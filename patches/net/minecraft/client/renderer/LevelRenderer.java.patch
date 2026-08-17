@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/LevelRenderer.java
 +++ b/net/minecraft/client/renderer/LevelRenderer.java
-@@ -225,6 +_,8 @@
+@@ -226,6 +_,8 @@
              this.targets.alwaysOnTopDepth = frame.createInternal("always_on_top_depth", extraDepthTargetDescriptor);
          }
  
@@ -9,7 +9,7 @@
          this.targets.entityOutline = frame.importExternal("entity_outline", this.entityOutlineTarget);
          FramePass clearPass = frame.addPass("clear");
          this.targets.main = clearPass.readsAndWrites(this.targets.main);
-@@ -250,7 +_,7 @@
+@@ -252,7 +_,7 @@
              chunkSectionsToRender = this.prepareChunkRenders(terrainMatrix, !this.gameRenderer.useImprovedTransparency());
          }
  
@@ -18,7 +18,7 @@
          if (this.currentFrameRendersEntityOutline) {
              PostChain entityOutlineChain = this.shaderManager.getPostChain(ENTITY_OUTLINE_POST_CHAIN_ID, LevelTargetBundle.OUTLINE_TARGETS);
              if (entityOutlineChain != null) {
-@@ -314,6 +_,8 @@
+@@ -319,6 +_,8 @@
              this.submitBlockOutline(poseStack, this.submitNodeStorage, levelRenderState);
          }
  
@@ -27,7 +27,7 @@
          this.finalizeGizmoCollection();
          this.finalizedGizmos.standardPrimitives().submit(submitNodeCollector, levelRenderState.cameraRenderState, false);
          this.finalizedGizmos.alwaysOnTopPrimitives().submit(submitNodeCollector, levelRenderState.cameraRenderState, true);
-@@ -353,6 +_,7 @@
+@@ -358,6 +_,7 @@
                  this.targets.main = pass.readsAndWrites(this.targets.main);
                  pass.executes(
                      () -> {
@@ -35,7 +35,7 @@
                          RenderSystem.setShaderFog(skyFog);
                          if (state.skybox == DimensionType.Skybox.END) {
                              this.skyRenderer.renderEndSky();
-@@ -372,12 +_,18 @@
+@@ -377,12 +_,18 @@
                                  this.skyRenderer.renderDarkDisc();
                              }
                          }
@@ -54,7 +54,7 @@
      private void addMainPass(
          FrameGraphBuilder frame,
          FeatureRenderDispatcher.PreparedFrame featureFrame,
-@@ -385,6 +_,17 @@
+@@ -390,6 +_,17 @@
          ChunkSectionsToRender chunkSectionsToRender,
          boolean consistentDepthRequired
      ) {
@@ -72,7 +72,7 @@
          FramePass pass = frame.addPass("main");
          this.targets.main = pass.readsAndWrites(this.targets.main);
          boolean useImprovedTransparency = this.gameRenderer.useImprovedTransparency();
-@@ -446,9 +_,9 @@
+@@ -451,9 +_,9 @@
                              OptionalDouble.empty()
                          )) {
                      RenderSystem.bindDefaultUniforms(renderPass);
@@ -84,7 +84,7 @@
                      }
                  }
  
-@@ -494,15 +_,25 @@
+@@ -514,15 +_,25 @@
          return !this.finalizedGizmos.alwaysOnTopPrimitives().isEmpty();
      }
  
@@ -110,7 +110,7 @@
          profiler.pop();
      }
  
-@@ -645,29 +_,47 @@
+@@ -665,29 +_,47 @@
          }
      }
  
@@ -158,20 +158,7 @@
          this.worldBorderRenderer.render(this.levelRenderState.worldBorderRenderState, renderPass, cameraPos, renderDistance);
      }
  
-@@ -916,10 +_,10 @@
-             section.setWasPreviouslyEmpty(false);
-             if (rebuildSync) {
-                 profiler.push("compileSectionSynchronously");
--                section.compileSync(state.region());
-+                section.compileSync(state.region(), state.additionalRenderers());
-                 profiler.pop();
-             } else {
--                section.compileAsync(state.region());
-+                section.compileAsync(state.region(), state.additionalRenderers());
-             }
-         }
- 
-@@ -977,7 +_,7 @@
+@@ -990,7 +_,7 @@
                      poseStack.translate(state.blockState().getOffset(pos));
                      BlockStateModel model = this.modelManager.getBlockStateModelSet().get(state.blockState());
                      random.setSeed(state.blockState().getSeed(pos));
@@ -180,7 +167,7 @@
                      submitNodeCollector.submitBreakingBlockModel(poseStack, List.copyOf(parts), state.progress(), model.hasMaterialFlag(1));
                      parts.clear();
                      poseStack.popPose();
-@@ -989,6 +_,13 @@
+@@ -1002,6 +_,13 @@
      private void submitBlockOutline(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, LevelRenderState levelRenderState) {
          BlockOutlineRenderState state = levelRenderState.blockOutlineRenderState;
          if (state != null) {

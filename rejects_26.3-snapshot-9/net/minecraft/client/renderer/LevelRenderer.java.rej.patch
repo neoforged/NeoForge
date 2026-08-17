@@ -1,0 +1,15 @@
+--- a/net/minecraft/client/renderer/LevelRenderer.java
++++ b/net/minecraft/client/renderer/LevelRenderer.java
+@@ -916,10 +966,10 @@
+             section.setWasPreviouslyEmpty(false);
+             if (rebuildSync) {
+                 profiler.push("compileSectionSynchronously");
+-                section.compileSync(state.region());
++                section.compileSync(state.region(), state.additionalRenderers());
+                 profiler.pop();
+             } else {
+-                section.compileAsync(state.region());
++                section.compileAsync(state.region(), state.additionalRenderers());
+             }
+         }
+ 

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/biome/Biome.java
 +++ b/net/minecraft/world/level/biome/Biome.java
-@@ -38,9 +_,9 @@
+@@ -39,9 +_,9 @@
  public final class Biome {
      public static final Codec<Biome> DIRECT_CODEC = RecordCodecBuilder.create(
          i -> i.group(
@@ -12,7 +12,7 @@
                  BiomeGenerationSettings.CODEC.forGetter(b -> b.generationSettings)
              )
              .apply(i, Biome::new)
-@@ -70,9 +_,11 @@
+@@ -71,9 +_,11 @@
      @Deprecated(forRemoval = true)
      public static final Noise BIOME_INFO_NOISE = new SimplexNoise(new WorldgenRandom(new LegacyRandomSource(2345L)), true);
      private static final int TEMPERATURE_CACHE_SIZE = 1024;
@@ -24,7 +24,7 @@
      private final BiomeSpecialEffects specialEffects;
      private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> {
          Long2FloatLinkedOpenHashMap map = new Long2FloatLinkedOpenHashMap(1024, 0.25F) {
-@@ -94,6 +_,7 @@
+@@ -95,6 +_,7 @@
          this.attributes = attributes;
          this.specialEffects = specialEffects;
          this.generationSettings = generationSettings;
@@ -32,7 +32,7 @@
      }
  
      public boolean hasPrecipitation() {
-@@ -195,7 +_,7 @@
+@@ -196,7 +_,7 @@
      }
  
      public BiomeGenerationSettings getGenerationSettings() {
@@ -41,7 +41,7 @@
      }
  
      public int getGrassColor(double x, double z) {
-@@ -419,5 +_,32 @@
+@@ -420,5 +_,32 @@
          public String getSerializedName() {
              return this.name;
          }

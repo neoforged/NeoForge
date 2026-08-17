@@ -1,6 +1,6 @@
 --- a/net/minecraft/advancements/Advancement.java
 +++ b/net/minecraft/advancements/Advancement.java
-@@ -66,6 +_,7 @@
+@@ -65,6 +_,7 @@
              parent, display, AdvancementRewards.EMPTY, Map.of(), requirements, sendsTelemetryEvent
          )
      );

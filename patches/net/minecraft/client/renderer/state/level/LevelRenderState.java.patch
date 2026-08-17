@@ -7,9 +7,9 @@
 -public class LevelRenderState {
 +public class LevelRenderState extends net.neoforged.neoforge.client.renderstate.BaseRenderState {
      public CameraRenderState cameraRenderState = new CameraRenderState();
+     public final PlayerRenderState playerRenderState = new PlayerRenderState();
      public final List<SectionUpdateRenderState> sectionUpdateRenderStates = new ArrayList<>();
-     public final List<EntityRenderState> entityRenderStates = new ArrayList<>();
-@@ -32,6 +_,9 @@
+@@ -34,6 +_,9 @@
      public boolean shouldResetChunkLayerSampler;
      public boolean shouldShowEntityOutlines;
      public boolean shouldResetSkyRenderer;
@@ -19,7 +19,7 @@
  
      public void reset() {
          this.sectionUpdateRenderStates.clear();
-@@ -45,5 +_,9 @@
+@@ -48,5 +_,9 @@
          this.particlesRenderState.reset();
          this.chunkLoadingRenderState.reset();
          this.gameTime = 0L;

@@ -1,0 +1,17 @@
+--- a/net/minecraft/client/renderer/entity/EntityRenderDispatcher.java
++++ b/net/minecraft/client/renderer/entity/EntityRenderDispatcher.java
+@@ -205,6 +205,14 @@
+         return this.itemInHandRenderer;
+     }
+ 
++    public Map<PlayerModelType, EntityRenderer<? extends Avatar, ?>> getPlayerRenderers() {
++        return java.util.Collections.unmodifiableMap(playerRenderers);
++    }
++
++    public Map<PlayerModelType, EntityRenderer<? extends Avatar, ?>> getMannequinRenderers() {
++        return java.util.Collections.unmodifiableMap(mannequinRenderers);
++    }
++
+     @Override
+     public void onResourceManagerReload(ResourceManager resourceManager) {
+         EntityRendererProvider.Context context = new EntityRendererProvider.Context(

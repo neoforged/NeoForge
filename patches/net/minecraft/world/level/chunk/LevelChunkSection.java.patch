@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/LevelChunkSection.java
 +++ b/net/minecraft/world/level/chunk/LevelChunkSection.java
-@@ -66,7 +_,7 @@
+@@ -65,7 +_,7 @@
              previous = this.states.getAndSetUnchecked(sectionX, sectionY, sectionZ, state);
          }
  
@@ -9,7 +9,7 @@
              this.nonEmptyBlockCount--;
              if (previous.isRandomlyTicking()) {
                  this.tickingBlockCount--;
-@@ -81,7 +_,7 @@
+@@ -80,7 +_,7 @@
              }
          }
  
@@ -18,7 +18,7 @@
              this.nonEmptyBlockCount++;
              if (state.isRandomlyTicking()) {
                  this.tickingBlockCount++;
-@@ -127,7 +_,7 @@
+@@ -126,7 +_,7 @@
              public int tickingFluidCount;
  
              public void accept(BlockState state, int count) {

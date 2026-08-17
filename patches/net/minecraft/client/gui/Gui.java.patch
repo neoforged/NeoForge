@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/Gui.java
 +++ b/net/minecraft/client/gui/Gui.java
-@@ -78,6 +_,8 @@
+@@ -83,6 +_,8 @@
      private final ToastManager toastManager;
      private final ChatListener chatListener;
      private @Nullable TutorialToast socialInteractionsToast;
@@ -9,7 +9,7 @@
  
      public Gui(Minecraft minecraft, Hud hud, GuiRenderState guiRenderState) {
          this.minecraft = minecraft;
-@@ -175,7 +_,8 @@
+@@ -180,7 +_,8 @@
              profiler.push("screen");
  
              try {
@@ -19,8 +19,8 @@
              } catch (Throwable t) {
                  CrashReport report = CrashReport.forThrowable(t, "Rendering screen");
                  CrashReportCategory category = report.addCategory("Screen render details");
-@@ -224,11 +_,7 @@
-             LOGGER.error("setScreen called from non-game thread");
+@@ -234,11 +_,7 @@
+             this.screenTracySection = null;
          }
  
 -        if (this.screen != null) {
@@ -32,7 +32,7 @@
              this.minecraft.setLastInputType(InputType.NONE);
          }
  
-@@ -250,6 +_,21 @@
+@@ -260,6 +_,21 @@
              }
          }
  
@@ -54,7 +54,7 @@
          this.screen = screen;
          if (this.screen != null) {
              this.screen.added();
-@@ -377,6 +_,8 @@
+@@ -389,6 +_,8 @@
              nextStep = () -> this.setScreen(screen);
          }
  
@@ -63,7 +63,7 @@
          return nextStep;
      }
  
-@@ -467,5 +_,48 @@
+@@ -479,5 +_,48 @@
                          }
                      )
              );

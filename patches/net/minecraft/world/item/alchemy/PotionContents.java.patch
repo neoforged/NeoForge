@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/alchemy/PotionContents.java
 +++ b/net/minecraft/world/item/alchemy/PotionContents.java
-@@ -189,6 +_,10 @@
+@@ -198,6 +_,10 @@
              lines.accept(CommonComponents.EMPTY);
              lines.accept(Component.translatable("potion.whenDrank").withStyle(ChatFormatting.DARK_PURPLE));
  

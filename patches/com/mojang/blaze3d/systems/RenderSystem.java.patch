@@ -17,7 +17,7 @@
          if (currentPipelineCache != null) {
              CompiledRenderPipeline cachedPipeline = currentPipelineCache.get(pipeline);
              if (cachedPipeline != null) {
-@@ -493,5 +_,28 @@
+@@ -492,5 +_,28 @@
      }
  
      private record GpuAsyncTask(Runnable callback, GpuFence fence) {

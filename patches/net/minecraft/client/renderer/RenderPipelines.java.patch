@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/RenderPipelines.java
 +++ b/net/minecraft/client/renderer/RenderPipelines.java
-@@ -1338,4 +_,15 @@
+@@ -1273,4 +_,15 @@
      public static List<RenderPipeline> optionalPipelines() {
          return OPTIONAL_PIPELINES_BY_LOCATION.values().stream().toList();
      }

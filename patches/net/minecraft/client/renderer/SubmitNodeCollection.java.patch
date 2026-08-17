@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/SubmitNodeCollection.java
 +++ b/net/minecraft/client/renderer/SubmitNodeCollection.java
-@@ -271,7 +_,7 @@
+@@ -288,7 +_,7 @@
      @Override
      public void submitMovingBlock(PoseStack poseStack, MovingBlockRenderState movingBlockRenderState, int outlineColor) {
          BlockStateModel model = Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(movingBlockRenderState.blockState);
@@ -9,7 +9,7 @@
          MovingBlockFeatureRenderer.Submit submit = new MovingBlockFeatureRenderer.Submit(
              new Matrix4f(poseStack.last().pose()), movingBlockRenderState, 0, isTranslucent
          );
-@@ -321,6 +_,27 @@
+@@ -338,6 +_,27 @@
          }
      }
  
@@ -37,7 +37,7 @@
      private static @Nullable RenderType getOutlineRenderType(RenderType renderType) {
          if (renderType.isOutline()) {
              return renderType;
-@@ -421,6 +_,13 @@
+@@ -438,6 +_,13 @@
          } else {
              this.translucentGizmos.submit(submit);
          }
