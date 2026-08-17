@@ -59,7 +59,6 @@ import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.components.debug.DebugEntryCategory;
 import net.minecraft.client.gui.components.debug.DebugScreenEntries;
-import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
@@ -550,13 +549,13 @@ public class ClientHooks {
         NeoForge.EVENT_BUS.post(event);
     }
 
-    public static boolean onPreeditPre(GuiEventListener inputTarget, @Nullable PreeditEvent preeditEvent) {
-        var event = new InputEvent.Preedit.Pre(inputTarget, preeditEvent);
+    public static boolean onScreenPreeditPre(Screen guiScreen, @Nullable PreeditEvent preeditEvent) {
+        var event = new ScreenEvent.Preedit.Pre(guiScreen, preeditEvent);
         return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
-    public static void onPreeditPost(GuiEventListener inputTarget, @Nullable PreeditEvent preeditEvent) {
-        Event event = new InputEvent.Preedit.Post(inputTarget, preeditEvent);
+    public static void onScreenPreeditPost(Screen guiScreen, @Nullable PreeditEvent preeditEvent) {
+        Event event = new ScreenEvent.Preedit.Post(guiScreen, preeditEvent);
         NeoForge.EVENT_BUS.post(event);
     }
 
