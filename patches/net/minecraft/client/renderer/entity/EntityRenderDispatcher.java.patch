@@ -1,5 +1,20 @@
 --- a/net/minecraft/client/renderer/entity/EntityRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/entity/EntityRenderDispatcher.java
+@@ -193,6 +_,14 @@
+         return this.camera.position().distanceToSqr(entity.position());
+     }
+ 
++    public Map<PlayerModelType, EntityRenderer<? extends Avatar, ?>> getPlayerRenderers() {
++        return java.util.Collections.unmodifiableMap(playerRenderers);
++    }
++
++    public Map<PlayerModelType, EntityRenderer<? extends Avatar, ?>> getMannequinRenderers() {
++        return java.util.Collections.unmodifiableMap(mannequinRenderers);
++    }
++
+     @Override
+     public void onResourceManagerReload(ResourceManager resourceManager) {
+         EntityRendererProvider.Context context = new EntityRendererProvider.Context(
 @@ -211,5 +_,8 @@
          this.renderers = EntityRenderers.createEntityRenderers(context);
          this.playerRenderers = EntityRenderers.createAvatarRenderers(context);

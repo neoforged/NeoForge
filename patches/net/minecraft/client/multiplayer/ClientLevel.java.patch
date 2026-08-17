@@ -61,6 +61,21 @@
          ParticleStatus particleStatus = this.minecraft.options.particles().get();
          int weatherRadius = this.minecraft.options.weatherRadius().get();
          float rainLevel = this.getRainLevel(1.0F);
+@@ -468,8 +_,12 @@
+ 
+     public void tickNonPassenger(Entity entity) {
+         Profiler.get().push(entity.typeHolder()::getRegisteredName);
+-        entity.commonTick();
+-        entity.tick();
++        // Neo: Permit cancellation of Entity#tick via EntityTickEvent.Pre
++        if (!net.neoforged.neoforge.event.EventHooks.fireEntityTickPre(entity).isCanceled()) {
++            entity.commonTick();
++            entity.tick();
++            net.neoforged.neoforge.event.EventHooks.fireEntityTickPost(entity);
++        }
+         Profiler.get().pop();
+ 
+         for (Entity passenger : entity.getPassengers()) {
 @@ -524,8 +_,10 @@
      }
  

@@ -1,0 +1,47 @@
+--- a/net/minecraft/client/gui/screens/advancements/AdvancementTab.java
++++ b/net/minecraft/client/gui/screens/advancements/AdvancementTab.java
+@@ -38,6 +_,7 @@
+     private float fade;
+     private boolean centered;
+     private @Nullable AdvancementWidget hovered;
++    private int page;
+ 
+     public AdvancementTab(
+         Minecraft minecraft,
+@@ -60,6 +_,25 @@
+         this.addWidget(root);
+     }
+ 
++    public AdvancementTab(
++        Minecraft minecraft,
++        AdvancementsScreen screen,
++        AdvancementTabType type,
++        int index,
++        int page,
++        AdvancementWidget root,
++        ItemStackTemplate icon,
++        Component title,
++        Identifier background
++    ) {
++        this(minecraft, screen, type, index, root, icon, title, background);
++        this.page = page;
++    }
++
++    public int getPage() {
++        return page;
++    }
++
+     public void copyPosition(AdvancementTab source) {
+         this.scrollX = source.scrollX;
+         this.scrollY = source.scrollY;
+@@ -179,8 +_,8 @@
+         Identifier background = rootDisplay.background().get().texturePath();
+ 
+         for (AdvancementTabType type : AdvancementTabType.values()) {
+-            if (index < type.getMax()) {
+-                return new AdvancementTab(minecraft, screen, type, index, rootWidget, rootDisplay.icon(), rootDisplay.title(), background);
++            if ((index % AdvancementTabType.MAX_TABS) < type.getMax()) {
++                return new AdvancementTab(minecraft, screen, type, index % AdvancementTabType.MAX_TABS, index / AdvancementTabType.MAX_TABS, rootWidget, rootDisplay.icon(), rootDisplay.title(), background);
+             }
+ 
+             index -= type.getMax();

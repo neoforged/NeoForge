@@ -1,12 +1,12 @@
 --- a/net/minecraft/world/item/consume_effects/TeleportRandomlyConsumeEffect.java
 +++ b/net/minecraft/world/item/consume_effects/TeleportRandomlyConsumeEffect.java
-@@ -54,7 +54,8 @@
+@@ -55,7 +_,8 @@
              }
  
              Vec3 oldPos = user.position();
--            if (user.randomTeleport(xx, yy, zz, true)) {
+-            if (user.randomTeleport(xx, yy, zz, true, BlockTags.CONSUMABLE_DOES_NOT_TELEPORT_TO)) {
 +            // Neo: Pass on the consumed stack to fire the appropriate sub-event of EntityTeleportEvent
-+            if (user.randomTeleport(xx, yy, zz, true, stack)) {
++            if (user.randomTeleport(xx, yy, zz, true, BlockTags.CONSUMABLE_DOES_NOT_TELEPORT_TO, stack)) {
                  level.gameEvent(GameEvent.TELEPORT, oldPos, GameEvent.Context.of(user));
                  SoundSource soundSource;
                  SoundEvent soundEvent;

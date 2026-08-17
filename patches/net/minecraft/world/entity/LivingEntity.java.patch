@@ -771,6 +771,24 @@
          if (!this.level().isClientSide()) {
              boolean wasUsingItem = this.isUsingItem();
              this.recentKineticEnemies = null;
+@@ -3635,7 +_,17 @@
+         return this.randomTeleport(xx, yy, zz, showParticles, state -> state.is(avoidanceTag));
+     }
+ 
++    // Neo: Add overload with the consumed item causing the random teleport
++    public boolean randomTeleport(double xx, double yy, double zz, boolean showParticles, TagKey<Block> avoidanceTag, ItemStack consumedStack) {
++        return this.randomTeleport(xx, yy, zz, showParticles, state -> state.is(avoidanceTag), consumedStack);
++    }
++
+     public boolean randomTeleport(double xx, double yy, double zz, boolean showParticles, Predicate<BlockState> isInvalidPosition) {
++        return this.randomTeleport(xx, yy, zz, showParticles, isInvalidPosition, ItemStack.EMPTY);
++    }
++
++    // Neo: Add overload with the consumed item causing the random teleport
++    public boolean randomTeleport(double xx, double yy, double zz, boolean showParticles, Predicate<BlockState> isInvalidPosition, ItemStack consumedStack) {
+         double y = yy;
+         Level level = this.level();
+         WorldBorder worldBorder = level.getWorldBorder();
 @@ -3829,7 +_,9 @@
  
      public @Nullable Direction getBedOrientation() {

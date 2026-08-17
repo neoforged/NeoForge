@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.event.entity.living;
 
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.extensions.IItemExtension;
@@ -17,10 +17,10 @@ import net.neoforged.neoforge.common.extensions.IItemExtension;
  * This event is {@link ICancellableEvent}.
  * If this event is canceled, the Enderman will not target the player.
  */
-public class EnderManAngerEvent extends LivingEvent implements ICancellableEvent {
+public class EndermanAngerEvent extends LivingEvent implements ICancellableEvent {
     private final Player player;
 
-    public EnderManAngerEvent(EnderMan enderman, Player player) {
+    public EndermanAngerEvent(Enderman enderman, Player player) {
         super(enderman);
         this.player = player;
     }
@@ -33,7 +33,7 @@ public class EnderManAngerEvent extends LivingEvent implements ICancellableEvent
     }
 
     @Override
-    public EnderMan getEntity() {
-        return (EnderMan) super.getEntity();
+    public Enderman getEntity() {
+        return (Enderman) super.getEntity();
     }
 }

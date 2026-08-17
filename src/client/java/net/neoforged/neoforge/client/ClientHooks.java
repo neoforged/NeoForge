@@ -51,7 +51,6 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.Options;
-import net.minecraft.client.entity.ClientAvatarEntity;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
@@ -96,6 +95,7 @@ import net.minecraft.client.renderer.chunk.RenderSectionRegion;
 import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.renderer.fog.environment.FogEnvironment;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.state.level.PlayerRenderState;
 import net.minecraft.client.renderer.texture.SpriteLoader;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -125,7 +125,6 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
@@ -255,9 +254,16 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(new RenderHandEvent(hand, poseStack, submitNodeCollector, packedLight, partialTick, interpPitch, swingProgress, equipProgress, stack)).isCanceled();
     }
 
-    public static <AvatarlikeEntity extends Avatar & ClientAvatarEntity> boolean renderSpecificFirstPersonArm(PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
-            int lightCoords, Identifier skinTexture, boolean hasSleeve, AvatarlikeEntity avatar, HumanoidArm arm, ModelPart armPart) {
-        return NeoForge.EVENT_BUS.post(new RenderArmEvent<>(poseStack, submitNodeCollector, lightCoords, skinTexture, hasSleeve, avatar, arm, armPart)).isCanceled();
+    public static boolean renderSpecificFirstPersonArm(
+            PoseStack poseStack,
+            SubmitNodeCollector submitNodeCollector,
+            int lightCoords,
+            Identifier skinTexture,
+            boolean hasSleeve,
+            PlayerRenderState renderState,
+            HumanoidArm arm,
+            ModelPart armPart) {
+        return NeoForge.EVENT_BUS.post(new RenderArmEvent(poseStack, submitNodeCollector, lightCoords, skinTexture, hasSleeve, renderState, arm, armPart)).isCanceled();
     }
 
     public static void onTextureAtlasStitched(TextureAtlas atlas) {

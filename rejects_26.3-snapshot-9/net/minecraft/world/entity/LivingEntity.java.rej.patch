@@ -1,17 +1,5 @@
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -3635,6 +3792,11 @@
-     }
- 
-     public boolean randomTeleport(double xx, double yy, double zz, boolean showParticles) {
-+        return randomTeleport(xx, yy, zz, showParticles, ItemStack.EMPTY);
-+    }
-+
-+    // Neo: Add overload with the consumed item causing the random teleport
-+    public boolean randomTeleport(double xx, double yy, double zz, boolean showParticles, ItemStack consumedStack) {
-         double xo = this.getX();
-         double yo = this.getY();
-         double zo = this.getZ();
 @@ -3642,6 +3804,8 @@
          boolean ok = false;
          BlockPos pos = BlockPos.containing(xx, y, zz);

@@ -25,6 +25,17 @@
  
          for (GpuBackend backendToTry : backendsToTry) {
              boolean libraryLoaded = false;
+@@ -493,8 +_,8 @@
+                 device = backendToTry.createDevice(
+                     new GpuDebugOptions(
+                         this.options.glDebugVerbosity,
+-                        SharedConstants.DEBUG_SYNCHRONOUS_GL_LOGS,
+-                        gameConfig.game.renderDebugLabels,
++                        SharedConstants.DEBUG_SYNCHRONOUS_GL_LOGS || enableGlDebug,
++                        gameConfig.game.renderDebugLabels || enableGlDebug,
+                         gameConfig.game.vulkanValidation
+                     )
+                 );
 @@ -569,6 +_,9 @@
          this.keyboardHandler = new KeyboardHandler(this);
          this.options.applyGraphicsPreset(this.options.graphicsPreset().get());
@@ -49,6 +60,22 @@
          this.itemModelResolver = new ItemModelResolver(this.modelManager);
          this.palettedTextureManager = new PalettedTextureManager(this.resourceManager, this.textureManager);
          this.resourceManager.registerReloadListener(this.palettedTextureManager);
+@@ -647,6 +_,7 @@
+         this.resourceManager.registerReloadListener(particleResources);
+         this.particleEngine = new ParticleEngine(this.level, particleResources);
+         particleResources.onReload(this.particleEngine::clearParticles);
++        net.neoforged.neoforge.client.ClientHooks.onRegisterParticleProviders(particleResources);
+         this.gameRenderer = new GameRenderer(this, new FirstPersonHandsAndItemsRenderer(this), this.modelManager, this.itemModelResolver);
+         this.resourceManager.registerReloadListener(this.gameRenderer.createReloadListener());
+         WindowRenderState windowRenderState = this.gameRenderer.gameRenderState().windowRenderState;
+@@ -695,6 +_,7 @@
+             MessageBox.error(message.toString());
+         }
+ 
++        net.neoforged.neoforge.client.ClientHooks.initClientHooks(this, this.resourceManager);
+         this.window.setAllowCursorChanges(this.options.allowCursorChanges().get());
+         this.window.setQuitShortcuts(this.options.quitShortcuts().get());
+         if (InputQuirks.EMULATE_RIGHT_CLICK_WITH_CTRL_KEY) {
 @@ -713,6 +_,7 @@
          TitleScreen.registerTextures(this.textureManager);
          LoadingOverlay.registerTextures(this.textureManager);
