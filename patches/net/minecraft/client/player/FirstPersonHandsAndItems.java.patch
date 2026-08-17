@@ -1,0 +1,34 @@
+--- a/net/minecraft/client/player/FirstPersonHandsAndItems.java
++++ b/net/minecraft/client/player/FirstPersonHandsAndItems.java
+@@ -44,9 +_,20 @@
+             this.mainHandHeight = Mth.clamp(this.mainHandHeight - 0.4F, 0.0F, 1.0F);
+             this.offHandHeight = Mth.clamp(this.offHandHeight - 0.4F, 0.0F, 1.0F);
+         } else {
++            // Neo: allow suppressing re-equip animation when only the stack's data changes
++            boolean swapAnimMain = net.neoforged.neoforge.client.ClientHooks.shouldCauseReequipAnimation(this.mainHandItem, nextMainHand, player.getInventory().getSelectedSlot());
++            boolean swapAnimOff = net.neoforged.neoforge.client.ClientHooks.shouldCauseReequipAnimation(this.offHandItem, nextOffHand, -1);
++
++            if (!swapAnimMain && this.mainHandItem != nextMainHand) {
++                this.mainHandItem = nextMainHand;
++            }
++            if (!swapAnimOff && this.offHandItem != nextOffHand) {
++                this.offHandItem = nextOffHand;
++            }
++
+             float attackAnim = player.getItemSwapScale(1.0F);
+-            float mainHandTargetHeight = this.mainHandItem != nextMainHand ? 0.0F : attackAnim * attackAnim * attackAnim;
+-            float offHandTargetHeight = this.offHandItem != nextOffHand ? 0.0F : 1.0F;
++            float mainHandTargetHeight = swapAnimMain ? 0.0F : attackAnim * attackAnim * attackAnim;
++            float offHandTargetHeight = swapAnimOff ? 0.0F : 1.0F;
+             this.mainHandHeight = this.mainHandHeight + Mth.clamp(mainHandTargetHeight - this.mainHandHeight, -0.4F, 0.4F);
+             this.offHandHeight = this.offHandHeight + Mth.clamp(offHandTargetHeight - this.offHandHeight, -0.4F, 0.4F);
+         }
+@@ -122,7 +_,7 @@
+ 
+     private boolean extractMapRenderState(LocalPlayer player, ItemStack itemStack, MapRenderState state) {
+         MapId mapId = itemStack.get(DataComponents.MAP_ID);
+-        MapItemSavedData mapData = mapId == null ? null : MapItem.getSavedData(mapId, player.level());
++        MapItemSavedData mapData = mapId == null ? null : MapItem.getSavedData(itemStack, player.level());
+         if (mapId != null && mapData != null) {
+             player.minecraft.getMapRenderer().extractRenderState(mapId, mapData, state);
+             return true;

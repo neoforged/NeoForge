@@ -36,33 +36,3 @@
                  this.itemModelResolver.updateForLiving(state.heldOnHead, useItem, ItemDisplayContext.HEAD, entity);
              }
          }
-@@ -229,11 +_,29 @@
-         state.capeFlap = state.capeFlap + Mth.sin(walkDistance * 6.0F) * 32.0F * pow;
-     }
- 
-+    /**
-+     * @deprecated Neo: use {@link #renderRightHand(PoseStack, SubmitNodeCollector, int, Identifier, boolean, Avatar)} instead
-+     */
-+    @Deprecated
-     public void renderRightHand(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, Identifier skinTexture, boolean hasSleeve) {
-+        this.renderRightHand(poseStack, submitNodeCollector, lightCoords, skinTexture, hasSleeve, (AvatarlikeEntity) net.minecraft.client.Minecraft.getInstance().player);
-+    }
-+
-+    public void renderRightHand(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, Identifier skinTexture, boolean hasSleeve, AvatarlikeEntity avatar) {
-+        if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonArm(poseStack, submitNodeCollector, lightCoords, skinTexture, hasSleeve, avatar, HumanoidArm.RIGHT, this.model.rightArm))
-         this.renderHand(poseStack, submitNodeCollector, lightCoords, skinTexture, this.model.rightArm, hasSleeve);
-     }
- 
-+    /**
-+     * @deprecated Neo: use {@link #renderLeftHand(PoseStack, SubmitNodeCollector, int, Identifier, boolean, Avatar)} instead
-+     */
-+    @Deprecated
-     public void renderLeftHand(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, Identifier skinTexture, boolean hasSleeve) {
-+        this.renderLeftHand(poseStack, submitNodeCollector, lightCoords, skinTexture, hasSleeve, (AvatarlikeEntity) net.minecraft.client.Minecraft.getInstance().player);
-+    }
-+
-+    public void renderLeftHand(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, Identifier skinTexture, boolean hasSleeve, AvatarlikeEntity avatar) {
-+        if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonArm(poseStack, submitNodeCollector, lightCoords, skinTexture, hasSleeve, avatar, HumanoidArm.LEFT, this.model.leftArm))
-         this.renderHand(poseStack, submitNodeCollector, lightCoords, skinTexture, this.model.leftArm, hasSleeve);
-     }
- 

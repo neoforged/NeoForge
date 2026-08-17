@@ -6,11 +6,10 @@
 package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.entity.ClientAvatarEntity;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.state.level.PlayerRenderState;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.HumanoidArm;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -25,27 +24,32 @@ import org.jetbrains.annotations.ApiStatus;
 /// This event is [cancellable][ICancellableEvent]. If this event is cancelled, then the arm will not be rendered.
 ///
 /// This event is fired on the [main NeoForge event bus][NeoForge#EVENT_BUS], only on the [logical client][LogicalSide#CLIENT].
-///
-/// @param <AvatarlikeEntity> This generic parameter **cannot** be used to target specific subclasses of [Avatar], nor narrow the type in any other way (i.e. it must be specified as a wild card).
-public class RenderArmEvent<AvatarlikeEntity extends Avatar & ClientAvatarEntity> extends Event implements ICancellableEvent {
+public class RenderArmEvent extends Event implements ICancellableEvent {
     private final PoseStack poseStack;
     private final SubmitNodeCollector submitNodeCollector;
     private final int lightCoords;
     private final Identifier skinTexture;
     private final boolean hasSleeve;
-    private final AvatarlikeEntity avatar;
+    private final PlayerRenderState playerRenderState;
     private final HumanoidArm arm;
     private final ModelPart armPart;
 
     @ApiStatus.Internal
-    public RenderArmEvent(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, Identifier skinTexture, boolean hasSleeve,
-            AvatarlikeEntity avatar, HumanoidArm arm, ModelPart armPart) {
+    public RenderArmEvent(
+            PoseStack poseStack,
+            SubmitNodeCollector submitNodeCollector,
+            int lightCoords,
+            Identifier skinTexture,
+            boolean hasSleeve,
+            PlayerRenderState playerRenderState,
+            HumanoidArm arm,
+            ModelPart armPart) {
         this.poseStack = poseStack;
         this.submitNodeCollector = submitNodeCollector;
         this.lightCoords = lightCoords;
         this.skinTexture = skinTexture;
         this.hasSleeve = hasSleeve;
-        this.avatar = avatar;
+        this.playerRenderState = playerRenderState;
         this.arm = arm;
         this.armPart = armPart;
     }
@@ -95,8 +99,8 @@ public class RenderArmEvent<AvatarlikeEntity extends Avatar & ClientAvatarEntity
         return armPart;
     }
 
-    /// {@return the avatar that is having their arm rendered} In general, this will be the same as [net.minecraft.client.Minecraft#player].
-    public AvatarlikeEntity getAvatar() {
-        return avatar;
+    /// {@return the render state of the player that is having their arm rendered}
+    public PlayerRenderState getPlayerRenderState() {
+        return playerRenderState;
     }
 }

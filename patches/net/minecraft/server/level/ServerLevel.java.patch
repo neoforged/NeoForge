@@ -120,6 +120,21 @@
          }
      }
  
+@@ -833,8 +_,12 @@
+         ProfilerFiller profiler = Profiler.get();
+         profiler.push(entity.typeHolder()::getRegisteredName);
+         profiler.incrementCounter("tickNonPassenger");
+-        entity.commonTick();
+-        entity.tick();
++        // Neo: Permit cancellation of Entity#tick via EntityTickEvent.Pre
++        if (!net.neoforged.neoforge.event.EventHooks.fireEntityTickPre(entity).isCanceled()) {
++            entity.commonTick();
++            entity.tick();
++            net.neoforged.neoforge.event.EventHooks.fireEntityTickPost(entity);
++        }
+         profiler.pop();
+ 
+         for (Entity passenger : entity.getPassengers()) {
 @@ -896,6 +_,7 @@
              } else {
                  this.entityManager.autoSave();

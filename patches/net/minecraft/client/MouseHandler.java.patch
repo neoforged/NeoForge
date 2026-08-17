@@ -1,5 +1,14 @@
 --- a/net/minecraft/client/MouseHandler.java
 +++ b/net/minecraft/client/MouseHandler.java
+@@ -75,6 +_,8 @@
+                 this.activeButton = null;
+             }
+ 
++            if (net.neoforged.neoforge.client.ClientHooks.onMouseButtonPre(rawButtonInfo, action)) return;
++            boolean screenHandled = false;
+             if (this.minecraft.gui.overlay() == null) {
+                 if (pressed
+                     && this.minecraft
 @@ -100,10 +_,14 @@
                                  && currentTime - this.lastClick.time() < 250L
                                  && this.lastClick.screen() == screen

@@ -12,8 +12,8 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
+import net.minecraft.client.renderer.state.level.PlayerRenderState;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
@@ -74,16 +74,16 @@ public interface IClientItemExtensions {
     /**
      * Called right before when client applies transformations to item in hand and render it.
      *
-     * @param poseStack    The pose stack
-     * @param player       The player holding the item, it's always main client player
-     * @param arm          The arm holding the item
-     * @param itemInHand   The held item
-     * @param partialTick  Partial tick time, useful for interpolation
-     * @param equipProcess Equip process time, Ranging from 0.0 to 1.0. 0.0 when it's done equipping
-     * @param swingProcess Swing process time, Ranging from 0.0 to 1.0. 0.0 when it's done swinging
+     * @param poseStack         The pose stack
+     * @param playerRenderState The render state of the player holding the item, it's always main client player
+     * @param arm               The arm holding the item
+     * @param itemInHand        The held item
+     * @param partialTick       Partial tick time, useful for interpolation
+     * @param equipProcess      Equip process time, Ranging from 0.0 to 1.0. 0.0 when it's done equipping
+     * @param swingProcess      Swing process time, Ranging from 0.0 to 1.0. 0.0 when it's done swinging
      * @return true if it should skip applying other transforms and go straight to rendering
      */
-    default boolean applyForgeHandTransform(PoseStack poseStack, LocalPlayer player, HumanoidArm arm, ItemStack itemInHand, float partialTick, float equipProcess, float swingProcess) {
+    default boolean applyForgeHandTransform(PoseStack poseStack, PlayerRenderState playerRenderState, HumanoidArm arm, ItemStack itemInHand, float partialTick, float equipProcess, float swingProcess) {
         return false;
     }
 

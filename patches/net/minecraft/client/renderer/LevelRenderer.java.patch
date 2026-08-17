@@ -158,6 +158,19 @@
          this.worldBorderRenderer.render(this.levelRenderState.worldBorderRenderState, renderPass, cameraPos, renderDistance);
      }
  
+@@ -929,10 +_,10 @@
+             SectionRenderDispatcher.RenderSection section = this.viewArea.getRenderSection(state.sectionNode());
+             if (rebuildSync) {
+                 profiler.push("compileSectionSynchronously");
+-                section.compileSync(state.region());
++                section.compileSync(state.region(), state.additionalRenderers());
+                 profiler.pop();
+             } else {
+-                section.compileAsync(state.region());
++                section.compileAsync(state.region(), state.additionalRenderers());
+             }
+         }
+ 
 @@ -990,7 +_,7 @@
                      poseStack.translate(state.blockState().getOffset(pos));
                      BlockStateModel model = this.modelManager.getBlockStateModelSet().get(state.blockState());
