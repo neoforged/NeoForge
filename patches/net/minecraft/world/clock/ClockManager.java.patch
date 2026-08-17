@@ -3,7 +3,7 @@
 @@ -4,4 +_,11 @@
  
  public interface ClockManager {
-     long getTotalTicks(Holder<WorldClock> definition);
+     ClockInstance getInstance(Holder<WorldClock> definition);
 +
 +    default float getPartialTick(Holder<WorldClock> definition) {
 +        return 0;

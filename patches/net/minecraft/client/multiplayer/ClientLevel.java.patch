@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientLevel.java
 +++ b/net/minecraft/client/multiplayer/ClientLevel.java
-@@ -156,7 +_,7 @@
+@@ -155,7 +_,7 @@
      private final @Nullable EndFlashState endFlashState;
      private final Minecraft minecraft = Minecraft.getInstance();
      private final List<AbstractClientPlayer> players = Lists.newArrayList();
@@ -9,7 +9,7 @@
      private final Map<MapId, MapItemSavedData> mapData = Maps.newHashMap();
      private int skyFlashTime;
      private int rainSoundTime;
-@@ -165,6 +_,7 @@
+@@ -164,6 +_,7 @@
          cache.put(BiomeColors.FOLIAGE_COLOR_RESOLVER, new BlockTintCache(pos -> this.calculateBlockTint(pos, BiomeColors.FOLIAGE_COLOR_RESOLVER)));
          cache.put(BiomeColors.DRY_FOLIAGE_COLOR_RESOLVER, new BlockTintCache(pos -> this.calculateBlockTint(pos, BiomeColors.DRY_FOLIAGE_COLOR_RESOLVER)));
          cache.put(BiomeColors.WATER_COLOR_RESOLVER, new BlockTintCache(pos -> this.calculateBlockTint(pos, BiomeColors.WATER_COLOR_RESOLVER)));
@@ -17,7 +17,7 @@
      });
      private final ClientChunkCache chunkSource;
      private final Deque<Runnable> lightUpdateQueue = Queues.newArrayDeque();
-@@ -178,6 +_,7 @@
+@@ -177,6 +_,7 @@
      private final Long2ObjectMap<SortedSet<BlockDestructionProgress>> destructionProgress = new Long2ObjectOpenHashMap<>();
      private final int seaLevel;
      private static final Set<Item> MARKER_PARTICLE_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
@@ -25,7 +25,7 @@
  
      public void handleBlockChangedAck(int sequence) {
          if (SharedConstants.DEBUG_BLOCK_BREAK) {
-@@ -223,10 +_,15 @@
+@@ -222,10 +_,15 @@
      @Override
      public boolean setBlock(BlockPos pos, BlockState blockState, @Block.UpdateFlags int updateFlags, int updateLimit) {
          if (this.blockStatePredictionHandler.isPredicting()) {
@@ -41,7 +41,7 @@
              }
  
              return success;
-@@ -260,6 +_,7 @@
+@@ -259,6 +_,7 @@
          this.serverSimulationDistance = serverSimulationDistance;
          this.environmentAttributes = this.addEnvironmentAttributeLayers(EnvironmentAttributeSystem.builder()).build();
          this.updateSkyBrightness();
@@ -49,7 +49,7 @@
      }
  
      private EnvironmentAttributeSystem.Builder addEnvironmentAttributeLayers(EnvironmentAttributeSystem.Builder environmentAttributes) {
-@@ -339,6 +_,11 @@
+@@ -338,6 +_,11 @@
      }
  
      public void tickWeatherEffects() {
@@ -61,20 +61,22 @@
          ParticleStatus particleStatus = this.minecraft.options.particles().get();
          int weatherRadius = this.minecraft.options.weatherRadius().get();
          float rainLevel = this.getRainLevel(1.0F);
-@@ -471,7 +_,11 @@
-         entity.setOldPosAndRot();
-         entity.tickCount++;
+@@ -468,8 +_,12 @@
+ 
+     public void tickNonPassenger(Entity entity) {
          Profiler.get().push(entity.typeHolder()::getRegisteredName);
+-        entity.commonTick();
 -        entity.tick();
 +        // Neo: Permit cancellation of Entity#tick via EntityTickEvent.Pre
 +        if (!net.neoforged.neoforge.event.EventHooks.fireEntityTickPre(entity).isCanceled()) {
++            entity.commonTick();
 +            entity.tick();
 +            net.neoforged.neoforge.event.EventHooks.fireEntityTickPost(entity);
 +        }
          Profiler.get().pop();
  
          for (Entity passenger : entity.getPassengers()) {
-@@ -527,8 +_,10 @@
+@@ -524,8 +_,10 @@
      }
  
      public void addEntity(Entity entity) {
@@ -85,7 +87,7 @@
      }
  
      public void removeEntity(int id, Entity.RemovalReason reason) {
-@@ -676,6 +_,13 @@
+@@ -673,6 +_,13 @@
      public void playSeededSound(
          @Nullable Entity except, double x, double y, double z, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
@@ -99,7 +101,7 @@
          if (except == this.minecraft.player) {
              this.playSound(x, y, z, sound.value(), source, volume, pitch, false, seed);
          }
-@@ -685,6 +_,12 @@
+@@ -682,6 +_,12 @@
      public void playSeededSound(
          @Nullable Entity except, Entity sourceEntity, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
@@ -112,7 +114,7 @@
          if (except == this.minecraft.player) {
              this.minecraft.getSoundManager().play(new EntityBoundSoundInstance(sound.value(), source, volume, pitch, sourceEntity, seed));
          }
-@@ -913,7 +_,7 @@
+@@ -916,7 +_,7 @@
          return this.players;
      }
  
@@ -121,7 +123,7 @@
          return this.dragonParts;
      }
  
-@@ -1009,7 +_,7 @@
+@@ -1012,7 +_,7 @@
  
      @Override
      public void addDestroyBlockEffect(BlockPos pos, BlockState blockState) {
@@ -130,7 +132,7 @@
              VoxelShape shape = blockState.getShape(this, pos);
              double density = 0.25;
              shape.forAllBoxes(
-@@ -1035,7 +_,7 @@
+@@ -1038,7 +_,7 @@
                                      .add(
                                          new TerrainParticle(
                                              this, pos.getX() + x, pos.getY() + y, pos.getZ() + z, relX - 0.5, relY - 0.5, relZ - 0.5, blockState, pos
@@ -139,7 +141,7 @@
                                      );
                              }
                          }
-@@ -1045,9 +_,16 @@
+@@ -1048,9 +_,16 @@
          }
      }
  
@@ -157,7 +159,7 @@
              int x = pos.getX();
              int y = pos.getY();
              int z = pos.getZ();
-@@ -1080,7 +_,7 @@
+@@ -1083,7 +_,7 @@
                  xp = x + shape.maxX + 0.1F;
              }
  
@@ -166,7 +168,7 @@
          }
      }
  
-@@ -1200,6 +_,7 @@
+@@ -1193,6 +_,7 @@
          }
  
          public void setDifficulty(Difficulty difficulty) {
@@ -174,7 +176,7 @@
              this.difficulty = difficulty;
          }
  
-@@ -1240,6 +_,9 @@
+@@ -1233,6 +_,9 @@
                      ClientLevel.this.dragonParts.addAll(Arrays.asList(dragon.getSubEntities()));
                      break;
                  default:
@@ -184,7 +186,7 @@
              }
          }
  
-@@ -1253,10 +_,26 @@
+@@ -1246,10 +_,26 @@
                      ClientLevel.this.dragonParts.removeAll(Arrays.asList(dragon.getSubEntities()));
                      break;
                  default:

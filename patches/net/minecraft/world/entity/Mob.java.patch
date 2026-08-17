@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -144,6 +_,11 @@
+@@ -145,6 +_,11 @@
      private Leashable.@Nullable LeashData leashData;
      private BlockPos homePosition = BlockPos.ZERO;
      private int homeRadius = -1;
@@ -12,7 +12,7 @@
  
      protected Mob(EntityType<? extends Mob> type, Level level) {
          super(type, level);
-@@ -249,7 +_,11 @@
+@@ -250,7 +_,11 @@
      }
  
      public void setTarget(@Nullable LivingEntity target) {
@@ -25,7 +25,7 @@
      }
  
      @Override
-@@ -345,6 +_,12 @@
+@@ -346,6 +_,12 @@
          if (!this.level().isClientSide() && this.tickCount % 5 == 0) {
              this.updateControlFlags();
          }
@@ -38,7 +38,7 @@
      }
  
      protected void updateControlFlags() {
-@@ -388,6 +_,9 @@
+@@ -389,6 +_,9 @@
          if (this.isNoAi()) {
              output.putBoolean("NoAI", this.isNoAi());
          }
@@ -48,7 +48,7 @@
      }
  
      @Override
-@@ -406,6 +_,14 @@
+@@ -407,6 +_,14 @@
          this.lootTable = input.read("DeathLootTable", LootTable.KEY_CODEC);
          this.lootTableSeed = input.getLongOr("DeathLootTableSeed", 0L);
          this.setNoAi(input.getBooleanOr("NoAI", false));
@@ -63,7 +63,7 @@
      }
  
      @Override
-@@ -464,7 +_,7 @@
+@@ -465,7 +_,7 @@
              && this.canPickUpLoot()
              && this.isAlive()
              && !this.dead
@@ -72,7 +72,7 @@
              Vec3i pickupReach = this.getPickupReach();
  
              for (ItemEntity entity : this.level()
-@@ -646,6 +_,8 @@
+@@ -647,6 +_,8 @@
      private double getApproximateAttributeWith(ItemStack itemStack, Holder<Attribute> attribute, EquipmentSlot slot) {
          double baseValue = this.getAttributes().hasAttribute(attribute) ? this.getAttributeBaseValue(attribute) : 0.0;
          ItemAttributeModifiers attributeModifiers = itemStack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
@@ -81,15 +81,17 @@
          return attributeModifiers.compute(attribute, baseValue, slot);
      }
  
-@@ -685,6 +_,7 @@
+@@ -686,6 +_,9 @@
  
      @Override
      public void checkDespawn() {
-+        if (net.neoforged.neoforge.event.EventHooks.checkMobDespawn(this)) return;
++        if (net.neoforged.neoforge.event.EventHooks.checkMobDespawn(this)) {
++            return;
++        }
          if (this.level().getDifficulty() == Difficulty.PEACEFUL && !this.getType().isAllowedInPeaceful()) {
              this.discard();
-         } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {
-@@ -1078,6 +_,11 @@
+         } else {
+@@ -1082,6 +_,11 @@
          }
      }
  
@@ -101,7 +103,7 @@
      public @Nullable SpawnGroupData finalizeSpawn(
          ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnReason, @Nullable SpawnGroupData groupData
      ) {
-@@ -1090,6 +_,7 @@
+@@ -1094,6 +_,7 @@
          }
  
          this.setLeftHanded(random.nextFloat() < 0.05F);
@@ -109,7 +111,7 @@
          return groupData;
      }
  
-@@ -1238,6 +_,7 @@
+@@ -1242,6 +_,7 @@
  
          params.type().convert(this, newMob, params);
          afterConversion.finalizeConversion(newMob);
@@ -117,7 +119,7 @@
          if (this.level() instanceof ServerLevel serverLevel) {
              serverLevel.addFreshEntity(newMob);
          }
-@@ -1399,14 +_,24 @@
+@@ -1403,14 +_,24 @@
      }
  
      @Override
@@ -143,39 +145,34 @@
      @VisibleForTesting
      public void removeFreeWill() {
          this.removeAllGoals(goal -> true);
-@@ -1472,5 +_,40 @@
+@@ -1485,5 +_,35 @@
  
-     public float chargeSpeedModifier() {
-         return 1.0F;
+     public void swing(InteractionHand hand, SwingAnimation animation) {
+         this.swing(hand, animation, false);
 +    }
 +
-+    /**
-+     * Returns the type of spawn that created this mob, if applicable.
-+     * If it could not be determined, this will return null.
-+     * <p>
-+     * This is set via {@link Mob#finalizeSpawn}, so you should not call this from within that method, instead using the parameter.
-+     */
++    /// {@return the type of spawn that created this mob, if applicable}
++    /// If it could not be determined, this will return null.
++    ///
++    /// This is set via [Mob#finalizeSpawn], so you should not call this from within that method, instead using the parameter.
 +    @Nullable
 +    public final EntitySpawnReason getSpawnType() {
 +        return this.spawnType;
 +    }
 +
-+    /**
-+     * This method exists so that spawns can be cancelled from the {@link net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent FinalizeSpawnEvent}
-+     * without needing to hook up an additional handler for the {@link net.neoforged.neoforge.event.entity.EntityJoinLevelEvent EntityJoinLevelEvent}.
-+     * @return if this mob will be blocked from spawning during {@link Level#addFreshEntity(Entity)}
-+     * @apiNote Not public-facing API.
-+     */
++    /// This method exists so that spawns can be canceled from the [`FinalizeSpawnEvent`][net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent]
++    /// without needing to hook up an additional handler for the [`EntityJoinLevelEvent`][net.neoforged.neoforge.event.entity.EntityJoinLevelEvent].
++    /// @return if this mob will be blocked from spawning during [Level#addFreshEntity(Entity)]
++    /// @apiNote Not public-facing API.
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public final boolean isSpawnCancelled() {
 +        return this.spawnCancelled;
 +    }
 +
-+    /**
-+     * Marks this mob as being disallowed to spawn during {@link Level#addFreshEntity(Entity)}.<p>
-+     * @throws UnsupportedOperationException if this entity has already been {@link Entity#isAddedToLevel()} added to the level.
-+     * @apiNote Not public-facing API.
-+     */
++    /// Marks this mob as being disallowed to spawn during [Level#addFreshEntity(Entity)].
++    ///
++    /// @throws UnsupportedOperationException if this entity has already been [Entity#isAddedToLevel()] added to the level.
++    /// @apiNote Not public-facing API.
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public final void setSpawnCancelled(boolean cancel) {
 +        if (this.isAddedToLevel()) {

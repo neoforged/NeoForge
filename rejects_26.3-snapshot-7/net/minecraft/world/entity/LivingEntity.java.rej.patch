@@ -1,0 +1,34 @@
+--- a/net/minecraft/world/entity/LivingEntity.java
++++ b/net/minecraft/world/entity/LivingEntity.java
+@@ -3755,8 +3933,8 @@
+         }
+ 
+         BlockState blockState = this.level().getBlockState(bedPosition);
+-        if (blockState.getBlock() instanceof BedBlock) {
+-            this.level().setBlock(bedPosition, blockState.setValue(BedBlock.OCCUPIED, true), 3);
++        if (blockState.isBed(level(), bedPosition, this)) {
++            blockState.setBedOccupied(level(), bedPosition, this, true);
+         }
+ 
+         this.setPose(Pose.SLEEPING);
+@@ -3771,15 +3949,17 @@
+     }
+ 
+     private boolean checkBedExists() {
+-        return this.getSleepingPos().map(bedPosition -> this.level().getBlockState(bedPosition).getBlock() instanceof BedBlock).orElse(false);
++        // Neo: Overwrite the vanilla instanceof BedBlock check with isBed and fire the CanContinueSleepingEvent.
++        boolean hasBed = this.getSleepingPos().map(pos -> this.level().getBlockState(pos).isBed(this.level(), pos, this)).orElse(false);
++        return net.neoforged.neoforge.event.EventHooks.canEntityContinueSleeping(this, hasBed ? null : Player.BedSleepingProblem.OTHER_PROBLEM);
+     }
+ 
+     public void stopSleeping() {
+         this.getSleepingPos().filter(this.level()::hasChunkAt).ifPresent(bedPosition -> {
+             BlockState state = this.level().getBlockState(bedPosition);
+-            if (state.getBlock() instanceof BedBlock) {
++            if (state.isBed(level(), bedPosition, this)) {
+                 Direction facing = state.getValue(BedBlock.FACING);
+-                this.level().setBlock(bedPosition, state.setValue(BedBlock.OCCUPIED, false), 3);
++                state.setBedOccupied(level(), bedPosition, this, false);
+                 Vec3 standUp = BedBlock.findStandUpPosition(this.getType(), this.level(), bedPosition, facing, this.getYRot()).orElseGet(() -> {
+                     BlockPos above = bedPosition.above();
+                     return new Vec3(above.getX() + 0.5, above.getY() + 0.1, above.getZ() + 0.5);

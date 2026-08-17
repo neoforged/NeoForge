@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/wolf/Wolf.java
 +++ b/net/minecraft/world/entity/animal/wolf/Wolf.java
-@@ -506,7 +_,7 @@
+@@ -507,7 +_,7 @@
      }
  
      private void tryToTame(Player player) {
@@ -9,7 +9,7 @@
              this.tame(player);
              this.navigation.stop();
              this.setTarget(null);
-@@ -659,7 +_,7 @@
+@@ -660,7 +_,7 @@
          return new Vec3(0.0, 0.6F * this.getEyeHeight(), this.getBbWidth() * 0.4F);
      }
  

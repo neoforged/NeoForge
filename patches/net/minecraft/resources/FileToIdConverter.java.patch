@@ -1,27 +1,23 @@
 --- a/net/minecraft/resources/FileToIdConverter.java
 +++ b/net/minecraft/resources/FileToIdConverter.java
-@@ -36,4 +_,25 @@
+@@ -40,4 +_,21 @@
      public Map<Identifier, List<Resource>> listMatchingResourceStacks(ResourceManager manager) {
-         return manager.listResourceStacks(this.prefix, this::extensionMatches);
+         return manager.listResourceStacks(this.prefix, this.extensionSelector());
      }
 +
-+    /**
-+     * List all resources under the given namespace which match this converter
-+     *
-+     * @param manager   The resource manager to collect the resources from
-+     * @param namespace The namespace to search under
-+     * @return All resources from the given namespace which match this converter
-+     */
++    /// List all resources under the given namespace which match this converter
++    ///
++    /// @param manager   The resource manager to collect the resources from
++    /// @param namespace The namespace to search under
++    /// @return All resources from the given namespace which match this converter
 +    public Map<Identifier, Resource> listMatchingResourcesFromNamespace(ResourceManager manager, String namespace) {
 +        return manager.listResources(this.prefix, path -> path.getNamespace().equals(namespace) && this.extensionMatches(path));
 +    }
-+    /**
-+     * List all resource stacks under the given namespace which match this converter
-+     *
-+     * @param manager   The resource manager to collect the resources from
-+     * @param namespace The namespace to search under
-+     * @return All resource stacks from the given namespace which match this converter
-+     */
++    /// List all resource stacks under the given namespace which match this converter
++    ///
++    /// @param manager   The resource manager to collect the resources from
++    /// @param namespace The namespace to search under
++    /// @return All resource stacks from the given namespace which match this converter
 +    public Map<Identifier, List<Resource>> listMatchingResourceStacksFromNamespace(ResourceManager manager, String namespace) {
 +        return manager.listResourceStacks(this.prefix, path -> path.getNamespace().equals(namespace) && this.extensionMatches(path));
 +    }

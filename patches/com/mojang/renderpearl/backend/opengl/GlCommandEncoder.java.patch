@@ -1,0 +1,57 @@
+--- a/com/mojang/renderpearl/backend/opengl/GlCommandEncoder.java
++++ b/com/mojang/renderpearl/backend/opengl/GlCommandEncoder.java
+@@ -262,8 +_,9 @@
+         GlStateManager._depthMask(true);
+         GlStateManager._disableScissorTest();
+ 
++        boolean hasStencil = depthTexture.getFormat().hasStencilAspect();
+         for (int i = 0; i < depthTexture.getMipLevels(); i++) {
+-            this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, 0, ((GlTexture)depthTexture).id, i, 36160);
++            this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, 0, ((GlTexture)depthTexture).id, i, 36160, hasStencil);
+             GL33C.glDrawBuffer(0);
+             GlStateManager._clear(256);
+         }
+@@ -274,6 +_,17 @@
+     }
+ 
+     @Override
++    public void clearStencilTexture(GpuTexture texture, int value) {
++        this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, 0, ((GlTexture)texture).id, 0, GlConst.GL_FRAMEBUFFER, true);
++        GL33C.glDrawBuffer(GlConst.GL_NONE);
++        GL33C.glClearStencil(value);
++        GlStateManager._depthMask(true);
++        GlStateManager._clear(GL33C.GL_STENCIL_BUFFER_BIT);
++        GL33C.glDrawBuffer(GlConst.GL_COLOR_ATTACHMENT0);
++        GlStateManager._glBindFramebuffer(GlConst.GL_FRAMEBUFFER, 0);
++    }
++
++    @Override
+     public void writeToBuffer(GpuBufferSlice slice, ByteBuffer data) {
+         GlBuffer buffer = (GlBuffer)slice.buffer();
+         buffer.checkCanBeUsed();
+@@ -390,11 +_,22 @@
+         boolean isDepth = source.getFormat().hasDepthAspect();
+         int sourceId = ((GlTexture)source).glId();
+         int destId = ((GlTexture)destination).glId();
+-        this.device.directStateAccess().bindFrameBufferTextures(this.readFbo, isDepth ? 0 : sourceId, isDepth ? sourceId : 0, mipLevel, 0);
+-        this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, isDepth ? 0 : destId, isDepth ? destId : 0, mipLevel, 0);
++        boolean hasStencil = source.getFormat().hasStencilAspect();
++        this.device.directStateAccess().bindFrameBufferTextures(this.readFbo, isDepth ? 0 : sourceId, isDepth ? sourceId : 0, 0, 0, hasStencil);
++        this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, isDepth ? 0 : destId, isDepth ? destId : 0, 0, 0, hasStencil);
++        int bufferMask = 0;
++        if (source.getFormat().hasColorAspect()) {
++            bufferMask |= GlConst.GL_COLOR_BUFFER_BIT;
++        }
++        if (source.getFormat().hasDepthAspect()) {
++            bufferMask |= GlConst.GL_DEPTH_BUFFER_BIT;
++        }
++        if (source.getFormat().hasStencilAspect()) {
++            bufferMask |= GL33C.GL_STENCIL_BUFFER_BIT;
++        }
+         this.device
+             .directStateAccess()
+-            .blitFrameBuffers(this.readFbo, this.drawFbo, sourceX, sourceY, width, height, destX, destY, width, height, isDepth ? 256 : 16384, 9728);
++                .blitFrameBuffers(this.readFbo, this.drawFbo, sourceX, sourceY, width, height, destX, destY, width, height, bufferMask, 9728);
+         int error = GlStateManager._getError();
+         if (error != 0) {
+             throw new IllegalStateException(

@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/level/storage/loot/LootPool.java
 +++ b/net/minecraft/world/level/storage/loot/LootPool.java
-@@ -33,7 +_,8 @@
-                 LootItemCondition.DIRECT_CODEC.listOf().optionalFieldOf("conditions", List.of()).forGetter(p -> p.conditions),
-                 LootItemFunctions.ROOT_CODEC.listOf().optionalFieldOf("functions", List.of()).forGetter(p -> p.functions),
+@@ -32,7 +_,8 @@
+                 LootItemCondition.CODEC.optionalFieldOf("condition").forGetter(p -> p.condition),
+                 LootItemFunctions.CODEC.optionalFieldOf("modifier").forGetter(p -> p.modifier),
                  NumberProviders.CODEC.fieldOf("rolls").forGetter(p -> p.rolls),
 -                NumberProviders.CODEC.optionalFieldOf("bonus_rolls", ConstantValue.exactly(0.0F)).forGetter(p -> p.bonusRolls)
 +                NumberProviders.CODEC.optionalFieldOf("bonus_rolls", ConstantValue.exactly(0.0F)).forGetter(p -> p.bonusRolls),
@@ -10,26 +10,25 @@
              )
              .apply(i, LootPool::new)
      );
-@@ -50,7 +_,8 @@
-         List<LootItemCondition> conditions,
-         List<LootItemFunction> functions,
-         NumberProvider rolls,
--        NumberProvider bonusRolls
-+        NumberProvider bonusRolls,
+@@ -47,13 +_,15 @@
+         Optional<Holder<LootItemCondition>> condition,
+         Optional<Holder<LootItemFunction>> modifier,
+         Holder<NumberProvider> rolls,
+-        Holder<NumberProvider> bonusRolls
++        Holder<NumberProvider> bonusRolls,
 +        java.util.Optional<String> name
      ) {
          this.entries = entries;
-         this.conditions = conditions;
-@@ -59,6 +_,7 @@
-         this.compositeFunction = LootItemFunctions.compose(functions);
+         this.condition = condition;
+         this.modifier = modifier;
          this.rolls = rolls;
          this.bonusRolls = bonusRolls;
 +        this.name = name.orElse(null);
      }
  
      private void addRandomItem(Consumer<ItemStack> result, LootContext context) {
-@@ -114,6 +_,57 @@
-         Validatable.validate(output, "bonus_rolls", this.bonusRolls);
+@@ -109,6 +_,57 @@
+         Validatable.validateHolder(output, "bonus_rolls", this.bonusRolls);
      }
  
 +    // Neo: Implement LootPool freezing to prevent manipulation outside of Neo APIs
@@ -64,21 +63,21 @@
 +        this.name = name;
 +    }
 +
-+    // Neo: Add getters and settings for changing the rolls for this pool
-+    public NumberProvider getRolls() {
++    // Neo: Add getters and setters for changing the rolls for this pool
++    public Holder<NumberProvider> getRolls() {
 +        return this.rolls;
 +    }
 +
-+    public NumberProvider getBonusRolls() {
++    public Holder<NumberProvider> getBonusRolls() {
 +        return this.bonusRolls;
 +    }
 +
-+    public void setRolls (NumberProvider v) {
++    public void setRolls(Holder<NumberProvider> v) {
 +        checkFrozen();
 +        this.rolls = v;
 +    }
 +
-+    public void setBonusRolls (NumberProvider v) {
++    public void setBonusRolls(Holder<NumberProvider> v) {
 +        checkFrozen();
 +        this.bonusRolls = v;
 +    }
@@ -86,16 +85,16 @@
      public static LootPool.Builder lootPool() {
          return new LootPool.Builder();
      }
-@@ -124,6 +_,8 @@
-         private final ImmutableList.Builder<LootItemFunction> functions = ImmutableList.builder();
-         private NumberProvider rolls = ConstantValue.exactly(1.0F);
-         private NumberProvider bonusRolls = ConstantValue.exactly(0.0F);
+@@ -119,6 +_,8 @@
+         private final ImmutableList.Builder<Holder<LootItemFunction>> functions = ImmutableList.builder();
+         private Holder<NumberProvider> rolls = ConstantValue.exactly(1.0F);
+         private Holder<NumberProvider> bonusRolls = ConstantValue.exactly(0.0F);
 +        @org.jspecify.annotations.Nullable
 +        private String name;
  
-         public LootPool.Builder setRolls(NumberProvider rolls) {
+         public LootPool.Builder setRolls(Holder<NumberProvider> rolls) {
              this.rolls = rolls;
-@@ -162,8 +_,13 @@
+@@ -157,13 +_,19 @@
              return this;
          }
  
@@ -105,8 +104,14 @@
 +        }
 +
          public LootPool build() {
--            return new LootPool(this.entries.build(), this.conditions.build(), this.functions.build(), this.rolls, this.bonusRolls);
-+            return new LootPool(this.entries.build(), this.conditions.build(), this.functions.build(), this.rolls, this.bonusRolls, java.util.Optional.ofNullable(this.name));
+             return new LootPool(
+                 this.entries.build(),
+                 ConditionUserBuilder.buildCondition(this.conditions.build()),
+                 FunctionUserBuilder.buildFunction(this.functions.build()),
+                 this.rolls,
+-                this.bonusRolls
++                this.bonusRolls,
++                java.util.Optional.ofNullable(this.name)
+             );
          }
      }
- }

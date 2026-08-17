@@ -8,4 +8,4 @@
 +        InteractionHand hand = ProjectileUtil.getWeaponHoldingHand(body, item -> item instanceof CrossbowItem);
          ItemStack usedItem = body.getItemInHand(hand);
          if (usedItem.getItem() instanceof CrossbowItem crossbow) {
-             crossbow.performShooting(body.level(), body, hand, usedItem, crossbowPower, 14 - body.level().getDifficulty().getId() * 4, this.getTarget());
+             crossbow.performShooting(body.level(), body, hand, usedItem, crossbowPower, this.rangedAttackUncertainty(body.level()), this.getTarget());

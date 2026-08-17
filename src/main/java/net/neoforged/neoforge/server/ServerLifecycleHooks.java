@@ -174,7 +174,7 @@ public class ServerLifecycleHooks {
                     biomeRegistry);
 
             final MobSpawnSettings mobSettings = biome.getMobSettings();
-            mobSettings.getSpawnerTypes().forEach(category -> {
+            mobSettings.definedCategories().forEach(category -> {
                 mobSettings.getMobs(category).unwrap().forEach(data -> {
                     if (SpawnPlacements.hasPlacement(data.value().type()))
                         return;
@@ -182,7 +182,7 @@ public class ServerLifecycleHooks {
                 });
             });
 
-            for (MobCategory mobCategory : mobSettings.getSpawnerTypes()) {
+            for (MobCategory mobCategory : mobSettings.definedCategories()) {
                 for (Weighted<MobSpawnSettings.SpawnerData> spawnerData : mobSettings.getMobs(mobCategory).unwrap()) {
                     if (spawnerData.value().type().getCategory() != mobCategory) {
                         // Ignore vanilla bugged entries to reduce unneeded logging. See https://bugs.mojang.com/browse/MC-1788 for the Ocelot/Jungle vanilla bug.

@@ -1,0 +1,16 @@
+--- a/com/mojang/renderpearl/api/pipeline/DepthStencilState.java
++++ b/com/mojang/renderpearl/api/pipeline/DepthStencilState.java
+@@ -4,8 +_,12 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public record DepthStencilState(CompareOp depthTest, boolean writeDepth, float depthBiasScaleFactor, float depthBiasConstant) {
++public record DepthStencilState(CompareOp depthTest, boolean writeDepth, float depthBiasScaleFactor, float depthBiasConstant, net.neoforged.neoforge.client.stencil.@org.jspecify.annotations.Nullable StencilTest stencilTest) {
+     public static final DepthStencilState DEFAULT = new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true);
++
++    public DepthStencilState(CompareOp depthTest, boolean writeDepth, float depthBiasScaleFactor, float depthBiasConstant) {
++        this(depthTest, writeDepth, depthBiasScaleFactor, depthBiasConstant, null);
++    }
+ 
+     public DepthStencilState(CompareOp depthTest, boolean depthWrite) {
+         this(depthTest, depthWrite, 0.0F, 0.0F);

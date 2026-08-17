@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/data/models/ItemModelGenerators.java
 +++ b/net/minecraft/client/data/models/ItemModelGenerators.java
-@@ -232,6 +_,49 @@
+@@ -251,6 +_,49 @@
          this.itemModelOutput.accept(armor, ItemModelUtils.select(new TrimMaterialProperty(), untrimmedModel, cases));
      }
  

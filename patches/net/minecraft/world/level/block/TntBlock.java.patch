@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/TntBlock.java
 +++ b/net/minecraft/world/level/block/TntBlock.java
-@@ -47,7 +_,7 @@
+@@ -43,7 +_,7 @@
      @Override
      protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
          if (!oldState.is(state.getBlock())) {
@@ -9,7 +9,7 @@
                  level.removeBlock(pos, false);
              }
          }
-@@ -55,7 +_,7 @@
+@@ -51,7 +_,7 @@
  
      @Override
      protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, @Nullable Orientation orientation, boolean movedByPiston) {
@@ -18,7 +18,7 @@
              level.removeBlock(pos, false);
          }
      }
-@@ -63,7 +_,7 @@
+@@ -59,7 +_,7 @@
      @Override
      public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
          if (!level.isClientSide() && !player.getAbilities().instabuild && state.getValue(UNSTABLE)) {
@@ -27,40 +27,31 @@
          }
  
          return super.playerWillDestroy(level, pos, state, player);
-@@ -78,10 +_,14 @@
+@@ -74,10 +_,14 @@
          }
      }
  
-+    /** @deprecated Neo: use {@link net.neoforged.neoforge.common.extensions.IBlockStateExtension#onCaughtFire(Level,BlockPos,net.minecraft.core.Direction,LivingEntity)} instead */
++    /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#onCaughtFire(Level,BlockPos,net.minecraft.core.Direction,LivingEntity)] instead
 +    @Deprecated
      public static boolean prime(Level level, BlockPos pos) {
-         return prime(level, pos, null);
+         return prime(level, pos, null, ItemStack.EMPTY);
      }
  
-+    /** @deprecated Neo: use {@link net.neoforged.neoforge.common.extensions.IBlockStateExtension#onCaughtFire(Level,BlockPos,net.minecraft.core.Direction,LivingEntity)} instead */
++    /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#onCaughtFire(Level,BlockPos,net.minecraft.core.Direction,LivingEntity)] instead
 +    @Deprecated
-     private static boolean prime(Level level, BlockPos pos, @Nullable LivingEntity source) {
-         if (level instanceof ServerLevel serverLevel && serverLevel.getGameRules().get(GameRules.TNT_EXPLODES)) {
-             PrimedTnt tnt = new PrimedTnt(level, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, source);
+     public static boolean prime(Level level, BlockPos pos, @Nullable LivingEntity source, ItemStack itemStack) {
+         if (!(level instanceof ServerLevel serverLevel && serverLevel.getGameRules().get(GameRules.TNT_EXPLODES))) {
+             return false;
 @@ -102,7 +_,7 @@
              return super.useItemOn(itemStack, state, level, pos, player, hand, hitResult);
          }
  
--        if (prime(level, pos, player)) {
+-        if (prime(level, pos, player, itemStack)) {
 +        if (onCaughtFire(state, level, pos, hitResult.getDirection(), player)) {
              level.setBlock(pos, Blocks.AIR.defaultBlockState(), 11);
              Item item = itemStack.getItem();
              if (itemStack.is(Items.FLINT_AND_STEEL)) {
-@@ -127,7 +_,7 @@
-             Entity owner = projectile.getOwner();
-             if (projectile.isOnFire()
-                 && projectile.mayInteract(serverLevel, pos)
--                && prime(level, pos, owner instanceof LivingEntity livingEntity ? livingEntity : null)) {
-+                && onCaughtFire(state, level, pos, null, owner instanceof LivingEntity ? (LivingEntity)owner : null)) {
-                 level.removeBlock(pos, false);
-             }
-         }
-@@ -141,5 +_,10 @@
+@@ -146,5 +_,10 @@
      @Override
      protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
          builder.add(UNSTABLE);
@@ -68,6 +59,6 @@
 +
 +    @Override
 +    public boolean onCaughtFire(BlockState state, Level world, BlockPos pos, net.minecraft.core.@Nullable Direction face, @Nullable LivingEntity igniter) {
-+        return prime(world, pos, igniter);
++        return prime(world, pos, igniter, ItemStack.EMPTY);
      }
  }

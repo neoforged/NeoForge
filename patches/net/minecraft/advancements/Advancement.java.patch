@@ -1,9 +1,9 @@
 --- a/net/minecraft/advancements/Advancement.java
 +++ b/net/minecraft/advancements/Advancement.java
-@@ -55,6 +_,7 @@
+@@ -65,6 +_,7 @@
+             parent, display, AdvancementRewards.EMPTY, Map.of(), requirements, sendsTelemetryEvent
          )
-         .validate(Advancement::validate);
-     public static final StreamCodec<RegistryFriendlyByteBuf, Advancement> STREAM_CODEC = StreamCodec.ofMember(Advancement::write, Advancement::read);
+     );
 +    public static final Codec<Optional<net.neoforged.neoforge.common.conditions.WithConditions<Advancement>>> CONDITIONAL_CODEC = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodecWithConditions(CODEC);
  
      public Advancement(

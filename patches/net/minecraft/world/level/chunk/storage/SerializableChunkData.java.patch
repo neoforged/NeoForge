@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
 +++ b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
-@@ -91,7 +_,9 @@
+@@ -90,7 +_,9 @@
      List<SerializableChunkData.SectionData> sectionData,
      List<CompoundTag> entities,
      List<CompoundTag> blockEntities,
@@ -11,7 +11,7 @@
  ) {
      private static final Codec<List<SavedTick<Block>>> BLOCK_TICKS_CODEC = SavedTick.codec(BuiltInRegistries.BLOCK.byNameCodec()).listOf();
      private static final Codec<List<SavedTick<Fluid>>> FLUID_TICKS_CODEC = SavedTick.codec(BuiltInRegistries.FLUID.byNameCodec()).listOf();
-@@ -107,6 +_,33 @@
+@@ -106,6 +_,32 @@
      public static final String BLOCK_LIGHT_TAG = "BlockLight";
      public static final String SKY_LIGHT_TAG = "SkyLight";
  
@@ -29,7 +29,6 @@
 +            BlendingData.@Nullable Packed blendingData,
 +            @Nullable BelowZeroRetrogen belowZeroRetrogen,
 +            UpgradeData upgradeData,
-+            long @Nullable [] carvingMask,
 +            Map<Heightmap.Types, long[]> heightmaps,
 +            ChunkAccess.PackedTicks packedTicks,
 +            ShortList[] postProcessingSections,
@@ -39,22 +38,13 @@
 +            List<CompoundTag> blockEntities,
 +            CompoundTag structureData
 +    ) {
-+        this(containerFactory, chunkPos, minSectionY, lastUpdateTime, inhabitedTime, chunkStatus, blendingData, belowZeroRetrogen, upgradeData, carvingMask, heightmaps, packedTicks, postProcessingSections, lightCorrect, sectionData, entities, blockEntities, structureData, null, null);
++        this(containerFactory, chunkPos, minSectionY, lastUpdateTime, inhabitedTime, chunkStatus, blendingData, belowZeroRetrogen, upgradeData, heightmaps, packedTicks, postProcessingSections, lightCorrect, sectionData, entities, blockEntities, structureData, null, null);
 +    }
 +
      public static SerializableChunkData parse(LevelHeightAccessor levelHeight, PalettedContainerFactory containerFactory, CompoundTag chunkData) {
          if (chunkData.getString("Status").isEmpty()) {
              return null;
-@@ -123,7 +_,7 @@
-         long[] carvingMask = chunkData.getLongArray("carving_mask").orElse(null);
-         Map<Heightmap.Types, long[]> heightmaps = new EnumMap<>(Heightmap.Types.class);
-         chunkData.getCompound("Heightmaps").ifPresent(heightmapsTag -> {
--            for (Heightmap.Types type : status.heightmapsAfter()) {
-+            for (Heightmap.Types type : status.getChunkSaveHeightmaps()) {
-                 heightmapsTag.getLongArray(type.getSerializationKey()).ifPresent(longs -> heightmaps.put(type, longs));
-             }
-         });
-@@ -186,6 +_,9 @@
+@@ -184,6 +_,9 @@
              }
          }
  
@@ -64,7 +54,7 @@
          return new SerializableChunkData(
              containerFactory,
              chunkPos,
-@@ -204,7 +_,9 @@
+@@ -201,7 +_,9 @@
              sectionData,
              entities,
              blockEntities,
@@ -75,7 +65,7 @@
          );
      }
  
-@@ -263,6 +_,9 @@
+@@ -260,6 +_,9 @@
                  postLoadChunk(level, this.entities, this.blockEntities),
                  BlendingData.unpack(this.blendingData)
              );
@@ -85,16 +75,7 @@
          } else {
              ProtoChunkTicks<Block> blockTicks = ProtoChunkTicks.load(this.packedTicks.blocks());
              ProtoChunkTicks<Fluid> fluidTicks = ProtoChunkTicks.load(this.packedTicks.fluids());
-@@ -284,7 +_,7 @@
-         chunk.setLightCorrect(this.lightCorrect);
-         EnumSet<Heightmap.Types> toPrime = EnumSet.noneOf(Heightmap.Types.class);
- 
--        for (Heightmap.Types type : chunk.getPersistedStatus().heightmapsAfter()) {
-+        for (Heightmap.Types type : chunk.getPersistedStatus().getChunkSaveHeightmaps()) {
-             long[] heightmap = this.heightmaps.get(type);
-             if (heightmap != null) {
-                 chunk.setHeightmap(type, heightmap);
-@@ -304,6 +_,10 @@
+@@ -297,6 +_,10 @@
              }
          }
  
@@ -105,16 +86,7 @@
          if (chunkType == ChunkType.LEVELCHUNK) {
              return new ImposterProtoChunk((LevelChunk)chunk, false);
          }
-@@ -375,7 +_,7 @@
-         Map<Heightmap.Types, long[]> heightmaps = new EnumMap<>(Heightmap.Types.class);
- 
-         for (Entry<Heightmap.Types, Heightmap> entry : chunk.getHeightmaps()) {
--            if (chunk.getPersistedStatus().heightmapsAfter().contains(entry.getKey())) {
-+            if (chunk.getPersistedStatus().getChunkSaveHeightmaps().contains(entry.getKey())) {
-                 long[] data = entry.getValue().getRawData();
-                 heightmaps.put(entry.getKey(), (long[])data.clone());
-             }
-@@ -386,6 +_,18 @@
+@@ -368,6 +_,18 @@
              .map(shorts -> shorts != null && !shorts.isEmpty() ? new ShortArrayList(shorts) : null)
              .toArray(ShortList[]::new);
          CompoundTag structureData = packStructureData(StructurePieceSerializationContext.fromLevel(level), pos, chunk.getAllStarts(), chunk.getAllReferences());
@@ -133,7 +105,7 @@
          return new SerializableChunkData(
              level.palettedContainerFactory(),
              pos,
-@@ -404,7 +_,9 @@
+@@ -385,7 +_,9 @@
              sectionData,
              entities,
              blockEntities,
@@ -144,7 +116,7 @@
          );
      }
  
-@@ -471,6 +_,14 @@
+@@ -449,6 +_,14 @@
          this.heightmaps.forEach((type, data) -> heightmapsTag.put(type.getSerializationKey(), new LongArrayTag(data)));
          tag.put("Heightmaps", heightmapsTag);
          tag.put("structures", this.structureData);

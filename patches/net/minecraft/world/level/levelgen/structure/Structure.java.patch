@@ -1,9 +1,9 @@
 --- a/net/minecraft/world/level/levelgen/structure/Structure.java
 +++ b/net/minecraft/world/level/levelgen/structure/Structure.java
-@@ -46,10 +_,11 @@
+@@ -45,10 +_,11 @@
  public abstract class Structure {
      public static final Codec<Structure> DIRECT_CODEC = BuiltInRegistries.STRUCTURE_TYPE.byNameCodec().dispatch(Structure::type, StructureType::codec);
-     public static final Codec<Holder<Structure>> CODEC = RegistryFileCodec.create(Registries.STRUCTURE, DIRECT_CODEC);
+     public static final Codec<Holder<Structure>> CODEC = RegistryCodecs.holder(Registries.STRUCTURE, DIRECT_CODEC);
 -    protected final Structure.StructureSettings settings;
 +    /** Neo: Field accesses are redirected to {@link #getModifiedStructureSettings()} with a coremod. */
 +    private final Structure.StructureSettings settings;
@@ -14,7 +14,7 @@
      }
  
      public static <S extends Structure> MapCodec<S> simpleCodec(Function<Structure.StructureSettings, S> constructor) {
-@@ -58,6 +_,7 @@
+@@ -57,6 +_,7 @@
  
      protected Structure(Structure.StructureSettings settings) {
          this.settings = settings;
@@ -22,7 +22,7 @@
      }
  
      public HolderSet<Biome> biomes() {
-@@ -209,6 +_,25 @@
+@@ -202,6 +_,25 @@
      }
  
      public abstract StructureType<?> type();

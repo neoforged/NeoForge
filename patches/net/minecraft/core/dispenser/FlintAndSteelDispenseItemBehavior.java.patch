@@ -10,7 +10,7 @@
 +                level.setBlockAndUpdate(targetPos, blockstate2);
                  level.gameEvent(null, GameEvent.BLOCK_CHANGE, targetPos);
 -            } else if (target.getBlock() instanceof TntBlock) {
--                if (TntBlock.prime(level, targetPos)) {
+-                if (TntBlock.prime(level, targetPos, null, dispensed)) {
 +            } else if (target.isFlammable(level, targetPos, source.state().getValue(DispenserBlock.FACING).getOpposite())) {
 +                if (target.onCaughtFire(level, targetPos, source.state().getValue(DispenserBlock.FACING).getOpposite(), null)) {
 +                    if (target.getBlock() instanceof TntBlock)

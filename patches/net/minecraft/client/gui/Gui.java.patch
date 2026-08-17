@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/Gui.java
 +++ b/net/minecraft/client/gui/Gui.java
-@@ -78,6 +_,8 @@
+@@ -83,6 +_,8 @@
      private final ToastManager toastManager;
      private final ChatListener chatListener;
      private @Nullable TutorialToast socialInteractionsToast;
@@ -9,7 +9,7 @@
  
      public Gui(Minecraft minecraft, Hud hud, GuiRenderState guiRenderState) {
          this.minecraft = minecraft;
-@@ -175,7 +_,8 @@
+@@ -180,7 +_,8 @@
              profiler.push("screen");
  
              try {
@@ -19,18 +19,20 @@
              } catch (Throwable t) {
                  CrashReport report = CrashReport.forThrowable(t, "Rendering screen");
                  CrashReportCategory category = report.addCategory("Screen render details");
-@@ -224,9 +_,7 @@
-             LOGGER.error("setScreen called from non-game thread");
+@@ -234,11 +_,7 @@
+             this.screenTracySection = null;
          }
  
 -        if (this.screen != null) {
+-            this.screen.clearFocus();
+-            this.minecraft.textInputManager().stopTextInput();
 -            this.screen.removed();
 -        } else {
 +        if (this.screen == null) {
              this.minecraft.setLastInputType(InputType.NONE);
          }
  
-@@ -248,6 +_,19 @@
+@@ -260,6 +_,21 @@
              }
          }
  
@@ -44,13 +46,15 @@
 +
 +        if (old != null && screen != old) {
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Closing(old));
++            old.clearFocus();
++            this.minecraft.textInputManager().stopTextInput();
 +            old.removed();
 +        }
 +
          this.screen = screen;
          if (this.screen != null) {
              this.screen.added();
-@@ -375,6 +_,8 @@
+@@ -389,6 +_,8 @@
              nextStep = () -> this.setScreen(screen);
          }
  
@@ -59,7 +63,7 @@
          return nextStep;
      }
  
-@@ -465,5 +_,48 @@
+@@ -479,5 +_,48 @@
                          }
                      )
              );

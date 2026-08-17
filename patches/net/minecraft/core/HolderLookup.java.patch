@@ -19,10 +19,10 @@
          interface Delegate<T> extends HolderLookup.RegistryLookup<T> {
              HolderLookup.RegistryLookup<T> parent();
  
-@@ -127,6 +_,12 @@
+@@ -132,6 +_,12 @@
              @Override
-             default Stream<HolderSet.Named<T>> listTags() {
-                 return this.parent().listTags();
+             default boolean canSerialize(HolderOwner<T> owner) {
+                 return this.parent().canSerialize(owner);
 +            }
 +
 +            @Override

@@ -1,14 +1,23 @@
 --- a/com/mojang/blaze3d/systems/RenderSystem.java
 +++ b/com/mojang/blaze3d/systems/RenderSystem.java
-@@ -71,6 +_,7 @@
-     private static @Nullable DynamicUniforms dynamicUniforms;
-     private static final ScissorState scissorStateForRenderTypeDraws = new ScissorState();
+@@ -83,6 +_,7 @@
      private static final SamplerCache samplerCache = new SamplerCache();
+     private static @Nullable PipelineCache fallbackPipelineCache;
+     private static @Nullable PipelineCache currentPipelineCache;
 +    private static final net.neoforged.neoforge.client.pipeline.PipelineModifierStack PIPELINE_MODIFIERS = new net.neoforged.neoforge.client.pipeline.PipelineModifierStack();
  
      public static SamplerCache getSamplerCache() {
          return samplerCache;
-@@ -377,5 +_,33 @@
+@@ -103,6 +_,8 @@
+     }
+ 
+     public static @Nullable CompiledRenderPipeline getCompiledPipelineNullable(RenderPipeline pipeline) {
++        pipeline = PIPELINE_MODIFIERS.apply(pipeline);
++
+         if (currentPipelineCache != null) {
+             CompiledRenderPipeline cachedPipeline = currentPipelineCache.get(pipeline);
+             if (cachedPipeline != null) {
+@@ -492,5 +_,28 @@
      }
  
      private record GpuAsyncTask(Runnable callback, GpuFence fence) {
@@ -30,11 +39,6 @@
 +    /// to the pipelines used by the rendering done in the [Runnable]
 +    public static void renderWithPipelineModifier(net.minecraft.resources.ResourceKey<net.neoforged.neoforge.client.pipeline.PipelineModifier> modifier, Runnable renderTask) {
 +        PIPELINE_MODIFIERS.renderWithModifier(modifier, renderTask);
-+    }
-+
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public static com.mojang.blaze3d.pipeline.RenderPipeline applyPipelineModifiers(com.mojang.blaze3d.pipeline.RenderPipeline pipeline) {
-+        return PIPELINE_MODIFIERS.apply(pipeline);
 +    }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal

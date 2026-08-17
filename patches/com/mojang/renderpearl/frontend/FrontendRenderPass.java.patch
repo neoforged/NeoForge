@@ -1,0 +1,14 @@
+--- a/com/mojang/renderpearl/frontend/FrontendRenderPass.java
++++ b/com/mojang/renderpearl/frontend/FrontendRenderPass.java
+@@ -189,6 +_,11 @@
+     }
+ 
+     @Override
++    public void setViewport(int x, int y, int width, int height) {
++        this.backend.setViewport(x, y, width, height);
++    }
++
++    @Override
+     public void enableScissor(int x, int y, int width, int height) {
+         if (width > 0 && height > 0) {
+             if (x >= this.renderArea.x()

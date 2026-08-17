@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/NoteBlock.java
 +++ b/net/minecraft/world/level/block/NoteBlock.java
-@@ -115,7 +_,9 @@
+@@ -108,7 +_,9 @@
      @Override
      protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
          if (!level.isClientSide()) {
@@ -8,10 +8,10 @@
 +            int _new = net.neoforged.neoforge.common.CommonHooks.onNoteChange(level, pos, state, state.getValue(NOTE), state.cycle(NOTE).getValue(NOTE));
 +            if (_new == -1) return InteractionResult.FAIL;
 +            state = state.setValue(NOTE, _new);
-             level.setBlock(pos, state, 3);
+             level.setBlockAndUpdate(pos, state);
              this.playNote(player, state, level, pos);
              player.awardStat(Stats.TUNE_NOTEBLOCK);
-@@ -138,6 +_,9 @@
+@@ -131,6 +_,9 @@
  
      @Override
      protected boolean triggerEvent(BlockState state, Level level, BlockPos pos, int b0, int b1) {

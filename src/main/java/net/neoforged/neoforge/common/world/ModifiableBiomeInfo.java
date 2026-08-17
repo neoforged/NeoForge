@@ -17,7 +17,6 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biome.ClimateSettings;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
-import net.minecraft.world.level.biome.MobSpawnSettings;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -103,14 +102,12 @@ public class ModifiableBiomeInfo {
      * @param climateSettings    Weather and temperature settings.
      * @param effects            Client-relevant effects for rendering and sound.
      * @param generationSettings Worldgen features and carvers.
-     * @param mobSpawnSettings   Mob spawn settings.
      */
-    public record BiomeInfo(ClimateSettings climateSettings, BiomeSpecialEffects effects, BiomeGenerationSettings generationSettings, MobSpawnSettings mobSpawnSettings) {
+    public record BiomeInfo(ClimateSettings climateSettings, BiomeSpecialEffects effects, BiomeGenerationSettings generationSettings) {
         public static class Builder {
             private ClimateSettingsBuilder climateSettings;
             private BiomeSpecialEffectsBuilder effects;
             private BiomeGenerationSettingsBuilder generationSettings;
-            private MobSpawnSettingsBuilder mobSpawnSettings;
 
             /**
              * @param original the biome to copy
@@ -120,24 +117,18 @@ public class ModifiableBiomeInfo {
                 final ClimateSettingsBuilder climateBuilder = ClimateSettingsBuilder.copyOf(original.climateSettings());
                 final BiomeSpecialEffectsBuilder effectsBuilder = BiomeSpecialEffectsBuilder.copyOf(original.effects());
                 final BiomeGenerationSettingsBuilder generationBuilder = new BiomeGenerationSettingsBuilder(original.generationSettings());
-                final MobSpawnSettingsBuilder mobSpawnBuilder = new MobSpawnSettingsBuilder(original.mobSpawnSettings());
 
-                return new Builder(
-                        climateBuilder,
-                        effectsBuilder,
-                        generationBuilder,
-                        mobSpawnBuilder);
+                return new Builder(climateBuilder, effectsBuilder, generationBuilder);
             }
 
-            private Builder(final ClimateSettingsBuilder climateSettings, final BiomeSpecialEffectsBuilder effects, final BiomeGenerationSettingsBuilder generationSettings, final MobSpawnSettingsBuilder mobSpawnSettings) {
+            private Builder(final ClimateSettingsBuilder climateSettings, final BiomeSpecialEffectsBuilder effects, final BiomeGenerationSettingsBuilder generationSettings) {
                 this.climateSettings = climateSettings;
                 this.effects = effects;
                 this.generationSettings = generationSettings;
-                this.mobSpawnSettings = mobSpawnSettings;
             }
 
             public BiomeInfo build() {
-                return new BiomeInfo(this.climateSettings.build(), this.effects.build(), this.generationSettings.build(), this.mobSpawnSettings.build());
+                return new BiomeInfo(this.climateSettings.build(), this.effects.build(), this.generationSettings.build());
             }
 
             public ClimateSettingsBuilder getClimateSettings() {
@@ -150,10 +141,6 @@ public class ModifiableBiomeInfo {
 
             public BiomeGenerationSettingsBuilder getGenerationSettings() {
                 return generationSettings;
-            }
-
-            public MobSpawnSettingsBuilder getMobSpawnSettings() {
-                return mobSpawnSettings;
             }
         }
     }

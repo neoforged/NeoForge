@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/entity/player/Player.java
++++ b/net/minecraft/world/entity/player/Player.java
+@@ -582,10 +595,18 @@
+     }
+ 
+     public @Nullable ItemEntity drop(ItemStack itemStack, boolean thrownFromHand) {
+-        return this.drop(itemStack, false, thrownFromHand);
++        return net.neoforged.neoforge.common.CommonHooks.onPlayerTossEvent(this, itemStack, false, thrownFromHand);
+     }
+ 

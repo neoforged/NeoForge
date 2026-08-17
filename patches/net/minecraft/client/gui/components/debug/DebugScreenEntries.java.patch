@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/components/debug/DebugScreenEntries.java
 +++ b/net/minecraft/client/gui/components/debug/DebugScreenEntries.java
-@@ -56,6 +_,13 @@
+@@ -57,6 +_,13 @@
      public static final Identifier VISUALIZE_SKY_LIGHT_SECTIONS = register("visualize_sky_light_sections", new DebugEntryNoop());
      public static final Identifier CHUNK_SECTION_VISIBILITY = register("chunk_section_visibility", new DebugEntryNoop());
      public static final Map<DebugScreenProfile, Map<Identifier, DebugScreenEntryStatus>> PROFILES;
@@ -14,7 +14,7 @@
  
      private static Identifier register(String id, DebugScreenEntry entry) {
          return register(Identifier.withDefaultNamespace(id), entry);
-@@ -107,6 +_,23 @@
+@@ -108,6 +_,23 @@
              SIMPLE_PERFORMANCE_IMPACTORS,
              DebugScreenEntryStatus.IN_OVERLAY
          );

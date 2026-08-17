@@ -1,14 +1,15 @@
 --- a/net/minecraft/client/renderer/RenderPipelines.java
 +++ b/net/minecraft/client/renderer/RenderPipelines.java
-@@ -820,4 +_,14 @@
-     public static List<RenderPipeline> getStaticPipelines() {
-         return PIPELINES_BY_LOCATION.values().stream().toList();
+@@ -1273,4 +_,15 @@
+     public static List<RenderPipeline> optionalPipelines() {
+         return OPTIONAL_PIPELINES_BY_LOCATION.values().stream().toList();
      }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public static void registerCustomPipelines() {
-+        var event = new net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent(pipeline -> {
-+            if (PIPELINES_BY_LOCATION.putIfAbsent(pipeline.getLocation(), pipeline) != null) {
++        var event = new net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent((pipeline, optional) -> {
++            var registry = optional ? OPTIONAL_PIPELINES_BY_LOCATION : PIPELINES_BY_LOCATION;
++            if (registry.putIfAbsent(pipeline.getLocation(), pipeline) != null) {
 +                throw new IllegalStateException("Duplicate RenderPipeline registration for location: " + pipeline.getLocation());
 +            }
 +        });

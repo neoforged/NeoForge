@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/DropperBlock.java
 +++ b/net/minecraft/world/level/block/DropperBlock.java
-@@ -58,12 +_,16 @@
+@@ -51,12 +_,16 @@
                  ItemStack itemStack = blockEntity.getItem(slot);
                  if (!itemStack.isEmpty()) {
                      Direction direction = level.getBlockState(pos).getValue(FACING);

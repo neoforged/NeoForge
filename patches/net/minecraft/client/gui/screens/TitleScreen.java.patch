@@ -20,7 +20,7 @@
          this.friends = this.addRenderableWidget(
              CommonButtons.friends(
 @@ -130,17 +_,17 @@
-                 !this.minecraft.isDemo()
+                 !this.minecraft.isDemo() && !this.minecraft.isOfflineDeveloperMode()
              )
          );
 -        this.friends.setPosition(this.getHorizontalPosition(++currentButton, 3, 20), topPos);
@@ -38,7 +38,7 @@
 -        accessibility.setPosition(this.getHorizontalPosition(++currentButton, 3, 20), topPos);
 +        accessibility.setPosition(this.getHorizontalPosition(++currentButton, numberOfButtons, 20), topPos);
          Button.Builder var10001 = Button.builder(
-             Component.translatable("menu.options"), var1x -> this.minecraft.gui.setScreen(new OptionsScreen(this, this.minecraft.options, false))
+             Component.translatable("menu.options"), var1x -> this.minecraft.gui.setScreen(new OptionsScreen(this, this.minecraft.options))
          );
 @@ -310,6 +_,7 @@
          this.extractPanorama(graphics, a);

@@ -24,6 +24,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.DetectedVersion;
+import net.minecraft.SharedConstants;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.data.DataGenerator;
@@ -36,6 +37,8 @@ import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
+import net.minecraft.server.packs.metadata.pack.PackFormat;
+import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.repository.ServerPacksSource;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
@@ -151,7 +154,7 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
 
             clientResourceManager = createResourceManager(PackType.CLIENT_RESOURCES, mods::contains, existingPacks, vanillaClientAssets);
 
-            serverResourceManager = createResourceManager(PackType.SERVER_DATA, mods::contains, existingPacks, consumer -> consumer.accept(ServerPacksSource.createVanillaPackSource()));
+            serverResourceManager = createResourceManager(PackType.SERVER_DATA, mods::contains, existingPacks, consumer -> consumer.accept(ServerPacksSource.createVanillaPackSource().fullResources()));
 
             if (mods.contains("minecraft") || mods.isEmpty()) {
                 this.generators.add(vanillaGenerator);
@@ -203,17 +206,21 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
             });
 
             // include mod resources last
+            PackFormat packVersion = SharedConstants.getCurrentVersion().packVersion(packType);
             ModList.get().getSortedMods().stream()
                     // ignore 'minecraft' mod, this is added via `[Server|Client]PackSource`
                     .filter(Predicate.not(mod -> mod.getModId().equals("minecraft")))
                     // ignore actively generated models, their resource packs should be included using `--existing <packPath>`
                     // this is to workaround accidentally including resources being actively generated
                     .filter(Predicate.not(mod -> isGeneratedMod.test(mod.getModId())))
-                    .map(mod -> {
+                    .flatMap(mod -> {
                         var owningFile = mod.getModInfo().getOwningFile();
                         var packInfo = new PackLocationInfo("mod/" + mod.getModId(), Component.empty(), PackSource.BUILT_IN, Optional.empty());
-                        return ResourcePackLoader.createPackForMod(owningFile).openPrimary(packInfo);
+                        Pack.ResourcesSupplier packSupplier = ResourcePackLoader.createPackForMod(owningFile);
+                        Pack.Metadata metadata = Pack.readPackMetadata(packInfo, packSupplier, packVersion, packType);
+                        return metadata != null ? packSupplier.openResources(packInfo, metadata) : null;
                     })
+                    .filter(Objects::nonNull)
                     .forEach(packs::add);
 
             return new MultiPackResourceManager(packType, packs);

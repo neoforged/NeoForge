@@ -1,0 +1,56 @@
+--- a/com/mojang/renderpearl/backend/vulkan/VulkanRenderPass.java
++++ b/com/mojang/renderpearl/backend/vulkan/VulkanRenderPass.java
+@@ -50,6 +_,7 @@
+     private final int outputWidth;
+     private final int outputHeight;
+     private final boolean hasDepth;
++    private final boolean hasStencil;
+     private final Supplier<String> label;
+     protected int pushedDebugGroups = 0;
+     private final VkCommandBuffer commandBuffer;
+@@ -66,6 +_,7 @@
+         int outputWidth,
+         int outputHeight,
+         boolean hasDepth,
++        boolean hasStencil,
+         Supplier<String> label
+     ) {
+         this.device = device;
+@@ -76,6 +_,7 @@
+         this.outputWidth = outputWidth;
+         this.outputHeight = outputHeight;
+         this.hasDepth = hasDepth;
++        this.hasStencil = hasStencil;
+         this.label = label;
+ 
+         try (MemoryStack stack = MemoryStack.stackPush()) {
+@@ -118,6 +_,10 @@
+             this.anyDescriptorDirty = true;
+             this.uniforms.clear();
+             this.uniforms.size(vulkanRenderPipeline.uniforms().size());
++            if (this.hasStencil) {
++                VK12.vkCmdBindPipeline(this.commandBuffer(), VK12.VK_PIPELINE_BIND_POINT_GRAPHICS, this.pipeline.withDepthStencilPipeline());
++                return;
++            }
+             VK12.vkCmdBindPipeline(this.commandBuffer(), 0, this.hasDepth ? this.pipeline.withDepthPipeline() : this.pipeline.withoutDepthPipeline());
+         } else {
+             throw new IllegalArgumentException("Pipeline must be instance of VulkanRenderPipeline");
+@@ -134,6 +_,18 @@
+     public void pushConstants(ByteBuffer value) {
+         assert this.pipeline != null;
+         VK12.vkCmdPushConstants(this.commandBuffer(), this.pipeline.pipelineLayout(), Integer.MAX_VALUE, 0, value);
++    }
++
++    @Override
++    public void setViewport(int x, int y, int width, int height) {
++        try (MemoryStack stack = MemoryStack.stackPush()) {
++            VkViewport.Buffer viewport = VkViewport.calloc(1, stack);
++            viewport.x(x);
++            viewport.y(y);
++            viewport.width(width);
++            viewport.height(height);
++            VK12.vkCmdSetViewport(this.commandBuffer(), 0, viewport);
++        }
+     }
+ 
+     @Override

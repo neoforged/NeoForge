@@ -116,7 +116,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -204,7 +204,7 @@ import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
-import net.neoforged.neoforge.event.entity.living.EnderManAngerEvent;
+import net.neoforged.neoforge.event.entity.living.EndermanAngerEvent;
 import net.neoforged.neoforge.event.entity.living.LivingBreatheEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
@@ -406,7 +406,7 @@ public class CommonHooks {
         return NeoForge.EVENT_BUS.post(event);
     }
 
-    public static double getEntityVisibilityMultiplier(LivingEntity entity, Entity lookingEntity, double originalMultiplier) {
+    public static double getEntityVisibilityMultiplier(LivingEntity entity, @Nullable Entity lookingEntity, double originalMultiplier) {
         LivingEvent.LivingVisibilityEvent event = new LivingEvent.LivingVisibilityEvent(entity, lookingEntity, originalMultiplier);
         NeoForge.EVENT_BUS.post(event);
         return Math.max(0, event.getVisibilityModifier());
@@ -1349,8 +1349,8 @@ public class CommonHooks {
         }
     }
 
-    public static boolean shouldSuppressEnderManAnger(EnderMan enderMan, Player player) {
-        return NeoForge.EVENT_BUS.post(new EnderManAngerEvent(enderMan, player)).isCanceled();
+    public static boolean shouldSuppressEnderManAnger(Enderman enderMan, Player player) {
+        return NeoForge.EVENT_BUS.post(new EndermanAngerEvent(enderMan, player)).isCanceled();
     }
 
     private static final Lazy<Map<String, StructuresBecomeConfiguredFix.Conversion>> FORGE_CONVERSION_MAP = Lazy.of(() -> {

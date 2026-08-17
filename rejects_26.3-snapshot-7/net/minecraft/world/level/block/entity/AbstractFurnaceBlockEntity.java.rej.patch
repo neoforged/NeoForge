@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
+@@ -245,7 +253,7 @@
+     }
+ 
+     protected int getBurnDuration(FuelValues fuelValues, ItemStack itemStack) {
+-        return fuelValues.burnDuration(itemStack);
++        return itemStack.getBurnTime(this.recipeType, fuelValues);
+     }
+ 
+     private static int getTotalCookTime(ServerLevel level, AbstractFurnaceBlockEntity entity) {

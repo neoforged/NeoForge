@@ -1,0 +1,18 @@
+--- a/net/minecraft/world/item/crafting/RecipeManager.java
++++ b/net/minecraft/world/item/crafting/RecipeManager.java
+@@ -68,8 +69,13 @@
+ 
+     protected RecipeMap prepare(ResourceManager manager, ProfilerFiller profiler) {
+         SortedMap<Identifier, Recipe<?>> recipes = new TreeMap<>();
+-        SimpleJsonResourceReloadListener.scanDirectory(
+-            manager, RECIPE_LISTER, this.registries.createSerializationContext(JsonOps.INSTANCE), Recipe.CODEC, recipes
++        // Neo: add condition context and post recipe JSON modification event
++        var conditionalOps = new net.neoforged.neoforge.common.conditions.ConditionalOps<>(this.registries.createSerializationContext(JsonOps.INSTANCE), getContext());
++        SimpleJsonResourceReloadListener.scanDirectoryWithModifier(
++            manager, RECIPE_LISTER, conditionalOps, Recipe.CODEC, recipes, recipeJsons -> {
++                var event = new net.neoforged.neoforge.event.ModifyRecipeJsonsEvent(conditionalOps, recipeJsons);
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
++            }
+         );
+         List<RecipeHolder<?>> recipeHolders = new ArrayList<>(recipes.size());
+         recipes.forEach((id, recipe) -> {

@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/state/level/PlayerRenderState.java
++++ b/net/minecraft/client/renderer/state/level/PlayerRenderState.java
+@@ -9,7 +_,7 @@
+ import org.jspecify.annotations.Nullable;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class PlayerRenderState {
++public class PlayerRenderState extends net.neoforged.neoforge.client.renderstate.BaseRenderState {
+     public boolean hasPlayer;
+     public @Nullable AvatarRenderState avatarRenderState;
+     public final FirstPersonHandsAndItemsRenderState firstPersonHandsAndItems = new FirstPersonHandsAndItemsRenderState();

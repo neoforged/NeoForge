@@ -8,16 +8,15 @@ package net.neoforged.neoforge.client;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MultimapBuilder;
-import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.pipeline.MainTarget;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.resource.RenderTargetDescriptor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Either;
+import com.mojang.renderpearl.api.GpuFormat;
 import it.unimi.dsi.fastutil.floats.FloatComparators;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMaps;
@@ -52,7 +51,6 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.Options;
-import net.minecraft.client.entity.ClientAvatarEntity;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
@@ -97,6 +95,7 @@ import net.minecraft.client.renderer.chunk.RenderSectionRegion;
 import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.renderer.fog.environment.FogEnvironment;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.state.level.PlayerRenderState;
 import net.minecraft.client.renderer.texture.SpriteLoader;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -126,17 +125,16 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeMap;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SkullBlock;
-import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
@@ -256,9 +254,16 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(new RenderHandEvent(hand, poseStack, submitNodeCollector, packedLight, partialTick, interpPitch, swingProgress, equipProgress, stack)).isCanceled();
     }
 
-    public static <AvatarlikeEntity extends Avatar & ClientAvatarEntity> boolean renderSpecificFirstPersonArm(PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
-            int lightCoords, Identifier skinTexture, boolean hasSleeve, AvatarlikeEntity avatar, HumanoidArm arm, ModelPart armPart) {
-        return NeoForge.EVENT_BUS.post(new RenderArmEvent<>(poseStack, submitNodeCollector, lightCoords, skinTexture, hasSleeve, avatar, arm, armPart)).isCanceled();
+    public static boolean renderSpecificFirstPersonArm(
+            PoseStack poseStack,
+            SubmitNodeCollector submitNodeCollector,
+            int lightCoords,
+            Identifier skinTexture,
+            boolean hasSleeve,
+            PlayerRenderState renderState,
+            HumanoidArm arm,
+            ModelPart armPart) {
+        return NeoForge.EVENT_BUS.post(new RenderArmEvent(poseStack, submitNodeCollector, lightCoords, skinTexture, hasSleeve, renderState, arm, armPart)).isCanceled();
     }
 
     public static void onTextureAtlasStitched(TextureAtlas atlas) {
@@ -422,7 +427,7 @@ public class ClientHooks {
         if (entity != null) {
             Identifier shader = EntitySpectatorShaderManager.get(entity.getType());
             if (shader != null) {
-                gameRenderer.setPostEffect(shader);
+                gameRenderer.setSpectatedEntityPostEffect(shader);
                 return true;
             }
         }
@@ -641,14 +646,10 @@ public class ClientHooks {
     }
 
     @ApiStatus.Internal
-    public static void handleUpdateRecipes(ClientPacketListener packetListener, Consumer<FuelValues> fuelValuesSetter) {
-        // Neo: abuse recipe sync to overwrite fuel values with datamap values after their sync (tag update doesn't fire on initial sync and the constructor is too early)
-        if (packetListener.getConnectionType().isNeoForge()) {
-            fuelValuesSetter.accept(net.neoforged.neoforge.common.DataMapHooks.populateFuelValues(packetListener.registryAccess(), packetListener.enabledFeatures()));
-        } else {
+    public static void handleUpdateRecipes(ClientPacketListener packetListener) {
+        if (!packetListener.getConnectionType().isNeoForge()) {
             // Notify client mods that they're connected to a Vanilla server, which will never give them recipe data
-            var event = new net.neoforged.neoforge.client.event.RecipesReceivedEvent(java.util.Set.of(), net.minecraft.world.item.crafting.RecipeMap.create(java.util.List.of()));
-            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
+            NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RecipesReceivedEvent(Set.of(), RecipeMap.EMPTY));
         }
     }
 
@@ -905,14 +906,14 @@ public class ClientHooks {
     }
 
     @ApiStatus.Internal
-    public static FrameGraphSetupEvent fireFrameGraphSetup(FrameGraphBuilder builder, LevelTargetBundle targets, RenderTargetDescriptor renderTargetDescriptor, CameraRenderState cameraState, Matrix4fc modelViewMatrix, DeltaTracker deltaTracker, ProfilerFiller profiler) {
-        return NeoForge.EVENT_BUS.post(new FrameGraphSetupEvent(builder, targets, renderTargetDescriptor, cameraState, modelViewMatrix, deltaTracker, profiler));
+    public static FrameGraphSetupEvent fireFrameGraphSetup(FrameGraphBuilder builder, LevelTargetBundle targets, CameraRenderState cameraState, Matrix4fc modelViewMatrix, ProfilerFiller profiler) {
+        return NeoForge.EVENT_BUS.post(new FrameGraphSetupEvent(builder, targets, cameraState, modelViewMatrix, profiler));
     }
 
     @ApiStatus.Internal
     public static MainTarget instantiateMainTarget(int width, int height) {
         var e = ModLoader.postEventWithReturn(new ConfigureMainRenderTargetEvent());
-        return new MainTarget(width, height, e.isStencilEnabled());
+        return new MainTarget(width, height, e.isStencilEnabled() ? getStencilFormat() : GpuFormat.D32_FLOAT);
     }
 
     @ApiStatus.Internal

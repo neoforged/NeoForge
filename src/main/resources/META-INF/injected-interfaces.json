@@ -137,8 +137,8 @@
   "net/minecraft/server/level/ServerChunkCache": [
     "net/neoforged/neoforge/common/extensions/IServerChunkCacheExtension"
   ],
-  "net/minecraft/server/packs/PackResources": [
-    "net/neoforged/neoforge/common/extensions/IPackResourcesExtension"
+  "net/minecraft/server/packs/PackMetadataResources": [
+    "net/neoforged/neoforge/common/extensions/PackMetadataResourcesExtension"
   ],
   "net/minecraft/server/packs/PackType": [
     "net/minecraft/util/StringRepresentable"

@@ -1,47 +1,43 @@
 --- a/net/minecraft/data/registries/RegistriesDatapackGenerator.java
 +++ b/net/minecraft/data/registries/RegistriesDatapackGenerator.java
-@@ -15,13 +_,30 @@
+@@ -16,19 +_,36 @@
  import net.minecraft.resources.RegistryDataLoader;
  import net.minecraft.resources.ResourceKey;
  
-+/**
-+ * @deprecated Forge: Use {@link net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider} instead
-+ */
++/// @deprecated Neo: Use [net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider] instead
 +@Deprecated
  public class RegistriesDatapackGenerator implements DataProvider {
      private final PackOutput output;
+     private final String name;
+     private final Collection<RegistryDataLoader.RegistryData<?>> registryData;
      private final CompletableFuture<HolderLookup.Provider> registries;
 +    private final java.util.function.Predicate<String> namespacePredicate;
 +    private final java.util.Map<ResourceKey<?>, java.util.List<net.neoforged.neoforge.common.conditions.ICondition>> conditions;
  
 +    @Deprecated
-     public RegistriesDatapackGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
-+        this(output, registries, null, java.util.Map.of());
+     public RegistriesDatapackGenerator(
+         PackOutput output, String name, Collection<RegistryDataLoader.RegistryData<?>> registryData, CompletableFuture<HolderLookup.Provider> registryContents
+     ) {
++        this(output, name, registryData, registryContents, null, java.util.Map.of());
 +    }
-+
-+    public RegistriesDatapackGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, java.util.@org.jspecify.annotations.Nullable Set<String> modIds) {
-+        this(output, registries, modIds, java.util.Map.of());
++    public RegistriesDatapackGenerator(
++        PackOutput output, String name, Collection<RegistryDataLoader.RegistryData<?>> registryData, CompletableFuture<HolderLookup.Provider> registryContents, java.util.@org.jspecify.annotations.Nullable Set<String> modIds
++    ) {
++        this(output, name, registryData, registryContents, modIds, java.util.Map.of());
 +    }
-+
-+    public RegistriesDatapackGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, java.util.@org.jspecify.annotations.Nullable Set<String> modIds, java.util.Map<ResourceKey<?>, java.util.List<net.neoforged.neoforge.common.conditions.ICondition>> conditions) {
-+        this.namespacePredicate = modIds == null ? namespace -> true : modIds::contains;
-         this.registries = registries;
++    public RegistriesDatapackGenerator(
++        PackOutput output, String name, Collection<RegistryDataLoader.RegistryData<?>> registryData, CompletableFuture<HolderLookup.Provider> registryContents, java.util.@org.jspecify.annotations.Nullable Set<String> modIds, java.util.Map<ResourceKey<?>, java.util.List<net.neoforged.neoforge.common.conditions.ICondition>> conditions
++    ) {
+         this.name = name;
+         this.registryData = registryData;
+         this.registries = registryContents;
          this.output = output;
++        this.namespacePredicate = modIds == null ? _ -> true : modIds::contains;
 +        this.conditions = conditions;
      }
  
-     @Override
-@@ -31,8 +_,7 @@
-                 access -> {
-                     DynamicOps<JsonElement> registryOps = access.createSerializationContext(JsonOps.INSTANCE);
-                     return CompletableFuture.allOf(
--                        RegistryDataLoader.WORLDGEN_REGISTRIES
--                            .stream()
-+                            net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistriesWithDimensions()
-                             .flatMap(v -> this.dumpRegistryCap(cache, access, registryOps, (RegistryDataLoader.RegistryData<?>)v).stream())
-                             .toArray(CompletableFuture[]::new)
-                     );
-@@ -44,20 +_,22 @@
+     public static RegistriesDatapackGenerator forWorldLayer(PackOutput output, CompletableFuture<HolderLookup.Provider> registryContents) {
+@@ -59,20 +_,22 @@
          CachedOutput cache, HolderLookup.Provider registries, DynamicOps<JsonElement> writeOps, RegistryDataLoader.RegistryData<T> v
      ) {
          ResourceKey<? extends Registry<T>> registryKey = v.key();

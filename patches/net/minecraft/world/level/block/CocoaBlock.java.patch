@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/CocoaBlock.java
 +++ b/net/minecraft/world/level/block/CocoaBlock.java
-@@ -50,10 +_,11 @@
+@@ -43,10 +_,11 @@
  
      @Override
      protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
@@ -14,7 +14,7 @@
              }
          }
      }
-@@ -61,6 +_,8 @@
+@@ -54,6 +_,8 @@
      @Override
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
          BlockState relativeState = level.getBlockState(pos.relative(state.getValue(FACING)));

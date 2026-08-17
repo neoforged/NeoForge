@@ -56,9 +56,6 @@ import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.LadderBlock;
 import net.minecraft.world.level.block.LeavesBlock;
-import net.minecraft.world.level.block.ObserverBlock;
-import net.minecraft.world.level.block.RedStoneWireBlock;
-import net.minecraft.world.level.block.RepeaterBlock;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.TrapDoorBlock;
@@ -68,7 +65,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
+import net.minecraft.world.level.levelgen.feature.TreeFeature;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
@@ -248,10 +245,10 @@ public interface IBlockExtension {
     }
 
     /**
-     * Called when a block is removed by {@link PushReaction#DESTROY}. This is responsible for
+     * Called when a block is removed by {@link PushReaction#POPPED}. This is responsible for
      * actually destroying the block, and the block is intact at time of call.
      * <p>
-     * Will only be called if {@link BlockState#getPistonPushReaction} returns {@link PushReaction#DESTROY}.
+     * Will only be called if {@link BlockState#getPistonPushReaction} returns {@link PushReaction#POPPED}.
      * <p>
      * Note: When used in multiplayer, this is called on both client and
      * server sides!
@@ -443,10 +440,10 @@ public interface IBlockExtension {
      * @param placeFunction Function to set blocks in the level for the tree, use this instead of the level directly
      * @param randomSource  The random source
      * @param pos           Position of the block to be set to dirt
-     * @param config        Configuration of the trunk placer. Consider azalea trees, which should place rooted dirt instead of regular dirt.
+     * @param tree          Configuration of the trunk placer. Consider azalea trees, which should place rooted dirt instead of regular dirt.
      * @return True to ignore vanilla behaviour
      */
-    default boolean onTreeGrow(BlockState state, WorldGenLevel level, BiConsumer<BlockPos, BlockState> placeFunction, RandomSource randomSource, BlockPos pos, TreeConfiguration config) {
+    default boolean onTreeGrow(BlockState state, WorldGenLevel level, BiConsumer<BlockPos, BlockState> placeFunction, RandomSource randomSource, BlockPos pos, TreeFeature tree) {
         return false;
     }
 
@@ -848,7 +845,7 @@ public interface IBlockExtension {
         } else if (ItemAbilities.SHOVEL_DOUSE == itemAbility) {
             if (state.getBlock() instanceof CampfireBlock && state.getValue(CampfireBlock.LIT)) {
                 if (!simulate) {
-                    CampfireBlock.dowse(context.getPlayer(), context.getLevel(), context.getClickedPos(), state);
+                    CampfireBlock.douse(context.getPlayer(), context.getLevel(), context.getClickedPos(), state);
                 }
                 return state.setValue(CampfireBlock.LIT, Boolean.valueOf(false));
             }
@@ -872,48 +869,6 @@ public interface IBlockExtension {
      */
     default boolean isScaffolding(BlockState state, LevelReader level, BlockPos pos, LivingEntity entity) {
         return state.is(Blocks.SCAFFOLDING);
-    }
-
-    /**
-     * Whether redstone dust should visually connect to this block on a given side
-     * <p>
-     * The default implementation is identical to
-     * {@code RedStoneWireBlock#shouldConnectTo(BlockState, Direction)}
-     *
-     * <p>
-     * {@link RedStoneWireBlock} updates its visual connection when
-     * {@link BlockState#updateShape(Direction, BlockState, LevelAccessor, BlockPos, BlockPos)}
-     * is called, this callback is used during the evaluation of its new shape.
-     *
-     * @param state     The current state
-     * @param level     The level
-     * @param pos       The block position in level
-     * @param direction The coming direction of the redstone dust connection (with respect to the block at pos)
-     * @return True if redstone dust should visually connect on the side passed
-     *         <p>
-     *         If the return value is evaluated based on level and pos (e.g. from BlockEntity), then the implementation of
-     *         this block should notify its neighbors to update their shapes when necessary. Consider using
-     *         {@link BlockState#updateNeighbourShapes(LevelAccessor, BlockPos, int, int)} or
-     *         {@link BlockState#updateShape(Direction, BlockState, LevelAccessor, BlockPos, BlockPos)}.
-     *         <p>
-     *         Example:
-     *         <p>
-     *         1. {@code yourBlockState.updateNeighbourShapes(level, yourBlockPos, UPDATE_ALL);}
-     *         <p>
-     *         2. {@code neighborState.updateShape(fromDirection, stateOfYourBlock, level, neighborBlockPos, yourBlockPos)},
-     *         where {@code fromDirection} is defined from the neighbor block's point of view.
-     */
-    default boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
-        if (state.is(Blocks.REDSTONE_WIRE)) {
-            return true;
-        } else if (state.is(Blocks.REPEATER)) {
-            Direction facing = state.getValue(RepeaterBlock.FACING);
-            return facing == direction || facing.getOpposite() == direction;
-        } else if (state.is(Blocks.OBSERVER)) {
-            return direction == state.getValue(ObserverBlock.FACING);
-        } else {
-            return state.isSignalSource() && direction != null;
-        }
     }
 
     /**

@@ -100,7 +100,7 @@ public class BundleItemHandler implements ResourceHandler<ItemResource> {
         BundleContents contents = accessResource.get(component);
         if (contents == null || index > contents.size()) return 0;
 
-        BundleContents.Mutable mutable = new BundleContents.Mutable(contents);
+        BundleContents.Mutable mutable = contents.asMutable();
         int inserted = 0;
 
         if (index == contents.size()) {

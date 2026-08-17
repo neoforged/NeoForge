@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/SetSpawnCommand.java
++++ b/net/minecraft/server/commands/SetSpawnCommand.java
+@@ -88,7 +88,7 @@
+                     pos.getZ(),
+                     yaw,
+                     pitch,
+-                    dimensionName,
++                    source.getLevel().getDescription(), // Neo: Use dimension translation, if one exists
+                     targets.iterator().next().getDisplayName()
+                 ),
+                 true

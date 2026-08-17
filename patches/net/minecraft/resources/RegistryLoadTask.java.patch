@@ -23,7 +23,7 @@
          this.loadingErrors = loadingErrors;
          this.concurrentRegistrationGetter = new ConcurrentHolderGetter<>(this.registryWriteLock, this.registry.createRegistrationLookup());
      }
-@@ -64,7 +_,13 @@
+@@ -60,7 +_,13 @@
              elements.forEach(
                  element -> element.value
                      .ifLeft(value -> this.registry.register(element.key, (T)value, element.registrationInfo))
@@ -38,7 +38,7 @@
              );
              this.elementsRegistered = true;
          }
-@@ -103,7 +_,15 @@
+@@ -99,7 +_,15 @@
          ) {
              try (Reader reader = thunk.openAsReader()) {
                  JsonElement json = StrictJsonParser.parse(reader);

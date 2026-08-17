@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/piston/PistonHeadBlock.java
 +++ b/net/minecraft/world/level/block/piston/PistonHeadBlock.java
-@@ -143,4 +_,20 @@
+@@ -136,4 +_,20 @@
      protected boolean isPathfindable(BlockState state, PathComputationType type) {
          return false;
      }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -239,6 +_,10 @@
+@@ -240,6 +_,10 @@
          return !this.isEmpty() && this.components.hasNonDefault(type);
      }
  
@@ -11,7 +11,7 @@
      public ItemStack(ItemLike item, int count) {
          this(item.asItem().builtInRegistryHolder(), count);
      }
-@@ -358,6 +_,20 @@
+@@ -359,6 +_,20 @@
      }
  
      public InteractionResult useOn(UseOnContext context) {
@@ -32,7 +32,7 @@
          Player player = context.getPlayer();
          BlockPos pos = context.getClickedPos();
          if (player != null && !player.getAbilities().mayBuild && !this.canPlaceOnBlockInAdventureMode(new BlockInWorld(context.getLevel(), pos, false))) {
-@@ -365,7 +_,7 @@
+@@ -366,7 +_,7 @@
          }
  
          Item usedItem = this.getItem();
@@ -41,7 +41,7 @@
          if (player != null && result instanceof InteractionResult.Success success && success.wasItemInteraction()) {
              player.awardStat(Stats.ITEM_USED.get(usedItem));
          }
-@@ -412,6 +_,12 @@
+@@ -413,6 +_,12 @@
          return result;
      }
  
@@ -54,7 +54,7 @@
      public boolean isStackable() {
          return this.getMaxStackSize() > 1 && (!this.isDamageableItem() || !this.isDamaged());
      }
-@@ -421,19 +_,19 @@
+@@ -422,19 +_,19 @@
      }
  
      public boolean isDamaged() {
@@ -78,7 +78,7 @@
      }
  
      public boolean isBroken() {
-@@ -445,6 +_,11 @@
+@@ -446,6 +_,11 @@
      }
  
      public void hurtAndBreak(int amount, ServerLevel level, @Nullable ServerPlayer player, Consumer<Item> onBreak) {
@@ -90,7 +90,7 @@
          int newAmount = this.processDurabilityChange(amount, level, player);
          if (newAmount != 0) {
              this.applyDamage(this.getDamageValue() + newAmount, player, onBreak);
-@@ -452,6 +_,10 @@
+@@ -453,6 +_,10 @@
      }
  
      private int processDurabilityChange(int amount, ServerLevel level, @Nullable ServerPlayer player) {
@@ -101,7 +101,7 @@
          if (!this.isDamageableItem()) {
              return 0;
          } else if (player != null && player.hasInfiniteMaterials()) {
-@@ -462,8 +_,12 @@
+@@ -463,8 +_,12 @@
      }
  
      private void applyDamage(int newDamage, @Nullable ServerPlayer player, Consumer<Item> onBreak) {
@@ -116,7 +116,7 @@
          }
  
          this.setDamageValue(newDamage);
-@@ -493,7 +_,7 @@
+@@ -494,7 +_,7 @@
      public void hurtAndBreak(int amount, LivingEntity owner, EquipmentSlot slot) {
          if (owner.level() instanceof ServerLevel serverLevel) {
              this.hurtAndBreak(
@@ -125,7 +125,7 @@
              );
          }
      }
-@@ -617,6 +_,16 @@
+@@ -618,6 +_,16 @@
          }
      }
  
@@ -142,7 +142,7 @@
      @Deprecated
      public static boolean listMatches(List<ItemStack> left, List<ItemStack> right) {
          if (left.size() != right.size()) {
-@@ -644,6 +_,27 @@
+@@ -645,6 +_,27 @@
          }
      }
  
@@ -170,7 +170,7 @@
      public static boolean matchesIgnoringComponents(ItemStack a, ItemStack b, Predicate<DataComponentType<?>> ignoredPredicate) {
          if (a == b) {
              return true;
-@@ -828,7 +_,7 @@
+@@ -829,7 +_,7 @@
      }
  
      public Component getStyledHoverName() {
@@ -179,15 +179,15 @@
          if (this.has(DataComponents.CUSTOM_NAME)) {
              hoverName.withStyle(ChatFormatting.ITALIC);
          }
-@@ -836,6 +_,7 @@
-         return hoverName;
+@@ -851,6 +_,7 @@
+         }
      }
  
 +    @Override // Neo: Add override annotation to ensure our extension method signature always matches vanilla
      public <T extends TooltipProvider> void addToTooltip(
          DataComponentType<T> type, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> consumer, TooltipFlag flag
      ) {
-@@ -854,6 +_,7 @@
+@@ -866,6 +_,7 @@
              List<Component> lines = Lists.newArrayList();
              lines.add(this.getStyledHoverName());
              this.addDetailsToTooltip(context, display, player, tooltipFlag, lines::add);
@@ -195,7 +195,7 @@
              return lines;
          }
      }
-@@ -861,7 +_,16 @@
+@@ -873,7 +_,16 @@
      public void addDetailsToTooltip(
          Item.TooltipContext context, TooltipDisplay display, @Nullable Player player, TooltipFlag tooltipFlag, Consumer<Component> builder
      ) {
@@ -212,7 +212,7 @@
          this.addToTooltip(DataComponents.TROPICAL_FISH_PATTERN, context, display, builder, tooltipFlag);
          this.addToTooltip(DataComponents.INSTRUMENT, context, display, builder, tooltipFlag);
          this.addToTooltip(DataComponents.MAP_ID, context, display, builder, tooltipFlag);
-@@ -913,7 +_,11 @@
+@@ -927,7 +_,11 @@
              if (this.isDamaged() && display.shows(DataComponents.DAMAGE)) {
                  builder.accept(Component.translatable("item.durability", this.getMaxDamage() - this.getDamageValue(), this.getMaxDamage()));
              }
@@ -224,7 +224,7 @@
              builder.accept(Component.literal(BuiltInRegistries.ITEM.getKey(this.getItem()).toString()).withStyle(ChatFormatting.DARK_GRAY));
              int count = this.components.size();
              if (count > 0) {
-@@ -936,7 +_,10 @@
+@@ -950,7 +_,10 @@
              builder.accept(component);
          }
      }
@@ -236,7 +236,7 @@
      private void addAttributeTooltips(Consumer<Component> consumer, TooltipDisplay display, @Nullable Player player) {
          if (display.shows(DataComponents.ATTRIBUTE_MODIFIERS)) {
              for (EquipmentSlotGroup slot : EquipmentSlotGroup.values()) {
-@@ -991,19 +_,43 @@
+@@ -1005,19 +_,43 @@
          return !this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).isEmpty();
      }
  
@@ -280,7 +280,7 @@
          EnchantmentHelper.forEachModifier(this, slot, consumer);
      }
  
-@@ -1015,7 +_,7 @@
+@@ -1029,7 +_,7 @@
  
          MutableComponent result = ComponentUtils.wrapInSquareBrackets(hoverName);
          if (!this.isEmpty()) {
@@ -289,7 +289,7 @@
          }
  
          return result;
-@@ -1096,11 +_,14 @@
+@@ -1114,11 +_,14 @@
          }
      }
  

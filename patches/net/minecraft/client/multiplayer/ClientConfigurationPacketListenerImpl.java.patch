@@ -55,7 +55,7 @@
                  @Override
                  public boolean hasInfiniteMaterials() {
                      return true;
-@@ -206,6 +_,59 @@
+@@ -211,6 +_,59 @@
      public void onDisconnect(DisconnectionDetails reason) {
          super.onDisconnect(reason);
          this.minecraft.clearDownloadedResourcePacks();

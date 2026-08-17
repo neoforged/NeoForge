@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/functions/EnchantedCountIncreaseFunction.java
 +++ b/net/minecraft/world/level/storage/loot/functions/EnchantedCountIncreaseFunction.java
-@@ -72,6 +_,10 @@
+@@ -73,6 +_,10 @@
          Entity killer = context.getOptionalParameter(LootContextParams.ATTACKING_ENTITY);
          if (killer instanceof LivingEntity entity) {
              int level = EnchantmentHelper.getEnchantmentLevel(this.enchantment, entity);

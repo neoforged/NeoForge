@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/HoneycombItem.java
 +++ b/net/minecraft/world/item/HoneycombItem.java
-@@ -30,6 +_,10 @@
+@@ -33,6 +_,10 @@
  import net.minecraft.world.level.gameevent.GameEvent;
  
  public class HoneycombItem extends Item implements SignApplicator {
@@ -11,7 +11,7 @@
      public static final Supplier<BiMap<Block, Block>> WAXABLES = Suppliers.memoize(
          () -> {
              Builder<Block, Block> builderx = ImmutableBiMap.builder();
-@@ -54,6 +_,10 @@
+@@ -57,6 +_,10 @@
              return builderx.build();
          }
      );
@@ -22,7 +22,7 @@
      public static final Supplier<BiMap<Block, Block>> WAX_OFF_BY_BLOCK = Suppliers.memoize(() -> WAXABLES.get().inverse());
      public static final ImmutableMap<Block, Pair<RecipeCategory, String>> WAXED_RECIPES;
  
-@@ -88,7 +_,7 @@
+@@ -93,7 +_,7 @@
      }
  
      public static Optional<BlockState> getWaxed(BlockState oldState) {

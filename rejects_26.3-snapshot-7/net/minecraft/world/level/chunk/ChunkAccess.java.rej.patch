@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/level/chunk/ChunkAccess.java
++++ b/net/minecraft/world/level/chunk/ChunkAccess.java
+@@ -335,8 +339,9 @@
+                     for (int z = 0; z < 16; z++) {
+                         for (int x = 0; x < 16; x++) {
+                             BlockState state = section.getBlockState(x, y, z);
+-                            if (predicate.test(state)) {
+-                                consumer.accept(mutablePos.setWithOffset(origin, x, y, z), state);
++                            mutablePos.setWithOffset(origin, x, y, z);
++                            if (fineFilter.test(state, mutablePos)) {
++                                consumer.accept(mutablePos, state);
+                             }
+                         }
+                     }

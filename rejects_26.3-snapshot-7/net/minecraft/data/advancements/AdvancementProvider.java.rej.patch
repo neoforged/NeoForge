@@ -1,0 +1,11 @@
+--- a/net/minecraft/data/advancements/AdvancementProvider.java
++++ b/net/minecraft/data/advancements/AdvancementProvider.java
+@@ -38,7 +38,7 @@
+                 }
+ 
+                 Path path = this.pathProvider.json(holder.id());
+-                tasks.add(DataProvider.saveStable(cache, lookup, Advancement.CODEC, holder.value(), path));
++                tasks.add(DataProvider.saveStable(cache, lookup, Advancement.CODEC, holder.value(), path)); // TODO: make conditional
+             };
+ 
+             for (AdvancementSubProvider subProvider : this.subProviders) {

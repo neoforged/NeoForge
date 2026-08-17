@@ -132,7 +132,7 @@
          }
  
          List<Identifier> unboundTags = this.frozenTags
-@@ -443,6 +_,12 @@
+@@ -448,6 +_,12 @@
                  return patchedHolder;
              }
  
@@ -145,7 +145,7 @@
              @Override
              public void apply() {
                  pendingTags.forEach((id, tag) -> {
-@@ -453,6 +_,55 @@
+@@ -458,6 +_,55 @@
                  MappedRegistry.this.refreshTagsInHolders();
              }
          };

@@ -1,0 +1,12 @@
+--- a/net/minecraft/data/registries/RegistriesDatapackGenerator.java
++++ b/net/minecraft/data/registries/RegistriesDatapackGenerator.java
+@@ -31,8 +48,7 @@
+                 access -> {
+                     DynamicOps<JsonElement> registryOps = access.createSerializationContext(JsonOps.INSTANCE);
+                     return CompletableFuture.allOf(
+-                        RegistryDataLoader.WORLDGEN_REGISTRIES
+-                            .stream()
++                            net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistriesWithDimensions()
+                             .flatMap(v -> this.dumpRegistryCap(cache, access, registryOps, (RegistryDataLoader.RegistryData<?>)v).stream())
+                             .toArray(CompletableFuture[]::new)
+                     );

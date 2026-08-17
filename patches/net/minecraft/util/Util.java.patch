@@ -1,6 +1,6 @@
 --- a/net/minecraft/util/Util.java
 +++ b/net/minecraft/util/Util.java
-@@ -313,8 +_,8 @@
+@@ -319,8 +_,8 @@
                  .getSchema(DataFixUtils.makeKey(SharedConstants.getCurrentVersion().dataVersion().version()))
                  .getChoiceType(reference, name);
          } catch (IllegalArgumentException e) {
@@ -11,10 +11,10 @@
                  throw e;
              }
          }
-@@ -735,20 +_,20 @@
+@@ -745,20 +_,20 @@
  
      public static void logAndPauseIfInIde(String message) {
-         LOGGER.error(message);
+         LOGGER.error("{}", message);
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
 +        if (SharedConstants.IS_RUNNING_WITH_JDWP) {
              doPause(message);
@@ -22,7 +22,7 @@
      }
  
      public static void logAndPauseIfInIde(String message, Throwable throwable) {
-         LOGGER.error(message, throwable);
+         LOGGER.error("{}", message, throwable);
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
 +        if (SharedConstants.IS_RUNNING_WITH_JDWP) {
              doPause(message);

@@ -1,0 +1,66 @@
+--- a/net/minecraft/data/loot/LootTableProvider.java
++++ b/net/minecraft/data/loot/LootTableProvider.java
+@@ -59,7 +59,8 @@
+     private CompletableFuture<?> run(CachedOutput cache, HolderLookup.Provider registries) {
+         WritableRegistry<LootTable> tables = new MappedRegistry<>(Registries.LOOT_TABLE, Lifecycle.experimental());
+         Map<RandomSupport.Seed128bit, Identifier> randomSequenceSeeds = new Object2ObjectOpenHashMap<>();
+-        this.subProviders.forEach(subProvider -> subProvider.provider().apply(registries).generate((id, lootTable) -> {
++        Map<LootTable, List<net.neoforged.neoforge.common.conditions.ICondition>> conditionsPerTable = new java.util.IdentityHashMap<>();
++        getTables().forEach(subProvider -> subProvider.provider().apply(registries).generate((id, lootTable) -> {
+             Identifier sequenceId = sequenceIdForLootTable(id);
+             Identifier previous = randomSequenceSeeds.put(RandomSequence.seedForKey(sequenceId), sequenceId);
+             if (previous != null) {
+@@ -69,17 +70,18 @@
+             lootTable.setRandomSequence(sequenceId);
+             LootTable table = lootTable.setParamSet(subProvider.paramSet).build();
+             tables.register(id, table, RegistrationInfo.BUILT_IN);
++            var conditions = lootTable.buildConditions();
++            if (!conditions.isEmpty()) {
++                conditionsPerTable.put(table, conditions);
++            }
+         }));
+         tables.freeze();
+         ProblemReporter.Collector problems = new ProblemReporter.Collector();
+         HolderGetter.Provider validationProvider = new RegistryAccess.ImmutableRegistryAccess(List.of(tables)).freeze();
+         ValidationContextSource validationContext = new ValidationContextSource(problems, validationProvider);
+ 
+-        for (ResourceKey<LootTable> missingTable : Sets.difference(this.requiredTables, tables.registryKeySet())) {
+-            problems.report(new LootTableProvider.MissingTableProblem(missingTable));
+-        }
++        validate(tables, validationContext, problems);
+ 
+-        LootDataType.TABLE.runValidation(validationContext, tables);
+         if (!problems.isEmpty()) {
+             problems.forEach((id, problem) -> LOGGER.warn("Found validation problem in {}: {}", id, problem.description()));
+             throw new IllegalStateException("Failed to validate loot tables, see logs");
+@@ -88,9 +90,29 @@
+                 ResourceKey<LootTable> id = entry.getKey();
+                 LootTable table = entry.getValue();
+                 Path path = this.pathProvider.json(id.identifier());
+-                return DataProvider.saveStable(cache, registries, LootTable.DIRECT_CODEC, table, path);
++                var conditional = new net.neoforged.neoforge.common.conditions.WithConditions<>(conditionsPerTable.getOrDefault(table, List.of()), table);
++                return DataProvider.saveStable(cache, registries, LootTable.CONDITIONAL_DIRECT_CODEC, java.util.Optional.of(conditional), path);
+             }).toArray(CompletableFuture[]::new));
+         }
++    }
++
++    public List<LootTableProvider.SubProviderEntry> getTables() {
++        return this.subProviders;
++    }
++
++    protected void validate(WritableRegistry<LootTable> tables, ValidationContextSource validationContext, ProblemReporter.Collector problems) {
++        for (ResourceKey<LootTable> missingTable : Sets.difference(this.requiredTables, tables.registryKeySet())) {
++            problems.report(new LootTableProvider.MissingTableProblem(missingTable));
++        }
++
++        tables.listElements()
++                .forEach(
++                        tableHolder -> tableHolder.value()
++                                .validate(
++                                        validationContext.context(tableHolder.value().getParamSet())
++                                                .enterElement(new ProblemReporter.RootElementPathElement(tableHolder.key()), tableHolder.key())
++                                )
++                );
+     }
+ 
+     private static Identifier sequenceIdForLootTable(ResourceKey<LootTable> id) {

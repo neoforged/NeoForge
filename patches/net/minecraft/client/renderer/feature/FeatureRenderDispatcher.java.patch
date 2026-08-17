@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/feature/FeatureRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/feature/FeatureRenderDispatcher.java
-@@ -55,6 +_,7 @@
+@@ -56,6 +_,7 @@
          this.featureRenderers.put(QuadParticleFeatureRenderer.TYPE, new QuadParticleFeatureRenderer());
          this.featureRenderers.put(ShapeOutlineFeatureRenderer.TYPE, new ShapeOutlineFeatureRenderer());
          this.featureRenderers.put(GizmoFeatureRenderer.TYPE, new GizmoFeatureRenderer());

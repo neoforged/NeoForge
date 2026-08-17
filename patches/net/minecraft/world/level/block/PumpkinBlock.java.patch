@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/PumpkinBlock.java
 +++ b/net/minecraft/world/level/block/PumpkinBlock.java
-@@ -37,7 +_,7 @@
+@@ -29,7 +_,7 @@
      protected InteractionResult useItemOn(
          ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult
      ) {

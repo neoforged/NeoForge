@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
-@@ -150,17 +_,17 @@
+@@ -163,18 +_,18 @@
          this.guiRenderer = new GuiRenderer(
              this.gameRenderState.guiRenderState,
              this.featureRenderDispatcher,
@@ -19,22 +19,23 @@
 +                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.renderer.state.gui.pip.GuiProfilerChartRenderState.class, GuiProfilerChartRenderer::new)
 +            ))
          );
-         this.screenEffectRenderer = new ScreenEffectRenderer(minecraft, atlasManager);
+         this.screenEffectRenderer = new ScreenEffectRenderer(this, atlasManager);
          this.debugCrosshairRenderer = new DebugCrosshairRenderer();
 -        this.mainRenderTarget = new MainTarget(minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight());
+         this.hud3DTarget = new TextureTarget("hud_3d_depth", minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight(), null, GpuFormat.D32_FLOAT);
 +        this.mainRenderTarget = net.neoforged.neoforge.client.ClientHooks.instantiateMainTarget(minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight());
      }
  
      @Override
-@@ -219,6 +_,7 @@
+@@ -234,6 +_,7 @@
                  break;
              case null:
              default:
 +                if (!net.neoforged.neoforge.client.ClientHooks.loadEntityShader(cameraEntity, this))
-                 this.clearPostEffect();
+                 this.clearSpectatedEntityPostEffect();
          }
      }
-@@ -309,6 +_,9 @@
+@@ -331,6 +_,9 @@
                  return;
              }
  
@@ -44,13 +45,13 @@
              hurt /= cameraState.entityRenderState.hurtDuration;
              hurt = Mth.sin(hurt * hurt * hurt * hurt * (float) Math.PI);
              float rr = cameraState.entityRenderState.hurtDir;
-@@ -563,6 +_,9 @@
+@@ -647,6 +_,9 @@
          this.minecraft
              .levelRenderer
-             .render(this.resourcePool, deltaTracker, renderOutline, cameraState, modelViewMatrix, terrainFog, cameraState.fogData.color, !shouldCreateBossFog);
+             .render(this.resourcePool, renderOutline, cameraState, terrainFog, cameraState.fogData.color, !shouldCreateBossFog, consistentDepthRequired);
 +        profiler.popPush("neoforge_render_after_level");
 +        LevelRenderer levelRenderer = this.minecraft.levelRenderer;
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterLevel(levelRenderer, levelRenderer.levelRenderState, null, modelViewMatrix, levelRenderer.visibleSections()));
-         profiler.popPush("hand");
-         boolean isSleeping = cameraState.entityRenderState.isSleeping;
-         this.hudProjection
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterLevel(levelRenderer, levelRenderer.levelRenderState, null, cameraState.viewRotationMatrix, levelRenderer.visibleSections()));
+         this.render3dHud(cameraState, playerState, optionsState, consistentDepthRequired);
+     }
+ 

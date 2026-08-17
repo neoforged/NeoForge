@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/FlatLevelSource.java
 +++ b/net/minecraft/world/level/levelgen/FlatLevelSource.java
-@@ -30,9 +_,11 @@
+@@ -33,9 +_,11 @@
          i -> i.group(FlatLevelGeneratorSettings.CODEC.fieldOf("settings").forGetter(FlatLevelSource::settings)).apply(i, i.stable(FlatLevelSource::new))
      );
      private final FlatLevelGeneratorSettings settings;
@@ -13,7 +13,7 @@
          this.settings = generatorSettings;
      }
  
-@@ -142,5 +_,13 @@
+@@ -157,5 +_,13 @@
      @Override
      public int getSeaLevel() {
          return -63;

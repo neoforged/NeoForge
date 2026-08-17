@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/SugarCaneBlock.java
 +++ b/net/minecraft/world/level/block/SugarCaneBlock.java
-@@ -57,12 +_,15 @@
+@@ -50,12 +_,15 @@
  
              if (height < 3) {
                  int age = state.getValue(AGE);
@@ -16,7 +16,7 @@
              }
          }
      }
-@@ -92,13 +_,16 @@
+@@ -85,13 +_,16 @@
              return true;
          }
  
