@@ -845,7 +845,7 @@ public interface IBlockExtension {
         } else if (ItemAbilities.SHOVEL_DOUSE == itemAbility) {
             if (state.getBlock() instanceof CampfireBlock && state.getValue(CampfireBlock.LIT)) {
                 if (!simulate) {
-                    CampfireBlock.dowse(context.getPlayer(), context.getLevel(), context.getClickedPos(), state);
+                    CampfireBlock.douse(context.getPlayer(), context.getLevel(), context.getClickedPos(), state);
                 }
                 return state.setValue(CampfireBlock.LIT, Boolean.valueOf(false));
             }
