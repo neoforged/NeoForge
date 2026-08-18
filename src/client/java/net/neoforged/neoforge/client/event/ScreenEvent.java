@@ -968,13 +968,14 @@ public abstract class ScreenEvent extends Event {
         }
     }
 
-    /// Fired when an [Input Method Editor (IME) preedit event][PreeditEvent] is submitted to a screen.
+    /// Fired when an [Input Method Editor (IME) preedit event][PreeditEvent] is received by a screen.
     ///
     /// An IME lets users enter text that is not directly available from their keyboard, such as Chinese, Japanese,
     /// and Korean characters. While input is being composed, the IME supplies temporary preedit text that can change
     /// until the user commits it.
     ///
-    /// See [Pre][Preedit.Pre] and [Post][Preedit.Post] for listening before and after the normal handling.
+    /// @see Preedit.Pre
+    /// @see Preedit.Post
     public static abstract class Preedit extends ScreenEvent {
         private final @Nullable PreeditEvent preeditEvent;
 
@@ -989,9 +990,9 @@ public abstract class ScreenEvent extends Event {
             return preeditEvent;
         }
 
-        /// Fired **before** the preedit event is handled by the screen.
+        /// Fired **before** the preedit event is received by the screen.
         ///
-        /// This event is [cancellable][ICancellableEvent]. If the event is cancelled, the screen's preedit handler will
+        /// This event is [cancellable][ICancellableEvent]. If this event is canceled, the screen's preedit handler will
         /// be bypassed and the corresponding [Post][Preedit.Post] will not be fired.
         ///
         /// This event is fired on the [main NeoForge event bus][NeoForge#EVENT_BUS],
@@ -1003,8 +1004,8 @@ public abstract class ScreenEvent extends Event {
             }
         }
 
-        /// Fired **after** the preedit event is handled, if not handled by the screen
-        /// and the corresponding [Pre][Preedit.Pre] is not cancelled.
+        /// Fired **after** the preedit event and the normal screen handler, only if the corresponding
+        /// [Pre][Preedit.Pre] event is not canceled and the normal screen handler returns `false`.
         ///
         /// This event is not [cancellable][ICancellableEvent].
         ///
