@@ -976,6 +976,7 @@ public abstract class ScreenEvent extends Event {
     ///
     /// @see Preedit.Pre
     /// @see Preedit.Post
+    /// @see GuiEventListener#preeditUpdated(PreeditEvent)
     public static abstract class Preedit extends ScreenEvent {
         private final @Nullable PreeditEvent preeditEvent;
 
@@ -990,7 +991,7 @@ public abstract class ScreenEvent extends Event {
             return preeditEvent;
         }
 
-        /// Fired **before** the preedit event is received by the screen.
+        /// Fired **before** the preedit event is received by the screen's preedit handler.
         ///
         /// This event is [cancellable][ICancellableEvent]. If this event is canceled, the screen's preedit handler will
         /// be bypassed and the corresponding [Post][Preedit.Post] will not be fired.
@@ -1004,8 +1005,8 @@ public abstract class ScreenEvent extends Event {
             }
         }
 
-        /// Fired **after** the preedit event and the normal screen handler, only if the corresponding
-        /// [Pre][Preedit.Pre] event is not canceled and the normal screen handler returns `false`.
+        /// Fired **after** the screen's preedit handler, only if the corresponding [Pre][Preedit.Pre] event is not
+        /// canceled and the screen's preedit handler returns `false`.
         ///
         /// This event is not [cancellable][ICancellableEvent].
         ///
