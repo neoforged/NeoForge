@@ -55,7 +55,7 @@
                  @Override
                  public boolean hasInfiniteMaterials() {
                      return true;
-@@ -206,6 +_,59 @@
+@@ -206,6 +_,61 @@
      public void onDisconnect(DisconnectionDetails reason) {
          super.onDisconnect(reason);
          this.minecraft.clearDownloadedResourcePacks();
@@ -65,6 +65,8 @@
 +    public void handleCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket packet) {
 +        // Handle the initial registration payload by responding with the client's set of supported channels.
 +        if (!this.initializedConnection && packet.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload) {
++            // Handle the registration packet before we respond, so that implementations like fabric that only send it once, don't have the values ignored
++            super.handleCustomPayload(packet);
 +            net.neoforged.neoforge.client.network.registration.ClientNetworkRegistry.sendInitialListeningChannels(this);
 +            return;
 +        }
