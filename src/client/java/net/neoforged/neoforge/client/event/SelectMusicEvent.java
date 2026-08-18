@@ -26,7 +26,8 @@ import org.jspecify.annotations.Nullable;
  * Higher priorities would likely be better suited for biome-based or dimension-based musics, whereas lower priority is likely good for specific structures or situations.<br>
  * <br>
  * This event is {@linkplain ICancellableEvent cancellable}.<br>
- * If the event is canceled, then whatever the latest music set was will be used as the music.
+ * Cancelling the event <strong>does not prevent the music from being changed</strong>, rather it stops propagation to further event handlers, and uses whatever the music was set to in the event.<br>
+ * When cancelling the event, it is therefore preferred to call the {@linkplain SelectMusicEvent#overrideMusic(Music)} helper with your music, which automatically calls {@linkplain SelectMusicEvent#setCanceled(boolean)} for you.<br>
  * <br>
  * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},<br>
  * only on the {@linkplain LogicalSide#CLIENT logical client}.
