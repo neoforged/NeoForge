@@ -1,20 +1,19 @@
 --- a/net/minecraft/client/sounds/MusicManager.java
 +++ b/net/minecraft/client/sounds/MusicManager.java
-@@ -42,9 +_,15 @@
+@@ -42,7 +_,15 @@
              }
          }
  
 -        Music music = this.minecraft.getSituationalMusic();
-+        var event = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.SelectMusicEvent(this.minecraft.getSituationalMusic(), this.currentMusic));
-+        if (event.isCanceled()) return;
-+        Music music = event.getMusic();
-+
-         if (music == null) {
--            this.nextSongDelay = Math.max(this.nextSongDelay, 100);
++        Music music = net.neoforged.neoforge.client.ClientHooks.selectMusic(this.minecraft.getSituationalMusic(), this.currentMusic);
++        if (music == null) {
 +            if (this.currentMusic != null) {
 +                this.stopPlaying();
 +            }
 +            this.nextSongDelay = 0;
++            return;
++        }
++
+         if (music == null) {
+             this.nextSongDelay = Math.max(this.nextSongDelay, 100);
          } else {
-             if (this.currentMusic != null) {
-                 if (canReplace(music, this.currentMusic)) {
