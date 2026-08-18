@@ -34,7 +34,7 @@
  
      protected LivingEntity(EntityType<? extends LivingEntity> type, Level level) {
          super(type, level);
-@@ -358,12 +_,15 @@
+@@ -358,6 +_,8 @@
              .add(Attributes.AIR_DRAG_MODIFIER)
              .add(Attributes.FRICTION_MODIFIER)
              .add(Attributes.NAME_TAG_DISTANCE)
@@ -42,13 +42,6 @@
 +            .add(net.neoforged.neoforge.common.NeoForgeMod.GLIDING_FLIGHT)
              .add(Attributes.BELOW_NAME_DISTANCE);
      }
- 
-     @Override
-     protected void checkFallDamage(double ya, boolean onGround, BlockState onState, BlockPos pos) {
-         if (!this.isInWater()) {
-+            // TODO: prior to 26.1-snapshot-8 we called our patched in method 'this.updateInWaterStateAndDoWaterCurrentPushing(false)'
-             this.updateFluidInteraction();
-         }
  
 @@ -385,7 +_,8 @@
  
