@@ -41,6 +41,21 @@
              hurt /= cameraState.entityRenderState.hurtDuration;
              hurt = Mth.sin(hurt * hurt * hurt * hurt * (float) Math.PI);
              float rr = cameraState.entityRenderState.hurtDir;
+@@ -423,11 +_,12 @@
+     public void render(DeltaTracker deltaTracker, boolean advanceGameTime) {
+         ProfilerFiller profiler = Profiler.get();
+         profiler.push("render");
+-        if (this.gameRenderState.windowRenderState.isResized) {
++        RenderTarget mainRenderTarget = this.minecraft.getMainRenderTarget();
++        // Neo: compare sizes instead of using the "resized" flag to correctly capture resizes happening before entering the tick loop
++        if (this.gameRenderState.windowRenderState.width != mainRenderTarget.width || this.gameRenderState.windowRenderState.height != mainRenderTarget.height) {
+             this.resize(this.gameRenderState.windowRenderState.width, this.gameRenderState.windowRenderState.height);
+         }
+ 
+-        RenderTarget mainRenderTarget = this.minecraft.getMainRenderTarget();
+         RenderSystem.getDevice()
+             .createCommandEncoder()
+             .clearColorAndDepthTextures(
 @@ -507,7 +_,8 @@
              profiler.push("screen");
  
