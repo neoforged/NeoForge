@@ -92,7 +92,7 @@
              BakedQuad.MaterialInfo materialInfo = modelBakery.interner()
 -                .materialInfo(BakedQuad.MaterialInfo.of(this.material, this.material.sprite().transparency(), this.layerIndex, null, 0));
 -            ItemModelGenerator.bakeExtrudedSprite(builder, modelBakery.interner(), this.modelState, materialInfo);
-+                .materialInfo(BakedQuad.MaterialInfo.of(this.material, this.material.sprite().transparency(), this.layerIndex, true, faceData.lightEmission(), faceData.ambientOcclusion()));
++                .materialInfo(BakedQuad.MaterialInfo.of(this.material, this.material.sprite().transparency(), this.layerIndex, null, faceData.lightEmission(), faceData.ambientOcclusion()));
 +            ItemModelGenerator.bakeExtrudedSprite(builder, modelBakery.interner(), this.modelState, materialInfo, faceData);
              return builder.build();
          }

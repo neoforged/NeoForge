@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client.extensions;
 
 import net.minecraft.client.resources.model.ResolvedModel;
-import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.util.context.ContextMap;
 import org.jspecify.annotations.Nullable;
 
@@ -23,9 +22,9 @@ public interface ResolvedModelExtension {
      * and calling {@link UnbakedModelExtension#fillAdditionalProperties(ContextMap.Builder)}.
      */
     static ContextMap findTopAdditionalProperties(ResolvedModel topModel) {
-        var builder = new ContextMap.Builder();
+        var builder = ContextMap.builder();
         fillAdditionalProperties(topModel, builder);
-        return builder.create(ContextKeySet.EMPTY);
+        return builder.build();
     }
 
     private static void fillAdditionalProperties(@Nullable ResolvedModel model, ContextMap.Builder propertiesBuilder) {

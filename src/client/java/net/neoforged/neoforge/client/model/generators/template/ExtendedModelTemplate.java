@@ -115,8 +115,8 @@ public final class ExtendedModelTemplate extends ModelTemplate {
                     partObj.add("rotation", rotation);
                 }
 
-                if (!part.shade()) {
-                    partObj.addProperty("shade", false);
+                if (part.shadeDirectionOverride() != null) {
+                    partObj.addProperty("shade_direction_override", part.shadeDirectionOverride().getSerializedName());
                 }
 
                 if (part.lightEmission() != 0) {

@@ -16,7 +16,6 @@ import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector2ic;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * Fired when an input is detected from the user's input devices.

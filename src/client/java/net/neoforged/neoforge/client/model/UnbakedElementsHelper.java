@@ -50,7 +50,7 @@ public final class UnbakedElementsHelper {
      */
     public static QuadCollection bakeItemMaskQuads(ModelBaker baker, int layerIndex, Material.Baked maskMaterial, Material.Baked outputMaterial, ModelState modelState, ExtraFaceData faceData, UnaryOperator<BakedQuad.MaterialInfo> materialModifier) {
         ModelBaker.Interner interner = baker.interner();
-        BakedQuad.MaterialInfo outMaterialInfo = interner.materialInfo(materialModifier.apply(BakedQuad.MaterialInfo.of(outputMaterial, outputMaterial.sprite().transparency(), layerIndex, true, faceData.lightEmission(), faceData.ambientOcclusion())));
+        BakedQuad.MaterialInfo outMaterialInfo = interner.materialInfo(materialModifier.apply(BakedQuad.MaterialInfo.of(outputMaterial, outputMaterial.sprite().transparency(), layerIndex, null, faceData.lightEmission(), faceData.ambientOcclusion())));
         return bakeItemMaskQuads(baker, maskMaterial, outMaterialInfo, modelState, faceData);
     }
 
@@ -60,7 +60,7 @@ public final class UnbakedElementsHelper {
     public static QuadCollection bakeItemMaskQuads(ModelBaker baker, Material.Baked maskMaterial, BakedQuad.MaterialInfo outMaterialInfo, ModelState modelState, ExtraFaceData faceData) {
         ModelBaker.Interner interner = baker.interner();
         QuadCollection.Builder builder = new QuadCollection.Builder();
-        BakedQuad.MaterialInfo maskMaterialInfo = interner.materialInfo(BakedQuad.MaterialInfo.of(maskMaterial, maskMaterial.sprite().transparency(), -1, true, 0, true));
+        BakedQuad.MaterialInfo maskMaterialInfo = interner.materialInfo(BakedQuad.MaterialInfo.of(maskMaterial, maskMaterial.sprite().transparency(), -1, null, 0, true));
 
         // TODO 26.1: why are the side faces included at all?
         ItemModelGenerator.bakeSideFaces(builder, interner, modelState, maskMaterialInfo, faceData);
@@ -136,7 +136,7 @@ public final class UnbakedElementsHelper {
                         side,
                         modelState,
                         element.rotation(),
-                        element.shade(),
+                        element.shadeDirectionOverride(),
                         element.lightEmission());
                 if (face.cullForDirection() == null)
                     builder.addUnculledFace(quad);

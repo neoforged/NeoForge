@@ -37,7 +37,7 @@ import org.jspecify.annotations.Nullable;
  * <li>{@link #setCubeFace(Direction, Vector3fc, Vector3fc)} generates the positions of a 3D cube face by giving the cubes extent.</li>
  * <li>{@link #bakeUvsFromPosition(UVTransform)} generates the texture coordinates of the quad similar to how Vanilla block models do, with optional transformations.</li>
  * <li>{@link #recalculateWinding()} can reorder the vertices of the quad to match the vertex order expected by Vanilla ambient occlusion for axis-aligned quads.</li>
- * <li>{@link #setSpriteAndMoveUv(Material.Baked, Transparency)} and {@link #setSpriteAndMoveUv(TextureAtlasSprite, ChunkSectionLayer, RenderType)} can change the sprite used by a quad while remapping the atlas uv automatically.</li>
+ * <li>{@link #setSpriteAndMoveUv(Material.Baked, Transparency)} and {@link #setSpriteAndMoveUv(TextureAtlasSprite, ChunkSectionLayer, RenderType, RenderType, RenderType)} can change the sprite used by a quad while remapping the atlas uv automatically.</li>
  * </ul>
  */
 public class MutableQuad {
@@ -58,8 +58,13 @@ public class MutableQuad {
     private ChunkSectionLayer chunkLayer;
     @Nullable
     private RenderType itemRenderType;
+    @Nullable
+    private RenderType itemGlintRenderType;
+    @Nullable
+    private RenderType itemGlintSpecialRenderType;
     private int tintIndex = -1;
-    private boolean shade = true;
+    @Nullable
+    private Direction shadeOverride = null;
     private int lightEmission;
     private boolean ambientOcclusion;
     /**
@@ -549,6 +554,46 @@ public class MutableQuad {
         return itemRenderType;
     }
 
+    /// {@return the item glint render type associated with the quad or null if no item render type has been set yet}
+    ///
+    /// Note that [BakedQuad] must have an associated item glint render type
+    @Contract(pure = true)
+    @Nullable
+    public RenderType itemGlintRenderType() {
+        return itemRenderType;
+    }
+
+    /// Same as [#itemGlintRenderType()], but throws an exception if no item glint render type is set on the quad yet.
+    ///
+    /// @throws IllegalStateException If no item glint render type is set yet
+    @Contract(pure = true)
+    public RenderType requiredItemGlintRenderType() {
+        if (itemGlintRenderType == null) {
+            throw new IllegalStateException("An item RenderType has to be set on this quad before baking");
+        }
+        return itemGlintRenderType;
+    }
+
+    /// {@return the item glint special render type associated with the quad or null if no item render type has been set yet}
+    ///
+    /// Note that [BakedQuad] must have an associated item glint special render type
+    @Contract(pure = true)
+    @Nullable
+    public RenderType itemGlintSpecialRenderType() {
+        return itemGlintSpecialRenderType;
+    }
+
+    /// Same as [#itemGlintSpecialRenderType()], but throws an exception if no item render type is set on the quad yet.
+    ///
+    /// @throws IllegalStateException If no item glint special render type is set yet
+    @Contract(pure = true)
+    public RenderType requiredItemGlintSpecialRenderType() {
+        if (itemGlintSpecialRenderType == null) {
+            throw new IllegalStateException("An item RenderType has to be set on this quad before baking");
+        }
+        return itemGlintSpecialRenderType;
+    }
+
     /**
      * Changes the material used by this quad and sets the {@link #itemRenderType()} and {@link #chunkLayer()}
      * based on the material.
@@ -571,12 +616,18 @@ public class MutableQuad {
     @SuppressWarnings("deprecation")
     public MutableQuad setSprite(Material.Baked material, Transparency transparency) {
         RenderType itemRenderType;
+        RenderType itemGlintRenderType;
+        RenderType itemGlintSpecialRenderType;
         if (material.sprite().atlasLocation().equals(TextureAtlas.LOCATION_BLOCKS)) {
             itemRenderType = transparency.hasTranslucent() ? Sheets.translucentBlockItemSheet() : Sheets.cutoutBlockItemSheet();
+            itemGlintRenderType = transparency.hasTranslucent() ? Sheets.translucentBlockItemGlintSheet() : Sheets.cutoutBlockItemGlintSheet();
+            itemGlintSpecialRenderType = transparency.hasTranslucent() ? Sheets.translucentBlockItemGlintSpecialSheet() : Sheets.cutoutBlockItemGlintSpecialSheet();
         } else {
             itemRenderType = transparency.hasTranslucent() ? Sheets.translucentItemSheet() : Sheets.cutoutItemSheet();
+            itemGlintRenderType = transparency.hasTranslucent() ? Sheets.translucentItemGlintSheet() : Sheets.cutoutItemGlintSheet();
+            itemGlintSpecialRenderType = transparency.hasTranslucent() ? Sheets.translucentItemGlintSpecialSheet() : Sheets.cutoutItemGlintSpecialSheet();
         }
-        setSprite(material.sprite(), ChunkSectionLayer.byTransparency(transparency), itemRenderType);
+        setSprite(material.sprite(), ChunkSectionLayer.byTransparency(transparency), itemRenderType, itemGlintRenderType, itemGlintSpecialRenderType);
         return this;
     }
 
@@ -584,13 +635,15 @@ public class MutableQuad {
      * Changes the texture atlas sprite used by this quad.
      *
      * <p>Note that changing the sprite does not automatically translate the current UV coordinates within the atlas
-     * to be within this new sprite. Use {@link #setSpriteAndMoveUv(TextureAtlasSprite, ChunkSectionLayer, RenderType)}
+     * to be within this new sprite. Use {@link #setSpriteAndMoveUv(TextureAtlasSprite, ChunkSectionLayer, RenderType, RenderType, RenderType)}
      * to change sprites and remap them, {@link #bakeUvsFromPosition()} to generate texture coordinates from scratch, or set them manually.
      */
-    public MutableQuad setSprite(TextureAtlasSprite sprite, ChunkSectionLayer chunkLayer, RenderType itemRenderType) {
+    public MutableQuad setSprite(TextureAtlasSprite sprite, ChunkSectionLayer chunkLayer, RenderType itemRenderType, RenderType itemGlintRenderType, RenderType itemGlintSpecialRenderType) {
         this.sprite = sprite;
         this.chunkLayer = chunkLayer;
         this.itemRenderType = itemRenderType;
+        this.itemGlintRenderType = itemGlintRenderType;
+        this.itemGlintSpecialRenderType = itemGlintSpecialRenderType;
         return this;
     }
 
@@ -620,20 +673,21 @@ public class MutableQuad {
      *
      * @throws IllegalStateException If no sprite is currently set. There would be nothing to remap from.
      */
-    public MutableQuad setSpriteAndMoveUv(TextureAtlasSprite sprite, ChunkSectionLayer chunkLayer, RenderType itemRenderType) {
+    public MutableQuad setSpriteAndMoveUv(TextureAtlasSprite sprite, ChunkSectionLayer chunkLayer, RenderType itemRenderType, RenderType itemGlintRenderType, RenderType itemGlintSpecialRenderType) {
         transformUvsFromAtlasToSprite();
-        setSprite(sprite, chunkLayer, itemRenderType);
+        setSprite(sprite, chunkLayer, itemRenderType, itemGlintRenderType, itemGlintSpecialRenderType);
         transformUvsFromSpriteToAtlas();
         return this;
     }
 
+    @Nullable
     @Contract(pure = true)
-    public boolean shade() {
-        return shade;
+    public Direction shadeOverride() {
+        return shadeOverride;
     }
 
-    public MutableQuad setShade(boolean shade) {
-        this.shade = shade;
+    public MutableQuad setShadeOverride(@Nullable Direction shadeOverride) {
+        this.shadeOverride = shadeOverride;
         return this;
     }
 
@@ -874,7 +928,7 @@ public class MutableQuad {
         chunkLayer = materialInfo.layer();
         itemRenderType = materialInfo.itemRenderType();
         tintIndex = materialInfo.tintIndex();
-        shade = materialInfo.shade();
+        shadeOverride = materialInfo.shadeDirectionOverride();
         lightEmission = materialInfo.lightEmission();
         ambientOcclusion = materialInfo.ambientOcclusion();
         return this;
@@ -916,6 +970,8 @@ public class MutableQuad {
         TextureAtlasSprite sprite = requiredSprite();
         ChunkSectionLayer chunkLayer = requiredChunkLayer();
         RenderType itemRenderType = requiredItemRenderType();
+        RenderType itemGlintRenderType = requiredItemGlintRenderType();
+        RenderType itemGlintSpecialRenderType = requiredItemGlintSpecialRenderType();
 
         // Try to reuse objects from the last baked quad that we copied from to reduce allocations if
         // the quad was only partially transformed.
@@ -936,14 +992,16 @@ public class MutableQuad {
             boolean canReuseMaterialInfo = sprite == srcInfo.sprite() &&
                     chunkLayer == srcInfo.layer() &&
                     itemRenderType == srcInfo.itemRenderType() &&
+                    itemGlintRenderType == srcInfo.itemGlintRenderType() &&
+                    itemGlintSpecialRenderType == srcInfo.itemGlintSpecialRenderType() &&
                     tintIndex == srcInfo.tintIndex() &&
-                    shade == srcInfo.shade() &&
+                    shadeOverride == srcInfo.shadeDirectionOverride() &&
                     lightEmission == srcInfo.lightEmission() &&
                     ambientOcclusion == srcInfo.ambientOcclusion();
             if (canReuseMaterialInfo) {
                 materialInfo = srcInfo;
             } else {
-                materialInfo = new BakedQuad.MaterialInfo(sprite, chunkLayer, itemRenderType, tintIndex, shade, lightEmission, ambientOcclusion);
+                materialInfo = new BakedQuad.MaterialInfo(sprite, chunkLayer, itemRenderType, itemGlintRenderType, itemGlintSpecialRenderType, tintIndex, shadeOverride, lightEmission, ambientOcclusion);
             }
 
             // If the normals did not change, reuse the old object
@@ -970,7 +1028,7 @@ public class MutableQuad {
             pos1 = new Vector3f(positions[1]);
             pos2 = new Vector3f(positions[2]);
             pos3 = new Vector3f(positions[3]);
-            materialInfo = new BakedQuad.MaterialInfo(sprite, chunkLayer, itemRenderType, tintIndex, shade, lightEmission, ambientOcclusion);
+            materialInfo = new BakedQuad.MaterialInfo(sprite, chunkLayer, itemRenderType, itemGlintRenderType, itemGlintSpecialRenderType, tintIndex, shadeOverride, lightEmission, ambientOcclusion);
             bakedNormals = BakedNormals.of(normals[0], normals[1], normals[2], normals[3]);
             bakedColors = BakedColors.of(colors[0], colors[1], colors[2], colors[3]);
         }
@@ -1057,7 +1115,7 @@ public class MutableQuad {
         dest.chunkLayer = chunkLayer;
         dest.itemRenderType = itemRenderType;
         dest.tintIndex = tintIndex;
-        dest.shade = shade;
+        dest.shadeOverride = shadeOverride;
         dest.lightEmission = lightEmission;
         dest.ambientOcclusion = ambientOcclusion;
         dest.lastSourceQuad = lastSourceQuad;
@@ -1076,7 +1134,7 @@ public class MutableQuad {
         chunkLayer = null;
         itemRenderType = null;
         tintIndex = -1;
-        shade = true;
+        shadeOverride = null;
         lightEmission = 0;
         ambientOcclusion = false;
         lastSourceQuad = null;
