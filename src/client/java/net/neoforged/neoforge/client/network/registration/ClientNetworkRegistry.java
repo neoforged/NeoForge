@@ -10,7 +10,6 @@ import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.PacketFlow;
@@ -255,6 +254,16 @@ public final class ClientNetworkRegistry extends NetworkRegistry {
 
         NetworkFilters.injectIfNecessary(listener.getConnection());
 
+        sendInitialListeningChannels(listener);
+    }
+
+    /// Invoked by the client when it receives a [MinecraftRegisterPayload] during negotiation in the configuration phase.
+    /// This will respond to the server with the client's set of builtin and optional channels to indicate it supports the common protocol.
+    ///
+    /// Invoked on the network thread.
+    ///
+    /// @param listener The listener which received the brand payload.
+    public static void sendInitialListeningChannels(ClientConfigurationPacketListener listener) {
         ImmutableSet.Builder<Identifier> nowListeningOn = ImmutableSet.builder();
         nowListeningOn.addAll(getInitialListeningChannels(listener.flow()));
         PAYLOAD_REGISTRATIONS.get(ConnectionProtocol.CONFIGURATION).entrySet().stream()
@@ -262,19 +271,6 @@ public final class ClientNetworkRegistry extends NetworkRegistry {
                 .filter(registration -> registration.getValue().optional())
                 .forEach(registration -> nowListeningOn.add(registration.getKey()));
         listener.send(new MinecraftRegisterPayload(nowListeningOn.build()));
-    }
-
-    /**
-     * Invoked by the client when it receives a {@link MinecraftRegisterPayload} during negotiation in the configuration phase.
-     * This will respond to the server with the client's set of builtin channels to indicate it supports the common protocol.
-     * <p>
-     * Invoked on the network thread.
-     * 
-     * @param listener The listener which received the brand payload.
-     */
-    public static void sendInitialListeningChannels(ClientConfigurationPacketListener listener) {
-        Set<Identifier> nowListeningOn = ImmutableSet.copyOf(getInitialListeningChannels(listener.flow()));
-        listener.send(new MinecraftRegisterPayload(nowListeningOn));
     }
 
     /**
