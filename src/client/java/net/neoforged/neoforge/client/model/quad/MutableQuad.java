@@ -927,6 +927,8 @@ public class MutableQuad {
         sprite = materialInfo.sprite();
         chunkLayer = materialInfo.layer();
         itemRenderType = materialInfo.itemRenderType();
+        itemGlintRenderType = materialInfo.itemGlintRenderType();
+        itemGlintSpecialRenderType = materialInfo.itemGlintSpecialRenderType();
         tintIndex = materialInfo.tintIndex();
         shadeOverride = materialInfo.shadeDirectionOverride();
         lightEmission = materialInfo.lightEmission();
@@ -1114,6 +1116,8 @@ public class MutableQuad {
         dest.sprite = sprite;
         dest.chunkLayer = chunkLayer;
         dest.itemRenderType = itemRenderType;
+        dest.itemGlintRenderType = itemGlintRenderType;
+        dest.itemGlintSpecialRenderType = itemGlintSpecialRenderType;
         dest.tintIndex = tintIndex;
         dest.shadeOverride = shadeOverride;
         dest.lightEmission = lightEmission;
@@ -1133,6 +1137,8 @@ public class MutableQuad {
         sprite = null;
         chunkLayer = null;
         itemRenderType = null;
+        itemGlintRenderType = null;
+        itemGlintSpecialRenderType = null;
         tintIndex = -1;
         shadeOverride = null;
         lightEmission = 0;
