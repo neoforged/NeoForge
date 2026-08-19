@@ -68,6 +68,7 @@ public class RegistrySnapshot {
         this.ids = ids;
         this.aliases = aliases;
         this.fullBackup = null;
+        super();
     }
 
     /**

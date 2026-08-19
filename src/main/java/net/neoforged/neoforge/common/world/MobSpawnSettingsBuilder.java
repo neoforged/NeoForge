@@ -18,7 +18,7 @@ public class MobSpawnSettingsBuilder extends MobSpawnSettings.Builder {
     private final Set<EntityType<?>> costView = Collections.unmodifiableSet(this.mobSpawnCosts.keySet());
 
     public MobSpawnSettingsBuilder(MobSpawnSettings orig) {
-        orig.definedCategories().forEach(k -> spawnsByCategory.get(k).addAll(orig.getMobs(k)));
+        orig.definedCategories().forEach(k -> spawnsByCategory.get(k).addAll(orig.getMobsInCategory(k)));
         orig.allSpawnCosts().keySet().forEach(k -> mobSpawnCosts.put(k, orig.getMobSpawnCost(k)));
     }
 

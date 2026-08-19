@@ -94,6 +94,7 @@ import net.minecraft.stats.Stats;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.CrudeIncrementalIntIdentityHashBiMap;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Prediction;
 import net.minecraft.util.Util;
 import net.minecraft.util.datafix.fixes.StructuresBecomeConfiguredFix;
 import net.minecraft.world.Container;
@@ -443,9 +444,9 @@ public class CommonHooks {
     }
 
     @Nullable
-    public static ItemEntity onPlayerTossEvent(Player player, ItemStack item, boolean dropAround, boolean includeName) {
+    public static ItemEntity onPlayerTossEvent(Player player, ItemStack item, boolean dropAround, Prediction prediction) {
         player.captureDrops(Lists.newArrayList());
-        ItemEntity ret = player.drop(item, dropAround, includeName);
+        ItemEntity ret = player.drop(item, dropAround, prediction);
         player.captureDrops(null);
 
         if (ret == null)
