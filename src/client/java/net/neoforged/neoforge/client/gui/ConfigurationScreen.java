@@ -9,6 +9,7 @@ import com.electronwill.nightconfig.core.ConfigSpec;
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import com.electronwill.nightconfig.core.UnmodifiableConfig.Entry;
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.datafixers.util.Function4;
 import com.mojang.realmsclient.RealmsMainScreen;
 import com.mojang.serialization.Codec;
@@ -79,7 +80,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * A generic configuration UI.<p>
@@ -309,7 +309,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
         if (count == 1) {
             autoClose = true;
-            btn.onPress(new MouseButtonEvent(btn.getX() + btn.getWidth() / 2., btn.getY() + btn.getHeight() / 2., new MouseButtonInfo(GLFW.GLFW_MOUSE_BUTTON_LEFT, 0)));
+            btn.onPress(new MouseButtonEvent(btn.getX() + btn.getWidth() / 2., btn.getY() + btn.getHeight() / 2., new MouseButtonInfo(InputConstants.MOUSE_BUTTON_LEFT, 0)));
         }
     }
 

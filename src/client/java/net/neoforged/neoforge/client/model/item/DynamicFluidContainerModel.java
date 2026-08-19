@@ -38,6 +38,7 @@ import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.geometry.QuadCollection;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.client.resources.model.sprite.MaterialBaker;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ItemOwner;
@@ -69,10 +70,30 @@ public class DynamicFluidContainerModel implements ItemModel {
     private static final Transformation FLUID_TRANSFORM = new Transformation(new Vector3f(), new Quaternionf(), new Vector3f(1, 1, 1.002f), new Quaternionf());
     private static final Transformation COVER_TRANSFORM = new Transformation(new Vector3f(), new Quaternionf(), new Vector3f(1, 1, 1.004f), new Quaternionf());
     private static final ModelDebugName DEBUG_NAME = () -> "DynamicFluidContainerModel";
-    private static final RenderType RENDER_TYPE_CUTOUT_UNLIT_BLOCK = NeoForgeRenderTypes.getItemCutoutUnlit(TextureAtlas.LOCATION_BLOCKS);
-    private static final RenderType RENDER_TYPE_CUTOUT_UNLIT_ITEM = NeoForgeRenderTypes.getItemCutoutUnlit(TextureAtlas.LOCATION_ITEMS);
-    private static final RenderType RENDER_TYPE_TRANSLUCENT_UNLIT_BLOCK = NeoForgeRenderTypes.getItemTranslucentUnlit(TextureAtlas.LOCATION_BLOCKS);
-    private static final RenderType RENDER_TYPE_TRANSLUCENT_UNLIT_ITEM = NeoForgeRenderTypes.getItemTranslucentUnlit(TextureAtlas.LOCATION_ITEMS);
+    private static final ItemRenderTypes RENDER_TYPES_CUTOUT_BLOCK = new ItemRenderTypes(Sheets.cutoutBlockItemSheet(), Sheets.cutoutBlockItemGlintSheet(), Sheets.cutoutBlockItemGlintSpecialSheet());
+    private static final ItemRenderTypes RENDER_TYPES_CUTOUT_ITEM = new ItemRenderTypes(Sheets.cutoutItemSheet(), Sheets.cutoutItemGlintSheet(), Sheets.cutoutItemGlintSpecialSheet());
+    private static final ItemRenderTypes RENDER_TYPES_TRANSLUCENT_BLOCK = new ItemRenderTypes(Sheets.translucentBlockItemSheet(), Sheets.translucentBlockItemGlintSheet(), Sheets.translucentBlockItemGlintSpecialSheet());
+    private static final ItemRenderTypes RENDER_TYPES_TRANSLUCENT_ITEM = new ItemRenderTypes(Sheets.translucentItemSheet(), Sheets.translucentItemGlintSheet(), Sheets.translucentItemGlintSpecialSheet());
+    private static final ItemRenderTypes RENDER_TYPES_CUTOUT_UNLIT_BLOCK = new ItemRenderTypes(
+            NeoForgeRenderTypes.getItemCutoutUnlit(TextureAtlas.LOCATION_BLOCKS),
+            NeoForgeRenderTypes.getItemGlintCutoutUnlit(TextureAtlas.LOCATION_BLOCKS),
+            NeoForgeRenderTypes.getItemGlintSpecialCutoutUnlit(TextureAtlas.LOCATION_BLOCKS)
+    );
+    private static final ItemRenderTypes RENDER_TYPES_CUTOUT_UNLIT_ITEM = new ItemRenderTypes(
+            NeoForgeRenderTypes.getItemCutoutUnlit(TextureAtlas.LOCATION_ITEMS),
+            NeoForgeRenderTypes.getItemGlintCutoutUnlit(TextureAtlas.LOCATION_ITEMS),
+            NeoForgeRenderTypes.getItemGlintSpecialCutoutUnlit(TextureAtlas.LOCATION_ITEMS)
+    );
+    private static final ItemRenderTypes RENDER_TYPES_TRANSLUCENT_UNLIT_BLOCK = new ItemRenderTypes(
+            NeoForgeRenderTypes.getItemTranslucentUnlit(TextureAtlas.LOCATION_BLOCKS),
+            NeoForgeRenderTypes.getItemGlintTranslucentUnlit(TextureAtlas.LOCATION_BLOCKS),
+            NeoForgeRenderTypes.getItemGlintSpecialTranslucentUnlit(TextureAtlas.LOCATION_BLOCKS)
+    );
+    private static final ItemRenderTypes RENDER_TYPES_TRANSLUCENT_UNLIT_ITEM = new ItemRenderTypes(
+            NeoForgeRenderTypes.getItemTranslucentUnlit(TextureAtlas.LOCATION_ITEMS),
+            NeoForgeRenderTypes.getItemGlintTranslucentUnlit(TextureAtlas.LOCATION_ITEMS),
+            NeoForgeRenderTypes.getItemGlintSpecialTranslucentUnlit(TextureAtlas.LOCATION_ITEMS)
+    );
 
     private final Unbaked unbakedModel;
     private final BakingContext bakingContext;
@@ -134,8 +155,10 @@ public class DynamicFluidContainerModel implements ItemModel {
             boolean opaque = unbakedModel.forceOpaqueFluid;
             boolean emissive = unbakedModel.applyFluidLuminosity && fluid.getFluidType().getLightLevel() > 0;
             ModelBaker.Interner interner = baker.interner();
+            ItemRenderTypes renderTypes = computeFluidItemRenderType(fluidSprite, opaque, emissive);
+            Direction shadeDir = emissive ? Direction.UP : null;
             BakedQuad.MaterialInfo fluidInfo = interner.materialInfo(new BakedQuad.MaterialInfo(
-                    fluidSprite.sprite(), ChunkSectionLayer.SOLID, computeFluidItemRenderType(fluidSprite, opaque, emissive), 0, !emissive, emissive ? Level.MAX_BRIGHTNESS : 0, !emissive));
+                    fluidSprite.sprite(), ChunkSectionLayer.SOLID, renderTypes.item, renderTypes.itemGlint, renderTypes.itemGlintSpecial, 0, shadeDir, emissive ? Level.MAX_BRIGHTNESS : 0, !emissive));
             QuadCollection quads = UnbakedElementsHelper.bakeItemMaskQuads(baker, templateSprite, fluidInfo, transformedState, ExtraFaceData.DEFAULT); // Use template as mask
 
             subModels.add(new CuboidItemModelWrapper(List.of(FluidContentsTint.INSTANCE), quads, renderProperties, transformation));
@@ -153,19 +176,19 @@ public class DynamicFluidContainerModel implements ItemModel {
     }
 
     // Force all fluids into cutout to avoid blending issues with block atlas sprites being rendered in front of item atlas sprites (unless the model opts out of it)
-    private static RenderType computeFluidItemRenderType(Material.Baked material, boolean forceOpaque, boolean emissive) {
+    private static ItemRenderTypes computeFluidItemRenderType(Material.Baked material, boolean forceOpaque, boolean emissive) {
         boolean translucent = !forceOpaque && (material.forceTranslucent() || material.sprite().transparency().hasTranslucent());
         if (material.sprite().atlasLocation().equals(TextureAtlas.LOCATION_BLOCKS)) {
             if (translucent) {
-                return emissive ? RENDER_TYPE_TRANSLUCENT_UNLIT_BLOCK : Sheets.translucentBlockItemSheet();
+                return emissive ? RENDER_TYPES_TRANSLUCENT_UNLIT_BLOCK : RENDER_TYPES_TRANSLUCENT_BLOCK;
             } else {
-                return emissive ? RENDER_TYPE_CUTOUT_UNLIT_BLOCK : Sheets.cutoutBlockItemSheet();
+                return emissive ? RENDER_TYPES_CUTOUT_UNLIT_BLOCK : RENDER_TYPES_CUTOUT_BLOCK;
             }
         } else {
             if (translucent) {
-                return emissive ? RENDER_TYPE_TRANSLUCENT_UNLIT_ITEM : Sheets.translucentItemSheet();
+                return emissive ? RENDER_TYPES_TRANSLUCENT_UNLIT_ITEM : RENDER_TYPES_TRANSLUCENT_ITEM;
             } else {
-                return emissive ? RENDER_TYPE_CUTOUT_UNLIT_ITEM : Sheets.cutoutItemSheet();
+                return emissive ? RENDER_TYPES_CUTOUT_UNLIT_ITEM : RENDER_TYPES_CUTOUT_ITEM;
             }
         }
     }
@@ -178,6 +201,8 @@ public class DynamicFluidContainerModel implements ItemModel {
         cache.computeIfAbsent(fluid, this::bakeModelForFluid)
                 .update(renderState, stack, modelResolver, displayContext, level, owner, seed);
     }
+
+    private record ItemRenderTypes(RenderType item, RenderType itemGlint, RenderType itemGlintSpecial) {}
 
     public record Textures(
             Optional<Material> particle,

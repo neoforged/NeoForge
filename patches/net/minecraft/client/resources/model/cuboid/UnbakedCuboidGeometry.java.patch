@@ -6,7 +6,7 @@
      @Override
 -    public QuadCollection bake(TextureSlots textures, ModelBaker modelBaker, ModelState modelState, ModelDebugName name) {
 +    public QuadCollection bake(TextureSlots textures, ModelBaker modelBaker, ModelState modelState, ModelDebugName name, net.minecraft.util.context.ContextMap additionalProperties) {
-+        var transform = additionalProperties.getOptional(net.neoforged.neoforge.client.model.NeoForgeModelProperties.TRANSFORM);
++        var transform = additionalProperties.get(net.neoforged.neoforge.client.model.NeoForgeModelProperties.TRANSFORM);
 +        if (transform != null) {
 +            modelState = net.neoforged.neoforge.client.model.UnbakedElementsHelper.composeRootTransformIntoModelState(modelState, transform);
 +        }
