@@ -521,11 +521,12 @@ public class EventHooks {
      * @param level  The level
      * @param pos    The position of the target block
      * @param state  The state of the target block
+     * @param source The bonemeal source
      * @param stack  The bone meal item stack
      * @return The event
      */
-    public static BonemealEvent fireBonemealEvent(@Nullable Player player, Level level, BlockPos pos, BlockState state, ItemStack stack) {
-        return NeoForge.EVENT_BUS.post(new BonemealEvent(player, level, pos, state, stack));
+    public static BonemealEvent fireBonemealEvent(@Nullable Player player, Level level, BlockPos pos, BlockState state, BonemealSource source, ItemStack stack) {
+        return NeoForge.EVENT_BUS.post(new BonemealEvent(player, level, pos, state, source, stack));
     }
 
     public static PlayLevelSoundEvent.AtEntity onPlaySoundAtEntity(Entity entity, Holder<SoundEvent> name, SoundSource category, float volume, float pitch) {

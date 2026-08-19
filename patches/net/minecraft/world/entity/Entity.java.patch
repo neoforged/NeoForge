@@ -159,7 +159,7 @@
          if (inWater) {
              this.resetFallDistance();
              if (!this.wasTouchingWater && !this.firstTick) {
-@@ -1681,17 +_,10 @@
+@@ -1681,14 +_,7 @@
  
          this.wasTouchingWater = inWater;
          if (this.isPushedByFluid()) {
@@ -174,11 +174,7 @@
 +            this.fluidInteraction.applyCurrentTo(this);
          }
  
--        return inAnyFluid;
-+        return this.fluidInteraction.isInAnyFluid();
-     }
- 
-     protected void doWaterSplashEffect() {
+         return inAnyFluid;
 @@ -1737,12 +_,13 @@
      }
  

@@ -24,10 +24,10 @@
 +                return DataResult.error(() -> "Not a registry ops");
 +
 +            return registryOps.lookupProvider.lookup(resourceKey).map(registryInfo -> {
-+                if (!(registryInfo.owner() instanceof HolderLookup.RegistryLookup<E> registryLookup))
++                if (!(registryInfo instanceof HolderLookup.RegistryLookup<E> registryLookup))
 +                    return DataResult.<HolderLookup.RegistryLookup<E>>error(() -> "Found holder getter but was not a registry lookup for " + resourceKey);
 +
-+                return DataResult.success(registryLookup, registryInfo.elementsLifecycle());
++                return DataResult.success(registryLookup, registryLookup.registryLifecycle());
 +            }).orElseGet(() -> DataResult.error(() -> "Unknown registry: " + resourceKey));
 +        });
      }

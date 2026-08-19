@@ -22,12 +22,12 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.predicates.DataComponentPredicate;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.core.registries.codec.RegistryCodecs;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -313,7 +313,7 @@ public class NeoForgeMod {
      * Stock structure modifier for adding mob spawns to structures.
      */
     public static final DeferredHolder<MapCodec<? extends StructureModifier>, MapCodec<StructureModifiers.AddSpawnsStructureModifier>> ADD_SPAWNS_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("add_spawns", () -> RecordCodecBuilder.mapCodec(builder -> builder.group(
-            RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(StructureModifiers.AddSpawnsStructureModifier::structures),
+            RegistryCodecs.holderSet(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(StructureModifiers.AddSpawnsStructureModifier::structures),
             // Allow either a list or single spawner, attempting to decode the list format first.
             // Uses the better EitherCodec that logs both errors if both formats fail to parse.
             Codec.either(WeightedList.codec(SpawnerData.CODEC), Weighted.codec(SpawnerData.CODEC)).xmap(
@@ -325,14 +325,14 @@ public class NeoForgeMod {
      * Stock structure modifier for removing mob spawns from structures.
      */
     public static final DeferredHolder<MapCodec<? extends StructureModifier>, MapCodec<StructureModifiers.RemoveSpawnsStructureModifier>> REMOVE_SPAWNS_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("remove_spawns", () -> RecordCodecBuilder.mapCodec(builder -> builder.group(
-            RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(StructureModifiers.RemoveSpawnsStructureModifier::structures),
-            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(StructureModifiers.RemoveSpawnsStructureModifier::entityTypes)).apply(builder, StructureModifiers.RemoveSpawnsStructureModifier::new)));
+            RegistryCodecs.holderSet(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(StructureModifiers.RemoveSpawnsStructureModifier::structures),
+            RegistryCodecs.holderSet(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(StructureModifiers.RemoveSpawnsStructureModifier::entityTypes)).apply(builder, StructureModifiers.RemoveSpawnsStructureModifier::new)));
 
     /**
      * Stock structure modifier for removing spawn override lists from structures.
      */
     public static final DeferredHolder<MapCodec<? extends StructureModifier>, MapCodec<StructureModifiers.ClearSpawnsStructureModifier>> CLEAR_SPAWNS_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("clear_spawns", () -> RecordCodecBuilder.mapCodec(builder -> builder.group(
-            RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(StructureModifiers.ClearSpawnsStructureModifier::structures),
+            RegistryCodecs.holderSet(Registries.STRUCTURE, Structure.DIRECT_CODEC).fieldOf("structures").forGetter(StructureModifiers.ClearSpawnsStructureModifier::structures),
             Codec.<List<MobCategory>, MobCategory>either(MobCategory.CODEC.listOf(), MobCategory.CODEC).<Set<MobCategory>>xmap(
                     either -> either.map(Set::copyOf, Set::of), // convert list/singleton to set when decoding
                     set -> set.size() == 1 ? Either.right(set.toArray(MobCategory[]::new)[0]) : Either.left(List.copyOf(set))).optionalFieldOf("categories", EnumSet.allOf(MobCategory.class)).forGetter(StructureModifiers.ClearSpawnsStructureModifier::categories))

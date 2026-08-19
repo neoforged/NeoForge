@@ -12,10 +12,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
@@ -125,15 +128,21 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         }
 
         @Override
-        public void includeRootAdvancement() {
-            // Let's not
-        }
-
-        @Override
         public void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
             Recipe<?> modified = enhance(id, recipe);
             if (modified != null)
                 output.accept(id, modified, null, conditions);
+        }
+
+        @Override
+        public <S> HolderGetter<S> lookup(ResourceKey<? extends Registry<? extends S>> key) {
+            return output.lookup(key);
+        }
+
+        @Override
+        @Deprecated
+        public <S> Stream<Holder.Reference<S>> listContextElements(ResourceKey<? extends Registry<? extends S>> key) {
+            return output.listContextElements(key);
         }
 
         @Nullable

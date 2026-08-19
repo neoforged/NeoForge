@@ -38,7 +38,7 @@ public record RegistryDataMapSyncPayload<T>(ResourceKey<? extends Registry<T>> r
         final ResourceKey<Registry<T>> registryKey = (ResourceKey<Registry<T>>) (Object) buf.readRegistryKey();
         final Map<Identifier, Map<ResourceKey<T>, ?>> attach = buf.readMap(FriendlyByteBuf::readIdentifier, (b1, key) -> {
             final DataMapType<T, ?> dataMap = RegistryManager.getDataMap(registryKey, key);
-            return b1.readMap(bf -> bf.readResourceKey(registryKey), bf -> readJsonWithRegistryCodec((RegistryFriendlyByteBuf) bf, dataMap.networkCodec()));
+            return b1.readMap(bf -> bf.readResourceKey(registryKey), (bf, _) -> readJsonWithRegistryCodec((RegistryFriendlyByteBuf) bf, dataMap.networkCodec()));
         });
         return new RegistryDataMapSyncPayload<>(registryKey, attach);
     }
@@ -48,7 +48,7 @@ public record RegistryDataMapSyncPayload<T>(ResourceKey<? extends Registry<T>> r
         buf.writeMap(dataMaps, FriendlyByteBuf::writeIdentifier, (b1, key, attach) -> {
             final DataMapType<T, ?> dataMap = RegistryManager.getDataMap(registryKey, key);
             // TODO - make datamaps use stream codecs once datapack registries use them too
-            b1.writeMap(attach, FriendlyByteBuf::writeResourceKey, (bf, value) -> writeJsonWithRegistryCodec((RegistryFriendlyByteBuf) bf, (Codec) dataMap.networkCodec(), value));
+            b1.writeMap(attach, FriendlyByteBuf::writeResourceKey, (bf, _, value) -> writeJsonWithRegistryCodec((RegistryFriendlyByteBuf) bf, (Codec) dataMap.networkCodec(), value));
         });
     }
 
