@@ -55,8 +55,7 @@ public class DatagenModLoader extends CommonModLoader {
         Bootstrap.bootStrap();
         begin(() -> {}, true);
         CompletableFuture<HolderLookup.Provider> worldLookupProvider = CompletableFuture.supplyAsync(VanillaRegistries::createWorldLookup, Util.backgroundExecutor());
-        CompletableFuture<HolderLookup.Provider> reloadableLookupProvider = worldLookupProvider.thenApply(VanillaRegistries::createReloadableLookup);
-        dataGeneratorConfig = new GatherDataEvent.DataGeneratorConfig(mods, path, inputs, worldLookupProvider, reloadableLookupProvider, devToolGenerators, reportsGenerator, structureValidator, flat, vanillaGenerator, existingPacks, vanillaClientAssets);
+        dataGeneratorConfig = new GatherDataEvent.DataGeneratorConfig(mods, path, inputs, worldLookupProvider, devToolGenerators, reportsGenerator, structureValidator, flat, vanillaGenerator, existingPacks, vanillaClientAssets);
         setup.run();
 
         // Only fire the event for mods that have their generators enabled
