@@ -110,6 +110,9 @@
   "net/minecraft/data/tags/TagAppender": [
     "net/neoforged/neoforge/common/extensions/ITagAppenderExtension<T>"
   ],
+  "net/minecraft/data/worldgen/BootstrapContext": [
+    "net/neoforged/neoforge/common/extensions/BootstrapContextExtension<T>"
+  ],
   "net/minecraft/network/FriendlyByteBuf": [
     "net/neoforged/neoforge/common/extensions/IFriendlyByteBufExtension"
   ],

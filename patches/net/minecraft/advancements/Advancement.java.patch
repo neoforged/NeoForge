@@ -8,3 +8,17 @@
  
      public Advancement(
          Optional<Identifier> parent,
+@@ -225,8 +_,12 @@
+         }
+ 
+         public AdvancementHolder save(BootstrapContext<Advancement> output, String name) {
++            return this.save(output, name, new net.neoforged.neoforge.common.conditions.ICondition[0]);
++        }
++
++        public AdvancementHolder save(BootstrapContext<Advancement> output, String name, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
+             AdvancementHolder advancement = this.build(Identifier.parse(name));
+-            advancement.register(output);
++            advancement.register(output, conditions);
+             return advancement;
+         }
+     }

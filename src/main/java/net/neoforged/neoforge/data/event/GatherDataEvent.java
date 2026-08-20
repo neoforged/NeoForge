@@ -18,7 +18,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -32,7 +31,6 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
@@ -49,10 +47,8 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
-import org.apache.commons.lang3.function.Consumers;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
@@ -62,7 +58,9 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
     private final ModContainer modContainer;
 
     @Nullable
-    private CompletableFuture<HolderLookup.Provider> registriesWithModdedEntries = null;
+    private CompletableFuture<HolderLookup.Provider> worldRegistriesWithModdedEntries = null;
+    @Nullable
+    private CompletableFuture<HolderLookup.Provider> reloadableRegistriesWithModdedEntries = null;
 
     public GatherDataEvent(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig) {
         this.modContainer = mc;
@@ -89,8 +87,12 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
         return this.dataGenerator;
     }
 
-    public CompletableFuture<HolderLookup.Provider> getLookupProvider() {
-        return Objects.requireNonNullElse(this.registriesWithModdedEntries, this.config.lookupProvider);
+    public CompletableFuture<HolderLookup.Provider> getWorldLookupProvider() {
+        return Objects.requireNonNullElse(this.worldRegistriesWithModdedEntries, this.config.worldLookupProvider);
+    }
+
+    public CompletableFuture<HolderLookup.Provider> getReloadableLookupProvider() {
+        return Objects.requireNonNullElse(this.reloadableRegistriesWithModdedEntries, this.config.reloadableLookupProvider);
     }
 
     public boolean includeDev() {
@@ -122,7 +124,8 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
         private final Set<String> mods;
         private final Path path;
         private final Collection<Path> inputs;
-        private final CompletableFuture<HolderLookup.Provider> lookupProvider;
+        private final CompletableFuture<HolderLookup.Provider> worldLookupProvider;
+        private final CompletableFuture<HolderLookup.Provider> reloadableLookupProvider;
         private final boolean dev;
         private final boolean reports;
         private final boolean validate;
@@ -135,7 +138,8 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
                 final Set<String> mods,
                 final Path path,
                 final Collection<Path> inputs,
-                final CompletableFuture<HolderLookup.Provider> lookupProvider,
+                final CompletableFuture<HolderLookup.Provider> worldLookupProvider,
+                final CompletableFuture<HolderLookup.Provider> reloadableLookupProvider,
                 final boolean dev,
                 final boolean reports,
                 final boolean validate,
@@ -146,7 +150,8 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
             this.mods = mods;
             this.path = path;
             this.inputs = inputs;
-            this.lookupProvider = lookupProvider;
+            this.worldLookupProvider = worldLookupProvider;
+            this.reloadableLookupProvider = reloadableLookupProvider;
             this.dev = dev;
             this.reports = reports;
             this.validate = validate;
@@ -236,38 +241,38 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
     }
 
     public <T extends DataProvider> T createProvider(DataProviderFromOutputLookup<T> builder) {
-        return addProvider(builder.create(dataGenerator.getPackOutput(), this.getLookupProvider()));
+        return addProvider(builder.create(dataGenerator.getPackOutput(), this.getReloadableLookupProvider()));
     }
 
     public void createBlockAndItemTags(DataProviderFromOutputLookup<TagsProvider<Block>> blockTagsProvider, ItemTagsProvider itemTagsProvider) {
         var blockTags = createProvider(blockTagsProvider);
-        addProvider(itemTagsProvider.create(this.getGenerator().getPackOutput(), this.getLookupProvider(), blockTags.contentsGetter()));
+        addProvider(itemTagsProvider.create(this.getGenerator().getPackOutput(), this.getReloadableLookupProvider(), blockTags.contentsGetter()));
     }
 
-    public void createDatapackRegistryObjects(RegistrySetBuilder datapackEntriesBuilder) {
-        this.createDatapackRegistryObjects(datapackEntriesBuilder, Set.of(this.modContainer.getModId()));
+    public void createWorldRegistryObjects(RegistrySetBuilder entriesBuilder) {
+        this.createWorldRegistryObjects(entriesBuilder, Set.of(this.modContainer.getModId()));
     }
 
-    public void createDatapackRegistryObjects(RegistrySetBuilder datapackEntriesBuilder, Set<String> modIds) {
-        this.createDatapackRegistryObjects(datapackEntriesBuilder, Consumers.nop(), modIds);
+    public void createWorldRegistryObjects(RegistrySetBuilder entriesBuilder, Set<String> modIds) {
+        this.createWorldRegistryObjects(entriesBuilder, modIds, "world");
     }
 
-    public void createDatapackRegistryObjects(RegistrySetBuilder datapackEntriesBuilder, Map<ResourceKey<?>, List<ICondition>> conditions) {
-        this.createDatapackRegistryObjects(datapackEntriesBuilder, conditions, Set.of(this.modContainer.getModId()));
+    public void createWorldRegistryObjects(RegistrySetBuilder entriesBuilder, Set<String> modIds, String name) {
+        var registries = this.createProvider((output) -> DatapackBuiltinEntriesProvider.forWorldLayer(output, name, getWorldLookupProvider(), entriesBuilder, modIds));
+        this.worldRegistriesWithModdedEntries = registries.getRegistryProvider();
     }
 
-    public void createDatapackRegistryObjects(RegistrySetBuilder datapackEntriesBuilder, Map<ResourceKey<?>, List<ICondition>> conditions, Set<String> modIds) {
-        var registries = this.createProvider((output, lookupProvider) -> new DatapackBuiltinEntriesProvider(output, lookupProvider, datapackEntriesBuilder, conditions, modIds));
-        this.registriesWithModdedEntries = registries.getRegistryProvider();
+    public void createReloadableRegistryObjects(RegistrySetBuilder entriesBuilder) {
+        this.createReloadableRegistryObjects(entriesBuilder, Set.of(this.modContainer.getModId()));
     }
 
-    public void createDatapackRegistryObjects(RegistrySetBuilder datapackEntriesBuilder, Consumer<BiConsumer<ResourceKey<?>, ICondition>> conditionsBuilder) {
-        this.createDatapackRegistryObjects(datapackEntriesBuilder, conditionsBuilder, Set.of(this.modContainer.getModId()));
+    public void createReloadableRegistryObjects(RegistrySetBuilder entriesBuilder, Set<String> modIds) {
+        this.createReloadableRegistryObjects(entriesBuilder, modIds, "reloadable");
     }
 
-    public void createDatapackRegistryObjects(RegistrySetBuilder datapackEntriesBuilder, Consumer<BiConsumer<ResourceKey<?>, ICondition>> conditionsBuilder, Set<String> modIds) {
-        var registries = this.createProvider((output, lookupProvider) -> new DatapackBuiltinEntriesProvider(output, lookupProvider, datapackEntriesBuilder, conditionsBuilder, modIds));
-        this.registriesWithModdedEntries = registries.getRegistryProvider();
+    public void createReloadableRegistryObjects(RegistrySetBuilder entriesBuilder, Set<String> modIds, String name) {
+        var registries = this.createProvider((output) -> DatapackBuiltinEntriesProvider.forReloadableLayer(output, name, getWorldLookupProvider(), getReloadableLookupProvider(), entriesBuilder, modIds));
+        this.reloadableRegistriesWithModdedEntries = registries.getRegistryProvider();
     }
 
     @FunctionalInterface
