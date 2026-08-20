@@ -8,6 +8,7 @@ package net.neoforged.neoforge.common.loot;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
@@ -46,8 +47,8 @@ public class AddTableLootModifier extends LootModifier {
 
     private final ResourceKey<LootTable> table;
 
-    public AddTableLootModifier(LootItemCondition[] conditions, int priority, ResourceKey<LootTable> table) {
-        super(conditions, priority);
+    public AddTableLootModifier(Holder<LootItemCondition> condition, int priority, ResourceKey<LootTable> table) {
+        super(condition, priority);
         this.table = table;
     }
 
