@@ -29,6 +29,7 @@ import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackLocationInfo;
@@ -59,6 +60,8 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
 
     @Nullable
     private CompletableFuture<HolderLookup.Provider> worldRegistriesWithModdedEntries = null;
+    @Nullable
+    private CompletableFuture<HolderLookup.Provider> reloadableRegistries = null;
     @Nullable
     private CompletableFuture<HolderLookup.Provider> reloadableRegistriesWithModdedEntries = null;
 
@@ -92,7 +95,13 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
     }
 
     public CompletableFuture<HolderLookup.Provider> getReloadableLookupProvider() {
-        return Objects.requireNonNullElse(this.reloadableRegistriesWithModdedEntries, this.config.reloadableLookupProvider);
+        if (this.reloadableRegistriesWithModdedEntries != null) {
+            return this.reloadableRegistriesWithModdedEntries;
+        }
+        if (this.reloadableRegistries == null) {
+            this.reloadableRegistries = getWorldLookupProvider().thenApply(VanillaRegistries::createReloadableLookup);
+        }
+        return this.reloadableRegistries;
     }
 
     public boolean includeDev() {
@@ -125,7 +134,6 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
         private final Path path;
         private final Collection<Path> inputs;
         private final CompletableFuture<HolderLookup.Provider> worldLookupProvider;
-        private final CompletableFuture<HolderLookup.Provider> reloadableLookupProvider;
         private final boolean dev;
         private final boolean reports;
         private final boolean validate;
@@ -139,7 +147,6 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
                 final Path path,
                 final Collection<Path> inputs,
                 final CompletableFuture<HolderLookup.Provider> worldLookupProvider,
-                final CompletableFuture<HolderLookup.Provider> reloadableLookupProvider,
                 final boolean dev,
                 final boolean reports,
                 final boolean validate,
@@ -151,7 +158,6 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
             this.path = path;
             this.inputs = inputs;
             this.worldLookupProvider = worldLookupProvider;
-            this.reloadableLookupProvider = reloadableLookupProvider;
             this.dev = dev;
             this.reports = reports;
             this.validate = validate;
