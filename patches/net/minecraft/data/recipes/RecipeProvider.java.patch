@@ -1,14 +1,50 @@
 --- a/net/minecraft/data/recipes/RecipeProvider.java
 +++ b/net/minecraft/data/recipes/RecipeProvider.java
-@@ -96,7 +_,7 @@
+@@ -96,15 +_,19 @@
          this.advancementOutput = advancementOutput;
          this.output = new RecipeOutput() {
              @Override
 -            public void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancementHolder) {
+-                recipeOutput.register(id, recipe);
 +            public void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancementHolder, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
-                 recipeOutput.register(id, recipe);
++                recipeOutput.register(id, recipe, conditions);
                  if (advancementHolder != null) {
-                     this.acceptAdvancement(advancementHolder);
+-                    this.acceptAdvancement(advancementHolder);
++                    this.acceptAdvancement(advancementHolder, conditions);
+                 }
+             }
+ 
+             private void acceptAdvancement(AdvancementHolder advancementHolder) {
+-                advancementHolder.register(advancementOutput);
++                this.acceptAdvancement(advancementHolder, new net.neoforged.neoforge.common.conditions.ICondition[0]);
++            }
++
++            private void acceptAdvancement(AdvancementHolder advancementHolder, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
++                advancementHolder.register(advancementOutput, conditions);
+             }
+ 
+             @Override
+@@ -127,6 +_,20 @@
+         this.trimPatterns = recipeOutput.lookup(Registries.TRIM_PATTERN);
+     }
+ 
++    public static net.minecraft.core.registries.MultiRegistryBootstrap asBootstrap(java.util.function.BiFunction<BootstrapContext<Recipe<?>>, BootstrapContext<Advancement>, ? extends RecipeProvider> providerFactory) {
++        return new net.minecraft.core.registries.MultiRegistryBootstrap() {
++            @Override
++            public java.util.Set<ResourceKey<? extends Registry<?>>> requestedRegistries() {
++                return java.util.Set.of(Registries.RECIPE, Registries.ADVANCEMENT);
++            }
++
++            @Override
++            public void run(net.minecraft.core.registries.MultiRegistryBootstrap.BootstrapGetter registries) {
++                providerFactory.apply(registries.get(Registries.RECIPE), registries.get(Registries.ADVANCEMENT)).buildRecipes();
++            }
++        };
++    }
++
+     protected abstract void buildRecipes();
+ 
+     protected void generateForEnabledBlockFamilies(FeatureFlagSet flagSet) {
 @@ -649,8 +_,7 @@
      }
  

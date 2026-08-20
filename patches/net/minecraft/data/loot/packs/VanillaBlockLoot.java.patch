@@ -1,0 +1,15 @@
+--- a/net/minecraft/data/loot/packs/VanillaBlockLoot.java
++++ b/net/minecraft/data/loot/packs/VanillaBlockLoot.java
+@@ -1452,4 +_,12 @@
+                 )
+             );
+     }
++
++    @Override
++    public Iterable<Block> getKnownBlocks() {
++        return net.minecraft.core.registries.BuiltInRegistries.BLOCK.listElements()
++                .filter(b -> b.key().identifier().getNamespace().equals("minecraft"))
++                .map(net.minecraft.core.Holder::value)
++                .toList();
++    }
+ }

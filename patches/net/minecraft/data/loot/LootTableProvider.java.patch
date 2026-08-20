@@ -1,0 +1,11 @@
+--- a/net/minecraft/data/loot/LootTableProvider.java
++++ b/net/minecraft/data/loot/LootTableProvider.java
+@@ -43,7 +_,7 @@
+                 }
+ 
+                 LootTable table = lootTable.setRandomSequence(sequenceId).setParamSet(subProvider.paramSet).build();
+-                return context.register(key, table);
++                return context.register(key, table, lootTable.buildConditions().toArray(net.neoforged.neoforge.common.conditions.ICondition[]::new));
+             }
+ 
+             @Override

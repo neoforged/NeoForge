@@ -1,26 +1,6 @@
 --- a/net/minecraft/data/loot/LootTableProvider.java
 +++ b/net/minecraft/data/loot/LootTableProvider.java
-@@ -59,7 +59,8 @@
-     private CompletableFuture<?> run(CachedOutput cache, HolderLookup.Provider registries) {
-         WritableRegistry<LootTable> tables = new MappedRegistry<>(Registries.LOOT_TABLE, Lifecycle.experimental());
-         Map<RandomSupport.Seed128bit, Identifier> randomSequenceSeeds = new Object2ObjectOpenHashMap<>();
--        this.subProviders.forEach(subProvider -> subProvider.provider().apply(registries).generate((id, lootTable) -> {
-+        Map<LootTable, List<net.neoforged.neoforge.common.conditions.ICondition>> conditionsPerTable = new java.util.IdentityHashMap<>();
-+        getTables().forEach(subProvider -> subProvider.provider().apply(registries).generate((id, lootTable) -> {
-             Identifier sequenceId = sequenceIdForLootTable(id);
-             Identifier previous = randomSequenceSeeds.put(RandomSequence.seedForKey(sequenceId), sequenceId);
-             if (previous != null) {
 @@ -69,17 +70,18 @@
-             lootTable.setRandomSequence(sequenceId);
-             LootTable table = lootTable.setParamSet(subProvider.paramSet).build();
-             tables.register(id, table, RegistrationInfo.BUILT_IN);
-+            var conditions = lootTable.buildConditions();
-+            if (!conditions.isEmpty()) {
-+                conditionsPerTable.put(table, conditions);
-+            }
-         }));
-         tables.freeze();
-         ProblemReporter.Collector problems = new ProblemReporter.Collector();
          HolderGetter.Provider validationProvider = new RegistryAccess.ImmutableRegistryAccess(List.of(tables)).freeze();
          ValidationContextSource validationContext = new ValidationContextSource(problems, validationProvider);
  

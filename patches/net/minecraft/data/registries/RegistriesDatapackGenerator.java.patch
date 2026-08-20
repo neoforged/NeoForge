@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/registries/RegistriesDatapackGenerator.java
 +++ b/net/minecraft/data/registries/RegistriesDatapackGenerator.java
-@@ -16,19 +_,36 @@
+@@ -16,23 +_,37 @@
  import net.minecraft.resources.RegistryDataLoader;
  import net.minecraft.resources.ResourceKey;
  
@@ -12,36 +12,61 @@
      private final Collection<RegistryDataLoader.RegistryData<?>> registryData;
      private final CompletableFuture<HolderLookup.Provider> registries;
 +    private final java.util.function.Predicate<String> namespacePredicate;
-+    private final java.util.Map<ResourceKey<?>, java.util.List<net.neoforged.neoforge.common.conditions.ICondition>> conditions;
++    private final CompletableFuture<net.neoforged.neoforge.common.data.RegistriesWithConditions> registriesWithConditions;
  
++    /// @deprecated Neo: use [#RegistriesDatapackGenerator(PackOutput, String, Collection, CompletableFuture, java.util.Set)] instead
 +    @Deprecated
      public RegistriesDatapackGenerator(
          PackOutput output, String name, Collection<RegistryDataLoader.RegistryData<?>> registryData, CompletableFuture<HolderLookup.Provider> registryContents
      ) {
-+        this(output, name, registryData, registryContents, null, java.util.Map.of());
++        this(output, name, registryData, registryContents.thenApply(net.neoforged.neoforge.common.data.RegistriesWithConditions::new), null);
 +    }
++
 +    public RegistriesDatapackGenerator(
-+        PackOutput output, String name, Collection<RegistryDataLoader.RegistryData<?>> registryData, CompletableFuture<HolderLookup.Provider> registryContents, java.util.@org.jspecify.annotations.Nullable Set<String> modIds
-+    ) {
-+        this(output, name, registryData, registryContents, modIds, java.util.Map.of());
-+    }
-+    public RegistriesDatapackGenerator(
-+        PackOutput output, String name, Collection<RegistryDataLoader.RegistryData<?>> registryData, CompletableFuture<HolderLookup.Provider> registryContents, java.util.@org.jspecify.annotations.Nullable Set<String> modIds, java.util.Map<ResourceKey<?>, java.util.List<net.neoforged.neoforge.common.conditions.ICondition>> conditions
++        PackOutput output, String name, Collection<RegistryDataLoader.RegistryData<?>> registryData, CompletableFuture<net.neoforged.neoforge.common.data.RegistriesWithConditions> registryContents, java.util.@org.jspecify.annotations.Nullable Set<String> modIds
 +    ) {
          this.name = name;
          this.registryData = registryData;
-         this.registries = registryContents;
+-        this.registries = registryContents;
++        this.registries = registryContents.thenApply(net.neoforged.neoforge.common.data.RegistriesWithConditions::registries);
          this.output = output;
 +        this.namespacePredicate = modIds == null ? _ -> true : modIds::contains;
-+        this.conditions = conditions;
++        this.registriesWithConditions = registryContents;
      }
  
      public static RegistriesDatapackGenerator forWorldLayer(PackOutput output, CompletableFuture<HolderLookup.Provider> registryContents) {
-@@ -59,20 +_,22 @@
+-        return new RegistriesDatapackGenerator(output, "world", RegistryDataLoader.WORLD_REGISTRIES, registryContents);
++        return new RegistriesDatapackGenerator(output, "world", net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistries(), registryContents);
+     }
+ 
+     public static DataProvider forReloadableLayer(PackOutput output, CompletableFuture<HolderLookup.Provider> registryContents) {
+@@ -41,7 +_,7 @@
+ 
+     @Override
+     public CompletableFuture<?> run(CachedOutput cache) {
+-        return this.registries
++        return this.registriesWithConditions
+             .thenCompose(
+                 access -> {
+                     DynamicOps<JsonElement> registryOps = access.createSerializationContext(JsonOps.INSTANCE);
+@@ -55,24 +_,35 @@
+             );
+     }
+ 
++    /// @deprecated Neo: use [#dumpRegistryCap(CachedOutput, net.neoforged.neoforge.common.data.RegistriesWithConditions, DynamicOps, RegistryDataLoader.RegistryData)] instead
++    @Deprecated
+     private <T> Optional<CompletableFuture<?>> dumpRegistryCap(
          CachedOutput cache, HolderLookup.Provider registries, DynamicOps<JsonElement> writeOps, RegistryDataLoader.RegistryData<T> v
      ) {
++        return this.dumpRegistryCap(cache, new net.neoforged.neoforge.common.data.RegistriesWithConditions(registries), writeOps, v);
++    }
++
++    private <T> Optional<CompletableFuture<?>> dumpRegistryCap(
++        CachedOutput cache, net.neoforged.neoforge.common.data.RegistriesWithConditions registries, DynamicOps<JsonElement> writeOps, RegistryDataLoader.RegistryData<T> v
++    ) {
          ResourceKey<? extends Registry<T>> registryKey = v.key();
 +        var conditionalCodec = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodecWithConditions(v.elementCodec());
++        var conditions = registries.conditionsByRegistry().getOrDefault(registryKey, java.util.Map.of());
          return registries.lookup(registryKey)
              .map(
                  registry -> {

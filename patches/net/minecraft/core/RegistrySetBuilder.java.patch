@@ -11,15 +11,97 @@
      private static HolderLookup.Provider buildProviderWithContext(HolderLookup.Provider context, Stream<? extends HolderLookup.RegistryLookup<?>> newRegistries) {
          Map<ResourceKey<? extends Registry<?>>, HolderLookup.RegistryLookup<?>> lookups = new HashMap<>();
          context.listRegistries()
-@@ -154,6 +_,11 @@
+@@ -82,6 +_,10 @@
+             newRegistry.freeze();
+             newRegistry.errorOnMissingHolders(state);
+             bootstrappedRegistries.add(newRegistry.registry());
++
++            if (!newRegistry.conditions.isEmpty()) {
++                state.errors.add(new IllegalStateException("Registry " + newRegistry.registry.key() + " in non-patch registry set cannot contain conditions"));
++            }
+         }
+ 
+         state.throwOnError();
+@@ -104,12 +_,17 @@
+             .toList();
+         RegistrySetBuilder.BuildState state = RegistrySetBuilder.BuildState.createAndApply(context, expandedEntries);
+         List<HolderLookup.RegistryLookup<?>> bootstrappedRegistries = new ArrayList<>(state.bootstrappedRegistries.size());
++        Map<ResourceKey<? extends Registry<?>>, Map<ResourceKey<?>, List<net.neoforged.neoforge.common.conditions.ICondition>>> conditionsByRegistry = new HashMap<>();
+ 
+         for (RegistrySetBuilder.BootstrappedRegistryState<?> newRegistry : state.bootstrappedRegistries.values()) {
+             newRegistry.bindHolders();
+             newRegistry.validatePatchHolders(state, fallbackProvider);
+             newRegistry.freeze();
+             bootstrappedRegistries.add(newRegistry.registry());
++
++            if (!newRegistry.conditions.isEmpty()) {
++                conditionsByRegistry.put(newRegistry.registry.key(), Map.copyOf(newRegistry.conditions));
++            }
+         }
+ 
+         HolderLookup.Provider patchOnlyRegistries = buildProviderWithContext(context, bootstrappedRegistries.stream());
+@@ -117,7 +_,7 @@
+         HolderLookup.Provider fullPatchedRegistries = EmptyTagLookupWrapper.wrap(
+             PatchedRegistry.applyPatches(context, fallbackProvider, patchOnlyRegistries, clonerFactory, state.bootstrappedRegistries.keySet())
+         );
+-        return new RegistrySetBuilder.PatchedRegistries(fullPatchedRegistries, patchOnlyRegistries);
++        return new RegistrySetBuilder.PatchedRegistries(fullPatchedRegistries, patchOnlyRegistries, Map.copyOf(conditionsByRegistry));
+     }
+ 
+     private static <T> ResourceKey<? extends Registry<T>> eyerollCast(ResourceKey<? extends Registry<? extends T>> registryKey) {
+@@ -128,7 +_,11 @@
+         return entries.flatMap(RegistrySetBuilder.RegistryStub::requiredRegistries).distinct();
+     }
+ 
+-    private record BootstrappedRegistryState<T>(BootstrapRegistry<T> registry, Map<ResourceKey<T>, T> registeredValues) {
++    private record BootstrappedRegistryState<T>(BootstrapRegistry<T> registry, Map<ResourceKey<T>, T> registeredValues, Map<ResourceKey<?>, List<net.neoforged.neoforge.common.conditions.ICondition>> conditions) {
++        public BootstrappedRegistryState(BootstrapRegistry<T> registry, Map<ResourceKey<T>, T> registeredValues) {
++            this(registry, registeredValues, new HashMap<>());
++        }
++
+         public static <T> RegistrySetBuilder.BootstrappedRegistryState<T> create(ResourceKey<? extends Registry<T>> key, Lifecycle lifecycle) {
+             BootstrapRegistry<T> newRegistry = new BootstrapRegistry<>(key, lifecycle);
+             return new RegistrySetBuilder.BootstrappedRegistryState<>(newRegistry, new HashMap<>());
+@@ -137,6 +_,14 @@
+         public BootstrapContext<T> createBootstrapContext(RegistrySetBuilder.BuildState state) {
+             return new BootstrapContext<T>() {
                  @Override
++                public Holder.Reference<T> register(ResourceKey<T> key, T value, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
++                    if (conditions.length > 0) {
++                        BootstrappedRegistryState.this.conditions.put(key, List.of(conditions));
++                    }
++                    return this.register(key, value);
++                }
++
++                @Override
+                 public Holder.Reference<T> register(ResourceKey<T> key, T value) {
+                     T previousValue = BootstrappedRegistryState.this.registeredValues.put(key, value);
+                     if (previousValue != null) {
+@@ -155,6 +_,11 @@
                  public <S> Stream<Holder.Reference<S>> listContextElements(ResourceKey<? extends Registry<? extends S>> key) {
                      return state.contextRegistries.lookupOrThrow(key).listElements();
-+                }
+                 }
 +
 +                @Override
 +                public <S> java.util.Optional<HolderLookup<S>> holderLookup(ResourceKey<? extends Registry<? extends S>> registry) {
 +                    return state.contextRegistries.lookup(registry).map(lookup -> (HolderLookup<S>) lookup);
-                 }
++                }
              };
          }
+ 
+@@ -250,7 +_,14 @@
+         }
+     }
+ 
+-    public record PatchedRegistries(HolderLookup.Provider full, HolderLookup.Provider patches) {
++    public record PatchedRegistries(HolderLookup.Provider full, HolderLookup.Provider patches, Map<ResourceKey<? extends Registry<?>>, Map<ResourceKey<?>, List<net.neoforged.neoforge.common.conditions.ICondition>>> conditionsByRegistry) {
++        public PatchedRegistries(HolderLookup.Provider full, HolderLookup.Provider patches) {
++            this(full, patches, Map.of());
++        }
++
++        public net.neoforged.neoforge.common.data.RegistriesWithConditions patchesWithConditions() {
++            return new net.neoforged.neoforge.common.data.RegistriesWithConditions(patches, conditionsByRegistry);
++        }
+     }
+ 
+     private interface RegistryStub {
