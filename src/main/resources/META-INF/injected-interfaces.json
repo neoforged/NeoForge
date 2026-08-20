@@ -98,8 +98,8 @@
   "net/minecraft/core/component/DataComponentMap$Builder": [
     "net/neoforged/neoforge/common/extensions/IDataComponentMapBuilderExtensions"
   ],
-  "net/minecraft/data/loot/LootTableSubProvider": [
-    "net/neoforged/neoforge/common/extensions/LootTableSubProviderExtension"
+  "net/minecraft/data/loot/LootTableSubProvider$Context": [
+    "net/neoforged/neoforge/common/extensions/LootTableSubProviderContextExtension"
   ],
   "net/minecraft/data/recipes/RecipeOutput": [
     "net/neoforged/neoforge/common/extensions/IRecipeOutputExtension"
