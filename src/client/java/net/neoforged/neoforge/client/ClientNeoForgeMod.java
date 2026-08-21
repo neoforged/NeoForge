@@ -17,6 +17,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.metadata.PackMetadataGenerator;
+import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
@@ -174,7 +175,8 @@ public class ClientNeoForgeMod {
 
         event.createReloadableRegistryObjects(
                 new RegistrySetBuilder()
-                        .add(Registries.ADVANCEMENT, new NeoForgeAdvancementProvider()),
+                        .add(Registries.ADVANCEMENT, new NeoForgeAdvancementProvider())
+                        .add(RecipeProvider.asBootstrap(NeoForgeRecipeProvider::new)),
                 Set.of("minecraft"));
 
         event.createBlockAndItemTags(NeoForgeBlockTagsProvider::new, NeoForgeItemTagsProvider::new);
