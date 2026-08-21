@@ -113,6 +113,9 @@
   "net/minecraft/data/worldgen/BootstrapContext": [
     "net/neoforged/neoforge/common/extensions/BootstrapContextExtension<T>"
   ],
+  "net/minecraft/data/worldgen/BootstrapContextAccess": [
+    "net/neoforged/neoforge/common/extensions/BootstrapContextAccessExtension"
+  ],
   "net/minecraft/network/FriendlyByteBuf": [
     "net/neoforged/neoforge/common/extensions/IFriendlyByteBufExtension"
   ],
