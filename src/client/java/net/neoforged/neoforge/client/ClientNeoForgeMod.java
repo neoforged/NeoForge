@@ -79,7 +79,7 @@ import net.neoforged.neoforge.common.data.internal.NeoForgeEntityTypeTagsProvide
 import net.neoforged.neoforge.common.data.internal.NeoForgeFluidTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeItemTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeLanguageProvider;
-import net.neoforged.neoforge.common.data.internal.NeoForgeLootTableProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeLootDataProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgePotionTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeRecipeProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeRegistryOrderReportProvider;
@@ -176,7 +176,8 @@ public class ClientNeoForgeMod {
         event.createReloadableRegistryObjects(
                 new RegistrySetBuilder()
                         .add(Registries.ADVANCEMENT, new NeoForgeAdvancementProvider())
-                        .add(RecipeProvider.asBootstrap(NeoForgeRecipeProvider::new)),
+                        .add(RecipeProvider.asBootstrap(NeoForgeRecipeProvider::new))
+                        .add(Registries.PREDICATE, NeoForgeLootDataProvider::overrideLootPredicates),
                 Set.of("minecraft"));
 
         event.createBlockAndItemTags(NeoForgeBlockTagsProvider::new, NeoForgeItemTagsProvider::new);
@@ -184,8 +185,6 @@ public class ClientNeoForgeMod {
         event.createProvider(NeoForgeFluidTagsProvider::new);
         event.createProvider(NeoForgeEnchantmentTagsProvider::new);
         event.createProvider(NeoForgePotionTagsProvider::new);
-        event.createProvider(NeoForgeRecipeProvider.Runner::new);
-        event.createProvider(NeoForgeLootTableProvider::new);
         event.createProvider(NeoForgeBiomeTagsProvider::new);
         event.createProvider(NeoForgeStructureTagsProvider::new);
         event.createProvider(NeoForgeDamageTypeTagsProvider::new);
