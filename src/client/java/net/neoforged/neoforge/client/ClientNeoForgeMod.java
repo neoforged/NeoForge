@@ -6,13 +6,16 @@
 package net.neoforged.neoforge.client;
 
 import com.mojang.brigadier.Command;
+import java.util.Set;
 import net.minecraft.DetectedVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -169,7 +172,11 @@ public class ClientNeoForgeMod {
                         Component.translatable("pack.neoforge.description"),
                         new InclusiveRange<>(DetectedVersion.BUILT_IN.packVersion(PackType.SERVER_DATA)))));
 
-        event.createProvider(NeoForgeAdvancementProvider::new);
+        event.createReloadableRegistryObjects(
+                new RegistrySetBuilder()
+                        .add(Registries.ADVANCEMENT, new NeoForgeAdvancementProvider()),
+                Set.of("minecraft"));
+
         event.createBlockAndItemTags(NeoForgeBlockTagsProvider::new, NeoForgeItemTagsProvider::new);
         event.createProvider(NeoForgeEntityTypeTagsProvider::new);
         event.createProvider(NeoForgeFluidTagsProvider::new);

@@ -3,67 +3,65 @@
   "criteria": {
     "distract_piglin": {
       "conditions": {
-        "entity": [
-          {
-            "condition": "minecraft:entity_properties",
-            "entity": "this",
-            "predicate": {
-              "minecraft:entity_type": "minecraft:piglin",
-              "minecraft:flags": {
-                "is_baby": false
-              }
+        "entity": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:entity_type": "minecraft:piglin",
+            "minecraft:flags": {
+              "is_baby": false
             }
           }
-        ],
+        },
         "item": {
           "items": "#minecraft:piglin_loved"
         },
-        "player": [
-          {
-            "condition": "minecraft:inverted",
-            "term": {
-              "condition": "minecraft:entity_properties",
+        "player": {
+          "type": "minecraft:inverted",
+          "term": {
+            "type": "minecraft:any_of",
+            "terms": {
+              "type": "minecraft:entity_properties",
               "entity": "this",
               "predicate": {
                 "neoforge:piglin_neutral_armor": {}
               }
             }
           }
-        ]
+        }
       },
       "trigger": "minecraft:thrown_item_picked_up_by_entity"
     },
     "distract_piglin_directly": {
       "conditions": {
-        "entity": [
-          {
-            "condition": "minecraft:entity_properties",
-            "entity": "this",
-            "predicate": {
-              "minecraft:entity_type": "minecraft:piglin",
-              "minecraft:flags": {
-                "is_baby": false
-              }
+        "entity": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:entity_type": "minecraft:piglin",
+            "minecraft:flags": {
+              "is_baby": false
             }
           }
-        ],
+        },
         "item": {
           "predicates": {
             "neoforge:piglin_currency": {}
           }
         },
-        "player": [
-          {
-            "condition": "minecraft:inverted",
-            "term": {
-              "condition": "minecraft:entity_properties",
+        "player": {
+          "type": "minecraft:inverted",
+          "term": {
+            "type": "minecraft:any_of",
+            "terms": {
+              "type": "minecraft:entity_properties",
               "entity": "this",
               "predicate": {
                 "neoforge:piglin_neutral_armor": {}
               }
             }
           }
-        ]
+        }
       },
       "trigger": "minecraft:player_interacted_with_entity"
     }
