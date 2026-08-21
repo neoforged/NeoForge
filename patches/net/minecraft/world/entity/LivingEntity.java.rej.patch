@@ -1,0 +1,12 @@
+--- /dev/null
++++ b/net/minecraft/world/entity/LivingEntity.java.rej
+@@ -1,0 +_,9 @@
++diff a/projects/neoforge/src/main/java/net/minecraft/world/entity/LivingEntity.java b/projects/neoforge/src/main/java/net/minecraft/world/entity/LivingEntity.java	(rejected hunks)
++@@ -377,7 +377,6 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
++     @Override
++     protected void checkFallDamage(double ya, boolean onGround, BlockState onState, BlockPos pos) {
++         if (!this.isInWater()) {
++-            // TODO: prior to 26.1-snapshot-8 we called our patched in method 'this.updateInWaterStateAndDoWaterCurrentPushing(false)'
++             this.updateFluidInteraction();
++         }
++ 
