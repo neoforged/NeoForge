@@ -9,6 +9,7 @@ import com.mojang.datafixers.Products;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.util.Optional;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.feature.trunkplacers.BendingTrunkPlacer;
@@ -18,7 +19,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 /// A base implementation of a Global Loot Modifier for modders to extend.
 /// Takes care of [LootItemCondition] matching and comes with the base codec to extend.
 public abstract class LootModifier implements IGlobalLootModifier {
-    protected final Holder<LootItemCondition> condition;
+    protected final Optional<Holder<LootItemCondition>> condition;
     protected final int priority;
 
     /**
@@ -31,23 +32,23 @@ public abstract class LootModifier implements IGlobalLootModifier {
      * Otherwise can follow this with #and() to add more fields.
      * Examples: Forge Test Subclasses or {@link BendingTrunkPlacer#CODEC}
      */
-    protected static <T extends LootModifier> Products.P2<RecordCodecBuilder.Mu<T>, Holder<LootItemCondition>, Integer> codecStart(RecordCodecBuilder.Instance<T> instance) {
+    protected static <T extends LootModifier> Products.P2<RecordCodecBuilder.Mu<T>, Optional<Holder<LootItemCondition>>, Integer> codecStart(RecordCodecBuilder.Instance<T> instance) {
         return instance.group(
-                LootItemCondition.CODEC.fieldOf("condition").forGetter(lm -> lm.condition),
+                LootItemCondition.CODEC.optionalFieldOf("condition").forGetter(lm -> lm.condition),
                 Codec.INT.optionalFieldOf("priority", IGlobalLootModifier.DEFAULT_PRIORITY).forGetter(lm -> lm.priority));
     }
 
     /// Constructs a LootModifier.
     ///
     /// @param condition the LootItemCondition that needs to be matched before the loot is modified.
-    protected LootModifier(Holder<LootItemCondition> condition, int priority) {
+    protected LootModifier(Optional<Holder<LootItemCondition>> condition, int priority) {
         this.condition = condition;
         this.priority = priority;
     }
 
     @Override
     public final ObjectArrayList<ItemStack> apply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-        return this.condition.value().test(context) ? this.doApply(generatedLoot, context) : generatedLoot;
+        return (this.condition.isEmpty() || this.condition.get().value().test(context)) ? this.doApply(generatedLoot, context) : generatedLoot;
     }
 
     @Override
