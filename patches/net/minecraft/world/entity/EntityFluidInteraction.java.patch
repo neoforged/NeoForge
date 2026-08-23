@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/EntityFluidInteraction.java
 +++ b/net/minecraft/world/entity/EntityFluidInteraction.java
-@@ -21,16 +_,17 @@
+@@ -21,16 +_,23 @@
  import org.jspecify.annotations.Nullable;
  
  public class EntityFluidInteraction {
@@ -15,22 +15,29 @@
          }
      }
  
++    /// @deprecated Neo: use [#update(Entity, java.util.function.Predicate)] instead
++    @Deprecated
      public void update(Entity entity, boolean ignoreCurrent) {
 -        this.trackerByFluid.values().forEach(EntityFluidInteraction.Tracker::reset);
++        update(entity, _ -> !ignoreCurrent);
++    }
++
++    public void update(Entity entity, java.util.function.Predicate<net.neoforged.neoforge.fluids.FluidType> typePushPredicate) {
 +        this.trackerByFluid.values().removeIf(EntityFluidInteraction.Tracker::resetAndCheckUnused);
          AABB box = entity.getFluidInteractionBox();
          if (box != null) {
              int x0 = Mth.floor(box.minX);
-@@ -44,7 +_,7 @@
+@@ -44,7 +_,8 @@
                  int eyeBlockX = entity.getBlockX();
                  double eyeY = entity.getEyeY();
                  int eyeBlockZ = entity.getBlockZ();
 -                Fluid lastFluidType = null;
 +                net.neoforged.neoforge.fluids.FluidType lastFluidType = null;
++                boolean ignoreCurrent = false;
                  EntityFluidInteraction.Tracker tracker = null;
                  BlockGetter level = entity.level();
                  BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
-@@ -58,13 +_,15 @@
+@@ -58,13 +_,16 @@
                                  double fluidBottom = mutablePos.getY();
                                  double fluidTop = fluidBottom + fluidState.getHeight(level, mutablePos);
                                  if (!(fluidTop < box.minY)) {
@@ -39,6 +46,7 @@
                                      if (fluidType != lastFluidType) {
                                          lastFluidType = fluidType;
                                          tracker = this.getTrackerFor(fluidType);
++                                        ignoreCurrent = !typePushPredicate.test(fluidType);
                                      }
  
                                      if (tracker != null) {
@@ -86,7 +94,7 @@
  
 +    public void applyCurrentTo(Entity entity) {
 +        for (var entry : this.trackerByFluid.entrySet()) {
-+            if (entry.getValue().height > 0D) {
++            if (entry.getValue().height > 0D && entity.isPushedByFluid(entry.getKey())) {
 +                entry.getValue().applyCurrentTo(entity, entity.getFluidMotionScale(entry.getKey()));
 +            }
 +        }
