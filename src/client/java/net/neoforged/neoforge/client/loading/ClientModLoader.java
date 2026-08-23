@@ -22,7 +22,6 @@ import net.neoforged.fml.ModLoadingException;
 import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.ModWorkManager;
 import net.neoforged.fml.VersionChecker;
-import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.loading.EarlyLoadingScreenController;
 import net.neoforged.fml.startup.FatalErrorReporting;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
@@ -74,8 +73,8 @@ public class ClientModLoader extends CommonModLoader {
             Minecraft.saveReport(gameDir, report);
             reportFatalError(e, gameDir.toPath(), report);
         }
-        if (earlyLoadingScreen instanceof DisplayWindow displayWindow) {
-            displayWindow.close();
+        if (earlyLoadingScreen != null) {
+            earlyLoadingScreen.close();
         }
     }
 
