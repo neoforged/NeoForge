@@ -1014,9 +1014,11 @@ public class EntityFluidInteractionTests {
                 .fill(0, 1, 4, 6, 1, 4, Blocks.STONE));
 
         test.onGameTest(TestHelper.class, helper -> {
-            final BlockPos pushablePos = new BlockPos(2, 1, 1);
-            final BlockPos centerPos = new BlockPos(2, 1, 2);
-            final BlockPos nonPushablePos = new BlockPos(2, 1, 3);
+            final BlockPos pushablePos = new BlockPos(1, 1, 1);
+            final BlockPos centerPos = new BlockPos(1, 1, 2);
+            final BlockPos nonPushablePos = new BlockPos(1, 1, 3);
+            final BlockPos pushableEntityPos = pushablePos.east();
+            final BlockPos nonPushableEntityPos = nonPushablePos.east();
 
             final AtomicReference<Zombie> pushableEntity = new AtomicReference<>();
             final AtomicReference<Pig> nonPushableEntity = new AtomicReference<>();
@@ -1028,12 +1030,12 @@ public class EntityFluidInteractionTests {
                         helper.setBlock(nonPushablePos, STEAM.blockState());
                     })
                     .thenExecuteAfter(20, () -> {
-                        pushableEntity.set(helper.spawnZombieWithNoFreeWill(pushablePos));
-                        nonPushableEntity.set(helper.spawnWithNoFreeWill(EntityTypes.PIG, nonPushablePos));
+                        pushableEntity.set(helper.spawnZombieWithNoFreeWill(pushableEntityPos));
+                        nonPushableEntity.set(helper.spawnWithNoFreeWill(EntityTypes.PIG, nonPushableEntityPos));
                     })
                     .thenExecuteAfter(40, () -> {
-                        helper.assertEntityPosition(pushableEntity.get(), pushablePos, (p1, p2) -> !p1.equals(p2), "Expected Zombie to be pushed by Steam");
-                        helper.assertEntityPosition(nonPushableEntity.get(), nonPushablePos, BlockPos::equals, "Expected Pig to not be pushed by Steam");
+                        helper.assertEntityPosition(pushableEntity.get(), pushableEntityPos, (p1, p2) -> !p1.equals(p2), "Expected Zombie to be pushed by Steam");
+                        helper.assertEntityPosition(nonPushableEntity.get(), nonPushableEntityPos, BlockPos::equals, "Expected Pig to not be pushed by Steam");
                     })
                     .thenSucceed();
         });
