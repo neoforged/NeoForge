@@ -16,7 +16,7 @@
          }
      }
  
-@@ -1018,9 +_,21 @@
+@@ -1018,9 +_,34 @@
      }
  
      public void setTooltipForNextFrame(Font font, ItemStack itemStack, int xo, int yo) {
@@ -27,13 +27,26 @@
 +        this.tooltipStack = ItemStack.EMPTY;
 +    }
 +
-+    public void setTooltipForNextFrame(Font font, List<Component> textComponents, Optional<TooltipComponent> tooltipComponent, ItemStack stack, int mouseX, int mouseY) {
-+        setTooltipForNextFrame(font, textComponents, tooltipComponent, stack, mouseX, mouseY, null);
++    public void setTooltipForNextFrame(Font font, List<Component> texts, Optional<TooltipComponent> optionalImage, ItemStack stack, int mouseX, int mouseY) {
++        setTooltipForNextFrame(font, texts, optionalImage, stack, mouseX, mouseY, null);
 +    }
 +
-+    public void setTooltipForNextFrame(Font font, List<Component> textComponents, Optional<TooltipComponent> tooltipComponent, ItemStack stack, int mouseX, int mouseY, @Nullable Identifier backgroundTexture) {
++    public void setTooltipForNextFrame(Font font, List<Component> texts, Optional<TooltipComponent> optionalImage, ItemStack stack, int mouseX, int mouseY, @Nullable Identifier style) {
++        this.setTooltipForNextFrame(font, texts, optionalImage, stack, mouseX, mouseY, style, false);
++    }
++
++    public void setTooltipForNextFrame(
++        Font font,
++        List<Component> texts,
++        Optional<TooltipComponent> optionalImage,
++        ItemStack stack,
++        int mouseX,
++        int mouseY,
++        @Nullable Identifier style,
++        boolean extraSpaceAfterFirstLine
++    ) {
 +        this.tooltipStack = stack;
-+        this.setTooltipForNextFrame(font, textComponents, tooltipComponent, mouseX, mouseY, backgroundTexture);
++        this.setTooltipForNextFrame(font, texts, optionalImage, mouseX, mouseY, style, extraSpaceAfterFirstLine);
 +        this.tooltipStack = ItemStack.EMPTY;
      }
  

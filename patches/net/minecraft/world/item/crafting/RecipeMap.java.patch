@@ -9,7 +9,7 @@
      private final Map<ResourceKey<Recipe<?>>, RecipeHolder<?>> byKey;
  
      private RecipeMap(Multimap<RecipeType<?>, RecipeHolder<?>> byType, Map<ResourceKey<Recipe<?>>, RecipeHolder<?>> byKey) {
-@@ -31,6 +_,22 @@
+@@ -31,6 +_,25 @@
              byKey.put(recipe.key(), legacyRecipeHolder);
          });
          return new RecipeMap(byType.build(), byKey.build());
@@ -19,15 +19,18 @@
 +    public void order(it.unimi.dsi.fastutil.objects.Object2IntMap<ResourceKey<net.minecraft.world.item.crafting.Recipe<?>>> recipePriorities) {
 +        it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap<java.util.List<RecipeHolder<?>>> priorityBuilder = new it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap<>();
 +        com.google.common.collect.LinkedListMultimap<RecipeType<?>, RecipeHolder<?>> finalBuilder = com.google.common.collect.LinkedListMultimap.create();
++
 +        for (RecipeHolder<?> recipeholder : this.byKey.values()) {
 +            int priority = recipePriorities.getOrDefault(recipeholder.id(), 0);
 +            priorityBuilder.computeIfAbsent(priority, p -> new java.util.ArrayList<>()).add(recipeholder);
 +        }
++
 +        for (var list : priorityBuilder.reversed().values()) {
 +            for (RecipeHolder<?> recipeHolder : list) {
 +                finalBuilder.put(recipeHolder.value().getType(), recipeHolder);
 +            }
 +        }
++
 +        this.byType = ImmutableMultimap.copyOf(finalBuilder);
      }
  

@@ -29,7 +29,7 @@
      public record MaterialInfo(
          TextureAtlasSprite sprite,
          ChunkSectionLayer layer,
-@@ -68,10 +_,25 @@
+@@ -68,11 +_,26 @@
          RenderType itemGlintSpecialRenderType,
          int tintIndex,
          @Nullable Direction shadeDirectionOverride,
@@ -47,12 +47,22 @@
 +        @Deprecated
          public static BakedQuad.MaterialInfo of(
              Material.Baked material, Transparency transparency, int tintIndex, @Nullable Direction shadeDirectionOverride, int lightEmission
-+        ) {
+         ) {
 +            return of(material, transparency, tintIndex, shadeDirectionOverride, lightEmission, true);
 +        }
 +
 +        public static BakedQuad.MaterialInfo of(
 +                Material.Baked material, Transparency transparency, int tintIndex, @Nullable Direction shadeDirectionOverride, int lightEmission, boolean ambientOcclusion
-         ) {
++        ) {
              ChunkSectionLayer layer = ChunkSectionLayer.byTransparency(transparency);
              RenderType itemRenderType;
+             RenderType itemGlintRenderType;
+@@ -90,7 +_,7 @@
+             }
+ 
+             return new BakedQuad.MaterialInfo(
+-                material.sprite(), layer, itemRenderType, itemGlintRenderType, itemGlintSpecialRenderType, tintIndex, shadeDirectionOverride, lightEmission
++                material.sprite(), layer, itemRenderType, itemGlintRenderType, itemGlintSpecialRenderType, tintIndex, shadeDirectionOverride, lightEmission, ambientOcclusion
+             );
+         }
+ 

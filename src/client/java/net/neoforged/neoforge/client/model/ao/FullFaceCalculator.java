@@ -16,8 +16,8 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Calculates AO for a full cube face.
- * There are 24 possible configurations for each block, depending on: the direction,
- * whether the quad wants to be shaded, and whether the sample is taken outside the block.
+ * There are 84 possible configurations for each block, depending on: the direction, whether the quad wants default
+ * shading or force a specific shade-direction, and whether the sample is taken outside the block.
  *
  * <p>The {@link EnhancedBlockModelLighter} then works by combining the results of multiple configurations,
  * using various interpolation schemes depending on the quad.

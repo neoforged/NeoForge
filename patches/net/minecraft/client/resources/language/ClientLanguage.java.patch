@@ -1,12 +1,14 @@
 --- a/net/minecraft/client/resources/language/ClientLanguage.java
 +++ b/net/minecraft/client/resources/language/ClientLanguage.java
-@@ -22,25 +_,33 @@
+@@ -22,25 +_,35 @@
  public class ClientLanguage extends Language {
      private static final Logger LOGGER = LogUtils.getLogger();
      private final Map<String, String> storage;
 +    private final Map<String, net.minecraft.network.chat.Component> componentStorage;
      private final boolean defaultRightToLeft;
  
++    /// @deprecated Neo: use [#ClientLanguage(Map, boolean, Map)] instead
++    @Deprecated
      private ClientLanguage(Map<String, String> storage, boolean defaultRightToLeft) {
 +        this(storage, defaultRightToLeft, Map.of());
 +    }
@@ -35,8 +37,12 @@
                      hasAnyTranslations = true;
                  }
              }
-@@ -54,10 +_,16 @@
-         return new ClientLanguage(Map.copyOf(translations), defaultRightToLeft);
+@@ -51,13 +_,19 @@
+         }
+ 
+         DeprecatedTranslationsInfo.loadFromDefaultResource().applyToMap(translations);
+-        return new ClientLanguage(Map.copyOf(translations), defaultRightToLeft);
++        return new ClientLanguage(Map.copyOf(translations), defaultRightToLeft, componentMap);
      }
  
 +    /// @deprecated Neo: use [#appendFrom(String, List, Map, Map)] instead

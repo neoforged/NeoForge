@@ -118,7 +118,7 @@
  
          public <T> Item.Properties delayedHolderComponent(DataComponentType<Holder<T>> type, ResourceKey<T> valueKey) {
 -            this.componentInitializer = this.componentInitializer.andThen((components, context, var4) -> components.set(type, context.getOrThrow(valueKey)));
-+            this.componentInitializer = this.componentInitializer.andThen((components, context, key) -> {
++            this.componentInitializer = this.componentInitializer.andThen((components, context, var4) -> {
 +                var value = context.getOrThrow(valueKey);
 +                net.neoforged.neoforge.common.CommonHooks.validateComponent(value);
 +                components.set(type, value);
