@@ -9,15 +9,6 @@
          this.targets.entityOutline = frame.importExternal("entity_outline", this.entityOutlineTarget);
          FramePass clearPass = frame.addPass("clear");
          this.targets.main = clearPass.readsAndWrites(this.targets.main);
-@@ -252,7 +_,7 @@
-             chunkSectionsToRender = this.prepareChunkRenders(terrainMatrix, !this.gameRenderer.useImprovedTransparency());
-         }
- 
--        this.addMainPass(frame, featureFrame, terrainFog, chunkSectionsToRender, consistentDepthRequired);
-+        this.addMainPass(frame, featureFrame, terrainFog, chunkSectionsToRender, consistentDepthRequired, cameraState.viewRotationMatrix);
-         if (this.currentFrameRendersEntityOutline) {
-             PostChain entityOutlineChain = this.shaderManager.getPostChain(ENTITY_OUTLINE_POST_CHAIN_ID, LevelTargetBundle.OUTLINE_TARGETS);
-             if (entityOutlineChain != null) {
 @@ -319,6 +_,8 @@
              this.submitBlockOutline(poseStack, this.submitNodeStorage, levelRenderState);
          }
@@ -35,7 +26,7 @@
                          RenderSystem.setShaderFog(skyFog);
                          if (state.skybox == DimensionType.Skybox.END) {
                              this.skyRenderer.renderEndSky();
-@@ -377,12 +_,18 @@
+@@ -377,6 +_,10 @@
                                  this.skyRenderer.renderDarkDisc();
                              }
                          }
@@ -46,93 +37,42 @@
                      }
                  );
              }
-         }
-     }
- 
-+    /// @deprecated Neo: use [#addMainPass(FrameGraphBuilder, FeatureRenderDispatcher.PreparedFrame, GpuBufferSlice, ChunkSectionsToRender, boolean, Matrix4fc)] instead
-+    @Deprecated
-     private void addMainPass(
-         FrameGraphBuilder frame,
-         FeatureRenderDispatcher.PreparedFrame featureFrame,
-@@ -390,6 +_,17 @@
-         ChunkSectionsToRender chunkSectionsToRender,
-         boolean consistentDepthRequired
-     ) {
-+        this.addMainPass(frame, featureFrame, terrainFog, chunkSectionsToRender, consistentDepthRequired, RenderSystem.getModelViewStack());
-+    }
-+
-+    private void addMainPass(
-+        FrameGraphBuilder frame,
-+        FeatureRenderDispatcher.PreparedFrame featureFrame,
-+        GpuBufferSlice terrainFog,
-+        ChunkSectionsToRender chunkSectionsToRender,
-+        boolean consistentDepthRequired,
-+        Matrix4fc modelViewMatrix
-+    ) {
-         FramePass pass = frame.addPass("main");
-         this.targets.main = pass.readsAndWrites(this.targets.main);
-         boolean useImprovedTransparency = this.gameRenderer.useImprovedTransparency();
-@@ -451,9 +_,9 @@
-                             OptionalDouble.empty()
-                         )) {
-                     RenderSystem.bindDefaultUniforms(renderPass);
--                    this.executeSolid(chunkSectionsToRender, featureFrame, renderPass);
-+                    this.executeSolid(chunkSectionsToRender, featureFrame, renderPass, modelViewMatrix);
-                     if (!useImprovedTransparency) {
--                        this.executeClassicTransparency(chunkSectionsToRender, featureFrame, renderPass);
-+                        this.executeClassicTransparency(chunkSectionsToRender, featureFrame, renderPass, modelViewMatrix);
-                     }
-                 }
- 
-@@ -514,15 +_,25 @@
-         return !this.finalizedGizmos.alwaysOnTopPrimitives().isEmpty();
-     }
- 
-+    /// @deprecated Neo: use [#executeSolid(ChunkSectionsToRender, FeatureRenderDispatcher.PreparedFrame, RenderPass, Matrix4fc)] instead
-+    @Deprecated
-     private void executeSolid(ChunkSectionsToRender chunkSectionsToRender, FeatureRenderDispatcher.PreparedFrame featureFrame, RenderPass renderPass) {
-+        this.executeSolid(chunkSectionsToRender, featureFrame, renderPass, RenderSystem.getModelViewStack());
-+    }
-+
-+    private void executeSolid(ChunkSectionsToRender chunkSectionsToRender, FeatureRenderDispatcher.PreparedFrame featureFrame, RenderPass renderPass, Matrix4fc modelViewMatrix) {
-         ProfilerFiller profiler = Profiler.get();
-         profiler.push("solidTerrain");
-         GpuTextureView blockAtlas = this.textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).getTextureView();
+@@ -521,8 +_,12 @@
          chunkSectionsToRender.renderGroup(
              ChunkSectionLayerGroup.OPAQUE, renderPass, this.chunkLayerSampler, blockAtlas, this.levelRenderState.renderWireframeTerrain
          );
 +        profiler.popPush("neoforge_render_after_opaque_blocks");
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterOpaqueBlocks(this, levelRenderState, null, modelViewMatrix, this.visibleSections));
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterOpaqueBlocks(this, this.levelRenderState, null, this.levelRenderState.cameraRenderState.viewRotationMatrix, this.visibleSections, renderPass));
          profiler.popPush("renderSolidFeatures");
          featureFrame.executeSolid(renderPass);
 +        profiler.popPush("neoforge_render_after_opaque_features");
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterOpaqueFeatures(this, levelRenderState, null, modelViewMatrix, this.visibleSections));
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterOpaqueFeatures(this, this.levelRenderState, null, this.levelRenderState.cameraRenderState.viewRotationMatrix, this.visibleSections, renderPass));
          profiler.pop();
      }
  
-@@ -665,29 +_,47 @@
-         }
+@@ -547,6 +_,7 @@
+         this.worldBorderRenderer
+             .prepare(this.levelRenderState.worldBorderRenderState, cameraState.pos, renderDistance, this.levelRenderState.cameraRenderState.depthFar);
+         this.weatherEffectRenderer.prepare(cameraState.pos, this.levelRenderState.weatherRenderState);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.PrepareRenderBuffersEvent(this, this.levelRenderState, this.optionsRenderState));
+         RenderSystem.resizeAllAutoStorageIndexBuffers();
      }
  
-+    /// @deprecated Neo: use [#executeClassicTransparency(ChunkSectionsToRender, FeatureRenderDispatcher.PreparedFrame, RenderPass, Matrix4fc)] instead
-+    @Deprecated
-     private void executeClassicTransparency(
-         ChunkSectionsToRender chunkSectionsToRender, FeatureRenderDispatcher.PreparedFrame featureFrame, RenderPass renderPass
-     ) {
-+        this.executeClassicTransparency(chunkSectionsToRender, featureFrame, renderPass, RenderSystem.getModelViewStack());
-+    }
+@@ -592,6 +_,8 @@
+                 featureFrame.executeOit(stage, renderPass);
+                 this.worldBorderRenderer.renderOit(this.levelRenderState.worldBorderRenderState, cameraState.pos, renderDistance, stage, renderPass);
+                 this.weatherEffectRenderer.renderOit(stage, this.levelRenderState.weatherRenderState, renderPass);
 +
-+    private void executeClassicTransparency(
-+        ChunkSectionsToRender chunkSectionsToRender, FeatureRenderDispatcher.PreparedFrame featureFrame, RenderPass renderPass, Matrix4fc modelViewMatrix
-+    ) {
-         ProfilerFiller profiler = Profiler.get();
-         CloudStatus cloudStatus = this.optionsRenderState.cloudStatus;
-         boolean shouldRenderClouds = cloudStatus != CloudStatus.OFF && ARGB.alpha(this.levelRenderState.cloudColor) > 0;
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.OitTranslucent(this, this.levelRenderState, stage, null, this.levelRenderState.cameraRenderState.viewRotationMatrix, this.visibleSections, renderPass));
+             }
+ 
+             if (stage == OitStage.DEPTH_BOUNDS) {
+@@ -674,20 +_,30 @@
          int renderDistance = this.optionsRenderState.renderDistance * 16;
          profiler.push("renderTranslucentFeatures");
          featureFrame.executeTranslucent(renderPass);
 +        profiler.popPush("neoforge_render_after_translucent_features");
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentFeatures(this, levelRenderState, null, modelViewMatrix, this.visibleSections));
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentFeatures(this, this.levelRenderState, null, this.levelRenderState.cameraRenderState.viewRotationMatrix, this.visibleSections, renderPass));
          profiler.pop();
          GpuTextureView blockAtlas = this.textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).getTextureView();
          profiler.push("translucentTerrain");
@@ -140,11 +80,11 @@
              ChunkSectionLayerGroup.TRANSLUCENT, renderPass, this.chunkLayerSampler, blockAtlas, this.levelRenderState.renderWireframeTerrain
          );
 +        profiler.popPush("neoforge_render_after_translucent_blocks");
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentBlocks(this, levelRenderState, null, modelViewMatrix, this.visibleSections));
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentBlocks(this, this.levelRenderState, null, this.levelRenderState.cameraRenderState.viewRotationMatrix, this.visibleSections, renderPass));
          profiler.pop();
          featureFrame.executeTranslucentAfterTerrain(renderPass);
 +        profiler.push("neoforge_render_after_translucent_particles");
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentParticles(this, levelRenderState, null, modelViewMatrix, this.visibleSections));
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentParticles(this, this.levelRenderState, null, this.levelRenderState.cameraRenderState.viewRotationMatrix, this.visibleSections, renderPass));
 +        profiler.pop();
          if (shouldRenderClouds) {
              this.cloudRenderer.render(cloudStatus, renderPass);
@@ -152,9 +92,9 @@
  
          Vec3 cameraPos = this.levelRenderState.cameraRenderState.pos;
          this.weatherEffectRenderer.render(this.levelRenderState.weatherRenderState, renderPass);
-+        Profiler.get().push("neoforge_render_after_weather");
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterWeather(this, this.levelRenderState, null, modelViewMatrix, this.visibleSections));
-+        Profiler.get().pop();
++        profiler.push("neoforge_render_after_weather");
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterWeather(this, this.levelRenderState, null, this.levelRenderState.cameraRenderState.viewRotationMatrix, this.visibleSections, renderPass));
++        profiler.pop();
          this.worldBorderRenderer.render(this.levelRenderState.worldBorderRenderState, renderPass, cameraPos, renderDistance);
      }
  

@@ -23,20 +23,20 @@
          profiler.popPush("blockOutline");
          this.extractBlockOutline(camera, this.levelRenderState);
          profiler.popPush("blockBreaking");
-@@ -219,6 +_,13 @@
-         profiler.popPush("debug");
-         this.debugRenderer.emitGizmos(cullFrustum, cameraPos.x, cameraPos.y, cameraPos.z, deltaTracker.getGameTimeDeltaPartialTick(false));
-         this.gameTestBlockHighlightRenderer.emitGizmos();
+@@ -229,6 +_,13 @@
+ 
+         this.levelRenderState.shouldShowEntityOutlines = shouldShowEntityOutlines(camera, this.levelRenderState.playerRenderState);
+         this.extractGizmos();
 +        profiler.popPush("neoforge_custom");
 +        this.levelRenderState.customWeatherEffectRenderer = net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager.getCustomWeatherEffectRenderer(this.level, camera.position());
 +        this.levelRenderState.customSkyboxRenderer = net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager.getCustomSkyboxRenderer(this.level, camera.position());
 +        this.levelRenderState.customCloudsRenderer = net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager.getCustomCloudsRenderer(this.level, camera.position());
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent(
-+                this, this.levelRenderState, this.level, camera, cullFrustum, deltaTracker
++                this, this.levelRenderState, this.minecraft.gameRenderer.gameRenderState().optionsRenderState, this.level, camera, cullFrustum, deltaTracker
 +        ));
-         this.levelRenderState.render3dCrosshair = this.minecraft.debugEntries.isCurrentlyEnabled(DebugScreenEntries.THREE_DIMENSIONAL_CROSSHAIR);
-         this.levelRenderState.renderWireframeTerrain = this.minecraft.wireframe;
-         this.levelRenderState.shouldUseMultiDrawIndirectForTerrain = this.minecraft.multiDrawIndirect;
+         profiler.pop();
+         profiler.pop();
+     }
 @@ -248,7 +_,7 @@
              float entityPartialTicks = deltaTracker.getGameTimeDeltaPartialTick(!tickRateManager.isEntityFrozen(entity));
              if (this.isEntityVisible(entity, frustum, camX, camY, camZ, entityPartialTicks, chunkFadeDuration)
