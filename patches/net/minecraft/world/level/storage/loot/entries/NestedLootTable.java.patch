@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/storage/loot/entries/NestedLootTable.java
++++ b/net/minecraft/world/level/storage/loot/entries/NestedLootTable.java
+@@ -77,4 +_,8 @@
+     public static UniformContainerBase.Builder<?> inlineLootTable(LootTable table) {
+         return lootTableReference(Holder.direct(table));
+     }
++
++    public static UniformContainerBase.Builder<?> tableSet(HolderSet<LootTable> tables) {
++        return simpleBuilder((wheight, quality, conditions, functions) -> new NestedLootTable(tables, false, wheight, quality, conditions, functions));
++    }
+ }
