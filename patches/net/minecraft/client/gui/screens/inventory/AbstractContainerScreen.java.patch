@@ -13,7 +13,7 @@
              if (this.menu.getCarried().isEmpty() || this.showTooltipWithItemInHand(item)) {
                  graphics.setTooltipForNextFrame(
 -                    this.font, this.getTooltipFromContainerItem(item), item.getTooltipImage(), mouseX, mouseY, item.get(DataComponents.TOOLTIP_STYLE), true
-+                    this.font, this.getTooltipFromContainerItem(item), item.getTooltipImage(), item, mouseX, mouseY, item.get(DataComponents.TOOLTIP_STYLE)
++                    this.font, this.getTooltipFromContainerItem(item), item.getTooltipImage(), item, mouseX, mouseY, item.get(DataComponents.TOOLTIP_STYLE), true
                  );
              }
          }
