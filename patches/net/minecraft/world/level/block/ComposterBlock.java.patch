@@ -16,24 +16,3 @@
      }
  
      @Override
-@@ -286,7 +_,7 @@
- 
-         @Override
-         public boolean canPlaceItemThroughFace(int slot, ItemStack itemStack, @Nullable Direction direction) {
--            return !this.changed && direction == Direction.UP && itemStack.has(DataComponents.COMPOSTABLE);
-+            return !this.changed && direction == Direction.UP && getValue(itemStack) > 0f;
-         }
- 
-         @Override
-@@ -345,5 +_,11 @@
-             ComposterBlock.empty(null, this.state, this.level, this.pos);
-             this.changed = true;
-         }
-+    }
-+
-+    public static float getValue(ItemStack item) {
-+        var value = item.getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.COMPOSTABLES);
-+        if (value != null) return value.chance();
-+        return -1f;
-     }
- }

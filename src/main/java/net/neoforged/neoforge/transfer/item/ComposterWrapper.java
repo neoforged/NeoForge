@@ -8,16 +8,25 @@ package net.neoforged.neoforge.transfer.item;
 import com.google.common.collect.MapMaker;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.Compostable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
@@ -106,8 +115,21 @@ public class ComposterWrapper extends SnapshotJournal<BlockState> {
         }
     }
 
-    private static float getComposterValue(ItemResource resource) {
-        return ComposterBlock.getValue(resource.toStack());
+    private float getComposterValue(ItemResource resource) {
+        if (location.level instanceof ServerLevel level) {
+            LootContext lootContext = new LootContext.Builder(
+                    new LootParams.Builder(level)
+                            .withParameter(LootContextParams.BLOCK_STATE, location.getBlockState())
+                            .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(location.pos))
+                            .withOptionalParameter(LootContextParams.INTERACTING_ENTITY, null)
+                            .create(LootContextParamSets.BLOCK_INTERACT)
+            ).create(Optional.empty());
+            Compostable compostable = resource.get(DataComponents.COMPOSTABLE);
+            if (compostable != null) {
+                return compostable.layers().getFloat(lootContext, 0F);
+            }
+        }
+        return 0F;
     }
 
     /**
@@ -168,13 +190,13 @@ public class ComposterWrapper extends SnapshotJournal<BlockState> {
         @Override
         public long getCapacityAsLong(int index, ItemResource resource) {
             Objects.checkIndex(index, size());
-            return resource.isEmpty() || getComposterValue(resource) > 0 ? 1 : 0;
+            return resource.isEmpty() || resource.has(DataComponents.COMPOSTABLE) ? 1 : 0;
         }
 
         @Override
         public boolean isValid(int index, ItemResource resource) {
             Objects.checkIndex(index, size());
-            return getComposterValue(resource) > 0;
+            return resource.has(DataComponents.COMPOSTABLE);
         }
 
         @Override

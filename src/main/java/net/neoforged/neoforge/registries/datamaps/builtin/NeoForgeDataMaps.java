@@ -9,6 +9,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.behavior.GiveGiftToHero;
+import net.minecraft.world.entity.ai.behavior.WorkAtComposter;
 import net.minecraft.world.entity.ai.sensing.VillagerHostilesSensor;
 import net.minecraft.world.entity.animal.parrot.Parrot;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
@@ -21,7 +22,6 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -57,19 +57,6 @@ public class NeoForgeDataMaps {
      */
     public static final DataMapType<EntityType<?>, AcceptableVillagerDistance> ACCEPTABLE_VILLAGER_DISTANCES = DataMapType.builder(id("acceptable_villager_distances"), Registries.ENTITY_TYPE, AcceptableVillagerDistance.CODEC)
             .synced(AcceptableVillagerDistance.DISTANCE_CODEC, false).build();
-    /**
-     * The {@linkplain Item} data map that replaces {@link ComposterBlock#COMPOSTABLES}.
-     * <p>
-     * The location of this data map is {@code neoforge/data_maps/item/compostables.json}, and the values are objects with 1 field:
-     * <ul>
-     * <li>{@code chance}, a float between 0 and 1 (inclusive) - the chance that the item will add levels to the composter when composted</li>
-     * </ul>
-     *
-     * The use of a float as the value is also possible, though discouraged in case more options are added in the future.
-     */
-    public static final DataMapType<Item, Compostable> COMPOSTABLES = DataMapType.builder(
-            id("compostables"), Registries.ITEM, Compostable.CODEC).synced(Compostable.CHANCE_CODEC, false).build();
-
     /**
      * The {@linkplain Item} data map that replaces {@link AbstractFurnaceBlockEntity#getFuel()}.
      * <p>
@@ -164,6 +151,19 @@ public class NeoForgeDataMaps {
             id("vibration_frequencies"), Registries.GAME_EVENT, VibrationFrequency.CODEC).synced(VibrationFrequency.FREQUENCY_CODEC, false).build();
 
     /**
+     * The {@linkplain Item} data map that replaces {@link WorkAtComposter#COMPOSTABLE_ITEMS}.
+     * <p>
+     * The location of this data map is {@code neoforge/data_maps/item/villager_compostables.json}, and the values are objects with 1 field:
+     * <ul>
+     * <li>{@code can_villager_compost}, a boolean indicating whether farmer villagers can compost the item</li>
+     * </ul>
+     *
+     * The use of a boolean as the value is also possible, though discouraged in case more options are added in the future.
+     */
+    public static final DataMapType<Item, VillagerCompostable> VILLAGER_COMPOSTABLES = DataMapType.builder(
+            id("villager_compostables"), Registries.ITEM, VillagerCompostable.CODEC).build();
+
+    /**
      * The {@linkplain Biome} data map that replaces {@link VillagerType#BY_BIOME}.
      * <p>
      * The location of this data map is {@code neoforge/data_maps/worldgen/biome/villager_types.json}, and the values are objects with 1 field:
@@ -196,7 +196,6 @@ public class NeoForgeDataMaps {
     @SubscribeEvent
     private static void register(final RegisterDataMapTypesEvent event) {
         event.register(ACCEPTABLE_VILLAGER_DISTANCES);
-        event.register(COMPOSTABLES);
         event.register(FURNACE_FUELS);
         event.register(MONSTER_ROOM_MOBS);
         event.register(OXIDIZABLES);
@@ -204,6 +203,7 @@ public class NeoForgeDataMaps {
         event.register(RAID_HERO_GIFTS);
         event.register(STRIPPABLES);
         event.register(VIBRATION_FREQUENCIES);
+        event.register(VILLAGER_COMPOSTABLES);
         event.register(VILLAGER_TYPES);
         event.register(WAXABLES);
     }
