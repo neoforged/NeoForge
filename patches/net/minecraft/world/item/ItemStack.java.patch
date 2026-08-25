@@ -81,7 +81,7 @@
 @@ -446,6 +_,11 @@
      }
  
-     public void hurtAndBreak(int amount, ServerLevel level, @Nullable ServerPlayer player, Consumer<Item> onBreak) {
+     public void hurtAndBreak(int amount, ServerLevel level, @Nullable ServerPlayer player, Consumer<ItemStack> onBreak) {
 +        this.hurtAndBreak(amount, level, (LivingEntity) player, onBreak);
 +    }
 +
@@ -104,7 +104,7 @@
 @@ -463,8 +_,12 @@
      }
  
-     private void applyDamage(int newDamage, @Nullable ServerPlayer player, Consumer<Item> onBreak) {
+     private void applyDamage(int newDamage, @Nullable ServerPlayer player, Consumer<ItemStack> onBreak) {
 -        if (player != null) {
 -            CriteriaTriggers.ITEM_DURABILITY_CHANGED.trigger(player, this, newDamage);
 +        applyDamage(newDamage, (LivingEntity) player, onBreak);

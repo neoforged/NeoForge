@@ -1,0 +1,12 @@
+--- a/net/minecraft/client/renderer/GameRenderer.java
++++ b/net/minecraft/client/renderer/GameRenderer.java
+@@ -309,7 +310,8 @@
+     }
+ 
+     public PreparableReloadListener createReloadListener() {
+-        return (ResourceManagerReloadListener)var1 -> this.shouldResetFailedPostEffects = true;
++        // Neo: move reload listener to a concrete class for compatibility with named reload listeners
++        return new ClearFailedPostEffects();
+     }
+ 
+     public void resize(int width, int height) {

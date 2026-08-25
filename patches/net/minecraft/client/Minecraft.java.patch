@@ -66,7 +66,7 @@
          particleResources.onReload(this.particleEngine::clearParticles);
 +        net.neoforged.neoforge.client.ClientHooks.onRegisterParticleProviders(particleResources);
          this.gameRenderer = new GameRenderer(this, new FirstPersonHandsAndItemsRenderer(this), this.modelManager, this.itemModelResolver);
-         this.resourceManager.registerReloadListener(this.gameRenderer.createReloadListener());
+         this.resourceManager.registerReloadListener(this.gameRenderer);
          WindowRenderState windowRenderState = this.gameRenderer.gameRenderState().windowRenderState;
 @@ -695,6 +_,7 @@
              MessageBox.error(message.toString());

@@ -29,7 +29,7 @@
      public void writeToBuffer(GpuBufferSlice slice, ByteBuffer data) {
          GlBuffer buffer = (GlBuffer)slice.buffer();
          buffer.checkCanBeUsed();
-@@ -390,11 +_,22 @@
+@@ -396,11 +_,22 @@
          boolean isDepth = source.getFormat().hasDepthAspect();
          int sourceId = ((GlTexture)source).glId();
          int destId = ((GlTexture)destination).glId();

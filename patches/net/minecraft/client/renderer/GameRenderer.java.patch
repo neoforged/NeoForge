@@ -35,17 +35,7 @@
                  this.clearSpectatedEntityPostEffect();
          }
      }
-@@ -309,7 +_,8 @@
-     }
- 
-     public PreparableReloadListener createReloadListener() {
--        return (ResourceManagerReloadListener)var1 -> this.shouldResetFailedPostEffects = true;
-+        // Neo: move reload listener to a concrete class for compatibility with named reload listeners
-+        return new ClearFailedPostEffects();
-     }
- 
-     public void resize(int width, int height) {
-@@ -331,6 +_,9 @@
+@@ -332,6 +_,9 @@
                  return;
              }
  
@@ -55,7 +45,7 @@
              hurt /= cameraState.entityRenderState.hurtDuration;
              hurt = Mth.sin(hurt * hurt * hurt * hurt * (float) Math.PI);
              float rr = cameraState.entityRenderState.hurtDir;
-@@ -647,6 +_,9 @@
+@@ -648,6 +_,9 @@
          this.minecraft
              .levelRenderer
              .render(this.resourcePool, renderOutline, cameraState, terrainFog, cameraState.fogData.color, !shouldCreateBossFog, consistentDepthRequired);
@@ -65,7 +55,7 @@
          this.render3dHud(cameraState, playerState, optionsState, consistentDepthRequired);
      }
  
-@@ -842,5 +_,12 @@
+@@ -843,5 +_,12 @@
  
      public boolean useImprovedTransparency() {
          return this.gameRenderState.optionsRenderState.improvedTransparency && !this.gameRenderState.levelRenderState.renderWireframeTerrain;

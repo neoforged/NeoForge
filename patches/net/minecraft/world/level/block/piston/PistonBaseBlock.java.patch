@@ -24,7 +24,7 @@
          return true;
      }
  
-@@ -286,8 +_,7 @@
+@@ -282,8 +_,7 @@
                  level.levelEvent(2001, pos, getId(state));
              }
  
@@ -34,7 +34,7 @@
              toUpdate[updateIndex++] = state;
          }
  
-@@ -358,6 +_,10 @@
+@@ -354,6 +_,10 @@
          return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
      }
  
@@ -45,7 +45,7 @@
      @Override
      protected BlockState mirror(BlockState state, Mirror mirror) {
          return state.rotate(mirror.getRotation(state.getValue(FACING)));
-@@ -376,5 +_,22 @@
+@@ -372,5 +_,22 @@
      @Override
      protected boolean isPathfindable(BlockState state, PathComputationType type) {
          return false;

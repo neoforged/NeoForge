@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/net/minecraft/client/multiplayer/ClientPacketListener.java
-@@ -420,6 +_,7 @@
+@@ -419,6 +_,7 @@
      private final ChunkBatchSizeCalculator chunkBatchSizeCalculator = new ChunkBatchSizeCalculator();
      private final PingDebugMonitor pingDebugMonitor;
      private final ClientDebugSubscriber debugSubscriber;
@@ -8,7 +8,7 @@
      private @Nullable LevelLoadTracker levelLoadTracker;
      private boolean serverEnforcesSecureChat;
      private boolean onlineMode;
-@@ -453,6 +_,7 @@
+@@ -452,6 +_,7 @@
              minecraft.gui.hud.getChat().restoreState(cookie.chatState());
          }
  
@@ -16,7 +16,7 @@
          this.levelLoadTracker = cookie.levelLoadTracker();
          this.clockManager = new ClientClockManager();
      }
-@@ -530,12 +_,13 @@
+@@ -529,12 +_,13 @@
          this.debugSubscriber.clear();
          this.minecraft.levelExtractor.debugRenderer.refreshRendererList();
          this.minecraft.player.resetPos();
@@ -31,7 +31,7 @@
          this.minecraft.player.setReducedDebugInfo(packet.reducedDebugInfo());
          this.minecraft.player.setShowDeathScreen(packet.showDeathScreen());
          this.minecraft.player.setDoLimitedCrafting(packet.doLimitedCrafting());
-@@ -967,7 +_,8 @@
+@@ -947,7 +_,8 @@
                          this.customReportDetails,
                          this.serverLinks(),
                          this.seenPlayers,
@@ -41,7 +41,7 @@
                      )
                  )
              );
-@@ -1308,7 +_,7 @@
+@@ -1288,7 +_,7 @@
          }
  
          this.setClientLoaded(false);
@@ -50,7 +50,7 @@
          newPlayer.setId(oldPlayer.getId());
          this.minecraft.player = newPlayer;
          if (dimensionChanged) {
-@@ -1336,6 +_,7 @@
+@@ -1316,6 +_,7 @@
              newPlayer.getAttributes().assignBaseValues(oldPlayer.getAttributes());
          }
  
@@ -58,7 +58,7 @@
          this.level.addEntity(newPlayer);
          newPlayer.input = new KeyboardInput(this.minecraft.options);
          this.minecraft.gameMode.adjustPlayer(newPlayer);
-@@ -1492,7 +_,7 @@
+@@ -1472,7 +_,7 @@
              ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(blockEntity.problemPath(), LOGGER);
  
              try {
@@ -67,7 +67,7 @@
              } catch (Throwable t$) {
                  try {
                      reporter.close();
-@@ -1641,7 +_,12 @@
+@@ -1621,7 +_,12 @@
              );
      }
  
@@ -80,7 +80,7 @@
          if (this.levelLoadTracker == null) {
              this.levelLoadTracker = new LevelLoadTracker();
          }
-@@ -1651,7 +_,7 @@
+@@ -1631,7 +_,7 @@
              loadingScreen.update(this.levelLoadTracker, reason);
          } else {
              this.minecraft.gui.hud.getChat().preserveCurrentChatScreen();
@@ -89,7 +89,7 @@
          }
      }
  
-@@ -1700,7 +_,9 @@
+@@ -1680,7 +_,9 @@
      @Override
      public void handleCommands(ClientboundCommandsPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.minecraft.packetProcessor());
@@ -100,7 +100,7 @@
      }
  
      @Override
-@@ -1719,6 +_,8 @@
+@@ -1699,6 +_,8 @@
      public void handleUpdateRecipes(ClientboundUpdateRecipesPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.minecraft.packetProcessor());
          this.recipes = new ClientRecipeContainer(packet.itemSets(), packet.stonecutterRecipes());
@@ -109,7 +109,7 @@
      }
  
      @Override
-@@ -1839,8 +_,11 @@
+@@ -1819,8 +_,11 @@
              pendingTags.forEach(Registry.PendingTags::apply);
          }
  
@@ -123,7 +123,7 @@
      }
  
      @Override
-@@ -2657,6 +_,8 @@
+@@ -2637,6 +_,8 @@
      }
  
      public void sendChat(String content) {
@@ -132,7 +132,7 @@
          Instant timeStamp = Instant.now();
          long salt = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastSeenUpdate = this.lastSeenMessages.generateAndApplyUpdate();
-@@ -2665,6 +_,7 @@
+@@ -2645,6 +_,7 @@
      }
  
      public void sendCommand(String command) {
@@ -140,7 +140,7 @@
          SignableCommand<ClientSuggestionProvider> signableCommand = SignableCommand.of(this.commands.parse(command, this.suggestionsProvider));
          if (signableCommand.arguments().isEmpty()) {
              this.send(new ServerboundChatCommandPacket(command));
-@@ -2681,6 +_,8 @@
+@@ -2661,6 +_,8 @@
      }
  
      public void sendUnattendedCommand(String command, @Nullable Screen screenAfterCommand) {
@@ -149,7 +149,7 @@
          switch (this.verifyCommand(command)) {
              case NO_ISSUES:
                  this.send(new ServerboundChatCommandPacket(command));
-@@ -2845,6 +_,10 @@
+@@ -2825,6 +_,10 @@
  
      public Scoreboard scoreboard() {
          return this.scoreboard;

@@ -579,7 +579,7 @@
      }
  
      protected boolean shouldTravelInFluid(FluidState fluidState) {
--        return (this.isInWater() || this.isInLava()) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidState);
+-        return this.isInLiquid() && this.isAffectedByFluids() && !this.canStandOnFluid(fluidState);
 +        return (this.isInWater() || this.isInLava() || this.isInFluidType(fluidState)) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidState);
      }
  
@@ -593,22 +593,7 @@
              )
              : 1.0F;
          Vec3 movement = this.handleRelativeFrictionAndCalculateMovement(input, blockFriction);
-@@ -2473,10 +_,13 @@
-         boolean isFalling = this.getDeltaMovement().y <= 0.0;
-         double oldY = this.getY();
-         double baseGravity = this.getEffectiveGravity();
-+        if (this.getFluidInteraction().isInFluidMatching(this, (entity, type, _) -> !type.isVanilla() && entity.moveInFluid(type, input, baseGravity))) {
-+            return;
-+        }
-         if (this.isInWater()) {
-             this.travelInWater(input, baseGravity, isFalling, oldY);
-             this.floatInWaterWhileRidden();
--        } else {
-+        } else if (this.isInLava()) { // Neo: only apply lava movement if the player is actually in lava and not another fluid
-             this.travelInLava(input, baseGravity, isFalling, oldY);
-         }
-     }
-@@ -2498,6 +_,7 @@
+@@ -2499,6 +_,7 @@
              slowDown = 0.96F;
          }
  
@@ -616,16 +601,7 @@
          this.moveRelative(speed, input);
          this.move(MoverType.SELF, this.getDeltaMovement());
          Vec3 movement = this.getDeltaMovement();
-@@ -2541,7 +_,7 @@
- 
-     private void floatInWaterWhileRidden() {
-         boolean canEntityFloatInWater = this.is(EntityTypeTags.CAN_FLOAT_WHILE_RIDDEN);
--        if (canEntityFloatInWater && this.isVehicle() && this.getFluidHeight(FluidTags.WATER) > this.getFluidJumpThreshold()) {
-+        if (canEntityFloatInWater && this.isVehicle() && this.getFluidInteraction().getMaxFluidHeightMatching(this, (_, type, _) -> type.getIsWaterLike()) > this.getFluidJumpThreshold()) {
-             this.setDeltaMovement(this.getDeltaMovement().add(0.0, 0.04F, 0.0));
-         }
-     }
-@@ -2675,7 +_,7 @@
+@@ -2679,7 +_,7 @@
              double xd = Mth.clamp(delta.x, -0.15F, 0.15F);
              double zd = Mth.clamp(delta.z, -0.15F, 0.15F);
              double yd = Math.max(delta.y, -0.15F);
@@ -634,7 +610,7 @@
                  yd = 0.0;
              }
  
-@@ -2922,6 +_,7 @@
+@@ -2926,6 +_,7 @@
              ItemStack previous = lastEquipmentItems.get(slot);
              ItemStack current = this.getItemBySlot(slot);
              if (this.equipmentHasChanged(previous, current)) {
@@ -642,7 +618,7 @@
                  if (changedItems == null) {
                      changedItems = Maps.newEnumMap(EquipmentSlot.class);
                  }
-@@ -3055,6 +_,10 @@
+@@ -3059,6 +_,10 @@
          profiler.push("jump");
          if (this.jumping && this.isAffectedByFluids()) {
              double fluidHeight;
@@ -653,7 +629,7 @@
              if (this.isInLava()) {
                  fluidHeight = this.getFluidHeight(FluidTags.LAVA);
              } else {
-@@ -3065,15 +_,17 @@
+@@ -3069,15 +_,17 @@
              double fluidJumpThreshold = this.getFluidJumpThreshold();
              if (!inWaterAndHasFluidHeight || this.onGround() && !(fluidHeight > fluidJumpThreshold)) {
                  if (!this.isInLava() || this.onGround() && this.isInShallowFluid(FluidTags.LAVA)) {
@@ -673,7 +649,7 @@
              }
          } else {
              this.noJumpDelay = 0;
-@@ -3160,8 +_,11 @@
+@@ -3164,8 +_,11 @@
                  int freeFallInterval = checkFallFlyTicks / 10;
                  if (freeFallInterval % 2 == 0) {
                      List<EquipmentSlot> slotsWithGliders = EquipmentSlot.VALUES.stream().filter(slot -> canGlideUsing(this.getItemBySlot(slot), slot)).toList();
@@ -686,7 +662,7 @@
                  }
  
                  this.gameEvent(GameEvent.ELYTRA_GLIDE);
-@@ -3170,7 +_,15 @@
+@@ -3174,7 +_,15 @@
      }
  
      protected boolean canGlide() {
@@ -702,7 +678,7 @@
              for (EquipmentSlot slot : EquipmentSlot.VALUES) {
                  if (canGlideUsing(this.getItemBySlot(slot), slot)) {
                      return true;
-@@ -3393,8 +_,11 @@
+@@ -3399,8 +_,11 @@
  
      private void updatingUsingItem() {
          if (this.isUsingItem()) {
@@ -716,7 +692,7 @@
                  this.updateUsingItem(this.useItem);
              } else {
                  this.stopUsingItem();
-@@ -3437,8 +_,11 @@
+@@ -3443,8 +_,11 @@
      }
  
      protected void updateUsingItem(ItemStack useItem) {
@@ -729,7 +705,7 @@
              this.completeUsingItem();
          }
      }
-@@ -3466,8 +_,10 @@
+@@ -3472,8 +_,10 @@
      public void startUsingItem(InteractionHand hand) {
          ItemStack itemStack = this.getItemInHand(hand);
          if (!itemStack.isEmpty() && !this.isUsingItem()) {
@@ -741,7 +717,7 @@
              if (!this.level().isClientSide()) {
                  this.setLivingEntityFlag(1, true);
                  this.setLivingEntityFlag(2, hand == InteractionHand.OFF_HAND);
-@@ -3537,7 +_,8 @@
+@@ -3543,7 +_,8 @@
                  this.releaseUsingItem();
              } else {
                  if (!this.useItem.isEmpty() && this.isUsingItem()) {
@@ -751,7 +727,7 @@
                      if (result != this.useItem) {
                          this.setItemInHand(hand, result);
                      }
-@@ -3571,7 +_,11 @@
+@@ -3577,7 +_,11 @@
          ItemStack itemInUsedHand = this.getItemInHand(this.getUsedItemHand());
          if (!this.useItem.isEmpty() && ItemStack.isSameItem(itemInUsedHand, this.useItem)) {
              this.useItem = itemInUsedHand;
@@ -763,7 +739,7 @@
              if (this.useItem.useOnRelease()) {
                  this.updatingUsingItem();
              }
-@@ -3581,6 +_,7 @@
+@@ -3587,6 +_,7 @@
      }
  
      public void stopUsingItem() {
@@ -771,7 +747,7 @@
          if (!this.level().isClientSide()) {
              boolean wasUsingItem = this.isUsingItem();
              this.recentKineticEnemies = null;
-@@ -3635,7 +_,17 @@
+@@ -3641,7 +_,17 @@
          return this.randomTeleport(xx, yy, zz, showParticles, state -> state.is(avoidanceTag));
      }
  
@@ -789,7 +765,7 @@
          double y = yy;
          Level level = this.level();
          WorldBorder worldBorder = level.getWorldBorder();
-@@ -3829,7 +_,9 @@
+@@ -3835,7 +_,9 @@
  
      public @Nullable Direction getBedOrientation() {
          BlockPos bedPos = this.getSleepingPos().orElse(null);
@@ -800,7 +776,7 @@
      }
  
      @Override
-@@ -3838,7 +_,7 @@
+@@ -3844,7 +_,7 @@
      }
  
      public ItemStack getProjectile(ItemStack heldWeapon) {
@@ -809,7 +785,7 @@
      }
  
      private static @EntityEvent.Value byte entityEventForEquipmentBreak(EquipmentSlot equipmentSlot) {
-@@ -3890,6 +_,8 @@
+@@ -3896,6 +_,8 @@
      }
  
      public EquipmentSlot getEquipmentSlotForItem(ItemStack itemStack) {
@@ -818,7 +794,7 @@
          Equippable equippable = itemStack.get(DataComponents.EQUIPPABLE);
          return equippable != null && this.canUseSlot(equippable.slot()) ? equippable.slot() : EquipmentSlot.MAINHAND;
      }
-@@ -4011,6 +_,8 @@
+@@ -4017,6 +_,8 @@
      }
  
      public static boolean canGlideUsing(ItemStack itemStack, EquipmentSlot slot) {
