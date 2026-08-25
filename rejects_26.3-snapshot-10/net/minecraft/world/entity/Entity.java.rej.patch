@@ -1,0 +1,18 @@
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -4216,6 +4343,15 @@
+ 
+     public void setInvulnerableTime(int invulnerableTime) {
+         this.invulnerableTime = invulnerableTime;
++    }
++
++    public int getInvulnerableTime() {
++        return this.invulnerableTime;
++    }
++
++    /// Neo: returns the [EntityFluidInteraction] tracking this entity's interactions with fluids
++    public EntityFluidInteraction getFluidInteraction() {
++        return this.fluidInteraction;
+     }
+ 
+     protected @Nullable AABB modifyPassengerFluidInteractionBox(AABB passengerBox) {

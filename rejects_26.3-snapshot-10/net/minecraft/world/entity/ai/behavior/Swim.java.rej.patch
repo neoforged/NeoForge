@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ai/behavior/Swim.java
 +++ b/net/minecraft/world/entity/ai/behavior/Swim.java
-@@ -14,7 +_,7 @@
+@@ -14,7 +14,7 @@
      }
  
      public static <T extends Mob> boolean shouldSwim(T mob) {

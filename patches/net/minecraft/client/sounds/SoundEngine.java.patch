@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/sounds/SoundEngine.java
 +++ b/net/minecraft/client/sounds/SoundEngine.java
-@@ -82,6 +_,7 @@
+@@ -83,6 +_,7 @@
          this.options = options;
          this.soundBuffers = new SoundBufferLibrary(resourceProvider);
          this.lastSeenDevices = this.deviceTracker.currentDevices();
@@ -8,7 +8,7 @@
      }
  
      public void reload() {
-@@ -99,6 +_,7 @@
+@@ -100,6 +_,7 @@
  
          this.destroy();
          this.loadLibrary();
@@ -16,7 +16,7 @@
      }
  
      private synchronized void loadLibrary() {
-@@ -345,7 +_,8 @@
+@@ -368,7 +_,8 @@
              return SoundEngine.PlayResult.NOT_STARTED;
          }
  
@@ -26,9 +26,9 @@
              return SoundEngine.PlayResult.NOT_STARTED;
          }
  
-@@ -430,15 +_,18 @@
+@@ -447,15 +_,18 @@
                      channel.setSelfPosition(position);
-                     channel.setRelative(isRelative);
+                     channel.setRelative(instance.isRelative());
                  });
 +                final SoundInstance soundinstance = instance;
                  if (!isStreaming) {

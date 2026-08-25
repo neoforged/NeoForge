@@ -17,7 +17,7 @@
 +            float bob = state.shouldBob ? Mth.sin(state.ageInTicks / 10.0F + state.bobOffset) * 0.1F + 0.1F : 0;
              poseStack.translate(0.0F, bob + minOffsetY, 0.0F);
              float spin = ItemEntity.getSpin(state.ageInTicks, state.bobOffset);
-             poseStack.mulPose(Axis.YP.rotation(spin));
+             poseStack.rotate(Axis.YP, spin);
 @@ -78,7 +_,9 @@
                      float xo = (random.nextFloat() * 2.0F - 1.0F) * 0.15F;
                      float yo = (random.nextFloat() * 2.0F - 1.0F) * 0.15F;

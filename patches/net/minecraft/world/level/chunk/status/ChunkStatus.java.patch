@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/status/ChunkStatus.java
 +++ b/net/minecraft/world/level/chunk/status/ChunkStatus.java
-@@ -59,6 +_,13 @@
+@@ -57,6 +_,13 @@
          this.chunkType = chunkType;
          this.heightmapsAfter = heightmapsAfter;
          this.index = parent == null ? 0 : parent.getIndex() + 1;
@@ -14,7 +14,7 @@
      }
  
      public int getIndex() {
-@@ -109,4 +_,16 @@
+@@ -107,4 +_,16 @@
      public String getName() {
          return BuiltInRegistries.CHUNK_STATUS.getKey(this).toString();
      }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/zombie/Drowned.java
 +++ b/net/minecraft/world/entity/monster/zombie/Drowned.java
-@@ -160,7 +_,7 @@
+@@ -137,7 +_,7 @@
      }
  
      public static boolean checkDrownedSpawnRules(

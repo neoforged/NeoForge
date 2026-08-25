@@ -1,6 +1,6 @@
 --- a/com/mojang/renderpearl/frontend/FrontendGpuDevice.java
 +++ b/com/mojang/renderpearl/frontend/FrontendGpuDevice.java
-@@ -33,7 +_,7 @@
+@@ -36,7 +_,7 @@
  @OnlyIn(Dist.CLIENT)
  public class FrontendGpuDevice implements GpuDevice {
      private static final Logger LOGGER = LogUtils.getLogger();
