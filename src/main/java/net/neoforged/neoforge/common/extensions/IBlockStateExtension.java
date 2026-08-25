@@ -354,29 +354,6 @@ public interface IBlockStateExtension {
     }
 
     /**
-     * Determines if this block can be used as the frame of a conduit.
-     *
-     * @param level   The current level
-     * @param pos     Block position in level
-     * @param conduit Conduit position in level
-     * @return True, to support the conduit, and make it active with this block.
-     */
-    default boolean isConduitFrame(LevelReader level, BlockPos pos, BlockPos conduit) {
-        return self().getBlock().isConduitFrame(self(), level, pos, conduit);
-    }
-
-    /**
-     * Determines if this block can be used as part of a frame of a nether portal.
-     *
-     * @param level The current level
-     * @param pos   Block position in level
-     * @return True, to support being part of a nether portal frame, false otherwise.
-     */
-    default boolean isPortalFrame(BlockGetter level, BlockPos pos) {
-        return self().getBlock().isPortalFrame(self(), level, pos);
-    }
-
-    /**
      * Returns how many experience points this block drops when broken, before application of {@linkplain EnchantmentEffectComponents#BLOCK_EXPERIENCE enchantments}.
      *
      * @param level       The level

@@ -202,13 +202,13 @@
 +    /// @deprecated Neo: use [#isEyeInFluid(net.neoforged.neoforge.fluids.FluidType)] instead
 +    @Deprecated
      public boolean isEyeInFluid(TagKey<Fluid> type) {
-+        return this.isEyeInFluid(EntityFluidInteraction.getFluidTypeByTag(type));
-+    }
-+
-+    public boolean isEyeInFluid(net.neoforged.neoforge.fluids.FluidType type) {
          return this.fluidInteraction.isEyeInFluid(type);
      }
  
++    public boolean isEyeInFluid(net.neoforged.neoforge.fluids.FluidType type) {
++        return this.fluidInteraction.isEyeInFluid(type);
++    }
++
      public boolean isInLava() {
 -        return !this.firstTick && this.fluidInteraction.isInFluid(FluidTags.LAVA);
 +        return !this.firstTick && this.fluidInteraction.isInFluid(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
@@ -362,20 +362,23 @@
          this.dimensions = newDim;
          this.eyeHeight = newDim.eyeHeight();
          this.reapplyPosition();
-@@ -3782,7 +_,13 @@
+@@ -3782,10 +_,16 @@
          return !this.level().hasChunksAt(x0, z0, x1, z1);
      }
  
 +    /// @deprecated Neo: use [#getFluidHeight(net.neoforged.neoforge.fluids.FluidType)] instead
 +    @Deprecated
      public double getFluidHeight(TagKey<Fluid> type) {
-+        return this.getFluidHeight(EntityFluidInteraction.getFluidTypeByTag(type));
-+    }
-+
-+    public double getFluidHeight(net.neoforged.neoforge.fluids.FluidType type) {
          return this.fluidInteraction.getFluidHeight(type);
      }
  
++    public double getFluidHeight(net.neoforged.neoforge.fluids.FluidType type) {
++        return this.fluidInteraction.getFluidHeight(type);
++    }
++
+     public double getFluidJumpThreshold() {
+         return this.getEyeHeight() < 0.4 ? 0.0 : 0.4;
+     }
 @@ -3937,6 +_,10 @@
                  }
              }
@@ -387,12 +390,10 @@
      }
  
      public void checkDespawn() {
-@@ -4090,6 +_,90 @@
- 
-     public boolean mayInteract(ServerLevel level, BlockPos pos) {
+@@ -4092,6 +_,90 @@
          return true;
-+    }
-+
+     }
+ 
 +    /**
 +     * Neo: Short-lived holder of dropped item entities. Used mainly for Neo hooks and event logic.
 +     * <p>
@@ -475,6 +476,20 @@
 +    @Nullable
 +    public final <T> T getCapability(net.neoforged.neoforge.capabilities.EntityCapability<T, @org.jspecify.annotations.Nullable Void> capability) {
 +        return capability.getCapability(this, null);
++    }
++
+     public boolean isFlyingVehicle() {
+         return false;
+     }
+@@ -4215,6 +_,11 @@
+ 
+     public int getInvulnerableTime() {
+         return this.invulnerableTime;
++    }
++
++    /// Neo: returns the [EntityFluidInteraction] tracking this entity's interactions with fluids
++    public EntityFluidInteraction getFluidInteraction() {
++        return this.fluidInteraction;
      }
  
-     public boolean isFlyingVehicle() {
+     protected @Nullable AABB modifyPassengerFluidInteractionBox(AABB passengerBox) {

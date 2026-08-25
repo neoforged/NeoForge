@@ -593,6 +593,18 @@
              )
              : 1.0F;
          Vec3 movement = this.handleRelativeFrictionAndCalculateMovement(input, blockFriction);
+@@ -2473,9 +_,10 @@
+         boolean isFalling = this.getDeltaMovement().y <= 0.0;
+         double oldY = this.getY();
+         double baseGravity = this.getEffectiveGravity();
++        if (!this.getFluidInteraction().isInFluidMatching(this, (entity, type, _) -> !type.isVanilla() && entity.moveInFluid(type, input, baseGravity)))
+         if (this.isInWater()) {
+             this.travelInWater(input, baseGravity, isFalling, oldY);
+-        } else {
++        } else if (this.isInLava()) { // Neo: only apply lava movement if the player is actually in lava and not another fluid
+             this.travelInLava(input, baseGravity, isFalling, oldY);
+         }
+ 
 @@ -2499,6 +_,7 @@
              slowDown = 0.96F;
          }
