@@ -554,7 +554,7 @@ public interface IItemExtension {
      * @param onBroken The on-broken callback from vanilla
      * @return The amount of damage to pass to the vanilla logic
      */
-    default <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<Item> onBroken) {
+    default <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<ItemStack> onBroken) {
         return amount;
     }
 

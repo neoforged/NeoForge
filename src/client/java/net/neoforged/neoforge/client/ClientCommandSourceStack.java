@@ -40,9 +40,8 @@ import org.jspecify.annotations.Nullable;
  * overrides for {@link CommandSourceStack} so that the methods will run successfully client side
  */
 public class ClientCommandSourceStack extends CommandSourceStack {
-    public ClientCommandSourceStack(CommandSource source, Vec3 position, Vec2 rotation, PermissionSet permissions, String plainTextName, Component displayName,
-            Entity executing) {
-        super(source, position, rotation, null, permissions, plainTextName, displayName, null, executing);
+    public ClientCommandSourceStack(CommandSource source, Vec3 position, Vec2 rotation, PermissionSet permissions, Entity executing) {
+        super(source, position, rotation, null, permissions, null, executing);
     }
 
     /**

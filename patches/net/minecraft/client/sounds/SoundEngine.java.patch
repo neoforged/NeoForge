@@ -26,9 +26,25 @@
              return SoundEngine.PlayResult.NOT_STARTED;
          }
  
-@@ -447,15 +_,18 @@
+@@ -434,10 +_,11 @@
+                 this.instanceToChannel.put(instance, handle);
+                 this.instanceBySource.put(soundSource, instance);
+                 float pitch = this.calculatePitch(instance);
++                SoundInstance finalInstance = instance;
+                 handle.execute(channel -> {
+                     channel.setPitch(pitch);
+                     channel.setVolume(volume);
+-                    if (instance.getAttenuation() == SoundInstance.Attenuation.LINEAR) {
++                    if (finalInstance.getAttenuation() == SoundInstance.Attenuation.LINEAR) {
+                         channel.linearAttenuation(attenuationDistance);
+                     } else {
+                         channel.disableAttenuation();
+@@ -445,17 +_,20 @@
+ 
+                     channel.setLooping(isLooping && !isStreaming);
                      channel.setSelfPosition(position);
-                     channel.setRelative(instance.isRelative());
+-                    channel.setRelative(instance.isRelative());
++                    channel.setRelative(finalInstance.isRelative());
                  });
 +                final SoundInstance soundinstance = instance;
                  if (!isStreaming) {
