@@ -11,6 +11,7 @@ import net.minecraft.client.PeriodicNotificationManager;
 import net.minecraft.client.gui.font.FontManager;
 import net.minecraft.client.particle.ParticleResources;
 import net.minecraft.client.renderer.CloudRenderer;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.GpuWarnlistManager;
 import net.minecraft.client.renderer.ShaderManager;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
@@ -77,6 +78,8 @@ public class VanillaClientListeners {
     public static final Identifier BLOCK_ENTITY_RENDERER = key(BlockEntityRenderDispatcher.class);
 
     public static final Identifier PARTICLE_RESOURCES = key(ParticleResources.class);
+
+    public static final Identifier CLEAR_FAILED_POST_EFFECTS = key(GameRenderer.ClearFailedPostEffects.class);
 
     public static final Identifier WAYPOINT_STYLES = key(WaypointStyleManager.class);
 
