@@ -30,7 +30,7 @@
                                  Vec3 flow = fluidState.getFlow(level, mutablePos);
                                  current.height = Math.max(tracker.height, current.height);
                                  if (current.height < 0.4) {
-@@ -145,28 +_,48 @@
+@@ -145,23 +_,39 @@
          return tracker;
      }
  
@@ -77,22 +77,24 @@
 +    /// @deprecated Neo: use [#getFluidHeight(net.neoforged.neoforge.fluids.FluidType)] instead
 +    @Deprecated
      public double getFluidHeight(TagKey<Fluid> fluid) {
-+        return this.getFluidHeight(getFluidTypeByTag(fluid));
-+    }
-+
-+    public double getFluidHeight(net.neoforged.neoforge.fluids.FluidType fluid) {
          double height = 0.0;
  
-         for (EntityFluidInteraction.Tracker tracker : this.fluidTrackers) {
--            if (tracker.height > height && tracker.fluidType.is(fluid)) {
-+            if (tracker.height > height && tracker.fluidType.value().getFluidType() == fluid) {
-                 height = tracker.height;
-             }
-         }
-@@ -174,24 +_,112 @@
+@@ -174,10 +_,70 @@
          return height;
      }
  
++    public double getFluidHeight(net.neoforged.neoforge.fluids.FluidType fluid) {
++        double height = 0.0;
++
++        for (EntityFluidInteraction.Tracker tracker : this.fluidTrackers) {
++            if (tracker.height > height && tracker.fluidType.value().getFluidType() == fluid) {
++                height = tracker.height;
++            }
++        }
++
++        return height;
++    }
++
 +    public <E extends Entity> double getMaxFluidHeightMatching(E entity, net.neoforged.neoforge.fluids.InFluidPredicate<E> predicate) {
 +        double maxHeight = 0D;
 +        for (Tracker tracker : this.fluidTrackers) {
@@ -118,13 +120,13 @@
 +    /// @deprecated Neo: use [#isInFluid(net.neoforged.neoforge.fluids.FluidType)] instead
 +    @Deprecated
      public boolean isInFluid(TagKey<Fluid> fluid) {
-+        return this.isInFluid(getFluidTypeByTag(fluid));
-+    }
-+
-+    public boolean isInFluid(net.neoforged.neoforge.fluids.FluidType fluid) {
          return this.getFluidHeight(fluid) > 0.0;
      }
  
++    public boolean isInFluid(net.neoforged.neoforge.fluids.FluidType fluid) {
++        return this.getFluidHeight(fluid) > 0.0;
++    }
++
 +    public boolean isInAnyFluid() {
 +        for (Tracker tracker : this.fluidTrackers) {
 +            if (tracker.height > 0D) {
@@ -146,17 +148,14 @@
 +    /// @deprecated Neo: use [#isEyeInFluid(net.neoforged.neoforge.fluids.FluidType)] instead
 +    @Deprecated
      public boolean isEyeInFluid(TagKey<Fluid> fluid) {
-+        return this.isEyeInFluid(getFluidTypeByTag(fluid));
-+    }
-+
-+    public boolean isEyeInFluid(net.neoforged.neoforge.fluids.FluidType fluid) {
          for (EntityFluidInteraction.Tracker tracker : this.fluidTrackers) {
--            if (tracker.eyesInside && tracker.fluidType.is(fluid)) {
--                return true;
--            }
--        }
--
--        return false;
+             if (tracker.eyesInside && tracker.fluidType.is(fluid)) {
+@@ -188,10 +_,56 @@
+         return false;
+     }
+ 
++    public boolean isEyeInFluid(net.neoforged.neoforge.fluids.FluidType fluid) {
++        for (EntityFluidInteraction.Tracker tracker : this.fluidTrackers) {
 +            if (tracker.eyesInside && tracker.fluidType.value().getFluidType() == fluid) {
 +                return true;
 +            }
@@ -191,8 +190,8 @@
 +        } else {
 +            throw new IllegalArgumentException("Cannot look up tracker by tag for non-vanilla fluid: " + fluidTag);
 +        }
-     }
- 
++    }
++
      private static class CurrentAccumulator {
          private double height;
          private Vec3 accumulatedCurrent = Vec3.ZERO;

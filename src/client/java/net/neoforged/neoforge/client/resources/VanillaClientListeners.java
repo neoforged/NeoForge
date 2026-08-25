@@ -79,7 +79,7 @@ public class VanillaClientListeners {
 
     public static final Identifier PARTICLE_RESOURCES = key(ParticleResources.class);
 
-    public static final Identifier CLEAR_FAILED_POST_EFFECTS = key(GameRenderer.ClearFailedPostEffects.class);
+    public static final Identifier GAME_RENDERER = key(GameRenderer.class);
 
     public static final Identifier WAYPOINT_STYLES = key(WaypointStyleManager.class);
 

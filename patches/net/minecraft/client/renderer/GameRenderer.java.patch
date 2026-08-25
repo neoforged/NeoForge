@@ -55,16 +55,3 @@
          this.render3dHud(cameraState, playerState, optionsState, consistentDepthRequired);
      }
  
-@@ -843,5 +_,12 @@
- 
-     public boolean useImprovedTransparency() {
-         return this.gameRenderState.optionsRenderState.improvedTransparency && !this.gameRenderState.levelRenderState.renderWireframeTerrain;
-+    }
-+
-+    public final class ClearFailedPostEffects implements ResourceManagerReloadListener {
-+        @Override
-+        public void onResourceManagerReload(net.minecraft.server.packs.resources.ResourceManager resourceManager) {
-+            GameRenderer.this.shouldResetFailedPostEffects = true;
-+        }
-     }
- }

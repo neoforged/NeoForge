@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/entity/monster/Shulker.java
 +++ b/net/minecraft/world/entity/monster/Shulker.java
-@@ -401,6 +401,13 @@
-                     && this.level().getWorldBorder().isWithinBounds(target)
-                     && this.level().noCollision(this, new AABB(target).deflate(1.0E-6))) {
+@@ -403,6 +_,13 @@
+                     && level.getWorldBorder().isWithinBounds(target)
+                     && level.noCollision(this, new AABB(target).deflate(1.0E-6))) {
                      Direction attachmentDirection = this.findAttachableSurface(target);
 +                    if (attachmentDirection != null) {
 +                        net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = net.neoforged.neoforge.event.EventHooks.onEnderTeleport(this, target.getX(), target.getY(), target.getZ());

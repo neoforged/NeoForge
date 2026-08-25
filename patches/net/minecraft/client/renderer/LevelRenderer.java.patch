@@ -18,6 +18,22 @@
          this.finalizeGizmoCollection();
          this.finalizedGizmos.standardPrimitives().submit(submitNodeCollector, levelRenderState.cameraRenderState, false);
          this.finalizedGizmos.alwaysOnTopPrimitives().submit(submitNodeCollector, levelRenderState.cameraRenderState, true);
+@@ -360,7 +_,14 @@
+             if (state.skybox != DimensionType.Skybox.NONE) {
+                 FramePass pass = frame.addPass("sky");
+                 this.targets.main = pass.readsAndWrites(this.targets.main);
+-                pass.executes(() -> this.skyRenderer.render(skyFog, state));
++                pass.executes(() -> {
++                    if (this.levelRenderState.customSkyboxRenderer == null || !this.levelRenderState.customSkyboxRenderer.renderSky(levelRenderState, state, cameraState.viewRotationMatrix, () -> RenderSystem.setShaderFog(skyFog))) {
++                        this.skyRenderer.render(skyFog, state);
++                    }
++                    Profiler.get().push("neoforge_render_after_sky");
++                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterSky(this, this.levelRenderState, null, cameraState.viewRotationMatrix, this.visibleSections));
++                    Profiler.get().pop();
++                });
+             }
+         }
+     }
 @@ -503,8 +_,12 @@
          chunkSectionsToRender.renderGroup(
              ChunkSectionLayerGroup.OPAQUE, renderPass, this.chunkLayerSampler, blockAtlas, this.levelRenderState.renderWireframeTerrain
