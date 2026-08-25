@@ -93,7 +93,6 @@ public class ClientModLoader extends CommonModLoader {
         if (!warnings.isEmpty()) {
             // Always log these warnings.
             // If the warning screen is shown then it provides a link to latest.log, and they should be found there.
-            // If the user disabled the warning screen, we should at least log them.
             LOGGER.warn(Logging.LOADING, "Mods loaded with {} warning(s)", warnings.size());
             for (var warning : warnings) {
                 LOGGER.warn(Logging.LOADING, FMLTranslations.translateIssueEnglish(warning));
