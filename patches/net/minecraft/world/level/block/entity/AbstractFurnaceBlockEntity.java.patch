@@ -43,7 +43,21 @@
              items.set(1, remainder != null ? remainder.create() : ItemStack.EMPTY);
          }
      }
-@@ -316,17 +_,57 @@
+@@ -260,11 +_,11 @@
+     }
+ 
+     protected int getBurnDuration(ServerLevel level, ItemStack fuelItem) {
+-        return ResolvableNumber.getIntFromItem(fuelItem, DataComponents.COOKING_FUEL, CookingFuel::burnTime, this.getLootContext(level), 0);
++        return ResolvableNumber.getIntFromItem(fuelItem, DataComponents.COOKING_FUEL, CookingFuel::burnTime, this.getLootContext(level, fuelItem), 0);
+     }
+ 
+     protected float getSpeedMultiplier(ServerLevel level, ItemStack fuelItem) {
+-        return ResolvableNumber.getFloatFromItem(fuelItem, DataComponents.COOKING_FUEL, CookingFuel::speedMultiplier, this.getLootContext(level), 1.0F);
++        return ResolvableNumber.getFloatFromItem(fuelItem, DataComponents.COOKING_FUEL, CookingFuel::speedMultiplier, this.getLootContext(level, fuelItem), 1.0F);
+     }
+ 
+     private static int getTotalCookTime(RecipeHolder<? extends AbstractCookingRecipe> recipe, AbstractFurnaceBlockEntity entity) {
+@@ -316,14 +_,54 @@
  
      @Override
      public void setItem(int slot, ItemStack itemStack) {
@@ -62,9 +76,9 @@
              this.cookingTotalTime = getTotalCookTime(serverLevel, this);
              this.cookingTimer = 0;
              this.setChanged();
-         }
-     }
- 
++        }
++    }
++
 +    // Neo: Reset cooking time when the input changes inside a transaction
 +    private boolean needsCookingReset = false;
 +    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Boolean> cookingResetJournal = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Boolean>() {
@@ -96,18 +110,6 @@
 +                cookingResetJournal.updateSnapshots(transaction);
 +                needsCookingReset = true;
 +            }
-+        }
-+    }
-+
-     @Override
-     public boolean canPlaceItem(int slot, ItemStack itemStack) {
-         if (slot == 2) {
-@@ -338,7 +_,7 @@
          }
- 
-         ItemStack fuelSlot = this.items.get(1);
--        return itemStack.has(DataComponents.COOKING_FUEL) || itemStack.is(Items.BUCKET) && !fuelSlot.is(Items.BUCKET);
-+        return itemStack.getBurnTime(this.recipeType, this.level.fuelValues()) > 0 || itemStack.is(Items.BUCKET) && !fuelSlot.is(Items.BUCKET);
      }
  
-     @Override

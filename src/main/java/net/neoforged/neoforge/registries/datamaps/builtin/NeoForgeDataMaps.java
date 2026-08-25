@@ -17,13 +17,10 @@ import net.minecraft.world.entity.npc.villager.VillagerType;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WeatheringCopper;
-import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
@@ -57,21 +54,6 @@ public class NeoForgeDataMaps {
      */
     public static final DataMapType<EntityType<?>, AcceptableVillagerDistance> ACCEPTABLE_VILLAGER_DISTANCES = DataMapType.builder(id("acceptable_villager_distances"), Registries.ENTITY_TYPE, AcceptableVillagerDistance.CODEC)
             .synced(AcceptableVillagerDistance.DISTANCE_CODEC, false).build();
-    /**
-     * The {@linkplain Item} data map that replaces {@link AbstractFurnaceBlockEntity#getFuel()}.
-     * <p>
-     * The location of this data map is {@code neoforge/data_maps/item/furnace_fuels.json}, and the values are objects with 1 field:
-     * <ul>
-     * <li>{@code burn_time}, a positive integer - how long the item will burn, in ticks</li>
-     * </ul>
-     *
-     * The use of a integer as the value is also possible, though discouraged in case more options are added in the future.
-     *
-     * @apiNote Use {@link net.neoforged.neoforge.common.extensions.IItemExtension#getBurnTime(ItemStack, RecipeType)} for NBT-sensitive burn times. That method takes precedence over the data map.
-     * @implNote This data map will be empty when connected to a Vanilla server.
-     */
-    public static final DataMapType<Item, FurnaceFuel> FURNACE_FUELS = DataMapType.builder(
-            id("furnace_fuels"), Registries.ITEM, FurnaceFuel.CODEC).synced(FurnaceFuel.BURN_TIME_CODEC, false).build();
 
     /**
      * The {@linkplain EntityType} data map that replaces {@link MonsterRoomFeature#MOBS}.
@@ -196,7 +178,6 @@ public class NeoForgeDataMaps {
     @SubscribeEvent
     private static void register(final RegisterDataMapTypesEvent event) {
         event.register(ACCEPTABLE_VILLAGER_DISTANCES);
-        event.register(FURNACE_FUELS);
         event.register(MONSTER_ROOM_MOBS);
         event.register(OXIDIZABLES);
         event.register(PARROT_IMITATIONS);
