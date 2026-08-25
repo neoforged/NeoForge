@@ -67,6 +67,7 @@ import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
+import net.minecraft.client.input.PreeditEvent;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -580,6 +581,16 @@ public class ClientHooks {
 
     public static void onScreenCharTypedPost(Screen guiScreen, CharacterEvent charEvent) {
         Event event = new ScreenEvent.CharacterTyped.Post(guiScreen, charEvent);
+        NeoForge.EVENT_BUS.post(event);
+    }
+
+    public static boolean onScreenPreeditPre(Screen guiScreen, @Nullable PreeditEvent preeditEvent) {
+        var event = new ScreenEvent.Preedit.Pre(guiScreen, preeditEvent);
+        return NeoForge.EVENT_BUS.post(event).isCanceled();
+    }
+
+    public static void onScreenPreeditPost(Screen guiScreen, @Nullable PreeditEvent preeditEvent) {
+        Event event = new ScreenEvent.Preedit.Post(guiScreen, preeditEvent);
         NeoForge.EVENT_BUS.post(event);
     }
 
