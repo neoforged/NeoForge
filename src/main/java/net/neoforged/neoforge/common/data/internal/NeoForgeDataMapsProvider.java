@@ -46,7 +46,6 @@ import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.data.DataMapProvider;
 import net.neoforged.neoforge.registries.datamaps.builtin.AcceptableVillagerDistance;
 import net.neoforged.neoforge.registries.datamaps.builtin.BiomeVillagerType;
-import net.neoforged.neoforge.registries.datamaps.builtin.Compostable;
 import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
 import net.neoforged.neoforge.registries.datamaps.builtin.MonsterRoomMob;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
@@ -55,6 +54,7 @@ import net.neoforged.neoforge.registries.datamaps.builtin.ParrotImitation;
 import net.neoforged.neoforge.registries.datamaps.builtin.RaidHeroGift;
 import net.neoforged.neoforge.registries.datamaps.builtin.Strippable;
 import net.neoforged.neoforge.registries.datamaps.builtin.VibrationFrequency;
+import net.neoforged.neoforge.registries.datamaps.builtin.VillagerCompostable;
 import net.neoforged.neoforge.registries.datamaps.builtin.Waxable;
 
 public class NeoForgeDataMapsProvider extends DataMapProvider {
@@ -67,10 +67,6 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
         final var biomeVillagers = builder(NeoForgeDataMaps.VILLAGER_TYPES);
         ObfuscationReflectionHelper.<Map<ResourceKey<Biome>, ResourceKey<VillagerType>>, VillagerType>getPrivateValue(VillagerType.class, null, "BY_BIOME")
                 .forEach((biome, type) -> biomeVillagers.add(biome, new BiomeVillagerType(type), false));
-
-        final var compostables = builder(NeoForgeDataMaps.COMPOSTABLES);
-        final List<Item> villagerCompostables = ObfuscationReflectionHelper.getPrivateValue(WorkAtComposter.class, null, "COMPOSTABLE_ITEMS");
-        ComposterBlock.COMPOSTABLES.forEach((item, chance) -> compostables.add(item.asItem().builtInRegistryHolder(), new Compostable(chance, villagerCompostables.contains(item.asItem())), false));
 
         final var acceptableVillagerDistances = builder(NeoForgeDataMaps.ACCEPTABLE_VILLAGER_DISTANCES);
         ObfuscationReflectionHelper.<ImmutableMap<EntityType<?>, Float>, VillagerHostilesSensor>getPrivateValue(VillagerHostilesSensor.class, null, "ACCEPTABLE_DISTANCE_FROM_HOSTILES")
@@ -103,6 +99,10 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
         WeatheringCopper.NEXT_BY_BLOCK.get().forEach((now, after) -> {
             oxidizables.add(now.builtInRegistryHolder(), new Oxidizable(after), false);
         });
+
+        final var compostables = builder(NeoForgeDataMaps.VILLAGER_COMPOSTABLES);
+        final List<Item> villagerCompostables = ObfuscationReflectionHelper.getPrivateValue(WorkAtComposter.class, null, "COMPOSTABLE_ITEMS");
+        villagerCompostables.forEach(item -> compostables.add(item.builtInRegistryHolder(), new VillagerCompostable(true), false));
 
         final var waxables = builder(NeoForgeDataMaps.WAXABLES);
         HoneycombItem.WAXABLES.get().forEach((now, after) -> {
