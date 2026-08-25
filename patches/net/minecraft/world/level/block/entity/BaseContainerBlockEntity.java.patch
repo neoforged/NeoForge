@@ -19,3 +19,22 @@
      }
  
      @Override
+@@ -178,12 +_,18 @@
+     }
+ 
+     protected LootContext getLootContext(ServerLevel level) {
++        return this.getLootContext(level, ItemStack.EMPTY);
++    }
++
++    /// Neo: add queried stack for cases where the loot context is used to query a data component which may want to access other components on the stack.
++    protected LootContext getLootContext(ServerLevel level, ItemStack queriedStack) {
+         return new LootContext.Builder(
+                 new LootParams.Builder(level)
+                     .withParameter(LootContextParams.BLOCK_STATE, this.getBlockState())
+                     .withParameter(LootContextParams.BLOCK_ENTITY, this)
+                     .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(this.getBlockPos()))
+                     .withParameter(LootContextParams.CONTAINER, this)
++                    .withOptionalParameter(net.neoforged.neoforge.common.loot.NeoForgeLootContextParams.QUERIED_STACK, queriedStack.isEmpty() ? null : queriedStack)
+                     .create(LootContextParamSets.CONTAINER_PROCESS)
+             )
+             .create(Optional.empty());

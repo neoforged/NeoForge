@@ -18,3 +18,11 @@
      );
      public static final ContextKeySet ENTITY = register(
          "entity",
+@@ -135,6 +_,7 @@
+             .required(LootContextParams.BLOCK_STATE)
+             .required(LootContextParams.CONTAINER)
+             .required(LootContextParams.ORIGIN)
++            .optional(net.neoforged.neoforge.common.loot.NeoForgeLootContextParams.QUERIED_STACK) // Neo: add the stack whose data is being queried with the context (i.e. fuel item in a furnace)
+     );
+     public static final ContextKeySet ENCHANTED_DAMAGE = register(
+         "enchanted_damage",
