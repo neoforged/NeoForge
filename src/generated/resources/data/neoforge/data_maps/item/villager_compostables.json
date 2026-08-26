@@ -1,0 +1,10 @@
+{
+  "values": {
+    "minecraft:beetroot_seeds": {
+      "can_villager_compost": true
+    },
+    "minecraft:wheat_seeds": {
+      "can_villager_compost": true
+    }
+  }
+}
