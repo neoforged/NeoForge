@@ -9,10 +9,21 @@
      private final Map<ResourceKey<Recipe<?>>, RecipeHolder<?>> byKey;
  
      private RecipeMap(Multimap<RecipeType<?>, RecipeHolder<?>> byType, Map<ResourceKey<Recipe<?>>, RecipeHolder<?>> byKey) {
-@@ -31,6 +_,25 @@
+@@ -31,6 +_,36 @@
              byKey.put(recipe.key(), legacyRecipeHolder);
          });
          return new RecipeMap(byType.build(), byKey.build());
++    }
++
++    /// Neo: add factory method for RecipeMap holding recipes synced to the client
++    public static RecipeMap createClient(java.util.List<RecipeHolder<?>> recipes) {
++        Builder<RecipeType<?>, RecipeHolder<?>> byType = ImmutableMultimap.builder();
++        com.google.common.collect.ImmutableMap.Builder<ResourceKey<Recipe<?>>, RecipeHolder<?>> byKey = ImmutableMap.builder();
++        for (RecipeHolder<?> recipe : recipes) {
++            byType.put(recipe.value().getType(), recipe);
++            byKey.put(recipe.id(), recipe);
++        }
++        return new RecipeMap(byType.build(), byKey.build());
 +    }
 +
 +    // Neo: handle ordering according to any recipe priorities
