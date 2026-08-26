@@ -1021,7 +1021,7 @@ public class EntityFluidInteractionTests {
                     })
                     .thenExecuteAfter(20, () -> {
                         pushableEntity.set(helper.spawnZombieWithNoFreeWill(pushableEntityPos));
-                        nonPushableEntity.set(helper.spawnWithNoFreeWill(EntityTypes.PIG, nonPushableEntityPos));
+                        nonPushableEntity.set(helper.spawnWithNoFreeWill(EntityType.PIG, nonPushableEntityPos));
                     })
                     .thenExecuteAfter(40, () -> {
                         helper.assertEntityPosition(pushableEntity.get(), pushableEntityPos, (p1, p2) -> !p1.equals(p2), "Expected Zombie to be pushed by Steam");
@@ -1334,7 +1334,7 @@ public class EntityFluidInteractionTests {
 
         @Override
         public boolean canPushEntity(Entity entity) {
-            return entity.getType() == EntityTypes.ZOMBIE;
+            return entity.getType() == EntityType.ZOMBIE;
         }
     }
 
