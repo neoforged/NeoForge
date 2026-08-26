@@ -11,11 +11,12 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
 import net.minecraft.client.renderer.texture.atlas.SpriteSource;
 import net.minecraft.client.renderer.texture.atlas.sources.LazyLoadedImage;
 import net.minecraft.client.renderer.texture.atlas.sources.PalettedPermutations;
+import net.minecraft.client.resources.palette.Palette;
+import net.minecraft.client.resources.palette.PaletteMapping;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
@@ -56,16 +57,16 @@ public record DirectoryPalettedPermutations(String texturePath, Identifier palet
             paletteTextures.put(path, id);
         });
 
-        Supplier<int[]> palette = Suppliers.memoize(() -> PalettedPermutations.loadPaletteEntryFromImage(manager, this.paletteKey()));
-        Map<String, Supplier<IntUnaryOperator>> mappedTextures = new HashMap<>();
-        paletteTextures.forEach((name, location) -> mappedTextures.put(name, Suppliers.memoize(() -> PalettedPermutations.createPaletteMapping(palette.get(), PalettedPermutations.loadPaletteEntryFromImage(manager, location)))));
+        Supplier<Palette> palette = Suppliers.memoize(() -> PalettedPermutations.loadPaletteEntryFromImage(manager, this.paletteKey()));
+        Map<String, Supplier<PaletteMapping>> mappedTextures = new HashMap<>();
+        paletteTextures.forEach((name, location) -> mappedTextures.put(name, Suppliers.memoize(() -> PaletteMapping.create(palette.get(), PalettedPermutations.loadPaletteEntryFromImage(manager, location)))));
 
         for (Map.Entry<Identifier, Resource> trimEntry : trimTextures.entrySet()) {
             Identifier trimLocation = TEXTURE_ID_CONVERTER.idToFile(trimEntry.getKey());
 
             LazyLoadedImage lazyloadedimage = new LazyLoadedImage(trimLocation, trimEntry.getValue(), mappedTextures.size());
 
-            for (Map.Entry<String, Supplier<IntUnaryOperator>> mappedEntry : mappedTextures.entrySet()) {
+            for (Map.Entry<String, Supplier<PaletteMapping>> mappedEntry : mappedTextures.entrySet()) {
                 Identifier mappedTrimLocation = trimEntry.getKey().withSuffix("_" + mappedEntry.getKey());
                 output.add(mappedTrimLocation, new PalettedPermutations.PalettedSpriteSupplier(lazyloadedimage, mappedEntry.getValue(), mappedTrimLocation));
             }
