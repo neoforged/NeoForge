@@ -26,10 +26,8 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.entity.projectile.hurtingprojectile.WitherSkull;
-import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.level.BlockAndLightGetter;
@@ -788,15 +786,11 @@ public interface IBlockExtension {
         if (!itemStack.canPerformAction(itemAbility))
             return null;
 
-        if (ItemAbilities.AXE_STRIP == itemAbility) {
-            return AxeItem.getAxeStrippingState(state);
-        } else if (ItemAbilities.AXE_SCRAPE == itemAbility) {
+        if (ItemAbilities.AXE_SCRAPE == itemAbility) {
             return WeatheringCopper.getPrevious(state).orElse(null);
         } else if (ItemAbilities.AXE_WAX_OFF == itemAbility) {
             Block waxOffBlock = DataMapHooks.getBlockUnwaxed(state.getBlock());
             return Optional.ofNullable(waxOffBlock).map(block -> block.withPropertiesOf(state)).orElse(null);
-        } else if (ItemAbilities.SHOVEL_FLATTEN == itemAbility) {
-            return ShovelItem.getShovelPathingState(state);
         } else if (ItemAbilities.HOE_TILL == itemAbility) {
             // Logic copied from HoeItem#TILLABLES; needs to be kept in sync during updating
             Block block = state.getBlock();
