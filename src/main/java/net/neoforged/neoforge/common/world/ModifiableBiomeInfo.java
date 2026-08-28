@@ -13,6 +13,7 @@ import java.util.List;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.world.attribute.EnvironmentAttributeMap;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biome.ClimateSettings;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
@@ -103,36 +104,43 @@ public class ModifiableBiomeInfo {
      * @param effects            Client-relevant effects for rendering and sound.
      * @param generationSettings Worldgen features and carvers.
      */
-    public record BiomeInfo(ClimateSettings climateSettings, BiomeSpecialEffects effects, BiomeGenerationSettings generationSettings) {
+    public record BiomeInfo(ClimateSettings climateSettings, EnvironmentAttributeMap attributes, BiomeSpecialEffects effects, BiomeGenerationSettings generationSettings) {
         public static class Builder {
-            private ClimateSettingsBuilder climateSettings;
-            private BiomeSpecialEffectsBuilder effects;
-            private BiomeGenerationSettingsBuilder generationSettings;
+            private final ClimateSettingsBuilder climateSettings;
+            private final EnvironmentAttributeMapBuilder attributes;
+            private final BiomeSpecialEffectsBuilder effects;
+            private final BiomeGenerationSettingsBuilder generationSettings;
 
             /**
              * @param original the biome to copy
              * @return A ModifiedBiomeInfo.Builder with a copy of the biome's data
              */
             public static Builder copyOf(final BiomeInfo original) {
-                final ClimateSettingsBuilder climateBuilder = ClimateSettingsBuilder.copyOf(original.climateSettings());
-                final BiomeSpecialEffectsBuilder effectsBuilder = BiomeSpecialEffectsBuilder.copyOf(original.effects());
-                final BiomeGenerationSettingsBuilder generationBuilder = new BiomeGenerationSettingsBuilder(original.generationSettings());
+                ClimateSettingsBuilder climateBuilder = ClimateSettingsBuilder.copyOf(original.climateSettings());
+                EnvironmentAttributeMapBuilder attributesBuilder = EnvironmentAttributeMapBuilder.copyOf(original.attributes());
+                BiomeSpecialEffectsBuilder effectsBuilder = BiomeSpecialEffectsBuilder.copyOf(original.effects());
+                BiomeGenerationSettingsBuilder generationBuilder = new BiomeGenerationSettingsBuilder(original.generationSettings());
 
-                return new Builder(climateBuilder, effectsBuilder, generationBuilder);
+                return new Builder(climateBuilder, attributesBuilder, effectsBuilder, generationBuilder);
             }
 
-            private Builder(final ClimateSettingsBuilder climateSettings, final BiomeSpecialEffectsBuilder effects, final BiomeGenerationSettingsBuilder generationSettings) {
+            private Builder(ClimateSettingsBuilder climateSettings, EnvironmentAttributeMapBuilder attributes, BiomeSpecialEffectsBuilder effects, BiomeGenerationSettingsBuilder generationSettings) {
                 this.climateSettings = climateSettings;
+                this.attributes = attributes;
                 this.effects = effects;
                 this.generationSettings = generationSettings;
             }
 
             public BiomeInfo build() {
-                return new BiomeInfo(this.climateSettings.build(), this.effects.build(), this.generationSettings.build());
+                return new BiomeInfo(this.climateSettings.build(), this.attributes.build(), this.effects.build(), this.generationSettings.build());
             }
 
             public ClimateSettingsBuilder getClimateSettings() {
                 return climateSettings;
+            }
+
+            public EnvironmentAttributeMapBuilder getAttributes() {
+                return attributes;
             }
 
             public BiomeSpecialEffectsBuilder getSpecialEffects() {
