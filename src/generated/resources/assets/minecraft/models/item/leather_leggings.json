@@ -1,0 +1,11 @@
+{
+  "base_model": {
+    "parent": "minecraft:item/generated",
+    "textures": {
+      "layer0": "minecraft:item/leather_leggings",
+      "layer1": "minecraft:item/leather_leggings_overlay"
+    }
+  },
+  "base_trim_texture": "minecraft:trims/items/leggings_trim",
+  "loader": "neoforge:trimmed_armor"
+}

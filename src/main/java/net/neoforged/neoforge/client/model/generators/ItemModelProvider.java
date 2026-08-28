@@ -9,8 +9,11 @@ import java.util.Objects;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.client.model.generators.loaders.TrimmedArmorModelBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 /**
@@ -57,6 +60,21 @@ public abstract class ItemModelProvider extends ModelProvider<ItemModelBuilder> 
 
     public ItemModelBuilder simpleBlockItem(ResourceLocation block) {
         return withExistingParent(block.toString(), ResourceLocation.fromNamespaceAndPath(block.getNamespace(), "block/" + block.getPath()));
+    }
+
+    public TrimmedArmorModelBuilder<ItemModelBuilder> dynamicTrimmableItem(ArmorItem armor) {
+        ResourceLocation armorId = Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(armor));
+        ResourceLocation armorTexture = armorId.withPrefix("item/");
+
+        ItemModelBuilder baseModel = nested().parent(new ModelFile.UncheckedModelFile("item/generated")).texture("layer0", armorTexture);
+        if (armor.getMaterial() == ArmorMaterials.LEATHER)
+            baseModel = baseModel.texture("layer1", armorTexture.withSuffix("_overlay"));
+
+        return dynamicTrimmableItem(armorId, baseModel, mcLoc("trims/items/" + armor.getType().getName() + "_trim"));
+    }
+
+    public TrimmedArmorModelBuilder<ItemModelBuilder> dynamicTrimmableItem(ResourceLocation armor, ItemModelBuilder baseModel, ResourceLocation baseTrimTexture) {
+        return getBuilder(armor.toString()).customLoader(TrimmedArmorModelBuilder::begin).baseModel(baseModel).baseTrimTexture(baseTrimTexture);
     }
 
     @Override

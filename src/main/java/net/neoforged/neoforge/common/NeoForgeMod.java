@@ -120,6 +120,7 @@ import net.neoforged.neoforge.common.data.internal.NeoForgeRecipeProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeRegistryOrderReportProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeSpriteSourceProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeStructureTagsProvider;
+import net.neoforged.neoforge.common.data.internal.VanillaItemModelProvider;
 import net.neoforged.neoforge.common.data.internal.VanillaSoundDefinitionsProvider;
 import net.neoforged.neoforge.common.extensions.IPlayerExtension;
 import net.neoforged.neoforge.common.loot.AddTableLootModifier;
@@ -643,6 +644,7 @@ public class NeoForgeMod {
         gen.addProvider(event.includeServer(), new NeoForgeDataMapsProvider(packOutput, lookupProvider));
 
         gen.addProvider(event.includeClient(), new NeoForgeSpriteSourceProvider(packOutput, lookupProvider, existingFileHelper));
+        gen.addProvider(event.includeClient(), new VanillaItemModelProvider(packOutput, existingFileHelper));
         gen.addProvider(event.includeClient(), new VanillaSoundDefinitionsProvider(packOutput, existingFileHelper));
         gen.addProvider(event.includeClient(), new NeoForgeLanguageProvider(packOutput));
     }
