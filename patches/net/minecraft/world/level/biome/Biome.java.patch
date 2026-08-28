@@ -28,7 +28,7 @@
          this.attributes = attributes;
          this.specialEffects = specialEffects;
          this.generationSettings = generationSettings;
-+        this.modifiableBiomeInfo = new net.neoforged.neoforge.common.world.ModifiableBiomeInfo(new net.neoforged.neoforge.common.world.ModifiableBiomeInfo.BiomeInfo(climateSettings, specialEffects, generationSettings)); // FORGE: cache original biome info on construction so we can bypass our field read coremods where necessary
++        this.modifiableBiomeInfo = new net.neoforged.neoforge.common.world.ModifiableBiomeInfo(new net.neoforged.neoforge.common.world.ModifiableBiomeInfo.BiomeInfo(climateSettings, attributes, specialEffects, generationSettings)); // Neo: cache original biome info on construction so we can bypass our field read coremods where necessary
      }
  
      public boolean hasPrecipitation() {
