@@ -143,9 +143,11 @@
      }
  
      void updateInWaterStateAndDoWaterCurrentPushing() {
-@@ -1279,6 +_,7 @@
+@@ -1278,7 +_,9 @@
+ 
      private void updateFluidOnEyes() {
          this.wasEyeInWater = this.isEyeInFluid(FluidTags.WATER);
++        this.wasTouchingWater |= this.wasEyeInWater;
          this.fluidOnEyes.clear();
 +        this.forgeFluidTypeOnEyes = net.neoforged.neoforge.common.NeoForgeMod.EMPTY_TYPE.value();
          double d0 = this.getEyeY();
@@ -193,7 +195,7 @@
  
      public boolean isInLava() {
 -        return !this.firstTick && this.fluidHeight.getDouble(FluidTags.LAVA) > 0.0;
-+        return !this.firstTick && this.forgeFluidTypeHeight.getDouble(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value()) > 0.0D;
++        return !this.firstTick && (this.forgeFluidTypeHeight.getDouble(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value()) > 0.0D || this.getEyeInFluidType() == net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
      }
  
      public void moveRelative(float p_19921_, Vec3 p_19922_) {
