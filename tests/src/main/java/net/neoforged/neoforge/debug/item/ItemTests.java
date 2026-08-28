@@ -6,10 +6,13 @@
 package net.neoforged.neoforge.debug.item;
 
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
@@ -71,7 +74,7 @@ import net.neoforged.testframework.registration.RegistrationHelper;
 public class ItemTests {
     public static final String GROUP = "level.item";
 
-    @GameTest
+    @GameTest(batch = GROUP + ".boat_dispenser") // Isolate this test because it counts every entity added while the dispenser activates
     @TestHolder(description = "Tests that dispensing a boat spawns one boat entity in the expected location")
     static void boatDispenserDoesNotSpawnDuplicate(final DynamicTest test) {
         test.registerGameTestTemplate(StructureTemplateBuilder.withSize(3, 4, 3)
@@ -81,6 +84,7 @@ public class ItemTests {
             final Component boatName = Component.literal("boat dispenser duplicate test");
             final ItemStack boatStack = Items.OAK_BOAT.getDefaultInstance();
             final BlockPos expectedPos = new BlockPos(1, 2, 1);
+            final var entitiesBeforeDispense = new HashSet<UUID>();
             boatStack.set(DataComponents.CUSTOM_NAME, boatName);
 
             helper.startSequence()
@@ -89,11 +93,20 @@ public class ItemTests {
                             "The expected boat location must be at least 16 blocks from the world origin"))
                     .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.DISPENSER.defaultBlockState().setValue(DispenserBlock.FACING, Direction.UP)))
                     .thenExecute(() -> helper.getBlockEntity(1, 1, 1, DispenserBlockEntity.class).setItem(0, boatStack))
+                    .thenExecute(() -> helper.getLevel().getAllEntities().forEach(entity -> entitiesBeforeDispense.add(entity.getUUID())))
                     .thenExecute(() -> helper.pulseRedstone(new BlockPos(1, 1, 2), 3))
                     .thenExecuteAfter(5, () -> {
-                        final var boats = helper.getLevel().getEntities(EntityTypes.OAK_BOAT, boat -> boatName.equals(boat.getCustomName()));
-                        helper.assertTrue(boats.size() == 1, "Expected exactly one boat to be spawned, found " + boats.size());
-                        final var boat = boats.getFirst();
+                        final var dispensedEntities = StreamSupport.stream(helper.getLevel().getAllEntities().spliterator(), false)
+                                .filter(entity -> !entitiesBeforeDispense.contains(entity.getUUID()))
+                                .toList();
+                        helper.assertTrue(
+                                dispensedEntities.size() == 1,
+                                "Expected exactly one entity to be dispensed, found " + dispensedEntities.size() + ": " + dispensedEntities.stream()
+                                        .map(entity -> entity.getType() + " at " + entity.blockPosition())
+                                        .toList());
+                        final var boat = dispensedEntities.getFirst();
+                        helper.assertTrue(boat.getType() == EntityTypes.OAK_BOAT, "Expected an oak boat to be dispensed, found " + boat.getType());
+                        helper.assertTrue(boatName.equals(boat.getCustomName()), "The dispensed boat did not retain its identifying name");
                         helper.assertTrue(
                                 boat.blockPosition().closerThan(helper.absolutePos(expectedPos), 2),
                                 "Expected the boat near " + expectedPos + ", found it at " + helper.relativePos(boat.blockPosition()));
