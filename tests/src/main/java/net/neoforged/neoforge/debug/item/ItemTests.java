@@ -19,8 +19,10 @@ import net.minecraft.client.renderer.entity.PigRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.sounds.SoundEvents;
@@ -68,6 +70,38 @@ import net.neoforged.testframework.registration.RegistrationHelper;
 @ForEachTest(groups = ItemTests.GROUP)
 public class ItemTests {
     public static final String GROUP = "level.item";
+
+    @GameTest
+    @TestHolder(description = "Tests that dispensing a boat spawns one boat entity in the expected location")
+    static void boatDispenserDoesNotSpawnDuplicate(final DynamicTest test) {
+        test.registerGameTestTemplate(StructureTemplateBuilder.withSize(3, 4, 3)
+                .placeSustainedWater(1, 2, 1, Blocks.IRON_BLOCK.defaultBlockState()));
+
+        test.onGameTest(helper -> {
+            final Component boatName = Component.literal("boat dispenser duplicate test");
+            final ItemStack boatStack = Items.OAK_BOAT.getDefaultInstance();
+            final BlockPos expectedPos = new BlockPos(1, 2, 1);
+            boatStack.set(DataComponents.CUSTOM_NAME, boatName);
+
+            helper.startSequence()
+                    .thenExecute(() -> helper.assertFalse(
+                            helper.absolutePos(expectedPos).closerThan(BlockPos.ZERO, 16),
+                            "The expected boat location must be at least 16 blocks from the world origin"))
+                    .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.DISPENSER.defaultBlockState().setValue(DispenserBlock.FACING, Direction.UP)))
+                    .thenExecute(() -> helper.getBlockEntity(1, 1, 1, DispenserBlockEntity.class).setItem(0, boatStack))
+                    .thenExecute(() -> helper.pulseRedstone(new BlockPos(1, 1, 2), 3))
+                    .thenExecuteAfter(5, () -> {
+                        final var boats = helper.getLevel().getEntities(EntityTypes.OAK_BOAT, boat -> boatName.equals(boat.getCustomName()));
+                        helper.assertTrue(boats.size() == 1, "Expected exactly one boat to be spawned, found " + boats.size());
+                        final var boat = boats.getFirst();
+                        helper.assertTrue(
+                                boat.blockPosition().closerThan(helper.absolutePos(expectedPos), 2),
+                                "Expected the boat near " + expectedPos + ", found it at " + helper.relativePos(boat.blockPosition()));
+                        boat.discard();
+                    })
+                    .thenSucceed();
+        });
+    }
 
     @GameTest
     @TestHolder(description = {
