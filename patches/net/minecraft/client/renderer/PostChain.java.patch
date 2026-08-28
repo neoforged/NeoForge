@@ -1,5 +1,39 @@
 --- a/net/minecraft/client/renderer/PostChain.java
 +++ b/net/minecraft/client/renderer/PostChain.java
+@@ -30,17 +_,17 @@
+ @OnlyIn(Dist.CLIENT)
+ public class PostChain implements AutoCloseable {
+     private static final String MAIN_RENDER_TARGET = "minecraft:main";
+-    protected final RenderTarget screenTarget;
++    private final RenderTarget screenTarget;
+     private final ResourceProvider resourceProvider;
+     private final String name;
+-    protected final List<PostPass> passes = Lists.newArrayList();
+-    protected final Map<String, RenderTarget> customRenderTargets = Maps.newHashMap();
+-    protected final List<RenderTarget> fullSizedTargets = Lists.newArrayList();
+-    protected Matrix4f shaderOrthoMatrix;
++    private final List<PostPass> passes = Lists.newArrayList();
++    private final Map<String, RenderTarget> customRenderTargets = Maps.newHashMap();
++    private final List<RenderTarget> fullSizedTargets = Lists.newArrayList();
++    private Matrix4f shaderOrthoMatrix;
+     private int screenWidth;
+     private int screenHeight;
+-    protected float time;
+-    protected float lastStamp;
++    private float time;
++    private float lastStamp;
+ 
+     public PostChain(TextureManager p_110018_, ResourceProvider p_330592_, RenderTarget p_110020_, ResourceLocation p_110021_) throws IOException, JsonSyntaxException {
+         this.resourceProvider = p_330592_;
+@@ -54,7 +_,7 @@
+         this.load(p_110018_, p_110021_);
+     }
+ 
+-    protected void load(TextureManager p_110034_, ResourceLocation p_110035_) throws IOException, JsonSyntaxException {
++    private void load(TextureManager p_110034_, ResourceLocation p_110035_) throws IOException, JsonSyntaxException {
+         Resource resource = this.resourceProvider.getResourceOrThrow(p_110035_);
+ 
+         try {
 @@ -156,7 +_,8 @@
                                  throw new ChainedJsonException("Render target '" + s4 + "' can't be used as depth buffer");
                              }
@@ -18,3 +52,134 @@
          this.customRenderTargets.put(p_110039_, rendertarget);
          if (p_110040_ == this.screenWidth && p_110041_ == this.screenHeight) {
              this.fullSizedTargets.add(rendertarget);
+@@ -346,6 +_,130 @@
+             return null;
+         } else {
+             return p_110050_.equals("minecraft:main") ? this.screenTarget : this.customRenderTargets.get(p_110050_);
++        }
++    }
++
++    public static @Nullable PostChain refreshComposite(@Nullable PostChain currentChain, @Nullable ResourceLocation newPost, net.neoforged.neoforge.client.PostChainGroup group, RenderTarget mainTarget) throws IOException {
++        PostChain newChain;
++        if (currentChain == null) {
++            if (newPost == null) return null;
++            newChain = ComposedPostChain.create(newPost, group, mainTarget);
++        } else if (currentChain instanceof ComposedPostChain cpc) {
++            newChain = cpc.with(newPost, group);
++        } else {
++            newChain = ComposedPostChain.wrap(currentChain, net.neoforged.neoforge.client.PostChainGroup.DEFAULT);
++        }
++        return newChain;
++    }
++
++    private static final class ComposedPostChain extends PostChain {
++
++        private final Map<net.neoforged.neoforge.client.PostChainGroup, PostChain> chainsPerGroup = Maps.newHashMap();
++
++        //prevent it from loading normally
++        private ComposedPostChain(TextureManager textureManager, ResourceProvider resourceProvider,
++                                  RenderTarget screenTarget, ResourceLocation resourceLocation) throws IOException, JsonSyntaxException {
++            super(textureManager, resourceProvider, screenTarget, resourceLocation);
++        }
++
++        @Override
++        public void close() {
++            super.close();
++            for (PostChain postChain : chainsPerGroup.values()){
++                try {
++                    postChain.close();
++                } catch (Exception ignored){}
++            }
++        }
++
++        @Override
++        protected void load(TextureManager textureManager, ResourceLocation resourceLocation) throws JsonSyntaxException {
++        }
++
++        private static ComposedPostChain wrap(PostChain vanillaChain, net.neoforged.neoforge.client.PostChainGroup group) throws IOException {
++            Minecraft mc = Minecraft.getInstance();
++            var tm = mc.getTextureManager();
++            var rm = mc.getResourceManager();
++            var cc = new ComposedPostChain(tm, rm, vanillaChain.screenTarget, ResourceLocation.parse(vanillaChain.getName()));
++            cc.addSubChain(vanillaChain, group);
++            return cc;
++        }
++
++        private static ComposedPostChain create(ResourceLocation postEffect, net.neoforged.neoforge.client.PostChainGroup group, RenderTarget mainTarget) throws IOException {
++            Minecraft mc = Minecraft.getInstance();
++            var tm = mc.getTextureManager();
++            var rm = mc.getResourceManager();
++            PostChain vanillaChain = new PostChain(tm, rm, mainTarget, postEffect);
++            vanillaChain.resize(mainTarget.width, mainTarget.height);
++            return wrap(vanillaChain, group);
++        }
++
++        private @Nullable ComposedPostChain with(@Nullable ResourceLocation newEffect, net.neoforged.neoforge.client.PostChainGroup group) throws IOException {
++            Minecraft mc = Minecraft.getInstance();
++            var tm = mc.getTextureManager();
++            var rm = mc.getResourceManager();
++
++            //check if it's already good
++            if (newEffect != null) {
++                PostChain existing = this.chainsPerGroup.get(group);
++                if (existing != null && existing.getName().equals(newEffect.toString())) {
++                    return this;
++                }
++            }
++            // copy existing groups
++            Map<net.neoforged.neoforge.client.PostChainGroup, PostChain> newGroups = Maps.newHashMap(this.chainsPerGroup);
++            if (newEffect == null) {
++                PostChain removed = newGroups.remove(group);
++                if (removed != null) removed.close();
++                if (newGroups.isEmpty()) {
++                    // if no groups left, return null to indicate no post-chain needed
++                    return null;
++                }
++            } else {
++                PostChain newChain = new PostChain(tm, rm, this.screenTarget, newEffect);
++                newChain.resize(this.screenTarget.width, this.screenTarget.height);
++                newGroups.put(group, newChain);
++            }
++
++            // sort groups by priority
++            var ordered = newGroups.entrySet().stream()
++                    .sorted(java.util.Comparator.comparingInt(a -> a.getKey().priority()))
++                    .toList();
++
++            ResourceLocation newName = ordered.size() == 1 ?
++                    ResourceLocation.parse(ordered.getFirst().getValue().getName()) :
++                    ResourceLocation.withDefaultNamespace("composed/" +
++                            ordered.stream()
++                            .map(e -> e.getValue().getName()
++                                      .replace(":", "_"))
++                            .reduce((a, b) -> a + "_" + b).orElse("empty"));
++
++            // create new composed chain (empty base)
++            ComposedPostChain result = new ComposedPostChain(
++                    tm, rm,
++                    this.screenTarget,
++                    newName // reuse same name
++            );
++            // rebuild passes + targets in order
++            for (var entry : ordered) {
++                PostChain pc = entry.getValue();
++                result.addSubChain(pc, entry.getKey());
++            }
++            this.resize(this.screenTarget.width, this.screenTarget.height);
++
++            return result;
++
++        }
++
++        private void addSubChain(PostChain chain, net.neoforged.neoforge.client.PostChainGroup group) {
++            this.chainsPerGroup.put(group, chain);
++
++            this.passes.addAll(chain.passes);
++            this.customRenderTargets.putAll(chain.customRenderTargets);
++            this.fullSizedTargets.addAll(chain.fullSizedTargets);
++
++            this.time = chain.time;
++            this.lastStamp = chain.lastStamp;
+         }
+     }
+ }

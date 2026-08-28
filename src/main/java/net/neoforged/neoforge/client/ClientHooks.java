@@ -535,7 +535,7 @@ public class ClientHooks {
         if (entity != null) {
             ResourceLocation shader = EntitySpectatorShaderManager.get(entity.getType());
             if (shader != null) {
-                entityRenderer.loadEffect(shader);
+                entityRenderer.togglePostChainEffect(shader, PostChainGroup.ENTITY_SHADERS);
             }
         }
     }
