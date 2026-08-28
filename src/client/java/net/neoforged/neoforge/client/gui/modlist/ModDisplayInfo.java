@@ -35,7 +35,7 @@ public interface ModDisplayInfo extends IExtensionPoint {
     /// {@return the credits} This is displayed if it is not [an empty component][Component#empty()].
     Component credits();
 
-    /// {@return the mod authors} This is displayed if it is not [an empty component][Component#empty()].
+    /// {@return the mod description} This is displayed if it is not [an empty component][Component#empty()].
     Component description();
 
     /// {@return the mod license} This is always displayed, even if [empty][Component#empty()].
