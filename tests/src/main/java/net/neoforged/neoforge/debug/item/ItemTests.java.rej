@@ -1,0 +1,12 @@
+diff a/tests/src/main/java/net/neoforged/neoforge/debug/item/ItemTests.java b/tests/src/main/java/net/neoforged/neoforge/debug/item/ItemTests.java	(rejected hunks)
+@@ -5,8 +5,10 @@
+ 
+ package net.neoforged.neoforge.debug.item;
+ 
++import java.util.ArrayList;
+ import java.util.EnumMap;
+ import java.util.Objects;
++import java.util.concurrent.atomic.AtomicBoolean;
+ import java.util.function.Supplier;
+ import java.util.function.UnaryOperator;
+ import java.util.stream.Stream;
