@@ -5,13 +5,8 @@
 
 package net.neoforged.neoforge.client;
 
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Collection;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.minecraft.advancements.AdvancementHolder;
@@ -19,10 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -75,23 +67,6 @@ public class ClientCommandSourceStack extends CommandSourceStack {
     @Override
     public Collection<String> getOnlinePlayerNames() {
         return connection().getOnlinePlayers().stream().map(player -> player.getProfile().name()).collect(Collectors.toList());
-    }
-
-    @Override
-    public <E> CompletableFuture<Suggestions> suggestRegistryElements(
-            ResourceKey<? extends Registry<E>> registry,
-            SharedSuggestionProvider.ElementSuggestionType suggestionType,
-            SuggestionsBuilder suggestionsBuilder,
-            CommandContext<?> context,
-            Predicate<E> filter) {
-        if (registry == Registries.RECIPE) {
-            // TODO 1.21.2: Not sure what to do here as the client doesn't receive recipe names. Letting super get called will cause an NPE on this.server.
-            return Suggestions.empty();
-        } else if (registry == Registries.ADVANCEMENT) {
-            //Only suggest from advancements that are visible to the player
-            return SharedSuggestionProvider.suggestResource(connection().getAdvancements().tree().nodes().stream().map(node -> node.holder().id()), suggestionsBuilder);
-        }
-        return super.suggestRegistryElements(registry, suggestionType, suggestionsBuilder, context, filter);
     }
 
     /**
