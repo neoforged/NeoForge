@@ -273,7 +273,7 @@ public class NeoForgeMod {
             builder -> builder
                     .group(
                             Biome.LIST_CODEC.fieldOf("biomes").forGetter(RemoveSpawnsBiomeModifier::biomes),
-                            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(RemoveSpawnsBiomeModifier::entityTypes))
+                            RegistryCodecs.holderSet(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(RemoveSpawnsBiomeModifier::entityTypes))
                     .apply(builder, RemoveSpawnsBiomeModifier::new)));
 
     /**
@@ -296,7 +296,7 @@ public class NeoForgeMod {
      */
     public static final DeferredHolder<MapCodec<? extends BiomeModifier>, MapCodec<BiomeModifiers.AddSpawnCostsBiomeModifier>> ADD_SPAWN_COSTS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_spawn_costs", () -> RecordCodecBuilder.mapCodec(builder -> builder.group(
             Biome.LIST_CODEC.fieldOf("biomes").forGetter(BiomeModifiers.AddSpawnCostsBiomeModifier::biomes),
-            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(BiomeModifiers.AddSpawnCostsBiomeModifier::entityTypes),
+            RegistryCodecs.holderSet(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(BiomeModifiers.AddSpawnCostsBiomeModifier::entityTypes),
             MobSpawnSettings.MobSpawnCost.CODEC.fieldOf("spawn_cost").forGetter(BiomeModifiers.AddSpawnCostsBiomeModifier::spawnCost)).apply(builder, BiomeModifiers.AddSpawnCostsBiomeModifier::new)));
 
     /**
@@ -304,7 +304,7 @@ public class NeoForgeMod {
      */
     public static final DeferredHolder<MapCodec<? extends BiomeModifier>, MapCodec<BiomeModifiers.RemoveSpawnCostsBiomeModifier>> REMOVE_SPAWN_COSTS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_spawn_costs", () -> RecordCodecBuilder.mapCodec(builder -> builder.group(
             Biome.LIST_CODEC.fieldOf("biomes").forGetter(BiomeModifiers.RemoveSpawnCostsBiomeModifier::biomes),
-            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(BiomeModifiers.RemoveSpawnCostsBiomeModifier::entityTypes)).apply(builder, BiomeModifiers.RemoveSpawnCostsBiomeModifier::new)));
+            RegistryCodecs.holderSet(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(BiomeModifiers.RemoveSpawnCostsBiomeModifier::entityTypes)).apply(builder, BiomeModifiers.RemoveSpawnCostsBiomeModifier::new)));
 
     /**
      * Noop structure modifier. Can be used in a structure modifier json with "type": "neoforge:none".
