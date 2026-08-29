@@ -217,14 +217,12 @@ public final class ClientNetworkRegistry extends NetworkRegistry {
         listener.send(new MinecraftRegisterPayload(nowListeningOn.build()));
     }
 
-    /**
-     * Initializes the client-side network state for a server that is not running NeoForge.
-     * <p>
-     * The client checks its registered channels for vanilla compatibility and disconnects if any require a modded server.
-     * Initialization is performed once per connection on the network thread. If the connection has since been identified as {@link ConnectionType#NEOFORGE}, this method does nothing.
-     *
-     * @param listener the active configuration listener
-     */
+    /// Initializes the client-side network state for a server that is not running NeoForge.
+    ///
+    /// The client checks its registered channels for vanilla compatibility and disconnects if any require a modded server.
+    /// Initialization is performed once per connection on the network thread. If the connection has since been identified as [ConnectionType#NEOFORGE], this method does nothing.
+    ///
+    /// @param listener the active configuration listener
     public static void initializeOtherConnection(ClientConfigurationPacketListener listener) {
         var eventLoop = listener.getConnection().channel().eventLoop();
         if (!eventLoop.inEventLoop()) {
@@ -297,6 +295,16 @@ public final class ClientNetworkRegistry extends NetworkRegistry {
         return result != null && result;
     }
 
+    /// Runs `initialization` at most once for `connection`.
+    ///
+    /// Connection classification may run concurrently from the render thread and the Netty event loop. Both the vanilla and NeoForge paths inject network filters, so without
+    /// serialization they can both remove the existing filter before either one adds its replacement, causing a duplicate-handler failure. The connection-specific lock keeps
+    /// the initialization check and filter injection atomic, and the initialized attribute makes subsequent attempts no-ops.
+    ///
+    /// See [PR #3415](https://github.com/neoforged/NeoForge/pull/3415) for details and steps to reproduce the issue.
+    ///
+    /// @param connection     the connection being initialized
+    /// @param initialization the connection-specific initialization action
     private static void runConnectionInitialization(Connection connection, Runnable initialization) {
         Lock lock = getConnectionInitializationLock(connection);
         lock.lock();
