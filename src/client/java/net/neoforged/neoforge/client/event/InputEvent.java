@@ -16,6 +16,8 @@ import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector2ic;
+import org.lwjgl.sdl.SDLKeycode;
+import org.lwjgl.sdl.SDLScancode;
 
 /**
  * Fired when an input is detected from the user's input devices.
@@ -249,52 +251,43 @@ public abstract class InputEvent extends Event {
             return keyEvent;
         }
 
-        /**
-         * {@return the {@code GLFW} (platform-agnostic) key code}
-         *
-         * @see InputConstants input constants starting with {@code KEY_}
-         * @see GLFW key constants starting with {@code GLFW_KEY_}
-         * @see <a href="https://www.glfw.org/docs/latest/group__keys.html" target="_top">the online GLFW documentation</a>
-         */
+        /// {@return the {@code SDL} physical key code}
+        ///
+        /// @see InputConstants input constants starting with `KEY_`
+        /// @see SDLScancode key constants
+        /// @see <a href="https://wiki.libsdl.org/SDL3/SDL_Scancode">the online SDL documentation</a>
         public int getKey() {
             return this.keyEvent.key();
         }
 
-        /**
-         * {@return the platform-specific scan code}
-         * <p>
-         * The scan code is unique for every key, regardless of whether it has a key code.
-         * Scan codes are platform-specific but consistent over time, so keys will have different scan codes depending
-         * on the platform but they are safe to save to disk as custom key bindings.
-         *
-         * @see InputConstants#getKey(KeyEvent)
-         */
-        public int getScanCode() {
-            return this.keyEvent.scancode();
+        /// {@return the {@code SDL} virtual key code}
+        ///
+        /// @see InputConstants input constants starting with `KEYCODE_`
+        /// @see SDLKeycode key constants starting with `SDLK_`
+        /// @see <a href="https://wiki.libsdl.org/SDL3/SDL_Keycode">the online SDL documentation</a>
+        public int getKeycode() {
+            return this.keyEvent.keycode();
         }
 
-        /**
-         * {@return the mouse button's action}
-         *
-         * @see InputConstants#PRESS
-         * @see InputConstants#RELEASE
-         * @see InputConstants#REPEAT
-         */
+        /// {@return the keyboard button's action}
+        ///
+        /// @see InputConstants#PRESS
+        /// @see InputConstants#RELEASE
+        /// @see InputConstants#REPEAT
         public int getAction() {
             return this.action;
         }
 
-        /**
-         * {@return a bit field representing the active modifier keys}
-         *
-         * @see InputConstants#MOD_CONTROL CTRL modifier key bit
-         * @see GLFW#GLFW_MOD_SHIFT SHIFT modifier key bit
-         * @see GLFW#GLFW_MOD_ALT ALT modifier key bit
-         * @see GLFW#GLFW_MOD_SUPER SUPER modifier key bit
-         * @see GLFW#GLFW_KEY_CAPS_LOCK CAPS LOCK modifier key bit
-         * @see GLFW#GLFW_KEY_NUM_LOCK NUM LOCK modifier key bit
-         * @see <a href="https://www.glfw.org/docs/latest/group__mods.html" target="_top">the online GLFW documentation</a>
-         */
+        /// {@return a bit field representing the active modifier keys}
+        ///
+        /// @see InputConstants#MOD_CONTROL CTRL modifier key bit
+        /// @see InputConstants#MOD_SHIFT SHIFT modifier key bit
+        /// @see InputConstants#MOD_ALT ALT modifier key bit
+        /// @see InputConstants#MOD_SUPER SUPER modifier key bit
+        /// @see InputConstants#MOD_CAPS_LOCK CAPS LOCK modifier key bit
+        /// @see InputConstants#MOD_NUM_LOCK NUM LOCK modifier key bit
+        /// @see SDLKeycode key constants starting with `SDL_KMOD`
+        /// @see <a href="https://wiki.libsdl.org/SDL3/SDL_Keymod">the online SDL documentation</a>
         public int getModifiers() {
             return this.keyEvent.modifiers();
         }
