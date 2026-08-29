@@ -5,7 +5,9 @@
 
 package net.neoforged.neoforge.debug.item;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
@@ -111,7 +113,7 @@ public class ItemTests {
                                             .map(entity -> entity.getType() + " at " + entity.blockPosition())
                                             .toList());
                             final var boat = dispensedEntities.getFirst();
-                            helper.assertTrue(boat.getType() == EntityTypes.OAK_BOAT, "Expected an oak boat to be dispensed, found " + boat.getType());
+                            helper.assertTrue(boat.getType() == EntityType.OAK_BOAT, "Expected an oak boat to be dispensed, found " + boat.getType());
                             helper.assertTrue(boatName.equals(boat.getCustomName()), "The dispensed boat did not retain its identifying name");
                             helper.assertTrue(
                                     boat.blockPosition().closerThan(helper.absolutePos(expectedPos), 2),
