@@ -41,7 +41,7 @@ public final class ConditionalModelBuilder extends CustomLoaderBuilder {
         return this;
     }
 
-    /// Specify the model to use when all conditions succeed as a nested object.
+    /// Specify the model to use when all conditions succeed, as a nested object.
     ///
     /// This is intended to be used when the guarded model uses yet another model loader.
     /// Models which do not need another loader should instead specify their elements/textures/etc.
@@ -50,23 +50,29 @@ public final class ConditionalModelBuilder extends CustomLoaderBuilder {
     /// @param template The template to generate the model from
     /// @param textures The texture mapping to generate the model with
     public ConditionalModelBuilder setInlineModel(ModelTemplate template, TextureMapping textures) {
+        Preconditions.checkNotNull(template, "Template must not be null");
+        Preconditions.checkNotNull(textures, "Textures must not be null");
         this.inlineModel = new InlineModel(template, textures);
         return this;
     }
 
-    /// Specify the model to fall back to when any condition fails as a reference to another file.
+    /// Specify the model to fall back to when any condition fails, as a reference to another file.
     ///
     /// @param fallback The fallback model
+    ///                 
+    /// @see #setInlineFallback(ModelTemplate, TextureMapping)
     public ConditionalModelBuilder setFallback(Identifier fallback) {
         Preconditions.checkNotNull(fallback, "Fallback must not be null");
         this.fallback = Either.left(fallback);
         return this;
     }
 
-    /// Specify the model to fall back to when any condition fails inlined into this model.
+    /// Specify the model to fall back to when any condition fails, inlined into this model.
     ///
     /// @param template The template to generate the fallback model from
     /// @param textures The texture mapping to generate the fallback model with
+    ///
+    /// @see #setFallback(Identifier)
     public ConditionalModelBuilder setInlineFallback(ModelTemplate template, TextureMapping textures) {
         Preconditions.checkNotNull(template, "Template must not be null");
         Preconditions.checkNotNull(textures, "Textures must not be null");
