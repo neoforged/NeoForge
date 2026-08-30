@@ -20,17 +20,18 @@
          private final int id;
          private final String name;
  
-@@ -137,6 +_,17 @@
+@@ -137,6 +_,18 @@
  
          public static FireworkExplosion.Shape byId(int p_330838_) {
              return BY_ID.apply(p_330838_);
 +        }
 +
++        @org.jetbrains.annotations.Nullable
 +        public static FireworkExplosion.Shape getShape(String name) {
 +            for (Shape ret : values())
-+                if (ret.name().equals(name))
++                if (ret.getSerializedName().equals(name))
 +                    return ret;
-+            return SMALL_BALL;
++            return null;
 +        }
 +
 +        public static Shape create(String registryName, int id, String shapeName) {
