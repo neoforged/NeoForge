@@ -154,17 +154,19 @@
      }
  
      protected boolean updateFluidInteraction() {
-         this.fluidInteraction.update(this, !this.isPushedByFluid());
+-        this.fluidInteraction.update(this, !this.isPushedByFluid());
 -        boolean inWater = this.fluidInteraction.isInFluid(FluidTags.WATER);
 -        boolean inLava = this.fluidInteraction.isInFluid(FluidTags.LAVA);
++        this.fluidInteraction.update(this, this::isPushedByFluid);
 +        boolean inWater = this.fluidInteraction.isInFluidMatching(this, (_, type, _) -> type.getIsWaterLike());
          if (inWater) {
              this.resetFallDistance();
              if (!this.wasTouchingWater && !this.firstTick) {
-@@ -1644,17 +_,10 @@
+@@ -1643,18 +_,9 @@
+         }
  
          this.wasTouchingWater = inWater;
-         if (this.isPushedByFluid()) {
+-        if (this.isPushedByFluid()) {
 -            if (inWater) {
 -                this.fluidInteraction.applyCurrentTo(FluidTags.WATER, this, 0.014);
 -            }
@@ -173,10 +175,11 @@
 -                double lavaFlowScale = this.level.environmentAttributes().getDimensionValue(EnvironmentAttributes.FAST_LAVA) ? 0.007 : 0.0023333333333333335;
 -                this.fluidInteraction.applyCurrentTo(FluidTags.LAVA, this, lavaFlowScale);
 -            }
-+            this.fluidInteraction.applyCurrentTo(this);
-         }
- 
+-        }
+-
 -        return inWater || inLava;
++        this.fluidInteraction.applyCurrentTo(this);
++
 +        return this.fluidInteraction.isInAnyFluid();
      }
  

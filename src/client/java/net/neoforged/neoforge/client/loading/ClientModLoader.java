@@ -23,6 +23,7 @@ import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.ModWorkManager;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.earlydisplay.DisplayWindow;
+import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.fml.loading.EarlyLoadingScreenController;
 import net.neoforged.fml.startup.FatalErrorReporting;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
@@ -90,14 +91,15 @@ public class ClientModLoader extends CommonModLoader {
     public static Runnable completeModLoading(Runnable initialScreensTask) {
         List<ModLoadingIssue> warnings = ModLoader.getLoadingIssues();
         if (!warnings.isEmpty()) {
-            if (NeoForgeClientConfig.INSTANCE.showLoadWarnings.get()) {
-                return () -> Minecraft.getInstance().gui.setScreen(new LoadingErrorScreen(warnings, null, initialScreensTask));
-            }
-
-            //User disabled warning screen, as least log them
+            // Always log these warnings.
+            // If the warning screen is shown then it provides a link to latest.log, and they should be found there.
             LOGGER.warn(Logging.LOADING, "Mods loaded with {} warning(s)", warnings.size());
             for (var warning : warnings) {
-                LOGGER.warn(Logging.LOADING, "{} [{}]", warning.translationKey(), warning.translationArgs());
+                LOGGER.warn(Logging.LOADING, FMLTranslations.translateIssueEnglish(warning));
+            }
+
+            if (NeoForgeClientConfig.INSTANCE.showLoadWarnings.get()) {
+                return () -> Minecraft.getInstance().gui.setScreen(new LoadingErrorScreen(warnings, null, initialScreensTask));
             }
         }
         return initialScreensTask;
