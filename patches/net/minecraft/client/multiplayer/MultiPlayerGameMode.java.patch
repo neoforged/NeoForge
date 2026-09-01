@@ -149,9 +149,9 @@
 +        }
 +        if (event.getUseItem().isTrue() || (!itemStack.isEmpty() && !player.getCooldowns().isOnCooldown(itemStack))) {
              UseOnContext context = new UseOnContext(player, hand, blockHit);
-             InteractionResult success;
+             InteractionResult result;
              if (player.hasInfiniteMaterials()) {
-@@ -406,6 +_,12 @@
+@@ -412,6 +_,12 @@
                  return packet;
              }
  
@@ -164,7 +164,7 @@
              InteractionResult resultHolder = itemStack.use(this.minecraft.level, player, hand);
              ItemStack result;
              if (resultHolder instanceof InteractionResult.Success success) {
-@@ -416,6 +_,8 @@
+@@ -422,6 +_,8 @@
  
              if (result != itemStack) {
                  player.setItemInHand(hand, result);

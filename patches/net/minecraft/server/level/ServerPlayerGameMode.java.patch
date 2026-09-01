@@ -143,6 +143,6 @@
 -                UseOnContext context = new UseOnContext(player, hand, hitResult);
 +            if (event.getUseItem().isTrue() || (!itemStack.isEmpty() && !player.getCooldowns().isOnCooldown(itemStack))) {
 +                if (event.getUseItem().isFalse()) return InteractionResult.PASS;
-                 InteractionResult success;
+                 InteractionResult result;
                  if (player.hasInfiniteMaterials()) {
                      int count = itemStack.getCount();

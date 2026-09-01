@@ -1,0 +1,11 @@
+--- a/net/minecraft/data/registries/VanillaRegistries.java
++++ b/net/minecraft/data/registries/VanillaRegistries.java
+@@ -134,6 +134,8 @@
+         .add(Registries.ADVANCEMENT, VanillaAdvancementProvider.create())
+         .add(Registries.NUMBER_PROVIDER, NumberProviders::bootstrap)
+         .add(VanillaRecipeProvider.create());
++    // Neo: Keep a set of all actual vanilla registries to allow filtering out registries that are added by mods for Vanilla clients.
++    public static final List<? extends net.minecraft.resources.ResourceKey<? extends net.minecraft.core.Registry<?>>> DATAPACK_REGISTRY_KEYS = WORLD_BUILDER.getEntryKeys();
+ 
+     public static void validateThatAllBiomeFeaturesHaveBiomeFilter(HolderLookup.Provider registries) {
+         HolderLookup.RegistryLookup<Biome> biomes = registries.lookupOrThrow(Registries.BIOME);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/FileToIdConverter.java
 +++ b/net/minecraft/resources/FileToIdConverter.java
-@@ -40,4 +_,21 @@
+@@ -48,4 +_,21 @@
      public Map<Identifier, List<Resource>> listMatchingResourceStacks(ResourceManager manager) {
          return manager.listResourceStacks(this.prefix, this.extensionSelector());
      }

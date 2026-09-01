@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/RegistryDataLoader.java
 +++ b/net/minecraft/resources/RegistryDataLoader.java
-@@ -157,7 +_,7 @@
+@@ -161,7 +_,7 @@
          new RegistryDataLoader.RegistryData<>(Registries.ADVANCEMENT, Advancement.CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.RECIPE, Recipe.DIRECT_CODEC)
      );
@@ -9,16 +9,16 @@
          new RegistryDataLoader.RegistryData<>(Registries.BIOME, Biome.NETWORK_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.CHAT_TYPE, ChatType.DIRECT_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.TRIM_PATTERN, TrimPattern.DIRECT_CODEC),
-@@ -189,7 +_,7 @@
-         new RegistryDataLoader.RegistryData<>(Registries.TIMELINE, Timeline.NETWORK_CODEC),
+@@ -194,7 +_,7 @@
          new RegistryDataLoader.RegistryData<>(Registries.DECORATED_POT_PATTERN, DecoratedPotPattern.CODEC),
-         new RegistryDataLoader.RegistryData<>(Registries.BLOCK_TRANSFORMER, BlockTransformer.DIRECT_CODEC)
+         new RegistryDataLoader.RegistryData<>(Registries.BLOCK_TRANSFORMER, BlockTransformer.DIRECT_CODEC),
+         new RegistryDataLoader.RegistryData<>(Registries.BLOCK_STATE_PROVIDER, BlockStateProvider.DIRECT_CODEC)
 -    );
 +    )); // Neo: Keep the list so custom registries can be added later
  
      public static CompletableFuture<RegistryAccess.Frozen> load(
          ResourceManager resourceManager,
-@@ -203,7 +_,7 @@
+@@ -208,7 +_,7 @@
                  return new ResourceManagerRegistryLoadTask<>(data, Lifecycle.stable(), loadingErrors, resourceManager);
              }
          };
@@ -27,7 +27,7 @@
      }
  
      public static CompletableFuture<RegistryAccess.Frozen> load(
-@@ -219,14 +_,16 @@
+@@ -224,14 +_,16 @@
                  return new NetworkRegistryLoadTask<>(data, Lifecycle.stable(), loadingErrors, entries, knownDataSource);
              }
          };
@@ -46,7 +46,7 @@
      ) {
          return CompletableFuture.<CompletableFuture<RegistryAccess.Frozen>>supplyAsync(
                  () -> {
-@@ -245,6 +_,15 @@
+@@ -250,6 +_,15 @@
                      return CompletableFuture.allOf(loadCompletions)
                          .thenApplyAsync(
                              ignored -> {
@@ -62,7 +62,7 @@
                                  List<RegistryLoadTask<?>> frozenRegistries = loadTasks.stream().filter(task -> task.freezeRegistry(loadingErrors)).toList();
                                  if (!loadingErrors.isEmpty()) {
                                      throw logErrors(loadingErrors);
-@@ -335,7 +_,11 @@
+@@ -340,7 +_,11 @@
      public record NetworkedRegistryData(List<RegistrySynchronization.PackedRegistryEntry> elements, TagNetworkSerialization.NetworkPayload tags) {
      }
  

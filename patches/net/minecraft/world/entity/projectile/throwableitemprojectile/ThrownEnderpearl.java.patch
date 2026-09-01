@@ -9,23 +9,3 @@
                          if (this.random.nextFloat() < 0.05F && level.isSpawningMonsters() && level.getLevelData().getDifficulty() != Difficulty.PEACEFUL) {
                              Endermite endermite = EntityTypes.ENDERMITE.create(level, EntitySpawnReason.TRIGGERED);
                              if (endermite != null) {
-@@ -118,16 +_,17 @@
- 
-                         ServerPlayer newOwner = player.teleport(
-                             new TeleportTransition(
--                                level, teleportPos, Vec3.ZERO, 0.0F, 0.0F, Relative.union(Relative.ROTATION, Relative.DELTA), TeleportTransition.DO_NOTHING
-+                                level, event.getTarget(), player.getDeltaMovement(), player.getYRot(), player.getXRot(), TeleportTransition.DO_NOTHING
-                             )
-                         );
-                         if (newOwner != null) {
-                             newOwner.resetFallDistance();
-                             newOwner.resetCurrentImpulseContext();
--                            newOwner.hurtServer(player.level(), this.damageSources().enderPearl(), 5.0F);
-+                            newOwner.hurtServer(newOwner.level(), this.damageSources().enderPearl(), event.getAttackDamage());
-                         }
- 
-                         this.playSound(level, teleportPos);
-+                        } //Forge: End
-                     }
-                 } else {
-                     Entity newOwner = owner.teleport(

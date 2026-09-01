@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
-@@ -163,18 +_,18 @@
+@@ -165,18 +_,18 @@
          this.guiRenderer = new GuiRenderer(
              this.gameRenderState.guiRenderState,
              this.featureRenderDispatcher,
@@ -27,7 +27,7 @@
      }
  
      @Override
-@@ -234,6 +_,7 @@
+@@ -236,6 +_,7 @@
                  break;
              case null:
              default:
@@ -35,7 +35,7 @@
                  this.clearSpectatedEntityPostEffect();
          }
      }
-@@ -332,6 +_,9 @@
+@@ -348,6 +_,9 @@
                  return;
              }
  
@@ -45,7 +45,7 @@
              hurt /= cameraState.entityRenderState.hurtDuration;
              hurt = Mth.sin(hurt * hurt * hurt * hurt * (float) Math.PI);
              float rr = cameraState.entityRenderState.hurtDir;
-@@ -648,6 +_,9 @@
+@@ -672,6 +_,9 @@
          this.minecraft
              .levelRenderer
              .render(this.resourcePool, renderOutline, cameraState, terrainFog, cameraState.fogData.color, !shouldCreateBossFog, consistentDepthRequired);

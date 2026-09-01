@@ -1,20 +1,20 @@
 --- a/net/minecraft/world/level/storage/loot/LootPool.java
 +++ b/net/minecraft/world/level/storage/loot/LootPool.java
-@@ -32,7 +_,8 @@
+@@ -33,7 +_,8 @@
                  LootItemCondition.CODEC.optionalFieldOf("condition").forGetter(p -> p.condition),
                  LootItemFunctions.CODEC.optionalFieldOf("modifier").forGetter(p -> p.modifier),
-                 NumberProviders.CODEC.fieldOf("rolls").forGetter(p -> p.rolls),
--                NumberProviders.CODEC.optionalFieldOf("bonus_rolls", ConstantValue.exactly(0.0F)).forGetter(p -> p.bonusRolls)
+                 ContextIntProviders.CODEC.fieldOf("rolls").forGetter(p -> p.rolls),
+-                ContextFloatProviders.CODEC.optionalFieldOf("bonus_rolls", ContextFloatProviders.exactly(0.0F)).forGetter(p -> p.bonusRolls)
 +                NumberProviders.CODEC.optionalFieldOf("bonus_rolls", ConstantValue.exactly(0.0F)).forGetter(p -> p.bonusRolls),
 +                Codec.STRING.optionalFieldOf("name").forGetter(pool -> java.util.Optional.ofNullable(pool.name).filter(name -> !name.startsWith("custom#")))
              )
              .apply(i, LootPool::new)
      );
-@@ -47,13 +_,15 @@
+@@ -48,13 +_,15 @@
          Optional<Holder<LootItemCondition>> condition,
          Optional<Holder<LootItemFunction>> modifier,
-         Holder<NumberProvider> rolls,
--        Holder<NumberProvider> bonusRolls
+         Holder<ContextIntProvider> rolls,
+-        Holder<ContextFloatProvider> bonusRolls
 +        Holder<NumberProvider> bonusRolls,
 +        java.util.Optional<String> name
      ) {
@@ -27,7 +27,7 @@
      }
  
      private void addRandomItem(Consumer<ItemStack> result, LootContext context) {
-@@ -109,6 +_,57 @@
+@@ -110,6 +_,57 @@
          Validatable.validateHolder(output, "bonus_rolls", this.bonusRolls);
      }
  
@@ -85,16 +85,7 @@
      public static LootPool.Builder lootPool() {
          return new LootPool.Builder();
      }
-@@ -119,6 +_,8 @@
-         private final ImmutableList.Builder<Holder<LootItemFunction>> functions = ImmutableList.builder();
-         private Holder<NumberProvider> rolls = ConstantValue.exactly(1.0F);
-         private Holder<NumberProvider> bonusRolls = ConstantValue.exactly(0.0F);
-+        @org.jspecify.annotations.Nullable
-+        private String name;
- 
-         public LootPool.Builder setRolls(Holder<NumberProvider> rolls) {
-             this.rolls = rolls;
-@@ -157,13 +_,19 @@
+@@ -158,13 +_,19 @@
              return this;
          }
  

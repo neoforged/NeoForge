@@ -315,7 +315,7 @@
      }
  
      public void onAboveBubbleColumn(boolean dragDown, BlockPos pos) {
-@@ -3045,7 +_,7 @@
+@@ -3049,7 +_,7 @@
      }
  
      protected Component getTypeName() {
@@ -324,7 +324,7 @@
      }
  
      public boolean is(Entity other) {
-@@ -3100,10 +_,11 @@
+@@ -3104,10 +_,11 @@
      }
  
      protected final boolean isInvulnerableToBase(DamageSource source) {
@@ -337,7 +337,7 @@
      }
  
      public boolean isInvulnerable() {
-@@ -3142,6 +_,7 @@
+@@ -3146,6 +_,7 @@
      }
  
      public @Nullable Entity teleport(TeleportTransition transition) {
@@ -345,7 +345,7 @@
          if (this.level() instanceof ServerLevel serverLevel && !this.isRemoved()) {
              ServerLevel newLevel = transition.newLevel();
              boolean otherDimension = newLevel.dimension() != serverLevel.dimension();
-@@ -3374,6 +_,7 @@
+@@ -3378,6 +_,7 @@
          return this.stringUUID;
      }
  
@@ -353,7 +353,7 @@
      public boolean isPushedByFluid() {
          return true;
      }
-@@ -3485,6 +_,8 @@
+@@ -3489,6 +_,8 @@
          EntityDimensions oldDim = this.dimensions;
          Pose pose = this.getPose();
          EntityDimensions newDim = this.getDimensions(pose);
@@ -362,7 +362,7 @@
          this.dimensions = newDim;
          this.eyeHeight = newDim.eyeHeight();
          this.reapplyPosition();
-@@ -3782,10 +_,16 @@
+@@ -3786,10 +_,16 @@
          return !this.level().hasChunksAt(x0, z0, x1, z1);
      }
  
@@ -379,7 +379,7 @@
      public double getFluidJumpThreshold() {
          return this.getEyeHeight() < 0.4 ? 0.0 : 0.4;
      }
-@@ -3937,6 +_,10 @@
+@@ -3941,6 +_,10 @@
                  }
              }
          }
@@ -390,7 +390,7 @@
      }
  
      public void checkDespawn() {
-@@ -4092,6 +_,90 @@
+@@ -4096,6 +_,90 @@
          return true;
      }
  
@@ -481,7 +481,7 @@
      public boolean isFlyingVehicle() {
          return false;
      }
-@@ -4215,6 +_,11 @@
+@@ -4219,6 +_,11 @@
  
      public int getInvulnerableTime() {
          return this.invulnerableTime;

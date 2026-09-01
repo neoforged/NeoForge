@@ -9,7 +9,7 @@
  
      public Gui(Minecraft minecraft, Hud hud, GuiRenderState guiRenderState) {
          this.minecraft = minecraft;
-@@ -180,7 +_,8 @@
+@@ -174,7 +_,8 @@
              profiler.push("screen");
  
              try {
@@ -19,7 +19,7 @@
              } catch (Throwable t) {
                  CrashReport report = CrashReport.forThrowable(t, "Rendering screen");
                  CrashReportCategory category = report.addCategory("Screen render details");
-@@ -234,11 +_,7 @@
+@@ -228,11 +_,7 @@
              this.screenTracySection = null;
          }
  
@@ -32,7 +32,7 @@
              this.minecraft.setLastInputType(InputType.NONE);
          }
  
-@@ -260,6 +_,21 @@
+@@ -254,6 +_,21 @@
              }
          }
  
@@ -54,7 +54,7 @@
          this.screen = screen;
          if (this.screen != null) {
              this.screen.added();
-@@ -389,6 +_,8 @@
+@@ -384,6 +_,8 @@
              nextStep = () -> this.setScreen(screen);
          }
  
@@ -63,7 +63,7 @@
          return nextStep;
      }
  
-@@ -479,5 +_,48 @@
+@@ -474,5 +_,48 @@
                          }
                      )
              );

@@ -260,7 +260,7 @@
              BlocksAttacks blocksAttacks = itemInUse.get(DataComponents.BLOCKS_ATTACKS);
              if (blocked && blocksAttacks != null) {
                  blocksAttacks.onBlocked(level, this);
-@@ -1255,14 +_,14 @@
+@@ -1256,14 +_,14 @@
  
          if (this.isDeadOrDying()) {
              if (!this.checkTotemDeathProtection(source)) {
@@ -277,7 +277,7 @@
              this.playHurtSound(source);
              this.playSecondaryHurtSound(source);
          }
-@@ -1288,6 +_,10 @@
+@@ -1289,6 +_,10 @@
              CriteriaTriggers.PLAYER_HURT_ENTITY.trigger(sourcePlayer, this, source, originalDamage, damage, blocked);
          }
  
@@ -288,7 +288,7 @@
          return success;
      }
  
-@@ -1320,7 +_,7 @@
+@@ -1321,7 +_,7 @@
          }
  
          BlocksAttacks blocksAttacks = blockingWith.get(DataComponents.BLOCKS_ATTACKS);
@@ -297,24 +297,7 @@
              if (source.getDirectEntity() instanceof AbstractArrow abstractArrow && abstractArrow.getPierceLevel() > 0) {
                  return 0.0F;
              } else {
-@@ -1336,7 +_,15 @@
-                 }
- 
-                 float damageBlocked = blocksAttacks.resolveBlockedDamage(source, damage, angle);
--                blocksAttacks.hurtBlockingItem(this.level(), blockingWith, this, this.getUsedItemHand(), damageBlocked);
-+
-+                var damageContainer = this.damageContainers.empty() ? new net.neoforged.neoforge.common.damagesource.DamageContainer(source, damage) : this.damageContainers.peek();
-+                var ev = net.neoforged.neoforge.common.CommonHooks.onDamageBlock(this, damageContainer, damageBlocked, !blocksAttacks.bypassedBy().map(t -> t.contains(source.typeHolder())).orElse(false));
-+                if (!ev.getBlocked()) return 0.0F;
-+
-+                damageBlocked = ev.getBlockedDamage();
-+                damageContainer.setBlockedDamage(ev);
-+                blocksAttacks.hurtBlockingItem(this.level(), blockingWith, this, this.getUsedItemHand(), damageBlocked, ev.shieldDamage());
-+
-                 if (damageBlocked > 0.0F && !source.is(DamageTypeTags.IS_PROJECTILE) && source.getDirectEntity() instanceof LivingEntity livingEntity) {
-                     this.blockUsingItem(level, livingEntity, source, damage);
-                 }
-@@ -1367,9 +_,9 @@
+@@ -1371,9 +_,9 @@
          Entity sourceEntity = source.getEntity();
          if (sourceEntity instanceof Player playerSource) {
              this.setLastHurtByPlayer(playerSource, 100);
@@ -327,7 +310,7 @@
              } else {
                  this.lastHurtByPlayer = null;
                  this.lastHurtByPlayerMemoryTime = 0;
-@@ -1398,7 +_,7 @@
+@@ -1402,7 +_,7 @@
          for (InteractionHand hand : InteractionHand.values()) {
              ItemStack itemStack = this.getItemInHand(hand);
              protection = itemStack.get(DataComponents.DEATH_PROTECTION);
@@ -336,7 +319,7 @@
                  protectionItem = itemStack.copy();
                  itemStack.shrink(1);
                  break;
-@@ -1454,6 +_,8 @@
+@@ -1458,6 +_,8 @@
  
      public void die(DamageSource source) {
          if (!this.isRemoved() && !this.dead) {
@@ -345,7 +328,7 @@
              Entity sourceEntity = source.getEntity();
              LivingEntity killer = this.getKillCredit();
              if (killer != null) {
-@@ -1492,7 +_,7 @@
+@@ -1496,7 +_,7 @@
          if (this.level() instanceof ServerLevel serverLevel) {
              boolean var6 = false;
              if (killer instanceof WitherBoss) {
@@ -354,7 +337,7 @@
                      BlockPos pos = this.blockPosition();
                      BlockState state = Blocks.WITHER_ROSE.defaultBlockState();
                      if (this.level().getBlockState(pos).isAir() && state.canSurvive(this.level(), pos)) {
-@@ -1510,6 +_,7 @@
+@@ -1514,6 +_,7 @@
      }
  
      protected void dropAllDeathLoot(ServerLevel level, DamageSource source) {
@@ -362,7 +345,7 @@
          boolean playerKilled = this.lastHurtByPlayerMemoryTime > 0;
          if (this.shouldDropLoot(level)) {
              this.dropFromLootTable(level, source, playerKilled);
-@@ -1518,6 +_,10 @@
+@@ -1522,6 +_,10 @@
  
          this.dropEquipment(level);
          this.dropExperience(level, source.getEntity());
@@ -373,7 +356,7 @@
      }
  
      protected void dropEquipment(ServerLevel level) {
-@@ -1529,7 +_,8 @@
+@@ -1533,7 +_,8 @@
                  this.isAlwaysExperienceDropper()
                      || this.lastHurtByPlayerMemoryTime > 0 && this.shouldDropExperience() && level.getGameRules().get(GameRules.MOB_DROPS)
              )) {
@@ -383,7 +366,7 @@
          }
      }
  
-@@ -1629,6 +_,12 @@
+@@ -1633,6 +_,12 @@
      }
  
      public void knockback(double power, double xd, double zd, DamageSource source, float damage, boolean comesFromEffect) {
@@ -396,7 +379,7 @@
          power *= 1.0 - this.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
          if (!(power <= 0.0)) {
              this.needsSync = true;
-@@ -1714,17 +_,11 @@
+@@ -1718,17 +_,11 @@
          } else {
              BlockPos ladderCheckPos = this.blockPosition();
              BlockState state = this.getInBlockState();
@@ -419,7 +402,7 @@
          }
      }
  
-@@ -1785,6 +_,11 @@
+@@ -1789,6 +_,11 @@
              effectiveFallDistance = fallDistance;
          }
  
@@ -431,7 +414,7 @@
          boolean damaged = super.causeFallDamage(effectiveFallDistance, damageModifier, damageSource);
          int dmg = this.calculateFallDamage(effectiveFallDistance, damageModifier);
          if (dmg > 0) {
-@@ -1848,10 +_,10 @@
+@@ -1852,10 +_,10 @@
              int xx = Mth.floor(this.getX());
              int yy = Mth.floor(this.getY() - 0.2F);
              int zz = Mth.floor(this.getZ());
@@ -445,7 +428,7 @@
              }
          }
      }
-@@ -1876,6 +_,8 @@
+@@ -1880,6 +_,8 @@
          if (!(damage <= 0.0F)) {
              int durabilityDamage = (int)Math.max(1.0F, damage / 4.0F);
  
@@ -454,7 +437,7 @@
              for (EquipmentSlot slot : slots) {
                  ItemStack itemStack = this.getItemBySlot(slot);
                  Equippable equippable = itemStack.get(DataComponents.EQUIPPABLE);
-@@ -1910,6 +_,7 @@
+@@ -1914,6 +_,7 @@
              damage = Math.max(v / 25.0F, 0.0F);
              float damageResisted = oldDamage - damage;
              if (damageResisted > 0.0F && damageResisted < 3.4028235E37F) {
@@ -462,7 +445,7 @@
                  if (this instanceof ServerPlayer serverPlayer) {
                      serverPlayer.awardStat(Stats.DAMAGE_RESISTED, Math.round(damageResisted * 10.0F));
                  } else if (damageSource.getEntity() instanceof ServerPlayer) {
-@@ -1935,6 +_,7 @@
+@@ -1939,6 +_,7 @@
  
          if (enchantmentArmor > 0.0F) {
              damage = CombatRules.getDamageAfterMagicAbsorb(damage, enchantmentArmor);
@@ -470,7 +453,7 @@
          }
  
          return damage;
-@@ -1942,22 +_,37 @@
+@@ -1946,22 +_,37 @@
  
      protected void actuallyHurt(ServerLevel level, DamageSource source, float dmg) {
          if (!this.isInvulnerableTo(level, source)) {
@@ -515,7 +498,7 @@
          }
      }
  
-@@ -2014,6 +_,10 @@
+@@ -2018,6 +_,10 @@
      }
  
      public boolean swing(InteractionHand hand, SwingAnimation animation, boolean sendToSwingingEntity) {
@@ -526,7 +509,7 @@
          if (this.swingState.startIfAble(hand, animation, this.getModifiedSwingDuration(animation))) {
              if (this.level() instanceof ServerLevel serverLevel) {
                  ClientboundSwingAnimationPacket packet = new ClientboundSwingAnimationPacket(this, hand, animation);
-@@ -2157,8 +_,10 @@
+@@ -2161,8 +_,10 @@
  
      private void swapHandItems() {
          ItemStack tmp = this.getItemBySlot(EquipmentSlot.OFFHAND);
@@ -539,7 +522,7 @@
      }
  
      @Override
-@@ -2260,7 +_,13 @@
+@@ -2264,7 +_,13 @@
      }
  
      public void setItemSlot(EquipmentSlot slot, ItemStack itemStack) {
@@ -554,7 +537,7 @@
      }
  
      public float getArmorCoverPercentage() {
-@@ -2365,15 +_,18 @@
+@@ -2369,15 +_,18 @@
              }
  
              this.needsSync = true;
@@ -575,7 +558,7 @@
      }
  
      protected float getWaterSlowDown() {
-@@ -2410,7 +_,7 @@
+@@ -2414,7 +_,7 @@
      }
  
      protected boolean shouldTravelInFluid(FluidState fluidState) {
@@ -584,7 +567,7 @@
      }
  
      protected void travelFlying(Vec3 input, float speed) {
-@@ -2437,7 +_,7 @@
+@@ -2441,7 +_,7 @@
          BlockPos posBelow = this.getBlockPosBelowThatAffectsMyMovement();
          float blockFriction = this.onGround()
              ? computeModifiedFriction(
@@ -593,7 +576,7 @@
              )
              : 1.0F;
          Vec3 movement = this.handleRelativeFrictionAndCalculateMovement(input, blockFriction);
-@@ -2473,9 +_,10 @@
+@@ -2477,9 +_,10 @@
          boolean isFalling = this.getDeltaMovement().y <= 0.0;
          double oldY = this.getY();
          double baseGravity = this.getEffectiveGravity();
@@ -605,7 +588,7 @@
              this.travelInLava(input, baseGravity, isFalling, oldY);
          }
  
-@@ -2499,6 +_,7 @@
+@@ -2503,6 +_,7 @@
              slowDown = 0.96F;
          }
  
@@ -613,7 +596,7 @@
          this.moveRelative(speed, input);
          this.move(MoverType.SELF, this.getDeltaMovement());
          Vec3 movement = this.getDeltaMovement();
-@@ -2679,7 +_,7 @@
+@@ -2683,7 +_,7 @@
              double xd = Mth.clamp(delta.x, -0.15F, 0.15F);
              double zd = Mth.clamp(delta.z, -0.15F, 0.15F);
              double yd = Math.max(delta.y, -0.15F);
@@ -622,7 +605,7 @@
                  yd = 0.0;
              }
  
-@@ -2926,6 +_,7 @@
+@@ -2930,6 +_,7 @@
              ItemStack previous = lastEquipmentItems.get(slot);
              ItemStack current = this.getItemBySlot(slot);
              if (this.equipmentHasChanged(previous, current)) {
@@ -630,7 +613,7 @@
                  if (changedItems == null) {
                      changedItems = Maps.newEnumMap(EquipmentSlot.class);
                  }
-@@ -3059,6 +_,10 @@
+@@ -3063,6 +_,10 @@
          profiler.push("jump");
          if (this.jumping && this.isAffectedByFluids()) {
              double fluidHeight;
@@ -641,7 +624,7 @@
              if (this.isInLava()) {
                  fluidHeight = this.getFluidHeight(FluidTags.LAVA);
              } else {
-@@ -3069,15 +_,17 @@
+@@ -3073,15 +_,17 @@
              double fluidJumpThreshold = this.getFluidJumpThreshold();
              if (!inWaterAndHasFluidHeight || this.onGround() && !(fluidHeight > fluidJumpThreshold)) {
                  if (!this.isInLava() || this.onGround() && this.isInShallowFluid(FluidTags.LAVA)) {
@@ -661,7 +644,7 @@
              }
          } else {
              this.noJumpDelay = 0;
-@@ -3164,8 +_,11 @@
+@@ -3168,8 +_,11 @@
                  int freeFallInterval = checkFallFlyTicks / 10;
                  if (freeFallInterval % 2 == 0) {
                      List<EquipmentSlot> slotsWithGliders = EquipmentSlot.VALUES.stream().filter(slot -> canGlideUsing(this.getItemBySlot(slot), slot)).toList();
@@ -674,7 +657,7 @@
                  }
  
                  this.gameEvent(GameEvent.ELYTRA_GLIDE);
-@@ -3174,7 +_,15 @@
+@@ -3178,7 +_,15 @@
      }
  
      protected boolean canGlide() {
@@ -690,7 +673,7 @@
              for (EquipmentSlot slot : EquipmentSlot.VALUES) {
                  if (canGlideUsing(this.getItemBySlot(slot), slot)) {
                      return true;
-@@ -3399,8 +_,11 @@
+@@ -3403,8 +_,11 @@
  
      private void updatingUsingItem() {
          if (this.isUsingItem()) {
@@ -704,7 +687,7 @@
                  this.updateUsingItem(this.useItem);
              } else {
                  this.stopUsingItem();
-@@ -3443,8 +_,11 @@
+@@ -3447,8 +_,11 @@
      }
  
      protected void updateUsingItem(ItemStack useItem) {
@@ -717,7 +700,7 @@
              this.completeUsingItem();
          }
      }
-@@ -3472,8 +_,10 @@
+@@ -3476,8 +_,10 @@
      public void startUsingItem(InteractionHand hand) {
          ItemStack itemStack = this.getItemInHand(hand);
          if (!itemStack.isEmpty() && !this.isUsingItem()) {
@@ -729,7 +712,7 @@
              if (!this.level().isClientSide()) {
                  this.setLivingEntityFlag(1, true);
                  this.setLivingEntityFlag(2, hand == InteractionHand.OFF_HAND);
-@@ -3543,7 +_,8 @@
+@@ -3547,7 +_,8 @@
                  this.releaseUsingItem();
              } else {
                  if (!this.useItem.isEmpty() && this.isUsingItem()) {
@@ -739,7 +722,7 @@
                      if (result != this.useItem) {
                          this.setItemInHand(hand, result);
                      }
-@@ -3577,7 +_,11 @@
+@@ -3581,7 +_,11 @@
          ItemStack itemInUsedHand = this.getItemInHand(this.getUsedItemHand());
          if (!this.useItem.isEmpty() && ItemStack.isSameItem(itemInUsedHand, this.useItem)) {
              this.useItem = itemInUsedHand;
@@ -751,7 +734,7 @@
              if (this.useItem.useOnRelease()) {
                  this.updatingUsingItem();
              }
-@@ -3587,6 +_,7 @@
+@@ -3591,6 +_,7 @@
      }
  
      public void stopUsingItem() {
@@ -759,7 +742,7 @@
          if (!this.level().isClientSide()) {
              boolean wasUsingItem = this.isUsingItem();
              this.recentKineticEnemies = null;
-@@ -3641,7 +_,17 @@
+@@ -3645,7 +_,17 @@
          return this.randomTeleport(xx, yy, zz, showParticles, state -> state.is(avoidanceTag));
      }
  
@@ -777,7 +760,7 @@
          double y = yy;
          Level level = this.level();
          WorldBorder worldBorder = level.getWorldBorder();
-@@ -3835,7 +_,9 @@
+@@ -3839,7 +_,9 @@
  
      public @Nullable Direction getBedOrientation() {
          BlockPos bedPos = this.getSleepingPos().orElse(null);
@@ -788,7 +771,7 @@
      }
  
      @Override
-@@ -3844,7 +_,7 @@
+@@ -3848,7 +_,7 @@
      }
  
      public ItemStack getProjectile(ItemStack heldWeapon) {
@@ -797,7 +780,7 @@
      }
  
      private static @EntityEvent.Value byte entityEventForEquipmentBreak(EquipmentSlot equipmentSlot) {
-@@ -3896,6 +_,8 @@
+@@ -3900,6 +_,8 @@
      }
  
      public EquipmentSlot getEquipmentSlotForItem(ItemStack itemStack) {
@@ -806,7 +789,7 @@
          Equippable equippable = itemStack.get(DataComponents.EQUIPPABLE);
          return equippable != null && this.canUseSlot(equippable.slot()) ? equippable.slot() : EquipmentSlot.MAINHAND;
      }
-@@ -4017,6 +_,8 @@
+@@ -4021,6 +_,8 @@
      }
  
      public static boolean canGlideUsing(ItemStack itemStack, EquipmentSlot slot) {

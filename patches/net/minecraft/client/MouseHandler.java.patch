@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/MouseHandler.java
 +++ b/net/minecraft/client/MouseHandler.java
-@@ -75,6 +_,8 @@
+@@ -79,6 +_,8 @@
                  this.activeButton = null;
              }
  
@@ -9,7 +9,7 @@
              if (this.minecraft.gui.overlay() == null) {
                  if (pressed
                      && this.minecraft
-@@ -100,10 +_,14 @@
+@@ -104,10 +_,14 @@
                                  && currentTime - this.lastClick.time() < 250L
                                  && this.lastClick.screen() == screen
                                  && this.lastClickButton == event.button();
@@ -26,7 +26,7 @@
                              }
                          } catch (Throwable t) {
                              CrashReport report = CrashReport.forThrowable(t, "mouseClicked event handler");
-@@ -115,8 +_,10 @@
+@@ -118,8 +_,10 @@
                          }
                      } else {
                          try {
@@ -39,7 +39,7 @@
                              }
                          } catch (Throwable t) {
                              CrashReport report = CrashReport.forThrowable(t, "mouseReleased event handler");
-@@ -130,6 +_,10 @@
+@@ -132,6 +_,10 @@
                  }
              }
  
@@ -50,7 +50,7 @@
              if (this.minecraft.gui.screen() == null && this.minecraft.gui.overlay() == null) {
                  if (rawButtonInfo.button() == 1) {
                      this.isLeftPressed = pressed;
-@@ -145,6 +_,8 @@
+@@ -147,6 +_,8 @@
                      KeyMapping.click(mouseKey);
                  }
              }
@@ -59,7 +59,7 @@
          }
      }
  
-@@ -180,7 +_,11 @@
+@@ -182,7 +_,11 @@
                  if (this.minecraft.gui.screen() != null) {
                      double xm = this.getScaledXPos(this.minecraft.getWindow());
                      double ym = this.getScaledYPos(this.minecraft.getWindow());
@@ -72,7 +72,7 @@
                      this.minecraft.gui.screen().afterMouseAction();
                  } else if (this.minecraft.player != null) {
                      Vector2i wheelXY = this.scrollWheelHandler.onMouseScroll(scaledXOffset, scaledYOffset);
-@@ -189,6 +_,7 @@
+@@ -191,6 +_,7 @@
                      }
  
                      int wheel = wheelXY.y == 0 ? -wheelXY.x : wheelXY.y;
@@ -80,20 +80,6 @@
                      if (this.minecraft.player.isSpectator()) {
                          if (this.minecraft.gui.hud.getSpectatorGui().isMenuActive()) {
                              this.minecraft.gui.hud.getSpectatorGui().onMouseScrolled(-wheel);
-@@ -284,7 +_,12 @@
-                     double dy = getScaledYPos(window, this.accumulatedDY);
- 
-                     try {
--                        screen.mouseDragged(new MouseButtonEvent(xm, ym, this.activeButton), dx, dy);
-+                        MouseButtonEvent mouseButtonEvent = new MouseButtonEvent(xm, ym, this.activeButton);
-+                        if (!net.neoforged.neoforge.client.ClientHooks.onScreenMouseDragPre(screen, mouseButtonEvent, dx, dy)) {
-+                            if (!screen.mouseDragged(new MouseButtonEvent(xm, ym, this.activeButton), dx, dy)) {
-+                                net.neoforged.neoforge.client.ClientHooks.onScreenMouseDragPost(screen, mouseButtonEvent, dx, dy);
-+                            }
-+                        }
-                     } catch (Throwable t) {
-                         CrashReport report = CrashReport.forThrowable(t, "mouseDragged event handler");
-                         screen.fillCrashDetails(report);
 @@ -323,12 +_,13 @@
      }
  
