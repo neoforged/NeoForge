@@ -1,0 +1,11 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:registered",
+      "registry": "minecraft:worldgen/biome",
+      "value": "minecraft:plains"
+    }
+  ],
+  "type": "minecraft:empty",
+  "random_sequence": "neotests_reloadable_registry_conditions:present_datapack_registry_object"
+}

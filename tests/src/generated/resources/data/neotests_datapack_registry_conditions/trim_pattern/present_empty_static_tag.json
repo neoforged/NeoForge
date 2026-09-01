@@ -1,0 +1,11 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:tag_empty",
+      "tag": "c:drinks/juice"
+    }
+  ],
+  "asset_id": "neotests_datapack_registry_conditions:present_empty_static_tag",
+  "decal": false,
+  "description": ""
+}

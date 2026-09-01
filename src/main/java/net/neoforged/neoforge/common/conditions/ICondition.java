@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry.PendingTags;
 import net.minecraft.core.RegistryAccess;
@@ -113,6 +114,14 @@ public interface ICondition {
          */
         default <T> Collection<Holder<T>> getTag(TagKey<T> key) {
             return List.of();
+        }
+
+        /// Provides the context registries with partially bound tags for the currently active reload if
+        /// this context is used for a datapack reload.
+        ///
+        /// @return the context registries of the active reload
+        default HolderGetter.Provider registries() {
+            return RegistryAccess.EMPTY;
         }
 
         /// Provides access to the loaded registries if this context is used for a datapack reload.
