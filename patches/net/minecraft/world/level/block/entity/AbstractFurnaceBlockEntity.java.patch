@@ -31,17 +31,26 @@
      }
  
      @Override
+@@ -225,7 +_,7 @@
+ 
+     private static void consumeFuel(ServerLevel level, BlockPos pos, NonNullList<ItemStack> items, ItemStack fuel) {
+         Item fuelItem = fuel.getItem();
+-        ItemStackTemplate remainder = fuelItem.getCraftingRemainder();
++        ItemStackTemplate remainder = fuel.getCraftingRemainder();
+         ItemStack newFuel = fuel;
+         fuel.shrink(1);
+         if (remainder != null) {
 @@ -270,11 +_,11 @@
      }
  
      protected int getBurnDuration(ServerLevel level, ItemStack fuelItem) {
 -        return ResolvableInt.getFromItem(fuelItem, DataComponents.COOKING_FUEL, CookingFuel::burnTime, this.getLootContext(level), 0);
-+        return ResolvableNumber.getIntFromItem(fuelItem, DataComponents.COOKING_FUEL, CookingFuel::burnTime, this.getLootContext(level, fuelItem), 0);
++        return ResolvableInt.getFromItem(fuelItem, DataComponents.COOKING_FUEL, CookingFuel::burnTime, this.getLootContext(level, fuelItem), 0);
      }
  
      protected float getSpeedMultiplier(ServerLevel level, ItemStack fuelItem) {
 -        return ResolvableFloat.getFromItem(fuelItem, DataComponents.COOKING_FUEL, CookingFuel::speedMultiplier, this.getLootContext(level), 1.0F);
-+        return ResolvableNumber.getFloatFromItem(fuelItem, DataComponents.COOKING_FUEL, CookingFuel::speedMultiplier, this.getLootContext(level, fuelItem), 1.0F);
++        return ResolvableFloat.getFromItem(fuelItem, DataComponents.COOKING_FUEL, CookingFuel::speedMultiplier, this.getLootContext(level, fuelItem), 1.0F);
      }
  
      private static int getTotalCookTime(RecipeHolder<? extends AbstractCookingRecipe> recipe, AbstractFurnaceBlockEntity entity) {

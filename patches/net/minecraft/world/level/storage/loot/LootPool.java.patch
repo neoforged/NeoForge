@@ -5,7 +5,7 @@
                  LootItemFunctions.CODEC.optionalFieldOf("modifier").forGetter(p -> p.modifier),
                  ContextIntProviders.CODEC.fieldOf("rolls").forGetter(p -> p.rolls),
 -                ContextFloatProviders.CODEC.optionalFieldOf("bonus_rolls", ContextFloatProviders.exactly(0.0F)).forGetter(p -> p.bonusRolls)
-+                NumberProviders.CODEC.optionalFieldOf("bonus_rolls", ConstantValue.exactly(0.0F)).forGetter(p -> p.bonusRolls),
++                ContextFloatProviders.CODEC.optionalFieldOf("bonus_rolls", ContextFloatProviders.exactly(0.0F)).forGetter(p -> p.bonusRolls),
 +                Codec.STRING.optionalFieldOf("name").forGetter(pool -> java.util.Optional.ofNullable(pool.name).filter(name -> !name.startsWith("custom#")))
              )
              .apply(i, LootPool::new)
@@ -15,7 +15,7 @@
          Optional<Holder<LootItemFunction>> modifier,
          Holder<ContextIntProvider> rolls,
 -        Holder<ContextFloatProvider> bonusRolls
-+        Holder<NumberProvider> bonusRolls,
++        Holder<ContextFloatProvider> bonusRolls,
 +        java.util.Optional<String> name
      ) {
          this.entries = entries;
@@ -64,20 +64,20 @@
 +    }
 +
 +    // Neo: Add getters and setters for changing the rolls for this pool
-+    public Holder<NumberProvider> getRolls() {
++    public Holder<ContextIntProvider> getRolls() {
 +        return this.rolls;
 +    }
 +
-+    public Holder<NumberProvider> getBonusRolls() {
++    public Holder<ContextFloatProvider> getBonusRolls() {
 +        return this.bonusRolls;
 +    }
 +
-+    public void setRolls(Holder<NumberProvider> v) {
++    public void setRolls(Holder<ContextIntProvider> v) {
 +        checkFrozen();
 +        this.rolls = v;
 +    }
 +
-+    public void setBonusRolls(Holder<NumberProvider> v) {
++    public void setBonusRolls(Holder<ContextFloatProvider> v) {
 +        checkFrozen();
 +        this.bonusRolls = v;
 +    }
@@ -85,6 +85,15 @@
      public static LootPool.Builder lootPool() {
          return new LootPool.Builder();
      }
+@@ -120,6 +_,8 @@
+         private final ImmutableList.Builder<Holder<LootItemFunction>> functions = ImmutableList.builder();
+         private Holder<ContextIntProvider> rolls = ContextIntProviders.exactly(1);
+         private Holder<ContextFloatProvider> bonusRolls = ContextFloatProviders.exactly(0.0F);
++        @org.jspecify.annotations.Nullable
++        private String name;
+ 
+         public LootPool.Builder setRolls(Holder<ContextIntProvider> rolls) {
+             this.rolls = rolls;
 @@ -158,13 +_,19 @@
              return this;
          }

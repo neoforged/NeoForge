@@ -80,6 +80,20 @@
                      if (this.minecraft.player.isSpectator()) {
                          if (this.minecraft.gui.hud.getSpectatorGui().isMenuActive()) {
                              this.minecraft.gui.hud.getSpectatorGui().onMouseScrolled(-wheel);
+@@ -285,7 +_,12 @@
+                     double dy = getScaledYPos(window, this.accumulatedDY);
+ 
+                     try {
+-                        screen.mouseDragged(new MouseButtonEvent(xm, ym, this.activeButton), dx, dy);
++                        MouseButtonEvent mouseButtonEvent = new MouseButtonEvent(xm, ym, this.activeButton);
++                        if (!net.neoforged.neoforge.client.ClientHooks.onScreenMouseDragPre(screen, mouseButtonEvent, dx, dy)) {
++                            if (!screen.mouseDragged(new MouseButtonEvent(xm, ym, this.activeButton), dx, dy)) {
++                                net.neoforged.neoforge.client.ClientHooks.onScreenMouseDragPost(screen, mouseButtonEvent, dx, dy);
++                            }
++                        }
+                     } catch (Throwable t) {
+                         CrashReport report = CrashReport.forThrowable(t, "mouseDragged event handler");
+                         CrashReportCategory mouseDetails = report.addCategory("Mouse");
 @@ -323,12 +_,13 @@
      }
  
