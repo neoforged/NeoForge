@@ -126,7 +126,7 @@ public class ComposterWrapper extends SnapshotJournal<BlockState> {
             ).create(Optional.empty());
             Compostable compostable = resource.get(DataComponents.COMPOSTABLE);
             if (compostable != null) {
-                return compostable.layers().getFloat(lootContext, 0F);
+                return compostable.layers().get(lootContext, 0);
             }
         }
         return 0F;
