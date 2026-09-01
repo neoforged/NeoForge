@@ -297,6 +297,23 @@
              if (source.getDirectEntity() instanceof AbstractArrow abstractArrow && abstractArrow.getPierceLevel() > 0) {
                  return 0.0F;
              } else {
+@@ -1337,7 +_,15 @@
+                 }
+ 
+                 float damageBlocked = blocksAttacks.resolveBlockedDamage(source, damage, angle);
+-                blocksAttacks.hurtBlockingItem(this.level(), blockingWith, this, this.getUsedItemHand(), damageBlocked);
++
++                var damageContainer = this.damageContainers.empty() ? new net.neoforged.neoforge.common.damagesource.DamageContainer(source, damage) : this.damageContainers.peek();
++                var ev = net.neoforged.neoforge.common.CommonHooks.onDamageBlock(this, damageContainer, damageBlocked, !blocksAttacks.bypassedBy().map(t -> t.contains(source.typeHolder())).orElse(false));
++                if (!ev.getBlocked()) return 0.0F;
++
++                damageBlocked = ev.getBlockedDamage();
++                damageContainer.setBlockedDamage(ev);
++                blocksAttacks.hurtBlockingItem(this.level(), blockingWith, this, this.getUsedItemHand(), damageBlocked, ev.shieldDamage());
++
+                 if (damageBlocked > 0.0F
+                     && damageBlocked < damage
+                     && !source.is(DamageTypeTags.IS_PROJECTILE)
 @@ -1371,9 +_,9 @@
          Entity sourceEntity = source.getEntity();
          if (sourceEntity instanceof Player playerSource) {

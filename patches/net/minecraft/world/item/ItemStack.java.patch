@@ -32,6 +32,15 @@
          Player player = context.getPlayer();
          BlockPos pos = context.getClickedPos();
          if (player != null && !player.getAbilities().mayBuild && !this.canPlaceOnBlockInAdventureMode(new BlockInWorld(context.getLevel(), pos, false))) {
+@@ -366,7 +_,7 @@
+         } else {
+             ItemStack stackBeforeUse = this.copy();
+             Item usedItem = this.getItem();
+-            InteractionResult result = usedItem.useOn(context);
++            InteractionResult result = callback.apply(context);
+             if (player != null && result instanceof InteractionResult.Success success && success.wasItemInteraction()) {
+                 player.awardStat(Stats.ITEM_USED.get(usedItem));
+                 ItemStack transformTo = success.heldItemTransformedTo() == null ? this : success.heldItemTransformedTo();
 @@ -417,6 +_,12 @@
          return result;
      }
