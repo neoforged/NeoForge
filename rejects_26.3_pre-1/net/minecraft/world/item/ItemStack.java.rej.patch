@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/item/ItemStack.java
++++ b/net/minecraft/world/item/ItemStack.java
+@@ -366,7 +384,7 @@
+         }
+ 
+         Item usedItem = this.getItem();
+-        InteractionResult result = usedItem.useOn(context);
++        InteractionResult result = callback.apply(context);
+         if (player != null && result instanceof InteractionResult.Success success && success.wasItemInteraction()) {
+             player.awardStat(Stats.ITEM_USED.get(usedItem));
+         }

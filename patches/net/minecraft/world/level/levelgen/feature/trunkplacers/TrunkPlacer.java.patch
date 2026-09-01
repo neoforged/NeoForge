@@ -8,6 +8,6 @@
 +            return;
 +        }
 +
-         BlockState blockBelowTrunk = tree.belowTrunkProvider().getOptionalState(level, random, pos);
+         BlockState blockBelowTrunk = tree.belowTrunkProvider().value().getOptionalState(level, random, pos);
          if (blockBelowTrunk != null) {
              trunkSetter.accept(pos, blockBelowTrunk);

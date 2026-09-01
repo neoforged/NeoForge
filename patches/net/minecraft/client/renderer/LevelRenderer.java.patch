@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/renderer/LevelRenderer.java
 +++ b/net/minecraft/client/renderer/LevelRenderer.java
-@@ -230,6 +_,8 @@
-             this.targets.alwaysOnTopDepth = frame.createInternal("always_on_top_depth", extraDepthTargetDescriptor);
+@@ -235,6 +_,8 @@
+             this.targets.alwaysOnTopDepth = frame.createInternal("always_on_top_depth", extraDepthTargetDescriptorCleared);
          }
  
 +        net.neoforged.neoforge.client.ClientHooks.fireFrameGraphSetup(frame, this.targets, cameraState, cameraState.viewRotationMatrix, profiler);
@@ -9,7 +9,7 @@
          this.targets.entityOutline = frame.importExternal("entity_outline", this.entityOutlineTarget);
          FramePass clearPass = frame.addPass("clear");
          this.targets.main = clearPass.readsAndWrites(this.targets.main);
-@@ -323,6 +_,8 @@
+@@ -328,6 +_,8 @@
              this.submitBlockOutline(poseStack, this.submitNodeStorage, levelRenderState);
          }
  
@@ -18,7 +18,7 @@
          this.finalizeGizmoCollection();
          this.finalizedGizmos.standardPrimitives().submit(submitNodeCollector, levelRenderState.cameraRenderState, false);
          this.finalizedGizmos.alwaysOnTopPrimitives().submit(submitNodeCollector, levelRenderState.cameraRenderState, true);
-@@ -360,7 +_,14 @@
+@@ -365,7 +_,14 @@
              if (state.skybox != DimensionType.Skybox.NONE) {
                  FramePass pass = frame.addPass("sky");
                  this.targets.main = pass.readsAndWrites(this.targets.main);
@@ -34,7 +34,7 @@
              }
          }
      }
-@@ -503,8 +_,12 @@
+@@ -508,8 +_,12 @@
          chunkSectionsToRender.renderGroup(
              ChunkSectionLayerGroup.OPAQUE, renderPass, this.chunkLayerSampler, blockAtlas, this.levelRenderState.renderWireframeTerrain
          );
@@ -47,7 +47,7 @@
          profiler.pop();
      }
  
-@@ -529,6 +_,7 @@
+@@ -534,6 +_,7 @@
          this.worldBorderRenderer
              .prepare(this.levelRenderState.worldBorderRenderState, cameraState.pos, renderDistance, this.levelRenderState.cameraRenderState.depthFar);
          this.weatherEffectRenderer.prepare(cameraState.pos, this.levelRenderState.weatherRenderState);
@@ -55,7 +55,7 @@
          RenderSystem.resizeAllAutoStorageIndexBuffers();
      }
  
-@@ -574,6 +_,8 @@
+@@ -588,6 +_,8 @@
                  featureFrame.executeOit(stage, renderPass);
                  this.worldBorderRenderer.renderOit(this.levelRenderState.worldBorderRenderState, cameraState.pos, renderDistance, stage, renderPass);
                  this.weatherEffectRenderer.renderOit(stage, this.levelRenderState.weatherRenderState, renderPass);
@@ -64,7 +64,7 @@
              }
  
              if (stage == OitStage.DEPTH_BOUNDS) {
-@@ -656,20 +_,30 @@
+@@ -673,20 +_,30 @@
          int renderDistance = this.optionsRenderState.renderDistance * 16;
          profiler.push("renderTranslucentFeatures");
          featureFrame.executeTranslucent(renderPass);
@@ -95,7 +95,7 @@
          this.worldBorderRenderer.render(this.levelRenderState.worldBorderRenderState, renderPass, cameraPos, renderDistance);
      }
  
-@@ -911,10 +_,10 @@
+@@ -928,10 +_,10 @@
              SectionRenderDispatcher.RenderSection section = this.viewArea.getRenderSection(state.sectionNode());
              if (rebuildSync) {
                  profiler.push("compileSectionSynchronously");
@@ -108,7 +108,7 @@
              }
          }
  
-@@ -972,7 +_,7 @@
+@@ -989,7 +_,7 @@
                      poseStack.translate(state.blockState().getOffset(pos));
                      BlockStateModel model = this.modelManager.getBlockStateModelSet().get(state.blockState());
                      random.setSeed(state.blockState().getSeed(pos));
@@ -117,7 +117,7 @@
                      submitNodeCollector.submitBreakingBlockModel(poseStack, List.copyOf(parts), state.progress(), model.hasMaterialFlag(1));
                      parts.clear();
                      poseStack.popPose();
-@@ -984,6 +_,13 @@
+@@ -1001,6 +_,13 @@
      private void submitBlockOutline(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, LevelRenderState levelRenderState) {
          BlockOutlineRenderState state = levelRenderState.blockOutlineRenderState;
          if (state != null) {

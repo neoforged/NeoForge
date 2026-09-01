@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/KeyboardHandler.java
++++ b/net/minecraft/client/KeyboardHandler.java
+@@ -589,7 +598,9 @@
+             Screen screen = this.minecraft.gui.screen();
+             if (screen != null && this.minecraft.gui.overlay() == null) {
+                 try {
+-                    screen.charTyped(event);
++                    if (net.neoforged.neoforge.client.ClientHooks.onScreenCharTypedPre(screen, event)) return;
++                    if (screen.charTyped(event)) return;
++                    net.neoforged.neoforge.client.ClientHooks.onScreenCharTypedPost(screen, event);
+                 } catch (Throwable t) {
+                     CrashReport report = CrashReport.forThrowable(t, "charTyped event handler");
+                     screen.fillCrashDetails(report);
