@@ -163,7 +163,7 @@ public final class BiomeModifiers {
                 MobSpawnSettingsBuilder spawns = builder.getMobSpawnSettings();
                 for (Weighted<SpawnerData> spawner : this.spawners.unwrap()) {
                     EntityType<?> type = spawner.value().type();
-                    spawns.addSpawn(type.getCategory(), spawner.weight(), spawner.value());
+                    spawns.addSpawn(type, spawner.weight(), spawner.value().count());
                 }
             }
         }
@@ -293,7 +293,7 @@ public final class BiomeModifiers {
             if (phase == Phase.ADD) {
                 MobSpawnSettingsBuilder spawnBuilder = builder.getMobSpawnSettings();
                 for (var entityType : entityTypes) {
-                    spawnBuilder.addMobCharge(entityType.value(), spawnCost.charge(), spawnCost.energyBudget());
+                    spawnBuilder.addMobSpawnCost(entityType.value(), spawnCost.charge(), spawnCost.energyBudget());
                 }
             }
         }

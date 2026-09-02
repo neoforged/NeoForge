@@ -13,11 +13,15 @@ import java.util.List;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.attribute.EnvironmentAttributeMap;
+import net.minecraft.world.attribute.EnvironmentAttributes;
+import net.minecraft.world.attribute.modifier.MobSpawnSettingsModifier;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biome.ClimateSettings;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
+import net.minecraft.world.level.biome.MobSpawnSettings;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -75,12 +79,12 @@ public class ModifiableBiomeInfo {
      * @return whether the biome's network-synced data was modified
      */
     @ApiStatus.Internal
-    public boolean applyBiomeModifiers(final Holder<Biome> biome, final List<BiomeModifier> biomeModifiers, RegistryAccess registryAccess) {
+    public boolean applyBiomeModifiers(final Holder.Reference<Biome> biome, final List<BiomeModifier> biomeModifiers, RegistryAccess registryAccess) {
         if (this.modifiedBiomeInfo != null)
             return true;
 
         BiomeInfo original = this.getOriginalBiomeInfo();
-        final BiomeInfo.Builder builder = BiomeInfo.Builder.copyOf(original);
+        final BiomeInfo.Builder builder = BiomeInfo.Builder.copyOf(biome.getKey(), original);
         for (BiomeModifier.Phase phase : BiomeModifier.Phase.values()) {
             for (BiomeModifier modifier : biomeModifiers) {
                 modifier.modify(biome, phase, builder);
@@ -108,6 +112,8 @@ public class ModifiableBiomeInfo {
         public static class Builder {
             private final ClimateSettingsBuilder climateSettings;
             private final EnvironmentAttributeMapBuilder attributes;
+            private final boolean canModifySpawnSettings;
+            private final MobSpawnSettingsBuilder mobSpawnSettings;
             private final BiomeSpecialEffectsBuilder effects;
             private final BiomeGenerationSettingsBuilder generationSettings;
 
@@ -115,23 +121,37 @@ public class ModifiableBiomeInfo {
              * @param original the biome to copy
              * @return A ModifiedBiomeInfo.Builder with a copy of the biome's data
              */
-            public static Builder copyOf(final BiomeInfo original) {
+            public static Builder copyOf(ResourceKey<Biome> biomeKey, final BiomeInfo original) {
                 ClimateSettingsBuilder climateBuilder = ClimateSettingsBuilder.copyOf(original.climateSettings());
                 EnvironmentAttributeMapBuilder attributesBuilder = EnvironmentAttributeMapBuilder.copyOf(original.attributes());
                 BiomeSpecialEffectsBuilder effectsBuilder = BiomeSpecialEffectsBuilder.copyOf(original.effects());
                 BiomeGenerationSettingsBuilder generationBuilder = new BiomeGenerationSettingsBuilder(original.generationSettings());
 
-                return new Builder(climateBuilder, attributesBuilder, effectsBuilder, generationBuilder);
+                return new Builder(biomeKey, climateBuilder, attributesBuilder, effectsBuilder, generationBuilder);
             }
 
-            private Builder(ClimateSettingsBuilder climateSettings, EnvironmentAttributeMapBuilder attributes, BiomeSpecialEffectsBuilder effects, BiomeGenerationSettingsBuilder generationSettings) {
+            private Builder(ResourceKey<Biome> biomeKey, ClimateSettingsBuilder climateSettings, EnvironmentAttributeMapBuilder attributes, BiomeSpecialEffectsBuilder effects, BiomeGenerationSettingsBuilder generationSettings) {
                 this.climateSettings = climateSettings;
                 this.attributes = attributes;
+                EnvironmentAttributeMap.Entry<MobSpawnSettings, ?> entry = attributes.get(EnvironmentAttributes.NATURAL_MOB_SPAWNS);
+                this.canModifySpawnSettings = entry == null || entry.modifier() == MobSpawnSettingsModifier.overlay();
+                if (!this.canModifySpawnSettings) {
+                    // Sanity check in case someone cheeses in a non-standard spawn settings modifier
+                    LOGGER.warn("Cannot modify spawn settings of biome {}, found unexpected attribute modifier {}", biomeKey, entry.modifier());
+                }
+                if (entry != null && this.canModifySpawnSettings) {
+                    this.mobSpawnSettings = new MobSpawnSettingsBuilder((MobSpawnSettings) entry.argument());
+                } else {
+                    this.mobSpawnSettings = new MobSpawnSettingsBuilder(MobSpawnSettings.EMPTY);
+                }
                 this.effects = effects;
                 this.generationSettings = generationSettings;
             }
 
             public BiomeInfo build() {
+                if (this.canModifySpawnSettings) {
+                    this.attributes.modify(EnvironmentAttributes.NATURAL_MOB_SPAWNS, MobSpawnSettingsModifier.overlay(), this.mobSpawnSettings.build());
+                }
                 return new BiomeInfo(this.climateSettings.build(), this.attributes.build(), this.effects.build(), this.generationSettings.build());
             }
 
@@ -149,6 +169,10 @@ public class ModifiableBiomeInfo {
 
             public BiomeGenerationSettingsBuilder getGenerationSettings() {
                 return generationSettings;
+            }
+
+            public MobSpawnSettingsBuilder getMobSpawnSettings() {
+                return mobSpawnSettings;
             }
         }
     }
