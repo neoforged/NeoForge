@@ -9,7 +9,7 @@
 +    private InputConstants.Key lastPressedModifier = InputConstants.UNKNOWN;
 +    private boolean isLastKeyHeldDown = false;
 +    private boolean isLastModifierHeldDown = false;
-+    // NEO: Used by KeyBindsList to ensure the key press that assigns selectedKey is ignored on release (doesn't itself get set as the value)
++    // Neo: Used by KeyBindsList to ensure the key press that assigns selectedKey is ignored on release (doesn't itself get set as the value)
 +    boolean ignoreNextRelease = false;
  
      public KeyBindsScreen(Screen lastScreen, Options options) {
