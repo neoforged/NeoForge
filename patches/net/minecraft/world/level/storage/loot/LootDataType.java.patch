@@ -1,0 +1,35 @@
+--- a/net/minecraft/world/level/storage/loot/LootDataType.java
++++ b/net/minecraft/world/level/storage/loot/LootDataType.java
+@@ -14,7 +_,7 @@
+ import net.minecraft.world.level.storage.loot.providers.number.floats.ContextFloatProvider;
+ import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProvider;
+ 
+-public record LootDataType<T extends Validatable>(ResourceKey<Registry<T>> registryKey, LootDataType.ContextGetter<T> contextGetter) {
++public record LootDataType<T extends Validatable>(ResourceKey<Registry<T>> registryKey, LootDataType.ContextGetter<T> contextGetter, java.util.function.BiConsumer<T, net.minecraft.resources.Identifier> idSetter) {
+     public static final LootDataType<LootItemCondition> PREDICATE = new LootDataType<>(
+         Registries.PREDICATE, LootDataType.ContextGetter.constant(LootContextParamSets.ALL_PARAMS)
+     );
+@@ -24,7 +_,7 @@
+     public static final LootDataType<SlotSource> SLOT_SOURCE = new LootDataType<>(
+         Registries.SLOT_SOURCE, LootDataType.ContextGetter.constant(LootContextParamSets.ALL_PARAMS)
+     );
+-    public static final LootDataType<LootTable> TABLE = new LootDataType<>(Registries.LOOT_TABLE, LootTable::getParamSet);
++    public static final LootDataType<LootTable> TABLE = new LootDataType<>(Registries.LOOT_TABLE, LootTable::getParamSet, LootTable::setLootTableId);
+     public static final LootDataType<ContextFloatProvider> FLOAT_PROVIDER = new LootDataType<>(
+         Registries.CONTEXT_FLOAT_PROVIDER, LootDataType.ContextGetter.constant(LootContextParamSets.ALL_PARAMS)
+     );
+@@ -32,7 +_,14 @@
+         Registries.CONTEXT_INT_PROVIDER, LootDataType.ContextGetter.constant(LootContextParamSets.ALL_PARAMS)
+     );
+ 
++    /// @deprecated Neo: use the constructor [`with an id setter`][#LootDataType(ResourceKey, LootDataType.ContextGetter, java.util.function.BiConsumer)]
++    @Deprecated
++    private LootDataType(ResourceKey<Registry<T>> registryKey, LootDataType.ContextGetter<T> contextGetter) {
++        this(registryKey, contextGetter, (_, _) -> {});
++    }
++
+     public void runValidation(ValidationContextSource contextSource, ResourceKey<T> key, T value) {
++        this.idSetter.accept(value, key.identifier());
+         ContextKeySet contextKeys = this.contextGetter.context(value);
+         ValidationContext rootContext = contextSource.context(contextKeys).enterElement(new ProblemReporter.RootElementPathElement(key), key);
+         value.validate(rootContext);

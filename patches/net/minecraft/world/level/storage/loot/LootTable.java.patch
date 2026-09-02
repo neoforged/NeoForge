@@ -1,5 +1,30 @@
 --- a/net/minecraft/world/level/storage/loot/LootTable.java
 +++ b/net/minecraft/world/level/storage/loot/LootTable.java
+@@ -39,7 +_,7 @@
+             i -> i.group(
+                     LootContextParamSets.CODEC.lenientOptionalFieldOf("type", DEFAULT_PARAM_SET).forGetter(t -> t.paramSet),
+                     Identifier.CODEC.optionalFieldOf("random_sequence").forGetter(t -> t.randomSequence),
+-                    LootPool.CODEC.listOf().optionalFieldOf("pools", List.of()).forGetter(t -> t.pools),
++                    net.neoforged.neoforge.common.CommonHooks.lootPoolsCodec(LootPool::setName).optionalFieldOf("pools", List.of()).forGetter(t -> t.pools),
+                     LootItemFunctions.CODEC.optionalFieldOf("modifier").forGetter(t -> t.modifier)
+                 )
+                 .apply(i, LootTable::new)
+@@ -52,11 +_,14 @@
+     private final Optional<Identifier> randomSequence;
+     private final List<LootPool> pools;
+     private final Optional<Holder<LootItemFunction>> modifier;
++    // Neo: Linking the LootTable to its ID for easier retrieval
++    @org.jspecify.annotations.Nullable
++    private Identifier lootTableId;
+ 
+     private LootTable(ContextKeySet paramSet, Optional<Identifier> randomSequence, List<LootPool> pools, Optional<Holder<LootItemFunction>> modifier) {
+         this.paramSet = paramSet;
+         this.randomSequence = randomSequence;
+-        this.pools = pools;
++        this.pools = Lists.newArrayList(pools);
+         this.modifier = modifier;
+     }
+ 
 @@ -78,10 +_,12 @@
          };
      }
@@ -45,7 +70,7 @@
          return result;
      }
  
-@@ -213,11 +_,68 @@
+@@ -213,11 +_,67 @@
          return new LootTable.Builder();
      }
  
@@ -66,16 +91,15 @@
 +            throw new RuntimeException("Attempted to modify LootTable after being finalized!");
 +    }
 +
-+    // Neo: Linking the LootTable to its ID for easier retrieval
-+    private Identifier lootTableId;
-+
-+    public void setLootTableId(final Identifier id) {
-+        if (this.lootTableId != null) throw new IllegalStateException("Attempted to rename loot table from '" + this.lootTableId + "' to '" + id + "': this is not supported");
++    void setLootTableId(final Identifier id) {
++        if (this.lootTableId != null && !this.lootTableId.equals(id)) {
++            throw new IllegalStateException("Attempted to rename loot table from '" + this.lootTableId + "' to '" + id + "': this is not supported");
++        }
 +        this.lootTableId = java.util.Objects.requireNonNull(id);
 +    }
 +
 +    public Identifier getLootTableId() {
-+        return this.lootTableId;
++        return java.util.Objects.requireNonNull(this.lootTableId, "ID not set");
 +    }
 +
 +    // Neo: Retrieve LootPools by name
