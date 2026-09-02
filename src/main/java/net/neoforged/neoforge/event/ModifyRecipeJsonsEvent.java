@@ -8,6 +8,7 @@ package net.neoforged.neoforge.event;
 import com.google.gson.JsonElement;
 import java.util.Map;
 import java.util.Optional;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryOps;
@@ -52,11 +53,11 @@ public class ModifyRecipeJsonsEvent extends Event {
         return recipeJsons;
     }
 
-    public <T> Optional<RegistryOps.RegistryInfo<T>> lookup(ResourceKey<? extends Registry<? extends T>> registryKey) {
+    public <T> Optional<HolderGetter<T>> lookup(ResourceKey<? extends Registry<? extends T>> registryKey) {
         return registryInfoLookup.lookup(registryKey);
     }
 
-    public <T> RegistryOps.RegistryInfo<T> lookupOrThrow(ResourceKey<? extends Registry<? extends T>> registryKey) {
+    public <T> HolderGetter<T> lookupOrThrow(ResourceKey<? extends Registry<? extends T>> registryKey) {
         return registryInfoLookup.lookup(registryKey).orElseThrow();
     }
 }

@@ -76,10 +76,11 @@ public class TrimmedArmorModel implements ItemModel {
             Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
 
             if (equippable.assetId().isPresent()) {
-                Holder<TrimMaterial> material = Objects.requireNonNull(stack.get(DataComponents.TRIM)).material();
-                String suffix = material.value().assets().assetId(equippable.assetId().get()).suffix();
-
-                this.itemsWithTrims.computeIfAbsent(suffix, this::createTrimLayer).update(state, stack, resolver, context, level, owner, seed);
+                // TODO 26.3
+//                Holder<TrimMaterial> material = Objects.requireNonNull(stack.get(DataComponents.TRIM)).material();
+//                String suffix = material.value().assets().assetId(equippable.assetId().get()).suffix();
+//
+//                this.itemsWithTrims.computeIfAbsent(suffix, this::createTrimLayer).update(state, stack, resolver, context, level, owner, seed);
             }
         }
     }
