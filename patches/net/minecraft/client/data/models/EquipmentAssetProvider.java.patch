@@ -11,3 +11,29 @@
      private static void bootstrap(BiConsumer<ResourceKey<EquipmentAsset>, EquipmentClientInfo> consumer) {
          consumer.accept(
              EquipmentAssets.LEATHER,
+@@ -140,20 +_,20 @@
+     }
+ 
+     private static EquipmentClientInfo.Builder onlyHumanoid(String name) {
+-        return EquipmentClientInfo.builder().addHumanoidLayers(Identifier.withDefaultNamespace(name));
++        return EquipmentClientInfo.builder().addHumanoidLayers(Identifier.parse(name));
+     }
+ 
+     private static EquipmentClientInfo.Builder humanoidAndMountArmor(String name) {
+         return EquipmentClientInfo.builder()
+-            .addHumanoidLayers(Identifier.withDefaultNamespace(name))
+-            .addLayers(EquipmentClientInfo.LayerType.HORSE_BODY, EquipmentClientInfo.Layer.leatherDyeable(Identifier.withDefaultNamespace(name), false))
+-            .addLayers(EquipmentClientInfo.LayerType.NAUTILUS_BODY, EquipmentClientInfo.Layer.leatherDyeable(Identifier.withDefaultNamespace(name), false));
++            .addHumanoidLayers(Identifier.parse(name))
++            .addLayers(EquipmentClientInfo.LayerType.HORSE_BODY, EquipmentClientInfo.Layer.leatherDyeable(Identifier.parse(name), false))
++            .addLayers(EquipmentClientInfo.LayerType.NAUTILUS_BODY, EquipmentClientInfo.Layer.leatherDyeable(Identifier.parse(name), false));
+     }
+ 
+     @Override
+     public CompletableFuture<?> run(CachedOutput cache) {
+         Map<ResourceKey<EquipmentAsset>, EquipmentClientInfo> equipmentAssets = new HashMap<>();
+-        bootstrap((id, asset) -> {
++        registerModels((id, asset) -> {
+             if (equipmentAssets.putIfAbsent(id, asset) != null) {
+                 throw new IllegalStateException("Tried to register equipment asset twice for id: " + id);
+             }
