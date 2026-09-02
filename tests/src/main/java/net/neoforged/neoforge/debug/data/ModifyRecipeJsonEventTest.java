@@ -40,7 +40,7 @@ public class ModifyRecipeJsonEventTest {
             }
             // Ensure the event exposes registry access
             try {
-                event.lookupOrThrow(Registries.BIOME).getter().getOrThrow(Biomes.PLAINS);
+                event.lookupOrThrow(Registries.BIOME).getOrThrow(Biomes.PLAINS);
             } catch (NoSuchElementException e) {
                 test.fail("Registry lookup failed");
             }

@@ -68,7 +68,8 @@ public interface IClientFluidTypeExtensions {
     default void renderOverlay(Minecraft mc, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
         Identifier texture = this.getRenderOverlayTexture(mc);
         if (texture != null) {
-            ScreenEffectRenderer.submitFluid(mc, poseStack, submitNodeCollector, texture);
+            // TODO 26.3
+            // ScreenEffectRenderer.submitFluid(mc, poseStack, submitNodeCollector, texture);
         }
     }
 
