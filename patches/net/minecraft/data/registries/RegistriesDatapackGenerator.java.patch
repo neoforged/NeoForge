@@ -36,7 +36,7 @@
  
      public static RegistriesDatapackGenerator forWorldLayer(PackOutput output, CompletableFuture<HolderLookup.Provider> registryContents) {
 -        return new RegistriesDatapackGenerator(output, "world", RegistryDataLoader.WORLD_REGISTRIES, registryContents);
-+        return new RegistriesDatapackGenerator(output, "world", net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistries(), registryContents);
++        return new RegistriesDatapackGenerator(output, "world", net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistriesWithDimensions().toList(), registryContents);
      }
  
      public static DataProvider forReloadableLayer(PackOutput output, CompletableFuture<HolderLookup.Provider> registryContents) {
