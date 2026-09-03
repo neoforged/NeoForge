@@ -3,8 +3,11 @@
   "biomes": "#minecraft:is_badlands",
   "spawners": {
     "type": "minecraft:magma_cube",
-    "maxCount": 4,
-    "minCount": 1,
+    "count": {
+      "type": "minecraft:uniform",
+      "max_inclusive": 4,
+      "min_inclusive": 1
+    },
     "weight": 100
   }
 }

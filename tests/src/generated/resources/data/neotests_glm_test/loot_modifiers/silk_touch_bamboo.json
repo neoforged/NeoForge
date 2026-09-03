@@ -1,16 +1,19 @@
 {
   "type": "neotests_glm_test:silk_touch_bamboo",
-  "conditions": [
-    {
-      "condition": "minecraft:match_tool",
-      "predicate": {
-        "items": "minecraft:bamboo"
+  "condition": {
+    "type": "minecraft:all_of",
+    "terms": [
+      {
+        "type": "minecraft:match_tool",
+        "predicate": {
+          "items": "minecraft:bamboo"
+        }
+      },
+      {
+        "type": "testframework:test_enabled",
+        "framework": "neotests:tests",
+        "test": "glm_silkTouchBambooTest"
       }
-    },
-    {
-      "condition": "testframework:test_enabled",
-      "framework": "neotests:tests",
-      "test": "glm_silkTouchBambooTest"
-    }
-  ]
+    ]
+  }
 }

@@ -34,7 +34,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "data_gen_test:conditional"
+        "recipes": "data_gen_test:conditional"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

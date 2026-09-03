@@ -14,7 +14,6 @@
   },
   "display": {
     "announce_to_chat": false,
-    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
     "description": "You got cobblestone",
     "icon": {
       "id": "minecraft:cobblestone"

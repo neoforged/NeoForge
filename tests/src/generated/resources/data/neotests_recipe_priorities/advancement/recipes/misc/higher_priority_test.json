@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "neotests_recipe_priorities:higher_priority_test"
+        "recipes": "neotests_recipe_priorities:higher_priority_test"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

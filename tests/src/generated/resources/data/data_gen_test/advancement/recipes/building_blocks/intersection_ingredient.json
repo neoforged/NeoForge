@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "data_gen_test:intersection_ingredient"
+        "recipes": "data_gen_test:intersection_ingredient"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

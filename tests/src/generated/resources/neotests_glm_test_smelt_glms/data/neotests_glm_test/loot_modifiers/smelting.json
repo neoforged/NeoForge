@@ -1,25 +1,28 @@
 {
   "type": "neotests_glm_test:smelting",
-  "conditions": [
-    {
-      "condition": "minecraft:match_tool",
-      "predicate": {
-        "predicates": {
-          "minecraft:enchantments": [
-            {
-              "enchantments": "neotests_glm_test:smelt",
-              "levels": {
-                "min": 1
+  "condition": {
+    "type": "minecraft:all_of",
+    "terms": [
+      {
+        "type": "minecraft:match_tool",
+        "predicate": {
+          "predicates": {
+            "minecraft:enchantments": [
+              {
+                "enchantments": "neotests_glm_test:smelt",
+                "levels": {
+                  "min": 1
+                }
               }
-            }
-          ]
+            ]
+          }
         }
+      },
+      {
+        "type": "testframework:test_enabled",
+        "framework": "neotests:tests",
+        "test": "glm_smeltingModifierTest"
       }
-    },
-    {
-      "condition": "testframework:test_enabled",
-      "framework": "neotests:tests",
-      "test": "glm_smeltingModifierTest"
-    }
-  ]
+    ]
+  }
 }
