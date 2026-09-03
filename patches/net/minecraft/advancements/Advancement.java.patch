@@ -1,13 +1,5 @@
 --- a/net/minecraft/advancements/Advancement.java
 +++ b/net/minecraft/advancements/Advancement.java
-@@ -65,6 +_,7 @@
-             parent, display, AdvancementRewards.EMPTY, Map.of(), requirements, sendsTelemetryEvent
-         )
-     );
-+    public static final Codec<Optional<net.neoforged.neoforge.common.conditions.WithConditions<Advancement>>> CONDITIONAL_CODEC = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodecWithConditions(CODEC);
- 
-     public Advancement(
-         Optional<Identifier> parent,
 @@ -225,8 +_,12 @@
          }
  

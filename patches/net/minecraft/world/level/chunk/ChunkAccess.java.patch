@@ -16,6 +16,15 @@
          BlockStateConsumer blockStateConsumer = (pos, state) -> {
              consumer.accept(pos, state);
              return Continuation.CONTINUE;
+@@ -332,7 +_,7 @@
+             LevelChunkSection section = this.getSection(this.getSectionIndexFromSectionY(sectionY));
+             if (section.maybeHas(predicate)) {
+                 BlockPos origin = SectionPos.of(this.chunkPos, sectionY).origin();
+-                BlockScanUtils.findBlocksInSection(section, origin, 0, 0, 0, 15, 15, 15, predicate, blockStateConsumer);
++                BlockScanUtils.findBlocksInSection(section, origin, 0, 0, 0, 15, 15, 15, fineFilter, blockStateConsumer);
+             }
+         }
+     }
 @@ -464,6 +_,83 @@
      public ChunkSkyLightSources getSkyLightSources() {
          return this.skyLightSources;
