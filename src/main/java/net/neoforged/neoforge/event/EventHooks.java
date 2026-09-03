@@ -1130,7 +1130,7 @@ public class EventHooks {
 
             if (BuildCreativeModeTabContentsEvent.isParentTab(vis)) {
                 if (!parentEntries.add(stack))
-                    throw new IllegalArgumentException("Stack " + stack.getDisplayName() + "has already been added to the tab " + tab.getDisplayName() + " previously");
+                    throw new IllegalArgumentException("Stack " + stack.getDisplayName().getString() + "has already been added to the tab " + tab.getDisplayName().getString() + " previously");
             }
 
             if (BuildCreativeModeTabContentsEvent.isSearchTab(vis)) {
