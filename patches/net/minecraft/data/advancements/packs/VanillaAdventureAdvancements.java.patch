@@ -1,0 +1,10 @@
+--- a/net/minecraft/data/advancements/packs/VanillaAdventureAdvancements.java
++++ b/net/minecraft/data/advancements/packs/VanillaAdventureAdvancements.java
+@@ -1227,6 +_,7 @@
+ 
+         Map<MobCategory, Set<EntityType<?>>> doNotKillByCategory = this.output
+             .listContextElements(Registries.ENTITY_TYPE)
++            .filter(type -> type.key().identifier().getNamespace().equals("minecraft")) // Neo: only check against vanilla entities
+             .map(Holder.Reference::value)
+             .filter(Predicate.not(mobsToKill::contains))
+             .collect(Collectors.groupingBy(EntityType::getCategory, Collectors.toSet()));
