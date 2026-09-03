@@ -1,0 +1,41 @@
+--- a/net/minecraft/world/level/blockscan/BlockScanUtils.java
++++ b/net/minecraft/world/level/blockscan/BlockScanUtils.java
+@@ -109,6 +_,38 @@
+         return false;
+     }
+ 
++    /// Neo: add overload of [#findBlocksInSection(LevelChunkSection, BlockPos, int, int, int, int, int, int, Predicate, BlockStateConsumer)] with a position-sensitive predicate
++    public static boolean findBlocksInSection(
++        LevelChunkSection section,
++        BlockPos origin,
++        int fromX,
++        int fromY,
++        int fromZ,
++        int toX,
++        int toY,
++        int toZ,
++        java.util.function.BiPredicate<BlockState, BlockPos> predicate,
++        BlockStateConsumer consumer
++    ) {
++        BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
++
++        for (int y = fromY; y <= toY; y++) {
++            for (int z = fromZ; z <= toZ; z++) {
++                for (int x = fromX; x <= toX; x++) {
++                    BlockState blockState = section.getBlockState(x, y, z);
++                    mutablePos.setWithOffset(origin, x, y, z);
++                    if (predicate.test(blockState, mutablePos)) {
++                        if (consumer.apply(mutablePos, blockState).shouldAbort()) {
++                            return true;
++                        }
++                    }
++                }
++            }
++        }
++
++        return false;
++    }
++
+     static boolean findBlocksWithCache(LevelReader level, Iterable<BlockPos> positions, Predicate<BlockState> predicate, BlockStateConsumer consumer) {
+         FilteredSectionCache sectionCache = new FilteredSectionCache(level, predicate);
+ 
