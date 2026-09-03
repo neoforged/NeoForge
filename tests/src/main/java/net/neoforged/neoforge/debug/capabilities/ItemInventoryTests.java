@@ -104,7 +104,7 @@ public class ItemInventoryTests {
     public static void testItemBundle(DynamicTest test, RegistrationHelper reg) {
         test.onGameTest(helper -> {
             ItemStack bundle = Items.BUNDLE.getDefaultInstance();
-            BundleContents.Mutable mutable = new BundleContents.Mutable(bundle.get(DataComponents.BUNDLE_CONTENTS));
+            BundleContents.Mutable mutable = bundle.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY).asMutable();
             mutable.tryInsert(Items.STICK.getDefaultInstance().copyWithCount(16));
             mutable.tryInsert(Items.APPLE.getDefaultInstance().copyWithCount(16));
             bundle.set(DataComponents.BUNDLE_CONTENTS, mutable.toImmutable());

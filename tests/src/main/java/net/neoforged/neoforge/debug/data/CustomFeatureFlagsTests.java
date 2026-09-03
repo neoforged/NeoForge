@@ -5,10 +5,9 @@
 
 package net.neoforged.neoforge.debug.data;
 
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.gametest.framework.GameTestServer;
 import net.minecraft.network.chat.Component;
@@ -113,26 +112,16 @@ public class CustomFeatureFlagsTests {
         var modId = reg.modId();
         var enabledRecipeName = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(modId, "diamonds_from_dirt"));
 
-        reg.addClientProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.generateReloadableRegistries(new RegistrySetBuilder().add(RecipeProvider.asBootstrap((recipes, advancements) -> new RecipeProvider(recipes, advancements) {
             @Override
-            protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
-                return new RecipeProvider(registries, output) {
-                    @Override
-                    protected void buildRecipes() {
-                        // recipe available when above flag is enabled
-                        shapeless(RecipeCategory.MISC, Items.DIAMOND)
-                                .requires(ItemTags.DIRT)
-                                .unlockedBy("has_dirt", has(ItemTags.DIRT))
-                                .save(output.withConditions(NeoForgeConditions.featureFlagsEnabled(flag)), enabledRecipeName);
-                    }
-                };
+            protected void buildRecipes() {
+                // recipe available when above flag is enabled
+                shapeless(RecipeCategory.MISC, Items.DIAMOND)
+                        .requires(ItemTags.DIRT)
+                        .unlockedBy("has_dirt", has(ItemTags.DIRT))
+                        .save(output.withConditions(NeoForgeConditions.featureFlagsEnabled(flag)), enabledRecipeName);
             }
-
-            @Override
-            public String getName() {
-                return "conditional_flag_recipes";
-            }
-        });
+        })));
 
         test.eventListeners().forge().addListener((ServerStartedEvent event) -> {
             var server = event.getServer();

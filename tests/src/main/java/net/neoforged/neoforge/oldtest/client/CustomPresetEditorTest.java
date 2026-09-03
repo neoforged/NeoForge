@@ -7,7 +7,7 @@ package net.neoforged.neoforge.oldtest.client;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
+
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Button.OnPress;
 import net.minecraft.client.gui.screens.Screen;
@@ -15,11 +15,8 @@ import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext.DimensionsUpdater;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.PackOutput;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -40,7 +37,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterPresetEditorsEvent;
-import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 @Mod(CustomPresetEditorTest.MODID)
@@ -52,19 +48,10 @@ public class CustomPresetEditorTest {
     public static class CommonModEvents {
         @SubscribeEvent
         public static void onGatherData(GatherDataEvent.Client event) {
-            DataGenerator gen = event.getGenerator();
-            PackOutput packOutput = gen.getPackOutput();
-            CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
-
-            RegistrySetBuilder registrySetBuilder = new RegistrySetBuilder()
-                    .add(Registries.WORLD_PRESET, context -> context.register(WORLD_PRESET_KEY, makeWorldPreset(context)));
-
-            gen.addProvider(true, new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, registrySetBuilder, Set.of(MODID)) {
-                @Override
-                public String getName() {
-                    return MODID + ":" + super.getName(); // dataproviders must have unique names
-                }
-            });
+            event.createWorldRegistryObjects(
+                    new RegistrySetBuilder().add(Registries.WORLD_PRESET, context -> context.register(WORLD_PRESET_KEY, makeWorldPreset(context))),
+                    Set.of(MODID),
+                    "world - " + MODID);
         }
 
         private static WorldPreset makeWorldPreset(BootstrapContext<WorldPreset> context) {

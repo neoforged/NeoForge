@@ -15,6 +15,7 @@ import com.mojang.blaze3d.platform.Transparency;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import net.minecraft.client.model.geom.builders.UVPair;
@@ -23,6 +24,7 @@ import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.client.renderer.texture.SpriteLoader;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.client.resources.model.ModelBaker;
@@ -143,7 +145,16 @@ public class MutableQuadTests {
                 (long) refVertices.get(2)[2],
                 (long) refVertices.get(3)[2],
                 side,
-                new BakedQuad.MaterialInfo(UnitTextureAtlasSprite.INSTANCE, ChunkSectionLayer.SOLID, RenderTypes.entitySolid(UnitTextureAtlasSprite.LOCATION), 0, true, 0, true));
+                new BakedQuad.MaterialInfo(
+                        UnitTextureAtlasSprite.INSTANCE,
+                        ChunkSectionLayer.SOLID,
+                        RenderTypes.entitySolid(UnitTextureAtlasSprite.LOCATION),
+                        RenderTypes.itemCutoutGlint(UnitTextureAtlasSprite.LOCATION),
+                        RenderTypes.itemCutoutGlintSpecial(UnitTextureAtlasSprite.LOCATION),
+                        0,
+                        null,
+                        0,
+                        true));
 
         var mutableQuad = new MutableQuad();
         mutableQuad.setSprite(makeMockMaterial(), Transparency.NONE);
@@ -214,7 +225,7 @@ public class MutableQuadTests {
         assertEquals(mutableQuad.tintIndex(), refQuad.materialInfo().tintIndex());
         assertEquals(mutableQuad.direction(), refQuad.direction());
         assertEquals(mutableQuad.sprite(), refQuad.materialInfo().sprite());
-        assertEquals(mutableQuad.shade(), refQuad.materialInfo().shade());
+        assertEquals(mutableQuad.shadeOverride(), refQuad.materialInfo().shadeDirectionOverride());
         assertEquals(mutableQuad.lightEmission(), refQuad.materialInfo().lightEmission());
         assertEquals(mutableQuad.hasAmbientOcclusion(), refQuad.materialInfo().ambientOcclusion());
     }
@@ -420,7 +431,8 @@ public class MutableQuadTests {
 
     static class MockModelBaker extends MaterialBaker implements ModelBaker, ModelBaker.Interner {
         public MockModelBaker() {
-            super(new MockSprite());
+            SpriteLoader.Preparations preparations = new SpriteLoader.Preparations(0, 0, 0, new MockSprite(), Map.of(), CompletableFuture.completedFuture(null));
+            super(preparations, preparations);
         }
 
         @Override
@@ -446,11 +458,6 @@ public class MutableQuadTests {
         @Override
         public <T> T compute(SharedOperationKey<T> key) {
             throw new UnsupportedOperationException();
-        }
-
-        @Override
-        protected Material.@Nullable Baked bake(Material material) {
-            return new Material.Baked(new MockSprite(), false);
         }
 
         @Override

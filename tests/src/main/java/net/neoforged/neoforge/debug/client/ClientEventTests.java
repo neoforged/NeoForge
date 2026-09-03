@@ -174,7 +174,7 @@ public class ClientEventTests {
                 for (int i = 0; i < numRender; i++) {
                     poseStack.translate(0, 1, 0);
                     poseStack.pushPose();
-                    poseStack.mulPose(Axis.XP.rotation(xRotation));
+                    poseStack.rotate(Axis.XP, xRotation);
 
                     BlockModelRenderState renderState = new BlockModelRenderState();
                     Minecraft.getInstance().getBlockModelResolver().update(renderState, Blocks.CALCITE.defaultBlockState(), blockDisplayContext);

@@ -5,17 +5,17 @@
 
 package net.neoforged.neoforge.debug.crafting;
 
-import java.util.concurrent.CompletableFuture;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.core.FrontAndTop;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CrafterBlock;
 import net.minecraft.world.level.block.entity.CrafterBlockEntity;
@@ -34,13 +34,13 @@ public class RecipePrioritiesTest {
     @EmptyTemplate()
     @TestHolder(description = "Tests creating a recipe with a higher priority than vanilla recipes")
     static void testOverridingRecipe(final DynamicTest test, final RegistrationHelper reg) {
-        reg.addClientProvider(event -> new RecipePrioritiesProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), "neotests_recipe_priorities") {
+        reg.generateReloadableRegistries(new RegistrySetBuilder().add(RecipeProvider.asBootstrap(Recipes::new)));
+        reg.addClientProvider(event -> new RecipePrioritiesProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider(), "neotests_recipe_priorities") {
             @Override
             protected void start() {
                 add("higher_priority_test", 1);
             }
         });
-        reg.addClientProvider(event -> new Recipes.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()));
         test.onGameTest(helper -> helper
                 .startSequence()
                 .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.CRAFTER.defaultBlockState().setValue(BlockStateProperties.ORIENTATION, FrontAndTop.UP_NORTH).setValue(CrafterBlock.CRAFTING, true)))
@@ -75,8 +75,8 @@ public class RecipePrioritiesTest {
     }
 
     public static class Recipes extends RecipeProvider {
-        protected Recipes(HolderLookup.Provider provider, RecipeOutput recipeOutput) {
-            super(provider, recipeOutput);
+        protected Recipes(BootstrapContext<Recipe<?>> recipeOutput, BootstrapContext<Advancement> advancementOutput) {
+            super(recipeOutput, advancementOutput);
         }
 
         @Override
@@ -89,22 +89,6 @@ public class RecipePrioritiesTest {
                     .group("bed")
                     .unlockedBy(getHasName(Blocks.CHERRY_PLANKS), has(Blocks.CHERRY_PLANKS))
                     .save(output, ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath("neotests_recipe_priorities", "higher_priority_test")));
-        }
-
-        private static class Runner extends RecipeProvider.Runner {
-            protected Runner(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> registries) {
-                super(packOutput, registries);
-            }
-
-            @Override
-            protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
-                return new RecipePrioritiesTest.Recipes(registries, output);
-            }
-
-            @Override
-            public String getName() {
-                return "RecipePrioritiesTest Recipes";
-            }
         }
     }
 }

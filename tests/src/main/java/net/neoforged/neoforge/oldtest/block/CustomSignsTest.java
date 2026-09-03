@@ -9,12 +9,13 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
 import net.minecraft.client.renderer.blockentity.StandingSignRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.HangingSignItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.SignItem;
+import net.minecraft.world.item.StandingAndWallBlockItem;
 import net.minecraft.world.level.block.CeilingHangingSignBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.StandingSignBlock;
@@ -52,7 +53,7 @@ public class CustomSignsTest {
     public static final DeferredBlock<CustomWallHangingSignBlock> TEST_WALL_HANGING_SIGN = BLOCKS.register("test_wall_hanging_sign", () -> new CustomWallHangingSignBlock(Properties.of().noCollision().strength(1.0F).sound(SoundType.WOOD), CustomSignsTest.TEST_WOOD_TYPE));
 
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
-    public static final DeferredItem<SignItem> TEST_SIGN = ITEMS.register("test_sign", () -> new SignItem(TEST_STANDING_SIGN.get(), TEST_WALL_SIGN.get(), new Item.Properties().stacksTo(16)));
+    public static final DeferredItem<Item> TEST_SIGN = ITEMS.register("test_sign", () -> new StandingAndWallBlockItem(TEST_STANDING_SIGN.get(), TEST_WALL_SIGN.get(), Direction.DOWN, new Item.Properties().stacksTo(16)));
     public static final DeferredItem<HangingSignItem> TEST_HANGING_SIGN = ITEMS.register("test_hanging_sign", () -> new HangingSignItem(TEST_CEILING_HANGING_SIGN.get(), TEST_WALL_HANGING_SIGN.get(), (new Item.Properties()).stacksTo(16)));
 
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);

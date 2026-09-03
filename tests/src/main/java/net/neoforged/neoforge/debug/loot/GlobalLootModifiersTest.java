@@ -11,8 +11,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -22,7 +21,8 @@ import net.minecraft.advancements.predicates.EnchantmentPredicate;
 import net.minecraft.advancements.predicates.ItemPredicate;
 import net.minecraft.advancements.predicates.MinMaxBounds;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.component.predicates.DataComponentPredicates;
 import net.minecraft.core.component.predicates.EnchantmentsPredicate;
@@ -32,7 +32,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.util.Util;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.Item;
@@ -43,6 +42,7 @@ import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
@@ -50,13 +50,13 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
+import net.minecraft.world.level.storage.loot.predicates.AllOfCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.MatchBlock;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
-import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
@@ -101,7 +101,7 @@ public class GlobalLootModifiersTest {
     private static class SmeltingEnchantmentModifier extends LootModifier {
         public static final Supplier<MapCodec<SmeltingEnchantmentModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, SmeltingEnchantmentModifier::new)));
 
-        public SmeltingEnchantmentModifier(LootItemCondition[] conditions, int priority) {
+        public SmeltingEnchantmentModifier(Optional<Holder<LootItemCondition>> conditions, int priority) {
             super(conditions, priority);
         }
 
@@ -133,7 +133,7 @@ public class GlobalLootModifiersTest {
     private static class SilkTouchTestModifier extends LootModifier {
         public static final Supplier<MapCodec<SilkTouchTestModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, SilkTouchTestModifier::new)));
 
-        public SilkTouchTestModifier(LootItemCondition[] conditions, int priority) {
+        public SilkTouchTestModifier(Optional<Holder<LootItemCondition>> conditions, int priority) {
             super(conditions, priority);
         }
 
@@ -178,7 +178,7 @@ public class GlobalLootModifiersTest {
         private final Item itemToCheck;
         private final Item itemReward;
 
-        public WheatSeedsConverterModifier(LootItemCondition[] conditions, int priority, int numSeeds, Item itemCheck, Item reward) {
+        public WheatSeedsConverterModifier(Optional<Holder<LootItemCondition>> conditions, int priority, int numSeeds, Item itemCheck, Item reward) {
             super(conditions, priority);
             numSeedsToConvert = numSeeds;
             itemToCheck = itemCheck;
@@ -219,7 +219,7 @@ public class GlobalLootModifiersTest {
 
         private final int multiplicationFactor;
 
-        public DungeonLootEnhancerModifier(LootItemCondition[] conditions, int priority, int multiplicationFactor) {
+        public DungeonLootEnhancerModifier(Optional<Holder<LootItemCondition>> conditions, int priority, int multiplicationFactor) {
             super(conditions, priority);
             this.multiplicationFactor = multiplicationFactor;
         }
@@ -248,22 +248,22 @@ public class GlobalLootModifiersTest {
     static void smeltingModifierTest(final DynamicTest test) {
         var registrySetBuilder = new RegistrySetBuilder()
                 .add(Registries.ENCHANTMENT, boot -> boot
-                        .register(SMELT, new Enchantment.Builder(Enchantment.definition(boot.holderLookup(Registries.ITEM).orElseThrow().getOrThrow(ItemTags.MINING_ENCHANTABLE), 10, 1, Enchantment.dynamicCost(1, 10), Enchantment.dynamicCost(5, 10), 1, EquipmentSlotGroup.HAND))
+                        .register(SMELT, new Enchantment.Builder(Enchantment.definition(boot.lookup(Registries.ITEM).getOrThrow(ItemTags.MINING_ENCHANTABLE), 10, 1, Enchantment.dynamicCost(1, 10), Enchantment.dynamicCost(5, 10), 1, EquipmentSlotGroup.HAND))
                                 .build(SMELT.identifier())));
+        HELPER.generateWorldRegistries(registrySetBuilder);
 
         var subpack = HELPER.registerSubpack("smelt_glms");
-        HELPER.addClientProvider(event -> new GlobalLootModifierProvider(event.getGenerator().getPackOutput(subpack), CompletableFuture.supplyAsync(() -> registrySetBuilder.build(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY)), Util.backgroundExecutor()), HELPER.modId()) {
+        HELPER.addClientProvider(event -> new GlobalLootModifierProvider(event.getGenerator().getPackOutput(subpack), event.getReloadableLookupProvider(), HELPER.modId()) {
             @Override
             protected void start() {
                 add("smelting", new SmeltingEnchantmentModifier(
-                        new LootItemCondition[] {
+                        Optional.of(Holder.direct(AllOfCondition.allOf(
                                 MatchTool.toolMatches(ItemPredicate.Builder.item().withComponents(
                                         DataComponentMatchers.Builder.components().partial(
                                                 DataComponentPredicates.ENCHANTMENTS,
-                                                EnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(registries.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(SMELT), MinMaxBounds.Ints.atLeast(1))))).build()))
-                                        .build(),
-                                new TestEnabledLootCondition(test)
-                        }, IGlobalLootModifier.DEFAULT_PRIORITY));
+                                                EnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(registries.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(SMELT), MinMaxBounds.Ints.atLeast(1))))).build())),
+                                () -> new TestEnabledLootCondition(test)
+                        ).build())), IGlobalLootModifier.DEFAULT_PRIORITY));
             }
 
             @Override
@@ -271,8 +271,6 @@ public class GlobalLootModifiersTest {
                 return super.getName() + " - smelting modifier";
             }
         });
-        HELPER.addClientProvider(event -> new DatapackBuiltinEntriesProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(),
-                registrySetBuilder, Set.of(HELPER.modId())));
 
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL).preventItemPickup())
                 .thenExecute(player -> player.setItemInHand(InteractionHand.MAIN_HAND, Items.DIAMOND_PICKAXE.getDefaultInstance()))
@@ -302,25 +300,27 @@ public class GlobalLootModifiersTest {
     @TestHolder(description = "Tests if a GLM replacing loot table values works, by replacing seeds with wheat when harvesting wheat")
     static void wheatSeedReplacerTest(final DynamicTest test) {
         var subpack = HELPER.registerSubpack("wheat_seed_glms");
-        HELPER.addClientProvider(event -> new GlobalLootModifierProvider(event.getGenerator().getPackOutput(subpack), event.getLookupProvider(), HELPER.modId()) {
+        HELPER.addClientProvider(event -> new GlobalLootModifierProvider(event.getGenerator().getPackOutput(subpack), event.getReloadableLookupProvider(), HELPER.modId()) {
             @Override
             protected void start() {
+                HolderLookup.RegistryLookup<Block> blocks = registries.lookupOrThrow(Registries.BLOCK);
+
                 this.add("wheat_harvest", new WheatSeedsConverterModifier(
-                        new LootItemCondition[] {
+                        Optional.of(Holder.direct(AllOfCondition.allOf(
                                 // Check shear tool tag to ensure GLMs can resolve tags during loading
-                                MatchTool.toolMatches(ItemPredicate.Builder.item().of(this.registries.lookupOrThrow(Registries.ITEM), Tags.Items.TOOLS_SHEAR)).build(),
-                                LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.WHEAT).build(),
-                                new TestEnabledLootCondition(test)
-                        },
+                                MatchTool.toolMatches(ItemPredicate.Builder.item().of(this.registries.lookupOrThrow(Registries.ITEM), Tags.Items.TOOLS_SHEAR)),
+                                MatchBlock.blockMatches(blocks, Blocks.WHEAT),
+                                () -> new TestEnabledLootCondition(test)
+                        ).build())),
                         IGlobalLootModifier.DEFAULT_PRIORITY,
                         1, Items.WHEAT_SEEDS, Items.WHEAT));
 
                 // Ensure loading conditions work on GLMs
                 this.add("wheat_harvest_disabled", new WheatSeedsConverterModifier(
-                        new LootItemCondition[] {
-                                LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.WHEAT).build(),
-                                new TestEnabledLootCondition(test)
-                        },
+                        Optional.of(Holder.direct(AllOfCondition.allOf(
+                                MatchBlock.blockMatches(blocks, (Blocks.WHEAT)),
+                                () -> new TestEnabledLootCondition(test)
+                        ).build())),
                         IGlobalLootModifier.DEFAULT_PRIORITY - 100,
                         1, Items.WHEAT, Items.BAMBOO), NeoForgeConditions.never());
             }
@@ -363,10 +363,10 @@ public class GlobalLootModifiersTest {
     @TestHolder(description = "Tests if the silk touch bamboo GLM works, by breaking leaves with bamboo and verifying the leaf block is dropped")
     static void silkTouchBambooTest(final DynamicTest test) {
         HELPER.clientProvider(GlobalLootModifierProvider.class, prov -> prov.add("silk_touch_bamboo", new SilkTouchTestModifier(
-                new LootItemCondition[] {
-                        MatchTool.toolMatches(ItemPredicate.Builder.item().of(null, Items.BAMBOO)).build(),
-                        new TestEnabledLootCondition(test)
-                },
+                Optional.of(Holder.direct(AllOfCondition.allOf(
+                        MatchTool.toolMatches(ItemPredicate.Builder.item().of(null, Items.BAMBOO)),
+                        () -> new TestEnabledLootCondition(test)
+                ).build())),
                 IGlobalLootModifier.DEFAULT_PRIORITY)));
 
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL).preventItemPickup())
@@ -390,10 +390,10 @@ public class GlobalLootModifiersTest {
     @TestHolder(description = "Tests if dungeon loot modifiers work, by rolling the simple_dungeon loot table")
     static void dungeonLootTest(final DynamicTest test) {
         HELPER.clientProvider(GlobalLootModifierProvider.class, prov -> prov.add("dungeon_loot", new DungeonLootEnhancerModifier(
-                new LootItemCondition[] {
-                        LootTableIdCondition.builder(Identifier.withDefaultNamespace("chests/simple_dungeon")).build(),
-                        new TestEnabledLootCondition(test)
-                },
+                Optional.of(Holder.direct(AllOfCondition.allOf(
+                        LootTableIdCondition.builder(Identifier.withDefaultNamespace("chests/simple_dungeon")),
+                        () -> new TestEnabledLootCondition(test)
+                ).build())),
                 IGlobalLootModifier.DEFAULT_PRIORITY,
                 2)));
 

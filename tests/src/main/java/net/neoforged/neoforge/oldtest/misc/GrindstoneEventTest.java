@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.oldtest.misc;
 
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.item.ItemStack;
@@ -88,7 +89,7 @@ public class GrindstoneEventTest {
             ItemStack reward = new ItemStack(Items.ENCHANTED_BOOK);
             reward.set(DataComponents.STORED_ENCHANTMENTS, topItem.getTagEnchantments());
             if (!event.getPlayer().getInventory().add(reward)) {
-                event.getPlayer().drop(reward, false);
+                event.getPlayer().drop(reward, false, Prediction.PREDICTED);
             }
 
             //summon visual lightning above the grindstone

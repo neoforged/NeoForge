@@ -87,7 +87,7 @@ public class DataPackRegistriesTest {
         // This outputs to data/data_pack_registries_test/data_pack_registries_test/unsyncable/datagen_test.json
         final DataGenerator generator = event.getGenerator();
         final Path outputFolder = generator.getPackOutput().getOutputFolder();
-        final CompletableFuture<HolderLookup.Provider> providerCompletableFuture = event.getLookupProvider();
+        final CompletableFuture<HolderLookup.Provider> providerCompletableFuture = event.getReloadableLookupProvider();
         final Gson gson = new GsonBuilder().setPrettyPrinting().create();
         final Identifier registryId = Unsyncable.REGISTRY_KEY.identifier();
         final Identifier id = this.datagenTestObject.getId();

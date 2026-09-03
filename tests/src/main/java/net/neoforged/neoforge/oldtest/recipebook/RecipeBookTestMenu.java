@@ -13,6 +13,7 @@ import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.recipebook.ServerPlaceRecipe;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -89,7 +90,7 @@ public class RecipeBookTestMenu extends RecipeBookMenu {
                                 itemstack1.grow(itemstack.getCount());
                                 container.setItem(i1, itemstack1);
                             } else if (!player.getInventory().add(itemstack1)) {
-                                player.drop(itemstack1, false);
+                                player.drop(itemstack1, false, Prediction.PREDICTED);
                             }
                         }
                     }
@@ -233,6 +234,7 @@ public class RecipeBookTestMenu extends RecipeBookMenu {
     /**
      * Mostly copied from {@link CraftingMenu#quickMoveStack}
      */
+    @Override
     public ItemStack quickMoveStack(Player player, int idx) {
         ItemStack ret = ItemStack.EMPTY;
         Slot slot = this.slots.get(idx);
@@ -268,7 +270,7 @@ public class RecipeBookTestMenu extends RecipeBookMenu {
 
         slot.onTake(player, item);
         if (idx == RESULT_SLOT)
-            player.drop(item, false);
+            player.drop(item, false, Prediction.PREDICTED);
 
         return ret;
     }

@@ -27,7 +27,6 @@ import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.Pose;
-import net.minecraft.world.entity.ai.behavior.Swim;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.animal.equine.SkeletonHorse;
 import net.minecraft.world.entity.animal.fish.Cod;
@@ -611,10 +610,10 @@ public class EntityFluidInteractionTests {
 
         helper.startSequence()
                 .thenExecuteAfter(2, () -> {
-                    helper.assertTrue(Swim.shouldSwim(milkZombie), "Water-like custom fluid should trigger swim behavior");
-                    helper.assertTrue(Swim.shouldSwim(waterZombie), "Water should trigger swim behavior");
-                    helper.assertTrue(Swim.shouldSwim(lavaZombie), "Lava should trigger swim behavior");
-                    helper.assertFalse(Swim.shouldSwim(dryZombie), "Dry mob should stay out of swim behavior");
+                    helper.assertTrue(helper.checkCanSwim(milkZombie), "Water-like custom fluid should trigger swim behavior");
+                    helper.assertTrue(helper.checkCanSwim(waterZombie), "Water should trigger swim behavior");
+                    helper.assertTrue(helper.checkCanSwim(lavaZombie), "Lava should trigger swim behavior");
+                    helper.assertFalse(helper.checkCanSwim(dryZombie), "Dry mob should stay out of swim behavior");
                 })
                 .thenSucceed();
     }
@@ -1087,6 +1086,10 @@ public class EntityFluidInteractionTests {
             this.assertTrue(horse.isGiant(), "Skeleton horse in " + fluidName + " should become giant");
             this.assertTrue(horse.getBbWidth() > normalWidth, "Skeleton horse in " + fluidName + " should grow wider");
             this.assertTrue(horse.getBbHeight() > normalHeight, "Skeleton horse in " + fluidName + " should grow taller");
+        }
+
+        boolean checkCanSwim(LivingEntity entity) {
+            return entity.getFluidInteraction().isInFluidMatching(entity, (e, fluidType, height) -> e.canSwimInFluidType(fluidType) && height > entity.getFluidJumpThreshold());
         }
 
         void fillFluidColumn(FluidFixture<?> fluid, BlockPos pos) {

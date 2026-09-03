@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.oldtest.item;
 
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -28,7 +28,7 @@ public class EnderMaskTest {
     public static DeferredItem<Item> ENDER_MASK = ITEMS.registerItem("ender_mask", props -> new Item(props.humanoidArmor(ArmorMaterials.LEATHER, ArmorType.HELMET)) {
         @Override
         public boolean isGazeDisguise(ItemStack stack, Player player, @Nullable LivingEntity entity) {
-            return entity instanceof EnderMan && player.experienceLevel > 10;
+            return entity instanceof Enderman && player.experienceLevel > 10;
         }
     });
 

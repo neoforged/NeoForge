@@ -15,7 +15,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.repository.BuiltInPackSource;
 import net.minecraft.server.packs.repository.KnownPack;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
@@ -49,7 +48,7 @@ public class BulkKnownPackTest {
                     generateEntry(pack, i);
                     event.addRepositorySource(packs -> packs.accept(Pack.readMetaAndCreate(
                             pack.location(),
-                            BuiltInPackSource.fixedResources(pack),
+                            pack.asResourcesSupplier(),
                             PackType.SERVER_DATA,
                             new PackSelectionConfig(true, Pack.Position.TOP, false))));
                 }

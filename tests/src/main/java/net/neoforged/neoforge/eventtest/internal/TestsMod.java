@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.eventtest.internal;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import java.nio.file.Path;
 import net.minecraft.commands.CommandSourceStack;
@@ -26,7 +27,6 @@ import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.impl.MutableTestFramework;
 import net.neoforged.testframework.summary.GitHubActionsStepSummaryDumper;
 import net.neoforged.testframework.summary.JUnitSummaryDumper;
-import org.lwjgl.glfw.GLFW;
 
 @Mod("neotests")
 public class TestsMod {
@@ -47,8 +47,8 @@ public class TestsMod {
     public TestsMod(IEventBus modBus, ModContainer container) {
         final MutableTestFramework framework = FrameworkConfiguration.builder(Identifier.fromNamespaceAndPath("neotests", "tests"))
                 .clientConfiguration(() -> ClientConfiguration.builder()
-                        .toggleOverlayKey(GLFW.GLFW_KEY_J)
-                        .openManagerKey(GLFW.GLFW_KEY_N)
+                        .toggleOverlayKey(InputConstants.KEY_J)
+                        .openManagerKey(InputConstants.KEY_N)
                         .build())
                 .enable(Feature.CLIENT_SYNC, Feature.CLIENT_MODIFICATIONS, Feature.TEST_STORE)
                 .dumpers(new JUnitSummaryDumper(Path.of("tests/")), new GitHubActionsStepSummaryDumper())

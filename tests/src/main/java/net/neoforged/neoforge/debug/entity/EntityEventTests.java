@@ -102,7 +102,7 @@ public class EntityEventTests {
             DamageSource source = new DamageSource(helper.getLevel().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.MOB_ATTACK));
             helper.startSequence(() -> helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL))
                     .thenExecute(player -> player.setCustomName(NAME))
-                    .thenExecute(player -> player.setInvulnerable(true))
+                    .thenExecute(player -> player.setPermanentlyInvulnerable(true))
                     .thenWaitUntil(player -> helper.assertFalse(player.isInvulnerableTo(helper.getLevel(), source), "Player Invulnerability not bypassed."))
                     .thenSucceed();
         });

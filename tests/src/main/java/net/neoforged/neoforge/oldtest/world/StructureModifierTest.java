@@ -10,8 +10,8 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.core.registries.codec.RegistryCodecs;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.random.Weighted;
 import net.minecraft.world.entity.MobCategory;
@@ -39,7 +39,7 @@ import org.apache.logging.log4j.Logger;
  */
 @Mod(StructureModifierTest.MODID)
 public class StructureModifierTest {
-    private static final Codec<HolderSet<Structure>> STRUCTURE_LIST_CODEC = RegistryCodecs.homogeneousList(Registries.STRUCTURE, Structure.DIRECT_CODEC);
+    private static final Codec<HolderSet<Structure>> STRUCTURE_LIST_CODEC = RegistryCodecs.holderSet(Registries.STRUCTURE, Structure.DIRECT_CODEC);
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MODID = "structure_modifiers_test";
     public static final boolean ENABLED = true;

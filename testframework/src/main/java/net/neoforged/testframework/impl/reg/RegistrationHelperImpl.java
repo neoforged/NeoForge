@@ -12,6 +12,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
@@ -20,6 +21,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
@@ -54,6 +56,7 @@ import net.neoforged.testframework.registration.DeferredBlocks;
 import net.neoforged.testframework.registration.DeferredEntityTypes;
 import net.neoforged.testframework.registration.DeferredItems;
 import net.neoforged.testframework.registration.RegistrationHelper;
+import org.jspecify.annotations.Nullable;
 
 public class RegistrationHelperImpl implements RegistrationHelper {
     private ModContainer owner;
@@ -98,6 +101,10 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     private final List<Function<GatherDataEvent.Client, DataProvider>> directClientProviders = new ArrayList<>();
     private final List<Function<GatherDataEvent.Server, DataProvider>> directServerProviders = new ArrayList<>();
     private final Map<ResourceKey<? extends Registry<?>>, DeferredRegister<?>> registrars = new ConcurrentHashMap<>();
+    @Nullable
+    private RegistrySetBuilder worldRegistrySetBuilder;
+    @Nullable
+    private RegistrySetBuilder reloadableRegistrySetBuilder;
 
     @Override
     public <T> DeferredRegister<T> registrar(ResourceKey<Registry<T>> registry) {
@@ -216,6 +223,22 @@ public class RegistrationHelperImpl implements RegistrationHelper {
         directServerProviders.add(provider);
     }
 
+    @Override
+    public void generateWorldRegistries(RegistrySetBuilder registrySetBuilder) {
+        if (worldRegistrySetBuilder != null) {
+            throw new IllegalStateException("Cannot add multiple sets of world registry data");
+        }
+        worldRegistrySetBuilder = registrySetBuilder;
+    }
+
+    @Override
+    public void generateReloadableRegistries(RegistrySetBuilder registrySetBuilder) {
+        if (reloadableRegistrySetBuilder != null) {
+            throw new IllegalStateException("Cannot add multiple sets of reloadable registry data");
+        }
+        reloadableRegistrySetBuilder = registrySetBuilder;
+    }
+
     private IEventBus bus;
 
     @Override
@@ -244,6 +267,13 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     }
 
     private <T extends GatherDataEvent> void gather(final T event, ListMultimap<Class<?>, Consumer<? extends DataProvider>> providers, List<Function<T, DataProvider>> directProviders) {
+        if (worldRegistrySetBuilder != null) {
+            event.createWorldRegistryObjects(worldRegistrySetBuilder, null, "world (" + modId + ")");
+        }
+        if (reloadableRegistrySetBuilder != null) {
+            event.createReloadableRegistryObjects(reloadableRegistrySetBuilder, null, "reloadable (" + modId + ")");
+        }
+
         providers.asMap().forEach((cls, cons) -> event.getGenerator().addProvider(true, PROVIDERS.get(cls).create(
                 event.getGenerator().getPackOutput(), event.getReloadableLookupProvider(), event.getGenerator(), modId, (List) cons)));
 
