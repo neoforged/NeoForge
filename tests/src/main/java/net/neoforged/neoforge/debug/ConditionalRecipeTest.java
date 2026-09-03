@@ -5,10 +5,9 @@
 
 package net.neoforged.neoforge.debug;
 
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -27,27 +26,17 @@ public interface ConditionalRecipeTest {
         // name pointing to recipe which should never be enabled
         var recipeName = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(reg.modId(), "always_disabled_recipe"));
 
-        reg.addClientProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.generateReloadableRegistries(new RegistrySetBuilder().add(RecipeProvider.asBootstrap((recipes, advancements) -> new RecipeProvider(recipes, advancements) {
             @Override
-            protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
-                return new RecipeProvider(registries, output) {
-                    @Override
-                    protected void buildRecipes() {
-                        // generic stone -> bedrock recipe
-                        shapeless(RecipeCategory.MISC, Items.BEDROCK)
-                                .requires(Items.STONE)
-                                .unlockedBy("has_stone", has(Items.STONE))
-                                // false condition to have this recipe always disabled
-                                .save(output.withConditions(NeoForgeConditions.never()), recipeName);
-                    }
-                };
+            protected void buildRecipes() {
+                // generic stone -> bedrock recipe
+                shapeless(RecipeCategory.MISC, Items.BEDROCK)
+                        .requires(Items.STONE)
+                        .unlockedBy("has_stone", has(Items.STONE))
+                        // false condition to have this recipe always disabled
+                        .save(output.withConditions(NeoForgeConditions.never()), recipeName);
             }
-
-            @Override
-            public String getName() {
-                return "always_disabled_recipe_provider";
-            }
-        });
+        })));
 
         test.eventListeners().forge().addListener((ServerStartedEvent event) -> {
             var recipe = event.getServer().getRecipeManager().recipeMap().byKey(recipeName);

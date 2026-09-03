@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.oldtest.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
@@ -104,7 +103,7 @@ public class CustomItemDisplayContextTest {
                 poseStack.pushPose();
 
                 poseStack.translate(0.5, 0.5, 0.5);
-                poseStack.mulPose(renderState.facing.getRotation());
+                poseStack.rotate(renderState.facing.getRotation());
                 poseStack.translate(-0.5, -0.5, -0.5);
 
                 renderState.item.submit(poseStack, submitNodeCollector, renderState.lightCoords, OverlayTexture.NO_OVERLAY, 0);
@@ -182,16 +181,9 @@ public class CustomItemDisplayContextTest {
     }
 
     private static class ItemHangerBlock extends HorizontalDirectionalBlock implements EntityBlock {
-        public static final MapCodec<ItemHangerBlock> CODEC = simpleCodec(ItemHangerBlock::new);
-
         public ItemHangerBlock(BlockBehaviour.Properties properties) {
             super(properties);
             registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
-        }
-
-        @Override
-        protected MapCodec<ItemHangerBlock> codec() {
-            return CODEC;
         }
 
         @Override

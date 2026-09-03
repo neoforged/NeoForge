@@ -43,8 +43,6 @@ public class MapDecorationRenderTests {
                 () -> new MapDecorationType(
                         Identifier.withDefaultNamespace("target_x"),
                         false,
-                        -1,
-                        false,
                         false));
 
         test.framework().modEventBus().addListener((RegisterMapDecorationRenderersEvent event) -> {
@@ -73,8 +71,6 @@ public class MapDecorationRenderTests {
                 "test",
                 () -> new MapDecorationType(
                         Identifier.withDefaultNamespace("target_x"),
-                        false,
-                        -1,
                         false,
                         false));
 
@@ -121,7 +117,7 @@ public class MapDecorationRenderTests {
                 int index) {
             poseStack.pushPose();
             poseStack.translate(decoration.x / 2.0F + 64.0F, decoration.y / 2.0F + 64.0F, -0.02F);
-            poseStack.mulPose(Axis.ZP.rotationDegrees((float) (decoration.rot * 360) / 16.0F));
+            poseStack.rotateDegrees(Axis.ZP, (float) (decoration.rot * 360) / 16.0F);
             poseStack.scale(4.0F, 4.0F, 3.0F);
             poseStack.translate(-0.125F, 0.125F, 0.0F);
 

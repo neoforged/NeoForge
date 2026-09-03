@@ -35,7 +35,7 @@ public class OnDestroyedByPushReactionTests {
                         "destroy_on_piston_move",
                         properties -> new DestroyedByPushReactionListeningBlock(properties, callback),
                         props -> props
-                                .pushReaction(PushReaction.DESTROY))
+                                .pushReaction(PushReaction.POPPED))
                 .withDefaultWhiteModel()
                 .withBlockItem()
                 .withLang("Destroy on piston move");
@@ -47,7 +47,7 @@ public class OnDestroyedByPushReactionTests {
                         "push_on_piston_move",
                         properties -> new DestroyedByPushReactionListeningBlock(properties, callback),
                         props -> props
-                                .pushReaction(PushReaction.PUSH_ONLY))
+                                .pushReaction(PushReaction.PUSH))
                 .withDefaultWhiteModel()
                 .withBlockItem()
                 .withLang("Push on piston move");

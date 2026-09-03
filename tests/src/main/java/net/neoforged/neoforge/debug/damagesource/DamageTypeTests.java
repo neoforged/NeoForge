@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.debug.damagesource;
 
-import java.util.Set;
 import java.util.function.Supplier;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -35,7 +34,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.common.asm.enumextension.EnumProxy;
 import net.neoforged.neoforge.common.damagesource.IDeathMessageProvider;
 import net.neoforged.neoforge.common.damagesource.IScalingFunction;
-import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -95,12 +93,7 @@ public class DamageTypeTests {
         registrySetBuilder.add(Registries.DAMAGE_TYPE, bootstrap -> {
             bootstrap.register(TEST_DMG_TYPE, new DamageType("test_mod", scaling, 0.0f, effects, msgType));
         });
-
-        reg.addClientProvider(event -> new DatapackBuiltinEntriesProvider(
-                event.getGenerator().getPackOutput(),
-                event.getLookupProvider(),
-                registrySetBuilder,
-                Set.of(reg.modId())));
+        reg.generateWorldRegistries(registrySetBuilder);
 
         test.onGameTest(helper -> {
             Skeleton target = helper.spawnWithNoFreeWill(EntityTypes.SKELETON, 1, 1, 1);
@@ -121,7 +114,7 @@ public class DamageTypeTests {
             helper.assertTrue(attacker.getHealth() == 18F, "Incorrecty damage scaling for normal difficulty");
 
             helper.getLevel().getServer().setDifficulty(Difficulty.HARD, true);
-            attacker.invulnerableTime = 0; // Need to reset this so full damage is taken.
+            attacker.setInvulnerableTime(0); // Need to reset this so full damage is taken.
             attacker.setHealth(20F);
             attacker.hurt(helper.getLevel().damageSources().source(TEST_DMG_TYPE), 2);
             helper.assertTrue(attacker.getHealth() == 10F, "Incorrecty damage scaling for hard difficulty: " + attacker.getHealth() + " != 10F");

@@ -11,14 +11,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
+
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.DataProvider;
-import net.minecraft.data.PackOutput;
 import net.minecraft.data.worldgen.features.NetherFeatures;
 import net.minecraft.data.worldgen.placement.VegetationPlacements;
 import net.minecraft.resources.Identifier;
@@ -26,6 +23,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.random.Weighted;
+import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biome.Precipitation;
@@ -36,7 +34,6 @@ import net.minecraft.world.level.levelgen.placement.CountOnEveryLayerPlacement;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers.AddFeaturesBiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers.AddSpawnsBiomeModifier;
@@ -87,7 +84,7 @@ public class BiomeModifierTest {
     private static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
             .add(Registries.PLACED_FEATURE, context -> context.register(LARGE_BASALT_COLUMNS,
                     new PlacedFeature(
-                            context.lookup(Registries.CONFIGURED_FEATURE).getOrThrow(NetherFeatures.LARGE_BASALT_COLUMNS),
+                            context.lookup(Registries.FEATURE).getOrThrow(NetherFeatures.LARGE_BASALT_COLUMNS),
                             List.of(CountOnEveryLayerPlacement.of(1), BiomeFilter.biome()))))
             .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, context -> {
                 var badlandsTag = context.lookup(Registries.BIOME).getOrThrow(BiomeTags.IS_BADLANDS);
@@ -100,7 +97,7 @@ public class BiomeModifierTest {
 
                 context.register(ADD_MAGMA_CUBES_MODIFIER, AddSpawnsBiomeModifier.singleSpawn(
                         badlandsTag,
-                        new Weighted<>(new SpawnerData(EntityTypes.MAGMA_CUBE, 1, 4), 100)));
+                        new Weighted<>(new SpawnerData(EntityTypes.MAGMA_CUBE, new UniformInt(1, 4)), 100)));
 
                 context.register(MODIFY_BADLANDS_MODIFIER, new TestModifier(
                         badlandsTag,
@@ -127,18 +124,7 @@ public class BiomeModifierTest {
     }
 
     private void onGatherData(GatherDataEvent.Client event) {
-        event.getGenerator().addProvider(true, (DataProvider.Factory<BiomeModifiers>) output -> new BiomeModifiers(output, event.getLookupProvider()));
-    }
-
-    private static class BiomeModifiers extends DatapackBuiltinEntriesProvider {
-        public BiomeModifiers(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
-            super(output, registries, BUILDER, Set.of(MODID));
-        }
-
-        @Override
-        public String getName() {
-            return "Biome Modifier Registries: " + MODID;
-        }
+        event.createWorldRegistryObjects(BUILDER, Set.of(MODID), "world - " + MODID);
     }
 
     public record TestModifier(HolderSet<Biome> biomes, Precipitation precipitation, int waterColor) implements BiomeModifier {

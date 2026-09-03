@@ -33,7 +33,7 @@ public class RemoveTagDatagenTest {
     private void onGatherData(GatherDataEvent.Client event) {
         DataGenerator generator = event.getGenerator();
 
-        var blocks = new BlockTagsProvider(generator.getPackOutput(), event.getLookupProvider(), MODID) {
+        var blocks = new BlockTagsProvider(generator.getPackOutput(), event.getReloadableLookupProvider(), MODID) {
             @SuppressWarnings("unchecked")
             @Override
             protected void addTags(HolderLookup.Provider provider) {
@@ -49,7 +49,7 @@ public class RemoveTagDatagenTest {
 
         generator.addProvider(true, blocks);
 
-        generator.addProvider(true, new BlockTagCopyingItemTagProvider(generator.getPackOutput(), event.getLookupProvider(), blocks.contentsGetter(), MODID) {
+        generator.addProvider(true, new BlockTagCopyingItemTagProvider(generator.getPackOutput(), event.getReloadableLookupProvider(), blocks.contentsGetter(), MODID) {
             @Override
             protected void addTags(HolderLookup.Provider provider) {
                 // This is for testing if it is functional, remove spruce_planks from planks, which makes us unable to craft beds with them.

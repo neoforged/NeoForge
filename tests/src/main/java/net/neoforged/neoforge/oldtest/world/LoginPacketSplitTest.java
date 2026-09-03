@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.minecraft.SharedConstants;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.MappedRegistry;
@@ -40,12 +41,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.PackLocationInfo;
+import net.minecraft.server.packs.PackMetadataResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
-import net.minecraft.server.packs.repository.BuiltInPackSource;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
@@ -91,7 +92,7 @@ public class LoginPacketSplitTest {
                     generateEntries(pack);
                     event.addRepositorySource(packs -> packs.accept(Pack.readMetaAndCreate(
                             pack.location(),
-                            BuiltInPackSource.fixedResources(pack),
+                            pack.asResourcesSupplier(),
                             PackType.SERVER_DATA,
                             new PackSelectionConfig(true, Pack.Position.TOP, false))));
                 }
@@ -253,6 +254,20 @@ public class LoginPacketSplitTest {
 
         public static byte[] fromJson(JsonElement json) {
             return GsonHelper.toStableString(json).getBytes(StandardCharsets.UTF_8);
+        }
+
+        public Pack.ResourcesSupplier asResourcesSupplier() {
+            return new Pack.ResourcesSupplier() {
+                @Override
+                public PackMetadataResources openMetadata(PackLocationInfo location) {
+                    return InMemoryResourcePack.this;
+                }
+
+                @Override
+                public Stream<PackResources> openResources(PackLocationInfo location, Pack.Metadata metadata) {
+                    return Stream.of(InMemoryResourcePack.this);
+                }
+            };
         }
     }
 

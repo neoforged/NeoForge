@@ -69,7 +69,7 @@ public class JarContentsPackResourcesTest {
     private PackResources getResources(String prefix) {
         prefix = Objects.requireNonNullElse(prefix, "");
 
-        return new JarContentsPackResources.JarContentsResourcesSupplier(contents, prefix).openPrimary(
+        return new JarContentsPackResources.JarContentsResourcesSupplier(contents, prefix).openMetadata(
                 new PackLocationInfo(
                         "x", Component.literal("x"), PackSource.BUILT_IN, Optional.empty()));
     }

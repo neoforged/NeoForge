@@ -18,7 +18,7 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
+import net.minecraft.world.level.levelgen.feature.TreeFeature;
 import net.minecraft.world.level.levelgen.feature.stateproviders.RuleBasedStateProvider;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
@@ -29,7 +29,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
- * A test case used to ensure that {@link IBlockStateExtension#onTreeGrow(WorldGenLevel, BiConsumer, RandomSource, BlockPos, TreeConfiguration)}
+ * A test case used to ensure that {@link IBlockStateExtension#onTreeGrow(WorldGenLevel, BiConsumer, RandomSource, BlockPos, TreeFeature)}
  * works properly, using a custom grass block that should revert to its custom dirt form after a tree grows on
  * top of it instead of turning to dirt.
  */
@@ -49,9 +49,9 @@ public class OnTreeGrowBlockTest {
         }
 
         @Override
-        public boolean onTreeGrow(BlockState state, WorldGenLevel level, BiConsumer<BlockPos, BlockState> placeFunction, RandomSource randomSource, BlockPos pos, TreeConfiguration config) {
+        public boolean onTreeGrow(BlockState state, WorldGenLevel level, BiConsumer<BlockPos, BlockState> placeFunction, RandomSource randomSource, BlockPos pos, TreeFeature config) {
             // Respect vanilla behavior for trees that want custom dirt blocks
-            if (config.belowTrunkProvider instanceof RuleBasedStateProvider provider) {
+            if (config.belowTrunkProvider().value() instanceof RuleBasedStateProvider provider) {
                 List<RuleBasedStateProvider.Rule> rules = ObfuscationReflectionHelper.getPrivateValue(RuleBasedStateProvider.class, provider, "rules");
                 if (rules.stream().map(RuleBasedStateProvider.Rule::ifTrue).anyMatch(pred -> pred.test(level, pos))) {
                     return false;

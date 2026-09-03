@@ -16,9 +16,9 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.core.registries.codec.RegistryCodecs;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -74,7 +74,7 @@ public class HolderSetTests {
     @TestHolder(description = "Test if HolderSetCodec can properly encode and decode HolderSet")
     public static void holderSetCodecTest(ExtendedGameTestHelper test) {
         List<HolderSet<Item>> holderSets = createTestHolderSets();
-        Codec<HolderSet<Item>> codec = RegistryCodecs.homogeneousList(Registries.ITEM);
+        Codec<HolderSet<Item>> codec = RegistryCodecs.holderSet(Registries.ITEM);
         HolderLookup.Provider lookup = test.getLevel().registryAccess();
         for (HolderSet<Item> holderSet : holderSets) {
             testHolderSetCodecWithOps(test, NbtOps.INSTANCE, lookup, codec, holderSet);

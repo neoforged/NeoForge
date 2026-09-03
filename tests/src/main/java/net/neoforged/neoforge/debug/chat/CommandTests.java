@@ -123,14 +123,12 @@ public class CommandTests {
                     player.getRotationVector(),
                     player.level() instanceof ServerLevel ? (ServerLevel) player.level() : null,
                     perm,
-                    player.getName().getString(),
-                    player.getDisplayName(),
                     player.level().getServer(),
                     player);
         }
 
-        public ErrorCatchingStack(CommandSource source, Vec3 position, Vec2 rotation, ServerLevel level, PermissionSet p_81306_, String textName, Component displayName, MinecraftServer server, @Nullable Entity entity) {
-            super(source, position, rotation, level, p_81306_, textName, displayName, server, entity);
+        public ErrorCatchingStack(CommandSource source, Vec3 position, Vec2 rotation, ServerLevel level, PermissionSet permissions, MinecraftServer server, Entity entity) {
+            super(source, position, rotation, level, permissions, server, entity);
         }
 
         final List<Component> errors = new ArrayList<>();
