@@ -1129,6 +1129,8 @@ public class EventHooks {
                 throw new IllegalArgumentException("The stack count must be 1");
 
             if (BuildCreativeModeTabContentsEvent.isParentTab(vis)) {
+                if (parentEntries.contains(stack))
+                    throw new IllegalArgumentException("Stack " + stack.getDisplayName() + "has already been added to the tab " + tab.getDisplayName() + " previously");
                 parentEntries.add(stack);
             }
 
