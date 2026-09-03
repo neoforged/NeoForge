@@ -115,7 +115,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
                 HolderLookup.RegistryLookup<Block> blockLookup = server.registryAccess()
                         .lookupOrThrow(Registries.BLOCK)
                         .filterFeatures(server.getWorldData().enabledFeatures());
-                structures.setup(server.getStructureManager(), server.getFixerUpper(), blockLookup);
+                structures.setup(server.getStructureTemplateManager(), server.getFixerUpper(), blockLookup);
             } catch (Throwable exception) {
                 throw new RuntimeException(exception);
             }

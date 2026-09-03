@@ -245,7 +245,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
 
     private <T extends GatherDataEvent> void gather(final T event, ListMultimap<Class<?>, Consumer<? extends DataProvider>> providers, List<Function<T, DataProvider>> directProviders) {
         providers.asMap().forEach((cls, cons) -> event.getGenerator().addProvider(true, PROVIDERS.get(cls).create(
-                event.getGenerator().getPackOutput(), event.getLookupProvider(), event.getGenerator(), modId, (List) cons)));
+                event.getGenerator().getPackOutput(), event.getReloadableLookupProvider(), event.getGenerator(), modId, (List) cons)));
 
         directProviders.forEach(func -> event.getGenerator().addProvider(true, new DataProvider() {
             final DataProvider p = func.apply(event);
