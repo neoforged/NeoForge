@@ -1125,6 +1125,7 @@ public class EventHooks {
         final var searchEntries = new InsertableLinkedOpenCustomHashSet<ItemStack>(ItemStackLinkedSet.TYPE_AND_TAG);
 
         originalGenerator.accept(params, (stack, vis) -> {
+            // This should mirror the checks in CreativeModeTab.ItemDisplayBuilder#accept
             if (stack.getCount() != 1)
                 throw new IllegalArgumentException("The stack count must be 1");
 
