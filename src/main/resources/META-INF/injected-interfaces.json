@@ -219,6 +219,12 @@
   "net/minecraft/world/level/block/BucketPickup": [
     "net/neoforged/neoforge/common/extensions/IBucketPickupExtension"
   ],
+  "net/minecraft/world/level/block/CaveVines": [
+    "net/neoforged/neoforge/common/extensions/ICaveVineExtension"
+  ],
+  "net/minecraft/world/level/block/CropBlock": [
+    "net/neoforged/neoforge/common/extensions/ICropBlockExtension"
+  ],
   "net/minecraft/world/level/block/DeadBushBlock": [
     "net/neoforged/neoforge/common/IShearable"
   ],
@@ -230,6 +236,9 @@
   ],
   "net/minecraft/world/level/block/SeagrassBlock": [
     "net/neoforged/neoforge/common/IShearable"
+  ],
+  "net/minecraft/world/level/block/SweetBerryBushBlock": [
+    "net/neoforged/neoforge/common/extensions/ISweetBerryBushBlockExtension"
   ],
   "net/minecraft/world/level/block/TallGrassBlock": [
     "net/neoforged/neoforge/common/IShearable"
