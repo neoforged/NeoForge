@@ -1,0 +1,11 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:registered",
+      "value": "minecraft:redstone"
+    }
+  ],
+  "asset_id": "neotests_datapack_registry_conditions:present_static_object",
+  "decal": false,
+  "description": ""
+}

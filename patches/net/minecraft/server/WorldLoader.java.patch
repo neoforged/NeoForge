@@ -5,7 +5,16 @@
                      RegistryAccess.Frozen worldgenLoadContext = initialLayers.getAccessForLoading(RegistryLayer.WORLDGEN);
                      List<HolderLookup.RegistryLookup<?>> worldgenContextRegistries = TagLoader.buildUpdatedLookups(worldgenLoadContext, staticLayerTags);
 -                    return RegistryDataLoader.load(resources, worldgenContextRegistries, RegistryDataLoader.WORLDGEN_REGISTRIES, backgroundExecutor)
-+                    return RegistryDataLoader.load(resources, worldgenContextRegistries, net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistries(), backgroundExecutor)
++                    return RegistryDataLoader.load(resources, worldgenContextRegistries, net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistries(), staticLayerTags, backgroundExecutor)
                          .thenComposeAsync(
                              loadedWorldgenRegistries -> {
                                  List<HolderLookup.RegistryLookup<?>> dimensionContextRegistries = Stream.concat(
+@@ -47,7 +_,7 @@
+                                     )
+                                     .toList();
+                                 return RegistryDataLoader.load(
+-                                        resources, dimensionContextRegistries, RegistryDataLoader.DIMENSION_REGISTRIES, backgroundExecutor
++                                        resources, dimensionContextRegistries, RegistryDataLoader.DIMENSION_REGISTRIES, staticLayerTags, backgroundExecutor
+                                     )
+                                     .thenComposeAsync(
+                                         initialWorldgenDimensions -> {

@@ -1,5 +1,14 @@
 --- a/net/minecraft/core/HolderSet.java
 +++ b/net/minecraft/core/HolderSet.java
+@@ -41,7 +_,7 @@
+     static <T> HolderSet.Named<T> emptyNamed(HolderOwner<T> owner, TagKey<T> key) {
+         return new HolderSet.Named<T>(owner, key) {
+             @Override
+-            protected List<Holder<T>> contents() {
++            public List<Holder<T>> contents() {
+                 throw new UnsupportedOperationException("Tag " + this.key() + " can't be dereferenced during construction");
+             }
+         };
 @@ -174,6 +_,9 @@
  
          void bind(List<Holder<T>> contents) {
