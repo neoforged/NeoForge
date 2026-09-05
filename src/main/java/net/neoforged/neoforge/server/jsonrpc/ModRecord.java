@@ -7,11 +7,16 @@ package net.neoforged.neoforge.server.jsonrpc;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.neoforged.neoforgespi.language.IModInfo;
 
-record ModRecord(String modId, String version, String displayName, String description) {
+public record ModRecord(String modId, String version, String displayName, String description) {
     public static final Codec<ModRecord> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.STRING.fieldOf("modId").forGetter(ModRecord::modId),
             Codec.STRING.fieldOf("version").forGetter(ModRecord::version),
             Codec.STRING.fieldOf("displayName").forGetter(ModRecord::displayName),
             Codec.STRING.fieldOf("description").forGetter(ModRecord::description)).apply(instance, ModRecord::new));
+
+    public ModRecord(IModInfo modInfo) {
+        this(modInfo.getModId(), modInfo.getVersion().toString(), modInfo.getDisplayName(), modInfo.getDescription());
+    }
 }
