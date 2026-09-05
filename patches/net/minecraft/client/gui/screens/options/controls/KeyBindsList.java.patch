@@ -22,7 +22,7 @@
              if (!this.key.isUnbound()) {
                  for (KeyMapping otherKey : KeyBindsList.this.minecraft.options.keyMappings) {
 -                    if (otherKey != this.key && this.key.same(otherKey) && (!otherKey.isDefault() || !this.key.isDefault())) {
-+                    if ((otherKey != this.key && this.key.same(otherKey)) || otherKey.hasKeyModifierConflict(this.key)) { // Neo: gracefully handle conflicts like SHIFT vs SHIFT+G
++                    if (otherKey != this.key && this.key.same(otherKey)) {
                          if (this.hasCollision) {
                              tooltip.append(", ");
                          }
