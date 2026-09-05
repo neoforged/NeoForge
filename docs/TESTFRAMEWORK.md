@@ -4,7 +4,7 @@ If you are a contributor looking to add a GameTest for your PR, [please see this
 ## What is the Framework?
 The Framework is used in order to manage and process Minecraft in-game tests, and is designed to be used by NeoForge.
 ## How does the Framework work?
-The Framwork manages tests, which can be enabled or disabled at runtime, using either an in-game command or a UI. Tests have a status which consist of a message and a `Result`, which can be either `PASSED`, `FAILED` or `NOT_PROCESSED`. The status of a test is changed by test itself when it meets certain conditions, or it encounteres exceptions.  
+The Framework manages tests, which can be enabled or disabled at runtime, using either an in-game command or a UI. Tests have a status which consist of a message and a `Result`, which can be either `PASSED`, `FAILED` or `NOT_PROCESSED`. The status of a test is changed by test itself when it meets certain conditions, or it encounteres exceptions.  
 The status of tests is synchronized with clients, which means multiple players can simultaneously run tests on the same server.  
 Tests can also be run without manual player interaction (like on a CI for example), by utilising the [GameTest integration](#gametest-integration).
 ## Creating a `TestFramework`
