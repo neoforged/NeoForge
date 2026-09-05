@@ -1,0 +1,52 @@
+--- a/net/minecraft/server/jsonrpc/IncomingRpcMethod.java
++++ b/net/minecraft/server/jsonrpc/IncomingRpcMethod.java
+@@ -113,6 +_,8 @@
+             }
+         }
+ 
++        /* @deprecated Neo: Use the RegisterEvent to register instead of this  */
++        @Deprecated
+         public IncomingRpcMethod<?, ?> register(Registry<IncomingRpcMethod<?, ?>> methodRegistry, String key) {
+             return this.register(methodRegistry, Identifier.withDefaultNamespace(key));
+         }
+@@ -152,18 +_,21 @@
+                     paramsJsonElement = jsonArray.get(0);
+                 }
+ 
++                // Neo: add registry context to the ops used for decoding the params and encoding the result so that registry references can be resolved
++                net.minecraft.server.dedicated.DedicatedServer server = minecraftApi.notificationManager().server();
++                com.mojang.serialization.DynamicOps<JsonElement> ops = server == null ? JsonOps.INSTANCE : server.registryAccess().createSerializationContext(JsonOps.INSTANCE);
+                 Params params = this.info
+                     .params()
+                     .get()
+                     .schema()
+                     .codec()
+-                    .parse(JsonOps.INSTANCE, paramsJsonElement)
++                    .parse(ops, paramsJsonElement)
+                     .getOrThrow(InvalidParameterJsonRpcException::new);
+                 Result result = this.function.apply(minecraftApi, params, clientInfo);
+                 if (this.info.result().isEmpty()) {
+                     throw new IllegalStateException("No result codec defined");
+                 } else {
+-                    return this.info.result().get().schema().codec().encodeStart(JsonOps.INSTANCE, result).getOrThrow(EncodeJsonRpcException::new);
++                    return this.info.result().get().schema().codec().encodeStart(ops, result).getOrThrow(EncodeJsonRpcException::new);
+                 }
+             } else {
+                 throw new InvalidParameterJsonRpcException("Expected params as array or named");
+@@ -184,12 +_,15 @@
+                     if (this.info.result().isEmpty()) {
+                         throw new IllegalStateException("No result codec defined");
+                     } else {
++                        // Neo: add registry context to the ops used for encoding the result so that registry references can be resolved
++                        net.minecraft.server.dedicated.DedicatedServer server = minecraftApi.notificationManager().server();
++                        com.mojang.serialization.DynamicOps<JsonElement> ops = server == null ? JsonOps.INSTANCE : server.registryAccess().createSerializationContext(JsonOps.INSTANCE);
+                         return this.info
+                             .result()
+                             .get()
+                             .schema()
+                             .codec()
+-                            .encodeStart(JsonOps.INSTANCE, result)
++                            .encodeStart(ops, result)
+                             .getOrThrow(InvalidParameterJsonRpcException::new);
+                     }
+                 }
