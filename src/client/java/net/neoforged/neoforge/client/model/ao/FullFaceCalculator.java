@@ -94,25 +94,25 @@ class FullFaceCalculator {
         BlockState sideState0 = level.getBlockState(scratchPos);
         int sideLightmap0 = this.cache.getLightCoords(sideState0, level, scratchPos);
         float sideBrightness0 = this.cache.getShadeBrightness(sideState0, level, scratchPos);
-        boolean sideClear0 = !sideState0.isLightPermeable() || sideState0.getLightDampening() == 0;
+        boolean sideClear0 = sideState0.isLightPermeable();
 
         scratchPos.setWithOffset(samplePos, adjacencyInfo.corners[1]);
         BlockState sideState1 = level.getBlockState(scratchPos);
         int sideLightmap1 = this.cache.getLightCoords(sideState1, level, scratchPos);
         float sideBrightness1 = this.cache.getShadeBrightness(sideState1, level, scratchPos);
-        boolean sideClear1 = !sideState1.isLightPermeable() || sideState1.getLightDampening() == 0;
+        boolean sideClear1 = sideState1.isLightPermeable();
 
         scratchPos.setWithOffset(samplePos, adjacencyInfo.corners[2]);
         BlockState sideState2 = level.getBlockState(scratchPos);
         int sideLightmap2 = this.cache.getLightCoords(sideState2, level, scratchPos);
         float sideBrightness2 = this.cache.getShadeBrightness(sideState2, level, scratchPos);
-        boolean sideClear2 = !sideState2.isLightPermeable() || sideState2.getLightDampening() == 0;
+        boolean sideClear2 = sideState2.isLightPermeable();
 
         scratchPos.setWithOffset(samplePos, adjacencyInfo.corners[3]);
         BlockState sideState3 = level.getBlockState(scratchPos);
         int sideLightmap3 = this.cache.getLightCoords(sideState3, level, scratchPos);
         float sideBrightness3 = this.cache.getShadeBrightness(sideState3, level, scratchPos);
-        boolean sideClear3 = !sideState3.isLightPermeable() || sideState3.getLightDampening() == 0;
+        boolean sideClear3 = sideState3.isLightPermeable();
 
         // Process corners
         // Note that corners[0] and corners[1] are on the same axis, and same for corners[2] and corners[3].
@@ -129,7 +129,7 @@ class FullFaceCalculator {
             BlockState cornerState0 = level.getBlockState(scratchPos);
             cornerBrightness0 = this.cache.getShadeBrightness(cornerState0, level, scratchPos);
             cornerLightmap0 = this.cache.getLightCoords(cornerState0, level, scratchPos);
-            cornerClear0 = !cornerState0.isLightPermeable() || cornerState0.getLightDampening() == 0;
+            cornerClear0 = cornerState0.isLightPermeable();
         }
 
         float cornerBrightness1;
@@ -144,7 +144,7 @@ class FullFaceCalculator {
             BlockState cornerState1 = level.getBlockState(scratchPos);
             cornerBrightness1 = this.cache.getShadeBrightness(cornerState1, level, scratchPos);
             cornerLightmap1 = this.cache.getLightCoords(cornerState1, level, scratchPos);
-            cornerClear1 = !cornerState1.isLightPermeable() || cornerState1.getLightDampening() == 0;
+            cornerClear1 = cornerState1.isLightPermeable();
         }
 
         float cornerBrightness2;
@@ -160,7 +160,7 @@ class FullFaceCalculator {
             BlockState cornerState2 = level.getBlockState(scratchPos);
             cornerBrightness2 = this.cache.getShadeBrightness(cornerState2, level, scratchPos);
             cornerLightmap2 = this.cache.getLightCoords(cornerState2, level, scratchPos);
-            cornerClear2 = !cornerState2.isLightPermeable() || cornerState2.getLightDampening() == 0;
+            cornerClear2 = cornerState2.isLightPermeable();
         }
 
         float cornerBrightness3;
@@ -176,7 +176,7 @@ class FullFaceCalculator {
             BlockState cornerState3 = level.getBlockState(scratchPos);
             cornerBrightness3 = this.cache.getShadeBrightness(cornerState3, level, scratchPos);
             cornerLightmap3 = this.cache.getLightCoords(cornerState3, level, scratchPos);
-            cornerClear3 = !cornerState3.isLightPermeable() || cornerState3.getLightDampening() == 0;
+            cornerClear3 = cornerState3.isLightPermeable();
         }
 
         // Process the inside of the block
@@ -186,7 +186,7 @@ class FullFaceCalculator {
         BlockState insideState = sampleOutside ? level.getBlockState(samplePos) : renderedState;
         float insideBrightness = this.cache.getShadeBrightness(insideState, level, samplePos);
         int insideLightmap = this.cache.getLightCoords(insideState, level, samplePos);
-        boolean insideClear = !insideState.isLightPermeable() || insideState.getLightDampening() == 0;
+        boolean insideClear = insideState.isLightPermeable();
 
         // Wrap up
         CardinalLighting cardinalLighting = level.cardinalLighting();
