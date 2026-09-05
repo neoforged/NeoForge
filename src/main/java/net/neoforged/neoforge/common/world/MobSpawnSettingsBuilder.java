@@ -7,6 +7,9 @@ package net.neoforged.neoforge.common.world;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Predicate;
+
+import net.minecraft.util.random.Weighted;
 import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -18,15 +21,15 @@ public class MobSpawnSettingsBuilder extends MobSpawnSettings.Builder {
     private final Set<EntityType<?>> costView = Collections.unmodifiableSet(this.mobSpawnCosts.keySet());
 
     public MobSpawnSettingsBuilder(MobSpawnSettings orig) {
-        orig.definedCategories().forEach(k -> spawnsByCategory.get(k).addAll(orig.getMobsInCategory(k)));
-        orig.allSpawnCosts().keySet().forEach(k -> mobSpawnCosts.put(k, orig.getMobSpawnCost(k)));
+        orig.definedCategories().forEach(k -> forCategory(k).addAll(orig.getMobsInCategory(k)));
+        this.mobSpawnCosts.putAll(orig.allSpawnCosts());
     }
 
     public Set<MobCategory> getSpawnerTypes() {
         return this.typesView;
     }
 
-    public WeightedList.Builder<MobSpawnSettings.SpawnerData> getSpawner(MobCategory type) {
+    public WeightedList.@Nullable Builder<MobSpawnSettings.SpawnerData> getSpawner(MobCategory type) {
         return this.spawnsByCategory.get(type);
     }
 
@@ -39,6 +42,13 @@ public class MobSpawnSettingsBuilder extends MobSpawnSettings.Builder {
     }
 
     public MobSpawnSettingsBuilder disablePlayerSpawn() {
+        return this;
+    }
+
+    public MobSpawnSettingsBuilder removeSpawns(Predicate<Weighted<MobSpawnSettings.SpawnerData>> filter) {
+        for (WeightedList.Builder<MobSpawnSettings.SpawnerData> list : this.spawnsByCategory.values()) {
+            list.removeIf(filter);
+        }
         return this;
     }
 
