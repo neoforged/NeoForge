@@ -4,7 +4,7 @@
  import java.util.Set;
  
  public class ContextKeySet {
-+    // Neo: Add EMPTY context set for convenience, since we disable the check for `required` keys in ContextMap.Builder.
++    // Neo: Add EMPTY context set for convenience
 +    public static final ContextKeySet EMPTY = new Builder().build();
 +
      private final Set<ContextKey<?>> required;

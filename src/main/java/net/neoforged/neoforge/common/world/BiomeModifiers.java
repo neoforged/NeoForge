@@ -14,7 +14,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.random.Weighted;
 import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
@@ -194,10 +193,7 @@ public final class BiomeModifiers {
         public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
             if (phase == Phase.REMOVE && this.biomes.contains(biome)) {
                 MobSpawnSettingsBuilder spawnBuilder = builder.getMobSpawnSettings();
-                for (MobCategory category : MobCategory.values()) {
-                    WeightedList.Builder<SpawnerData> spawns = spawnBuilder.getSpawner(category);
-                    spawns.removeIf(spawnerData -> this.entityTypes.contains(BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(spawnerData.value().type())));
-                }
+                spawnBuilder.removeSpawns(data -> this.entityTypes.contains(BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(data.value().type())));
             }
         }
 
