@@ -141,6 +141,29 @@
                                      );
                              }
                          }
+@@ -1054,11 +_,11 @@
+ 
+     public void addBreakingBlockEffects(BlockPos pos, Direction direction, boolean playSound) {
+         BlockState blockState = this.getBlockState(pos);
+-        if (playSound) {
++        if (playSound && !net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(blockState).playHitSound(blockState, this, pos, direction, this.minecraft.getSoundManager())) {
+             this.playBreakingSound(pos, blockState);
+         }
+ 
+-        if (blockState.getRenderShape() != RenderShape.INVISIBLE && blockState.shouldSpawnTerrainParticles()) {
++        if (blockState.getRenderShape() != RenderShape.INVISIBLE && !net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(blockState).addHitEffects(blockState, this, pos, direction, this.minecraft.particleEngine)) {
+             this.addBreakingParticles(pos, direction, blockState);
+         }
+     }
+@@ -1096,7 +_,7 @@
+             xp = x + shape.maxX + 0.1F;
+         }
+ 
+-        this.minecraft.particleEngine.add(new TerrainParticle(this, xp, yp, zp, 0.0, 0.0, 0.0, blockState, pos).setPower(0.2F).scale(0.6F));
++        this.minecraft.particleEngine.add(new TerrainParticle(this, xp, yp, zp, 0.0, 0.0, 0.0, blockState, pos).updateSprite(blockState, pos).setPower(0.2F).scale(0.6F));
+     }
+ 
+     private void playBreakingSound(BlockPos pos, BlockState blockState) {
 @@ -1221,6 +_,7 @@
          }
  

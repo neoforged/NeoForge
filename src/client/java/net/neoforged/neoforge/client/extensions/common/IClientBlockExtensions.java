@@ -52,11 +52,12 @@ public interface IClientBlockExtensions {
      *
      * @param state   The current state
      * @param level   The current level
-     * @param target  The target the player is looking at {x/y/z/side/sub}, if available
+     * @param pos     The position of the target the player is looking at
+     * @param face    The side of the target the player is looking at
      * @param manager A reference to the current particle manager.
      * @return True to prevent vanilla digging particles form spawning.
      */
-    default boolean addHitEffects(BlockState state, Level level, @Nullable HitResult target, ParticleEngine manager) {
+    default boolean addHitEffects(BlockState state, Level level, BlockPos pos, Direction face, ParticleEngine manager) {
         return !state.shouldSpawnTerrainParticles();
     }
 
