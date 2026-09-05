@@ -1,5 +1,13 @@
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
+@@ -124,6 +_,7 @@
+ import net.minecraft.world.level.entity.EntityInLevelCallback;
+ import net.minecraft.world.level.gameevent.DynamicGameEventListener;
+ import net.minecraft.world.level.gameevent.GameEvent;
++import net.minecraft.world.level.gamerules.GameRules;
+ import net.minecraft.world.level.levelgen.Heightmap;
+ import net.minecraft.world.level.material.Fluid;
+ import net.minecraft.world.level.material.FluidState;
 @@ -160,6 +_,7 @@
  import net.neoforged.neoforge.common.extensions.IEntityExtension;
  
@@ -390,7 +398,7 @@
      }
  
      public void checkDespawn() {
-@@ -4096,6 +_,90 @@
+@@ -4096,6 +_,93 @@
          return true;
      }
  
@@ -426,10 +434,13 @@
 +    // Neo: Set the default behavior for trampling on Farmland
 +    @Override
 +    public boolean canTrample(ServerLevel level, BlockState state, BlockPos pos, double fallDistance) {
-+        return level.getRandom().nextFloat() < fallDistance - 0.5F
-+             && this instanceof LivingEntity
-+             && (this instanceof Player || net.neoforged.neoforge.event.EventHooks.canEntityGrief(level, this))
-+             && this.getBbWidth() * this.getBbWidth() * this.getBbHeight() > 0.512F;
++        if (level.getRandom().nextFloat() < fallDistance - .5F && this instanceof LivingEntity) {
++            boolean canTrample = this instanceof Player player
++                                 ? !level.getServer().isUnderSpawnProtection(level, pos, player)
++                                 : net.neoforged.neoforge.event.EventHooks.canEntityGrief(level, this);
++            return canTrample && this.getBbWidth() * this.getBbWidth() * this.getBbHeight() > 0.512F;
++        }
++        return false;
 +    }
 +
 +    /**
