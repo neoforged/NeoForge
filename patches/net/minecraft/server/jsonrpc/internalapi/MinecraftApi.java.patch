@@ -1,79 +1,64 @@
 --- a/net/minecraft/server/jsonrpc/internalapi/MinecraftApi.java
 +++ b/net/minecraft/server/jsonrpc/internalapi/MinecraftApi.java
-@@ -16,6 +_,24 @@
+@@ -17,7 +_,10 @@
      private final MinecraftServerSettingsService minecraftServerSettingsService;
      private final MinecraftServerStateService minecraftServerStateService;
      private final MinecraftExecutorService executorService;
-+    private final @org.jspecify.annotations.Nullable DedicatedServer server;
 +    private final @org.jspecify.annotations.Nullable JsonRpcLogger logger;
-+
-+    /** @deprecated Neo: Use the constructor with the server and logger instead **/
-+    @Deprecated
-+    public MinecraftApi(
-+            NotificationManager p_449655_,
-+            MinecraftAllowListService p_443286_,
-+            MinecraftBanListService p_443467_,
-+            MinecraftPlayerListService p_442735_,
-+            MinecraftGameRuleService p_442736_,
-+            MinecraftOperatorListService p_443566_,
-+            MinecraftServerSettingsService p_443225_,
-+            MinecraftServerStateService p_443354_,
-+            MinecraftExecutorService p_449378_
-+    ) {
-+        this(p_449655_, p_443286_, p_443467_, p_442735_, p_442736_, p_443566_, p_443225_, p_443354_, p_449378_, null, null);
-+    }
  
++    /// @deprecated Neo: Use the constructor with the server and logger instead
++    @Deprecated
      public MinecraftApi(
-         NotificationManager p_449655_,
-@@ -26,7 +_,9 @@
-         MinecraftOperatorListService p_443566_,
-         MinecraftServerSettingsService p_443225_,
-         MinecraftServerStateService p_443354_,
--        MinecraftExecutorService p_449378_
-+        MinecraftExecutorService p_449378_,
-+        @org.jspecify.annotations.Nullable DedicatedServer server,
-+        @org.jspecify.annotations.Nullable JsonRpcLogger logger
+         NotificationManager notificationManager,
+         MinecraftAllowListService allowListService,
+@@ -29,6 +_,21 @@
+         MinecraftServerStateService minecraftServerStateService,
+         MinecraftExecutorService executorService
      ) {
-         this.notificationManager = p_449655_;
-         this.allowListService = p_443286_;
-@@ -37,6 +_,8 @@
-         this.minecraftServerSettingsService = p_443225_;
-         this.minecraftServerStateService = p_443354_;
-         this.executorService = p_449378_;
-+        this.server = server;
++        this(notificationManager, allowListService, banListService, minecraftPlayerListService, gameRuleService, minecraftOperatorListService, minecraftServerSettingsService, minecraftServerStateService, executorService, null);
++    }
++
++    public MinecraftApi(
++            NotificationManager notificationManager,
++            MinecraftAllowListService allowListService,
++            MinecraftBanListService banListService,
++            MinecraftPlayerListService minecraftPlayerListService,
++            MinecraftGameRuleService gameRuleService,
++            MinecraftOperatorListService minecraftOperatorListService,
++            MinecraftServerSettingsService minecraftServerSettingsService,
++            MinecraftServerStateService minecraftServerStateService,
++            MinecraftExecutorService executorService,
++            @org.jspecify.annotations.Nullable JsonRpcLogger logger
++    ) {
+         this.notificationManager = notificationManager;
+         this.allowListService = allowListService;
+         this.banListService = banListService;
+@@ -38,6 +_,7 @@
+         this.minecraftServerSettingsService = minecraftServerSettingsService;
+         this.minecraftServerStateService = minecraftServerStateService;
+         this.executorService = executorService;
 +        this.logger = logger;
      }
  
-     public <V> CompletableFuture<V> submit(Supplier<V> p_442544_) {
-@@ -79,6 +_,20 @@
+     public <V> CompletableFuture<V> submit(Supplier<V> supplier) {
+@@ -80,6 +_,10 @@
          return this.notificationManager;
      }
  
-+    public DedicatedServer getServer() {
-+        if (this.server == null) {
-+            throw new net.minecraft.server.jsonrpc.methods.MethodNotFoundJsonRpcException("This method requires the server, but it is not available");
-+        }
-+        return this.server;
++    public JsonRpcLogger logger() {
++        return java.util.Objects.requireNonNull(this.logger);
 +    }
 +
-+    public JsonRpcLogger getLogger() {
-+        if (this.logger == null) {
-+            throw new net.minecraft.server.jsonrpc.methods.MethodNotFoundJsonRpcException("This method requires the json-rpc logger, but it is not available");
-+        }
-+        return this.logger;
-+    }
-+
-     public static MinecraftApi of(DedicatedServer p_449765_) {
-         JsonRpcLogger jsonrpclogger = new JsonRpcLogger();
-         MinecraftAllowListServiceImpl minecraftallowlistserviceimpl = new MinecraftAllowListServiceImpl(p_449765_, jsonrpclogger);
-@@ -98,7 +_,9 @@
-             minecraftoperatorlistserviceimpl,
-             minecraftserversettingsserviceimpl,
-             minecraftserverstateserviceimpl,
--            minecraftexecutorservice
-+            minecraftexecutorservice,
-+            p_449765_,
-+            jsonrpclogger
+     public static MinecraftApi of(NotificationManager notificationManager) {
+         JsonRpcLogger jsonrpcLogger = new JsonRpcLogger();
+         MinecraftAllowListServiceImpl allowListService = new MinecraftAllowListServiceImpl(notificationManager, jsonrpcLogger);
+@@ -99,7 +_,8 @@
+             operatorListService,
+             serverSettingsService,
+             serverStateService,
+-            executorService
++            executorService,
++            jsonrpcLogger
          );
      }
  }

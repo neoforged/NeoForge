@@ -1,0 +1,10 @@
+--- a/net/minecraft/server/jsonrpc/JsonRpc.java
++++ b/net/minecraft/server/jsonrpc/JsonRpc.java
+@@ -24,6 +_,7 @@
+                 throw new IllegalStateException("Invalid management server secret, must be 40 alphanumeric characters");
+             }
+ 
++            net.neoforged.neoforge.server.ServerLifecycleHooks.fireSchemaRegistryEvent();
+             String managementHost = properties.managementServerHost;
+             int managementPort = properties.managementServerPort;
+             HostAndPort hostAndPort = HostAndPort.fromParts(managementHost, managementPort);

@@ -1,51 +1,43 @@
 --- a/net/minecraft/server/jsonrpc/IncomingRpcMethod.java
 +++ b/net/minecraft/server/jsonrpc/IncomingRpcMethod.java
-@@ -105,6 +_,8 @@
+@@ -113,6 +_,8 @@
              }
          }
  
 +        /* @deprecated Neo: Use the RegisterEvent to register instead of this  */
 +        @Deprecated
-         public IncomingRpcMethod<?, ?> register(Registry<IncomingRpcMethod<?, ?>> p_451139_, String p_451409_) {
-             return this.register(p_451139_, Identifier.withDefaultNamespace(p_451409_));
+         public IncomingRpcMethod<?, ?> register(Registry<IncomingRpcMethod<?, ?>> methodRegistry, String key) {
+             return this.register(methodRegistry, Identifier.withDefaultNamespace(key));
          }
-@@ -143,18 +_,24 @@
-                         jsonelement = jsonarray.get(0);
-                     }
+@@ -152,18 +_,20 @@
+                     paramsJsonElement = jsonArray.get(0);
+                 }
  
-+                    com.mojang.serialization.DynamicOps<JsonElement> ops;
-+                    try {
-+                        ops = p_442932_.getServer().registryAccess().createSerializationContext(JsonOps.INSTANCE);
-+                    } catch (net.minecraft.server.jsonrpc.methods.MethodNotFoundJsonRpcException e) {
-+                        ops = JsonOps.INSTANCE;
-+                    }
-                     Params params = this.info
-                         .params()
-                         .get()
-                         .schema()
-                         .codec()
--                        .parse(JsonOps.INSTANCE, jsonelement)
-+                        .parse(ops, jsonelement)
-                         .getOrThrow(InvalidParameterJsonRpcException::new);
-                     Result result = this.function.apply(p_442932_, params, p_442918_);
-                     if (this.info.result().isEmpty()) {
-                         throw new IllegalStateException("No result codec defined");
-                     } else {
--                        return this.info.result().get().schema().codec().encodeStart(JsonOps.INSTANCE, result).getOrThrow(EncodeJsonRpcException::new);
-+                        return this.info.result().get().schema().codec().encodeStart(ops, result).getOrThrow(EncodeJsonRpcException::new);
-                     }
++                net.minecraft.server.dedicated.DedicatedServer server = minecraftApi.notificationManager().server();
++                com.mojang.serialization.DynamicOps<JsonElement> ops = server == null ? JsonOps.INSTANCE : server.registryAccess().createSerializationContext(JsonOps.INSTANCE);
+                 Params params = this.info
+                     .params()
+                     .get()
+                     .schema()
+                     .codec()
+-                    .parse(JsonOps.INSTANCE, paramsJsonElement)
++                    .parse(ops, paramsJsonElement)
+                     .getOrThrow(InvalidParameterJsonRpcException::new);
+                 Result result = this.function.apply(minecraftApi, params, clientInfo);
+                 if (this.info.result().isEmpty()) {
+                     throw new IllegalStateException("No result codec defined");
+                 } else {
+-                    return this.info.result().get().schema().codec().encodeStart(JsonOps.INSTANCE, result).getOrThrow(EncodeJsonRpcException::new);
++                    return this.info.result().get().schema().codec().encodeStart(ops, result).getOrThrow(EncodeJsonRpcException::new);
                  }
              } else {
-@@ -176,12 +_,18 @@
+                 throw new InvalidParameterJsonRpcException("Expected params as array or named");
+@@ -184,12 +_,14 @@
                      if (this.info.result().isEmpty()) {
                          throw new IllegalStateException("No result codec defined");
                      } else {
-+                        com.mojang.serialization.DynamicOps<JsonElement> ops;
-+                        try {
-+                            ops = p_443197_.getServer().registryAccess().createSerializationContext(JsonOps.INSTANCE);
-+                        } catch (net.minecraft.server.jsonrpc.methods.MethodNotFoundJsonRpcException e) {
-+                            ops = JsonOps.INSTANCE;
-+                        }
++                        net.minecraft.server.dedicated.DedicatedServer server = minecraftApi.notificationManager().server();
++                        com.mojang.serialization.DynamicOps<JsonElement> ops = server == null ? JsonOps.INSTANCE : server.registryAccess().createSerializationContext(JsonOps.INSTANCE);
                          return this.info
                              .result()
                              .get()
