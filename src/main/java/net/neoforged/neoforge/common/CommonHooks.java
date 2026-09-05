@@ -91,7 +91,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.stats.RecipeBookSettings;
 import net.minecraft.stats.Stats;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.CrudeIncrementalIntIdentityHashBiMap;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Prediction;
@@ -1406,26 +1405,6 @@ public class CommonHooks {
             return PermissionAPI.getPermission(player, NeoForgeMod.USE_SELECTORS_PERMISSION);
         }
         return false;
-    }
-
-    @ApiStatus.Internal
-    public static <T> HolderLookup.RegistryLookup<T> wrapRegistryLookup(final HolderLookup.RegistryLookup<T> lookup) {
-        return new HolderLookup.RegistryLookup.Delegate<>() {
-            @Override
-            public RegistryLookup<T> parent() {
-                return lookup;
-            }
-
-            @Override
-            public Stream<HolderSet.Named<T>> listTags() {
-                return Stream.empty();
-            }
-
-            @Override
-            public Optional<HolderSet.Named<T>> get(TagKey<T> key) {
-                return Optional.of(HolderSet.emptyNamed(lookup, key));
-            }
-        };
     }
 
     /**
