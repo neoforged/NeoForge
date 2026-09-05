@@ -59,16 +59,13 @@ public final class NeoForgeRpcMethods {
     }
 
     private static List<String> listRegistries(MinecraftApi api) {
-        return api.getServer()
-                .registryAccess()
+        return api.registryAccess()
                 .listRegistries()
                 .map(r -> r.key().identifier().toString())
                 .toList();
     }
 
     private static RegistryInfo listRegistryContents(MinecraftApi api, Identifier registryId, ClientInfo clientInfo) {
-        return RegistryInfo.withEntries(api.getServer()
-                .registryAccess()
-                .lookupOrThrow(ResourceKey.createRegistryKey(registryId)));
+        return RegistryInfo.withEntries(api.registryAccess().lookupOrThrow(ResourceKey.createRegistryKey(registryId)));
     }
 }

@@ -30,6 +30,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.jsonrpc.IncomingRpcMethod;
 import net.minecraft.server.jsonrpc.OutgoingRpcMethod;
+import net.minecraft.server.jsonrpc.api.Schema;
 import net.minecraft.server.jsonrpc.api.SchemaComponent;
 import net.minecraft.util.random.Weighted;
 import net.minecraft.world.entity.EntityType;
@@ -147,19 +148,13 @@ public class ServerLifecycleHooks {
         System.exit(retVal);
     }
 
-    private static final ArrayList<SchemaComponent<?>> SCHEMA_REGISTRY = new ArrayList<>();
-
-    @Internal
-    public static List<SchemaComponent<?>> getSchemaRegistry() {
-        return SCHEMA_REGISTRY;
-    }
-
     @Internal
     public static void fireSchemaRegistryEvent() {
         final Map<String, SchemaComponent<?>> schemaRegistry = new HashMap<>();
+        final ArrayList<SchemaComponent<?>> vanillaSchemaRegistry = (ArrayList<SchemaComponent<?>>) Schema.getSchemaRegistry();
 
         // fill with vanilla values
-        for (SchemaComponent<?> schemaComponent : SCHEMA_REGISTRY) {
+        for (SchemaComponent<?> schemaComponent : vanillaSchemaRegistry) {
             schemaRegistry.put(schemaComponent.name(), schemaComponent);
         }
 
@@ -167,10 +162,10 @@ public class ServerLifecycleHooks {
         NeoForge.EVENT_BUS.post(new RegisterRpcSchemaEvent(schemaRegistry));
 
         // mirror final contents back to the list
-        SCHEMA_REGISTRY.clear();
-        SCHEMA_REGISTRY.ensureCapacity(schemaRegistry.size());
-        SCHEMA_REGISTRY.addAll(schemaRegistry.values());
-        SCHEMA_REGISTRY.sort((o1, o2) -> {
+        vanillaSchemaRegistry.clear();
+        vanillaSchemaRegistry.ensureCapacity(schemaRegistry.size());
+        vanillaSchemaRegistry.addAll(schemaRegistry.values());
+        vanillaSchemaRegistry.sort((o1, o2) -> {
             Identifier rl1 = Identifier.tryParse(o1.name());
             Identifier rl2 = Identifier.tryParse(o2.name());
             if (rl1 == null && rl2 == null) {
