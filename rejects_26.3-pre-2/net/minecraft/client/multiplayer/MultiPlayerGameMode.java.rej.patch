@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
++++ b/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
+@@ -262,8 +277,8 @@
+             }
+ 
+             this.destroyProgress = this.destroyProgress + state.getDestroyProgress(this.minecraft.player, this.minecraft.player.level(), pos);
+-            if (this.destroyTicks % 4.0F == 0.0F) {
+-                SoundType soundType = state.getSoundType();
++            if (this.destroyTicks % 4.0F == 0.0F && !net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(state).playHitSound(state, this.minecraft.level, pos, direction, this.minecraft.getSoundManager())) {
++                SoundType soundType = state.getSoundType(this.minecraft.level, pos, this.minecraft.player);
+                 this.minecraft
+                     .getSoundManager()
+                     .play(

@@ -1,0 +1,20 @@
+--- a/net/minecraft/client/Options.java
++++ b/net/minecraft/client/Options.java
+@@ -1665,10 +1667,15 @@
+         access.process("musicFrequency", this.musicFrequency);
+ 
+         for (KeyMapping keyMapping : this.keyMappings) {
+-            String currentValue = keyMapping.saveString();
++            String currentValue = keyMapping.saveString() + (keyMapping.getKeyModifier() != net.neoforged.neoforge.client.settings.KeyModifier.NONE ? ":" + keyMapping.getKeyModifier() : "");
+             String newValue = access.process("key_" + keyMapping.getName(), currentValue);
+             if (!currentValue.equals(newValue)) {
+-                keyMapping.setKey(InputConstants.getKey(newValue));
++                if (newValue.indexOf(':') != -1) {
++                    String[] pts = newValue.split(":");
++                    keyMapping.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.valueFromString(pts[1]), InputConstants.getKey(pts[0]));
++                } else {
++                    keyMapping.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.NONE, InputConstants.getKey(newValue));
++                }
+             }
+         }
+ 

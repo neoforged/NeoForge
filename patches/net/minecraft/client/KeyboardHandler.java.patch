@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/KeyboardHandler.java
 +++ b/net/minecraft/client/KeyboardHandler.java
-@@ -498,7 +_,11 @@
+@@ -496,7 +_,11 @@
                  if (screen != null) {
                      try {
                          if (action != 1 && action != -1) {
@@ -13,7 +13,7 @@
                                  if (options.keyDebugModifier.matches(event)) {
                                      this.usedDebugKeyAsModifier = false;
                                  }
-@@ -507,7 +_,11 @@
+@@ -505,7 +_,11 @@
                              }
                          } else {
                              screen.afterKeyboardAction();
@@ -26,7 +26,7 @@
                                  if (this.minecraft.gui.screen() == null) {
                                      InputConstants.Key key = InputConstants.getKey(event);
                                      KeyMapping.set(key, false);
-@@ -580,6 +_,7 @@
+@@ -578,6 +_,7 @@
                      }
                  }
              }
@@ -34,7 +34,7 @@
          }
      }
  
-@@ -588,7 +_,9 @@
+@@ -586,7 +_,9 @@
              Screen screen = this.minecraft.gui.screen();
              if (screen != null && this.minecraft.gui.overlay() == null) {
                  try {

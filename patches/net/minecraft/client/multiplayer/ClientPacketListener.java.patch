@@ -123,7 +123,7 @@
      }
  
      @Override
-@@ -2637,6 +_,8 @@
+@@ -2647,6 +_,8 @@
      }
  
      public void sendChat(String content) {
@@ -132,7 +132,7 @@
          Instant timeStamp = Instant.now();
          long salt = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastSeenUpdate = this.lastSeenMessages.generateAndApplyUpdate();
-@@ -2645,6 +_,7 @@
+@@ -2655,6 +_,7 @@
      }
  
      public void sendCommand(String command) {
@@ -140,7 +140,7 @@
          SignableCommand<ClientSuggestionProvider> signableCommand = SignableCommand.of(this.commands.parse(command, this.suggestionsProvider));
          if (signableCommand.arguments().isEmpty()) {
              this.send(new ServerboundChatCommandPacket(command));
-@@ -2661,6 +_,8 @@
+@@ -2671,6 +_,8 @@
      }
  
      public void sendUnattendedCommand(String command, @Nullable Screen screenAfterCommand) {
@@ -149,7 +149,7 @@
          switch (this.verifyCommand(command)) {
              case NO_ISSUES:
                  this.send(new ServerboundChatCommandPacket(command));
-@@ -2825,6 +_,10 @@
+@@ -2835,6 +_,10 @@
  
      public Scoreboard scoreboard() {
          return this.scoreboard;

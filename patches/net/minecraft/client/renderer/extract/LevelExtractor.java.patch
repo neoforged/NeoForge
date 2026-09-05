@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/extract/LevelExtractor.java
 +++ b/net/minecraft/client/renderer/extract/LevelExtractor.java
-@@ -171,11 +_,12 @@
+@@ -172,11 +_,12 @@
                          section.sectionMesh.get() != CompiledSectionMesh.UNCOMPILED
                              || this.sectionUpdateTracker.hasAllNeighbors(this.level, section.getSectionNode())
                      )) {
@@ -14,7 +14,7 @@
                              )
                          );
                      dirtyState.setNotDirty();
-@@ -186,7 +_,7 @@
+@@ -187,7 +_,7 @@
          profiler.popPush("entities");
          this.extractVisibleEntities(camera, cullFrustum, deltaTracker, this.levelRenderState);
          profiler.popPush("blockEntities");
@@ -23,7 +23,7 @@
          profiler.popPush("blockOutline");
          this.extractBlockOutline(camera, this.levelRenderState);
          profiler.popPush("blockBreaking");
-@@ -231,6 +_,13 @@
+@@ -232,6 +_,13 @@
  
          this.levelRenderState.shouldShowEntityOutlines = shouldShowEntityOutlines(camera, this.levelRenderState.playerRenderState);
          this.extractGizmos();
@@ -37,7 +37,7 @@
          profiler.pop();
          profiler.pop();
      }
-@@ -250,7 +_,7 @@
+@@ -251,7 +_,7 @@
              float entityPartialTicks = deltaTracker.getGameTimeDeltaPartialTick(!tickRateManager.isEntityFrozen(entity));
              if (this.isEntityVisible(entity, frustum, camX, camY, camZ, entityPartialTicks, chunkFadeDuration)
                  && (entity != camera.entity() || camera.isDetached() || camera.entity() instanceof LivingEntity && ((LivingEntity)camera.entity()).isSleeping())
@@ -46,7 +46,7 @@
                  if (entity.tickCount == 0) {
                      entity.xOld = entity.getX();
                      entity.yOld = entity.getY();
-@@ -281,7 +_,13 @@
+@@ -282,7 +_,13 @@
          return this.levelRenderer.entityRenderDispatcher().extractEntity(entity, partialTickTime);
      }
  
@@ -60,7 +60,7 @@
          Vec3 cameraPos = camera.position();
          double camX = cameraPos.x();
          double camY = cameraPos.y();
-@@ -307,7 +_,7 @@
+@@ -308,7 +_,7 @@
  
                      BlockEntityRenderState state = this.levelRenderer
                          .blockEntityRenderDispatcher()
@@ -69,7 +69,7 @@
                      if (state != null) {
                          levelRenderState.blockEntityRenderStates.add(state);
                      }
-@@ -324,7 +_,7 @@
+@@ -325,7 +_,7 @@
              } else {
                  BlockEntityRenderState state = this.levelRenderer
                      .blockEntityRenderDispatcher()
@@ -78,7 +78,7 @@
                  if (state != null) {
                      levelRenderState.blockEntityRenderStates.add(state);
                  }
-@@ -359,19 +_,23 @@
+@@ -360,19 +_,23 @@
                  BlockState state = this.level.getBlockState(pos);
                  if (!state.isAir() && this.level.getWorldBorder().isWithinBounds(pos)) {
                      BlockStateModel blockStateModel = this.minecraft.getModelManager().getBlockStateModelSet().get(state);
@@ -105,7 +105,7 @@
                      }
                  }
              }
-@@ -575,6 +_,13 @@
+@@ -576,6 +_,13 @@
          }
  
          return rendered;

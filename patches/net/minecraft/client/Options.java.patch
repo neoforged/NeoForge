@@ -25,25 +25,7 @@
          this.load();
      }
  
-@@ -1665,10 +_,15 @@
-         access.process("musicFrequency", this.musicFrequency);
- 
-         for (KeyMapping keyMapping : this.keyMappings) {
--            String currentValue = keyMapping.saveString();
-+            String currentValue = keyMapping.saveString() + (keyMapping.getKeyModifier() != net.neoforged.neoforge.client.settings.KeyModifier.NONE ? ":" + keyMapping.getKeyModifier() : "");
-             String newValue = access.process("key_" + keyMapping.getName(), currentValue);
-             if (!currentValue.equals(newValue)) {
--                keyMapping.setKey(InputConstants.getKey(newValue));
-+                if (newValue.indexOf(':') != -1) {
-+                    String[] pts = newValue.split(":");
-+                    keyMapping.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.valueFromString(pts[1]), InputConstants.getKey(pts[0]));
-+                } else {
-+                    keyMapping.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.NONE, InputConstants.getKey(newValue));
-+                }
-             }
-         }
- 
-@@ -1962,6 +_,23 @@
+@@ -1967,6 +_,23 @@
          }
  
          repository.setSelected(selected);

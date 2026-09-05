@@ -2,7 +2,7 @@
 +++ b/net/minecraft/world/level/storage/loot/predicates/BonusLevelTableCondition.java
 @@ -37,6 +_,10 @@
      public boolean test(LootContext context) {
-         ItemInstance tool = context.getOptionalParameter(LootContextParams.TOOL);
+         ItemInstance tool = context.getOptional(LootContextParams.TOOL);
          int level = tool != null ? EnchantmentHelper.getItemEnchantmentLevel(this.enchantment, tool) : 0;
 +
 +        // Neo: Allow mods to modify the enchantment level for loot calculations with relevant context.

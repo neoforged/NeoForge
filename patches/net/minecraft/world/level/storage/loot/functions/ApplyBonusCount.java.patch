@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/level/storage/loot/functions/ApplyBonusCount.java
 +++ b/net/minecraft/world/level/storage/loot/functions/ApplyBonusCount.java
 @@ -64,6 +_,10 @@
-         ItemInstance tool = context.getOptionalParameter(LootContextParams.TOOL);
+         ItemInstance tool = context.getOptional(LootContextParams.TOOL);
          if (tool != null) {
              int level = EnchantmentHelper.getItemEnchantmentLevel(this.enchantment, tool);
 +

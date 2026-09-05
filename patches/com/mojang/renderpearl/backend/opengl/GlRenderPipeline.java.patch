@@ -58,7 +58,7 @@
      }
  
      @Override
-@@ -156,6 +_,22 @@
+@@ -157,6 +_,22 @@
          }
  
          GlStateManager._polygonMode(1032, this.polygonMode);

@@ -78,7 +78,7 @@
                          this.player.stopUsingItem();
                      }
  
-@@ -1381,7 +_,7 @@
+@@ -1382,7 +_,7 @@
                  case ABORT_DESTROY_BLOCK:
                  case STOP_DESTROY_BLOCK:
                      this.player.gameMode.handleBlockBreakAction(pos, action, packet.getDirection(), this.player.level().getMaxY(), packet.getSequence());
@@ -87,7 +87,7 @@
                      return;
                  default:
                      throw new IllegalArgumentException("Invalid player action");
-@@ -1403,7 +_,7 @@
+@@ -1404,7 +_,7 @@
      public void handleUseItemOn(ServerboundUseItemOnPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
          if (this.hasClientLoaded()) {
@@ -96,7 +96,7 @@
              ServerLevel level = this.player.level();
              InteractionHand hand = packet.hand();
              ItemStack itemStack = this.player.getItemInHand(hand);
-@@ -1548,13 +_,24 @@
+@@ -1549,13 +_,24 @@
      @Override
      public void handleSetCarriedItem(ServerboundSetCarriedItemPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
@@ -121,7 +121,7 @@
          } else {
              LOGGER.warn("{} tried to set an invalid carried item", this.player.getPlainTextName());
          }
-@@ -1574,8 +_,9 @@
+@@ -1575,8 +_,9 @@
                  }
  
                  CompletableFuture<FilteredText> filteredFuture = this.filterTextPacket(signedMessage.signedContent());
@@ -132,7 +132,7 @@
                      PlayerChatMessage filteredMessage = signedMessage.withUnsignedContent(decorated).filter(filtered.mask());
                      this.broadcastChatMessage(filteredMessage);
                  });
-@@ -2139,14 +_,16 @@
+@@ -2140,14 +_,16 @@
      @Override
      public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
@@ -150,7 +150,7 @@
          if (this.player.isModelPartShown(PlayerModelPart.HAT) != wasHatShown) {
              this.server.getPlayerList().broadcastAll(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_HAT, this.player));
          }
-@@ -2223,7 +_,7 @@
+@@ -2224,7 +_,7 @@
          this.connection
              .setupInboundProtocol(
                  ConfigurationProtocols.SERVERBOUND,
@@ -159,7 +159,7 @@
              );
      }
  
-@@ -2257,6 +_,7 @@
+@@ -2258,6 +_,7 @@
  
      @Override
      public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {

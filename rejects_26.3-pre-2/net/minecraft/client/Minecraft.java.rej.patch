@@ -1,0 +1,22 @@
+--- a/net/minecraft/client/Minecraft.java
++++ b/net/minecraft/client/Minecraft.java
+@@ -1622,8 +1648,17 @@
+                     BlockPos pos = blockHit.getBlockPos();
+                     if (!this.level.getBlockState(pos).isAir()) {
+                         Direction direction = blockHit.getDirection();
+-                        if (this.gameMode.continueDestroyBlock(pos, direction)) {
+-                            this.level.addBreakingBlockEffect(pos, direction);
++                        var inputEvent = net.neoforged.neoforge.client.ClientHooks.onClickInput(0, this.options.keyAttack, InteractionHand.MAIN_HAND);
++                        if (inputEvent.isCanceled()) {
++                            if (inputEvent.shouldSwingHand()) {
++                                this.level.addBreakingBlockEffect(pos, direction, blockHit);
++                                this.player.swing(InteractionHand.MAIN_HAND, swingAnimation, false);
++                                this.player.connection.send(ServerboundPunchPacket.INSTANCE);
++                            }
++                            return;
++                        }
++                        if (this.gameMode.continueDestroyBlock(pos, direction) && inputEvent.shouldSwingHand()) {
++                            this.level.addBreakingBlockEffect(pos, direction, blockHit);
+                             this.player.swing(InteractionHand.MAIN_HAND, swingAnimation, false);
+                             this.player.connection.send(ServerboundPunchPacket.INSTANCE);
+                         }

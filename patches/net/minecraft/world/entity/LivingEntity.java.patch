@@ -630,7 +630,7 @@
                  if (changedItems == null) {
                      changedItems = Maps.newEnumMap(EquipmentSlot.class);
                  }
-@@ -3063,6 +_,10 @@
+@@ -3067,6 +_,10 @@
          profiler.push("jump");
          if (this.jumping && this.isAffectedByFluids()) {
              double fluidHeight;
@@ -641,7 +641,7 @@
              if (this.isInLava()) {
                  fluidHeight = this.getFluidHeight(FluidTags.LAVA);
              } else {
-@@ -3073,15 +_,17 @@
+@@ -3077,15 +_,17 @@
              double fluidJumpThreshold = this.getFluidJumpThreshold();
              if (!inWaterAndHasFluidHeight || this.onGround() && !(fluidHeight > fluidJumpThreshold)) {
                  if (!this.isInLava() || this.onGround() && this.isInShallowFluid(FluidTags.LAVA)) {
@@ -661,7 +661,7 @@
              }
          } else {
              this.noJumpDelay = 0;
-@@ -3168,8 +_,11 @@
+@@ -3172,8 +_,11 @@
                  int freeFallInterval = checkFallFlyTicks / 10;
                  if (freeFallInterval % 2 == 0) {
                      List<EquipmentSlot> slotsWithGliders = EquipmentSlot.VALUES.stream().filter(slot -> canGlideUsing(this.getItemBySlot(slot), slot)).toList();
@@ -674,7 +674,7 @@
                  }
  
                  this.gameEvent(GameEvent.ELYTRA_GLIDE);
-@@ -3178,7 +_,15 @@
+@@ -3182,7 +_,15 @@
      }
  
      protected boolean canGlide() {
@@ -690,7 +690,7 @@
              for (EquipmentSlot slot : EquipmentSlot.VALUES) {
                  if (canGlideUsing(this.getItemBySlot(slot), slot)) {
                      return true;
-@@ -3403,8 +_,11 @@
+@@ -3407,8 +_,11 @@
  
      private void updatingUsingItem() {
          if (this.isUsingItem()) {
@@ -704,7 +704,7 @@
                  this.updateUsingItem(this.useItem);
              } else {
                  this.stopUsingItem();
-@@ -3447,8 +_,11 @@
+@@ -3451,8 +_,11 @@
      }
  
      protected void updateUsingItem(ItemStack useItem) {
@@ -717,7 +717,7 @@
              this.completeUsingItem();
          }
      }
-@@ -3476,8 +_,10 @@
+@@ -3480,8 +_,10 @@
      public void startUsingItem(InteractionHand hand) {
          ItemStack itemStack = this.getItemInHand(hand);
          if (!itemStack.isEmpty() && !this.isUsingItem()) {
@@ -727,9 +727,9 @@
 -            this.useItemRemaining = itemStack.getUseDuration(this);
 +            this.useItemRemaining = duration;
              if (!this.level().isClientSide()) {
+                 this.updatePlayersWithNewEquipment((ServerLevel)this.level(), List.of(Pair.of(hand.asEquipmentSlot(), this.useItem)));
                  this.setLivingEntityFlag(1, true);
-                 this.setLivingEntityFlag(2, hand == InteractionHand.OFF_HAND);
-@@ -3547,7 +_,8 @@
+@@ -3552,7 +_,8 @@
                  this.releaseUsingItem();
              } else {
                  if (!this.useItem.isEmpty() && this.isUsingItem()) {
@@ -739,7 +739,7 @@
                      if (result != this.useItem) {
                          this.setItemInHand(hand, result);
                      }
-@@ -3581,7 +_,11 @@
+@@ -3586,7 +_,11 @@
          ItemStack itemInUsedHand = this.getItemInHand(this.getUsedItemHand());
          if (!this.useItem.isEmpty() && ItemStack.isSameItem(itemInUsedHand, this.useItem)) {
              this.useItem = itemInUsedHand;
@@ -751,7 +751,7 @@
              if (this.useItem.useOnRelease()) {
                  this.updatingUsingItem();
              }
-@@ -3591,6 +_,7 @@
+@@ -3596,6 +_,7 @@
      }
  
      public void stopUsingItem() {
@@ -759,7 +759,7 @@
          if (!this.level().isClientSide()) {
              boolean wasUsingItem = this.isUsingItem();
              this.recentKineticEnemies = null;
-@@ -3645,7 +_,17 @@
+@@ -3650,7 +_,17 @@
          return this.randomTeleport(xx, yy, zz, showParticles, state -> state.is(avoidanceTag));
      }
  
@@ -777,7 +777,7 @@
          double y = yy;
          Level level = this.level();
          WorldBorder worldBorder = level.getWorldBorder();
-@@ -3839,7 +_,9 @@
+@@ -3844,7 +_,9 @@
  
      public @Nullable Direction getBedOrientation() {
          BlockPos bedPos = this.getSleepingPos().orElse(null);
@@ -788,7 +788,7 @@
      }
  
      @Override
-@@ -3848,7 +_,7 @@
+@@ -3853,7 +_,7 @@
      }
  
      public ItemStack getProjectile(ItemStack heldWeapon) {
@@ -797,7 +797,7 @@
      }
  
      private static @EntityEvent.Value byte entityEventForEquipmentBreak(EquipmentSlot equipmentSlot) {
-@@ -3900,6 +_,8 @@
+@@ -3905,6 +_,8 @@
      }
  
      public EquipmentSlot getEquipmentSlotForItem(ItemStack itemStack) {
@@ -806,7 +806,7 @@
          Equippable equippable = itemStack.get(DataComponents.EQUIPPABLE);
          return equippable != null && this.canUseSlot(equippable.slot()) ? equippable.slot() : EquipmentSlot.MAINHAND;
      }
-@@ -4021,6 +_,8 @@
+@@ -4026,6 +_,8 @@
      }
  
      public static boolean canGlideUsing(ItemStack itemStack, EquipmentSlot slot) {
