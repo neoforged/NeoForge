@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/registries/BuiltInRegistries.java
 +++ b/net/minecraft/core/registries/BuiltInRegistries.java
-@@ -447,6 +_,10 @@
+@@ -442,6 +_,10 @@
          ((MappedRegistry)registry).bindAllTagsToEmpty();
      }
  

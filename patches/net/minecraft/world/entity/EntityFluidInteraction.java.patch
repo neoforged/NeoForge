@@ -22,7 +22,7 @@
          AABB box = entity.getFluidInteractionBox();
          if (box == null) {
              return false;
-@@ -86,6 +_,7 @@
+@@ -89,6 +_,7 @@
  
                              tracker.height = Math.max(fluidTop - entityY, tracker.height);
                              if (current != null) {
@@ -30,7 +30,7 @@
                                  Vec3 flow = fluidState.getFlow(level, mutablePos);
                                  current.height = Math.max(tracker.height, current.height);
                                  if (current.height < 0.4) {
-@@ -145,23 +_,39 @@
+@@ -148,23 +_,39 @@
          return tracker;
      }
  
@@ -79,7 +79,7 @@
      public double getFluidHeight(TagKey<Fluid> fluid) {
          double height = 0.0;
  
-@@ -174,10 +_,70 @@
+@@ -177,10 +_,70 @@
          return height;
      }
  
@@ -150,7 +150,7 @@
      public boolean isEyeInFluid(TagKey<Fluid> fluid) {
          for (EntityFluidInteraction.Tracker tracker : this.fluidTrackers) {
              if (tracker.eyesInside && tracker.fluidType.is(fluid)) {
-@@ -188,10 +_,56 @@
+@@ -191,10 +_,56 @@
          return false;
      }
  

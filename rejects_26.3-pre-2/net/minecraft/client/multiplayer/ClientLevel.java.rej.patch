@@ -1,0 +1,29 @@
+--- a/net/minecraft/client/multiplayer/ClientLevel.java
++++ b/net/minecraft/client/multiplayer/ClientLevel.java
+@@ -1050,9 +1082,16 @@
+         }
+     }
+ 
++    /**
++     * @deprecated Neo: use {@link #addBreakingBlockEffect(BlockPos, Direction, net.minecraft.world.phys.HitResult)} instead
++     */
+     public void addBreakingBlockEffect(BlockPos pos, Direction direction) {
++        this.addBreakingBlockEffect(pos, direction, null);
++    }
++
++    public void addBreakingBlockEffect(BlockPos pos, Direction direction, net.minecraft.world.phys.@Nullable HitResult hitResult) {
+         BlockState blockState = this.getBlockState(pos);
+-        if (blockState.getRenderShape() != RenderShape.INVISIBLE && blockState.shouldSpawnTerrainParticles()) {
++        if (blockState.getRenderShape() != RenderShape.INVISIBLE && !net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(blockState).addHitEffects(blockState, this, hitResult, this.minecraft.particleEngine)) {
+             int x = pos.getX();
+             int y = pos.getY();
+             int z = pos.getZ();
+@@ -1085,7 +1124,7 @@
+                 xp = x + shape.maxX + 0.1F;
+             }
+ 
+-            this.minecraft.particleEngine.add(new TerrainParticle(this, xp, yp, zp, 0.0, 0.0, 0.0, blockState, pos).setPower(0.2F).scale(0.6F));
++            this.minecraft.particleEngine.add(new TerrainParticle(this, xp, yp, zp, 0.0, 0.0, 0.0, blockState, pos).updateSprite(blockState, pos).setPower(0.2F).scale(0.6F));
+         }
+     }
+ 
