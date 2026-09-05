@@ -14,12 +14,12 @@
 @@ -140,20 +_,20 @@
      }
  
-     private static EquipmentClientInfo.Builder onlyHumanoid(String name) {
+     public static EquipmentClientInfo.Builder onlyHumanoid(String name) {
 -        return EquipmentClientInfo.builder().addHumanoidLayers(Identifier.withDefaultNamespace(name));
 +        return EquipmentClientInfo.builder().addHumanoidLayers(Identifier.parse(name));
      }
  
-     private static EquipmentClientInfo.Builder humanoidAndMountArmor(String name) {
+     public static EquipmentClientInfo.Builder humanoidAndMountArmor(String name) {
          return EquipmentClientInfo.builder()
 -            .addHumanoidLayers(Identifier.withDefaultNamespace(name))
 -            .addLayers(EquipmentClientInfo.LayerType.HORSE_BODY, EquipmentClientInfo.Layer.leatherDyeable(Identifier.withDefaultNamespace(name), false))
