@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/inventory/ItemCombinerMenu.java
++++ b/net/minecraft/world/inventory/ItemCombinerMenu.java
+@@ -105,7 +_,7 @@
+     @Override
+     public boolean stillValid(Player player) {
+         return this.access
+-            .evaluate((level, pos) -> !this.isValidBlock(level.getBlockState(pos)) ? false : player.isWithinBlockInteractionRange(pos, 4.0), true);
++            .evaluate((level, pos) -> !this.isValidBlock(level.getBlockState(pos)) ? false : net.neoforged.neoforge.common.CommonHooks.menuRangeValidity(player, level, pos, 4.0), true);
+     }
+ 
+     @Override
