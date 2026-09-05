@@ -44,7 +44,7 @@ public class CanItemPerformAbility implements LootItemCondition {
 
     @Override
     public boolean test(LootContext lootContext) {
-        ItemInstance stack = lootContext.getOptionalParameter(LootContextParams.TOOL);
+        ItemInstance stack = lootContext.getOptional(LootContextParams.TOOL);
         return stack != null && stack.canPerformAction(this.ability);
     }
 
