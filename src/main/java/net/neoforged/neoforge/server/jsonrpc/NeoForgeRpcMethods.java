@@ -16,9 +16,7 @@ import net.minecraft.server.jsonrpc.methods.ClientInfo;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import org.jetbrains.annotations.ApiStatus.Internal;
 
-@Internal
 public final class NeoForgeRpcMethods {
     private NeoForgeRpcMethods() {}
 
@@ -27,9 +25,9 @@ public final class NeoForgeRpcMethods {
     }
 
     private static void registerIncoming(RegisterEvent.RegisterHelper<IncomingRpcMethod<?, ?>> helper) {
-        helper.register(rl("modlist"), IncomingRpcMethod
+        helper.register(rl("mods"), IncomingRpcMethod
                 .method(NeoForgeRpcMethods::getModList)
-                .response("modlist", NeoForgeSchemas.MOD_SCHEMA.asArray())
+                .response("mods", NeoForgeSchemas.MOD_SCHEMA.asArray())
                 .description("Get a list of all mods installed on the server")
                 .build());
         helper.register(rl("registries"), IncomingRpcMethod
@@ -50,11 +48,9 @@ public final class NeoForgeRpcMethods {
     }
 
     private static List<ModRecord> getModList(MinecraftApi api) {
-        return ModList
-                .get()
-                .getMods()
+        return ModList.get().getMods()
                 .stream()
-                .map(info -> new ModRecord(info.getModId(), info.getVersion().toString(), info.getDisplayName(), info.getDescription()))
+                .map(ModRecord::new)
                 .toList();
     }
 

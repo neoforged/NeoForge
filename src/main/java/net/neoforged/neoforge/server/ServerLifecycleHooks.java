@@ -63,7 +63,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-import org.jetbrains.annotations.ApiStatus.Internal;
+import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 public class ServerLifecycleHooks {
@@ -148,7 +148,7 @@ public class ServerLifecycleHooks {
         System.exit(retVal);
     }
 
-    @Internal
+    @ApiStatus.Internal
     public static void fireSchemaRegistryEvent() {
         final Map<String, SchemaComponent<?>> schemaRegistry = new HashMap<>();
         final ArrayList<SchemaComponent<?>> vanillaSchemaRegistry = (ArrayList<SchemaComponent<?>>) Schema.getSchemaRegistry();
@@ -165,6 +165,7 @@ public class ServerLifecycleHooks {
         vanillaSchemaRegistry.clear();
         vanillaSchemaRegistry.ensureCapacity(schemaRegistry.size());
         vanillaSchemaRegistry.addAll(schemaRegistry.values());
+        // sort the list so that non-identifier names come first, then vanilla and then modded, all sorted by namespace and path
         vanillaSchemaRegistry.sort((o1, o2) -> {
             Identifier rl1 = Identifier.tryParse(o1.name());
             Identifier rl2 = Identifier.tryParse(o2.name());
@@ -187,13 +188,14 @@ public class ServerLifecycleHooks {
                     methodInfo.params().flatMap(paramsInfo -> paramsInfo.schema().reference()).ifPresent(consumer);
                 })
                 .map(URI::toString)
+                // filter out any non-local references. The path #/components/schemas/ comes from ReferenceUtil#createLocalReferenc
                 .filter(uri -> uri.startsWith("#/components/schemas/"))
                 .map(uri -> uri.substring("#/components/schemas/".length()))
                 .filter(name -> !schemaRegistry.containsKey(name))
                 .collect(Collectors.toSet());
 
         if (!missing.isEmpty()) {
-            throw new IllegalArgumentException("Some schemas were not registered: " + String.join(", ", missing));
+            throw new IllegalStateException("Some schemas were not registered: " + String.join(", ", missing));
         }
     }
 
