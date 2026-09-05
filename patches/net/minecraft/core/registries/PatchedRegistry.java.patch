@@ -1,0 +1,35 @@
+--- a/net/minecraft/core/registries/PatchedRegistry.java
++++ b/net/minecraft/core/registries/PatchedRegistry.java
+@@ -73,8 +_,13 @@
+         }
+ 
+         HolderLookup.RegistryLookup<T> patchContents = patchProvider.lookupOrThrow(registryKey);
+-        HolderLookup.RegistryLookup<T> baseContents = baseProvider.lookupOrThrow(registryKey);
+-        Lifecycle lifecycle = patchContents.registryLifecycle().add(baseContents.registryLifecycle());
++        Optional<? extends HolderLookup.RegistryLookup<T>> maybeBaseContents = baseProvider.lookup(registryKey);
++        Lifecycle lifecycle;
++        if (maybeBaseContents.isPresent()) {
++            lifecycle = patchContents.registryLifecycle().add(maybeBaseContents.get().registryLifecycle());
++        } else {
++            lifecycle = patchContents.registryLifecycle();
++        }
+         PatchedRegistry<T> result = new PatchedRegistry<>(registryKey, lifecycle);
+         patchContents.listElements().forEach(elementHolder -> {
+             ResourceKey<T> elementKey = elementHolder.key();
+@@ -82,14 +_,14 @@
+             holder.supplier = () -> cloner.clone((T)elementHolder.value(), patchProvider, clonedRegistriesProvider.get());
+             result.entries.put(elementKey, holder);
+         });
+-        baseContents.listElements().forEach(elementHolder -> {
++        maybeBaseContents.ifPresent(baseContents -> baseContents.listElements().forEach(elementHolder -> {
+             ResourceKey<T> elementKey = elementHolder.key();
+             result.entries.computeIfAbsent(elementKey, key -> {
+                 PatchedRegistry.LazyHolder<T> holder = new PatchedRegistry.LazyHolder<>(result, elementKey);
+                 holder.supplier = () -> cloner.clone((T)elementHolder.value(), baseProvider, clonedRegistriesProvider.get());
+                 return holder;
+             });
+-        });
++        }));
+         return result;
+     }
+ 

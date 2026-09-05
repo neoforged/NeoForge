@@ -89,6 +89,18 @@
              };
          }
  
+@@ -175,6 +_,11 @@
+         }
+ 
+         public void validatePatchHolders(RegistrySetBuilder.BuildState state, HolderLookup.Provider fallback) {
++            // Neo: ignore patched registries which don't exist in the fallback lookup (i.e. any modded registry)
++            if (fallback.lookup(this.registry.key()).isEmpty()) {
++                return;
++            }
++
+             HolderLookup<T> baseRegistry = fallback.lookupOrThrow(this.registry.key());
+             this.registry
+                 .removeIf(
 @@ -250,7 +_,14 @@
          }
      }
