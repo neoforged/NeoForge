@@ -137,6 +137,154 @@ public class TransactionTests {
         }
     }
 
+    protected static class OngoingTransactionJournal extends SnapshotJournal<Void> {
+        @Override
+        protected Void createSnapshot() {
+            assertThat(hasOngoingTransaction()).isEqualTo(true);
+            return null;
+        }
+
+        @Override
+        protected void revertToSnapshot(Void snapshot) {
+            assertThat(hasOngoingTransaction()).isEqualTo(true);
+        }
+
+        @Override
+        protected void onRootCommit(Void originalState) {
+            assertThat(hasOngoingTransaction()).isEqualTo(false);
+        }
+    }
+
+    @Test
+    void testHasOngoingTransaction() {
+        var journal = new OngoingTransactionJournal();
+
+        assertThat(journal.hasOngoingTransaction()).isEqualTo(false);
+
+        // taking part of all transactions
+        try (var tx = Transaction.openRoot()) {
+            journal.updateSnapshots(tx);
+            assertThat(journal.hasOngoingTransaction()).isEqualTo(true);
+
+            try (var tx2 = Transaction.open(tx)) {
+                journal.updateSnapshots(tx2);
+                assertThat(journal.hasOngoingTransaction()).isEqualTo(true);
+            }
+
+            assertThat(journal.hasOngoingTransaction()).isEqualTo(true);
+            tx.commit();
+            assertThat(journal.hasOngoingTransaction()).isEqualTo(false);
+        }
+
+        assertThat(journal.hasOngoingTransaction()).isEqualTo(false);
+
+        // taking part of root and somewhere downstream
+        try (var tx = Transaction.openRoot()) {
+            journal.updateSnapshots(tx);
+            assertThat(journal.hasOngoingTransaction()).isEqualTo(true);
+
+            try (var tx2 = Transaction.open(tx)) {
+                try (var tx3 = Transaction.open(tx2)) {
+                    journal.updateSnapshots(tx3);
+                    assertThat(journal.hasOngoingTransaction()).isEqualTo(true);
+                }
+
+                assertThat(journal.hasOngoingTransaction()).isEqualTo(true);
+            }
+
+            assertThat(journal.hasOngoingTransaction()).isEqualTo(true);
+            tx.commit();
+            assertThat(journal.hasOngoingTransaction()).isEqualTo(false);
+        }
+
+        assertThat(journal.hasOngoingTransaction()).isEqualTo(false);
+
+        // taking part only somewhere in downstream, with downstream getting rolled back
+        try (var tx = Transaction.openRoot()) {
+            assertThat(journal.hasOngoingTransaction()).isEqualTo(false);
+
+            try (var tx2 = Transaction.open(tx)) {
+                try (var tx3 = Transaction.open(tx2)) {
+                    journal.updateSnapshots(tx3);
+                    assertThat(journal.hasOngoingTransaction()).isEqualTo(true);
+                }
+
+                assertThat(journal.hasOngoingTransaction()).isEqualTo(false);
+            }
+
+            assertThat(journal.hasOngoingTransaction()).isEqualTo(false);
+            tx.commit();
+            assertThat(journal.hasOngoingTransaction()).isEqualTo(false);
+        }
+
+        assertThat(journal.hasOngoingTransaction()).isEqualTo(false);
+
+        // taking part only somewhere in downstream, with downstream getting commited, then rolled back by parent
+        try (var tx = Transaction.openRoot()) {
+            assertThat(journal.hasOngoingTransaction()).isEqualTo(false);
+
+            try (var tx2 = Transaction.open(tx)) {
+                try (var tx3 = Transaction.open(tx2)) {
+                    journal.updateSnapshots(tx3);
+                    assertThat(journal.hasOngoingTransaction()).isEqualTo(true);
+                    tx3.commit();
+                }
+
+                assertThat(journal.hasOngoingTransaction()).isEqualTo(true);
+            }
+
+            assertThat(journal.hasOngoingTransaction()).isEqualTo(false);
+            tx.commit();
+            assertThat(journal.hasOngoingTransaction()).isEqualTo(false);
+        }
+
+        assertThat(journal.hasOngoingTransaction()).isEqualTo(false);
+
+        // taking part only somewhere in downstream, with everything getting commited
+        try (var tx = Transaction.openRoot()) {
+            assertThat(journal.hasOngoingTransaction()).isEqualTo(false);
+
+            try (var tx2 = Transaction.open(tx)) {
+                try (var tx3 = Transaction.open(tx2)) {
+                    journal.updateSnapshots(tx3);
+                    assertThat(journal.hasOngoingTransaction()).isEqualTo(true);
+                    tx3.commit();
+                }
+
+                assertThat(journal.hasOngoingTransaction()).isEqualTo(true);
+                tx2.commit();
+                assertThat(journal.hasOngoingTransaction()).isEqualTo(true);
+            }
+
+            assertThat(journal.hasOngoingTransaction()).isEqualTo(true);
+            tx.commit();
+            assertThat(journal.hasOngoingTransaction()).isEqualTo(false);
+        }
+
+        assertThat(journal.hasOngoingTransaction()).isEqualTo(false);
+
+        // taking part only somewhere in downstream, with everything getting commited except root
+        try (var tx = Transaction.openRoot()) {
+            assertThat(journal.hasOngoingTransaction()).isEqualTo(false);
+
+            try (var tx2 = Transaction.open(tx)) {
+                try (var tx3 = Transaction.open(tx2)) {
+                    journal.updateSnapshots(tx3);
+                    assertThat(journal.hasOngoingTransaction()).isEqualTo(true);
+                    tx3.commit();
+                }
+
+                assertThat(journal.hasOngoingTransaction()).isEqualTo(true);
+                tx2.commit();
+                assertThat(journal.hasOngoingTransaction()).isEqualTo(true);
+            }
+
+            assertThat(journal.hasOngoingTransaction()).isEqualTo(true);
+        }
+
+        assertThat(journal.hasOngoingTransaction()).isEqualTo(false);
+    }
+
     @Test
     void testNullSnapshots() {
         class VoidJournal extends SnapshotJournal<Void> {

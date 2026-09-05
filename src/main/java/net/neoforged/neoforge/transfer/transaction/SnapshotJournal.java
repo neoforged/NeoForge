@@ -38,37 +38,42 @@ import org.jspecify.annotations.Nullable;
  * @param <T> The objects that this journal uses to record its state snapshots.
  */
 public abstract class SnapshotJournal<T extends @Nullable Object> {
-    /**
-     * Used for entries of {@link #snapshots} that do not correspond to a snapshot.
-     * {@code null} corresponds to a snapshot that happens to be {@code null}.
-     */
+    /// Used for entries of [SnapshotJournal#snapshots] that do not correspond to a snapshot.
     private static final Object NO_SNAPSHOT = new Object();
 
     private final ArrayList<T> snapshots = new ArrayList<>();
+    private int snapshotCount = 0;
 
     @Nullable
     private T originalState = null;
 
-    /**
-     * Return a new <b>nonnull</b> object containing the current state of this journal.
-     * <b>{@code null} may not be returned, or an exception will be thrown!</b>
-     */
+    /// {@return new *independent* state copy of this journal}
+    /// This value later will be passed to either [SnapshotJournal#revertToSnapshot] (on transaction abortion, directly or due to parent being aborted)
+    /// or [SnapshotJournal#onRootCommit] (when root transaction concludes successfully).
+    ///
+    /// One may settle for some form of partial independence, the only requirement is that value returned by this
+    /// method will be sufficient to rollback (via [SnapshotJournal#revertToSnapshot]) this journal to point in time this method was called.
+    ///
+    /// [SnapshotJournal#hasOngoingTransaction] will return `true` inside this callback, and will continue to return `true`
+    /// until all snapshots are either reverted to or [SnapshotJournal#onRootCommit] is called.
     protected abstract T createSnapshot();
 
-    /**
-     * Roll back to a state previously created by {@link #createSnapshot}.
-     */
+    /// Roll back to a state previously created by [SnapshotJournal#createSnapshot].
+    ///
+    /// [SnapshotJournal#hasOngoingTransaction] will return `true` inside this callback, and, given there
+    /// are no snapshots left, will return `false` right after this callback returns.
     protected abstract void revertToSnapshot(T snapshot);
 
-    /**
-     * Signals that the snapshot will not be used anymore, and is safe to cache for future calls to {@link #createSnapshot},
-     * or discard entirely.
-     */
+    /// Signals that the snapshot will not be used anymore, and is safe to cache for future calls to [SnapshotJournal#createSnapshot],
+    /// or discard entirely.
+    ///
+    /// [SnapshotJournal#hasOngoingTransaction] will return `false` inside this callback
     protected void releaseSnapshot(T snapshot) {}
 
     /**
      * Called after the root transaction was successfully committed,
      * to perform irreversible actions such as {@code setChanged()} or neighbor updates.
+     * {@link #hasOngoingTransaction} will return {@code false} inside this callback.
      *
      * <p>When a root transaction is being closed,
      * all journals for which {@code onRootCommit} will be called are stored in a global thread-local queue.
@@ -99,6 +104,17 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
      */
     protected void onRootCommit(T originalState) {}
 
+    /// {@return whenever this journal is part of any ongoing transaction}
+    ///
+    /// Check specific callbacks docs to see when this method returns `true`.
+    /// 
+    /// @see SnapshotJournal#createSnapshot
+    /// @see SnapshotJournal#revertToSnapshot
+    /// @see SnapshotJournal#onRootCommit
+    public final boolean hasOngoingTransaction() {
+        return snapshotCount > 0;
+    }
+
     /**
      * Update the stored snapshots so that the changes happening as part of the passed transaction can be correctly
      * committed or rolled back.
@@ -115,12 +131,14 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
         }
 
         if (snapshots.get(currentDepth) == NO_SNAPSHOT) {
-            snapshots.set(currentDepth, createSnapshot());
-
             // This is a special case where we need to cast to access internal Transaction methods.
             // You should never, however, cast to call commit or close!
             var transactionImpl = (Transaction) transaction;
             transactionImpl.validateOpen();
+
+            snapshotCount++;
+            snapshots.set(currentDepth, createSnapshot());
+
             transactionImpl.journalsToClose.add(this);
         }
     }
@@ -137,8 +155,9 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
         if (wasAborted) {
             // If the transaction was aborted, we just revert to the state of the snapshot.
             revertToSnapshot(snapshot);
+            snapshotCount--;
             releaseSnapshot(snapshot);
-        } else if (currentDepth <= 0) {
+        } else if (currentDepth == 0) {
             // The transaction is the root.
             if (originalState == null) {
                 originalState = snapshot;
@@ -149,6 +168,8 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
                 // In this case we just wait for the already-registered callback to run.
                 releaseSnapshot(snapshot);
             }
+
+            snapshotCount = 0;
         } else if (snapshots.get(currentDepth - 1) == NO_SNAPSHOT) {
             // No snapshot yet, so move the snapshot one depth up.
             snapshots.set(currentDepth - 1, snapshot);
@@ -157,6 +178,7 @@ public abstract class SnapshotJournal<T extends @Nullable Object> {
         } else {
             // There is already an older snapshot at the depth above, just release the newer one.
             releaseSnapshot(snapshot);
+            snapshotCount--;
         }
     }
 
