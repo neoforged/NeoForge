@@ -1,0 +1,23 @@
+--- a/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
+@@ -229,6 +_,10 @@
+         NonNullList<ItemStack> items = entity.getItems();
+         ItemStack ingredient = items.get(3);
+ 
++        if (net.neoforged.neoforge.event.EventHooks.onPotionAttemptBrew(items)) {
++            return;
++        }
++
+         for (int dest = 0; dest < 3; dest++) {
+             ItemStack container = items.get(dest);
+             BrewingInput input = new BrewingInput(container, ingredient);
+@@ -236,7 +_,8 @@
+             items.set(dest, recipe.isPresent() ? recipe.get().value().assemble(input) : container);
+         }
+ 
+-        ItemStackTemplate remainder = ingredient.getItem().getCraftingRemainder();
++        net.neoforged.neoforge.event.EventHooks.onPotionBrewed(items);
++        ItemStackTemplate remainder = ingredient.getCraftingRemainder();
+         ingredient.shrink(1);
+         if (remainder != null) {
+             if (ingredient.isEmpty()) {
