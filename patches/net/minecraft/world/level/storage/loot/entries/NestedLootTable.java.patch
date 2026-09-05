@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/storage/loot/entries/NestedLootTable.java
++++ b/net/minecraft/world/level/storage/loot/entries/NestedLootTable.java
+@@ -47,7 +_,7 @@
+     public void createItemStack(Consumer<ItemStack> output, LootContext context) {
+         this.contents
+             .map(name -> context.getResolver().get((ResourceKey<LootTable>)name).map(Holder::value).orElse(LootTable.EMPTY), table -> (LootTable)table)
+-            .getRandomItemsRaw(context, output);
++            .getRandomItems(context, output);
+     }
+ 
+     @Override
