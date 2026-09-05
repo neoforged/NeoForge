@@ -8,3 +8,20 @@
      }
  
      public FeatureRenderDispatcher.PreparedFrame prepareFrame(SubmitNodeStorage submitNodeStorage) {
+@@ -322,6 +_,16 @@
+         public boolean hasAnySeeThrough() {
+             SubmitNodeStorage submitNodeStorage = Objects.requireNonNull(this.submitNodeStorage);
+             return !this.groupsByPhase.getOrDefault(submitNodeStorage.seeThrough(), List.of()).isEmpty();
++        }
++
++        public boolean hasAnyAlwaysOnTop() {
++            SubmitNodeStorage submitNodeStorage = Objects.requireNonNull(this.submitNodeStorage);
++            for (SubmitNodeCollection collection : submitNodeStorage.getSubmitsPerOrder().values()) {
++                if (!this.groupsByPhase.getOrDefault(collection.alwaysOnTopGizmos, List.of()).isEmpty()) {
++                    return true;
++                }
++            }
++            return false;
+         }
+ 
+         public boolean isEmpty() {

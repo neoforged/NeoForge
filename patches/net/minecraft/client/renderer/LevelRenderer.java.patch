@@ -1,6 +1,12 @@
 --- a/net/minecraft/client/renderer/LevelRenderer.java
 +++ b/net/minecraft/client/renderer/LevelRenderer.java
-@@ -235,6 +_,8 @@
+@@ -231,10 +_,13 @@
+             this.targets.oitTerrainWithWaterPatchDepth = frame.createInternal("terrain_depth", extraDepthTargetDescriptor);
+         }
+ 
+-        if (this.frameHasAlwaysOnTopGizmos() && consistentDepthRequired) {
++        // Neo: also check the FeatureFrame to ensure non-gizmo always-on-top submits are rendered
++        if ((this.frameHasAlwaysOnTopGizmos() || featureFrame.hasAnyAlwaysOnTop()) && consistentDepthRequired) {
              this.targets.alwaysOnTopDepth = frame.createInternal("always_on_top_depth", extraDepthTargetDescriptorCleared);
          }
  
@@ -34,6 +40,16 @@
              }
          }
      }
+@@ -398,7 +_,8 @@
+             }
+         }
+ 
+-        boolean hasAlwaysOnTopGizmos = this.frameHasAlwaysOnTopGizmos();
++        // Neo: also check the FeatureFrame to ensure non-gizmo always-on-top submits are rendered
++        boolean hasAlwaysOnTopGizmos = this.frameHasAlwaysOnTopGizmos() || featureFrame.hasAnyAlwaysOnTop();
+         if (hasAlwaysOnTopGizmos && consistentDepthRequired) {
+             this.targets.alwaysOnTopDepth = pass.readsAndWrites(this.targets.alwaysOnTopDepth);
+         }
 @@ -508,8 +_,12 @@
          chunkSectionsToRender.renderGroup(
              ChunkSectionLayerGroup.OPAQUE, renderPass, this.chunkLayerSampler, blockAtlas, this.levelRenderState.renderWireframeTerrain
