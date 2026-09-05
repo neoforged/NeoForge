@@ -1,13 +1,9 @@
 --- a/net/minecraft/world/clock/ClockManager.java
 +++ b/net/minecraft/world/clock/ClockManager.java
-@@ -4,4 +_,11 @@
+@@ -4,4 +_,7 @@
  
  public interface ClockManager {
      ClockInstance getInstance(Holder<WorldClock> definition);
-+
-+    default float getPartialTick(Holder<WorldClock> definition) {
-+        return 0;
-+    }
 +
 +    default void setRate(Holder<WorldClock> definition, float rate) {
 +    }
