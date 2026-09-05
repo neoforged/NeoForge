@@ -93,6 +93,7 @@
     "minecraft:environment_attribute",
     "minecraft:attribute_type",
     "minecraft:slot_source_type",
+    "minecraft:context_key_set",
     "minecraft:test_function",
     "neoforge:attachment_types",
     "neoforge:biome_modifier_serializers",
