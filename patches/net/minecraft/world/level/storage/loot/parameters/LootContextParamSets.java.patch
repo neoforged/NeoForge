@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/storage/loot/parameters/LootContextParamSets.java
 +++ b/net/minecraft/world/level/storage/loot/parameters/LootContextParamSets.java
+@@ -35,7 +_,7 @@
+             .required(LootContextParams.ENCHANTMENT_ACTIVE)
+             .required(LootContextParams.ENCHANTMENT_LEVEL)
+     );
+-    public static final ContextKeySet CHEST = register("chest", builder -> builder.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY));
++    public static final ContextKeySet CHEST = register("chest", builder -> builder.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY).optional(LootContextParams.ATTACKING_ENTITY)); //Neo: Chest minecarts can have killer entities
+     public static final ContextKeySet COMMAND = register(
+         "command", builder -> builder.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY)
+     );
 @@ -67,7 +_,7 @@
              .required(LootContextParams.ADDITIONAL_COST_COMPONENT_ALLOWED)
      );

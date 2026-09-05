@@ -20,7 +20,7 @@
                              level.gameEvent(player, GameEvent.FLUID_PICKUP, pos);
                              ItemStack result = ItemUtils.createFilledResult(itemStack, player, taken);
                              if (!level.isClientSide()) {
-@@ -107,7 +_,12 @@
+@@ -107,7 +_,13 @@
      }
  
      @Override
@@ -29,11 +29,35 @@
 +        return this.emptyContents(user, level, pos, hitResult, null);
 +    }
 +
++    @Override
 +    public boolean emptyContents(@Nullable LivingEntity user, Level level, BlockPos pos, @Nullable BlockHitResult hitResult, @Nullable ItemStack containerItem) {
          if (!(this.content instanceof FlowingFluid flowingFluid)) {
              return false;
          } else {
-@@ -155,9 +_,15 @@
+@@ -117,8 +_,15 @@
+             boolean shiftKeyDown = user != null && user.isShiftKeyDown();
+             boolean placeLiquid = mayReplace
+                 || block instanceof LiquidBlockContainer container && container.canPlaceLiquid(user, level, pos, blockState, this.content);
++            // TODO: The stack is only used as a parameter in the vaporization check. What if the fluidType is different? And should the rest of the method be made stack-aware as well?
++            var containedFluidStack = containerItem != null ? net.neoforged.neoforge.transfer.fluid.FluidUtil.getFirstStackContained(containerItem) : net.neoforged.neoforge.fluids.FluidStack.EMPTY;
+             boolean canPlaceFluidInsideBlock = blockState.isAir() || placeLiquid && (!shiftKeyDown || hitResult == null);
+             if (canPlaceFluidInsideBlock) {
++                if (!containedFluidStack.isEmpty() && this.content.getFluidType().isVaporizedOnPlacement(level, pos, containedFluidStack)) {
++                    this.content.getFluidType().onVaporize(user, level, pos, containedFluidStack);
++                    return true;
++                }
++
+                 if (level.environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, pos) && this.content.is(FluidTags.WATER)) {
+                     int x = pos.getX();
+                     int y = pos.getY();
+@@ -149,15 +_,21 @@
+                     return true;
+                 }
+             } else {
+-                return hitResult != null && this.emptyContents(user, level, hitResult.getBlockPos().relative(hitResult.getDirection()), null);
++                return hitResult != null && this.emptyContents(user, level, hitResult.getBlockPos().relative(hitResult.getDirection()), null, containerItem);
+             }
+         }
      }
  
      protected void playEmptySound(@Nullable LivingEntity user, LevelAccessor level, BlockPos pos) {

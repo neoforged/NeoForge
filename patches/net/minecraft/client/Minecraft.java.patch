@@ -213,6 +213,16 @@
          this.running = false;
      }
  
+@@ -1621,7 +_,8 @@
+                     BlockPos pos = blockHit.getBlockPos();
+                     if (!this.level.getBlockState(pos).isAir()) {
+                         Direction direction = blockHit.getDirection();
+-                        if (this.gameMode.continueDestroyBlock(pos, direction)) {
++                        var inputEvent = net.neoforged.neoforge.client.ClientHooks.onClickInput(0, this.options.keyAttack, InteractionHand.MAIN_HAND);
++                        if ((inputEvent.isCanceled() || this.gameMode.continueDestroyBlock(pos, direction)) && inputEvent.shouldSwingHand()) {
+                             this.player.swing(InteractionHand.MAIN_HAND, swingAnimation, false);
+                             this.player.connection.send(ServerboundPunchPacket.INSTANCE);
+                         }
 @@ -1670,8 +_,16 @@
  
                  SwingAnimation attackAnimation = heldItem.getAttackAnimation();
