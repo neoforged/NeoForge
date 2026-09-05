@@ -24,11 +24,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.crafting.RecipeMap;
-import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.attachment.AttachmentSync;
+import net.neoforged.neoforge.attachment.sync.SyncAttachmentsPayload;
 import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 import net.neoforged.neoforge.client.registries.ClientRegistryManager;
@@ -50,7 +49,7 @@ import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
 import net.neoforged.neoforge.network.payload.RecipeContentPayload;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
-import net.neoforged.neoforge.network.payload.SyncAttachmentsPayload;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.RegistrySnapshot;
 import org.jetbrains.annotations.ApiStatus;
@@ -188,34 +187,10 @@ final class ClientPayloadHandler {
     }
 
     private static void handle(SyncAttachmentsPayload payload, IPayloadContext context) {
-        switch (payload.target()) {
-            case SyncAttachmentsPayload.BlockEntityTarget(var pos) -> {
-                var blockEntity = context.player().level().getBlockEntity(pos);
-                if (blockEntity == null) {
-                    LOGGER.warn("Received synced attachments from unknown block entity");
-                } else {
-                    AttachmentSync.receiveSyncedDataAttachments(blockEntity, context.player().registryAccess(), payload.types(), payload.syncPayload());
-                }
-            }
-            case SyncAttachmentsPayload.ChunkTarget(var pos) -> {
-                var chunk = context.player().level().getChunk(pos.x(), pos.z(), ChunkStatus.FULL, false);
-                if (chunk == null) {
-                    LOGGER.warn("Received synced attachments from unknown chunk");
-                } else {
-                    AttachmentSync.receiveSyncedDataAttachments(chunk.getAttachmentHolder(), chunk.getLevel().registryAccess(), payload.types(), payload.syncPayload());
-                }
-            }
-            case SyncAttachmentsPayload.EntityTarget(var entityId) -> {
-                var entity = context.player().level().getEntity(entityId);
-                if (entity == null) {
-                    LOGGER.warn("Received synced attachments from unknown entity");
-                } else {
-                    AttachmentSync.receiveSyncedDataAttachments(entity, entity.registryAccess(), payload.types(), payload.syncPayload());
-                }
-            }
-            case SyncAttachmentsPayload.LevelTarget() -> {
-                AttachmentSync.receiveSyncedDataAttachments(context.player().level(), context.player().registryAccess(), payload.types(), payload.syncPayload());
-            }
-        }
+        final var level = context.player().level();
+        var reg = level.registryAccess().lookupOrThrow(NeoForgeRegistries.ATTACHMENT_HOLDER_SYNC_HANDLERS.key());
+        reg.get(payload.syncHandlerKey()).ifPresent(handler -> {
+            handler.value().receiveData(level.registryAccess(), payload.types(), payload.syncPayload());
+        });
     }
 }
