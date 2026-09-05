@@ -1182,8 +1182,8 @@ public class EventHooks {
      * @param ctx       The loot context for the current block loot evaluation.
      */
     public static int getBlockLootEnchantmentLevel(ItemInstance tool, Holder<Enchantment> ench, int enchLevel, LootContext ctx) {
-        BlockState state = ctx.getOptionalParameter(LootContextParams.BLOCK_STATE);
-        Vec3 pos = ctx.getOptionalParameter(LootContextParams.ORIGIN);
+        BlockState state = ctx.getOptional(LootContextParams.BLOCK_STATE);
+        Vec3 pos = ctx.getOptional(LootContextParams.ORIGIN);
         if (state != null && pos != null) {
             var event = new EnchantedBlockLootEvent(ctx.getLevel(), BlockPos.containing(pos), state, tool, ench, enchLevel);
             NeoForge.EVENT_BUS.post(event);
@@ -1203,8 +1203,8 @@ public class EventHooks {
      * @param ctx       The loot context for the current entity loot evaluation.
      */
     public static int getEntityLootEnchantmentLevel(Holder<Enchantment> ench, int enchLevel, LootContext ctx) {
-        Entity entity = ctx.getOptionalParameter(LootContextParams.THIS_ENTITY);
-        DamageSource src = ctx.getOptionalParameter(LootContextParams.DAMAGE_SOURCE);
+        Entity entity = ctx.getOptional(LootContextParams.THIS_ENTITY);
+        DamageSource src = ctx.getOptional(LootContextParams.DAMAGE_SOURCE);
         if (src != null && entity instanceof LivingEntity living) {
             var event = new EnchantedEntityLootEvent(living, src, ench, enchLevel);
             NeoForge.EVENT_BUS.post(event);
