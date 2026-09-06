@@ -9,6 +9,15 @@
              int width = minecraft.font.width(name);
              if (width > this.maxNameWidth) {
                  this.maxNameWidth = width;
+@@ -113,6 +_,8 @@
+             this.name = name;
+             this.changeButton = Button.builder(name, button -> {
+                     KeyBindsList.this.keyBindsScreen.selectedKey = key;
++                    // Neo: Mark the key which triggered this button, so its release doesn't trigger the logic to set the key mapping
++                    KeyBindsList.this.keyBindsScreen.ignoreNextRelease = true;
+                     KeyBindsList.this.resetMappingAndUpdateButtons();
+                 })
+                 .bounds(0, 0, 75, 20)
 @@ -123,6 +_,7 @@
                  )
                  .build();
