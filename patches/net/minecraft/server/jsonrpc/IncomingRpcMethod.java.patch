@@ -1,13 +1,19 @@
 --- a/net/minecraft/server/jsonrpc/IncomingRpcMethod.java
 +++ b/net/minecraft/server/jsonrpc/IncomingRpcMethod.java
-@@ -113,6 +_,8 @@
+@@ -113,10 +_,14 @@
              }
          }
  
-+        /* @deprecated Neo: Use the RegisterEvent to register instead of this  */
++        /// @deprecated Neo: Use the [RegisterEvent][net.neoforged.neoforge.registries.RegisterEvent] to register instead of this
 +        @Deprecated
          public IncomingRpcMethod<?, ?> register(Registry<IncomingRpcMethod<?, ?>> methodRegistry, String key) {
              return this.register(methodRegistry, Identifier.withDefaultNamespace(key));
+         }
+ 
++        /// @deprecated Neo: Use the [RegisterEvent][net.neoforged.neoforge.registries.RegisterEvent] to register instead of this
++        @Deprecated
+         private IncomingRpcMethod<?, ?> register(Registry<IncomingRpcMethod<?, ?>> methodRegistry, Identifier id) {
+             return Registry.register(methodRegistry, id, this.build());
          }
 @@ -152,18 +_,21 @@
                      paramsJsonElement = jsonArray.get(0);

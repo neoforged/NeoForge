@@ -25,17 +25,17 @@ public final class NeoForgeRpcMethods {
     }
 
     private static void registerIncoming(RegisterEvent.RegisterHelper<IncomingRpcMethod<?, ?>> helper) {
-        helper.register(rl("mods"), IncomingRpcMethod
+        helper.register(id("mods"), IncomingRpcMethod
                 .method(NeoForgeRpcMethods::getModList)
                 .response("mods", NeoForgeSchemas.MOD_SCHEMA.asArray())
                 .description("Get a list of all mods installed on the server")
                 .build());
-        helper.register(rl("registries"), IncomingRpcMethod
+        helper.register(id("registries"), IncomingRpcMethod
                 .method(NeoForgeRpcMethods::listRegistries)
                 .response("registries", Schema.STRING_SCHEMA.asArray())
                 .description("List all registries on the server")
                 .build());
-        helper.register(rl("registry"), IncomingRpcMethod
+        helper.register(id("registry"), IncomingRpcMethod
                 .method(NeoForgeRpcMethods::listRegistryContents)
                 .response("registry", NeoForgeSchemas.REGISTRY_SCHEMA.asRef())
                 .param("registryId", Schema.ofType("string", Identifier.CODEC))
@@ -43,7 +43,7 @@ public final class NeoForgeRpcMethods {
                 .build());
     }
 
-    private static Identifier rl(String path) {
+    private static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, path);
     }
 

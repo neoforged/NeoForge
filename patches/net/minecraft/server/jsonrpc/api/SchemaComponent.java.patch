@@ -1,8 +1,11 @@
 --- a/net/minecraft/server/jsonrpc/api/SchemaComponent.java
 +++ b/net/minecraft/server/jsonrpc/api/SchemaComponent.java
-@@ -4,6 +_,10 @@
+@@ -3,7 +_,13 @@
+ import java.net.URI;
  import java.util.List;
  
++/// Neo: Use the constructor taking an [Identifier][net.minecraft.resources.Identifier] for internal references,
++/// as it will automatically create a local reference for you.
  public record SchemaComponent<T>(String name, URI ref, Schema<T> schema) {
 +    public SchemaComponent(net.minecraft.resources.Identifier name, Schema<T> schema) {
 +        this(name.toString(), ReferenceUtil.createLocalReference(name.toString()), schema);
