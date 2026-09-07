@@ -94,7 +94,7 @@
 +
 +    /// @deprecated Neo: To be removed in 26.3. Full pots are automatically added to the maps of their respective empty pots.
 +    /// This does not support adding arbitrary blocks as 'full pots'. If you use this feature, please raise this in the NeoForge issue tracker.
-+    @Deprecated(forRemoval = true, since = "26.3")
++    @Deprecated(forRemoval = true, since = "26.2")
 +    public void addPlant(net.minecraft.resources.Identifier flower, java.util.function.Supplier<? extends Block> fullPot) {
 +         if (getEmptyPot() != this) {
 +              throw new IllegalArgumentException("Cannot add plant to non-empty pot: " + this);
