@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/monster/zombie/Zombie.java
 +++ b/net/minecraft/world/entity/monster/zombie/Zombie.java
+@@ -218,7 +_,7 @@
+                     this.doUnderWaterConversion(serverLevel);
+                 }
+             } else if (this.convertsInWater()) {
+-                if (this.isEyeInFluid(FluidTags.WATER)) {
++                if (this.getFluidInteraction().isEyeInFluidMatching(this, (_, type, _) -> type.getIsWaterLike())) {
+                     this.inWaterTime++;
+                     if (this.inWaterTime >= 600) {
+                         this.startUnderWaterConversion(300);
 @@ -238,6 +_,7 @@
      }
  

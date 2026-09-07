@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.event.entity.living;
 
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,7 +17,7 @@ import net.neoforged.neoforge.common.NeoForge;
 /**
  * LivingDrownEvent is fired whenever a living entity can't breathe and its air supply is less than or equal to zero.
  * <p>
- * This event is fired via {@link CommonHooks#onLivingBreathe(LivingEntity, int, int)}.
+ * This event is fired via {@link CommonHooks#onLivingBreathe(LivingEntity, ServerLevel, int, int)}.
  * <p>
  * This event is {@link ICancellableEvent}. Effects of cancellation are noted in {@link #setCanceled(boolean)}.
  * <p>
@@ -46,10 +47,10 @@ public class LivingDrownEvent extends LivingEvent implements ICancellableEvent {
     /**
      * Constructor which auto-populates with all vanilla values.
      * 
-     * @see #LivingDrownEvent(LivingEntity, boolean, float, boolean)
+     * @see #LivingDrownEvent(LivingEntity, boolean, float, int)
      */
     public LivingDrownEvent(LivingEntity entity) {
-        this(entity, entity.getAirSupply() <= -20, 2.0F, 8);
+        this(entity, entity.shouldTakeDrowningDamage(), 2.0F, 8);
     }
 
     /**

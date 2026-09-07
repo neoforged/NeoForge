@@ -94,7 +94,9 @@ public abstract class ContainerScreenEvent extends Event {
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
          *
          * @see ScreenEvent.Render.Background ScreenEvent.Render.Background, for listening to the background being drawn
+         * @deprecated Use {@link ScreenEvent.Render.Foreground} instead.
          */
+        @Deprecated(since = "26.1.2", forRemoval = true)
         public static class Foreground extends Render {
             @ApiStatus.Internal
             public Foreground(AbstractContainerScreen<?> guiContainer, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {

@@ -275,7 +275,7 @@ public final class SoundDefinition {
          * <p>In a "normal" sound, the {@code name} is considered a file name, which
          * the game attempts to load from the currently loaded resource packs.</p>
          */
-        SOUND("sound"),
+        SOUND("file"),
         /**
          * Identifies a "redirect" sound.
          *

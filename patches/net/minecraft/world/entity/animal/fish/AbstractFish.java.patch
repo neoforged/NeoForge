@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/animal/fish/AbstractFish.java
++++ b/net/minecraft/world/entity/animal/fish/AbstractFish.java
+@@ -170,7 +_,7 @@
+ 
+         @Override
+         public void tick() {
+-            if (this.fish.isEyeInFluid(FluidTags.WATER)) {
++            if (this.fish.getFluidInteraction().isEyeInFluidMatching(this.fish, (_, type, _) -> type.getIsWaterLike())) {
+                 this.fish.setDeltaMovement(this.fish.getDeltaMovement().add(0.0, 0.005, 0.0));
+             }
+ 

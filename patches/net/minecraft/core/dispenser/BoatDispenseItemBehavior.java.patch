@@ -1,26 +1,37 @@
 --- a/net/minecraft/core/dispenser/BoatDispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/BoatDispenseItemBehavior.java
-@@ -29,11 +_,17 @@
+@@ -29,27 +_,36 @@
          double spawnY = center.y() + direction.getStepY() * 1.125F;
          double spawnZ = center.z() + direction.getStepZ() * justOutsideDispenser;
          BlockPos frontPos = source.pos().relative(direction);
-+        AbstractBoat abstractboat = this.type.create(level, EntitySpawnReason.DISPENSER);
-+        if (abstractboat != null) {
-+            EntityType.<AbstractBoat>createDefaultStackConfig(level, dispensed, null).accept(abstractboat);
-+            abstractboat.setYRot(direction.toYRot());
-+            level.addFreshEntity(abstractboat);
++        // Neo: Move the creation (but not addition to the level) of the boat entity earlier for use in various checks
++        AbstractBoat boat = this.type.create(level, EntitySpawnReason.DISPENSER);
++        if (boat != null) {
++            boat.setInitialPos(spawnX, spawnY, spawnZ);
++            EntityType.<AbstractBoat>createDefaultStackConfig(level, dispensed, null).accept(boat);
++            boat.setYRot(direction.toYRot());
 +        }
          double yOffset;
 -        if (level.getFluidState(frontPos).is(FluidTags.WATER)) {
-+        if (canBoatInFluid(abstractboat, level.getFluidState(frontPos))) {
++        if (canBoatInFluid(boat, level.getFluidState(frontPos))) {
              yOffset = 1.0;
          } else {
 -            if (!level.getBlockState(frontPos).isAir() || !level.getFluidState(frontPos.below()).is(FluidTags.WATER)) {
-+            if (!level.getBlockState(frontPos).isAir() || !canBoatInFluid(abstractboat, level.getFluidState(frontPos.below()))) {
++            if (!level.getBlockState(frontPos).isAir() || !canBoatInFluid(boat, level.getFluidState(frontPos.below()))) {
                  return this.defaultDispenseItemBehavior.dispense(source, dispensed);
              }
  
-@@ -50,6 +_,10 @@
+             yOffset = 0.0;
+         }
+ 
+-        AbstractBoat boat = this.type.create(level, EntitySpawnReason.DISPENSER);
+         if (boat != null) {
++            // Neo: Apply Y offset to the boat, add it to the level, and shrink the stack
+             boat.setInitialPos(spawnX, spawnY + yOffset, spawnZ);
+-            EntityType.<AbstractBoat>createDefaultStackConfig(level, dispensed, null).accept(boat);
+-            boat.setYRot(direction.toYRot());
+             level.addFreshEntity(boat);
+             dispensed.shrink(1);
          }
  
          return dispensed;

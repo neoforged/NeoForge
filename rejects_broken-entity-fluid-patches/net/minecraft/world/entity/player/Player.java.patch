@@ -1,5 +1,0 @@
-     protected boolean updateIsUnderwater() {
--        this.wasUnderwater = this.isEyeInFluid(FluidTags.WATER);
-+        this.wasUnderwater = this.getEyeInFluidType() != null && this.getEyeInFluidType().canSwim(this);
-         return this.wasUnderwater;
-     }
