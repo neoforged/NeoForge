@@ -1,10 +1,11 @@
 --- a/net/minecraft/client/gui/Font.java
 +++ b/net/minecraft/client/gui/Font.java
-@@ -39,6 +_,8 @@
+@@ -39,6 +_,9 @@
      private final RandomSource random = RandomSource.create();
      private final Font.Provider provider;
      private final StringSplitter splitter;
-+    /** Neo: enables linear filtering on text */
++    /// @deprecated For removal in 26.3.
++    @Deprecated(forRemoval = true, since = "26.2")
 +    public boolean enableTextTextureLinearFiltering = false;
  
      public Font(Font.Provider provider) {
