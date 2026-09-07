@@ -40,7 +40,7 @@
      ) {
          BlockState newContents = (itemStack.getItem() instanceof BlockItem blockItem
 -                ? POTTED_BY_CONTENT.getOrDefault(blockItem.getBlock(), Blocks.AIR)
-+                ? getFullPotsView().getOrDefault(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(blockItem.getBlock()), () -> Blocks.AIR).get()
++                ? emptyPot == null ? getFullPot(blockItem.getBlock()) : Blocks.AIR
                  : Blocks.AIR)
              .defaultBlockState();
          if (newContents.isAir()) {
@@ -53,7 +53,7 @@
          level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
          return InteractionResult.SUCCESS;
      }
-@@ -118,12 +_,34 @@
+@@ -118,12 +_,58 @@
      }
  
      public Block getPotted() {
@@ -68,6 +68,28 @@
 +
 +    public FlowerPotBlock getEmptyPot() {
 +         return emptyPot == null ? this : emptyPot.get();
++    }
++
++    /// {@return an unmodifiable view of the map of plant blocks to their associated full pot block}
++    ///
++    /// @throws IllegalStateException if this is called on a non-empty pot
++    public Map<net.minecraft.resources.Identifier, Block> getFullPots() {
++        if (emptyPot != null) {
++            throw new IllegalStateException("Full pots can only be queried from the empty pot");
++        }
++        return java.util.Collections.unmodifiableMap(net.neoforged.neoforge.registries.GameData.getFlowerPotBlockTable().row(this));
++    }
++
++    /// Neo: {@return the full pot associated with the given plant block, or [Blocks#AIR] if there is no associated full pot}
++    ///
++    /// @param plant the plant block
++    /// @throws IllegalStateException if this is called on a non-empty pot
++    public Block getFullPot(Block plant) {
++        if (emptyPot != null) {
++            throw new IllegalStateException("Full pots can only be queried from the empty pot");
++        }
++        return net.neoforged.neoforge.registries.GameData.getFlowerPotBlockTable().row(this)
++                .getOrDefault(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(plant), Blocks.AIR);
 +    }
 +
 +    /// @deprecated Neo: To be removed in 26.3. Full pots are automatically added to the maps of their respective empty pots.
