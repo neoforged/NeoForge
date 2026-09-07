@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.registries;
 
+import com.google.common.collect.Table;
 import com.mojang.logging.LogUtils;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -50,6 +51,10 @@ public class GameData {
 
     public static Map<BlockState, Holder<PoiType>> getBlockStatePointOfInterestTypeMap() {
         return NeoForgeRegistryCallbacks.PoiTypeCallbacks.BLOCKSTATE_TO_POI_TYPE_MAP;
+    }
+
+    public static Table<Block, Identifier, Block> getFlowerPotBlockTable() {
+        return NeoForgeRegistryCallbacks.BlockCallbacks.EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE;
     }
 
     public static void vanillaSnapshot() {

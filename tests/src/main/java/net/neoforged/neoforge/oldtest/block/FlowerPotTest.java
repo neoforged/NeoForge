@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.oldtest.block;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
@@ -14,12 +13,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FlowerPotBlock;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegisterEvent;
 
 @EventBusSubscriber
 @Mod(FlowerPotTest.MODID)
@@ -35,13 +32,6 @@ public class FlowerPotTest {
 
     static {
         ITEMS.register(BLOCK_ID, () -> new BlockItem(EMPTY_FLOWER_POT.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, EMPTY_FLOWER_POT.getId())).useBlockDescriptionPrefix()));
-    }
-
-    @SubscribeEvent
-    public static void onItemRegister(RegisterEvent event) {
-        if (event.getRegistryKey().equals(Registries.ITEM)) {
-            EMPTY_FLOWER_POT.get().addPlant(BuiltInRegistries.BLOCK.getKey(Blocks.OAK_SAPLING), OAK_FLOWER_POT);
-        }
     }
 
     public FlowerPotTest(IEventBus modBus) {
