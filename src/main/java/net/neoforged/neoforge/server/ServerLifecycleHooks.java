@@ -188,7 +188,7 @@ public class ServerLifecycleHooks {
                     methodInfo.params().flatMap(paramsInfo -> paramsInfo.schema().reference()).ifPresent(consumer);
                 })
                 .map(URI::toString)
-                // filter out any non-local references. The path #/components/schemas/ comes from ReferenceUtil#createLocalReferenc
+                // filter out any non-local references. The path #/components/schemas/ comes from ReferenceUtil#createLocalReference
                 .filter(uri -> uri.startsWith("#/components/schemas/"))
                 .map(uri -> uri.substring("#/components/schemas/".length()))
                 .filter(name -> !schemaRegistry.containsKey(name))

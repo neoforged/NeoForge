@@ -35,7 +35,7 @@ public final class NeoForgeRpcMethods {
                 .response("registries", Schema.STRING_SCHEMA.asArray())
                 .description("List all registries on the server")
                 .build());
-        helper.register(id("registry"), IncomingRpcMethod
+        helper.register(id("registries/content"), IncomingRpcMethod
                 .method(NeoForgeRpcMethods::listRegistryContents)
                 .response("registry", NeoForgeSchemas.REGISTRY_SCHEMA.asRef())
                 .param("registryId", Schema.ofType("string", Identifier.CODEC))
