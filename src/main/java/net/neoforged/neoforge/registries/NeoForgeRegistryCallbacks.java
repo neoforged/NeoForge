@@ -36,7 +36,7 @@ class NeoForgeRegistryCallbacks {
     static class BlockCallbacks implements AddCallback<Block>, ClearCallback<Block>, BakeCallback<Block> {
         static final BlockCallbacks INSTANCE = new BlockCallbacks();
         static final ClearableObjectIntIdentityMap<BlockState> BLOCKSTATE_TO_ID_MAP = new ClearableObjectIntIdentityMap<>();
-        static final Table<Block, Identifier, Block> EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE = Tables.newCustomTable(new IdentityHashMap<>(), IdentityHashMap::new);
+        static final Table<Block, Identifier, Block> EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE = Tables.newCustomTable(new IdentityHashMap<>(), HashMap::new);
 
         private final Set<Block> addedBlocks = new ReferenceOpenHashSet<>();
 
