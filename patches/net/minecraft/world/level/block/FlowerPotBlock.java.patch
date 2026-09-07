@@ -102,6 +102,8 @@
 +         // No-op
 +    }
 +
++    /// @deprecated Neo: To be removed in 26.3. Use [#getFullPots()] instead.
++    @Deprecated(forRemoval = true, since = "26.2")
 +    public Map<net.minecraft.resources.Identifier, java.util.function.Supplier<? extends Block>> getFullPotsView() {
 +        if (emptyPot != null) {
 +            return java.util.Map.of();
