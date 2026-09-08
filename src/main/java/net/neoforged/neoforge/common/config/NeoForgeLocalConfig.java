@@ -18,12 +18,17 @@ public final class NeoForgeLocalConfig {
     public static final NeoForgeLocalConfig INSTANCE;
 
     public final ModConfigSpec.BooleanValue attributeAdvancedTooltipDebugInfo;
+    public final ModConfigSpec.BooleanValue enableGlobalDatapacksAutomatically;
 
     private NeoForgeLocalConfig(ModConfigSpec.Builder builder) {
         attributeAdvancedTooltipDebugInfo = builder
                 .comment("Set this to true to enable showing debug information about attributes on an item when advanced tooltips is on.")
                 .translation("neoforge.configgui.attributeAdvancedTooltipDebugInfo")
                 .define("attributeAdvancedTooltipDebugInfo", true);
+        enableGlobalDatapacksAutomatically = builder
+                .comment("Controls whether datapacks loaded from the global 'datapacks' folder (in the game directory) are automatically enabled for new worlds.")
+                .translation("neoforge.configgui.enableGlobalDatapacksAutomatically")
+                .define("enableGlobalDatapacksAutomatically", false);
     }
 
     static {
