@@ -67,8 +67,8 @@
                  if (notAir && state.getDestroyProgress(this.minecraft.player, this.minecraft.player.level(), pos) >= 1.0F) {
                      this.destroyBlock(pos);
                  } else {
-@@ -208,7 +_,7 @@
-                     this.minecraft.level.destroyBlockProgress(this.minecraft.player.getId(), this.destroyBlockPos, this.getDestroyStage());
+@@ -209,7 +_,7 @@
+                     this.minecraft.level.addBreakingBlockEffects(this.destroyBlockPos, this.destroyDirection, true);
                  }
  
 -                return new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
@@ -76,7 +76,7 @@
              });
          }
  
-@@ -248,6 +_,7 @@
+@@ -249,6 +_,7 @@
              }
  
              this.startPrediction(this.minecraft.level, sequence -> {
@@ -84,7 +84,7 @@
                  this.destroyBlock(pos);
                  return new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
              });
-@@ -262,6 +_,7 @@
+@@ -263,6 +_,7 @@
              this.destroyProgress = this.destroyProgress + state.getDestroyProgress(this.minecraft.player, this.minecraft.player.level(), pos);
              this.destroyTicks++;
              this.minecraft.getTutorial().onDestroyBlock(this.minecraft.level, pos, state, Mth.clamp(this.destroyProgress, 0.0F, 1.0F));
@@ -92,7 +92,7 @@
              if (this.destroyProgress >= 1.0F) {
                  this.isDestroying = false;
                  if (SharedConstants.DEBUG_BLOCK_BREAK) {
-@@ -307,7 +_,7 @@
+@@ -308,7 +_,7 @@
  
      private boolean sameDestroyTarget(BlockPos pos) {
          ItemStack selected = this.minecraft.player.getMainHandItem();
@@ -101,7 +101,7 @@
      }
  
      private void ensureHasSentCarriedItem() {
-@@ -335,13 +_,24 @@
+@@ -336,13 +_,24 @@
      private InteractionResult performUseItemOn(LocalPlayer player, InteractionHand hand, BlockHitResult blockHit) {
          BlockPos pos = blockHit.getBlockPos();
          ItemStack itemStack = player.getItemInHand(hand);
@@ -128,7 +128,7 @@
              BlockState blockState = this.minecraft.level.getBlockState(pos);
              if (!this.connection.isFeatureEnabled(blockState.getBlock().requiredFeatures())) {
                  return InteractionResult.FAIL;
-@@ -360,7 +_,10 @@
+@@ -361,7 +_,10 @@
              }
          }
  
@@ -140,7 +140,7 @@
              UseOnContext context = new UseOnContext(player, hand, blockHit);
              InteractionResult result;
              if (player.hasInfiniteMaterials()) {
-@@ -398,6 +_,12 @@
+@@ -399,6 +_,12 @@
                  return packet;
              }
  
@@ -153,7 +153,7 @@
              InteractionResult resultHolder = itemStack.use(this.minecraft.level, player, hand);
              ItemStack result;
              if (resultHolder instanceof InteractionResult.Success success) {
-@@ -408,6 +_,8 @@
+@@ -409,6 +_,8 @@
  
              if (result != itemStack) {
                  player.setItemInHand(hand, result);

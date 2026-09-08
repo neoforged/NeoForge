@@ -1,0 +1,16 @@
+--- a/net/minecraft/client/multiplayer/ClientLevel.java
++++ b/net/minecraft/client/multiplayer/ClientLevel.java
+@@ -1054,11 +1086,11 @@
+ 
+     public void addBreakingBlockEffects(BlockPos pos, Direction direction, boolean playSound) {
+         BlockState blockState = this.getBlockState(pos);
+-        if (playSound) {
++        if (playSound && !net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(blockState).playHitSound(blockState, this, pos, direction, this.minecraft.getSoundManager())) {
+             this.playBreakingSound(pos, blockState);
+         }
+ 
+-        if (blockState.getRenderShape() != RenderShape.INVISIBLE && blockState.shouldSpawnTerrainParticles()) {
++        if (blockState.getRenderShape() != RenderShape.INVISIBLE && !net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(blockState).addHitEffects(blockState, this, pos, direction, this.minecraft.particleEngine)) {
+             this.addBreakingParticles(pos, direction, blockState);
+         }
+     }

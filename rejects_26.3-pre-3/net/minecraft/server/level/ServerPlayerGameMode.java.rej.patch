@@ -1,0 +1,13 @@
+--- a/net/minecraft/server/level/ServerPlayerGameMode.java
++++ b/net/minecraft/server/level/ServerPlayerGameMode.java
+@@ -161,6 +164,10 @@
+     }
+ 
+     public void handleBlockBreakAction(BlockPos pos, ServerboundPlayerActionPacket.Action action, Direction direction, int maxY, int sequence) {
++        net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock event = net.neoforged.neoforge.common.CommonHooks.onLeftClickBlock(player, pos, direction, action);
++        if (event.isCanceled()) {
++            return;
++        }
+         if (!this.player.isWithinBlockInteractionRange(pos, 1.0)) {
+             this.debugLogging(pos, false, sequence, "too far");
+         } else if (pos.getY() > maxY) {
