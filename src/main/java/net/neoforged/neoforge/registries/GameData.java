@@ -11,6 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import net.minecraft.core.Holder;
 import net.minecraft.core.IdMapper;
 import net.minecraft.core.MappedRegistry;
@@ -53,8 +54,13 @@ public class GameData {
         return NeoForgeRegistryCallbacks.PoiTypeCallbacks.BLOCKSTATE_TO_POI_TYPE_MAP;
     }
 
-    public static Table<Block, Identifier, Block> getFlowerPotBlockTable() {
+    public static Table<Block, Block, Block> getFlowerPotBlockTable() {
         return NeoForgeRegistryCallbacks.BlockCallbacks.EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE;
+    }
+
+    // TODO 26.3: Remove this and change necessary methods in FlowerPotBlock
+    public static Table<Block, Identifier, Supplier<? extends Block>> getLegacyFlowerPotBlockTable() {
+        return NeoForgeRegistryCallbacks.BlockCallbacks.LEGACY_EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE.get();
     }
 
     public static void vanillaSnapshot() {
