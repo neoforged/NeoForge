@@ -27,7 +27,7 @@ public class FlowerPotTest {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    public static final DeferredBlock<FlowerPotBlock> EMPTY_FLOWER_POT = BLOCKS.registerBlock(BLOCK_ID, props -> new FlowerPotBlock(null, () -> Blocks.AIR, props), () -> Block.Properties.ofFullCopy(Blocks.FLOWER_POT));
+    public static final DeferredBlock<FlowerPotBlock> EMPTY_FLOWER_POT = BLOCKS.registerBlock(BLOCK_ID, FlowerPotBlock::new, () -> Block.Properties.ofFullCopy(Blocks.FLOWER_POT));
     public static final DeferredBlock<FlowerPotBlock> OAK_FLOWER_POT = BLOCKS.registerBlock(BLOCK_ID + "_oak", props -> new FlowerPotBlock(EMPTY_FLOWER_POT, () -> Blocks.OAK_SAPLING, props), () -> Block.Properties.ofFullCopy(Blocks.FLOWER_POT));
 
     static {

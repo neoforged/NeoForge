@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/FlowerPotBlock.java
 +++ b/net/minecraft/world/level/block/FlowerPotBlock.java
-@@ -35,17 +_,32 @@
+@@ -35,17 +_,51 @@
      );
      private static final Map<Block, Block> POTTED_BY_CONTENT = Maps.newHashMap();
      private static final VoxelShape SHAPE = Block.column(6.0, 0.0, 6.0);
@@ -14,24 +14,43 @@
          return CODEC;
      }
  
-+    /// @deprecated Neo: Use the [other constructor][FlowerPotBlock#FlowerPotBlock(Supplier, Supplier, Properties)].
++    /// @deprecated Neo: Use the other constructors for [empty pots][#FlowerPotBlock(Properties)] and [full pots][#FlowerPotBlock(java.util.function.Supplier, java.util.function.Supplier, Properties)].
 +    @Deprecated
      public FlowerPotBlock(Block potted, BlockBehaviour.Properties properties) {
-+        this(Blocks.FLOWER_POT == null ? null : () -> (FlowerPotBlock) Blocks.FLOWER_POT, () -> potted, properties);
+         super(properties);
+-        this.potted = potted;
+-        POTTED_BY_CONTENT.put(potted, this);
++        this.potted = null; // Unused, redirected by coremod
++        this.flowerDelegate = () -> potted;
++        this.emptyPot = Blocks.FLOWER_POT == null ? null : () -> (FlowerPotBlock) Blocks.FLOWER_POT;
 +    }
 +
 +    /// Neo: Constructs a flower pot with the given empty pot and potted flower/plant.
 +    /// For mod use, eliminates the need to extend this class, and prevents modded flower pots from altering vanilla behavior.
 +    ///
-+    /// @param emptyPot The empty pot for this pot, or `null` if this is the empty pot.
-+    /// @param potted The potted flower/plant, or `null` if this is the empty pot.
++    /// Use the [other constructor][#FlowerPotBlock(Properties)] for constructing empty pots.
++    ///
++    /// @param emptyPot The empty pot for this pot
++    /// @param potted The potted flower/plant
 +    public FlowerPotBlock(java.util.function.@org.jspecify.annotations.Nullable Supplier<FlowerPotBlock> emptyPot, java.util.function.@org.jspecify.annotations.Nullable Supplier<? extends Block> potted, BlockBehaviour.Properties properties) {
-         super(properties);
--        this.potted = potted;
--        POTTED_BY_CONTENT.put(potted, this);
++        super(properties);
 +        this.potted = null; // Unused, redirected by coremod
 +        this.flowerDelegate = potted != null ? potted : () -> Blocks.AIR;
 +        this.emptyPot = emptyPot;
++        // TODO 26.3: Make this constructor accept non-null suppliers, replace this dev-only warning with an always-active precondition, and adjust javadocs
++        if (emptyPot == null && !net.neoforged.fml.loading.FMLEnvironment.isProduction()) {
++            // No need to translate; this is a dev-only warning
++            //noinspection UnstableApiUsage
++            net.neoforged.fml.ModLoader.addLoadingIssue(net.neoforged.fml.ModLoadingIssue.warning("FlowerPotBlock's full pot constructor is used to create empty pot; use other constructor instead"));
++        }
++    }
++
++    /// Neo: Constructs an empty flower pot.
++    public FlowerPotBlock(BlockBehaviour.Properties properties) {
++        super(properties);
++        this.potted = null; // Unused, redirected by coremod
++        this.flowerDelegate = () -> Blocks.AIR;
++        this.emptyPot = null;
      }
  
      @Override
