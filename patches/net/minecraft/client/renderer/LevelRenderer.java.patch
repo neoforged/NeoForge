@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/LevelRenderer.java
 +++ b/net/minecraft/client/renderer/LevelRenderer.java
-@@ -231,10 +_,13 @@
+@@ -241,10 +_,13 @@
              this.targets.oitTerrainWithWaterPatchDepth = frame.createInternal("terrain_depth", extraDepthTargetDescriptor);
          }
  
@@ -15,7 +15,7 @@
          this.targets.entityOutline = frame.importExternal("entity_outline", this.entityOutlineTarget);
          FramePass clearPass = frame.addPass("clear");
          this.targets.main = clearPass.readsAndWrites(this.targets.main);
-@@ -328,6 +_,8 @@
+@@ -339,6 +_,8 @@
              this.submitBlockOutline(poseStack, this.submitNodeStorage, levelRenderState);
          }
  
@@ -24,7 +24,7 @@
          this.finalizeGizmoCollection();
          this.finalizedGizmos.standardPrimitives().submit(submitNodeCollector, levelRenderState.cameraRenderState, false);
          this.finalizedGizmos.alwaysOnTopPrimitives().submit(submitNodeCollector, levelRenderState.cameraRenderState, true);
-@@ -365,7 +_,14 @@
+@@ -376,7 +_,14 @@
              if (state.skybox != DimensionType.Skybox.NONE) {
                  FramePass pass = frame.addPass("sky");
                  this.targets.main = pass.readsAndWrites(this.targets.main);
@@ -40,7 +40,7 @@
              }
          }
      }
-@@ -398,7 +_,8 @@
+@@ -409,7 +_,8 @@
              }
          }
  
@@ -50,7 +50,7 @@
          if (hasAlwaysOnTopGizmos && consistentDepthRequired) {
              this.targets.alwaysOnTopDepth = pass.readsAndWrites(this.targets.alwaysOnTopDepth);
          }
-@@ -508,8 +_,12 @@
+@@ -519,8 +_,12 @@
          chunkSectionsToRender.renderGroup(
              ChunkSectionLayerGroup.OPAQUE, renderPass, this.chunkLayerSampler, blockAtlas, this.levelRenderState.renderWireframeTerrain
          );
@@ -63,7 +63,7 @@
          profiler.pop();
      }
  
-@@ -517,6 +_,17 @@
+@@ -528,6 +_,17 @@
          CloudStatus cloudStatus = this.optionsRenderState.cloudStatus;
          boolean shouldRenderClouds = cloudStatus != CloudStatus.OFF && ARGB.alpha(this.levelRenderState.cloudColor) > 0;
          if (shouldRenderClouds) {
@@ -81,7 +81,7 @@
              this.cloudRenderer
                  .prepare(
                      this.levelRenderState.cloudColor,
-@@ -534,6 +_,10 @@
+@@ -545,6 +_,10 @@
          this.worldBorderRenderer
              .prepare(this.levelRenderState.worldBorderRenderState, cameraState.pos, renderDistance, this.levelRenderState.cameraRenderState.depthFar);
          this.weatherEffectRenderer.prepare(cameraState.pos, this.levelRenderState.weatherRenderState);
@@ -92,7 +92,7 @@
          RenderSystem.resizeAllAutoStorageIndexBuffers();
      }
  
-@@ -587,7 +_,10 @@
+@@ -598,7 +_,10 @@
              try (RenderPass renderPass = OitRenderPassProvider.createRenderPass(stage, () -> "Features, World Border, Weather", params)) {
                  featureFrame.executeOit(stage, renderPass);
                  this.worldBorderRenderer.renderOit(this.levelRenderState.worldBorderRenderState, cameraState.pos, renderDistance, stage, renderPass);
@@ -103,7 +103,7 @@
              }
  
              if (stage == OitStage.DEPTH_BOUNDS) {
-@@ -596,7 +_,7 @@
+@@ -607,7 +_,7 @@
                  terrainParams.setDepthBoundsTargetView(depthBoundsCulledTargetView);
              }
  
@@ -112,7 +112,7 @@
                  this.cloudRenderer.renderOit(cloudStatus, stage, mainDepthTextureView, cloudParams);
              }
  
-@@ -673,20 +_,31 @@
+@@ -684,20 +_,31 @@
          int renderDistance = this.optionsRenderState.renderDistance * 16;
          profiler.push("renderTranslucentFeatures");
          featureFrame.executeTranslucent(renderPass);
@@ -145,7 +145,7 @@
          this.worldBorderRenderer.render(this.levelRenderState.worldBorderRenderState, renderPass, cameraPos, renderDistance);
      }
  
-@@ -928,10 +_,10 @@
+@@ -974,10 +_,10 @@
              SectionRenderDispatcher.RenderSection section = this.viewArea.getRenderSection(state.sectionNode());
              if (rebuildSync) {
                  profiler.push("compileSectionSynchronously");
@@ -158,7 +158,7 @@
              }
          }
  
-@@ -989,7 +_,7 @@
+@@ -1035,7 +_,7 @@
                      poseStack.translate(state.blockState().getOffset(pos));
                      BlockStateModel model = this.modelManager.getBlockStateModelSet().get(state.blockState());
                      random.setSeed(state.blockState().getSeed(pos));
@@ -167,7 +167,7 @@
                      submitNodeCollector.submitBreakingBlockModel(poseStack, List.copyOf(parts), state.progress(), model.hasMaterialFlag(1));
                      parts.clear();
                      poseStack.popPose();
-@@ -1001,6 +_,13 @@
+@@ -1071,6 +_,13 @@
      private void submitBlockOutline(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, LevelRenderState levelRenderState) {
          BlockOutlineRenderState state = levelRenderState.blockOutlineRenderState;
          if (state != null) {

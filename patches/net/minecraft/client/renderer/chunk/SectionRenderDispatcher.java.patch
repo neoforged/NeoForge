@@ -42,7 +42,7 @@
              task.doTask(SectionRenderDispatcher.this.fixedBuffers);
          }
  
-@@ -405,12 +_,29 @@
+@@ -405,14 +_,31 @@
              return success;
          }
  
@@ -57,6 +57,7 @@
 +
          private class CompileTask extends SectionRenderDispatcher.RenderSection.SectionTask {
              private final RenderSectionRegion region;
+             private final long startTimeNs;
 +            private final java.util.List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers;
  
 +            /// @deprecated Neo: use [#CompileTask(RenderSectionRegion, boolean, java.util.List)] instead
@@ -68,11 +69,12 @@
 +            public CompileTask(RenderSectionRegion region, boolean isRecompile, java.util.List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers) {
                  super(isRecompile);
                  this.region = region;
+                 this.startTimeNs = Util.getNanos();
 +                this.additionalRenderers = additionalRenderers;
              }
  
              @Override
-@@ -430,7 +_,7 @@
+@@ -432,7 +_,7 @@
                  SectionCompiler.Results results;
                  try (Zone ignored = Profiler.get().zone("Compile Section")) {
                      results = SectionRenderDispatcher.this.sectionCompiler
