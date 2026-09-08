@@ -11,6 +11,17 @@
      }
  
      private boolean isInRangeOfGround() {
+@@ -161,6 +_,10 @@
+     }
+ 
+     public void handleBlockBreakAction(BlockPos pos, ServerboundPlayerActionPacket.Action action, Direction direction, int maxY, int sequence) {
++        net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock event = net.neoforged.neoforge.common.CommonHooks.onLeftClickBlock(player, pos, direction, action);
++        if (event.isCanceled()) {
++            return;
++        }
+         if (!this.player.isWithinBlockInteractionRange(pos, 1.0)) {
+             if (this.isDestroyingBlock && action == ServerboundPlayerActionPacket.Action.ABORT_DESTROY_BLOCK) {
+                 this.abortDestroyBlock(pos, sequence);
 @@ -209,6 +_,7 @@
                          blockState,
                          item -> this.player.onEquippedItemBroken(item, EquipmentSlot.MAINHAND)
