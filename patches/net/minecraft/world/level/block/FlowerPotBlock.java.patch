@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/FlowerPotBlock.java
 +++ b/net/minecraft/world/level/block/FlowerPotBlock.java
-@@ -35,17 +_,52 @@
+@@ -35,17 +_,50 @@
      );
      private static final Map<Block, Block> POTTED_BY_CONTENT = Maps.newHashMap();
      private static final VoxelShape SHAPE = Block.column(6.0, 0.0, 6.0);
@@ -40,9 +40,7 @@
 +        this.emptyPot = emptyPot;
 +        // TODO 26.3: Make this constructor accept non-null suppliers, replace this dev-only warning with an always-active precondition, and adjust javadocs
 +        if (emptyPot == null && !net.neoforged.fml.loading.FMLEnvironment.isProduction()) {
-+            // No need to translate; this is a dev-only warning
-+            //noinspection UnstableApiUsage
-+            net.neoforged.fml.ModLoader.addLoadingIssue(net.neoforged.fml.ModLoadingIssue.warning("FlowerPotBlock's full pot constructor is used to create empty pot; use other constructor instead"));
++            com.mojang.logging.LogUtils.getLogger().warn("FlowerPotBlock's full pot constructor is used to create empty pot; use other constructor instead", new Exception("Stacktrace"));
 +        }
 +    }
 +
