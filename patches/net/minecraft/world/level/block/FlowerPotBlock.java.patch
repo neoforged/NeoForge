@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/FlowerPotBlock.java
 +++ b/net/minecraft/world/level/block/FlowerPotBlock.java
-@@ -35,17 +_,51 @@
+@@ -35,17 +_,52 @@
      );
      private static final Map<Block, Block> POTTED_BY_CONTENT = Maps.newHashMap();
      private static final VoxelShape SHAPE = Block.column(6.0, 0.0, 6.0);
@@ -22,6 +22,7 @@
 -        POTTED_BY_CONTENT.put(potted, this);
 +        this.potted = null; // Unused, redirected by coremod
 +        this.flowerDelegate = () -> potted;
++        // If we're constructing the empty pot at Blocks.FLOWER_POT, then the field will be null
 +        this.emptyPot = Blocks.FLOWER_POT == null ? null : () -> (FlowerPotBlock) Blocks.FLOWER_POT;
 +    }
 +
