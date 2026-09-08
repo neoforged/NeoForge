@@ -9,6 +9,7 @@ import static net.minecraft.network.chat.Component.translatable;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
+import com.mojang.blaze3d.Blaze3D;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.logging.LogUtils;
 import java.io.Closeable;
@@ -64,7 +65,6 @@ import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.CommonLinks;
 import net.minecraft.util.SpecialDates;
-import net.minecraft.util.Util;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.VersionChecker;
@@ -188,7 +188,7 @@ public class ModListScreen extends Screen {
         footer.spacing(4).defaultCellSetting().paddingTop(5);
 
         footer.addChild(Button.builder(Component.translatable("neoforge.screen.mods.button.open_folder"),
-                _ -> Util.getPlatform().openPath(modsFolder)).build());
+                _ -> Blaze3D.openPath(modsFolder)).build());
         footer.addChild(Button.builder(CommonComponents.GUI_BACK, _ -> ModListScreen.this.onClose()).build());
 
         // Content
