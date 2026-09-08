@@ -24,13 +24,13 @@
 +    /// For mod use, eliminates the need to extend this class, and prevents modded flower pots from altering vanilla behavior.
 +    ///
 +    /// @param emptyPot The empty pot for this pot, or `null` if this is the empty pot.
-+    /// @param potted For non-empty pots, the potted flower/plant. For the empty pot, this should be a supplier for [Blocks#AIR].
-+    public FlowerPotBlock(java.util.function.@org.jspecify.annotations.Nullable Supplier<FlowerPotBlock> emptyPot, java.util.function.Supplier<? extends Block> potted, BlockBehaviour.Properties properties) {
++    /// @param potted The potted flower/plant, or `null` if this is the empty pot.
++    public FlowerPotBlock(java.util.function.@org.jspecify.annotations.Nullable Supplier<FlowerPotBlock> emptyPot, java.util.function.@org.jspecify.annotations.Nullable Supplier<? extends Block> potted, BlockBehaviour.Properties properties) {
          super(properties);
 -        this.potted = potted;
 -        POTTED_BY_CONTENT.put(potted, this);
 +        this.potted = null; // Unused, redirected by coremod
-+        this.flowerDelegate = potted;
++        this.flowerDelegate = potted != null ? potted : () -> Blocks.AIR;
 +        this.emptyPot = emptyPot;
      }
  
