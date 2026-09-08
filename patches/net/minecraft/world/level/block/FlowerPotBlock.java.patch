@@ -70,7 +70,7 @@
 +         return emptyPot == null ? this : emptyPot.get();
 +    }
 +
-+    /// {@return an unmodifiable view of the map of plant blocks to their associated full pot block}
++    /// Neo: {@return an unmodifiable view of the map of plant blocks to their associated full pot block}
 +    ///
 +    /// @throws IllegalStateException if this is called on a non-empty pot
 +    public Map<Block, Block> getFullPots() {
