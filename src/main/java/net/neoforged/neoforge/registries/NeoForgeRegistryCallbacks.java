@@ -60,8 +60,10 @@ class NeoForgeRegistryCallbacks {
         @Override
         public void onClear(Registry<Block> registry, boolean full) {
             BLOCKSTATE_TO_ID_MAP.clear();
-            EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE.clear();
-            LEGACY_EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE.invalidate();
+            if (full) {
+                EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE.clear();
+                LEGACY_EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE.invalidate();
+            }
         }
 
         @Override
