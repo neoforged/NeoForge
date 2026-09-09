@@ -105,7 +105,7 @@ public class FullPotsAccessorDemo {
         @Override
         public InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
             if (level.getBlockEntity(pos) instanceof DioriteFlowerPotBlockEntity be) {
-                boolean isFlower = stack.getItem() instanceof BlockItem item && ((FlowerPotBlock) Blocks.FLOWER_POT).getFullPotsView().containsKey(BuiltInRegistries.ITEM.getKey(item));
+                boolean isFlower = stack.getItem() instanceof BlockItem item && ((FlowerPotBlock) Blocks.FLOWER_POT).getFullPot(item.getBlock()) != Blocks.AIR;
                 boolean hasFlower = be.plant != Blocks.AIR;
 
                 if (isFlower != hasFlower) {
@@ -267,7 +267,7 @@ public class FullPotsAccessorDemo {
             }
 
             private static void collectPlantParts(Block plant, BlockAndTintGetter level, BlockPos pos, RandomSource random, List<BlockStateModelPart> parts) {
-                BlockState potState = ((FlowerPotBlock) Blocks.FLOWER_POT).getFullPotsView().getOrDefault(BuiltInRegistries.BLOCK.getKey(plant), () -> Blocks.AIR).get().defaultBlockState();
+                BlockState potState = ((FlowerPotBlock) Blocks.FLOWER_POT).getFullPot(plant).defaultBlockState();
                 BlockStateModel potModel = Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(potState);
 
                 List<BlockStateModelPart> srcParts = new ObjectArrayList<>();

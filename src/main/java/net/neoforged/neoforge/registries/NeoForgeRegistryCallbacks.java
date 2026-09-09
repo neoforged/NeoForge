@@ -5,14 +5,20 @@
 
 package net.neoforged.neoforge.registries;
 
+import com.google.common.collect.Table;
+import com.google.common.collect.Tables;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import net.minecraft.core.Holder;
 import net.minecraft.core.IdMapper;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
@@ -20,9 +26,11 @@ import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.DebugLevelSource;
+import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.registries.callback.AddCallback;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
 import net.neoforged.neoforge.registries.callback.ClearCallback;
@@ -31,6 +39,16 @@ class NeoForgeRegistryCallbacks {
     static class BlockCallbacks implements AddCallback<Block>, ClearCallback<Block>, BakeCallback<Block> {
         static final BlockCallbacks INSTANCE = new BlockCallbacks();
         static final ClearableObjectIntIdentityMap<BlockState> BLOCKSTATE_TO_ID_MAP = new ClearableObjectIntIdentityMap<>();
+        static final Table<Block, Block, Block> EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE = Tables.newCustomTable(new IdentityHashMap<>(), IdentityHashMap::new);
+        // TODO 26.3: Remove this table and change any necessary methods in FlowerPotBlock
+        static final Lazy<Table<Block, Identifier, Supplier<? extends Block>>> LEGACY_EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE = Lazy.of(() -> {
+            var table = Tables.<Block, Identifier, Supplier<? extends Block>>newCustomTable(new IdentityHashMap<>(), HashMap::new);
+            for (Table.Cell<Block, Block, Block> cell : EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE.cellSet()) {
+                var value = cell.getValue(); // Avoid capturing the Cell instance in the supplier
+                table.put(cell.getRowKey(), BuiltInRegistries.BLOCK.getKey(cell.getColumnKey()), () -> value);
+            }
+            return table;
+        });
 
         private final Set<Block> addedBlocks = new ReferenceOpenHashSet<>();
 
@@ -42,6 +60,10 @@ class NeoForgeRegistryCallbacks {
         @Override
         public void onClear(Registry<Block> registry, boolean full) {
             BLOCKSTATE_TO_ID_MAP.clear();
+            if (full) {
+                EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE.clear();
+                LEGACY_EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE.invalidate();
+            }
         }
 
         @Override
@@ -59,6 +81,10 @@ class NeoForgeRegistryCallbacks {
             for (Block block : registry) {
                 for (BlockState state : block.getStateDefinition().getPossibleStates()) {
                     BLOCKSTATE_TO_ID_MAP.add(state);
+                }
+
+                if (block instanceof FlowerPotBlock potBlock && potBlock.getEmptyPot() != potBlock) {
+                    EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE.put(potBlock.getEmptyPot(), potBlock.getPotted(), potBlock);
                 }
             }
 
