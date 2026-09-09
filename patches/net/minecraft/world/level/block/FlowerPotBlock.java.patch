@@ -71,7 +71,7 @@
          level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
          return InteractionResult.SUCCESS;
      }
-@@ -118,12 +_,58 @@
+@@ -118,12 +_,57 @@
      }
  
      public Block getPotted() {
@@ -106,8 +106,7 @@
 +        if (emptyPot != null) {
 +            throw new IllegalStateException("Full pots can only be queried from the empty pot");
 +        }
-+        return net.neoforged.neoforge.registries.GameData.getFlowerPotBlockTable().row(this)
-+                .getOrDefault(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(plant), Blocks.AIR);
++        return net.neoforged.neoforge.registries.GameData.getFlowerPotBlockTable().row(this).getOrDefault(plant, Blocks.AIR);
 +    }
 +
 +    /// @deprecated Neo: To be removed in 26.3. Full pots are automatically added to the maps of their respective empty pots.
