@@ -1,22 +1,44 @@
 --- a/net/minecraft/client/gui/components/AbstractWidget.java
 +++ b/net/minecraft/client/gui/components/AbstractWidget.java
-@@ -221,6 +_,19 @@
-         this.focused = focused;
+@@ -334,4 +_,41 @@
+             this.inactiveMessage = defaultInactiveMessage(message);
+         }
      }
- 
-+    public static final int UNSET_FG_COLOR = -1;
-+    protected int packedFGColor = UNSET_FG_COLOR;
-+    public int getFGColor() {
-+        if (packedFGColor != UNSET_FG_COLOR) return packedFGColor;
-+        return this.active ? -1 : -6250336; // White : Light Grey
-+    }
-+    public void setFGColor(int color) {
-+        this.packedFGColor = color;
-+    }
-+    public void clearFGColor() {
-+        this.packedFGColor = UNSET_FG_COLOR;
++
++    // Neo Begin
++    // Support for custom forced text colors. If the color is not set, it will use the vanilla defaults (white when active, light grey when inactive).
++
++    private static final net.minecraft.network.chat.TextColor WHITE = net.minecraft.network.chat.TextColor.fromRgb(0xFFFFFF);
++    private static final net.minecraft.network.chat.TextColor LIGHT_GRAY = net.minecraft.network.chat.TextColor.fromRgb(-6250336);
++
++    /**
++     * Stores the text color override. See {@link #getTextColor()} and {@link #setTextColor}.
++     */
++    protected net.minecraft.network.chat.@Nullable TextColor textColor = null;
++
++    /**
++     * Returns the widget's text color. If a custom text color has been set, that color will be used.
++     * If a custom text color has not been set, white will be used when active, and light gray otherwise.
++     * <p>
++     * Subclasses may override this to provide more advanced text color handling.
++     */
++    public net.minecraft.network.chat.TextColor getTextColor() {
++        if (this.textColor != null) {
++            return this.textColor;
++        }
++        return this.active ? WHITE : LIGHT_GRAY;
 +    }
 +
-     @Override
-     public NarratableEntry.NarrationPriority narrationPriority() {
-         if (this.isFocused()) {
++    /**
++     * Sets the text color for this widget. If null, the widget will use the vanilla default.
++     */
++    public void setTextColor(net.minecraft.network.chat.@Nullable TextColor color) {
++        this.textColor = color;
++    }
++
++    public void setTextColor(int color) {
++        this.textColor = net.minecraft.network.chat.TextColor.fromRgb(color);
++    }
++
++    // Neo End
+ }
