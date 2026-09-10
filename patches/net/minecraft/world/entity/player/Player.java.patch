@@ -476,7 +476,7 @@
      }
  
      @Override
-@@ -2022,5 +_,41 @@
+@@ -2022,5 +_,52 @@
          public static final Player.BedSleepingProblem OBSTRUCTED = new Player.BedSleepingProblem(Component.translatable("block.minecraft.bed.obstructed"));
          public static final Player.BedSleepingProblem OTHER_PROBLEM = new Player.BedSleepingProblem(null);
          public static final Player.BedSleepingProblem NOT_SAFE = new Player.BedSleepingProblem(Component.translatable("block.minecraft.bed.not_safe"));
@@ -516,5 +516,16 @@
 +    @Nullable
 +    public Pose getForcedPose() {
 +        return this.forcedPose;
++    }
++
++    @Override
++    public net.minecraft.world.entity.item.@Nullable ItemEntity drop(ItemStack itemStack, boolean thrownFromHand, net.minecraft.util.Prediction prediction) {
++        return net.neoforged.neoforge.common.CommonHooks.onPlayerTossEvent(this, itemStack, thrownFromHand, prediction);
++    }
++
++    /// Neo: internal, expose super implementation for ItemTossEvent
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public net.minecraft.world.entity.item.@Nullable ItemEntity dropWithoutEvent(ItemStack itemStack, boolean thrownFromHand, net.minecraft.util.Prediction prediction) {
++        return super.drop(itemStack, thrownFromHand, prediction);
      }
  }
