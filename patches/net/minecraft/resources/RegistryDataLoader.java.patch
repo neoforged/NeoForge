@@ -14,31 +14,26 @@
          new RegistryDataLoader.RegistryData<>(Registries.WORLD_CLOCK, WorldClock.DIRECT_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.TIMELINE, Timeline.NETWORK_CODEC)
 -    );
--
--    public static CompletableFuture<RegistryAccess.Frozen> load(
--        ResourceManager resourceManager,
--        List<HolderLookup.RegistryLookup<?>> contextRegistries,
--        List<RegistryDataLoader.RegistryData<?>> registriesToLoad,
 +    )); // Neo: Keep the list so custom registries can be added later
-+
-+    /// @deprecated Neo: use [#load(ResourceManager, List, List, List, Executor)] instead
+ 
++    /// @deprecated Neo: use [#load(ResourceManager, List, List, Executor, List)] instead
 +    @Deprecated
-+    public static CompletableFuture<RegistryAccess.Frozen> load(
-+        ResourceManager resourceManager,
-+        List<HolderLookup.RegistryLookup<?>> contextRegistries,
-+        List<RegistryDataLoader.RegistryData<?>> registriesToLoad,
-+        Executor executor
-+    ) {
-+        return load(resourceManager, contextRegistries, registriesToLoad, List.of(), executor);
+     public static CompletableFuture<RegistryAccess.Frozen> load(
+         ResourceManager resourceManager,
+         List<HolderLookup.RegistryLookup<?>> contextRegistries,
+         List<RegistryDataLoader.RegistryData<?>> registriesToLoad,
+         Executor executor
+     ) {
++        return load(resourceManager, contextRegistries, registriesToLoad, executor, List.of());
 +    }
 +
 +    public static CompletableFuture<RegistryAccess.Frozen> load(
 +        ResourceManager resourceManager,
 +        List<HolderLookup.RegistryLookup<?>> contextRegistries,
 +        List<RegistryDataLoader.RegistryData<?>> registriesToLoad,
-+        List<Registry.PendingTags<?>> pendingTags,
-         Executor executor
-     ) {
++        Executor executor,
++        List<Registry.PendingTags<?>> pendingTags
++    ) {
          RegistryDataLoader.LoaderFactory loaderFactory = new RegistryDataLoader.LoaderFactory() {
              @Override
              public <T> RegistryLoadTask<T> create(RegistryDataLoader.RegistryData<T> data, Map<ResourceKey<?>, Exception> loadingErrors) {

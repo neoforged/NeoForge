@@ -127,12 +127,12 @@ public interface ICondition {
         /// Provides access to the loaded registries if this context is used for a datapack reload.
         ///
         /// @apiNote The returned [RegistryAccess] does NOT provide access to the tags loaded during the active reload.
-        /// To resolve tags the [HolderLookup.Provider] provided via [ContextAwareReloadListener#getRegistryLookup()]
-        /// must be used instead.
+        /// To resolve tags the [HolderLookup.Provider] provided via [#registries()] or
+        /// [ContextAwareReloadListener#getRegistryLookup()] must be used instead.
         ///
         /// @return The [RegistryAccess] context for the currently active reload.
         ///
-        /// @deprecated Use [ContextAwareReloadListener#getRegistryLookup()] instead
+        /// @deprecated Use [#registries()] or [ContextAwareReloadListener#getRegistryLookup()] instead
         @Deprecated(forRemoval = true, since = "26.1.2")
         default RegistryAccess registryAccess() {
             return RegistryAccess.EMPTY;
