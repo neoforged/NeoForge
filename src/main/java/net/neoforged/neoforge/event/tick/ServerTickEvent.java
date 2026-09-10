@@ -10,10 +10,11 @@ import net.minecraft.server.MinecraftServer;
 import net.neoforged.bus.api.Event;
 
 /**
- * Base class of the two server tick events.
+ * Base class of the three server tick events.
  * 
  * @see ServerTickEvent.Pre
  * @see ServerTickEvent.Post
+ * @see ServerTickEvent.Empty
  */
 public abstract class ServerTickEvent extends Event {
     private final BooleanSupplier hasTime;
@@ -58,6 +59,18 @@ public abstract class ServerTickEvent extends Event {
      */
     public static class Post extends ServerTickEvent {
         public Post(BooleanSupplier haveTime, MinecraftServer server) {
+            super(haveTime, server);
+        }
+    }
+
+    /**
+     * {@link ServerTickEvent.Empty} is fired once per skipped server tick after the server has been empty for some time
+     * and pauses; during this pause, skipped ticks are handled by this event.
+     * <p>
+     * This event only fires on the logical server.
+     */
+    public static class Empty extends ServerTickEvent {
+        public Empty(BooleanSupplier haveTime, MinecraftServer server) {
             super(haveTime, server);
         }
     }

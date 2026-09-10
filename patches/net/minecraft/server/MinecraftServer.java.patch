@@ -98,7 +98,13 @@
                  this.onServerExit();
              }
          }
-@@ -987,11 +_,13 @@
+@@ -982,16 +_,19 @@
+                 }
+ 
+                 this.tickConnection();
++                net.neoforged.neoforge.event.EventHooks.fireServerTickEmpty(haveTime, this);
+                 return;
+             }
          }
  
          this.tickCount++;

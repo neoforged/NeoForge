@@ -1028,6 +1028,17 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new ServerTickEvent.Post(haveTime, server));
     }
 
+    /**
+     * Fires {@link ServerTickEvent.Empty} for an empty tick while the server is paused after being empty for some time.
+     * Called when {@link MinecraftServer#tickServer(BooleanSupplier)} returns early from the empty tick path.
+     * 
+     * @param haveTime The time supplier, indicating if there is remaining time to do work in the current tick.
+     * @param server   The current server
+     */
+    public static void fireServerTickEmpty(BooleanSupplier haveTime, MinecraftServer server) {
+        NeoForge.EVENT_BUS.post(new ServerTickEvent.Empty(haveTime, server));
+    }
+
     private static final WeightedList<MobSpawnSettings.SpawnerData> NO_SPAWNS = WeightedList.of();
 
     public static WeightedList<MobSpawnSettings.SpawnerData> getPotentialSpawns(LevelAccessor level, MobCategory category, BlockPos pos, WeightedList<MobSpawnSettings.SpawnerData> oldList) {
