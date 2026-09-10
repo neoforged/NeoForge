@@ -40,7 +40,7 @@ public class RegisterRenderPipelinesEvent extends Event implements IModBusEvent 
     ///
     /// @param pipeline a render pipeline
     public void registerOptionalPipeline(RenderPipeline pipeline) {
-        registrar.register(pipeline, false);
+        registrar.register(pipeline, true);
     }
 
     /// Registers an OIT [RenderPipeline] set.

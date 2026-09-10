@@ -12,7 +12,7 @@
 -            } else if (target.getBlock() instanceof TntBlock) {
 -                if (TntBlock.prime(level, targetPos, null, dispensed)) {
 +            } else if (target.isFlammable(level, targetPos, source.state().getValue(DispenserBlock.FACING).getOpposite())) {
-+                if (target.onCaughtFire(level, targetPos, source.state().getValue(DispenserBlock.FACING).getOpposite(), null)) {
++                if (target.onCaughtFire(level, targetPos, source.state().getValue(DispenserBlock.FACING).getOpposite(), null, dispensed)) {
 +                    if (target.getBlock() instanceof TntBlock)
                      level.removeBlock(targetPos, false);
                  } else {

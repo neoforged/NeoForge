@@ -78,24 +78,6 @@
                          this.player.stopUsingItem();
                      }
  
-@@ -1382,7 +_,7 @@
-                 case ABORT_DESTROY_BLOCK:
-                 case STOP_DESTROY_BLOCK:
-                     this.player.gameMode.handleBlockBreakAction(pos, action, packet.getDirection(), this.player.level().getMaxY(), packet.getSequence());
--                    this.ackBlockChangesUpTo(packet.getSequence());
-+                    this.player.connection.ackBlockChangesUpTo = packet.getSequence();
-                     return;
-                 default:
-                     throw new IllegalArgumentException("Invalid player action");
-@@ -1404,7 +_,7 @@
-     public void handleUseItemOn(ServerboundUseItemOnPacket packet) {
-         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
-         if (this.hasClientLoaded()) {
--            this.ackBlockChangesUpTo(packet.sequence());
-+            this.player.connection.ackBlockChangesUpTo = packet.sequence();
-             ServerLevel level = this.player.level();
-             InteractionHand hand = packet.hand();
-             ItemStack itemStack = this.player.getItemInHand(hand);
 @@ -1549,13 +_,24 @@
      @Override
      public void handleSetCarriedItem(ServerboundSetCarriedItemPacket packet) {

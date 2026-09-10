@@ -512,14 +512,15 @@ public interface IBlockStateExtension {
      * <p>
      * The return value determines whether a flint-and-steel in a dispenser was used successfully and should be damaged
      *
-     * @param level   The current level
-     * @param pos     Block position in level
-     * @param face    The face that the fire is coming from
-     * @param igniter The entity that lit the fire
+     * @param level        The current level
+     * @param pos          Block position in level
+     * @param face         The face that the fire is coming from
+     * @param igniter      The entity that lit the fire
+     * @param ignitionItem The item that was used to light the fire
      * @return whether the block was successfully set on fire (i.e. TNT is allowed to explode and was primed)
      */
-    default boolean onCaughtFire(Level level, BlockPos pos, @Nullable Direction face, @Nullable LivingEntity igniter) {
-        return self().getBlock().onCaughtFire(self(), level, pos, face, igniter);
+    default boolean onCaughtFire(Level level, BlockPos pos, @Nullable Direction face, @Nullable LivingEntity igniter, ItemStack ignitionItem) {
+        return self().getBlock().onCaughtFire(self(), level, pos, face, igniter, ignitionItem);
     }
 
     /**
