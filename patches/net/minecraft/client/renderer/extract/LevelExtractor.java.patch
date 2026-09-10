@@ -105,6 +105,65 @@
                      }
                  }
              }
+@@ -436,8 +_,9 @@
+                 }
+ 
+                 if (!(camera.entity() instanceof LivingEntity livingEntity && livingEntity.isSleeping())) {
+-                    BlockState viewBlockingState = getViewBlockingState(player, camera.getCullFrustum());
+-                    if (viewBlockingState != null) {
++                    var stateAndPos = getViewBlockingStateAndPos(player, camera.getCullFrustum());
++                    if (stateAndPos != null && !net.neoforged.neoforge.client.ClientHooks.extractBlockScreenEffect(player, state,stateAndPos.getRight(), stateAndPos.getLeft(), camera, worldPartialTicks, playerPartialTick)) {
++                        BlockState viewBlockingState = stateAndPos.getLeft();
+                         TextureAtlasSprite sprite = this.minecraft.getModelManager().getBlockStateModelSet().getParticleMaterial(viewBlockingState).sprite();
+                         state.blockOverlay = new PlayerRenderState.BlockOverlay(
+                             sprite.atlasLocation(), sprite.getU0(), sprite.getV0(), sprite.getU1(), sprite.getV1()
+@@ -447,12 +_,22 @@
+                     if (this.minecraft.options.getCameraType().isFirstPerson()) {
+                         state.isEyeInWater = player.isEyeInFluid(FluidTags.WATER);
+                         state.isOnFire = player.isOnFire();
+-                        if (state.isEyeInWater) {
++                        if (state.isEyeInWater && !net.neoforged.neoforge.client.ClientHooks.extractWaterScreenEffect(player, state, camera, worldPartialTicks, playerPartialTick)) {
+                             BlockPos eyePos = BlockPos.containing(player.getEyePosition());
+                             float brightness = Lightmap.getBrightness(player.level().dimensionType(), player.level().getMaxLocalRawBrightness(eyePos));
+                             state.waterOverlay = new PlayerRenderState.WaterOverlay(
+                                 ARGB.colorFromFloat(0.1F, brightness, brightness, brightness), -player.getYRot() / 64.0F, player.getXRot() / 64.0F
+                             );
++                        } else {
++                            var fluidType = player.getFluidInteraction().getFirstEyeInFluid();
++                            if (!fluidType.isAir()) {
++                                BlockPos eyePos = BlockPos.containing(player.getEyePosition());
++                                float brightness = Lightmap.getBrightness(player.level().dimensionType(), player.level().getMaxLocalRawBrightness(eyePos));
++                                net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(fluidType).extractOverlay(this.minecraft, player, state, eyePos, brightness);
++                            }
++                        }
++                        if (state.isOnFire) {
++                            net.neoforged.neoforge.client.ClientHooks.extractFireScreenEffect(player, state, camera, worldPartialTicks, playerPartialTick);
+                         }
+                     }
+                 }
+@@ -462,7 +_,13 @@
+         }
+     }
+ 
++    /// @deprecated Neo: use [#getViewBlockingStateAndPos(LocalPlayer, Frustum)] instead
++    @Deprecated
+     private static @Nullable BlockState getViewBlockingState(LocalPlayer player, Frustum frustum) {
++        return net.minecraft.Optionull.map(getViewBlockingStateAndPos(player, frustum), org.apache.commons.lang3.tuple.Pair::getLeft);
++    }
++
++    private static org.apache.commons.lang3.tuple.@Nullable Pair<BlockState, BlockPos> getViewBlockingStateAndPos(LocalPlayer player, Frustum frustum) {
+         if (player.noPhysics) {
+             return null;
+         }
+@@ -478,7 +_,7 @@
+             );
+             BlockState blockState = player.level().getBlockState(testPos);
+             if (blockState.getRenderShape() != RenderShape.INVISIBLE && blockState.isViewBlocking(player.level(), testPos, nearPlaneBB)) {
+-                return blockState;
++                return org.apache.commons.lang3.tuple.Pair.of(blockState, testPos.immutable());
+             }
+         }
+ 
 @@ -605,6 +_,13 @@
          }
  
