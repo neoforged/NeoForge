@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Stream;
-
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.AbstractPackMetadataResources;
 import net.minecraft.server.packs.OverlayedPackResources;

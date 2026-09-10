@@ -8,7 +8,6 @@ package net.neoforged.neoforge.common.world;
 import java.util.Collections;
 import java.util.Set;
 import java.util.function.Predicate;
-
 import net.minecraft.util.random.Weighted;
 import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.EntityType;

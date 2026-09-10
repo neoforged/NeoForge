@@ -7,7 +7,6 @@ package net.neoforged.neoforge.transfer.item;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-
 import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;

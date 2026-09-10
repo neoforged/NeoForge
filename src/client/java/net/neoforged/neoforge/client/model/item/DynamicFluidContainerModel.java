@@ -77,23 +77,19 @@ public class DynamicFluidContainerModel implements ItemModel {
     private static final ItemRenderTypes RENDER_TYPES_CUTOUT_UNLIT_BLOCK = new ItemRenderTypes(
             NeoForgeRenderTypes.getItemCutoutUnlit(TextureAtlas.LOCATION_BLOCKS),
             NeoForgeRenderTypes.getItemGlintCutoutUnlit(TextureAtlas.LOCATION_BLOCKS),
-            NeoForgeRenderTypes.getItemGlintSpecialCutoutUnlit(TextureAtlas.LOCATION_BLOCKS)
-    );
+            NeoForgeRenderTypes.getItemGlintSpecialCutoutUnlit(TextureAtlas.LOCATION_BLOCKS));
     private static final ItemRenderTypes RENDER_TYPES_CUTOUT_UNLIT_ITEM = new ItemRenderTypes(
             NeoForgeRenderTypes.getItemCutoutUnlit(TextureAtlas.LOCATION_ITEMS),
             NeoForgeRenderTypes.getItemGlintCutoutUnlit(TextureAtlas.LOCATION_ITEMS),
-            NeoForgeRenderTypes.getItemGlintSpecialCutoutUnlit(TextureAtlas.LOCATION_ITEMS)
-    );
+            NeoForgeRenderTypes.getItemGlintSpecialCutoutUnlit(TextureAtlas.LOCATION_ITEMS));
     private static final ItemRenderTypes RENDER_TYPES_TRANSLUCENT_UNLIT_BLOCK = new ItemRenderTypes(
             NeoForgeRenderTypes.getItemTranslucentUnlit(TextureAtlas.LOCATION_BLOCKS),
             NeoForgeRenderTypes.getItemGlintTranslucentUnlit(TextureAtlas.LOCATION_BLOCKS),
-            NeoForgeRenderTypes.getItemGlintSpecialTranslucentUnlit(TextureAtlas.LOCATION_BLOCKS)
-    );
+            NeoForgeRenderTypes.getItemGlintSpecialTranslucentUnlit(TextureAtlas.LOCATION_BLOCKS));
     private static final ItemRenderTypes RENDER_TYPES_TRANSLUCENT_UNLIT_ITEM = new ItemRenderTypes(
             NeoForgeRenderTypes.getItemTranslucentUnlit(TextureAtlas.LOCATION_ITEMS),
             NeoForgeRenderTypes.getItemGlintTranslucentUnlit(TextureAtlas.LOCATION_ITEMS),
-            NeoForgeRenderTypes.getItemGlintSpecialTranslucentUnlit(TextureAtlas.LOCATION_ITEMS)
-    );
+            NeoForgeRenderTypes.getItemGlintSpecialTranslucentUnlit(TextureAtlas.LOCATION_ITEMS));
 
     private final Unbaked unbakedModel;
     private final BakingContext bakingContext;

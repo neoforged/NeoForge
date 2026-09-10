@@ -35,20 +35,19 @@ public class ModDatapackTest {
         final Identifier testAdvancement = Identifier.fromNamespaceAndPath(test.createModId(), "recipes/misc/test_advancement");
 
         test.registrationHelper().generateReloadableRegistries(new RegistrySetBuilder().add(Registries.ADVANCEMENT,
-            new AdvancementProvider(List.of(context -> new AdvancementSubProvider(context) {
-                @Override
-                public void generate() {
-                    Advancement.Builder.recipeAdvancement()
-                            .parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT)
-                            .addCriterion("has_scute", CriteriaTriggers.INVENTORY_CHANGED.createCriterion(
-                                    new InventoryChangeTrigger.TriggerInstance(
-                                            Optional.empty(), InventoryChangeTrigger.TriggerInstance.Slots.ANY, List.of(
-                                            ItemPredicate.Builder.item().of(output.lookup(Registries.ITEM), Items.TURTLE_SCUTE).build()))))
-                            .rewards(AdvancementRewards.Builder.recipe(ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath("minecraft", "turtle_helmet"))))
-                            .save(output, testAdvancement);
-                }
-            }))
-        ));
+                new AdvancementProvider(List.of(context -> new AdvancementSubProvider(context) {
+                    @Override
+                    public void generate() {
+                        Advancement.Builder.recipeAdvancement()
+                                .parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT)
+                                .addCriterion("has_scute", CriteriaTriggers.INVENTORY_CHANGED.createCriterion(
+                                        new InventoryChangeTrigger.TriggerInstance(
+                                                Optional.empty(), InventoryChangeTrigger.TriggerInstance.Slots.ANY, List.of(
+                                                        ItemPredicate.Builder.item().of(output.lookup(Registries.ITEM), Items.TURTLE_SCUTE).build()))))
+                                .rewards(AdvancementRewards.Builder.recipe(ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath("minecraft", "turtle_helmet"))))
+                                .save(output, testAdvancement);
+                    }
+                }))));
 
         test.eventListeners().forge().addListener((OnDatapackSyncEvent event) -> {
             if (event.getPlayerList().getServer().getAdvancements().get(testAdvancement) != null) {

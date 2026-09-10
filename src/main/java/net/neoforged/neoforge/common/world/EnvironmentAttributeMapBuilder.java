@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.common.world;
 
 import net.minecraft.world.attribute.EnvironmentAttribute;
@@ -11,7 +16,7 @@ public final class EnvironmentAttributeMapBuilder extends EnvironmentAttributeMa
         return builder;
     }
 
-    private EnvironmentAttributeMapBuilder() { }
+    private EnvironmentAttributeMapBuilder() {}
 
     @SuppressWarnings("unchecked")
     public <V> EnvironmentAttributeMap.@Nullable Entry<V, ?> get(EnvironmentAttribute<V> attribute) {

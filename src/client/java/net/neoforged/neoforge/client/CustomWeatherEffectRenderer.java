@@ -31,8 +31,7 @@ public interface CustomWeatherEffectRenderer {
     /// or [#renderSnowAndRainOit(LevelRenderState, WeatherRenderState, Vec3, OitStage, RenderPass)].
     ///
     /// @see WeatherEffectRenderer#prepare(Vec3, WeatherRenderState)
-    default void prepare(LevelRenderState levelRenderState, WeatherRenderState weatherRenderState, Vec3 camPos) {
-    }
+    default void prepare(LevelRenderState levelRenderState, WeatherRenderState weatherRenderState, Vec3 camPos) {}
 
     /// Renders the snow and rain effects of this dimension.
     ///

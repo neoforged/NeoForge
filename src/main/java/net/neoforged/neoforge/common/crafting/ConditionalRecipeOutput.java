@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.common.crafting;
 
+import java.util.stream.Stream;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.Holder;
@@ -17,8 +18,6 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
-
-import java.util.stream.Stream;
 
 /**
  * Wrapper around a {@link RecipeOutput} that adds conditions to all received recipes.
