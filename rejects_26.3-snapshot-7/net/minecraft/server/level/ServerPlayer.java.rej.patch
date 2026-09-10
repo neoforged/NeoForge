@@ -50,20 +50,3 @@
              Either<Player.BedSleepingProblem, Unit> result = super.startSleepInBed(pos).ifRight(unit -> {
                  this.awardStat(Stats.SLEEP_IN_BED);
                  CriteriaTriggers.SLEPT_IN_BED.trigger(this);
-@@ -2028,6 +2211,7 @@
-     }
- 
-     private GameType calculateGameModeForNewPlayer(@Nullable GameType loadedGameType) {
-+        if (isFakePlayer()) return GameType.SURVIVAL; // Neo: Always default fake players to survival
-         GameType forcedGameType = this.server.getForcedGameType();
-         if (forcedGameType != null) {
-             return forcedGameType;
-@@ -2072,7 +2258,7 @@
-             this.stopUsingItem();
-         }
- 
--        this.drop(removed, false, true);
-+        net.neoforged.neoforge.common.CommonHooks.onPlayerTossEvent(this, removed, false, true);
-     }
- 
-     @Override
