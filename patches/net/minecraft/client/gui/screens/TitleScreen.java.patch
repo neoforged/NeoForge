@@ -12,7 +12,7 @@
              topPos = this.createNormalMenuOptions(topPos, 24);
 +            int modsOffset = SharedConstants.IS_RUNNING_IN_IDE ? 2 : -100;
 +            int modsWidth = SharedConstants.IS_RUNNING_IN_IDE ? 98 : 200;
-+            this.addRenderableWidget(new net.neoforged.neoforge.client.gui.widget.ModsButton(Button.builder(Component.translatable("fml.menu.mods"), button -> this.minecraft.setScreen(new net.neoforged.neoforge.client.gui.ModListScreen(this)))
++            this.addRenderableWidget(new net.neoforged.neoforge.client.gui.widget.ModsButton(Button.builder(Component.translatable("fml.menu.mods"), button -> this.minecraft.setScreen(net.neoforged.neoforge.client.gui.modlist.ModListScreen.create(this)))
 +                    .pos(this.width / 2 + modsOffset, topPos + 24).size(modsWidth, 20)));
 +            if (!SharedConstants.IS_RUNNING_IN_IDE)
 +                topPos += 24; // Move down Options, Quit, Language, and Accessibility buttons to make room for mods button (in-dev the test world button "handles" this)
