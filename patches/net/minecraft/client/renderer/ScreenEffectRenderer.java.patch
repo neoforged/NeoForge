@@ -1,0 +1,40 @@
+--- a/net/minecraft/client/renderer/ScreenEffectRenderer.java
++++ b/net/minecraft/client/renderer/ScreenEffectRenderer.java
+@@ -36,6 +_,7 @@
+         PoseStack poseStack = new PoseStack();
+         AvatarRenderState avatarRenderState = playerRenderState.avatarRenderState;
+         if (!cameraRenderState.entityRenderState.isSleeping && playerRenderState.hasPlayer && avatarRenderState != null) {
++            if (playerRenderState.customBlockOverlayRenderer == null || !playerRenderState.customBlockOverlayRenderer.submit(playerRenderState, cameraRenderState, submitNodeCollector, poseStack, this.sprites, partialTicks, hideGui))
+             if (playerRenderState.blockOverlay != null) {
+                 submitBlockSprite(
+                     playerRenderState.blockOverlay.atlasLocation(),
+@@ -50,12 +_,14 @@
+             }
+ 
+             if (cameraRenderState.isFirstPerson && !avatarRenderState.isSpectator) {
++                if (playerRenderState.customFluidOverlayRenderer == null || !playerRenderState.customFluidOverlayRenderer.submit(playerRenderState, cameraRenderState, submitNodeCollector, poseStack, this.sprites, partialTicks, hideGui))
+                 if (playerRenderState.waterOverlay != null) {
+                     submitWater(playerRenderState.waterOverlay, poseStack, submitNodeCollector);
+                 }
+ 
+                 if (playerRenderState.isOnFire) {
+                     TextureAtlasSprite fireSprite = this.sprites.get(ModelBakery.FIRE_1);
++                    if (playerRenderState.customFireOverlayRenderer == null || !playerRenderState.customFireOverlayRenderer.submit(playerRenderState, cameraRenderState, submitNodeCollector, poseStack, this.sprites, partialTicks, hideGui))
+                     submitFire(poseStack, submitNodeCollector, fireSprite);
+                 }
+             }
+@@ -105,9 +_,13 @@
+     }
+ 
+     private static void submitWater(PlayerRenderState.WaterOverlay waterOverlay, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
++        submitFluid(waterOverlay, poseStack, submitNodeCollector, UNDERWATER_LOCATION);
++    }
++
++    public static void submitFluid(PlayerRenderState.WaterOverlay waterOverlay, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, Identifier texture) {
+         submitNodeCollector.submitCustomGeometry(
+             poseStack,
+-            RenderTypes.blockScreenEffect(UNDERWATER_LOCATION),
++            RenderTypes.blockScreenEffect(texture),
+             (pose, builder) -> {
+                 float uvSize = 4.0F;
+                 buildQuad(

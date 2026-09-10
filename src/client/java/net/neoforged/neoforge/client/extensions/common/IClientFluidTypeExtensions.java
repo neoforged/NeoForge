@@ -5,14 +5,17 @@
 
 package net.neoforged.neoforge.client.extensions.common;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.ScreenEffectRenderer;
 import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.renderer.fog.environment.FogEnvironment;
+import net.minecraft.client.renderer.state.level.PlayerRenderState;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.fml.LogicalSide;
@@ -57,18 +60,23 @@ public interface IClientFluidTypeExtensions {
         return null;
     }
 
-    /**
-     * Renders {@code #getRenderOverlayTexture} onto the camera when within
-     * the fluid.
-     *
-     * @param mc        the client instance
-     * @param poseStack the transformations representing the current rendering position
-     */
-    default void renderOverlay(Minecraft mc, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
-        Identifier texture = this.getRenderOverlayTexture(mc);
+    /// Extracts an overlay renderer rendering the [#getRenderOverlayTexture(Minecraft)] onto the camera when within
+    /// the fluid.
+    ///
+    /// @param minecraft         The client instance
+    /// @param player            The player in the fluid
+    /// @param playerRenderState The render state of the player in the fluid
+    /// @param eyePos            The block position containing the player's eye position
+    /// @param brightness        The brightness at the player's eye position
+    default void extractOverlay(Minecraft minecraft, LocalPlayer player, PlayerRenderState playerRenderState, BlockPos eyePos, float brightness) {
+        Identifier texture = this.getRenderOverlayTexture(minecraft);
         if (texture != null) {
-            // TODO 26.3
-            // ScreenEffectRenderer.submitFluid(mc, poseStack, submitNodeCollector, texture);
+            int color = ARGB.colorFromFloat(0.1F, brightness, brightness, brightness);
+            PlayerRenderState.WaterOverlay overlay = new PlayerRenderState.WaterOverlay(color, -player.getYRot() / 64.0F, player.getXRot() / 64.0F);
+            playerRenderState.customFluidOverlayRenderer = (_, _, submitNodeCollector, poseStack, _, _, _) -> {
+                ScreenEffectRenderer.submitFluid(overlay, poseStack, submitNodeCollector, texture);
+                return true;
+            };
         }
     }
 

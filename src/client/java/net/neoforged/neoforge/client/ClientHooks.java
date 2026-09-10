@@ -105,7 +105,6 @@ import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.model.sprite.AtlasManager;
 import net.minecraft.client.resources.model.sprite.MaterialBaker;
-import net.minecraft.client.resources.model.sprite.SpriteGetter;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -160,6 +159,7 @@ import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
 import net.neoforged.neoforge.client.event.ConfigureMainRenderTargetEvent;
 import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.ExtractBlockScreenEffectEvent;
 import net.neoforged.neoforge.client.event.FrameGraphSetupEvent;
 import net.neoforged.neoforge.client.event.GatherEffectScreenTooltipsEvent;
 import net.neoforged.neoforge.client.event.InitializeClientRegistriesEvent;
@@ -173,7 +173,6 @@ import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterTextureAtlasesEvent;
 import net.neoforged.neoforge.client.event.RenderArmEvent;
-import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
 import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
@@ -745,16 +744,20 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(new ToastAddEvent(toast)).isCanceled();
     }
 
-    public static boolean renderFireOverlay(Player player, PoseStack poseStack, SpriteGetter sprites, SubmitNodeCollector submitNodeCollector) {
-        return renderBlockOverlay(player, poseStack, RenderBlockScreenEffectEvent.OverlayType.FIRE, Blocks.FIRE.defaultBlockState(), player.blockPosition(), sprites, submitNodeCollector);
+    public static void extractFireScreenEffect(LocalPlayer player, PlayerRenderState playerRenderState, Camera camera, float worldPartialTick, float playerPartialTick) {
+        extractBlockScreenEffect(player, playerRenderState, player.blockPosition(), Blocks.FIRE.defaultBlockState(), camera, worldPartialTick, playerPartialTick, ExtractBlockScreenEffectEvent.OverlayType.FIRE);
     }
 
-    public static boolean renderWaterOverlay(Player player, PoseStack poseStack, SpriteGetter sprites, SubmitNodeCollector submitNodeCollector) {
-        return renderBlockOverlay(player, poseStack, RenderBlockScreenEffectEvent.OverlayType.WATER, Blocks.WATER.defaultBlockState(), player.blockPosition(), sprites, submitNodeCollector);
+    public static boolean extractWaterScreenEffect(LocalPlayer player, PlayerRenderState playerRenderState, Camera camera, float worldPartialTick, float playerPartialTick) {
+        return extractBlockScreenEffect(player, playerRenderState, BlockPos.containing(player.getEyePosition()), Blocks.WATER.defaultBlockState(), camera, worldPartialTick, playerPartialTick, ExtractBlockScreenEffectEvent.OverlayType.WATER);
     }
 
-    public static boolean renderBlockOverlay(Player player, PoseStack poseStack, RenderBlockScreenEffectEvent.OverlayType type, BlockState block, BlockPos pos, SpriteGetter sprites, SubmitNodeCollector submitNodeCollector) {
-        return NeoForge.EVENT_BUS.post(new RenderBlockScreenEffectEvent(player, poseStack, type, block, pos, sprites, submitNodeCollector)).isCanceled();
+    public static boolean extractBlockScreenEffect(LocalPlayer player, PlayerRenderState playerRenderState, BlockPos pos, BlockState state, Camera camera, float worldPartialTick, float playerPartialTick) {
+        return extractBlockScreenEffect(player, playerRenderState, pos, state, camera, worldPartialTick, playerPartialTick, ExtractBlockScreenEffectEvent.OverlayType.BLOCK);
+    }
+
+    private static boolean extractBlockScreenEffect(LocalPlayer player, PlayerRenderState playerRenderState, BlockPos pos, BlockState state, Camera camera, float worldPartialTick, float playerPartialTick, ExtractBlockScreenEffectEvent.OverlayType type) {
+        return NeoForge.EVENT_BUS.post(new ExtractBlockScreenEffectEvent(player, playerRenderState, pos, state, camera, worldPartialTick, playerPartialTick, type)).isCanceled();
     }
 
     public static List<AddSectionGeometryEvent.AdditionalSectionRenderer> gatherAdditionalRenderers(

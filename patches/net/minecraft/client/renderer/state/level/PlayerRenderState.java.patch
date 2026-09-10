@@ -9,3 +9,24 @@
      public boolean hasPlayer;
      public @Nullable AvatarRenderState avatarRenderState;
      public final FirstPersonHandsAndItemsRenderState firstPersonHandsAndItems = new FirstPersonHandsAndItemsRenderState();
+@@ -23,6 +_,9 @@
+     public PlayerRenderState.@Nullable BlockOverlay blockOverlay;
+     public PlayerRenderState.@Nullable WaterOverlay waterOverlay;
+     public PlayerRenderState.@Nullable ItemActivationRenderState itemActivation;
++    public net.neoforged.neoforge.client.@Nullable CustomBlockScreenEffectRenderer customBlockOverlayRenderer;
++    public net.neoforged.neoforge.client.@Nullable CustomBlockScreenEffectRenderer customFluidOverlayRenderer;
++    public net.neoforged.neoforge.client.@Nullable CustomBlockScreenEffectRenderer customFireOverlayRenderer;
+ 
+     public void reset() {
+         this.hasPlayer = false;
+@@ -30,6 +_,10 @@
+         this.blockOverlay = null;
+         this.waterOverlay = null;
+         this.itemActivation = null;
++        this.resetRenderData();
++        this.customBlockOverlayRenderer = null;
++        this.customFluidOverlayRenderer = null;
++        this.customFireOverlayRenderer = null;
+     }
+ 
+     public record BlockOverlay(Identifier atlasLocation, float u0, float v0, float u1, float v1) {
