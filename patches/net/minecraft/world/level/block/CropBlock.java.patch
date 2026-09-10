@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/block/CropBlock.java
 +++ b/net/minecraft/world/level/block/CropBlock.java
+@@ -62,6 +_,8 @@
+         return state.getValue(this.getAgeProperty());
+     }
+ 
++    /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.ICropBlockExtension#getStateForAge(LevelReader, BlockPos, BlockState, int)] instead
++    @Deprecated
+     public BlockState getStateForAge(int age) {
+         return this.defaultBlockState().setValue(this.getAgeProperty(), age);
+     }
 @@ -77,12 +_,14 @@
  
      @Override
@@ -10,14 +19,23 @@
              if (age < this.getMaxAge()) {
 -                float growthSpeed = getGrowthSpeed(this, level, pos);
 -                if (random.nextInt((int)(25.0F / growthSpeed) + 1) == 0) {
-+                float f = getGrowthSpeed(state, level, pos);
-+                if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, random.nextInt((int)(25.0F / f) + 1) == 0)) {
-                     level.setBlock(pos, this.getStateForAge(age + 1), 2);
+-                    level.setBlock(pos, this.getStateForAge(age + 1), 2);
++                float growthSpeed = getGrowthSpeed(state, level, pos);
++                if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, random.nextInt((int)(25.0F / growthSpeed) + 1) == 0)) {
++                    level.setBlock(pos, this.getStateForAge(level, pos, state, age + 1), 2);
 +                    net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(level, pos, state);
                  }
              }
          }
-@@ -97,7 +_,8 @@
+@@ -90,14 +_,15 @@
+ 
+     public void growCrops(Level level, BlockPos pos, BlockState state) {
+         int age = Math.min(this.getMaxAge(), this.getAge(state) + this.getBonemealAgeIncrease(level));
+-        level.setBlock(pos, this.getStateForAge(age), 2);
++        level.setBlock(pos, this.getStateForAge(level, pos, state, age), 2);
+     }
+ 
+     protected int getBonemealAgeIncrease(Level level) {
          return Mth.nextInt(level.getRandom(), 2, 5);
      }
  
