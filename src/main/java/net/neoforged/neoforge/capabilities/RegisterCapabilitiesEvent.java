@@ -7,6 +7,7 @@ package net.neoforged.neoforge.capabilities;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.function.Function;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -20,6 +21,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
+import net.neoforged.neoforge.attachment.capability.AttachmentCapability;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -151,5 +154,20 @@ public class RegisterCapabilitiesEvent extends Event implements IModBusEvent {
     public boolean isItemRegistered(ItemCapability<?, ?> capability, Item item) {
         Objects.requireNonNull(item);
         return capability.providers.containsKey(item);
+    }
+
+    // Attachments
+    /// Register a capability provider for an attachment type.
+    public <TAttachment, THolder extends IAttachmentHolder, TContext extends @Nullable Object> void registerAttachment(Class<THolder> holderClass, AttachmentCapability<TAttachment, TContext> capability, ICapabilityProvider<THolder, TContext, TAttachment> provider) {
+        Objects.requireNonNull(provider);
+        capability.register(holderClass, capability, provider);
+    }
+
+    /// Register a capability provider for an attachment type.
+    public <TAttachment, THolder extends IAttachmentHolder> void registerAttachment(Class<THolder> holderClass, AttachmentCapability<TAttachment, Void> capability, Function<THolder, @Nullable TAttachment> provider) {
+        Objects.requireNonNull(provider);
+
+        ICapabilityProvider<THolder, Void, TAttachment> adaptedProvider = (holder, _) -> provider.apply(holder);
+        registerAttachment(holderClass, capability, adaptedProvider);
     }
 }
