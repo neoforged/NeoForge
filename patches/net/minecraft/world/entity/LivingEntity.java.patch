@@ -37,7 +37,7 @@
  
      protected LivingEntity(EntityType<? extends LivingEntity> type, Level level) {
          super(type, level);
-@@ -337,13 +_,15 @@
+@@ -337,7 +_,9 @@
              .add(Attributes.MOVEMENT_EFFICIENCY)
              .add(Attributes.ATTACK_KNOCKBACK)
              .add(Attributes.CAMERA_DISTANCE)
@@ -48,13 +48,6 @@
      }
  
      @Override
-     protected void checkFallDamage(double ya, boolean onGround, BlockState onState, BlockPos pos) {
-         if (!this.isInWater()) {
--            this.updateFluidInteraction();
-+            this.updateFluidInteraction(); // TODO: prior to 26.1-snapshot-8 we called our patched in method 'this.updateInWaterStateAndDoWaterCurrentPushing(false)'
-         }
- 
-         if (this.level() instanceof ServerLevel level && onGround && this.fallDistance > 0.0) {
 @@ -364,7 +_,8 @@
  
                  double scale = Math.min(0.2F + power / 15.0, 2.5);
