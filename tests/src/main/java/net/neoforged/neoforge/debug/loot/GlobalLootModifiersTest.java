@@ -262,8 +262,8 @@ public class GlobalLootModifiersTest {
                                         DataComponentMatchers.Builder.components().partial(
                                                 DataComponentPredicates.ENCHANTMENTS,
                                                 EnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(registries.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(SMELT), MinMaxBounds.Ints.atLeast(1))))).build())),
-                                () -> new TestEnabledLootCondition(test)
-                        ).build())), IGlobalLootModifier.DEFAULT_PRIORITY));
+                                () -> new TestEnabledLootCondition(test)).build())),
+                        IGlobalLootModifier.DEFAULT_PRIORITY));
             }
 
             @Override
@@ -310,8 +310,7 @@ public class GlobalLootModifiersTest {
                                 // Check shear tool tag to ensure GLMs can resolve tags during loading
                                 MatchTool.toolMatches(ItemPredicate.Builder.item().of(this.registries.lookupOrThrow(Registries.ITEM), Tags.Items.TOOLS_SHEAR)),
                                 MatchBlock.blockMatches(blocks, Blocks.WHEAT),
-                                () -> new TestEnabledLootCondition(test)
-                        ).build())),
+                                () -> new TestEnabledLootCondition(test)).build())),
                         IGlobalLootModifier.DEFAULT_PRIORITY,
                         1, Items.WHEAT_SEEDS, Items.WHEAT));
 
@@ -319,8 +318,7 @@ public class GlobalLootModifiersTest {
                 this.add("wheat_harvest_disabled", new WheatSeedsConverterModifier(
                         Optional.of(Holder.direct(AllOfCondition.allOf(
                                 MatchBlock.blockMatches(blocks, (Blocks.WHEAT)),
-                                () -> new TestEnabledLootCondition(test)
-                        ).build())),
+                                () -> new TestEnabledLootCondition(test)).build())),
                         IGlobalLootModifier.DEFAULT_PRIORITY - 100,
                         1, Items.WHEAT, Items.BAMBOO), NeoForgeConditions.never());
             }
@@ -365,8 +363,7 @@ public class GlobalLootModifiersTest {
         HELPER.clientProvider(GlobalLootModifierProvider.class, prov -> prov.add("silk_touch_bamboo", new SilkTouchTestModifier(
                 Optional.of(Holder.direct(AllOfCondition.allOf(
                         MatchTool.toolMatches(ItemPredicate.Builder.item().of(null, Items.BAMBOO)),
-                        () -> new TestEnabledLootCondition(test)
-                ).build())),
+                        () -> new TestEnabledLootCondition(test)).build())),
                 IGlobalLootModifier.DEFAULT_PRIORITY)));
 
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL).preventItemPickup())
@@ -392,8 +389,7 @@ public class GlobalLootModifiersTest {
         HELPER.clientProvider(GlobalLootModifierProvider.class, prov -> prov.add("dungeon_loot", new DungeonLootEnhancerModifier(
                 Optional.of(Holder.direct(AllOfCondition.allOf(
                         LootTableIdCondition.builder(Identifier.withDefaultNamespace("chests/simple_dungeon")),
-                        () -> new TestEnabledLootCondition(test)
-                ).build())),
+                        () -> new TestEnabledLootCondition(test)).build())),
                 IGlobalLootModifier.DEFAULT_PRIORITY,
                 2)));
 

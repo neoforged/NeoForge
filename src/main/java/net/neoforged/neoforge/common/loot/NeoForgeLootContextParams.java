@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.common.loot;
 
 import net.minecraft.resources.Identifier;
@@ -9,5 +14,5 @@ public final class NeoForgeLootContextParams {
     /// Holds the itemstack whose data is being queried with the loot context (i.e. the fuel item in a furnace).
     public static final ContextKey<ItemInstance> QUERIED_STACK = new ContextKey<>(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "queried_stack"));
 
-    private NeoForgeLootContextParams() { }
+    private NeoForgeLootContextParams() {}
 }

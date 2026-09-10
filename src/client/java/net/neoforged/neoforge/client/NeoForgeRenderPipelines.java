@@ -65,8 +65,7 @@ public final class NeoForgeRenderPipelines {
                     accumulate -> accumulate.withSnippet(RenderPipelines.GLINT_SNIPPET)
                             .withBindGroupLayout(BindGroupLayouts.GLOBALS)
                             .withBindGroupLayout(BindGroupLayouts.SAMPLER1)
-                            .withBindGroupLayout(BindGroupLayouts.SAMPLER2)
-            )
+                            .withBindGroupLayout(BindGroupLayouts.SAMPLER2))
             .build();
     /// Duplicate of [RenderPipelines#ITEM_TRANSLUCENT_GLINT_SPECIAL] with directional shading and lighting disabled
     public static final RenderPipeline ITEM_TRANSLUCENT_UNLIT_GLINT_SPECIAL = RenderPipeline.builder(ITEM_UNLIT_SNIPPET, RenderPipelines.GLINT_SPECIAL_SNIPPET)
@@ -80,8 +79,7 @@ public final class NeoForgeRenderPipelines {
                     accumulate -> accumulate.withSnippet(RenderPipelines.GLINT_SPECIAL_SNIPPET)
                             .withBindGroupLayout(BindGroupLayouts.GLOBALS)
                             .withBindGroupLayout(BindGroupLayouts.SAMPLER1)
-                            .withBindGroupLayout(BindGroupLayouts.SAMPLER2)
-            )
+                            .withBindGroupLayout(BindGroupLayouts.SAMPLER2))
             .build();
     /// Duplicate of [RenderPipelines#ENTITY_TRANSLUCENT] with directional shading and lighting disabled
     public static final RenderPipeline ENTITY_UNLIT_TRANSLUCENT = RenderPipeline.builder(RenderPipelines.ENTITY_SNIPPET)
@@ -96,8 +94,7 @@ public final class NeoForgeRenderPipelines {
             .withAccumulateModifier(
                     accumulate -> accumulate.withShaderDefine("NO_CARDINAL_LIGHTING")
                             .withBindGroupLayout(BindGroupLayouts.SAMPLER1)
-                            .withBindGroupLayout(BindGroupLayouts.SAMPLER2)
-            )
+                            .withBindGroupLayout(BindGroupLayouts.SAMPLER2))
             .build();
 
     @SubscribeEvent

@@ -7,9 +7,9 @@ package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.renderpearl.api.commands.RenderPass;
 import java.util.Objects;
 import java.util.function.Consumer;
-import com.mojang.renderpearl.api.commands.RenderPass;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.SubmitNodeCollector;

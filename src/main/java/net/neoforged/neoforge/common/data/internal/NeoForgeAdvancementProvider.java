@@ -115,8 +115,7 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
         }));
 
         List<AdvancementSubProvider.Factory> subProviders = getPrivateValue(AdvancementProvider.class, (AdvancementProvider) VanillaAdvancementProvider.create(), "subProviders");
-        return subProviders.stream()
-                .<AdvancementSubProvider.Factory>map(vanillaProvider -> ctx -> vanillaProvider.create(new AdvancementRewriteContext(ctx, criteriaReplacers)))
+        return subProviders.stream().<AdvancementSubProvider.Factory>map(vanillaProvider -> ctx -> vanillaProvider.create(new AdvancementRewriteContext(ctx, criteriaReplacers)))
                 .toList();
     }
 

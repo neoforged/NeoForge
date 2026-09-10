@@ -19,5 +19,5 @@ public final class NeoForgeLootDataProvider {
         registry.register(LootPredicates.TOOL_CAN_SHEAR, CanItemPerformAbility.canItemPerformAbility(ItemAbilities.SHEARS_DIG).build());
     }
 
-    private NeoForgeLootDataProvider() { }
+    private NeoForgeLootDataProvider() {}
 }

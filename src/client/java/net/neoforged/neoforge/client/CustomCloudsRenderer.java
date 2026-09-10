@@ -32,8 +32,7 @@ public interface CustomCloudsRenderer {
     /// [#renderCloudsOit(LevelRenderState, CloudStatus, Matrix4fc, OitStage, GpuTextureView, OitRenderPassProvider.Parameters)].
     ///
     /// @see CloudRenderer#prepare(int, CloudStatus, float, int, Vec3, long, float)
-    default void prepare(LevelRenderState levelRenderState, Vec3 camPos, CloudStatus cloudStatus, int cloudColor, float cloudHeight, int cloudRange, Matrix4fc modelViewMatrix) {
-    }
+    default void prepare(LevelRenderState levelRenderState, Vec3 camPos, CloudStatus cloudStatus, int cloudColor, float cloudHeight, int cloudRange, Matrix4fc modelViewMatrix) {}
 
     /// Renders the clouds of this dimension.
     ///

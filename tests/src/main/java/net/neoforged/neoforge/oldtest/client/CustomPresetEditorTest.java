@@ -7,7 +7,6 @@ package net.neoforged.neoforge.oldtest.client;
 
 import java.util.Map;
 import java.util.Set;
-
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Button.OnPress;
 import net.minecraft.client.gui.screens.Screen;

@@ -122,8 +122,7 @@ public class ComposterWrapper extends SnapshotJournal<BlockState> {
                             .withParameter(LootContextParams.BLOCK_STATE, location.getBlockState())
                             .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(location.pos))
                             .withOptionalParameter(LootContextParams.INTERACTING_ENTITY, null)
-                            .create(LootContextParamSets.BLOCK_INTERACT)
-            ).create(Optional.empty());
+                            .create(LootContextParamSets.BLOCK_INTERACT)).create(Optional.empty());
             Compostable compostable = resource.get(DataComponents.COMPOSTABLE);
             if (compostable != null) {
                 return compostable.layers().get(lootContext, 0);

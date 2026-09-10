@@ -1,13 +1,5 @@
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -124,6 +_,7 @@
- import net.minecraft.world.level.entity.EntityInLevelCallback;
- import net.minecraft.world.level.gameevent.DynamicGameEventListener;
- import net.minecraft.world.level.gameevent.GameEvent;
-+import net.minecraft.world.level.gamerules.GameRules;
- import net.minecraft.world.level.levelgen.Heightmap;
- import net.minecraft.world.level.material.Fluid;
- import net.minecraft.world.level.material.FluidState;
 @@ -160,6 +_,7 @@
  import net.neoforged.neoforge.common.extensions.IEntityExtension;
  
