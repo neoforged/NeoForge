@@ -70,6 +70,7 @@ import net.neoforged.neoforge.common.data.internal.NeoForgeDamageTypeTagsProvide
 import net.neoforged.neoforge.common.data.internal.NeoForgeDataMapsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeEnchantmentTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeEntityTypeTagsProvider;
+import net.neoforged.neoforge.common.data.internal.NeoForgeExtendedSlotsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeFluidTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeItemTagsProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeLanguageProvider;
@@ -176,6 +177,7 @@ public class ClientNeoForgeMod {
         event.createProvider(NeoForgeDamageTypeTagsProvider::new);
         event.createProvider(NeoForgeRegistryOrderReportProvider::new);
         event.createProvider(NeoForgeDataMapsProvider::new);
+        event.createProvider(NeoForgeExtendedSlotsProvider::new);
 
         event.createProvider(NeoForgeSpriteSourceProvider::new);
         event.createProvider(VanillaModelProvider::new);
