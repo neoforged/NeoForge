@@ -5,7 +5,7 @@
      protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
          if (!oldState.is(state.getBlock())) {
 -            if (level.hasNeighborSignal(pos) && prime(level, pos)) {
-+            if (level.hasNeighborSignal(pos) && onCaughtFire(state, level, pos, null, null)) {
++            if (level.hasNeighborSignal(pos) && onCaughtFire(state, level, pos, null, null, ItemStack.EMPTY)) {
                  level.removeBlock(pos, false);
              }
          }
@@ -14,7 +14,7 @@
      @Override
      protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, @Nullable Orientation orientation, boolean movedByPiston) {
 -        if (level.hasNeighborSignal(pos) && prime(level, pos)) {
-+        if (level.hasNeighborSignal(pos) && onCaughtFire(state, level, pos, null, null)) {
++        if (level.hasNeighborSignal(pos) && onCaughtFire(state, level, pos, null, null, ItemStack.EMPTY)) {
              level.removeBlock(pos, false);
          }
      }
@@ -23,7 +23,7 @@
      public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
          if (!level.isClientSide() && !player.getAbilities().instabuild && state.getValue(UNSTABLE)) {
 -            prime(level, pos);
-+            onCaughtFire(state, level, pos, null, null);
++            onCaughtFire(state, level, pos, null, null, ItemStack.EMPTY);
          }
  
          return super.playerWillDestroy(level, pos, state, player);
@@ -31,13 +31,13 @@
          }
      }
  
-+    /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#onCaughtFire(Level,BlockPos,net.minecraft.core.Direction,LivingEntity)] instead
++    /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#onCaughtFire(Level,BlockPos,net.minecraft.core.Direction,LivingEntity,ItemStack)] instead
 +    @Deprecated
      public static boolean prime(Level level, BlockPos pos) {
          return prime(level, pos, null, ItemStack.EMPTY);
      }
  
-+    /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#onCaughtFire(Level,BlockPos,net.minecraft.core.Direction,LivingEntity)] instead
++    /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#onCaughtFire(Level,BlockPos,net.minecraft.core.Direction,LivingEntity,ItemStack)] instead
 +    @Deprecated
      public static boolean prime(Level level, BlockPos pos, @Nullable LivingEntity source, ItemStack itemStack) {
          if (!(level instanceof ServerLevel serverLevel && serverLevel.getGameRules().get(GameRules.TNT_EXPLODES))) {
@@ -47,10 +47,23 @@
          }
  
 -        if (prime(level, pos, player, itemStack)) {
-+        if (onCaughtFire(state, level, pos, hitResult.getDirection(), player)) {
++        if (onCaughtFire(state, level, pos, hitResult.getDirection(), player, itemStack)) {
              level.setBlock(pos, Blocks.AIR.defaultBlockState(), 11);
              Item item = itemStack.getItem();
              if (itemStack.is(Items.FLINT_AND_STEEL)) {
+@@ -127,9 +_,11 @@
+             Entity owner = projectile.getOwner();
+             if (projectile.isOnFire()
+                 && projectile.mayInteract(serverLevel, pos)
+-                && prime(
++                && onCaughtFire(
++                    state,
+                     level,
+                     pos,
++                    blockHit.getDirection(),
+                     owner instanceof LivingEntity livingEntity ? livingEntity : null,
+                     projectile instanceof AbstractArrow arr ? arr.getPickupItemStackOrigin() : ItemStack.EMPTY
+                 )) {
 @@ -146,5 +_,10 @@
      @Override
      protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
@@ -58,7 +71,7 @@
 +    }
 +
 +    @Override
-+    public boolean onCaughtFire(BlockState state, Level world, BlockPos pos, net.minecraft.core.@Nullable Direction face, @Nullable LivingEntity igniter) {
-+        return prime(world, pos, igniter, ItemStack.EMPTY);
++    public boolean onCaughtFire(BlockState state, Level world, BlockPos pos, net.minecraft.core.@Nullable Direction face, @Nullable LivingEntity igniter, ItemStack ignitionItem) {
++        return prime(world, pos, igniter, ignitionItem);
      }
  }

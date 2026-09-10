@@ -16,20 +16,14 @@
          PatchedRegistry<T> result = new PatchedRegistry<>(registryKey, lifecycle);
          patchContents.listElements().forEach(elementHolder -> {
              ResourceKey<T> elementKey = elementHolder.key();
-@@ -82,14 +_,14 @@
+@@ -82,6 +_,10 @@
              holder.supplier = () -> cloner.clone((T)elementHolder.value(), patchProvider, clonedRegistriesProvider.get());
              result.entries.put(elementKey, holder);
          });
--        baseContents.listElements().forEach(elementHolder -> {
-+        maybeBaseContents.ifPresent(baseContents -> baseContents.listElements().forEach(elementHolder -> {
++        if (maybeBaseContents.isEmpty()) {
++            return result;
++        }
++        HolderLookup.RegistryLookup<T> baseContents = maybeBaseContents.get();
+         baseContents.listElements().forEach(elementHolder -> {
              ResourceKey<T> elementKey = elementHolder.key();
              result.entries.computeIfAbsent(elementKey, key -> {
-                 PatchedRegistry.LazyHolder<T> holder = new PatchedRegistry.LazyHolder<>(result, elementKey);
-                 holder.supplier = () -> cloner.clone((T)elementHolder.value(), baseProvider, clonedRegistriesProvider.get());
-                 return holder;
-             });
--        });
-+        }));
-         return result;
-     }
- 

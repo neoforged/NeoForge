@@ -115,7 +115,7 @@ public class ComposterWrapper extends SnapshotJournal<BlockState> {
         }
     }
 
-    private float getComposterValue(ItemResource resource) {
+    private int getComposterValue(ItemResource resource) {
         if (location.level instanceof ServerLevel level) {
             LootContext lootContext = new LootContext.Builder(
                     new LootParams.Builder(level)
@@ -128,7 +128,7 @@ public class ComposterWrapper extends SnapshotJournal<BlockState> {
                 return compostable.layers().get(lootContext, 0);
             }
         }
-        return 0F;
+        return 0;
     }
 
     /**
@@ -157,16 +157,14 @@ public class ComposterWrapper extends SnapshotJournal<BlockState> {
             int currentLevel = state.getValue(ComposterBlock.LEVEL);
             if (currentLevel >= ComposterBlock.MAX_LEVEL) return 0;
             // Check that the item is compostable.
-            float value = getComposterValue(resource);
+            int value = getComposterValue(resource);
             if (value <= 0) return 0;
 
             // Always update snapshots even if increaseSuccessful below is false, to send the COMPOSTER_FILL level event
             updateSnapshots(transaction);
 
-            // Always increment on first insert (like vanilla).
-            if (currentLevel == ComposterBlock.MIN_LEVEL || transactionalRandom.nextDouble(transaction) < value) {
-                setLevel(state, currentLevel + 1);
-            }
+            // Always increment (like vanilla), the randomization is up to the compostable component's ResolvableInt.
+            setLevel(state, currentLevel + 1);
 
             return 1;
         }

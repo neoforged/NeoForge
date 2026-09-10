@@ -232,7 +232,7 @@
 +
 +            // If we are going to do damage despite invulnerability (due to the damage being higher than prior), we need to setup the container differently.
 +            this.damageContainers.peek().setShouldCauseSideEffects(false);
-+            this.damageContainers.peek().setPostAttackInvulnerabilityTicks(this.getInvulnerableTime());
++            this.damageContainers.peek().setPostAttackInvulnerabilityTicks(this.damageCooldownTime);
 +            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.INVULNERABILITY, this.lastHurt);
  
              this.actuallyHurt(level, source, damage - this.lastHurt);
@@ -241,13 +241,13 @@
 +            // lastHurt, in both blocks, needs to always be set to the value of `damage` since it is pre-reduction. Using a post reduction value invalidates iframes.
 +            // Since we're in the "damage while invuln is active" block, we need to make sure we don't reduce the lastHurt amount.
 +            this.lastHurt = java.lang.Math.max(this.lastHurt, damage);
-+            this.setInvulnerableTime(this.damageContainers.peek().getPostAttackInvulnerabilityTicks());
++            this.damageCooldownTime = this.damageContainers.peek().getPostAttackInvulnerabilityTicks();
          } else {
 -            this.lastHurt = damage;
 -            this.damageCooldownTime = 20;
              this.actuallyHurt(level, source, damage);
 +            this.lastHurt = damage;
-+            this.setInvulnerableTime(this.damageContainers.peek().getPostAttackInvulnerabilityTicks());
++            this.damageCooldownTime = this.damageContainers.peek().getPostAttackInvulnerabilityTicks();
              this.hurtDuration = 10;
              this.hurtTime = this.hurtDuration;
          }
@@ -308,7 +308,7 @@
 +
 +                damageBlocked = ev.getBlockedDamage();
 +                damageContainer.setBlockedDamage(ev);
-+                blocksAttacks.hurtBlockingItem(this.level(), blockingWith, this, this.getUsedItemHand(), ev.shieldDamage());
++                blocksAttacks.hurtBlockingItem(this.level(), blockingWith, this, this.getUsedItemHand(), damageBlocked, ev.shieldDamage());
 +
                  if (damageBlocked > 0.0F && !source.is(DamageTypeTags.IS_PROJECTILE) && source.getDirectEntity() instanceof LivingEntity livingEntity) {
                      this.blockUsingItem(level, livingEntity, source, damage, damageBlocked >= damage);
@@ -579,7 +579,7 @@
  
      protected boolean shouldTravelInFluid(FluidState fluidState) {
 -        return this.isInLiquid() && this.isAffectedByFluids() && !this.canStandOnFluid(fluidState);
-+        return (this.isInWater() || this.isInLava() || this.isInFluidType(fluidState)) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidState);
++        return (this.isInLiquid() || this.isInFluidType(fluidState)) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidState);
      }
  
      protected void travelFlying(Vec3 input, float speed) {
