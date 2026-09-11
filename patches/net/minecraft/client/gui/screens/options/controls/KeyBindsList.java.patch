@@ -9,9 +9,22 @@
              int width = minecraft.font.width(name);
              if (width > this.maxNameWidth) {
                  this.maxNameWidth = width;
-@@ -123,6 +_,7 @@
+@@ -121,8 +_,19 @@
+                         ? Component.translatable("narrator.controls.unbound", name)
+                         : Component.translatable("narrator.controls.bound", name, defaultNarrationSupplier.get())
                  )
-                 .build();
+-                .build();
++                .build(builder -> new Button.Plain(builder) {
++                    @Override
++                    public boolean keyPressed(net.minecraft.client.input.KeyEvent event) {
++                        // Neo: Mark the key which triggered this button, so its release doesn't trigger the logic to set the key mapping
++                        var pressed = super.keyPressed(event);
++                        if (pressed) {
++                            KeyBindsList.this.keyBindsScreen.ignoreNextRelease = true;
++                        }
++                        return pressed;
++                    }
++                });
              this.resetButton = Button.builder(RESET_BUTTON_TITLE, button -> {
 +                this.key.setToDefault();
                  key.setKey(key.getDefaultKey());
