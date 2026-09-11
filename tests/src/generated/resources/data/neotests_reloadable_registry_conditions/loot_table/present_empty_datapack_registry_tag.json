@@ -1,0 +1,11 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:tag_empty",
+      "registry": "minecraft:worldgen/biome",
+      "tag": "c:hidden_from_locator_selection"
+    }
+  ],
+  "type": "minecraft:empty",
+  "random_sequence": "neotests_reloadable_registry_conditions:present_empty_datapack_registry_tag"
+}

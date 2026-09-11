@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry.PendingTags;
 import net.minecraft.core.RegistryAccess;
@@ -115,15 +116,23 @@ public interface ICondition {
             return List.of();
         }
 
+        /// Provides the context registries with partially bound tags for the currently active reload if
+        /// this context is used for a datapack reload.
+        ///
+        /// @return the context registries of the active reload
+        default HolderGetter.Provider registries() {
+            return RegistryAccess.EMPTY;
+        }
+
         /// Provides access to the loaded registries if this context is used for a datapack reload.
         ///
         /// @apiNote The returned [RegistryAccess] does NOT provide access to the tags loaded during the active reload.
-        /// To resolve tags the [HolderLookup.Provider] provided via [ContextAwareReloadListener#getRegistryLookup()]
-        /// must be used instead.
+        /// To resolve tags the [HolderLookup.Provider] provided via [#registries()] or
+        /// [ContextAwareReloadListener#getRegistryLookup()] must be used instead.
         ///
         /// @return The [RegistryAccess] context for the currently active reload.
         ///
-        /// @deprecated Use [ContextAwareReloadListener#getRegistryLookup()] instead
+        /// @deprecated Use [#registries()] or [ContextAwareReloadListener#getRegistryLookup()] instead
         @Deprecated(forRemoval = true, since = "26.1.2")
         default RegistryAccess registryAccess() {
             return RegistryAccess.EMPTY;

@@ -1,0 +1,9 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:registered",
+      "value": "minecraft:redstone"
+    }
+  ],
+  "type": "minecraft:crafting_special_repairitem"
+}

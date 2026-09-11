@@ -1,0 +1,10 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:tag_empty",
+      "tag": "c:drinks/juice"
+    }
+  ],
+  "type": "minecraft:empty",
+  "random_sequence": "neotests_reloadable_registry_conditions:present_empty_static_tag"
+}

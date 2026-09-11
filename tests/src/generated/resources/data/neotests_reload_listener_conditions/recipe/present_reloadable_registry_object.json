@@ -1,0 +1,10 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:registered",
+      "registry": "minecraft:loot_table",
+      "value": "minecraft:chests/ancient_city"
+    }
+  ],
+  "type": "minecraft:crafting_special_repairitem"
+}

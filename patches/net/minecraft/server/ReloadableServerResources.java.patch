@@ -19,7 +19,7 @@
 +        // Neo: Store registries and create context object
 +        this.registryAccess = fullLayers.compositeAccess();
 +        this.loadingContext = loadingContext;
-+        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.postponedTags, registryAccess, enabledFeatures);
++        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.postponedTags, this.registryAccess, this.loadingContext, enabledFeatures);
      }
  
      public ServerFunctionLibrary getFunctionLibrary() {

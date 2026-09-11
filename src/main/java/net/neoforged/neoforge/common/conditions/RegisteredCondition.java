@@ -24,7 +24,7 @@ public record RegisteredCondition<T>(ResourceKey<T> registryKey) implements ICon
 
     @Override
     public boolean test(IContext context) {
-        return context.registryAccess().holder(registryKey).map(Holder::isBound).orElse(false);
+        return context.registries().get(registryKey).map(Holder::isBound).orElse(false);
     }
 
     @Override
