@@ -18,3 +18,22 @@ modId="custom_feature_flags_test"
 featureFlags="feature_flags.json"
 [[mods]]
 modId="consumable_item_access_test"
+[[mods]]
+modId="referral_url_target_test"
+[[mods]]
+modId="referral_url_present_test"
+[[dependencies.referral_url_present_test]]
+    modId="referral_url_target_test"
+    mandatory=false
+    referralUrl="https://neoforged.net/referral"
+[[mods]]
+modId="referral_url_missing_test"
+[[dependencies.referral_url_missing_test]]
+    modId="referral_url_target_test"
+    mandatory=false
+[[mods]]
+modId="referral_url_placeholder_test"
+[[dependencies.referral_url_placeholder_test]]
+    modId="referral_url_target_test"
+    mandatory=false
+    referralUrl="https://example.invalid/change-me"
