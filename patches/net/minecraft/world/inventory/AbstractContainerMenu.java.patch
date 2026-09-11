@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/inventory/AbstractContainerMenu.java
 +++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
+@@ -91,7 +_,7 @@
+     }
+ 
+     protected static boolean stillValid(ContainerLevelAccess access, Player player, Block block) {
+-        return access.evaluate((level, pos) -> !level.getBlockState(pos).is(block) ? false : player.isWithinBlockInteractionRange(pos, 4.0), true);
++        return access.evaluate((level, pos) -> !level.getBlockState(pos).is(block) ? false : net.neoforged.neoforge.common.CommonHooks.menuRangeValidity(player, level, pos, 4.0), true);
+     }
+ 
+     public MenuType<?> getType() {
 @@ -558,6 +_,13 @@
      }
  
