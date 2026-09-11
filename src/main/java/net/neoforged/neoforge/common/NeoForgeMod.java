@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
+import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.advancements.predicates.entity.EntitySubPredicate;
 import net.minecraft.commands.Commands;
@@ -28,10 +29,14 @@ import net.minecraft.core.component.predicates.DataComponentPredicate;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.TicketType;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.repository.FolderRepositorySource;
+import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.random.Weighted;
@@ -70,6 +75,7 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.storage.LevelStorageSource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
@@ -86,6 +92,7 @@ import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
 import net.neoforged.neoforge.capabilities.CapabilityHooks;
 import net.neoforged.neoforge.common.advancements.critereon.ItemAbilityPredicate;
@@ -130,6 +137,7 @@ import net.neoforged.neoforge.common.world.NoneStructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifiers;
 import net.neoforged.neoforge.data.loading.DatagenModLoader;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.DefaultDataComponentsBoundEvent;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
@@ -566,6 +574,7 @@ public class NeoForgeMod {
         modEventBus.addListener(this::loadComplete);
         modEventBus.addListener(this::registerFluids);
         modEventBus.addListener(this::registerLootData);
+        modEventBus.addListener(this::onAddPackFinders);
         modEventBus.addListener(NeoForgeMod::onConfigLoad);
         modEventBus.addListener(NeoForgeMod::onConfigFileChange);
         ATTRIBUTES.register(modEventBus);
@@ -699,5 +708,29 @@ public class NeoForgeMod {
                 && stack.get(DataComponents.EQUIPPABLE) instanceof Equippable equippable) {
             event.addModifier(GLIDING_FLIGHT, GLIDER_COMPONENT_FLIGHT_MODIFIER, EquipmentSlotGroup.bySlot(equippable.slot()));
         }
+    }
+
+    private static final PackSource GLOBAL_PACK_SOURCE = new PackSource() {
+        @Override
+        public Component decorate(Component packDescription) {
+            return Component.translatable("pack.nameAndSource",
+                    packDescription,
+                    Component.translatable("pack.source.neoforge.global")).withStyle(ChatFormatting.GRAY);
+        }
+
+        @Override
+        public boolean shouldAddAutomatically() {
+            return NeoForgeCommonConfig.INSTANCE.enableGlobalDatapacksAutomatically.getAsBoolean();
+        }
+    };
+
+    public void onAddPackFinders(AddPackFindersEvent event) {
+        if (event.getPackType() != PackType.SERVER_DATA) return;
+
+        var gameDirectory = FMLPaths.GAMEDIR.get();
+        var datapacksFolder = gameDirectory.resolve("datapacks");
+        var validator = LevelStorageSource.parseValidator(gameDirectory.resolve(LevelStorageSource.ALLOWED_SYMLINKS_CONFIG_NAME));
+
+        event.addRepositorySource(new FolderRepositorySource(datapacksFolder, PackType.SERVER_DATA, GLOBAL_PACK_SOURCE, validator));
     }
 }
