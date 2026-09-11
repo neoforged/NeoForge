@@ -820,7 +820,7 @@ public class DeferredRegister<T> {
          * @param name     The name for this entity type. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
          * @param factory  The factory used to typically construct the entity when using an existing helper from the type.
          * @param category The category of the entity, typically {@link MobCategory#MISC} for non-living entities, or one of the others for living entities.
-         * @param builder  The bifunction that is passed {@code factory} and {@code category} and returns an {@link EntityType.Builder} which is built upon registration.
+         * @param builder  The bifunction that is passed <code>factory</code> and <code>category</code> and returns an {@link EntityType.Builder} which is built upon registration.
          * @return A {@link DeferredHolder} which reflects the data that will be registered.
          * @param <E> the type of the entity
          * @see #registerEntityType(String, EntityType.EntityFactory, MobCategory)
