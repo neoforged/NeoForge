@@ -5,6 +5,7 @@
 
 package net.neoforged.testframework.registration;
 
+import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
@@ -25,6 +26,11 @@ public class DeferredEntityTypes extends DeferredRegister.Entities {
     @Override
     protected <I extends EntityType<?>> DeferredEntityTypeBuilder createHolder(ResourceKey<? extends Registry<EntityType<?>>> registryKey, Identifier key) {
         return new DeferredEntityTypeBuilder(ResourceKey.create(registryKey, key), helper);
+    }
+
+    @Override
+    public <E extends Entity> DeferredEntityTypeBuilder<E, EntityType<E>> registerEntityType(String name, EntityType.EntityFactory<E> factory, MobCategory category, BiFunction<EntityType.EntityFactory<E>, MobCategory, EntityType.Builder<E>> builder) {
+        return (DeferredEntityTypeBuilder<E, EntityType<E>>) super.registerEntityType(name, factory, category, builder);
     }
 
     @Override
