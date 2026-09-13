@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.client.loading.earlydisplay;
 
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
 import net.neoforged.fml.earlydisplay.render.backend.ELSBufferSlice;
 
 @SuppressWarnings("UnstableApiUsage")

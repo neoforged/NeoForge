@@ -5,27 +5,30 @@
 
 package net.neoforged.neoforge.client.loading.earlydisplay;
 
-import com.mojang.blaze3d.GpuFormat;
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.pipeline.BindGroupLayout;
-import com.mojang.blaze3d.pipeline.BlendFunction;
-import com.mojang.blaze3d.pipeline.ColorTargetState;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.BlendFactor;
+import com.mojang.blaze3d.pipeline.PipelineCache;
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.shaders.ShaderSource;
-import com.mojang.blaze3d.shaders.UniformType;
-import com.mojang.blaze3d.systems.GpuDevice;
-import com.mojang.blaze3d.systems.GpuSurface;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.systems.SurfaceException;
-import com.mojang.blaze3d.textures.FilterMode;
-import com.mojang.blaze3d.textures.GpuSampler;
-import com.mojang.blaze3d.textures.GpuTexture;
-import com.mojang.blaze3d.textures.GpuTextureView;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.logging.LogUtils;
+import com.mojang.renderpearl.api.GpuFormat;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.device.GpuDevice;
+import com.mojang.renderpearl.api.device.GpuSurface;
+import com.mojang.renderpearl.api.device.SurfaceException;
+import com.mojang.renderpearl.api.pipeline.BindGroupLayout;
+import com.mojang.renderpearl.api.pipeline.BlendFactor;
+import com.mojang.renderpearl.api.pipeline.BlendFunction;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.CompiledRenderPipeline;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.ShaderSource;
+import com.mojang.renderpearl.api.pipeline.ShaderType;
+import com.mojang.renderpearl.api.pipeline.UniformType;
+import com.mojang.renderpearl.api.textures.FilterMode;
+import com.mojang.renderpearl.api.textures.GpuSampler;
+import com.mojang.renderpearl.api.textures.GpuTexture;
+import com.mojang.renderpearl.api.textures.GpuTextureView;
+import com.mojang.renderpearl.api.vertex.VertexFormat;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
@@ -47,12 +50,13 @@ import net.neoforged.fml.earlydisplay.theme.NativeBuffer;
 import net.neoforged.fml.earlydisplay.theme.ThemeColor;
 import org.joml.Vector4f;
 import org.joml.Vector4fc;
-import org.lwjgl.glfw.GLFW;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 @SuppressWarnings("UnstableApiUsage")
 public final class Blaze3DRenderBackend extends ELSRenderBackend {
     private static final Logger LOGGER = LogUtils.getLogger();
+    @GpuTexture.Usage
     private static final int TEX_USAGE = GpuTexture.USAGE_COPY_DST | GpuTexture.USAGE_COPY_SRC | GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_RENDER_ATTACHMENT;
     private static final ColorTargetState COLOR_STATE = new ColorTargetState(new BlendFunction(BlendFactor.SRC_ALPHA, BlendFactor.ONE_MINUS_SRC_ALPHA, BlendFactor.ZERO, BlendFactor.ONE));
     private static final VertexFormat FORMAT_POS = VertexFormat.builder(0)
@@ -74,7 +78,7 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
 
     private final GpuDevice device;
     private final Window window;
-    private final Map<ELSRenderPipeline, RenderPipeline> pipelines = new IdentityHashMap<>();
+    private final Map<ELSRenderPipeline, CompiledRenderPipeline> pipelines = new IdentityHashMap<>();
 
     public Blaze3DRenderBackend(Window window) {
         this.device = RenderSystem.getDevice();
@@ -88,7 +92,7 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
             ElementShader shader = elsPipeline.shader();
             BindGroupLayout.Builder layoutBuilder = BindGroupLayout.builder();
             if (elsPipeline.texture() != null) {
-                layoutBuilder.withSampler(elsPipeline.texture());
+                layoutBuilder.withUniform(elsPipeline.texture(), UniformType.COMBINED_IMAGE_SAMPLER);
             }
             for (String uniform : elsPipeline.uniforms()) {
                 layoutBuilder.withUniform(uniform, UniformType.UNIFORM_BUFFER);
@@ -110,8 +114,13 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
                     })
                     .withBindGroupLayout(layoutBuilder.build())
                     .build();
-            this.device.precompilePipeline(pipeline, makeShaderSource(shader));
-            this.pipelines.put(elsPipeline, pipeline);
+            PipelineCache cache = new PipelineCache(this.device, makeShaderSource(shader));
+            CompiledRenderPipeline compiledPipeline = cache.get(pipeline);
+            if (compiledPipeline != null) {
+                this.pipelines.put(elsPipeline, compiledPipeline);
+            } else {
+                LOGGER.error("Failed to compile pipeline '{}'", pipeline);
+            }
         }
     }
 
@@ -174,29 +183,26 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
             return false;
         }
 
-        if (Minecraft.getInstance().windowSurfaceNeedsReconfiguring) {
-            int[] width = new int[1];
-            int[] height = new int[1];
-            GLFW.glfwGetFramebufferSize(this.window.handle(), width, height);
-            listener.accept(width[0], height[0]);
+        this.window.updateFullscreenIfChanged();
+        if ((Minecraft.getInstance().windowSurfaceNeedsReconfiguring || gpuSurface.isSuboptimal() && !Minecraft.getInstance().surfaceIsInvalid) && !this.window.isIconified()) {
+            Window.FramebufferSize framebufferSize = this.window.queryFramebufferSize();
+            listener.accept(framebufferSize.width(), framebufferSize.height());
 
-            if (width[0] != 0 || height[0] != 0) {
-                GpuSurface.PresentMode presentMode = GpuSurface.PresentMode.getSupportedVsyncMode(
-                        gpuSurface.supportedPresentModes(), Minecraft.getInstance().options.enableVsync().get());
-                GpuSurface.Configuration config = new GpuSurface.Configuration(width[0], height[0], presentMode);
+            GpuSurface.PresentMode presentMode = GpuSurface.PresentMode.getSupportedVsyncMode(
+                    gpuSurface.supportedPresentModes(), Minecraft.getInstance().options.enableVsync().get());
+            GpuSurface.Configuration config = new GpuSurface.Configuration(framebufferSize.width(), framebufferSize.height(), presentMode);
 
-                try {
-                    gpuSurface.configure(config);
-                    Minecraft.getInstance().surfaceIsInvalid = false;
-                } catch (SurfaceException exception) {
-                    LOGGER.warn("Couldn't configure surface to {}: {}", config, exception);
-                    Minecraft.getInstance().surfaceIsInvalid = true;
-                }
+            try {
+                gpuSurface.configure(config);
+                Minecraft.getInstance().surfaceIsInvalid = false;
+                Minecraft.getInstance().windowSurfaceNeedsReconfiguring = false;
+            } catch (SurfaceException exception) {
+                LOGGER.warn("Couldn't configure surface to {}: {}", config, exception);
+                Minecraft.getInstance().surfaceIsInvalid = true;
             }
-            Minecraft.getInstance().windowSurfaceNeedsReconfiguring = false;
         }
 
-        if (!Minecraft.getInstance().surfaceIsInvalid && !this.window.isMinimized()) {
+        if (!Minecraft.getInstance().surfaceIsInvalid) {
             try {
                 gpuSurface.acquireNextTexture();
             } catch (SurfaceException ex) {
@@ -243,15 +249,17 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
     }
 
     @Override
-    public void close() {}
+    public void close() {
+        this.pipelines.values().forEach(CompiledRenderPipeline::close);
+    }
 
     @Override
     public String name() {
         return "Blaze3D";
     }
 
-    RenderPipeline getPipeline(ELSRenderPipeline elsPipeline) {
-        RenderPipeline pipeline = this.pipelines.get(elsPipeline);
+    CompiledRenderPipeline getPipeline(ELSRenderPipeline elsPipeline) {
+        CompiledRenderPipeline pipeline = this.pipelines.get(elsPipeline);
         if (pipeline == null) {
             throw new IllegalArgumentException("Unrecognized pipeline: " + elsPipeline);
         }
@@ -263,16 +271,29 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
     }
 
     private static ShaderSource makeShaderSource(ElementShader shader) {
-        return (_, type) -> {
-            try {
-                NativeBuffer buffer = switch (type) {
-                    case VERTEX -> shader.loadVertexShader();
-                    case FRAGMENT -> shader.loadFragmentShader();
-                };
-                return new String(buffer.toByteArray());
-            } catch (IOException e) {
+        return new ShaderSource() {
+            @Override
+            public @Nullable String getShader(Identifier id, ShaderType type) {
+                try {
+                    NativeBuffer buffer = switch (type) {
+                        case VERTEX -> shader.loadVertexShader();
+                        case FRAGMENT -> shader.loadFragmentShader();
+                    };
+                    String content = new String(buffer.toByteArray());
+                    buffer.close();
+                    return content;
+                } catch (IOException e) {
+                    return null;
+                }
+            }
+
+            @Override
+            public @Nullable CachedIncludeSource getInclude(Identifier id) {
                 return null;
             }
+
+            @Override
+            public void close() {}
         };
     }
 }

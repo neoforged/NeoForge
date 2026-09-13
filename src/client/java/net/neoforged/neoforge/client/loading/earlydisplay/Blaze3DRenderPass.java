@@ -5,8 +5,8 @@
 
 package net.neoforged.neoforge.client.loading.earlydisplay;
 
-import com.mojang.blaze3d.IndexType;
-import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.renderpearl.api.commands.RenderPass;
+import com.mojang.renderpearl.api.pipeline.IndexType;
 import net.neoforged.fml.earlydisplay.render.backend.ELSBuffer;
 import net.neoforged.fml.earlydisplay.render.backend.ELSBufferSlice;
 import net.neoforged.fml.earlydisplay.render.backend.ELSRenderPass;
@@ -48,9 +48,9 @@ final class Blaze3DRenderPass implements ELSRenderPass {
     public void bindTexture(String name, @Nullable ELSTexture texture) {
         if (texture != null) {
             Blaze3DTexture b3dTexture = (Blaze3DTexture) texture;
-            this.renderPass.bindTexture(name, b3dTexture.view(), b3dTexture.sampler);
+            this.renderPass.setUniform(name, b3dTexture.view(), b3dTexture.sampler);
         } else {
-            this.renderPass.bindTexture(name, null, null);
+            this.renderPass.setUniform(name, null, null);
         }
     }
 
