@@ -195,6 +195,8 @@
   "neoforge.configgui.attributeAdvancedTooltipDebugInfo.tooltip": "Set this to true to enable additional information about attributes on an item when advanced tooltips is on.",
   "neoforge.configgui.enableB3DValidationLayer": "Enable Blaze3D Validation Layer",
   "neoforge.configgui.enableB3DValidationLayer.tooltip": "When enabled, all usage of Blaze3D (Minecraft's internal rendering abstraction) will be validated against allowed usage.",
+  "neoforge.configgui.enableGlobalDatapacksAutomatically": "Automatically Enable Global Datapacks",
+  "neoforge.configgui.enableGlobalDatapacksAutomatically.tooltip": "Controls whether datapacks loaded from the global 'datapacks' folder (in the game directory) are automatically enabled for new worlds.",
   "neoforge.configgui.forgeLightPipelineEnabled": "NeoForge Light Pipeline",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Enable the NeoForge block rendering pipeline - fixes the lighting of custom models.",
   "neoforge.configgui.fullBoundingBoxLadders": "Full Bounding Box Ladders",
@@ -248,6 +250,7 @@
 
   "pack.neoforge.description": "NeoForge data/resource pack",
   "pack.neoforge.source.child": "child",
+  "pack.source.neoforge.global": "global",
 
   "neoforge.network.negotiation.failure.mod": "Channel of mod \"%1$s\" failed to connect: %2$s",
   "neoforge.network.negotiation.failure.missing.client.server": "This channel is missing on the server side, but required on the client!",
