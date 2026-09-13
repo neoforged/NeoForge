@@ -5,6 +5,5 @@
       "registry": "minecraft:worldgen/biome",
       "value": "minecraft:plains"
     }
-  ],
-  "type": "minecraft:crafting_special_repairitem"
+  ]
 }

@@ -3,8 +3,7 @@
     {
       "type": "neoforge:tag_empty",
       "registry": "minecraft:worldgen/biome",
-      "tag": "nope:no_such_biome_tag"
+      "tag": "c:hidden_from_locator_selection"
     }
-  ],
-  "type": "minecraft:crafting_special_repairitem"
+  ]
 }

@@ -5,6 +5,5 @@
       "registry": "minecraft:loot_table",
       "tag": "neotests_reload_listener_conditions:empty"
     }
-  ],
-  "type": "minecraft:crafting_special_repairitem"
+  ]
 }

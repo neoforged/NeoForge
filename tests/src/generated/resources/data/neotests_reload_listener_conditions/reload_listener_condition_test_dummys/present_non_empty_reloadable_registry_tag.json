@@ -4,10 +4,9 @@
       "type": "neoforge:not",
       "value": {
         "type": "neoforge:tag_empty",
-        "registry": "minecraft:worldgen/biome",
-        "tag": "c:is_plains"
+        "registry": "minecraft:loot_table",
+        "tag": "neotests_reload_listener_conditions:not_empty"
       }
     }
-  ],
-  "type": "minecraft:crafting_special_repairitem"
+  ]
 }

@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/ReloadableServerRegistries.java
++++ b/net/minecraft/server/ReloadableServerRegistries.java
+@@ -34,7 +_,7 @@
+             context.getAccessForLoading(RegistryLayer.RELOADABLE), updatedContextTags
+         );
+         HolderLookup.Provider loadingContextWithTags = HolderLookup.Provider.create(contextRegistriesWithTags.stream());
+-        return RegistryDataLoader.load(manager, contextRegistriesWithTags, RegistryDataLoader.RELOADABLE_REGISTRIES, executor)
++        return RegistryDataLoader.load(manager, contextRegistriesWithTags, RegistryDataLoader.RELOADABLE_REGISTRIES, executor, updatedContextTags)
+             .thenApplyAsync(newlyLoadedRegistries -> createAndValidateFullContext(context, loadingContextWithTags, newlyLoadedRegistries), executor);
+     }
+ 

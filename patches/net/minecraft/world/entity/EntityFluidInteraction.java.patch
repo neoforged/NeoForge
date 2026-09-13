@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/EntityFluidInteraction.java
 +++ b/net/minecraft/world/entity/EntityFluidInteraction.java
-@@ -26,17 +_,18 @@
+@@ -26,17 +_,22 @@
  
  public class EntityFluidInteraction {
      private final List<EntityFluidInteraction.Tracker> fluidTrackers = new ArrayList<>();
@@ -16,12 +16,28 @@
      }
  
      public boolean update(Entity entity, boolean ignoreCurrent) {
++        return this.update(entity, _ -> !ignoreCurrent);
++    }
++
++    public boolean update(Entity entity, java.util.function.Predicate<net.neoforged.neoforge.fluids.FluidType> typePushPredicate) {
          this.fluidTrackers.removeIf(EntityFluidInteraction.Tracker::reset);
 -        this.currentAccumulators.values().forEach(EntityFluidInteraction.CurrentAccumulator::reset);
 +        this.currentAccumulators.values().removeIf(EntityFluidInteraction.CurrentAccumulator::resetAndCheckUnused);
          AABB box = entity.getFluidInteractionBox();
          if (box == null) {
              return false;
+@@ -75,8 +_,10 @@
+                             if (fluidType != lastFluidType) {
+                                 lastFluidType = fluidType;
+                                 tracker = this.getOrCreateTrackerFor(fluidType);
+-                                if (!ignoreCurrent) {
++                                if (typePushPredicate.test(lastFluidType.value().getFluidType())) {
+                                     current = this.getCurrentAccumulatorFor(fluidType);
++                                } else {
++                                    current = null;
+                                 }
+                             }
+ 
 @@ -89,6 +_,7 @@
  
                              tracker.height = Math.max(fluidTop - entityY, tracker.height);
@@ -61,14 +77,15 @@
 +
 +    public void applyCurrentTo(net.neoforged.neoforge.fluids.FluidType fluid, Entity entity, double scale) {
          EntityFluidInteraction.CurrentAccumulator current = this.currentAccumulators.get(fluid);
-         if (current != null) {
+-        if (current != null) {
++        if (current != null && entity.isPushedByFluid(fluid)) {
              current.applyTo(entity, scale);
          }
      }
  
 +    public void applyCurrentTo(Entity entity) {
 +        for (var entry : this.currentAccumulators.entrySet()) {
-+            if (entry.getValue().height > 0D) {
++            if (entry.getValue().height > 0D && entity.isPushedByFluid(entry.getKey())) {
 +                entry.getValue().applyTo(entity, entity.getFluidMotionScale(entry.getKey()));
 +            }
 +        }
@@ -79,7 +96,7 @@
      public double getFluidHeight(TagKey<Fluid> fluid) {
          double height = 0.0;
  
-@@ -177,10 +_,70 @@
+@@ -177,10 +_,85 @@
          return height;
      }
  
@@ -115,6 +132,21 @@
 +            }
 +        }
 +        return maxHeightType;
++    }
++
++    public float getFallDistanceModifier(Entity entity) {
++        float minMod = 1F;
++        for (Tracker tracker : this.fluidTrackers) {
++            var fluidType = tracker.fluidType.value().getFluidType();
++            if (tracker.height <= 0D || fluidType.isVanilla() || fluidType.getIsWaterLike()) {
++                continue;
++            }
++            float mod = entity.getFluidFallDistanceModifier(fluidType);
++            if (mod < minMod) {
++                minMod = mod;
++            }
++        }
++        return minMod;
 +    }
 +
 +    /// @deprecated Neo: use [#isInFluid(net.neoforged.neoforge.fluids.FluidType)] instead

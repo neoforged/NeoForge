@@ -11,20 +11,24 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
-import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraft.world.item.crafting.RepairItemRecipe;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.equipment.trim.TrimPattern;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -32,7 +36,8 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
-import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
+import net.neoforged.neoforge.common.data.JsonCodecProvider;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -51,27 +56,28 @@ public final class LoadingConditionsTest {
         ResourceKey<TrimPattern> presentEmptyStaticTag = ResourceKey.create(Registries.TRIM_PATTERN, Identifier.fromNamespaceAndPath(modId, "present_empty_static_tag"));
         ResourceKey<TrimPattern> presentNonEmptyStaticTag = ResourceKey.create(Registries.TRIM_PATTERN, Identifier.fromNamespaceAndPath(modId, "present_non_empty_static_tag"));
 
-        test.registrationHelper().addClientProvider(event -> {
-            RegistrySetBuilder entries = new RegistrySetBuilder().add(Registries.TRIM_PATTERN, registry -> {
-                registry.register(absentStaticObject, new TrimPattern(absentStaticObject.identifier(), Component.empty(), false));
-                registry.register(presentStaticObject, new TrimPattern(presentStaticObject.identifier(), Component.empty(), false));
-                registry.register(absentStaticTag, new TrimPattern(absentStaticTag.identifier(), Component.empty(), false));
-                registry.register(presentEmptyStaticTag, new TrimPattern(presentEmptyStaticTag.identifier(), Component.empty(), false));
-                registry.register(presentNonEmptyStaticTag, new TrimPattern(presentNonEmptyStaticTag.identifier(), Component.empty(), false));
-            });
-            Map<ResourceKey<?>, List<ICondition>> conditions = Map.of(
+        test.registrationHelper().generateWorldRegistries(new RegistrySetBuilder().add(Registries.TRIM_PATTERN, registry -> {
+            registry.register(
                     absentStaticObject,
-                    List.of(NeoForgeConditions.not(NeoForgeConditions.itemRegistered("nope:no_such_item"))),
+                    new TrimPattern(absentStaticObject.identifier(), Component.empty(), false),
+                    NeoForgeConditions.not(NeoForgeConditions.itemRegistered("nope:no_such_item")));
+            registry.register(
                     presentStaticObject,
-                    List.of(NeoForgeConditions.itemRegistered("redstone")),
+                    new TrimPattern(presentStaticObject.identifier(), Component.empty(), false),
+                    NeoForgeConditions.itemRegistered("redstone"));
+            registry.register(
                     absentStaticTag,
-                    List.of(NeoForgeConditions.itemTagEmpty("nope:no_such_item_tag")),
+                    new TrimPattern(absentStaticTag.identifier(), Component.empty(), false),
+                    NeoForgeConditions.itemTagEmpty("nope:no_such_item_tag"));
+            registry.register(
                     presentEmptyStaticTag,
-                    List.of(NeoForgeConditions.itemTagEmpty("c:drinks/juice")),
+                    new TrimPattern(presentEmptyStaticTag.identifier(), Component.empty(), false),
+                    NeoForgeConditions.itemTagEmpty("c:drinks/juice"));
+            registry.register(
                     presentNonEmptyStaticTag,
-                    List.of(NeoForgeConditions.not(NeoForgeConditions.itemTagEmpty("c:eggs"))));
-            return new DatapackBuiltinEntriesProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), entries, conditions, Set.of(modId));
-        });
+                    new TrimPattern(presentNonEmptyStaticTag.identifier(), Component.empty(), false),
+                    NeoForgeConditions.not(NeoForgeConditions.itemTagEmpty("c:eggs")));
+        }));
 
         test.eventListeners().forge().addListener((TagsUpdatedEvent.ServerDataLoad event) -> {
             assertEntryPresence(test, event.getRegistries(), RegistryAccess::get, "datapack registry", Set.of(
@@ -97,31 +103,30 @@ public final class LoadingConditionsTest {
         ResourceKey<LootTable> presentEmptyDatapackRegistryTag = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(modId, "present_empty_datapack_registry_tag"));
         ResourceKey<LootTable> presentNonEmptyDatapackRegistryTag = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(modId, "present_non_empty_datapack_registry_tag"));
 
-        test.registrationHelper().addClientProvider(event -> {
-            LootTableProvider.SubProviderEntry entry = new LootTableProvider.SubProviderEntry(_ -> consumer -> {
-                consumer.accept(absentStaticObject, LootTable.lootTable()
-                        .withCondition(NeoForgeConditions.not(NeoForgeConditions.itemRegistered("nope:no_such_item"))));
-                consumer.accept(presentStaticObject, LootTable.lootTable()
-                        .withCondition(NeoForgeConditions.itemRegistered("redstone")));
-                consumer.accept(absentStaticTag, LootTable.lootTable()
-                        .withCondition(NeoForgeConditions.itemTagEmpty("nope:no_such_item_tag")));
-                consumer.accept(presentEmptyStaticTag, LootTable.lootTable()
-                        .withCondition(NeoForgeConditions.itemTagEmpty("c:drinks/juice")));
-                consumer.accept(presentNonEmptyStaticTag, LootTable.lootTable()
-                        .withCondition(NeoForgeConditions.not(NeoForgeConditions.itemTagEmpty("c:eggs"))));
-                consumer.accept(absentDatapackRegistryObject, LootTable.lootTable()
-                        .withCondition(NeoForgeConditions.not(NeoForgeConditions.registered(Registries.BIOME, Identifier.parse("nope:no_such_biome")))));
-                consumer.accept(presentDatapackRegistryObject, LootTable.lootTable()
-                        .withCondition(NeoForgeConditions.registered(Registries.BIOME, Identifier.parse("plains"))));
-                consumer.accept(absentDatapackRegistryTag, LootTable.lootTable()
-                        .withCondition(NeoForgeConditions.tagEmpty(Registries.BIOME, Identifier.parse("nope:no_such_biome_tag"))));
-                consumer.accept(presentEmptyDatapackRegistryTag, LootTable.lootTable()
-                        .withCondition(NeoForgeConditions.tagEmpty(Tags.Biomes.HIDDEN_FROM_LOCATOR_SELECTION)));
-                consumer.accept(presentNonEmptyDatapackRegistryTag, LootTable.lootTable()
-                        .withCondition(NeoForgeConditions.not(NeoForgeConditions.tagEmpty(Tags.Biomes.IS_PLAINS))));
-            }, LootContextParamSets.EMPTY);
-            return new LootTableProvider(event.getGenerator().getPackOutput(), Set.of(), List.of(entry), event.getLookupProvider());
-        });
+        LootTableProvider.SubProviderEntry entry = new LootTableProvider.SubProviderEntry(context -> () -> {
+            context.accept(absentStaticObject, LootTable.lootTable()
+                    .withCondition(NeoForgeConditions.not(NeoForgeConditions.itemRegistered("nope:no_such_item"))));
+            context.accept(presentStaticObject, LootTable.lootTable()
+                    .withCondition(NeoForgeConditions.itemRegistered("redstone")));
+            context.accept(absentStaticTag, LootTable.lootTable()
+                    .withCondition(NeoForgeConditions.itemTagEmpty("nope:no_such_item_tag")));
+            context.accept(presentEmptyStaticTag, LootTable.lootTable()
+                    .withCondition(NeoForgeConditions.itemTagEmpty("c:drinks/juice")));
+            context.accept(presentNonEmptyStaticTag, LootTable.lootTable()
+                    .withCondition(NeoForgeConditions.not(NeoForgeConditions.itemTagEmpty("c:eggs"))));
+            context.accept(absentDatapackRegistryObject, LootTable.lootTable()
+                    .withCondition(NeoForgeConditions.not(NeoForgeConditions.registered(Registries.BIOME, Identifier.parse("nope:no_such_biome")))));
+            context.accept(presentDatapackRegistryObject, LootTable.lootTable()
+                    .withCondition(NeoForgeConditions.registered(Registries.BIOME, Identifier.parse("plains"))));
+            context.accept(absentDatapackRegistryTag, LootTable.lootTable()
+                    .withCondition(NeoForgeConditions.tagEmpty(Registries.BIOME, Identifier.parse("nope:no_such_biome_tag"))));
+            context.accept(presentEmptyDatapackRegistryTag, LootTable.lootTable()
+                    .withCondition(NeoForgeConditions.tagEmpty(Tags.Biomes.HIDDEN_FROM_LOCATOR_SELECTION)));
+            context.accept(presentNonEmptyDatapackRegistryTag, LootTable.lootTable()
+                    .withCondition(NeoForgeConditions.not(NeoForgeConditions.tagEmpty(Tags.Biomes.IS_PLAINS))));
+        }, LootContextParamSets.EMPTY);
+        LootTableProvider lootTableProvider = new LootTableProvider(Set.of(), List.of(entry));
+        test.registrationHelper().generateReloadableRegistries(new RegistrySetBuilder().add(Registries.LOOT_TABLE, lootTableProvider));
 
         test.eventListeners().forge().addListener((TagsUpdatedEvent.ServerDataLoad event) -> {
             assertEntryPresence(test, event.getRegistries(), RegistryAccess::get, "reloadable registry", Set.of(
@@ -141,89 +146,86 @@ public final class LoadingConditionsTest {
     @TestHolder(description = "Tests that reload listener loading conditions have access to static, datapack and reloadable registry contents and associated tags", enabledByDefault = true)
     static void reloadListenerConditions(DynamicTest test) {
         String modId = test.createModId();
-        ResourceKey<Recipe<?>> absentStaticObject = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(modId, "absent_static_object"));
-        ResourceKey<Recipe<?>> presentStaticObject = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(modId, "present_static_object"));
-        ResourceKey<Recipe<?>> absentStaticTag = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(modId, "absent_static_tag"));
-        ResourceKey<Recipe<?>> presentEmptyStaticTag = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(modId, "present_empty_static_tag"));
-        ResourceKey<Recipe<?>> presentNonEmptyStaticTag = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(modId, "present_non_empty_static_tag"));
-        ResourceKey<Recipe<?>> absentDatapackRegistryObject = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(modId, "absent_datapack_registry_object"));
-        ResourceKey<Recipe<?>> presentDatapackRegistryObject = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(modId, "present_datapack_registry_object"));
-        ResourceKey<Recipe<?>> absentDatapackRegistryTag = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(modId, "absent_datapack_registry_tag"));
-        ResourceKey<Recipe<?>> presentEmptyDatapackRegistryTag = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(modId, "present_empty_datapack_registry_tag"));
-        ResourceKey<Recipe<?>> presentNonEmptyDatapackRegistryTag = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(modId, "present_non_empty_datapack_registry_tag"));
-        ResourceKey<Recipe<?>> absentReloadableRegistryObject = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(modId, "absent_reloadable_registry_object"));
-        ResourceKey<Recipe<?>> presentReloadableRegistryObject = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(modId, "present_reloadable_registry_object"));
-        ResourceKey<Recipe<?>> absentReloadableRegistryTag = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(modId, "absent_reloadable_registry_tag"));
-        ResourceKey<Recipe<?>> presentEmptyReloadableRegistryTag = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(modId, "present_empty_reloadable_registry_tag"));
-        ResourceKey<Recipe<?>> presentNonEmptyReloadableRegistryTag = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(modId, "present_non_empty_reloadable_registry_tag"));
+        String directory = "reload_listener_condition_test_dummys";
+        Codec<Object> codec = MapCodec.unitCodec(Object::new);
+        ResourceKey<Registry<Object>> dummyRegKey = ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(modId, "reload_listener_condition_test_dummy"));
+        ResourceKey<Object> absentStaticObject = ResourceKey.create(dummyRegKey, Identifier.fromNamespaceAndPath(modId, "absent_static_object"));
+        ResourceKey<Object> presentStaticObject = ResourceKey.create(dummyRegKey, Identifier.fromNamespaceAndPath(modId, "present_static_object"));
+        ResourceKey<Object> absentStaticTag = ResourceKey.create(dummyRegKey, Identifier.fromNamespaceAndPath(modId, "absent_static_tag"));
+        ResourceKey<Object> presentEmptyStaticTag = ResourceKey.create(dummyRegKey, Identifier.fromNamespaceAndPath(modId, "present_empty_static_tag"));
+        ResourceKey<Object> presentNonEmptyStaticTag = ResourceKey.create(dummyRegKey, Identifier.fromNamespaceAndPath(modId, "present_non_empty_static_tag"));
+        ResourceKey<Object> absentDatapackRegistryObject = ResourceKey.create(dummyRegKey, Identifier.fromNamespaceAndPath(modId, "absent_datapack_registry_object"));
+        ResourceKey<Object> presentDatapackRegistryObject = ResourceKey.create(dummyRegKey, Identifier.fromNamespaceAndPath(modId, "present_datapack_registry_object"));
+        ResourceKey<Object> absentDatapackRegistryTag = ResourceKey.create(dummyRegKey, Identifier.fromNamespaceAndPath(modId, "absent_datapack_registry_tag"));
+        ResourceKey<Object> presentEmptyDatapackRegistryTag = ResourceKey.create(dummyRegKey, Identifier.fromNamespaceAndPath(modId, "present_empty_datapack_registry_tag"));
+        ResourceKey<Object> presentNonEmptyDatapackRegistryTag = ResourceKey.create(dummyRegKey, Identifier.fromNamespaceAndPath(modId, "present_non_empty_datapack_registry_tag"));
+        ResourceKey<Object> absentReloadableRegistryObject = ResourceKey.create(dummyRegKey, Identifier.fromNamespaceAndPath(modId, "absent_reloadable_registry_object"));
+        ResourceKey<Object> presentReloadableRegistryObject = ResourceKey.create(dummyRegKey, Identifier.fromNamespaceAndPath(modId, "present_reloadable_registry_object"));
+        ResourceKey<Object> absentReloadableRegistryTag = ResourceKey.create(dummyRegKey, Identifier.fromNamespaceAndPath(modId, "absent_reloadable_registry_tag"));
+        ResourceKey<Object> presentEmptyReloadableRegistryTag = ResourceKey.create(dummyRegKey, Identifier.fromNamespaceAndPath(modId, "present_empty_reloadable_registry_tag"));
+        ResourceKey<Object> presentNonEmptyReloadableRegistryTag = ResourceKey.create(dummyRegKey, Identifier.fromNamespaceAndPath(modId, "present_non_empty_reloadable_registry_tag"));
 
         TagKey<LootTable> emptyLootTableTag = TagKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(modId, "empty"));
         TagKey<LootTable> nonEmptyLootTableTag = TagKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(modId, "not_empty"));
 
-        /*test.registrationHelper().addClientProvider(event -> {
-            return new TagsProvider<>(event.getGenerator().getPackOutput(), Registries.LOOT_TABLE, event.getLookupProvider(), modId) {
+        test.registrationHelper().addClientProvider(event -> {
+            return new TagsProvider<>(event.getGenerator().getPackOutput(), Registries.LOOT_TABLE, event.getReloadableLookupProvider(), modId) {
                 @Override
                 protected void addTags(HolderLookup.Provider registries) {
                     tag(emptyLootTableTag);
                     tag(nonEmptyLootTableTag).add(BuiltInLootTables.ANCIENT_CITY);
                 }
             };
-        });*/
-        test.registrationHelper().addClientProvider(event -> {
-            class TestRecipes extends RecipeProvider {
-                protected TestRecipes(HolderLookup.Provider registries, RecipeOutput output) {
-                    super(registries, output);
-                }
-
-                @Override
-                protected void buildRecipes() {
-                    output.accept(absentStaticObject, new RepairItemRecipe(), null, NeoForgeConditions.not(NeoForgeConditions.itemRegistered("nope:no_such_item")));
-                    output.accept(presentStaticObject, new RepairItemRecipe(), null, NeoForgeConditions.itemRegistered("redstone"));
-                    output.accept(absentStaticTag, new RepairItemRecipe(), null, NeoForgeConditions.itemTagEmpty("nope:no_such_item_tag"));
-                    output.accept(presentEmptyStaticTag, new RepairItemRecipe(), null, NeoForgeConditions.itemTagEmpty("c:drinks/juice"));
-                    output.accept(presentNonEmptyStaticTag, new RepairItemRecipe(), null, NeoForgeConditions.not(NeoForgeConditions.itemTagEmpty("c:eggs")));
-                    output.accept(absentDatapackRegistryObject, new RepairItemRecipe(), null, NeoForgeConditions.not(NeoForgeConditions.registered(Registries.BIOME, Identifier.parse("nope:no_such_biome"))));
-                    output.accept(presentDatapackRegistryObject, new RepairItemRecipe(), null, NeoForgeConditions.registered(Registries.BIOME, Identifier.parse("plains")));
-                    output.accept(absentDatapackRegistryTag, new RepairItemRecipe(), null, NeoForgeConditions.tagEmpty(Registries.BIOME, Identifier.parse("nope:no_such_biome_tag")));
-                    output.accept(presentEmptyDatapackRegistryTag, new RepairItemRecipe(), null, NeoForgeConditions.tagEmpty(Tags.Biomes.HIDDEN_FROM_LOCATOR_SELECTION));
-                    output.accept(presentNonEmptyDatapackRegistryTag, new RepairItemRecipe(), null, NeoForgeConditions.not(NeoForgeConditions.tagEmpty(Tags.Biomes.IS_PLAINS)));
-                    output.accept(absentReloadableRegistryObject, new RepairItemRecipe(), null, NeoForgeConditions.not(NeoForgeConditions.registered(Registries.LOOT_TABLE, Identifier.parse("nope:no_such_loot_table"))));
-                    output.accept(presentReloadableRegistryObject, new RepairItemRecipe(), null, NeoForgeConditions.registered(BuiltInLootTables.ANCIENT_CITY));
-                    output.accept(absentReloadableRegistryTag, new RepairItemRecipe(), null, NeoForgeConditions.tagEmpty(Registries.LOOT_TABLE, Identifier.parse("nope:no_such_loot_table_tag")));
-                    output.accept(presentEmptyReloadableRegistryTag, new RepairItemRecipe(), null, NeoForgeConditions.tagEmpty(emptyLootTableTag));
-                    output.accept(presentNonEmptyReloadableRegistryTag, new RepairItemRecipe(), null, NeoForgeConditions.not(NeoForgeConditions.tagEmpty(nonEmptyLootTableTag)));
-                }
+        });
+        test.registrationHelper().addClientProvider(event -> new JsonCodecProvider<>(event.getGenerator().getPackOutput(), PackOutput.Target.DATA_PACK, directory, codec, event.getReloadableLookupProvider(), modId) {
+            @Override
+            protected void gather() {
+                add(absentStaticObject, NeoForgeConditions.not(NeoForgeConditions.itemRegistered("nope:no_such_item")));
+                add(presentStaticObject, NeoForgeConditions.itemRegistered("redstone"));
+                add(absentStaticTag, NeoForgeConditions.itemTagEmpty("nope:no_such_item_tag"));
+                add(presentEmptyStaticTag, NeoForgeConditions.itemTagEmpty("c:drinks/juice"));
+                add(presentNonEmptyStaticTag, NeoForgeConditions.not(NeoForgeConditions.itemTagEmpty("c:eggs")));
+                add(absentDatapackRegistryObject, NeoForgeConditions.not(NeoForgeConditions.registered(Registries.BIOME, Identifier.parse("nope:no_such_biome"))));
+                add(presentDatapackRegistryObject, NeoForgeConditions.registered(Registries.BIOME, Identifier.parse("plains")));
+                add(absentDatapackRegistryTag, NeoForgeConditions.tagEmpty(Registries.BIOME, Identifier.parse("nope:no_such_biome_tag")));
+                add(presentEmptyDatapackRegistryTag, NeoForgeConditions.tagEmpty(Tags.Biomes.HIDDEN_FROM_LOCATOR_SELECTION));
+                add(presentNonEmptyDatapackRegistryTag, NeoForgeConditions.not(NeoForgeConditions.tagEmpty(Tags.Biomes.IS_PLAINS)));
+                add(absentReloadableRegistryObject, NeoForgeConditions.not(NeoForgeConditions.registered(Registries.LOOT_TABLE, Identifier.parse("nope:no_such_loot_table"))));
+                add(presentReloadableRegistryObject, NeoForgeConditions.registered(BuiltInLootTables.ANCIENT_CITY));
+                add(absentReloadableRegistryTag, NeoForgeConditions.tagEmpty(Registries.LOOT_TABLE, Identifier.parse("nope:no_such_loot_table_tag")));
+                add(presentEmptyReloadableRegistryTag, NeoForgeConditions.tagEmpty(emptyLootTableTag));
+                add(presentNonEmptyReloadableRegistryTag, NeoForgeConditions.not(NeoForgeConditions.tagEmpty(nonEmptyLootTableTag)));
             }
-            return new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
-                @Override
-                protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
-                    return new TestRecipes(registries, output);
-                }
 
-                @Override
-                public String getName() {
-                    return "LoadingConditionsTest - Recipes";
-                }
-            };
+            private void add(ResourceKey<Object> key, ICondition condition) {
+                conditionally(key.identifier(), b -> b.withCarrier(new Object()).addCondition(condition));
+            }
         });
 
-        test.eventListeners().forge().addListener((TagsUpdatedEvent.ServerDataLoad event) -> {
-            // TODO 26.3: enable non-empty reloadable registry tag test (presentNonEmptyReloadableRegistryTag) and move the tested tags to datagen above
-            assertEntryPresence(test, event.getServerResources().getRecipeManager(), RecipeManager::byKey, "reload listener", Set.of(
-                    absentStaticObject,
-                    presentStaticObject,
-                    absentStaticTag,
-                    presentEmptyStaticTag,
-                    presentNonEmptyStaticTag,
-                    absentDatapackRegistryObject,
-                    presentDatapackRegistryObject,
-                    absentDatapackRegistryTag,
-                    presentEmptyDatapackRegistryTag,
-                    presentNonEmptyDatapackRegistryTag,
-                    absentReloadableRegistryObject,
-                    presentReloadableRegistryObject,
-                    absentReloadableRegistryTag,
-                    presentEmptyReloadableRegistryTag));
+        test.eventListeners().forge().addListener((AddServerReloadListenersEvent event) -> {
+            Identifier listenerKey = Identifier.fromNamespaceAndPath(modId, "reload_listener_condition_test_dummy_loader");
+            FileToIdConverter lister = FileToIdConverter.json(directory);
+            event.addListener(listenerKey, new SimpleJsonResourceReloadListener<>(codec, lister) {
+                @Override
+                protected void apply(Map<Identifier, Object> preparations, ResourceManager manager, ProfilerFiller profiler) {
+                    assertEntryPresence(test, preparations, (map, key) -> Optional.ofNullable(map.get(key.identifier())), "reload_listener", Set.of(
+                            absentStaticObject,
+                            presentStaticObject,
+                            absentStaticTag,
+                            presentEmptyStaticTag,
+                            presentNonEmptyStaticTag,
+                            absentDatapackRegistryObject,
+                            presentDatapackRegistryObject,
+                            absentDatapackRegistryTag,
+                            presentEmptyDatapackRegistryTag,
+                            presentNonEmptyDatapackRegistryTag,
+                            absentReloadableRegistryObject,
+                            presentReloadableRegistryObject,
+                            absentReloadableRegistryTag,
+                            presentEmptyReloadableRegistryTag,
+                            presentNonEmptyReloadableRegistryTag));
+                }
+            });
         });
     }
 

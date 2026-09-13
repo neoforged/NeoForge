@@ -1,18 +1,13 @@
 --- a/net/minecraft/world/level/block/FlowerPotBlock.java
 +++ b/net/minecraft/world/level/block/FlowerPotBlock.java
-@@ -35,17 +_,50 @@
-     );
+@@ -30,12 +_,45 @@
+ public class FlowerPotBlock extends Block {
      private static final Map<Block, Block> POTTED_BY_CONTENT = Maps.newHashMap();
      private static final VoxelShape SHAPE = Block.column(6.0, 0.0, 6.0);
 +    /// Neo: Field accesses are redirected to {@link #getPotted()} with a coremod.
      private final Block potted;
 +    private final java.util.function.@org.jspecify.annotations.Nullable Supplier<FlowerPotBlock> emptyPot;
 +    private final java.util.function.Supplier<? extends Block> flowerDelegate;
- 
-     @Override
-     public MapCodec<FlowerPotBlock> codec() {
-         return CODEC;
-     }
  
 +    /// @deprecated Neo: Use the other constructors for [empty pots][#FlowerPotBlock(Properties)] and [full pots][#FlowerPotBlock(java.util.function.Supplier, java.util.function.Supplier, Properties)].
 +    @Deprecated
@@ -53,7 +48,7 @@
      }
  
      @Override
-@@ -58,7 +_,7 @@
+@@ -48,7 +_,7 @@
          ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult
      ) {
          BlockState newContents = (itemStack.getItem() instanceof BlockItem blockItem
@@ -62,16 +57,16 @@
                  : Blocks.AIR)
              .defaultBlockState();
          if (newContents.isAir()) {
-@@ -87,7 +_,7 @@
-             player.drop(plant, false);
+@@ -77,7 +_,7 @@
+             player.drop(plant, false, Prediction.PREDICTED);
          }
  
--        level.setBlock(pos, Blocks.FLOWER_POT.defaultBlockState(), 3);
-+        level.setBlock(pos, getEmptyPot().defaultBlockState(), 3);
+-        level.setBlockAndUpdate(pos, Blocks.FLOWER_POT.defaultBlockState());
++        level.setBlockAndUpdate(pos, getEmptyPot().defaultBlockState());
          level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
          return InteractionResult.SUCCESS;
      }
-@@ -118,12 +_,57 @@
+@@ -108,12 +_,57 @@
      }
  
      public Block getPotted() {

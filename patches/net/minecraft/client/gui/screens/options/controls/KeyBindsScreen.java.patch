@@ -23,7 +23,7 @@
              }
  
              this.keyBindsList.resetMappingAndUpdateButtons();
-@@ -73,18 +_,68 @@
+@@ -77,18 +_,65 @@
      @Override
      public boolean keyPressed(KeyEvent event) {
          if (this.selectedKey != null) {
@@ -43,10 +43,7 @@
 +
 +    @Override
 +    public boolean keyReleased(KeyEvent event) {
-+        // We ignore events from keys with the scan code 63 as they're emitted
-+        // (only as RELEASE, not PRESS) by Mac systems to indicate that "Fn" is being pressed
-+        // See https://github.com/neoforged/NeoForge/issues/1683
-+        if (!ignoreNextRelease && this.selectedKey != null && (!net.minecraft.client.input.InputQuirks.ON_OSX || event.scancode() != 63)) {
++        if (!ignoreNextRelease && this.selectedKey != null) {
              if (event.isEscape()) {
 +                this.selectedKey.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.NONE, InputConstants.UNKNOWN);
                  this.selectedKey.setKey(InputConstants.UNKNOWN);

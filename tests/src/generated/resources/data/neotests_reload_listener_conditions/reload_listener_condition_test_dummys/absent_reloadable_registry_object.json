@@ -8,6 +8,5 @@
         "value": "nope:no_such_loot_table"
       }
     }
-  ],
-  "type": "minecraft:crafting_special_repairitem"
+  ]
 }

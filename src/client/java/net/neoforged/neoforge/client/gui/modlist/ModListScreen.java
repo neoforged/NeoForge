@@ -12,7 +12,6 @@ import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.blaze3d.Blaze3D;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.logging.LogUtils;
 import java.io.Closeable;
 import java.io.IOException;
@@ -28,6 +27,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
+
+import com.mojang.renderpearl.api.textures.FilterMode;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractStringWidget;
@@ -559,7 +560,7 @@ public class ModListScreen extends Screen {
             if (event == null) return;
             switch (event) {
                 case ClickEvent.OpenUrl(URI uri) -> ConfirmLinkScreen.confirmLinkNow(ModListScreen.this, uri);
-                case ClickEvent.OpenFile openFile -> Util.getPlatform().openFile(openFile.file());
+                case ClickEvent.OpenFile openFile -> Blaze3D.openPath(openFile.file().toPath());
                 case ClickEvent.CopyToClipboard(String value) -> minecraft.keyboardHandler.setClipboard(value);
                 default -> LOGGER.error("Unable to handle click event ‘{}’", event);
             }

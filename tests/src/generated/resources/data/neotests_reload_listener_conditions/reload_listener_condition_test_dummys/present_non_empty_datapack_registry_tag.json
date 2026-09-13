@@ -3,11 +3,10 @@
     {
       "type": "neoforge:not",
       "value": {
-        "type": "neoforge:registered",
+        "type": "neoforge:tag_empty",
         "registry": "minecraft:worldgen/biome",
-        "value": "nope:no_such_biome"
+        "tag": "c:is_plains"
       }
     }
-  ],
-  "type": "minecraft:crafting_special_repairitem"
+  ]
 }

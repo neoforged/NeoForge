@@ -4,9 +4,9 @@
       "type": "neoforge:not",
       "value": {
         "type": "neoforge:registered",
-        "value": "nope:no_such_item"
+        "registry": "minecraft:worldgen/biome",
+        "value": "nope:no_such_biome"
       }
     }
-  ],
-  "type": "minecraft:crafting_special_repairitem"
+  ]
 }
