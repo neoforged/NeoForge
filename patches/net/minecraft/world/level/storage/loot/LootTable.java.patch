@@ -9,7 +9,13 @@
                      LootItemFunctions.CODEC.optionalFieldOf("modifier").forGetter(t -> t.modifier)
                  )
                  .apply(i, LootTable::new)
-@@ -52,11 +_,14 @@
+@@ -47,16 +_,19 @@
+     );
+     public static final Codec<Holder<LootTable>> CODEC = RegistryCodecs.holder(Registries.LOOT_TABLE, DIRECT_CODEC);
+     public static final Codec<HolderSet<LootTable>> LIST_CODEC = RegistryCodecs.holderSet(Registries.LOOT_TABLE, DIRECT_CODEC);
+-    public static final LootTable EMPTY = new LootTable(LootContextParamSets.EMPTY, Optional.empty(), List.of(), Optional.empty());
++    public static final LootTable EMPTY = new LootTable(LootContextParamSets.EMPTY, Optional.empty(), List.of(), Optional.empty()).setLootTableId(Identifier.withDefaultNamespace("empty"));
+     private final ContextKeySet paramSet;
      private final Optional<Identifier> randomSequence;
      private final List<LootPool> pools;
      private final Optional<Holder<LootItemFunction>> modifier;
@@ -70,7 +76,7 @@
          return result;
      }
  
-@@ -213,11 +_,67 @@
+@@ -213,11 +_,68 @@
          return new LootTable.Builder();
      }
  
@@ -91,11 +97,12 @@
 +            throw new RuntimeException("Attempted to modify LootTable after being finalized!");
 +    }
 +
-+    void setLootTableId(final Identifier id) {
++    LootTable setLootTableId(final Identifier id) {
 +        if (this.lootTableId != null && !this.lootTableId.equals(id)) {
 +            throw new IllegalStateException("Attempted to rename loot table from '" + this.lootTableId + "' to '" + id + "': this is not supported");
 +        }
 +        this.lootTableId = java.util.Objects.requireNonNull(id);
++        return this;
 +    }
 +
 +    public Identifier getLootTableId() {
