@@ -5,60 +5,50 @@
 
 package net.neoforged.neoforge.client.loading.earlydisplay;
 
-import com.mojang.blaze3d.platform.MacosUtil;
 import com.mojang.blaze3d.platform.Window;
-import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.loading.EarlyLoadingScreenController;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.sdl.SDLVideo;
 
 public final class EarlyWindowHandoff {
-    /** Completes the renderer handoff and restores the early display's native window state. */
+    /// Completes the renderer handoff and restores the early display's native window state.
     public static void completeWindowHandoff(Window window) {
         EarlyLoadingScreenController earlyLoadingScreen = EarlyLoadingScreenController.current();
         if (earlyLoadingScreen == null) {
-            GLFW.glfwShowWindow(window.handle());
+            SDLVideo.SDL_ShowWindow(window.handle());
             return;
         }
 
-        boolean nativeFullscreen = MacosUtil.IS_MACOS
-                && earlyLoadingScreen instanceof DisplayWindow displayWindow
-                && isInNativeFullscreen(displayWindow.getWindowHandle());
         EarlyLoadingScreenController.WindowState state = earlyLoadingScreen.handOverToMinecraft(() -> new Blaze3DRenderBackend(window));
-        restoreWindowState(window, state, nativeFullscreen);
-    }
-
-    private static void restoreWindowState(Window window, EarlyLoadingScreenController.WindowState state, boolean nativeFullscreen) {
         long windowHandle = window.handle();
-        if (state.posValid() && !state.minimized()) {
-            GLFW.glfwSetWindowPos(windowHandle, state.x(), state.y());
-        }
 
+        int x;
+        int y;
+        int width;
+        int height;
+        if (state.posValid() && !state.minimized()) {
+            x = state.x();
+            y = state.y();
+        } else {
+            x = window.getX();
+            y = window.getY();
+        }
         if (state.maximized()) {
             // A maximized window reports its maximized size, not its restore size.
-            GLFW.glfwMaximizeWindow(windowHandle);
+            SDLVideo.SDL_MaximizeWindow(windowHandle);
+            width = window.getWidth();
+            height = window.getHeight();
+            window.setWindowed(state.width(), state.height());
         } else {
-            GLFW.glfwSetWindowSize(windowHandle, state.width(), state.height());
+            width = state.width();
+            height = state.height();
         }
+        window.setWindowSizeAndPosition(x, y, width, height);
 
-        if (state.minimized() && !window.isFullscreen()) {
-            GLFW.glfwIconifyWindow(windowHandle);
-            GLFW.glfwPollEvents();
-        } else {
-            GLFW.glfwShowWindow(windowHandle);
-            if (nativeFullscreen) {
-                enterNativeFullscreen(windowHandle);
-            }
+        if (state.minimized() && !window.isWindowFullscreen()) {
+            SDLVideo.SDL_MinimizeWindow(windowHandle);
         }
-    }
-
-    private static boolean isInNativeFullscreen(long windowHandle) {
-        return MacosUtil.getNsWindow(windowHandle).filter(MacosUtil::isInNativeFullscreen).isPresent();
-    }
-
-    private static void enterNativeFullscreen(long windowHandle) {
-        MacosUtil.getNsWindow(windowHandle)
-                .filter(nsWindow -> !MacosUtil.isInNativeFullscreen(nsWindow))
-                .ifPresent(MacosUtil::toggleNativeFullscreen);
+        window.syncWindow();
+        SDLVideo.SDL_ShowWindow(windowHandle);
     }
 
     private EarlyWindowHandoff() {}

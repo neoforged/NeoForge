@@ -36,6 +36,14 @@
                          gameConfig.game.vulkanValidation
                      )
                  );
+@@ -547,6 +_,7 @@
+ 
+         this.windowSurface = device.createSurface(this.window.handle(), this.window::isIconified);
+         this.sdlEventHandler = new SDLEventHandler(this, this.window);
++        net.neoforged.neoforge.client.loading.earlydisplay.EarlyWindowHandoff.completeWindowHandoff(this.window);
+         this.textInputManager = new TextInputManager(this.window);
+         this.sdlEventHandler.flushInputEvents();
+         this.window
 @@ -570,6 +_,9 @@
          this.keyboardHandler = new KeyboardHandler(this);
          this.options.applyGraphicsPreset(this.options.graphicsPreset().get());

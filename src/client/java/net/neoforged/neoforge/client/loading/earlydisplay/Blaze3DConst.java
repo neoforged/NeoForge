@@ -5,12 +5,13 @@
 
 package net.neoforged.neoforge.client.loading.earlydisplay;
 
-import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
 import java.util.Set;
 import net.neoforged.fml.earlydisplay.render.backend.ELSBuffer;
 
 @SuppressWarnings("UnstableApiUsage")
 final class Blaze3DConst {
+    @GpuBuffer.Usage
     static int elsUsageToB3D(Set<ELSBuffer.Usage> usage) {
         int mask = 0;
         for (ELSBuffer.Usage entry : usage) {

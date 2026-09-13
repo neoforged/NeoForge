@@ -22,7 +22,6 @@ import net.neoforged.fml.ModLoadingException;
 import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.ModWorkManager;
 import net.neoforged.fml.VersionChecker;
-import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.fml.loading.EarlyLoadingScreenController;
 import net.neoforged.fml.startup.FatalErrorReporting;
