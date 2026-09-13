@@ -9,3 +9,12 @@
                      hasAnyClickCommand = true;
                      break;
                  case null:
+@@ -259,7 +_,7 @@
+ 
+     public boolean playerIsTooFarAwayToEdit(UUID player) {
+         Player editingPlayer = this.level.getPlayerByUUID(player);
+-        return editingPlayer == null || !editingPlayer.isWithinBlockInteractionRange(this.getBlockPos(), 4.0);
++        return editingPlayer == null || !net.neoforged.neoforge.common.CommonHooks.menuRangeValidity(editingPlayer, this, 4.0);
+     }
+ 
+     public static void tick(Level level, BlockPos blockPos, BlockState blockState, SignBlockEntity signBlockEntity) {
