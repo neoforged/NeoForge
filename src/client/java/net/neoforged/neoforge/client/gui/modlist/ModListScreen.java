@@ -13,6 +13,7 @@ import com.mojang.blaze3d.Blaze3D;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
+import com.mojang.renderpearl.api.textures.FilterMode;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,8 +28,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
-
-import com.mojang.renderpearl.api.textures.FilterMode;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractStringWidget;

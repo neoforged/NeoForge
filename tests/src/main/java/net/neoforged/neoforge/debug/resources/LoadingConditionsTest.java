@@ -5,14 +5,14 @@
 
 package net.neoforged.neoforge.debug.resources;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
