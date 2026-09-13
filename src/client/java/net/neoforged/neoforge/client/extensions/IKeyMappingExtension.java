@@ -11,9 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.client.settings.IKeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 
-/**
- * Extension interface for {@link KeyMapping}.
- */
+/// Extension interface for [KeyMapping].
 public interface IKeyMappingExtension {
     private KeyMapping self() {
         return (KeyMapping) this;
@@ -21,11 +19,9 @@ public interface IKeyMappingExtension {
 
     InputConstants.Key getKey();
 
-    /**
-     * {@return true if the key conflict context and modifier are active and the keyCode matches this binding, false otherwise}
-     */
+    /// {@return true if the key conflict context and modifier are active and the keyCode matches this binding, false otherwise}
     default boolean isActiveAndMatches(InputConstants.Key keyCode) {
-        return keyCode != InputConstants.UNKNOWN && keyCode.equals(getKey()) && getKeyConflictContext().isActive() && getKeyModifier().isActive(getKeyConflictContext());
+        return KeyMappingModifierHelper.isActiveAndMatches(keyCode, getKey(), getKeyConflictContext(), getKeyModifier());
     }
 
     public default void setToDefault() {
@@ -43,25 +39,18 @@ public interface IKeyMappingExtension {
     void setKeyModifierAndCode(KeyModifier keyModifier, InputConstants.Key keyCode);
 
     default boolean isConflictContextAndModifierActive() {
-        return getKeyConflictContext().isActive() && getKeyModifier().isActive(getKeyConflictContext());
+        IKeyConflictContext keyConflictContext = getKeyConflictContext();
+        return keyConflictContext.isActive() && KeyMappingModifierHelper.isModifierActive(keyConflictContext, getKeyModifier(), getKey());
     }
 
-    /**
-     * Returns true when one of the bindings' key codes conflicts with the other's modifier.
-     */
+    /// Returns true when one of the bindings' key codes conflicts with the other's modifier.
     default boolean hasKeyModifierConflict(KeyMapping other) {
-        if (getKeyConflictContext().conflicts(other.getKeyConflictContext()) || other.getKeyConflictContext().conflicts(getKeyConflictContext())) {
-            if (getKeyModifier().matches(other.getKey()) || other.getKeyModifier().matches(getKey())) {
-                return true;
-            }
-        }
-        return false;
+        return KeyMappingModifierHelper.hasKeyModifierConflict(self(), other);
     }
 
-    /**
-     * {@return the display name of this key mapping}
-     * Defaults to a {@linkplain Component#translatable(String) translatable component} of the {@link KeyMapping#getName() name}.
-     */
+    /// {@return the display name of this key mapping}
+    /// Defaults to a [translatable component][Component#translatable(String)] of the
+    /// [name][KeyMapping#getName()].
     default Component getDisplayName() {
         return Component.translatable(self().getName());
     }
