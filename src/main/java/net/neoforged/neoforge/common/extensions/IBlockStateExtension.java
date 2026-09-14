@@ -680,9 +680,9 @@ public interface IBlockStateExtension {
      * <li>A coral can live</li>
      * </ul>
      *
-     * @param getter   the getter which can get the block
-     * @param pos      the position of the block being hydrated
-     * @param fluid    the state of the fluid
+     * @param getter the getter which can get the block
+     * @param pos    the position of the block being hydrated
+     * @param fluid  the state of the fluid
      * @return {@code true} if the block can be hydrated, {@code false} otherwise
      */
     default boolean canBeHydrated(BlockGetter getter, BlockPos pos, FluidState fluid) {
