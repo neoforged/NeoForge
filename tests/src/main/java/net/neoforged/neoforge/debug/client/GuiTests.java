@@ -7,6 +7,7 @@ package net.neoforged.neoforge.debug.client;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
 import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
 import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import java.util.Objects;
@@ -286,6 +287,7 @@ public class GuiTests {
                 .withFragmentShader("core/position_color")
                 .withBindGroupLayout(BindGroupLayouts.DYNAMIC_TRANSFORMS)
                 .withBindGroupLayout(BindGroupLayouts.PROJECTION)
+                .withColorTargetState(ColorTargetState.DEFAULT)
                 .withCull(false)
                 .withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR)
                 .withPrimitiveTopology(PrimitiveTopology.TRIANGLE_FAN)
