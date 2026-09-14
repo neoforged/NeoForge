@@ -9,3 +9,13 @@
          if (windowHandle == 0L) {
              throw new IllegalStateException("Failed to create window: " + Objects.requireNonNullElse(SDLError.SDL_GetError(), "<no error>"));
          }
+@@ -347,7 +_,8 @@
+         }
+ 
+         this.updateWindowMouseGrab();
+-        if (Minecraft.getInstance().mouseHandler.isMouseGrabbed()) {
++        // Neo: prevent crash during ELS handover
++        if (Minecraft.getInstance().mouseHandler != null && Minecraft.getInstance().mouseHandler.isMouseGrabbed()) {
+             double xpos = this.getScreenWidth() / 2.0;
+             double ypos = this.getScreenHeight() / 2.0;
+             InputConstants.grabMouse(this, xpos, ypos);
