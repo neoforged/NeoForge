@@ -40,7 +40,6 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.SignalGetter;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.BeaconBeamBlock;
-import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CampfireBlock;
@@ -51,7 +50,6 @@ import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.GrowingPlantHeadBlock;
 import net.minecraft.world.level.block.HalfTransparentBlock;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.LadderBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.Rotation;
@@ -263,24 +261,6 @@ public interface IBlockExtension {
     }
 
     /**
-     * Determines if this block is classified as a bed, replacing <code>instanceof BedBlock</code> checks.
-     * <p>
-     * If true, players may sleep in it, though the block must manually put the player to sleep
-     * by calling {@link Player#startSleepInBed} from {@link BlockBehaviour#useWithoutItem} or similar.
-     * <p>
-     * If you want players to be able to respawn at your bed, you also need to override {@link #getRespawnPosition}.
-     *
-     * @param state   The current state
-     * @param level   The current level
-     * @param pos     Block position in level
-     * @param sleeper The sleeping entity.
-     * @return True to treat this as a bed
-     */
-    default boolean isBed(BlockState state, BlockGetter level, BlockPos pos, LivingEntity sleeper) {
-        return self() instanceof BedBlock;
-    }
-
-    /**
      * Returns the position that the entity is moved to upon respawning at this block.
      *
      * @param state       The current state
@@ -292,31 +272,6 @@ public interface IBlockExtension {
      */
     default Optional<ServerPlayer.RespawnPosAngle> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation) {
         return Optional.empty();
-    }
-
-    /**
-     * Called when a user either starts or stops sleeping in the bed.
-     *
-     * @param level    The current level
-     * @param pos      Block position in level
-     * @param sleeper  The sleeper or camera entity, null in some cases.
-     * @param occupied True if we are occupying the bed, or false if they are stopping use of the bed
-     */
-    default void setBedOccupied(BlockState state, Level level, BlockPos pos, LivingEntity sleeper, boolean occupied) {
-        level.setBlock(pos, state.setValue(BedBlock.OCCUPIED, occupied), 3);
-    }
-
-    /**
-     * Returns the direction of the block. Same values that
-     * are returned by BlockDirectional. Called every frame tick for every living entity. Be VERY fast.
-     *
-     * @param state The current state
-     * @param level The current level
-     * @param pos   Block position in level
-     * @return Bed direction
-     */
-    default Direction getBedDirection(BlockState state, LevelReader level, BlockPos pos) {
-        return state.getValue(HorizontalDirectionalBlock.FACING);
     }
 
     /**

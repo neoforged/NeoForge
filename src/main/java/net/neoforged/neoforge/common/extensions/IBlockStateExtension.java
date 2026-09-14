@@ -34,7 +34,6 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
 import net.minecraft.world.level.material.FluidState;
@@ -168,21 +167,6 @@ public interface IBlockStateExtension {
     }
 
     /**
-     * Determines if this block is classified as a bed, replacing <code>instanceof BedBlock</code> checks.
-     * <p>
-     * If true, players may sleep in it, though the block must manually put the player to sleep
-     * by calling {@link Player#startSleepInBed} from {@link BlockBehaviour#useWithoutItem} or similar.
-     *
-     * @param level   The current level
-     * @param pos     Block position in level
-     * @param sleeper The sleeping entity
-     * @return True to treat this as a bed
-     */
-    default boolean isBed(BlockGetter level, BlockPos pos, LivingEntity sleeper) {
-        return self().getBlock().isBed(self(), level, pos, sleeper);
-    }
-
-    /**
      * Returns the position that the entity is moved to upon
      * respawning at this block.
      *
@@ -194,30 +178,6 @@ public interface IBlockStateExtension {
      */
     default Optional<ServerPlayer.RespawnPosAngle> getRespawnPosition(EntityType<?> type, LevelReader level, BlockPos pos, float orientation) {
         return self().getBlock().getRespawnPosition(self(), type, level, pos, orientation);
-    }
-
-    /**
-     * Called when a user either starts or stops sleeping in the bed.
-     *
-     * @param level    The current level
-     * @param pos      Block position in level
-     * @param sleeper  The sleeper or camera entity, null in some cases.
-     * @param occupied True if we are occupying the bed, or false if they are stopping use of the bed
-     */
-    default void setBedOccupied(Level level, BlockPos pos, LivingEntity sleeper, boolean occupied) {
-        self().getBlock().setBedOccupied(self(), level, pos, sleeper, occupied);
-    }
-
-    /**
-     * Returns the direction of the block. Same values that
-     * are returned by BlockDirectional
-     *
-     * @param level The current level
-     * @param pos   Block position in level
-     * @return Bed direction
-     */
-    default Direction getBedDirection(LevelReader level, BlockPos pos) {
-        return self().getBlock().getBedDirection(self(), level, pos);
     }
 
     /**

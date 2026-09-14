@@ -820,17 +820,20 @@
                  this.teleportTo(xx, y, zz);
                  if (showParticles) {
                      level.broadcastEntityEvent(this, (byte)46);
-@@ -3843,7 +_,9 @@
- 
-     public @Nullable Direction getBedOrientation() {
-         BlockPos bedPos = this.getSleepingPos().orElse(null);
--        return bedPos != null ? BedBlock.getBedOrientation(this.level(), bedPos) : null;
-+        if (bedPos == null) return null;
-+        BlockState state = this.level().getBlockState(bedPos);
-+        return !state.isBed(level(), bedPos, this) ? null : state.getBedDirection(level(), bedPos);
+@@ -3811,10 +_,12 @@
      }
  
-     @Override
+     private boolean checkBedExists() {
+-        return this.getSleepingPos().map(bedPosition -> {
++        // Neo: Fire the CanContinueSleepingEvent.
++        boolean hasBed = this.getSleepingPos().map(bedPosition -> {
+             BlockState state = this.level().getBlockState(bedPosition);
+             return state.getBlock() instanceof AbstractBedBlock bedBlock && bedBlock.getSleepHeight(state, this.level(), bedPosition).isPresent();
+         }).orElse(false);
++        return net.neoforged.neoforge.event.EventHooks.canEntityContinueSleeping(this, hasBed ? null : Player.BedSleepingProblem.OTHER_PROBLEM);
+     }
+ 
+     public void stopSleeping() {
 @@ -3852,7 +_,7 @@
      }
  

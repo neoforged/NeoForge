@@ -42,7 +42,7 @@
              if (!this.level().isClientSide()
                  && this.getInBlockState().getBlock() instanceof AbstractBedBlock abstractBedBlock
 -                && !abstractBedBlock.getBedRule(this.level(), this.blockPosition()).canSleep(this.level())) {
-+                && net.neoforged.neoforge.event.EventHooks.canEntityContinueSleeping(this, !abstractBedBlock.getBedRule(this.level(), this.blockPosition()).canSleep(this.level()) ? BedSleepingProblem.OTHER_PROBLEM : null)) {
++                && !net.neoforged.neoforge.event.EventHooks.canEntityContinueSleeping(this, !abstractBedBlock.getBedRule(this.level(), this.blockPosition()).canSleep(this.level()) ? BedSleepingProblem.OTHER_PROBLEM : null)) {
                  this.stopSleepInBed(false, true);
              }
          } else if (this.sleepCounter > 0) {
