@@ -202,17 +202,25 @@
              profiler.popPush("frameLimiter");
              int framerateLimit = this.gameRenderer.gameRenderState().framerateLimit;
              if (framerateLimit < 260) {
-@@ -1430,8 +_,10 @@
+@@ -1430,12 +_,18 @@
      public void resizeGui() {
          int guiScale = this.window.calculateScale(this.options.guiScale().get(), this.isEnforceUnicode());
          this.window.setGuiScale(guiScale);
++        if (this.gui != null) { // Neo: prevent crash during ELS handover
 +        net.neoforged.neoforge.client.ClientHooks.fireWindowResize(this.window);
          if (this.gui.screen() != null) {
              this.gui.screen().resize(this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
 +            this.gui.resizeScreenLayers(this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
++        }
          }
  
++        if (this.mouseHandler != null) { // Neo: prevent crash during ELS handover
          this.mouseHandler.resyncMousePosition();
+         this.mouseHandler.setIgnoreFirstMove();
++        }
+     }
+ 
+     @Override
 @@ -1595,6 +_,7 @@
      }
  
