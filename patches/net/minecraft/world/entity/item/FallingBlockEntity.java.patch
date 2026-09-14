@@ -5,7 +5,7 @@
                  BlockPos pos = this.blockPosition();
                  boolean isConcrete = this.blockState.getBlock() instanceof ConcretePowderBlock;
 -                boolean isStuckInWater = isConcrete && this.level().getFluidState(pos).is(FluidTags.WATER);
-+                boolean isStuckInWater = isConcrete && this.blockState.canBeHydrated(this.level(), pos, this.level().getFluidState(pos), pos);
++                boolean isStuckInWater = isConcrete && this.blockState.canBeHydrated(this.level(), pos, this.level().getFluidState(pos));
                  double moveVec = this.getDeltaMovement().lengthSqr();
                  if (isConcrete && moveVec > 1.0) {
                      BlockHitResult clip = this.level()
@@ -14,7 +14,7 @@
                              )
                          );
 -                    if (clip.getType() != HitResult.Type.MISS && this.level().getFluidState(clip.getBlockPos()).is(FluidTags.WATER)) {
-+                    if (clip.getType() != HitResult.Type.MISS && this.blockState.canBeHydrated(this.level(), pos, this.level().getFluidState(clip.getBlockPos()), clip.getBlockPos())) {
++                    if (clip.getType() != HitResult.Type.MISS && this.blockState.canBeHydrated(this.level(), pos, this.level().getFluidState(clip.getBlockPos()))) {
                          pos = clip.getBlockPos();
                          isStuckInWater = true;
                      }

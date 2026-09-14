@@ -14,3 +14,14 @@
                  this.turnToBaseBlock(entity, state, level, pos);
              }
          }
+@@ -125,7 +_,9 @@
+     }
+ 
+     private static boolean isNearWater(LevelReader level, BlockPos pos) {
+-        return level.findBlocksIn(pos.offset(-4, 0, -4), pos.offset(4, 1, 4)).filterState(state -> state.getFluidState().is(FluidTags.WATER)).anyMatched();
++        BlockState farmland = level.getBlockState(pos);
++        return level.findBlocksIn(pos.offset(-4, 0, -4), pos.offset(4, 1, 4)).filterState(state -> farmland.canBeHydrated(level, pos, state.getFluidState())).anyMatched()
++                || net.neoforged.neoforge.common.FarmlandWaterManager.hasBlockWaterTicket(level, pos);
+     }
+ 
+     @Override

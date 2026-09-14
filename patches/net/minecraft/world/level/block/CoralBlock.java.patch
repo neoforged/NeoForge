@@ -8,7 +8,7 @@
          for (Direction direction : Direction.values()) {
              FluidState fluidState = level.getFluidState(blockPos.relative(direction));
 -            if (fluidState.is(FluidTags.WATER)) {
-+            if (state.canBeHydrated(level, blockPos, fluidState, blockPos.relative(direction))) {
++            if (state.canBeHydrated(level, blockPos, fluidState)) {
                  return true;
              }
          }

@@ -30,7 +30,7 @@
                  FluidState fluidState = level.getFluidState(below.relative(direction));
 -                if (fluidState.is(FluidTags.SUPPORTS_SUGAR_CANE_ADJACENTLY) || blockState.is(BlockTags.SUPPORTS_SUGAR_CANE_ADJACENTLY)) {
 +                // Neo: Allow the fluid state to dynamically decide whether it hydrates here if the tag-based checks fail
-+                if (fluidState.is(FluidTags.SUPPORTS_SUGAR_CANE_ADJACENTLY) || blockState.is(BlockTags.SUPPORTS_SUGAR_CANE_ADJACENTLY) || state.canBeHydrated(level, pos, fluidState, below.relative(direction))) {
++                if (fluidState.is(FluidTags.SUPPORTS_SUGAR_CANE_ADJACENTLY) || blockState.is(BlockTags.SUPPORTS_SUGAR_CANE_ADJACENTLY) || state.canBeHydrated(level, pos, fluidState)) {
                      return true;
                  }
              }

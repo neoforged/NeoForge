@@ -852,11 +852,10 @@ public interface IBlockExtension {
      * @param getter   the getter which can get the block
      * @param pos      the position of the block being hydrated
      * @param fluid    the state of the fluid
-     * @param fluidPos the position of the fluid
      * @return {@code true} if the block can be hydrated, {@code false} otherwise
      */
-    default boolean canBeHydrated(BlockState state, BlockGetter getter, BlockPos pos, FluidState fluid, BlockPos fluidPos) {
-        return fluid.canHydrate(getter, fluidPos, state, pos);
+    default boolean canBeHydrated(BlockState state, BlockGetter getter, BlockPos pos, FluidState fluid) {
+        return fluid.canHydrate(getter, state, pos);
     }
 
     /**

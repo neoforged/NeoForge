@@ -494,12 +494,11 @@ public class FluidType {
      *
      * @param state     the state of the fluid
      * @param getter    the getter which can get the fluid
-     * @param pos       the position of the fluid
      * @param source    the state of the block being hydrated
      * @param sourcePos the position of the block being hydrated
      * @return {@code true} if the block can be hydrated, {@code false} otherwise
      */
-    public boolean canHydrate(FluidState state, BlockGetter getter, BlockPos pos, BlockState source, BlockPos sourcePos) {
+    public boolean canHydrate(FluidState state, BlockGetter getter, BlockState source, BlockPos sourcePos) {
         return this.canHydrate;
     }
 

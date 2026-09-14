@@ -14,7 +14,7 @@
      }
  
 +    private static boolean shouldSolidify(BlockGetter level, BlockPos pos, BlockState replacedBlock, net.minecraft.world.level.material.FluidState fluidState) {
-+        return replacedBlock.canBeHydrated(level, pos, fluidState, pos) || touchesLiquid(level, pos, replacedBlock);
++        return replacedBlock.canBeHydrated(level, pos, fluidState) || touchesLiquid(level, pos, replacedBlock);
 +    }
 +
      private static boolean shouldSolidify(BlockGetter level, BlockPos pos, BlockState replacedBlock) {
@@ -30,11 +30,11 @@
          for (Direction direction : Direction.values()) {
              BlockState blockState = level.getBlockState(testPos);
 -            if (direction != Direction.DOWN || canSolidify(blockState)) {
-+            if (direction != Direction.DOWN || state.canBeHydrated(level, pos, blockState.getFluidState(), testPos)) {
++            if (direction != Direction.DOWN || state.canBeHydrated(level, pos, blockState.getFluidState())) {
                  testPos.setWithOffset(pos, direction);
                  blockState = level.getBlockState(testPos);
 -                if (canSolidify(blockState) && !blockState.isFaceSturdy(level, pos, direction.getOpposite())) {
-+                if (state.canBeHydrated(level, pos, blockState.getFluidState(), testPos) && !blockState.isFaceSturdy(level, pos, direction.getOpposite())) {
++                if (state.canBeHydrated(level, pos, blockState.getFluidState()) && !blockState.isFaceSturdy(level, pos, direction.getOpposite())) {
                      touchesLiquid = true;
                      break;
                  }

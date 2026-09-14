@@ -13,7 +13,7 @@
                  BlockState state = level.getBlockState(pos);
                  FluidState fluidState = level.getFluidState(pos);
 -                if (!fluidState.is(FluidTags.WATER)) {
-+                if (!spongeState.canBeHydrated(level, startPos, fluidState, pos)) {
++                if (!spongeState.canBeHydrated(level, startPos, fluidState)) {
                      return BlockPos.TraversalNodeStatus.SKIP;
                  } else if (state.getBlock() instanceof BucketPickup bucketPickup && !bucketPickup.pickupBlock(null, level, pos, state).isEmpty()) {
                      return BlockPos.TraversalNodeStatus.ACCEPT;
