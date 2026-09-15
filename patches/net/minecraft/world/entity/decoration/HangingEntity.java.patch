@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/entity/decoration/HangingEntity.java
++++ b/net/minecraft/world/entity/decoration/HangingEntity.java
+@@ -84,7 +_,10 @@
+             return false;
+         }
+ 
+-        boolean isSupported = this.level().findBlocksIn(this.calculateSupportBox()).filterState(HangingEntity::isSupportingBlock).allMatched();
++        // Neo: Allow hanging entities to be supported by sturdy faces of non-solid blocks
++        boolean isSupported = this.level().findBlocksIn(this.calculateSupportBox())
++                .filterPosition((state, pos) -> isSupportingBlock(state) || net.minecraft.world.level.block.Block.canSupportCenter(this.level(), pos, this.getDirection()))
++                .allMatched();
+         return isSupported && this.canCoexist(false);
+     }
+ 
