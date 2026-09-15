@@ -7,14 +7,16 @@ package net.neoforged.neoforge.debug.damagesource;
 
 import java.util.function.Supplier;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
+import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageEffects;
 import net.minecraft.world.damagesource.DamageScaling;
@@ -45,13 +47,11 @@ import net.neoforged.testframework.registration.RegistrationHelper;
 public class DamageTypeTests {
     public static final String GROUP = "level.damagetype";
 
-    public static final IScalingFunction SCALE_FUNC = (source, target, amount, difficulty) -> {
-        return switch (target.level().getDifficulty()) {
-            case PEACEFUL -> amount * 0F;
-            case EASY -> amount * 0.75F;
-            case NORMAL -> amount;
-            case HARD -> amount * 5F;
-        };
+    public static final IScalingFunction SCALE_FUNC = (_, _, amount, difficulty) -> switch (difficulty) {
+        case PEACEFUL -> 0F;
+        case EASY -> amount * 0.75F;
+        case NORMAL -> amount;
+        case HARD -> amount * 5F;
     };
 
     public static final IDeathMessageProvider MSG_PROVIDER = (entity, lastEntry, sigFall) -> {
@@ -94,6 +94,12 @@ public class DamageTypeTests {
             bootstrap.register(TEST_DMG_TYPE, new DamageType("test_mod", scaling, 0.0f, effects, msgType));
         });
         reg.generateWorldRegistries(registrySetBuilder);
+        reg.addClientProvider(event -> event.addProvider(new TagsProvider<>(event.getGenerator().getPackOutput(), Registries.DAMAGE_TYPE, event.getWorldLookupProvider(), reg.modId()) {
+            @Override
+            protected void addTags(Provider registries) {
+                tag(DamageTypeTags.BYPASSES_COOLDOWN).add(TEST_DMG_TYPE);
+            }
+        }));
 
         test.onGameTest(helper -> {
             Skeleton target = helper.spawnWithNoFreeWill(EntityTypes.SKELETON, 1, 1, 1);
@@ -104,8 +110,7 @@ public class DamageTypeTests {
 
             // Test that the damage type is used by the sword and set correctly.
             attacker.attack(target);
-            Registry<DamageType> dTypeReg = helper.getLevel().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE);
-            helper.assertTrue(dTypeReg.getResourceKey(target.getLastDamageSource().type()).get() == TEST_DMG_TYPE, "Incorrect damage type used");
+            helper.assertTrue(target.getLastDamageSource().is(TEST_DMG_TYPE), "Incorrect damage type used");
 
             // Test that the scaling function works correctly.
             helper.getLevel().getServer().setDifficulty(Difficulty.NORMAL, true);
@@ -114,7 +119,6 @@ public class DamageTypeTests {
             helper.assertTrue(attacker.getHealth() == 18F, "Incorrecty damage scaling for normal difficulty");
 
             helper.getLevel().getServer().setDifficulty(Difficulty.HARD, true);
-            attacker.setInvulnerableTime(0); // Need to reset this so full damage is taken.
             attacker.setHealth(20F);
             attacker.hurt(helper.getLevel().damageSources().source(TEST_DMG_TYPE), 2);
             helper.assertTrue(attacker.getHealth() == 10F, "Incorrecty damage scaling for hard difficulty: " + attacker.getHealth() + " != 10F");
