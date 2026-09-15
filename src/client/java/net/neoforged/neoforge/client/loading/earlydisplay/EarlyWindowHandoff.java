@@ -5,8 +5,8 @@
 
 package net.neoforged.neoforge.client.loading.earlydisplay;
 
-import java.nio.IntBuffer;
 import com.mojang.blaze3d.platform.Window;
+import java.nio.IntBuffer;
 import net.neoforged.fml.loading.EarlyLoadingScreenController;
 import org.lwjgl.sdl.SDLVideo;
 import org.lwjgl.system.MemoryStack;
