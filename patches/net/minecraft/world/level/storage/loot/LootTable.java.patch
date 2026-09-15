@@ -97,7 +97,7 @@
 +            throw new RuntimeException("Attempted to modify LootTable after being finalized!");
 +    }
 +
-+    LootTable setLootTableId(final Identifier id) {
++    public LootTable setLootTableId(final Identifier id) {
 +        if (this.lootTableId != null && !this.lootTableId.equals(id)) {
 +            throw new IllegalStateException("Attempted to rename loot table from '" + this.lootTableId + "' to '" + id + "': this is not supported");
 +        }

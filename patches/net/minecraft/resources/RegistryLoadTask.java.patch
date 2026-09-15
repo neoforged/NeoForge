@@ -56,7 +56,7 @@
 +                var elementCandidate = candidate.get();
 +                // For loot tables, we fire the appropriate LootTableLoadEvent first; if the event hook returns null, skip it
 +                if (elementKey.isFor(net.minecraft.core.registries.Registries.LOOT_TABLE) && elementCandidate instanceof net.minecraft.world.level.storage.loot.LootTable lootTable) {
-+                    net.minecraft.world.level.storage.loot.LootDataType.TABLE.idSetter().accept(lootTable, elementKey.identifier());
++                    lootTable.setLootTableId(elementKey.identifier());
 +                    var resultLootTable = net.neoforged.neoforge.event.EventHooks.loadLootTable(ops.lookupProvider::lookup, elementKey.identifier(), lootTable);
 +                    if (resultLootTable == null) {
 +                        return Either.right(SKIPPED_ELEMENT_MARKER);
