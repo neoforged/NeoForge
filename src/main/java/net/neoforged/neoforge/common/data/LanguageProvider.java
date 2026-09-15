@@ -11,6 +11,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -19,6 +20,7 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
@@ -29,9 +31,11 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.gamerules.GameRule;
 import net.minecraft.world.level.gamerules.GameRuleCategory;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.extensions.ILevelExtension;
 import net.neoforged.neoforge.fluids.FluidType;
+import org.jetbrains.annotations.UnknownNullability;
 
 public abstract class LanguageProvider implements DataProvider {
     private static final Codec<Map<String, Component>> CODEC = Codec.unboundedMap(Codec.STRING, ComponentSerialization.CODEC);
@@ -160,5 +164,35 @@ public abstract class LanguageProvider implements DataProvider {
 
     public void addKey(ResourceKey<?> registryKey, String type, String value) {
         add(registryKey.identifier().toLanguageKey(type), value);
+    }
+
+    public void add(Component key, String value) {
+        if (key.getContents() instanceof TranslatableContents translatable) {
+            add(translatable.getKey(), value);
+        } else {
+            add(key.getString(), value);
+        }
+    }
+
+    public void addConfigCategory(String key, String catValue, String catButtonValue, String catTooltipValue) {
+        add(key, catValue);
+        add(key + ".button", catButtonValue);
+        add(key + ".tooltip", catTooltipValue);
+    }
+
+    public void addConfigValue(ModConfigSpec.ConfigValue<?> configValue, String value) {
+        var translationKey = configValue.getSpec().getTranslationKey();
+
+        if(translationKey == null) {
+            return;
+        }
+
+        add(translationKey, value);
+
+        var comment = configValue.getSpec().getComment();
+
+        if(comment != null) {
+            add(translationKey + ".tooltip", comment);
+        }
     }
 }
