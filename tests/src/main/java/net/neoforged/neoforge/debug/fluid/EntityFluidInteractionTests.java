@@ -1149,7 +1149,8 @@ public class EntityFluidInteractionTests {
         }
 
         boolean checkCanSwim(LivingEntity entity) {
-            return entity.getFluidInteraction().isInFluidMatching(entity, (e, fluidType, height) -> e.canSwimInFluidType(fluidType) && height > entity.getFluidJumpThreshold());
+            // The Swim AI behavior explicitly checks for lava
+            return entity.isInLava() || entity.getFluidInteraction().isInFluidMatching(entity, (e, fluidType, height) -> e.canSwimInFluidType(fluidType) && height > entity.getFluidJumpThreshold());
         }
 
         void fillFluidColumn(FluidFixture<?> fluid, BlockPos pos) {
