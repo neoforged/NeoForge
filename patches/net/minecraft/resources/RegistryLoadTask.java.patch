@@ -40,7 +40,7 @@
              );
              this.elementsRegistered = true;
          }
-@@ -99,7 +_,25 @@
+@@ -99,7 +_,30 @@
          ) {
              try (Reader reader = thunk.openAsReader()) {
                  JsonElement json = StrictJsonParser.parse(reader);
@@ -61,6 +61,11 @@
 +                    if (resultLootTable == null) {
 +                        return Either.right(SKIPPED_ELEMENT_MARKER);
 +                    }
++                    // In case the loot table was freshly made and was not given its ID proeprly, set its ID
++                    resultLootTable.setLootTableId(elementKey.identifier());
++                    // The variable and type are known to be LootTable at this point
++                    //noinspection unchecked
++                    elementCandidate = (T) resultLootTable;
 +                }
 +
 +                return Either.left(elementCandidate);
