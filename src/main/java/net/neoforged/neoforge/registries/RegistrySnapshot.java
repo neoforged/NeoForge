@@ -17,6 +17,7 @@ import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -24,13 +25,16 @@ import org.jspecify.annotations.Nullable;
 
 public class RegistrySnapshot {
     private static final Comparator<Identifier> SORTER = Identifier::compareNamespaced;
+    private static final StreamCodec<FriendlyByteBuf, RegistrySnapshot> UNCACHED_STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.map(_ -> new Int2ObjectRBTreeMap<>(), ByteBufCodecs.VAR_INT, Identifier.STREAM_CODEC),
+            registrySnapshot -> registrySnapshot.ids,
+            ByteBufCodecs.map(_ -> new TreeMap<>(SORTER), Identifier.STREAM_CODEC, Identifier.STREAM_CODEC),
+            registrySnapshot -> registrySnapshot.aliases,
+            RegistrySnapshot::new);
     public static final StreamCodec<FriendlyByteBuf, RegistrySnapshot> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public RegistrySnapshot decode(FriendlyByteBuf buf) {
-            RegistrySnapshot snapshot = new RegistrySnapshot();
-            buf.readMap(size -> snapshot.ids, FriendlyByteBuf::readVarInt, FriendlyByteBuf::readIdentifier);
-            buf.readMap(size -> snapshot.aliases, FriendlyByteBuf::readIdentifier, FriendlyByteBuf::readIdentifier);
-            return snapshot;
+            return UNCACHED_STREAM_CODEC.decode(buf);
         }
 
         @Override
@@ -38,8 +42,7 @@ public class RegistrySnapshot {
             if (snapshot.binary == null) {
                 FriendlyByteBuf pkt = new FriendlyByteBuf(Unpooled.buffer());
                 try {
-                    pkt.writeMap(snapshot.ids, FriendlyByteBuf::writeVarInt, FriendlyByteBuf::writeIdentifier);
-                    pkt.writeMap(snapshot.aliases, FriendlyByteBuf::writeIdentifier, FriendlyByteBuf::writeIdentifier);
+                    UNCACHED_STREAM_CODEC.encode(pkt, snapshot);
                     snapshot.binary = new byte[pkt.readableBytes()];
                     pkt.readBytes(snapshot.binary);
                 } finally {
@@ -52,20 +55,20 @@ public class RegistrySnapshot {
 
     // Use a sorted map with the ID as the key.
     // We need the entries to be sorted by increasing order for client-side application of the snapshot to work.
-    private final Int2ObjectSortedMap<Identifier> ids = new Int2ObjectRBTreeMap<>();
+    private final Int2ObjectSortedMap<Identifier> ids;
     private final Int2ObjectSortedMap<Identifier> idsView = Int2ObjectSortedMaps.unmodifiable(this.ids);
-    private final Map<Identifier, Identifier> aliases = new TreeMap<>(SORTER);
+    private final Map<Identifier, Identifier> aliases;
     private final Map<Identifier, Identifier> aliasesView = Collections.unmodifiableMap(this.aliases);
     @Nullable
     private final Registry<?> fullBackup;
-    @Nullable
-    private byte[] binary = null;
+    private byte @Nullable [] binary = null;
 
-    /**
-     * Creates a blank snapshot to populate.
-     */
-    private RegistrySnapshot() {
+    /// Creates a snapshot from the given data recieved over the network.
+    private RegistrySnapshot(Int2ObjectSortedMap<Identifier> ids, Map<Identifier, Identifier> aliases) {
+        this.ids = ids;
+        this.aliases = aliases;
         this.fullBackup = null;
+        super();
     }
 
     /**
@@ -77,6 +80,10 @@ public class RegistrySnapshot {
      * @param <T>      the registry type
      */
     public <T> RegistrySnapshot(Registry<T> registry, boolean full) {
+        this.ids = new Int2ObjectRBTreeMap<>();
+        this.aliases = new TreeMap<>(SORTER);
+        super();
+
         registry.keySet().forEach(key -> this.ids.put(registry.getId(key), key));
         this.aliases.putAll(((BaseMappedRegistry<T>) registry).aliases);
 

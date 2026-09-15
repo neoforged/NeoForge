@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.debug;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.debug.DebugRenderer;
@@ -84,11 +83,6 @@ public interface CustomDebugSubscriberTest {
         final class DebugBlock extends BaseEntityBlock {
             private DebugBlock(Properties properties) {
                 super(properties);
-            }
-
-            @Override
-            protected MapCodec<? extends BaseEntityBlock> codec() {
-                return null;
             }
 
             @Override

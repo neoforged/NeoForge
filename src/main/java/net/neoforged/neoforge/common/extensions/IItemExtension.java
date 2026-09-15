@@ -41,13 +41,11 @@ import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantment.EnchantmentDefinition;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ItemAbilities;
@@ -345,6 +343,8 @@ public interface IItemExtension {
     default boolean canPerformAction(ItemInstance stack, ItemAbility itemAbility) {
         if (itemAbility == ItemAbilities.SWORD_SWEEP) {
             return stack.is(ItemTags.SWORDS);
+        } else if (itemAbility == ItemAbilities.SHOVEL_DOUSE) {
+            return stack.is(ItemTags.DOUSES_CAMPFIRES);
         }
         return false;
     }
@@ -524,16 +524,6 @@ public interface IItemExtension {
     }
 
     /**
-     * @return the fuel burn time for this item stack in a furnace. Return 0 to make it not act as a fuel.
-     * @apiNote This method takes precedence over the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FURNACE_FUELS data map}.
-     *          However, you should use the data map unless necessary (i.e. NBT-based burn times) so that users can configure burn times.
-     */
-    @ApiStatus.OverrideOnly
-    default int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType, FuelValues fuelValues) {
-        return fuelValues.burnDuration(itemStack);
-    }
-
-    /**
      * Called every tick when this item is equipped {@linkplain DataComponents#EQUIPPABLE as an armor item} by an animal.
      *
      * @param stack The armor stack
@@ -554,7 +544,7 @@ public interface IItemExtension {
      * @param onBroken The on-broken callback from vanilla
      * @return The amount of damage to pass to the vanilla logic
      */
-    default <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<Item> onBroken) {
+    default <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<ItemStack> onBroken) {
         return amount;
     }
 

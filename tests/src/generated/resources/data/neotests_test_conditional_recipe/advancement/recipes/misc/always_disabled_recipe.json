@@ -18,7 +18,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "neotests_test_conditional_recipe:always_disabled_recipe"
+        "recipes": "neotests_test_conditional_recipe:always_disabled_recipe"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

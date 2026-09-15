@@ -99,7 +99,7 @@ public final class NeoForgeModelProperties {
      */
     public static void fillRootTransformProperty(ContextMap.Builder propertiesBuilder, @Nullable Transformation rootTransform) {
         if (rootTransform != null) {
-            propertiesBuilder.withParameter(NeoForgeModelProperties.TRANSFORM, rootTransform);
+            propertiesBuilder.set(NeoForgeModelProperties.TRANSFORM, rootTransform);
         }
     }
 
@@ -109,7 +109,7 @@ public final class NeoForgeModelProperties {
      */
     public static void fillPartVisibilityProperty(ContextMap.Builder propertiesBuilder, Map<String, Boolean> partVisibility) {
         if (!partVisibility.isEmpty()) {
-            Map<String, Boolean> visibility = propertiesBuilder.getOptionalParameter(NeoForgeModelProperties.PART_VISIBILITY);
+            Map<String, Boolean> visibility = propertiesBuilder.get(NeoForgeModelProperties.PART_VISIBILITY);
             if (visibility != null) {
                 visibility = new HashMap<>(visibility);
                 visibility.putAll(partVisibility);
@@ -117,7 +117,7 @@ public final class NeoForgeModelProperties {
                 visibility = partVisibility;
             }
             visibility = Map.copyOf(visibility);
-            propertiesBuilder.withParameter(NeoForgeModelProperties.PART_VISIBILITY, visibility);
+            propertiesBuilder.set(NeoForgeModelProperties.PART_VISIBILITY, visibility);
         }
     }
 
@@ -125,7 +125,7 @@ public final class NeoForgeModelProperties {
     /// on a per-layer basis and overwriting existing layers
     public static void fillItemLayerFaceData(ContextMap.Builder propertiesBuilder, Int2ObjectMap<ExtraFaceData> layerFaceData) {
         if (!layerFaceData.isEmpty()) {
-            Int2ObjectMap<ExtraFaceData> faceData = propertiesBuilder.getOptionalParameter(ITEM_LAYER_FACE_DATA);
+            Int2ObjectMap<ExtraFaceData> faceData = propertiesBuilder.get(ITEM_LAYER_FACE_DATA);
             if (faceData != null) {
                 faceData = new Int2ObjectOpenHashMap<>(faceData);
                 faceData.putAll(layerFaceData);
@@ -133,7 +133,7 @@ public final class NeoForgeModelProperties {
             } else {
                 faceData = layerFaceData;
             }
-            propertiesBuilder.withParameter(ITEM_LAYER_FACE_DATA, faceData);
+            propertiesBuilder.set(ITEM_LAYER_FACE_DATA, faceData);
         }
     }
 

@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/recipes/RecipeUnlockAdvancementBuilder.java
 +++ b/net/minecraft/data/recipes/RecipeUnlockAdvancementBuilder.java
-@@ -19,6 +_,10 @@
+@@ -20,6 +_,10 @@
      }
  
      public AdvancementHolder build(RecipeOutput output, ResourceKey<Recipe<?>> id, RecipeCategory category) {
@@ -11,7 +11,7 @@
          if (this.criteria.isEmpty()) {
              throw new IllegalStateException("No way of obtaining recipe " + id.identifier());
          }
-@@ -28,6 +_,6 @@
+@@ -29,6 +_,6 @@
              .rewards(AdvancementRewards.Builder.recipe(id))
              .requirements(AdvancementRequirements.Strategy.OR);
          this.criteria.forEach(advancement::addCriterion);

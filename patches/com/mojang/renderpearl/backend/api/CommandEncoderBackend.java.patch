@@ -1,0 +1,11 @@
+--- a/com/mojang/renderpearl/backend/api/CommandEncoderBackend.java
++++ b/com/mojang/renderpearl/backend/api/CommandEncoderBackend.java
+@@ -40,6 +_,8 @@
+ 
+     void clearDepthTexture(GpuTexture depthTexture, double clearDepth);
+ 
++    void clearStencilTexture(GpuTexture texture, int value);
++
+     void writeToBuffer(GpuBufferSlice destination, ByteBuffer data);
+ 
+     void copyToBuffer(GpuBufferSlice source, GpuBufferSlice target);

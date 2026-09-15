@@ -11,17 +11,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.packs.VanillaRecipeProvider;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
@@ -38,16 +36,32 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ColorCollection;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import org.jspecify.annotations.Nullable;
 
 public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
     private final InterceptingRecipeOutput output;
 
-    private NeoForgeRecipeProvider(HolderLookup.Provider provider, InterceptingRecipeOutput output) {
-        super(provider, output);
-        this.output = output;
+    public NeoForgeRecipeProvider(BootstrapContext<Recipe<?>> recipeOutput, BootstrapContext<Advancement> advancementOutput) {
+        InterceptingRecipeOutput wrappedRecipeOutput = new InterceptingRecipeOutput(recipeOutput);
+        super(wrappedRecipeOutput, new BootstrapContext<>() {
+            @Override
+            public Holder.Reference<Advancement> register(ResourceKey<Advancement> key, Advancement value) {
+                return Holder.Reference.createStandAlone(advancementOutput.lookup(Registries.ADVANCEMENT), key);
+            }
+
+            @Override
+            public <S> HolderGetter<S> lookup(ResourceKey<? extends Registry<? extends S>> key) {
+                return advancementOutput.lookup(key);
+            }
+
+            @Override
+            @Deprecated
+            public <S> Stream<Holder.Reference<S>> listContextElements(ResourceKey<? extends Registry<? extends S>> key) {
+                return advancementOutput.listContextElements(key);
+            }
+        });
+        this.output = wrappedRecipeOutput;
     }
 
     private void exclude(ItemLike item) {
@@ -107,33 +121,37 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         super.buildRecipes();
     }
 
-    private static class InterceptingRecipeOutput implements RecipeOutput {
+    private static class InterceptingRecipeOutput implements BootstrapContext<Recipe<?>> {
         private final HolderGetter<Item> items;
-        private final RecipeOutput output;
+        private final BootstrapContext<Recipe<?>> output;
         private final Map<Item, TagKey<Item>> replacements = new HashMap<>();
         private final Map<Item, Ingredient> specialReplacements = new HashMap<>();
         private final Set<ResourceKey<Recipe<?>>> excludes = new HashSet<>();
 
-        private InterceptingRecipeOutput(HolderGetter<Item> items, RecipeOutput output) {
-            this.items = items;
+        private InterceptingRecipeOutput(BootstrapContext<Recipe<?>> output) {
+            this.items = output.lookup(Registries.ITEM);
             this.output = output;
         }
 
         @Override
-        public Advancement.Builder advancement() {
-            return output.advancement();
-        }
-
-        @Override
-        public void includeRootAdvancement() {
-            // Let's not
-        }
-
-        @Override
-        public void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
+        public Holder.Reference<Recipe<?>> register(ResourceKey<Recipe<?>> id, Recipe<?> recipe) {
             Recipe<?> modified = enhance(id, recipe);
-            if (modified != null)
-                output.accept(id, modified, null, conditions);
+            if (modified != null) {
+                return output.register(id, modified);
+            } else {
+                return Holder.Reference.createStandAlone(output.lookup(Registries.RECIPE), id);
+            }
+        }
+
+        @Override
+        public <S> HolderGetter<S> lookup(ResourceKey<? extends Registry<? extends S>> key) {
+            return output.lookup(key);
+        }
+
+        @Override
+        @Deprecated
+        public <S> Stream<Holder.Reference<S>> listContextElements(ResourceKey<? extends Registry<? extends S>> key) {
+            return output.listContextElements(key);
         }
 
         @Nullable
@@ -203,22 +221,6 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
                         }
                         return null;
                     });
-        }
-    }
-
-    public static final class Runner extends RecipeProvider.Runner {
-        public Runner(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
-            super(output, lookupProvider);
-        }
-
-        @Override
-        protected RecipeProvider createRecipeProvider(HolderLookup.Provider lookupProvider, RecipeOutput output) {
-            return new NeoForgeRecipeProvider(lookupProvider, new InterceptingRecipeOutput(lookupProvider.lookupOrThrow(Registries.ITEM), output));
-        }
-
-        @Override
-        public String getName() {
-            return "NeoForge recipes";
         }
     }
 }

@@ -34,15 +34,13 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
+import net.minecraft.world.level.levelgen.feature.TreeFeature;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
-import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
 import net.neoforged.neoforge.common.util.BlockRelocability;
@@ -150,10 +148,10 @@ public interface IBlockStateExtension {
     }
 
     /**
-     * Called when a block is removed by {@link PushReaction#DESTROY}. This is responsible for
+     * Called when a block is removed by {@link PushReaction#POPPED}. This is responsible for
      * actually destroying the block, and the block is intact at time of call.
      * <p>
-     * Will only be called if {@link BlockState#getPistonPushReaction} returns {@link PushReaction#DESTROY}.
+     * Will only be called if {@link BlockState#getPistonPushReaction} returns {@link PushReaction#POPPED}.
      * <p>
      * Note: When used in multiplayer, this is called on both client and
      * server sides!
@@ -168,21 +166,6 @@ public interface IBlockStateExtension {
     }
 
     /**
-     * Determines if this block is classified as a bed, replacing <code>instanceof BedBlock</code> checks.
-     * <p>
-     * If true, players may sleep in it, though the block must manually put the player to sleep
-     * by calling {@link Player#startSleepInBed} from {@link BlockBehaviour#useWithoutItem} or similar.
-     *
-     * @param level   The current level
-     * @param pos     Block position in level
-     * @param sleeper The sleeping entity
-     * @return True to treat this as a bed
-     */
-    default boolean isBed(BlockGetter level, BlockPos pos, LivingEntity sleeper) {
-        return self().getBlock().isBed(self(), level, pos, sleeper);
-    }
-
-    /**
      * Returns the position that the entity is moved to upon
      * respawning at this block.
      *
@@ -194,30 +177,6 @@ public interface IBlockStateExtension {
      */
     default Optional<ServerPlayer.RespawnPosAngle> getRespawnPosition(EntityType<?> type, LevelReader level, BlockPos pos, float orientation) {
         return self().getBlock().getRespawnPosition(self(), type, level, pos, orientation);
-    }
-
-    /**
-     * Called when a user either starts or stops sleeping in the bed.
-     *
-     * @param level    The current level
-     * @param pos      Block position in level
-     * @param sleeper  The sleeper or camera entity, null in some cases.
-     * @param occupied True if we are occupying the bed, or false if they are stopping use of the bed
-     */
-    default void setBedOccupied(Level level, BlockPos pos, LivingEntity sleeper, boolean occupied) {
-        self().getBlock().setBedOccupied(self(), level, pos, sleeper, occupied);
-    }
-
-    /**
-     * Returns the direction of the block. Same values that
-     * are returned by BlockDirectional
-     *
-     * @param level The current level
-     * @param pos   Block position in level
-     * @return Bed direction
-     */
-    default Direction getBedDirection(LevelReader level, BlockPos pos) {
-        return self().getBlock().getBedDirection(self(), level, pos);
     }
 
     /**
@@ -333,11 +292,11 @@ public interface IBlockStateExtension {
      * @param placeFunction Function to set blocks in the level for the tree, use this instead of the level directly
      * @param randomSource  The random source
      * @param pos           Position of the block to be set to dirt
-     * @param config        Configuration of the trunk placer. Consider azalea trees, which should place rooted dirt instead of regular dirt.
+     * @param tree          Configuration of the trunk placer. Consider azalea trees, which should place rooted dirt instead of regular dirt.
      * @return True to ignore vanilla behaviour
      */
-    default boolean onTreeGrow(WorldGenLevel level, BiConsumer<BlockPos, BlockState> placeFunction, RandomSource randomSource, BlockPos pos, TreeConfiguration config) {
-        return self().getBlock().onTreeGrow(self(), level, placeFunction, randomSource, pos, config);
+    default boolean onTreeGrow(WorldGenLevel level, BiConsumer<BlockPos, BlockState> placeFunction, RandomSource randomSource, BlockPos pos, TreeFeature tree) {
+        return self().getBlock().onTreeGrow(self(), level, placeFunction, randomSource, pos, tree);
     }
 
     /**
@@ -351,29 +310,6 @@ public interface IBlockStateExtension {
      */
     default boolean isFertile(BlockGetter level, BlockPos pos) {
         return self().getBlock().isFertile(self(), level, pos);
-    }
-
-    /**
-     * Determines if this block can be used as the frame of a conduit.
-     *
-     * @param level   The current level
-     * @param pos     Block position in level
-     * @param conduit Conduit position in level
-     * @return True, to support the conduit, and make it active with this block.
-     */
-    default boolean isConduitFrame(LevelReader level, BlockPos pos, BlockPos conduit) {
-        return self().getBlock().isConduitFrame(self(), level, pos, conduit);
-    }
-
-    /**
-     * Determines if this block can be used as part of a frame of a nether portal.
-     *
-     * @param level The current level
-     * @param pos   Block position in level
-     * @return True, to support being part of a nether portal frame, false otherwise.
-     */
-    default boolean isPortalFrame(BlockGetter level, BlockPos pos) {
-        return self().getBlock().isPortalFrame(self(), level, pos);
     }
 
     /**
@@ -535,14 +471,15 @@ public interface IBlockStateExtension {
      * <p>
      * The return value determines whether a flint-and-steel in a dispenser was used successfully and should be damaged
      *
-     * @param level   The current level
-     * @param pos     Block position in level
-     * @param face    The face that the fire is coming from
-     * @param igniter The entity that lit the fire
+     * @param level        The current level
+     * @param pos          Block position in level
+     * @param face         The face that the fire is coming from
+     * @param igniter      The entity that lit the fire
+     * @param ignitionItem The item that was used to light the fire
      * @return whether the block was successfully set on fire (i.e. TNT is allowed to explode and was primed)
      */
-    default boolean onCaughtFire(Level level, BlockPos pos, @Nullable Direction face, @Nullable LivingEntity igniter) {
-        return self().getBlock().onCaughtFire(self(), level, pos, face, igniter);
+    default boolean onCaughtFire(Level level, BlockPos pos, @Nullable Direction face, @Nullable LivingEntity igniter, ItemStack ignitionItem) {
+        return self().getBlock().onCaughtFire(self(), level, pos, face, igniter, ignitionItem);
     }
 
     /**
@@ -668,8 +605,6 @@ public interface IBlockStateExtension {
 
     /**
      * Returns the state that this block should transform into when right-clicked by a tool.
-     * For example: Used to determine if {@link ItemAbilities#AXE_STRIP an axe can strip},
-     * {@link ItemAbilities#SHOVEL_FLATTEN a shovel can path}, or {@link ItemAbilities#HOE_TILL a hoe can till}.
      * Returns {@code null} if nothing should happen.
      *
      * @param context     The use on context that the action was performed in
@@ -691,20 +626,6 @@ public interface IBlockStateExtension {
      */
     default boolean isScaffolding(LivingEntity entity) {
         return self().getBlock().isScaffolding(self(), entity.level(), entity.blockPosition(), entity);
-    }
-
-    /**
-     * Whether redstone dust should visually connect to this block on a side.
-     * <p>
-     * Modded redstone wire blocks should call this function to determine visual connections.
-     *
-     * @param level     The level
-     * @param pos       The block position in level
-     * @param direction The coming direction of the redstone dust connection (with respect to the block at pos)
-     * @return True if redstone dust should visually connect on the side passed
-     */
-    default boolean canRedstoneConnectTo(BlockGetter level, BlockPos pos, @Nullable Direction direction) {
-        return self().getBlock().canConnectRedstone(self(), level, pos, direction);
     }
 
     /**
@@ -756,14 +677,13 @@ public interface IBlockStateExtension {
      * <li>A coral can live</li>
      * </ul>
      *
-     * @param getter   the getter which can get the block
-     * @param pos      the position of the block being hydrated
-     * @param fluid    the state of the fluid
-     * @param fluidPos the position of the fluid
+     * @param getter the getter which can get the block
+     * @param pos    the position of the block being hydrated
+     * @param fluid  the state of the fluid
      * @return {@code true} if the block can be hydrated, {@code false} otherwise
      */
-    default boolean canBeHydrated(BlockGetter getter, BlockPos pos, FluidState fluid, BlockPos fluidPos) {
-        return self().getBlock().canBeHydrated(self(), getter, pos, fluid, fluidPos);
+    default boolean canBeHydrated(BlockGetter getter, BlockPos pos, FluidState fluid) {
+        return self().getBlock().canBeHydrated(self(), getter, pos, fluid);
     }
 
     /**

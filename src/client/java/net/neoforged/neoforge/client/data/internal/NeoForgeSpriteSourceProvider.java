@@ -22,7 +22,6 @@ public class NeoForgeSpriteSourceProvider extends SpriteSourceProvider {
     @Override
     protected void gather() {
         atlas(AtlasIds.BLOCKS).addSource(new SingleFile(Identifier.fromNamespaceAndPath("neoforge", "white")));
-        atlas(AtlasIds.ARMOR_TRIMS).addSource(new DirectoryPalettedPermutations("trims/entity", Identifier.withDefaultNamespace("trims/color_palettes/trim_palette"), "trims/color_palettes"));
         atlas(AtlasIds.ITEMS).addSource(new DirectoryPalettedPermutations("trims/items", Identifier.withDefaultNamespace("trims/color_palettes/trim_palette"), "trims/color_palettes"));
     }
 }

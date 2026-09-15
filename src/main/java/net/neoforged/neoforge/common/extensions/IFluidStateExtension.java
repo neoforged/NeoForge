@@ -128,13 +128,12 @@ public interface IFluidStateExtension {
      * </ul>
      *
      * @param getter    the getter which can get the fluid
-     * @param pos       the position of the fluid
      * @param source    the state of the block being hydrated
      * @param sourcePos the position of the block being hydrated
      * @return {@code true} if the block can be hydrated, {@code false} otherwise
      */
-    default boolean canHydrate(BlockGetter getter, BlockPos pos, BlockState source, BlockPos sourcePos) {
-        return self().getType().canHydrate(self(), getter, pos, source, sourcePos);
+    default boolean canHydrate(BlockGetter getter, BlockState source, BlockPos sourcePos) {
+        return self().getType().canHydrate(self(), getter, source, sourcePos);
     }
 
     /**

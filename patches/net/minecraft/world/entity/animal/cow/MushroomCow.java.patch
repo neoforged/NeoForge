@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/cow/MushroomCow.java
 +++ b/net/minecraft/world/entity/animal/cow/MushroomCow.java
-@@ -75,7 +_,7 @@
+@@ -76,7 +_,7 @@
      }
  
      public static boolean checkMushroomSpawnRules(
@@ -9,7 +9,7 @@
      ) {
          return level.getBlockState(pos.below()).is(BlockTags.MOOSHROOMS_SPAWNABLE_ON) && isBrightEnoughToSpawn(level, pos);
      }
-@@ -179,11 +_,19 @@
+@@ -187,11 +_,19 @@
      @Override
      public void shear(ServerLevel level, SoundSource soundSource, ItemStack tool) {
          level.playSound(null, this, SoundEvents.MOOSHROOM_SHEAR, soundSource, 1.0F, 1.0F);

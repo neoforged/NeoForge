@@ -8,15 +8,13 @@
      public final double minX;
      public final double minY;
      public final double minZ;
-@@ -462,6 +_,14 @@
-         return new AABB(
-             center.x - sizeX / 2.0, center.y - sizeY / 2.0, center.z - sizeZ / 2.0, center.x + sizeX / 2.0, center.y + sizeY / 2.0, center.z + sizeZ / 2.0
+@@ -473,6 +_,12 @@
+             Math.nextDown(this.maxY),
+             Math.nextDown(this.maxZ)
          );
 +    }
 +
-+    /**
-+     * {@return true if this AABB is infinite in all directions}
-+     */
++    /// {@return true if this AABB is infinite in all directions}
 +    public boolean isInfinite() {
 +        return this == INFINITE || (Double.isInfinite(this.minX) && Double.isInfinite(this.minY) && Double.isInfinite(this.minZ)
 +                && Double.isInfinite(this.maxX) && Double.isInfinite(this.maxY) && Double.isInfinite(this.maxZ));

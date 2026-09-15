@@ -1,20 +1,27 @@
 --- a/net/minecraft/client/resources/language/LanguageManager.java
 +++ b/net/minecraft/client/resources/language/LanguageManager.java
-@@ -29,7 +_,7 @@
+@@ -30,11 +_,12 @@
+     private final Minecraft minecraft;
+     private Map<String, LanguageInfo> languages = ImmutableMap.of("en_us", DEFAULT_LANGUAGE);
+     private String currentCode;
++    private java.util.Locale javaLocale; // Forge: add locale information for modders
      private final Consumer<ClientLanguage> reloadCallback;
  
-     public LanguageManager(String languageCode, Consumer<ClientLanguage> reloadCallback) {
+     public LanguageManager(Minecraft minecraft, String languageCode, Consumer<ClientLanguage> reloadCallback) {
+         this.minecraft = minecraft;
 -        this.currentCode = languageCode;
-+        setSelected(languageCode);
++        this.setSelected(languageCode);
          this.reloadCallback = reloadCallback;
      }
  
-@@ -67,8 +_,12 @@
-         this.reloadCallback.accept(locale);
+@@ -86,8 +_,14 @@
+         }
      }
  
-+    private java.util.Locale javaLocale; // Forge: add locale information for modders
-+    public java.util.Locale getJavaLocale() { return javaLocale; }
++    public java.util.Locale getJavaLocale() {
++        return this.javaLocale;
++    }
++
      public void setSelected(String code) {
          this.currentCode = code;
 +        final String[] langSplit = code.split("_", 2);

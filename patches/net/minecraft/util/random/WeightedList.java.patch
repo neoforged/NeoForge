@@ -9,17 +9,13 @@
  
          public WeightedList.Builder<E> add(E item) {
              return this.add(item, 1);
-@@ -165,8 +_,41 @@
+@@ -170,8 +_,37 @@
              return this;
          }
  
 +        public WeightedList.Builder<E> add(Weighted<E> value) {
 +            this.result.add(value);
 +            return this;
-+        }
-+
-+        public WeightedList.Builder<E> addAll(WeightedList<E> values) {
-+            return this.addAll(values.unwrap());
 +        }
 +
 +        public WeightedList.Builder<E> addAll(java.util.Collection<Weighted<E>> values) {

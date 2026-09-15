@@ -24,7 +24,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -81,7 +81,6 @@ import net.minecraft.world.item.ItemStackLinkedSet;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -96,13 +95,13 @@ import net.minecraft.world.level.ServerExplosion;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.SpawnData;
 import net.minecraft.world.level.biome.MobSpawnSettings;
-import net.minecraft.world.level.block.entity.FuelValues;
+import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.gamerules.GameRule;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.levelgen.PhantomSpawner;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.feature.treedecorators.AlterGroundDecorator;
 import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecorator;
@@ -174,7 +173,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerSetSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSwitchHotbarSlotEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerWakeUpEvent;
-import net.neoforged.neoforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider;
 import net.neoforged.neoforge.event.level.BlockEvent;
@@ -410,12 +408,6 @@ public class EventHooks {
         return event.getResult() != MobDespawnEvent.Result.DEFAULT;
     }
 
-    public static int getItemBurnTime(ItemStack itemStack, int burnTime, @Nullable RecipeType<?> recipeType, FuelValues fuelValues) {
-        FurnaceFuelBurnTimeEvent event = new FurnaceFuelBurnTimeEvent(itemStack, burnTime, recipeType, fuelValues);
-        NeoForge.EVENT_BUS.post(event);
-        return event.getBurnTime();
-    }
-
     public static int getExperienceDrop(LivingEntity entity, @Nullable Player attackingPlayer, int originalExperience) {
         LivingExperienceDropEvent event = new LivingExperienceDropEvent(entity, attackingPlayer, originalExperience);
         if (NeoForge.EVENT_BUS.post(event).isCanceled()) {
@@ -522,11 +514,12 @@ public class EventHooks {
      * @param level  The level
      * @param pos    The position of the target block
      * @param state  The state of the target block
+     * @param source The bonemeal source
      * @param stack  The bone meal item stack
      * @return The event
      */
-    public static BonemealEvent fireBonemealEvent(@Nullable Player player, Level level, BlockPos pos, BlockState state, ItemStack stack) {
-        return NeoForge.EVENT_BUS.post(new BonemealEvent(player, level, pos, state, stack));
+    public static BonemealEvent fireBonemealEvent(@Nullable Player player, Level level, BlockPos pos, BlockState state, BonemealSource source, ItemStack stack) {
+        return NeoForge.EVENT_BUS.post(new BonemealEvent(player, level, pos, state, source, stack));
     }
 
     public static PlayLevelSoundEvent.AtEntity onPlaySoundAtEntity(Entity entity, Holder<SoundEvent> name, SoundSource category, float volume, float pitch) {
@@ -722,7 +715,7 @@ public class EventHooks {
      */
     @Nullable
     @ApiStatus.Internal
-    public static LootTable loadLootTable(HolderLookup.Provider registries, Identifier name, LootTable table) {
+    public static LootTable loadLootTable(HolderGetter.Provider registries, Identifier name, LootTable table) {
         if (table == LootTable.EMPTY) // Empty table has a null name, and shouldn't be modified anyway.
             return null;
         LootTableLoadEvent event = new LootTableLoadEvent(registries, name, table);
@@ -779,7 +772,7 @@ public class EventHooks {
      * @param pos    The position the feature will be grown at
      * @param holder The feature to be grown, if any
      */
-    public static BlockGrowFeatureEvent fireBlockGrowFeature(LevelAccessor level, RandomSource rand, BlockPos pos, @Nullable Holder<ConfiguredFeature<?, ?>> holder) {
+    public static BlockGrowFeatureEvent fireBlockGrowFeature(LevelAccessor level, RandomSource rand, BlockPos pos, @Nullable Holder<Feature> holder) {
         return NeoForge.EVENT_BUS.post(new BlockGrowFeatureEvent(level, rand, pos, holder));
     }
 
@@ -1193,8 +1186,8 @@ public class EventHooks {
      * @param ctx       The loot context for the current block loot evaluation.
      */
     public static int getBlockLootEnchantmentLevel(ItemInstance tool, Holder<Enchantment> ench, int enchLevel, LootContext ctx) {
-        BlockState state = ctx.getOptionalParameter(LootContextParams.BLOCK_STATE);
-        Vec3 pos = ctx.getOptionalParameter(LootContextParams.ORIGIN);
+        BlockState state = ctx.getOptional(LootContextParams.BLOCK_STATE);
+        Vec3 pos = ctx.getOptional(LootContextParams.ORIGIN);
         if (state != null && pos != null) {
             var event = new EnchantedBlockLootEvent(ctx.getLevel(), BlockPos.containing(pos), state, tool, ench, enchLevel);
             NeoForge.EVENT_BUS.post(event);
@@ -1214,8 +1207,8 @@ public class EventHooks {
      * @param ctx       The loot context for the current entity loot evaluation.
      */
     public static int getEntityLootEnchantmentLevel(Holder<Enchantment> ench, int enchLevel, LootContext ctx) {
-        Entity entity = ctx.getOptionalParameter(LootContextParams.THIS_ENTITY);
-        DamageSource src = ctx.getOptionalParameter(LootContextParams.DAMAGE_SOURCE);
+        Entity entity = ctx.getOptional(LootContextParams.THIS_ENTITY);
+        DamageSource src = ctx.getOptional(LootContextParams.DAMAGE_SOURCE);
         if (src != null && entity instanceof LivingEntity living) {
             var event = new EnchantedEntityLootEvent(living, src, ench, enchLevel);
             NeoForge.EVENT_BUS.post(event);

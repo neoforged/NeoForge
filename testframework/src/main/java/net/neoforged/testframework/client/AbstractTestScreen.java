@@ -7,6 +7,7 @@ package net.neoforged.testframework.client;
 
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
+import com.mojang.blaze3d.platform.InputConstants;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,7 +37,6 @@ import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.group.Group;
 import net.neoforged.testframework.impl.MutableTestFramework;
-import org.lwjgl.glfw.GLFW;
 
 public abstract class AbstractTestScreen extends Screen {
     protected final MutableTestFramework framework;
@@ -75,7 +75,7 @@ public abstract class AbstractTestScreen extends Screen {
         @Override
         protected boolean isValidClickButton(MouseButtonInfo buttonInfo) {
             int button = buttonInfo.button();
-            return button == GLFW.GLFW_MOUSE_BUTTON_LEFT || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT || button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE;
+            return button == InputConstants.MOUSE_BUTTON_LEFT || button == InputConstants.MOUSE_BUTTON_RIGHT || button == InputConstants.MOUSE_BUTTON_MIDDLE;
         }
 
         @Override
@@ -151,12 +151,12 @@ public abstract class AbstractTestScreen extends Screen {
 
             @Override
             public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-                if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+                if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
                     setSelected(this);
                     return true;
-                } else if (event.button() == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+                } else if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
                     enable(!isEnabled());
-                } else if (event.button() == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
+                } else if (event.button() == InputConstants.MOUSE_BUTTON_MIDDLE) {
                     reset();
                 }
                 return false;
@@ -280,7 +280,7 @@ public abstract class AbstractTestScreen extends Screen {
                 if (isTitle) return false;
 
                 if (browseButton.isMouseOver(event.x(), event.y())) return browseButton.mouseClicked(event, doubleClick);
-                if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT && (event.hasShiftDown() || event.hasControlDown())) {
+                if (event.button() == InputConstants.MOUSE_BUTTON_LEFT && (event.hasShiftDown() || event.hasControlDown())) {
                     openBrowseGUI();
                     return false;
                 }

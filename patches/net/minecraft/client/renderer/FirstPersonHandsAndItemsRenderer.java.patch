@@ -1,0 +1,54 @@
+--- a/net/minecraft/client/renderer/FirstPersonHandsAndItemsRenderer.java
++++ b/net/minecraft/client/renderer/FirstPersonHandsAndItemsRenderer.java
+@@ -120,8 +_,10 @@
+             AvatarRenderer<?> avatarRenderer = this.minecraft.getEntityRenderDispatcher().getRenderer(avatarRenderState);
+             Identifier skinTexture = avatarRenderState.skin.body().texturePath();
+             if (arm == HumanoidArm.RIGHT) {
++                if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonArm(poseStack, submitNodeCollector, lightCoords, skinTexture, avatarRenderState.showRightSleeve, playerState, HumanoidArm.RIGHT, avatarRenderer.getModel().rightArm))
+                 avatarRenderer.renderRightHand(poseStack, submitNodeCollector, lightCoords, skinTexture, avatarRenderState.showRightSleeve);
+             } else {
++                if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonArm(poseStack, submitNodeCollector, lightCoords, skinTexture, avatarRenderState.showLeftSleeve, playerState, HumanoidArm.LEFT, avatarRenderer.getModel().leftArm))
+                 avatarRenderer.renderLeftHand(poseStack, submitNodeCollector, lightCoords, skinTexture, avatarRenderState.showLeftSleeve);
+             }
+         }
+@@ -338,6 +_,7 @@
+             if (state.handRenderSelection.renderMainHand) {
+                 float mainHandAttack = attackHand == InteractionHand.MAIN_HAND ? attackValue : 0.0F;
+                 float mainhandInverseArmHeight = state.mainHandSwapScale * (1.0F - Mth.lerp(partialTicks, state.oldMainHandHeight, state.mainHandHeight));
++                if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonHand(InteractionHand.MAIN_HAND, poseStack, submitNodeCollector, playerState.avatarRenderState.lightCoords, partialTicks, xRot, mainHandAttack, mainhandInverseArmHeight, state.mainHandItem))
+                 this.submitArmWithItem(
+                     playerState,
+                     state,
+@@ -356,6 +_,7 @@
+             if (state.handRenderSelection.renderOffHand) {
+                 float offHandAttack = attackHand == InteractionHand.OFF_HAND ? attackValue : 0.0F;
+                 float offhandInverseArmHeight = state.offHandSwapScale * (1.0F - Mth.lerp(partialTicks, state.oldOffHandHeight, state.offHandHeight));
++                if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonHand(InteractionHand.OFF_HAND, poseStack, submitNodeCollector, playerState.avatarRenderState.lightCoords, partialTicks, xRot, offHandAttack, offhandInverseArmHeight, state.offHandItem))
+                 this.submitArmWithItem(
+                     playerState,
+                     state,
+@@ -398,13 +_,13 @@
+                     if (isMainHand && !avatarRenderState.isInvisible) {
+                         this.renderPlayerArm(poseStack, submitNodeCollector, lightCoords, inverseArmHeight, attack, arm, playerState);
+                     }
+-                } else if (itemStack.has(DataComponents.MAP_ID)) {
++                } else if (itemStack.getItem() instanceof net.minecraft.world.item.MapItem) {
+                     if (isMainHand && state.offHandItem.isEmpty()) {
+                         this.renderTwoHandedMap(poseStack, submitNodeCollector, lightCoords, xRot, inverseArmHeight, attack, playerState, state);
+                     } else {
+                         this.renderOneHandedMap(poseStack, submitNodeCollector, lightCoords, inverseArmHeight, arm, attack, itemStack, playerState, state);
+                     }
+-                } else if (itemStack.is(Items.CROSSBOW)) {
++                } else if (itemStack.getItem() instanceof CrossbowItem) {
+                     this.applyItemArmTransform(poseStack, arm, inverseArmHeight);
+                     boolean charged = CrossbowItem.isCharged(itemStack);
+                     boolean isRightArm = arm == HumanoidArm.RIGHT;
+@@ -443,6 +_,8 @@
+                 } else {
+                     boolean isRightArm = arm == HumanoidArm.RIGHT;
+                     int invert = isRightArm ? 1 : -1;
++                    // Neo: Allow items to define custom arm animation
++                    if (!net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemStack).applyForgeHandTransform(poseStack, playerState, arm, itemStack, partialTicks, inverseArmHeight, attack))
+                     if (avatarRenderState.isUsingItem && state.useItemRemainingTicks > 0 && avatarRenderState.useItemHand == hand) {
+                         ItemUseAnimation useAnimation = itemStack.getUseAnimation();
+                         if (!useAnimation.hasCustomArmTransform()) {

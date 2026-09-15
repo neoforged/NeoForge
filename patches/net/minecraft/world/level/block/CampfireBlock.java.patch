@@ -1,6 +1,15 @@
 --- a/net/minecraft/world/level/block/CampfireBlock.java
 +++ b/net/minecraft/world/level/block/CampfireBlock.java
-@@ -258,7 +_,7 @@
+@@ -88,7 +_,7 @@
+             }
+         }
+ 
+-        if (itemStack.is(ItemTags.DOUSES_CAMPFIRES) && state.getValue(LIT)) {
++        if (itemStack.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SHOVEL_DOUSE) && state.getValue(LIT)) {
+             if (!level.isClientSide()) {
+                 level.levelEvent(null, 1009, pos, 0);
+             }
+@@ -254,7 +_,7 @@
                  return true;
              }
  

@@ -1,10 +1,16 @@
 --- a/net/minecraft/advancements/Advancement.java
 +++ b/net/minecraft/advancements/Advancement.java
-@@ -55,6 +_,7 @@
-         )
-         .validate(Advancement::validate);
-     public static final StreamCodec<RegistryFriendlyByteBuf, Advancement> STREAM_CODEC = StreamCodec.ofMember(Advancement::write, Advancement::read);
-+    public static final Codec<Optional<net.neoforged.neoforge.common.conditions.WithConditions<Advancement>>> CONDITIONAL_CODEC = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodecWithConditions(CODEC);
+@@ -225,8 +_,12 @@
+         }
  
-     public Advancement(
-         Optional<Identifier> parent,
+         public AdvancementHolder save(BootstrapContext<Advancement> output, String name) {
++            return this.save(output, name, new net.neoforged.neoforge.common.conditions.ICondition[0]);
++        }
++
++        public AdvancementHolder save(BootstrapContext<Advancement> output, String name, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
+             AdvancementHolder advancement = this.build(Identifier.parse(name));
+-            advancement.register(output);
++            advancement.register(output, conditions);
+             return advancement;
+         }
+     }

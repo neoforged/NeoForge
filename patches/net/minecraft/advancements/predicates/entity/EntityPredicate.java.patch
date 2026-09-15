@@ -1,6 +1,6 @@
 --- a/net/minecraft/advancements/predicates/entity/EntityPredicate.java
 +++ b/net/minecraft/advancements/predicates/entity/EntityPredicate.java
-@@ -91,6 +_,11 @@
+@@ -89,6 +_,11 @@
          return entity == null ? false : this.combinedPart.matches(entity, level, position);
      }
  
@@ -12,7 +12,7 @@
      public static LootContext createContext(ServerPlayer player, Entity entity) {
          LootParams lootParams = new LootParams.Builder(player.level())
              .withParameter(LootContextParams.THIS_ENTITY, entity)
-@@ -140,6 +_,19 @@
+@@ -138,6 +_,19 @@
  
          public static EntityPredicate.Builder entity() {
              return new EntityPredicate.Builder();

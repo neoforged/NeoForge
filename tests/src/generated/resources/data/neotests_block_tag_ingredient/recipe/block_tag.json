@@ -5,7 +5,7 @@
       "neoforge:ingredient_type": "testframework:test_enabled",
       "base": {
         "neoforge:ingredient_type": "neoforge:block_tag",
-        "tag": "minecraft:convertable_to_mud"
+        "tag": "minecraft:convertible_to_mud"
       },
       "framework": "neotests:tests",
       "testId": "blockTagIngredient"

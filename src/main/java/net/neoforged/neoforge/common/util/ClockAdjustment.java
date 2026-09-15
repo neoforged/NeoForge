@@ -30,7 +30,7 @@ public sealed interface ClockAdjustment {
     record Relative(long ticks) implements ClockAdjustment {
         @Override
         public void apply(ServerClockManager clockManager, Holder<WorldClock> clock) {
-            var currentTicks = clockManager.getTotalTicks(clock);
+            var currentTicks = clockManager.getInstance(clock).totalTicks();
             var newTicks = currentTicks + ticks;
             clockManager.setTotalTicks(clock, newTicks);
         }

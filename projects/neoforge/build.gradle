@@ -210,7 +210,7 @@ generateAccessTransformers {
     fieldGroup(
             'render pipeline snippets', PUBLIC,
             named('net/minecraft/client/renderer/RenderPipelines'),
-            fieldsOfType(named('com/mojang/blaze3d/pipeline/RenderPipeline$Snippet'))
+            fieldsOfType(named('com/mojang/renderpearl/api/pipeline/RenderPipeline$Snippet'))
     )
 
     // Make all block constructors public so they can be used by mods

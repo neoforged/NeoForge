@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -92,7 +_,7 @@
+@@ -91,7 +_,7 @@
  
  import net.neoforged.neoforge.common.extensions.ILevelExtension;
  
@@ -9,7 +9,7 @@
      public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceKey.codec(Registries.DIMENSION);
      public static final ResourceKey<Level> OVERWORLD = ResourceKey.create(Registries.DIMENSION, Identifier.withDefaultNamespace("overworld"));
      public static final ResourceKey<Level> NETHER = ResourceKey.create(Registries.DIMENSION, Identifier.withDefaultNamespace("the_nether"));
-@@ -133,6 +_,11 @@
+@@ -132,6 +_,11 @@
      private final DamageSources damageSources;
      private final PalettedContainerFactory palettedContainerFactory;
      private long subTickCount;
@@ -21,7 +21,7 @@
  
      protected Level(
          WritableLevelData levelData,
-@@ -232,11 +_,30 @@
+@@ -226,11 +_,30 @@
  
          LevelChunk chunk = this.getChunkAt(pos);
          Block block = blockState.getBlock();
@@ -52,7 +52,7 @@
          BlockState newState = this.getBlockState(pos);
          if (newState == blockState) {
              if (oldState != newState) {
-@@ -264,9 +_,8 @@
+@@ -258,9 +_,8 @@
              }
  
              this.updatePOIOnBlockStateChange(pos, oldState, newState);
@@ -63,7 +63,7 @@
      }
  
      public void updatePOIOnBlockStateChange(BlockPos pos, BlockState oldState, BlockState newState) {
-@@ -316,6 +_,7 @@
+@@ -303,6 +_,7 @@
      }
  
      public void updateNeighborsAt(BlockPos pos, Block sourceBlock, @Nullable Orientation orientation) {
@@ -71,7 +71,7 @@
      }
  
      public void updateNeighborsAtExceptFromFacing(BlockPos pos, Block blockObject, Direction skipDirection, @Nullable Orientation orientation) {
-@@ -464,8 +_,30 @@
+@@ -455,8 +_,30 @@
          (this.tickingBlockEntities ? this.pendingBlockEntityTickers : this.blockEntityTickers).add(ticker);
      }
  
@@ -102,7 +102,7 @@
          if (!this.pendingBlockEntityTickers.isEmpty()) {
              this.blockEntityTickers.addAll(this.pendingBlockEntityTickers);
              this.pendingBlockEntityTickers.clear();
-@@ -488,12 +_,19 @@
+@@ -479,12 +_,19 @@
  
      public <T extends Entity> void guardEntityTick(Consumer<T> tick, T entity) {
          try {
@@ -122,7 +122,7 @@
          }
      }
  
-@@ -639,6 +_,7 @@
+@@ -630,6 +_,7 @@
          if (this.isInValidBounds(pos)) {
              this.getChunkAt(pos).removeBlockEntity(pos);
          }
@@ -130,7 +130,7 @@
      }
  
      public boolean isLoaded(BlockPos pos) {
-@@ -704,8 +_,8 @@
+@@ -695,8 +_,8 @@
              }
          });
  
@@ -141,7 +141,7 @@
                  output.add(dragonPart);
              }
          }
-@@ -734,6 +_,7 @@
+@@ -725,6 +_,7 @@
                  }
              }
  
@@ -149,9 +149,9 @@
              if (e instanceof EnderDragon enderDragon) {
                  for (EnderDragonPart subEntity : enderDragon.getSubEntities()) {
                      T castSubPart = type.tryCast(subEntity);
-@@ -748,6 +_,15 @@
+@@ -739,6 +_,15 @@
  
-             return AbortableIterationConsumer.Continuation.CONTINUE;
+             return Continuation.CONTINUE;
          });
 +        for (net.neoforged.neoforge.entity.PartEntity<?> p : this.dragonParts()) {
 +            T t = type.tryCast(p);
@@ -165,17 +165,17 @@
      }
  
      public <T extends Entity> boolean hasEntities(EntityTypeTest<Entity, T> type, AABB bb, Predicate<? super T> selector) {
-@@ -759,6 +_,7 @@
-                 return AbortableIterationConsumer.Continuation.ABORT;
+@@ -750,6 +_,7 @@
+                 return Continuation.ABORT;
              }
  
 +            if (false)
              if (e instanceof EnderDragon enderDragon) {
                  for (EnderDragonPart subEntity : enderDragon.getSubEntities()) {
                      T castSubPart = type.tryCast(subEntity);
-@@ -771,6 +_,13 @@
+@@ -762,6 +_,13 @@
  
-             return AbortableIterationConsumer.Continuation.CONTINUE;
+             return Continuation.CONTINUE;
          });
 +        for (net.neoforged.neoforge.entity.PartEntity<?> p : this.dragonParts()) {
 +            T t = type.tryCast(p);
@@ -187,7 +187,7 @@
          return hasEntities.isTrue();
      }
  
-@@ -792,7 +_,7 @@
+@@ -783,7 +_,7 @@
          return this.getPlayerByUUID(uuid);
      }
  
@@ -196,7 +196,7 @@
  
      public void blockEntityChanged(BlockPos pos) {
          if (this.hasChunkAt(pos)) {
-@@ -920,17 +_,20 @@
+@@ -915,17 +_,20 @@
  
      public abstract Scoreboard getScoreboard();
  
@@ -222,7 +222,7 @@
                          this.neighborChanged(state, relativePos, changedBlock, null, false);
                      }
                  }
-@@ -993,6 +_,18 @@
+@@ -988,6 +_,18 @@
      @Override
      public BiomeManager getBiomeManager() {
          return this.biomeManager;

@@ -9,10 +9,11 @@ import static net.minecraft.network.chat.Component.translatable;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
+import com.mojang.blaze3d.Blaze3D;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.logging.LogUtils;
+import com.mojang.renderpearl.api.textures.FilterMode;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,7 +68,6 @@ import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.CommonLinks;
 import net.minecraft.util.SpecialDates;
-import net.minecraft.util.Util;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.VersionChecker;
@@ -191,7 +191,7 @@ public class ModListScreen extends Screen {
         footer.spacing(4).defaultCellSetting().paddingTop(5);
 
         footer.addChild(Button.builder(Component.translatable("neoforge.screen.mods.button.open_folder"),
-                _ -> Util.getPlatform().openPath(modsFolder)).build());
+                _ -> Blaze3D.openPath(modsFolder)).build());
         footer.addChild(Button.builder(CommonComponents.GUI_BACK, _ -> ModListScreen.this.onClose()).build());
 
         // Content
@@ -559,7 +559,7 @@ public class ModListScreen extends Screen {
             if (event == null) return;
             switch (event) {
                 case ClickEvent.OpenUrl(URI uri) -> ConfirmLinkScreen.confirmLinkNow(ModListScreen.this, uri);
-                case ClickEvent.OpenFile openFile -> Util.getPlatform().openFile(openFile.file());
+                case ClickEvent.OpenFile openFile -> Blaze3D.openPath(openFile.file().toPath());
                 case ClickEvent.CopyToClipboard(String value) -> minecraft.keyboardHandler.setClipboard(value);
                 default -> LOGGER.error("Unable to handle click event ‘{}’", event);
             }

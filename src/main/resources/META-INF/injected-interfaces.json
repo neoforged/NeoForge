@@ -98,8 +98,8 @@
   "net/minecraft/core/component/DataComponentMap$Builder": [
     "net/neoforged/neoforge/common/extensions/IDataComponentMapBuilderExtensions"
   ],
-  "net/minecraft/data/loot/LootTableSubProvider": [
-    "net/neoforged/neoforge/common/extensions/LootTableSubProviderExtension"
+  "net/minecraft/data/loot/LootTableSubProvider$Context": [
+    "net/neoforged/neoforge/common/extensions/LootTableSubProviderContextExtension"
   ],
   "net/minecraft/data/recipes/RecipeOutput": [
     "net/neoforged/neoforge/common/extensions/IRecipeOutputExtension"
@@ -109,6 +109,12 @@
   ],
   "net/minecraft/data/tags/TagAppender": [
     "net/neoforged/neoforge/common/extensions/ITagAppenderExtension<T>"
+  ],
+  "net/minecraft/data/worldgen/BootstrapContext": [
+    "net/neoforged/neoforge/common/extensions/BootstrapContextExtension<T>"
+  ],
+  "net/minecraft/data/worldgen/BootstrapContextAccess": [
+    "net/neoforged/neoforge/common/extensions/BootstrapContextAccessExtension"
   ],
   "net/minecraft/network/FriendlyByteBuf": [
     "net/neoforged/neoforge/common/extensions/IFriendlyByteBufExtension"
@@ -137,8 +143,8 @@
   "net/minecraft/server/level/ServerChunkCache": [
     "net/neoforged/neoforge/common/extensions/IServerChunkCacheExtension"
   ],
-  "net/minecraft/server/packs/PackResources": [
-    "net/neoforged/neoforge/common/extensions/IPackResourcesExtension"
+  "net/minecraft/server/packs/PackMetadataResources": [
+    "net/neoforged/neoforge/common/extensions/PackMetadataResourcesExtension"
   ],
   "net/minecraft/server/packs/PackType": [
     "net/minecraft/util/StringRepresentable"

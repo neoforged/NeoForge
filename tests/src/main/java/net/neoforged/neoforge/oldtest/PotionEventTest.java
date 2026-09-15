@@ -5,27 +5,24 @@
 
 package net.neoforged.neoforge.oldtest;
 
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+// TODO: convert to automated test
 @Mod("potion_event_test")
 @EventBusSubscriber
 public class PotionEventTest {
     private static final Logger LOGGER = LogManager.getLogger(PotionEventTest.class);
 
-    @SubscribeEvent
-    public static void onBrewingSetup(RegisterBrewingRecipesEvent event) {
-        event.getBuilder().addRecipe(Ingredient.of(Items.ICE), Ingredient.of(Items.LAVA_BUCKET), new ItemStack(Items.OBSIDIAN));
-    }
+    //@SubscribeEvent
+    //public static void onBrewingSetup(RegisterBrewingRecipesEvent event) {
+    //    event.getBuilder().addRecipe(Ingredient.of(Items.ICE), Ingredient.of(Items.LAVA_BUCKET), new ItemStack(Items.OBSIDIAN));
+    //}
 
     @SubscribeEvent
     public static void onPotionAdded(MobEffectEvent.Added event) {

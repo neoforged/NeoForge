@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/VegetationBlock.java
 +++ b/net/minecraft/world/level/block/VegetationBlock.java
-@@ -43,7 +_,10 @@
+@@ -39,7 +_,10 @@
      @Override
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
          BlockPos below = pos.below();

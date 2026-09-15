@@ -29,6 +29,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.SolidDebugger;
 import net.minecraft.world.level.levelgen.DebugLevelSource;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.registries.callback.AddCallback;
@@ -72,10 +73,12 @@ class NeoForgeRegistryCallbacks {
 
             // Init cache for new blocks only (the cache init is expensive).
             // State cache init cannot be done in onAdd because some of it might depend on other registries being populated in mod code.
-            for (Block block : addedBlocks) {
-                block.getStateDefinition().getPossibleStates().forEach(BlockBehaviour.BlockStateBase::initCache);
-            }
-            addedBlocks.clear();
+            SolidDebugger.runAndDump(() -> {
+                for (Block block : addedBlocks) {
+                    block.getStateDefinition().getPossibleStates().forEach(BlockBehaviour.BlockStateBase::initCache);
+                }
+                addedBlocks.clear();
+            });
 
             // Update block state ID map after each bake in case of registry changes.
             for (Block block : registry) {

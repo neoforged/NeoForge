@@ -4,22 +4,12 @@
      private static final MainTarget.Dimension DEFAULT_DIMENSIONS = new MainTarget.Dimension(854, 480);
  
      public MainTarget(int desiredWidth, int desiredHeight) {
--        super("Main", true, GpuFormat.RGBA8_UNORM);
-+        this(desiredWidth, desiredHeight, false);
+-        super("Main", GpuFormat.RGBA8_UNORM, GpuFormat.D32_FLOAT);
++        this(desiredWidth, desiredHeight, GpuFormat.D32_FLOAT);
 +    }
 +
-+    public MainTarget(int desiredWidth, int desiredHeight, boolean useStencil) {
-+        super("Main", true, useStencil, GpuFormat.RGBA8_UNORM);
++    public MainTarget(int desiredWidth, int desiredHeight, GpuFormat depthFormat) {
++        super("Main", GpuFormat.RGBA8_UNORM, depthFormat);
          this.createFrameBuffer(desiredWidth, desiredHeight);
      }
  
-@@ -84,7 +_,8 @@
- 
-     private @Nullable GpuTexture allocateDepthAttachment(MainTarget.Dimension dimension) {
-         try {
--            return RenderSystem.getDevice().createTexture(() -> this.label + " / Depth", 15, GpuFormat.D32_FLOAT, dimension.width, dimension.height, 1, 1);
-+            var format = this.useStencil ? net.neoforged.neoforge.client.ClientHooks.getStencilFormat() : GpuFormat.D32_FLOAT;
-+            return RenderSystem.getDevice().createTexture(() -> this.label + " / Depth", 15, format, dimension.width, dimension.height, 1, 1);
-         } catch (GpuOutOfMemoryException ignored) {
-             return null;
-         }

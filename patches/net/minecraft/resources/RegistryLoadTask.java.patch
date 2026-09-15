@@ -1,11 +1,13 @@
 --- a/net/minecraft/resources/RegistryLoadTask.java
 +++ b/net/minecraft/resources/RegistryLoadTask.java
-@@ -27,6 +_,9 @@
+@@ -27,6 +_,11 @@
  import net.minecraft.util.StrictJsonParser;
  
  public abstract class RegistryLoadTask<T> {
 +    private static final org.slf4j.Logger LOGGER = com.mojang.logging.LogUtils.getLogger();
-+    // Neo: Used as a marker to skip registration elements that were disabled due to conditions
++    // Neo: Used as a marker to skip registration for elements that were disabled due to conditions
++    private static final Exception SKIPPED_CONDITIONAL_ELEMENT_MARKER = new Exception();
++    // Neo: Used as a marker to skip registration for elements that were disabled due to other reasons (e.g., events)
 +    private static final Exception SKIPPED_ELEMENT_MARKER = new Exception();
      private final Object registryWriteLock = new Object();
      protected final RegistryDataLoader.RegistryData<T> data;
@@ -23,22 +25,22 @@
          this.loadingErrors = loadingErrors;
          this.concurrentRegistrationGetter = new ConcurrentHolderGetter<>(this.registryWriteLock, this.registry.createRegistrationLookup());
      }
-@@ -64,7 +_,13 @@
+@@ -60,7 +_,13 @@
              elements.forEach(
                  element -> element.value
                      .ifLeft(value -> this.registry.register(element.key, (T)value, element.registrationInfo))
 -                    .ifRight(error -> this.loadingErrors.put(element.key, error))
 +                    .ifRight(error -> {
-+                        if (error == SKIPPED_ELEMENT_MARKER) {
++                        if (error == SKIPPED_CONDITIONAL_ELEMENT_MARKER) {
 +                            LOGGER.debug("Skipping loading registry entry {} as its conditions were not met", element.key);
-+                        } else {
++                        } else if (error != SKIPPED_ELEMENT_MARKER) {
 +                            this.loadingErrors.put(element.key, error);
 +                        }
 +                    })
              );
              this.elementsRegistered = true;
          }
-@@ -103,7 +_,15 @@
+@@ -99,7 +_,30 @@
          ) {
              try (Reader reader = thunk.openAsReader()) {
                  JsonElement json = StrictJsonParser.parse(reader);
@@ -47,11 +49,26 @@
 +                // Neo: Allow a condition to skip the entire element, in which case we return a special marker error to skip it in the loader. Look for uses of SKIPPED_ELEMENT_MARKER
 +                var conditionalDecoder = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.decodeOnly(elementDecoder));
 +                var candidate = conditionalDecoder.parse(ops, json).getOrThrow();
-+                if (candidate.isPresent()) {
-+                    return Either.left(candidate.get());
-+                } else {
-+                    return Either.right(SKIPPED_ELEMENT_MARKER);
++                if (candidate.isEmpty()) {
++                    return Either.right(SKIPPED_CONDITIONAL_ELEMENT_MARKER);
 +                }
++
++                var elementCandidate = candidate.get();
++                // For loot tables, we fire the appropriate LootTableLoadEvent first; if the event hook returns null, skip it
++                if (elementKey.isFor(net.minecraft.core.registries.Registries.LOOT_TABLE) && elementCandidate instanceof net.minecraft.world.level.storage.loot.LootTable lootTable) {
++                    lootTable.setLootTableId(elementKey.identifier());
++                    var resultLootTable = net.neoforged.neoforge.event.EventHooks.loadLootTable(ops.lookupProvider::lookup, elementKey.identifier(), lootTable);
++                    if (resultLootTable == null) {
++                        return Either.right(SKIPPED_ELEMENT_MARKER);
++                    }
++                    // In case the loot table was freshly made and was not given its ID proeprly, set its ID
++                    resultLootTable.setLootTableId(elementKey.identifier());
++                    // The variable and type are known to be LootTable at this point
++                    //noinspection unchecked
++                    elementCandidate = (T) resultLootTable;
++                }
++
++                return Either.left(elementCandidate);
              } catch (Exception e) {
                  return Either.right(
                      new IllegalStateException(String.format(Locale.ROOT, "Failed to parse %s from pack %s", elementKey.identifier(), thunk.sourcePackId()), e)

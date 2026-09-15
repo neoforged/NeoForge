@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ExperienceOrb.java
 +++ b/net/minecraft/world/entity/ExperienceOrb.java
-@@ -106,7 +_,7 @@
+@@ -104,7 +_,7 @@
          } else {
              super.tick();
              boolean colliding = !this.level().noCollision(this.getBoundingBox());
@@ -9,7 +9,7 @@
                  this.setUnderwaterMovement();
              } else if (!colliding) {
                  this.applyGravity();
-@@ -136,7 +_,8 @@
+@@ -134,7 +_,8 @@
              this.applyEffectsFromBlocks();
              float friction = this.getAirDrag();
              if (this.onGround()) {
@@ -19,7 +19,7 @@
              }
  
              this.setDeltaMovement(this.getDeltaMovement().scale(friction));
-@@ -158,7 +_,7 @@
+@@ -156,7 +_,7 @@
  
      private void followNearbyPlayer() {
          if (this.followingPlayer == null || this.followingPlayer.isSpectator() || this.followingPlayer.distanceToSqr(this) > 64.0) {
@@ -28,7 +28,7 @@
              if (nearestPlayer != null && !nearestPlayer.isSpectator() && !nearestPlayer.isDeadOrDying()) {
                  this.followingPlayer = nearestPlayer;
              } else {
-@@ -282,6 +_,7 @@
+@@ -280,6 +_,7 @@
      public void playerTouch(Player player) {
          if (player instanceof ServerPlayer serverPlayer) {
              if (player.takeXpDelay == 0) {
@@ -36,7 +36,7 @@
                  player.takeXpDelay = 2;
                  player.take(this, 1);
                  int remaining = this.repairPlayerItems(serverPlayer, this.getValue());
-@@ -301,7 +_,7 @@
+@@ -299,7 +_,7 @@
          Optional<EnchantedItemInUse> selected = EnchantmentHelper.getRandomItemWith(EnchantmentEffectComponents.REPAIR_WITH_XP, player, ItemStack::isDamaged);
          if (selected.isPresent()) {
              ItemStack itemStack = selected.get().itemStack();

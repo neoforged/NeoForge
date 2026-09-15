@@ -9,22 +9,18 @@ import com.mojang.datafixers.Products;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import java.util.List;
-import java.util.function.Predicate;
+import java.util.Optional;
+import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.feature.trunkplacers.BendingTrunkPlacer;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.predicates.AllOfCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
-/**
- * A base implementation of a Global Loot Modifier for modders to extend.
- * Takes care of ILootCondition matching and comes with the base codec to extend.
- */
+/// A base implementation of a Global Loot Modifier for modders to extend.
+/// Takes care of [LootItemCondition] matching and comes with the base codec to extend.
 public abstract class LootModifier implements IGlobalLootModifier {
-    protected final LootItemCondition[] conditions;
+    protected final Optional<Holder<LootItemCondition>> condition;
     protected final int priority;
-    private final Predicate<LootContext> combinedConditions;
 
     /**
      * Simplifies codec creation, especially if no other fields are added:
@@ -36,26 +32,23 @@ public abstract class LootModifier implements IGlobalLootModifier {
      * Otherwise can follow this with #and() to add more fields.
      * Examples: Forge Test Subclasses or {@link BendingTrunkPlacer#CODEC}
      */
-    protected static <T extends LootModifier> Products.P2<RecordCodecBuilder.Mu<T>, LootItemCondition[], Integer> codecStart(RecordCodecBuilder.Instance<T> instance) {
+    protected static <T extends LootModifier> Products.P2<RecordCodecBuilder.Mu<T>, Optional<Holder<LootItemCondition>>, Integer> codecStart(RecordCodecBuilder.Instance<T> instance) {
         return instance.group(
-                LOOT_CONDITIONS_CODEC.fieldOf("conditions").forGetter(lm -> lm.conditions),
+                LootItemCondition.CODEC.optionalFieldOf("condition").forGetter(lm -> lm.condition),
                 Codec.INT.optionalFieldOf("priority", IGlobalLootModifier.DEFAULT_PRIORITY).forGetter(lm -> lm.priority));
     }
 
-    /**
-     * Constructs a LootModifier.
-     * 
-     * @param conditionsIn the ILootConditions that need to be matched before the loot is modified.
-     */
-    protected LootModifier(LootItemCondition[] conditions, int priority) {
-        this.conditions = conditions;
-        this.combinedConditions = AllOfCondition.allOf(List.of(conditions));
+    /// Constructs a LootModifier.
+    ///
+    /// @param condition the LootItemCondition that needs to be matched before the loot is modified.
+    protected LootModifier(Optional<Holder<LootItemCondition>> condition, int priority) {
+        this.condition = condition;
         this.priority = priority;
     }
 
     @Override
     public final ObjectArrayList<ItemStack> apply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-        return this.combinedConditions.test(context) ? this.doApply(generatedLoot, context) : generatedLoot;
+        return (this.condition.isEmpty() || this.condition.get().value().test(context)) ? this.doApply(generatedLoot, context) : generatedLoot;
     }
 
     @Override

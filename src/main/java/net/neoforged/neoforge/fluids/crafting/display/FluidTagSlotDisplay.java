@@ -42,7 +42,7 @@ public record FluidTagSlotDisplay(TagKey<Fluid> tag) implements SlotDisplay {
     @Override
     public <T> Stream<T> resolve(ContextMap context, DisplayContentsFactory<T> factory) {
         if (factory instanceof ForFluidStacks<T> fluids) {
-            HolderLookup.Provider registries = context.getOptional(SlotDisplayContext.REGISTRIES);
+            HolderLookup.Provider registries = context.get(SlotDisplayContext.REGISTRIES);
             if (registries != null) {
                 return registries.lookupOrThrow(Registries.FLUID)
                         .get(this.tag)

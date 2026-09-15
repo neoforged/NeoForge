@@ -22,4 +22,8 @@ public interface TooltipAppender {
     static <T extends TooltipProvider> TooltipAppender createComponentAppender(DataComponentType<T> type) {
         return (stack, context, display, _, flag, builder) -> stack.addToTooltip(type, context, display, builder, flag);
     }
+
+    static <T> TooltipAppender createComponentAppender(DataComponentType<T> type, TooltipProvider.Getter<T> tooltipGetter) {
+        return (stack, context, display, _, flag, builder) -> stack.addToTooltip(type, tooltipGetter, context, display, builder, flag);
+    }
 }

@@ -1,0 +1,12 @@
+--- a/net/minecraft/data/loot/packs/VanillaEntityLoot.java
++++ b/net/minecraft/data/loot/packs/VanillaEntityLoot.java
+@@ -1348,4 +_,9 @@
+                     .add(LootItem.lootTableItem(Items.TIDE_ARMOR_TRIM_SMITHING_TEMPLATE).setWeight(1))
+             );
+     }
++
++    @Override
++    protected java.util.stream.Stream<net.minecraft.world.entity.EntityType<?>> getKnownEntityTypes() {
++        return super.getKnownEntityTypes().filter(type -> type.builtInRegistryHolder().key().identifier().getNamespace().equals("minecraft")); // Neo: only generate for vanilla entities
++    }
+ }

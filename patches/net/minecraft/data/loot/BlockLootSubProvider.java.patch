@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/loot/BlockLootSubProvider.java
 +++ b/net/minecraft/data/loot/BlockLootSubProvider.java
-@@ -717,12 +_,16 @@
+@@ -703,12 +_,16 @@
  
      protected abstract void generate();
  
@@ -9,7 +9,7 @@
 +    }
 +
      @Override
-     public void generate(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> output) {
+     public void run() {
          this.generate();
          Set<ResourceKey<LootTable>> seen = new HashSet<>();
  

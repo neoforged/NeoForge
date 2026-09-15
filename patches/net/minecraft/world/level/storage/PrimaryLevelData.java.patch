@@ -1,14 +1,14 @@
 --- a/net/minecraft/world/level/storage/PrimaryLevelData.java
 +++ b/net/minecraft/world/level/storage/PrimaryLevelData.java
-@@ -42,6 +_,7 @@
-     private final Set<String> knownServerBrands;
+@@ -45,6 +_,7 @@
      private boolean wasModded;
      private final Set<String> removedFeatureFlags;
+     private List<Integer> versionHistory;
 +    private boolean confirmedExperimentalWarning = false;
  
      private PrimaryLevelData(
          @Nullable UUID singlePlayerUUID,
-@@ -90,7 +_,7 @@
+@@ -96,7 +_,7 @@
      ) {
          long gameTime = input.get("Time").asLong(0L);
          LevelVersion levelVersion = LevelVersion.parse(input);
@@ -17,7 +17,7 @@
              input.get("singleplayer_uuid").flatMap(UUIDUtil.CODEC::parse).result().orElse(null),
              input.get("WasModded").asBoolean(false),
              input.get("spawn").read(LevelData.RespawnData.CODEC).result().orElse(LevelData.RespawnData.DEFAULT),
-@@ -98,11 +_,16 @@
+@@ -104,12 +_,17 @@
              levelVersion.levelDataVersion(),
              input.get("initialized").asBoolean(true),
              input.get("ServerBrands").asStream().flatMap(b -> b.asString().result().stream()).collect(Collectors.toCollection(Sets::newLinkedHashSet)),
@@ -26,7 +26,8 @@
 +            updateRemovedFeatureFlags(input.get("removed_features").asStream().flatMap(b -> b.asString().result().stream()), input.get("enabled_features").asStream().flatMap(features -> features.asString().result().stream())).collect(Collectors.toSet()),
              settings,
              specialWorldProperty,
-             worldGenSettingsLifecycle
+             worldGenSettingsLifecycle,
+             input.get("version_history").orElseEmptyList().asList(d -> d.asInt(-1))
 -        );
 +        ).withConfirmedWarning(worldGenSettingsLifecycle != Lifecycle.stable() && input.get("confirmedExperimentalSettings").asBoolean(false));
 +        // Neo:
@@ -36,7 +37,7 @@
      }
  
      @Override
-@@ -139,6 +_,12 @@
+@@ -147,6 +_,12 @@
          }
  
          tag.store(WorldDataConfiguration.MAP_CODEC, this.settings.dataConfiguration());
@@ -49,7 +50,7 @@
      }
  
      public static void writeLastPlayed(CompoundTag tag) {
-@@ -325,10 +_,58 @@
+@@ -344,10 +_,58 @@
          return this.settings.copy();
      }
  

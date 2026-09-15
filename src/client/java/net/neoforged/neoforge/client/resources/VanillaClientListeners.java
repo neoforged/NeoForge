@@ -11,6 +11,7 @@ import net.minecraft.client.PeriodicNotificationManager;
 import net.minecraft.client.gui.font.FontManager;
 import net.minecraft.client.particle.ParticleResources;
 import net.minecraft.client.renderer.CloudRenderer;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.GpuWarnlistManager;
 import net.minecraft.client.renderer.ShaderManager;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
@@ -26,6 +27,7 @@ import net.minecraft.client.resources.language.LanguageManager;
 import net.minecraft.client.resources.model.EquipmentAssetManager;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.model.sprite.AtlasManager;
+import net.minecraft.client.resources.palette.PalettedTextureManager;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
@@ -69,11 +71,15 @@ public class VanillaClientListeners {
 
     public static final Identifier EQUIPMENT_ASSETS = key(EquipmentAssetManager.class);
 
+    public static final Identifier PALETTED_TEXTURES = key(PalettedTextureManager.class);
+
     public static final Identifier ENTITY_RENDERER = key(EntityRenderDispatcher.class);
 
     public static final Identifier BLOCK_ENTITY_RENDERER = key(BlockEntityRenderDispatcher.class);
 
     public static final Identifier PARTICLE_RESOURCES = key(ParticleResources.class);
+
+    public static final Identifier GAME_RENDERER = key(GameRenderer.class);
 
     public static final Identifier WAYPOINT_STYLES = key(WaypointStyleManager.class);
 

@@ -6,9 +6,7 @@
 package net.neoforged.neoforge.common.extensions;
 
 import com.google.common.collect.Maps;
-import java.util.Collection;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.IntFunction;
 import net.minecraft.network.FriendlyByteBuf;
@@ -22,18 +20,6 @@ import org.apache.commons.lang3.function.TriConsumer;
 public interface IFriendlyByteBufExtension {
     private FriendlyByteBuf self() {
         return (FriendlyByteBuf) this;
-    }
-
-    /**
-     * Writes the entries in the given set to the buffer, by first writing the count and then writing each entry.
-     *
-     * @param set    The set to write
-     * @param writer The writer to use for writing each entry
-     * @param <T>    The type of the entry
-     * @implNote This is a convenience method for {@link FriendlyByteBuf#writeCollection(Collection, StreamEncoder)}, where the callback can be a method on the entry type.
-     */
-    default <T> void writeObjectCollection(Collection<T> set, BiConsumer<T, FriendlyByteBuf> writer) {
-        self().writeCollection(set, (buf, t) -> writer.accept(t, buf));
     }
 
     /**

@@ -1,0 +1,11 @@
+--- a/com/mojang/renderpearl/api/commands/RenderPass.java
++++ b/com/mojang/renderpearl/api/commands/RenderPass.java
+@@ -39,6 +_,8 @@
+ 
+     void pushConstants(ByteBuffer value);
+ 
++    void setViewport(int x, int y, int width, int height);
++
+     void enableScissor(int x, int y, int width, int height);
+ 
+     void disableScissor();

@@ -40,7 +40,7 @@ class TimeSpeedCommand {
             return Command.SINGLE_SUCCESS;
         }
 
-        final float speed = clockManager.getRate(defaultClock);
+        final float speed = clockManager.getInstance(defaultClock).rate();
         if (speed == 1) {
             source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.timespeed.query.default", levelName(source)), true);
         } else {

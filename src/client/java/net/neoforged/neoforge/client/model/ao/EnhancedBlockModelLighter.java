@@ -105,7 +105,7 @@ public class EnhancedBlockModelLighter extends BlockModelLighter {
     private void calculateAxisAligned(BlockAndTintGetter level, BlockState state, BlockPos pos, Direction direction, BakedQuad quad, QuadInstance outputInstance) {
         // Same logic as vanilla: sample outside if the depth is small, or force outside if we are a full block.
         // This is already stored in the faceCubic field.
-        var fullFace = this.calculator.calculateFace(level, state, pos, direction, quad.materialInfo().shade(), this.faceCubic);
+        var fullFace = this.calculator.calculateFace(level, state, pos, direction, quad.materialInfo().shadeDirectionOverride(), this.faceCubic);
 
         // Perform bilinear interpolation to map a full AO face to actual vertex brightness and lightmap.
         // This will work regardless of the vertex order or position
@@ -154,7 +154,7 @@ public class EnhancedBlockModelLighter extends BlockModelLighter {
      * Projects onto each axis, computes the AO, then combines proportionally to the square of each normal component.
      */
     private void calculateIrregular(BlockAndTintGetter level, BlockState state, BlockPos pos, BakedQuad quad, QuadInstance outputInstance) {
-        boolean shade = quad.materialInfo().shade();
+        Direction shadeOverride = quad.materialInfo().shadeDirectionOverride();
         int quadNormal = -1;
 
         for (int vertex = 0; vertex < 4; ++vertex) {
@@ -195,7 +195,7 @@ public class EnhancedBlockModelLighter extends BlockModelLighter {
                 float depth = aoFace.computeDepth(vertPos.x(), vertPos.y(), vertPos.z());
                 // Same logic as vanilla: sample outside if the depth is small, or force outside if we are a full block.
                 boolean sampleOutside = depth < AO_EPS || state.isCollisionShapeFullBlock(level, pos);
-                AoCalculatedFace fullFace = this.calculator.calculateFace(level, state, pos, direction, shade, sampleOutside);
+                AoCalculatedFace fullFace = this.calculator.calculateFace(level, state, pos, direction, shadeOverride, sampleOutside);
 
                 // Perform bilinear interpolation to map full AO face to this vertex.
                 float[] weights = this.weights;
@@ -223,7 +223,7 @@ public class EnhancedBlockModelLighter extends BlockModelLighter {
 
     @Override
     public void prepareQuadFlat(BlockAndTintGetter level, BlockState state, BlockPos pos, int lightCoords, BakedQuad quad, QuadInstance outputInstance) {
-        if (!quad.materialInfo().shade()) {
+        if (quad.materialInfo().shadeDirectionOverride() != null) {
             super.prepareQuadFlat(level, state, pos, lightCoords, quad, outputInstance);
             return;
         }

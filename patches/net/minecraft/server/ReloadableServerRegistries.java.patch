@@ -1,30 +1,11 @@
 --- a/net/minecraft/server/ReloadableServerRegistries.java
 +++ b/net/minecraft/server/ReloadableServerRegistries.java
-@@ -44,7 +_,8 @@
+@@ -34,7 +_,7 @@
              context.getAccessForLoading(RegistryLayer.RELOADABLE), updatedContextTags
          );
          HolderLookup.Provider loadingContextWithTags = HolderLookup.Provider.create(contextRegistriesWithTags.stream());
--        RegistryOps<JsonElement> ops = loadingContextWithTags.createSerializationContext(JsonOps.INSTANCE);
-+        var conditionContext = new net.neoforged.neoforge.common.conditions.ConditionContext(updatedContextTags, RegistryAccess.EMPTY, loadingContextWithTags, net.minecraft.world.flag.FeatureFlags.VANILLA_SET);
-+        RegistryOps<JsonElement> ops = new net.neoforged.neoforge.common.conditions.ConditionalOps<>(loadingContextWithTags.createSerializationContext(JsonOps.INSTANCE), conditionContext);
-         List<CompletableFuture<WritableRegistry<?>>> registryLoads = LootDataType.values()
-             .map(type -> scheduleRegistryLoad((LootDataType<?>)type, ops, manager, executor))
-             .toList();
-@@ -60,7 +_,16 @@
-         return CompletableFuture.supplyAsync(() -> {
-             WritableRegistry<T> registry = new MappedRegistry<>(type.registryKey(), Lifecycle.experimental());
-             Map<Identifier, T> elements = new HashMap<>();
--            SimpleJsonResourceReloadListener.scanDirectory(manager, type.registryKey(), ops, type.codec(), elements);
-+            var provider = net.neoforged.neoforge.common.CommonHooks.extractLookupProvider(ops);
-+            Map<Identifier, Optional<T>> optionalMap = new HashMap<>();
-+            SimpleJsonResourceReloadListener.scanDirectoryWithOptionalValues(manager, type.registryKey(), ops, type.conditionalCodec(), optionalMap);
-+            optionalMap.forEach((rl, optionalEntry) -> {
-+                optionalEntry.ifPresent(entry -> type.idSetter().accept(entry, rl));
-+                T value = optionalEntry.orElse(type.defaultValue());
-+                if (value instanceof LootTable lootTable) value = (T) net.neoforged.neoforge.event.EventHooks.loadLootTable(provider, rl, lootTable);
-+                if (value != null)
-+                    elements.put(rl, value);
-+            });
-             elements.forEach((id, element) -> registry.register(ResourceKey.create(type.registryKey(), id), (T)element, DEFAULT_REGISTRATION_INFO));
-             TagLoader.loadTagsForRegistry(manager, registry);
-             return registry;
+-        return RegistryDataLoader.load(manager, contextRegistriesWithTags, RegistryDataLoader.RELOADABLE_REGISTRIES, executor)
++        return RegistryDataLoader.load(manager, contextRegistriesWithTags, RegistryDataLoader.RELOADABLE_REGISTRIES, executor, updatedContextTags)
+             .thenApplyAsync(newlyLoadedRegistries -> createAndValidateFullContext(context, loadingContextWithTags, newlyLoadedRegistries), executor);
+     }
+ 

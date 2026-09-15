@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.client.gui;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.Blaze3D;
 import com.mojang.logging.LogUtils;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,7 +36,6 @@ import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.Util;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.fml.loading.FMLPaths;
@@ -87,10 +87,10 @@ public class ModMismatchDisconnectedScreen extends Screen {
         int buttonWidth = Math.min(210, this.width / 2 - 20);
         this.addRenderableWidget(CycleButton.onOffBuilder(true)
                 .create(Math.max(this.width / 4 - buttonWidth / 2, listLeft), upperButtonHeight, buttonWidth, 20, Component.translatable("fml.modmismatchscreen.simplifiedview"), (b, v) -> scrollList.toggleSimplifiedView()));
-        this.addRenderableWidget(Button.builder(Component.literal(FMLTranslations.parseMessage("fml.button.open.file", logFile.getFileName())), button -> Util.getPlatform().openFile(logFile.toFile()))
+        this.addRenderableWidget(Button.builder(Component.literal(FMLTranslations.parseMessage("fml.button.open.file", logFile.getFileName())), button -> Blaze3D.openPath(logFile))
                 .bounds(Math.min(this.width * 3 / 4 - buttonWidth / 2, listLeft + listWidth - buttonWidth), upperButtonHeight, buttonWidth, 20)
                 .build());
-        this.addRenderableWidget(Button.builder(Component.literal(FMLTranslations.parseMessage("fml.button.open.mods.folder")), button -> Util.getPlatform().openFile(modsDir.toFile()))
+        this.addRenderableWidget(Button.builder(Component.literal(FMLTranslations.parseMessage("fml.button.open.mods.folder")), button -> Blaze3D.openPath(modsDir))
                 .bounds(Math.max(this.width / 4 - buttonWidth / 2, listLeft), lowerButtonHeight, buttonWidth, 20)
                 .build());
         this.addRenderableWidget(Button.builder(Component.translatable("gui.toMenu"), _ -> this.minecraft.gui.setScreen(this.parent))

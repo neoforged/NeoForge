@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.debug;
 
-import java.util.Set;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
@@ -17,54 +16,42 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.clock.WorldClock;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.GameTest;
+import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = "world_clock_tests")
 public interface WorldClockTests {
     @GameTest
     @TestHolder(description = "Registeres a new world clock which should never be pausable", enabledByDefault = true)
     @EmptyTemplate
-    static void unpauseClocksTest(DynamicTest test) {
+    static void unpauseClocksTest(DynamicTest test, RegistrationHelper reg) {
         var modId = test.createModId();
         var ignoresPause = ResourceKey.create(Registries.WORLD_CLOCK, Identifier.fromNamespaceAndPath(modId, "ignores_pause"));
         var ignoresAdvanceTime = ResourceKey.create(Registries.WORLD_CLOCK, Identifier.fromNamespaceAndPath(modId, "ignores_advance_time"));
 
-        test.eventListeners().mod().addListener((GatherDataEvent.Client event) -> {
-            // register datapack entry generator to generate our world clock
-            var moddedProviders = event.createProvider((output, lookupProvider) -> new DatapackBuiltinEntriesProvider(
-                    output,
-                    lookupProvider,
-                    new RegistrySetBuilder().add(Registries.WORLD_CLOCK, registry -> {
-                        registry.register(ignoresPause, new WorldClock());
-                        registry.register(ignoresAdvanceTime, new WorldClock());
-                    }),
-                    Set.of(modId)) {
-                @Override
-                public String getName() {
-                    return "unpause-clock-datapack-registries";
-                }
-            }).getRegistryProvider();
+        // register datapack entry generator to generate our world clock
+        reg.generateWorldRegistries(new RegistrySetBuilder().add(Registries.WORLD_CLOCK, registry -> {
+            registry.register(ignoresPause, new WorldClock());
+            registry.register(ignoresAdvanceTime, new WorldClock());
+        }));
 
-            // register tag generator to tag our new world clock as 'ignores_pausing'
-            event.createProvider(output -> new TagsProvider<WorldClock>(output, Registries.WORLD_CLOCK, moddedProviders, modId) {
-                @Override
-                protected void addTags(HolderLookup.Provider registries) {
-                    tag(Tags.WorldClocks.IGNORES_PAUSE_COMMAND).add(ignoresPause);
-                    tag(Tags.WorldClocks.IGNORES_ADVANCE_TIME_RULE).add(ignoresAdvanceTime);
-                }
+        // register tag generator to tag our new world clock as 'ignores_pausing'
+        reg.addClientProvider(event -> new TagsProvider<>(event.getGenerator().getPackOutput(), Registries.WORLD_CLOCK, event.getWorldLookupProvider(), modId) {
+            @Override
+            protected void addTags(HolderLookup.Provider registries) {
+                tag(Tags.WorldClocks.IGNORES_PAUSE_COMMAND).add(ignoresPause);
+                tag(Tags.WorldClocks.IGNORES_ADVANCE_TIME_RULE).add(ignoresAdvanceTime);
+            }
 
-                @Override
-                public String getName() {
-                    return "unpause-clock-tags";
-                }
-            });
+            @Override
+            public String getName() {
+                return "unpause-clock-tags";
+            }
         });
 
         test.onGameTest(helper -> helper.startSequence()
@@ -145,7 +132,7 @@ public interface WorldClockTests {
     }
 
     private static long getTotalTicks(ExtendedGameTestHelper helper, Holder<WorldClock> clock) {
-        return helper.getLevel().clockManager().getTotalTicks(clock);
+        return helper.getLevel().clockManager().getInstance(clock).totalTicks();
     }
 
     private static void setPaused(ExtendedGameTestHelper helper, Holder<WorldClock> clock, boolean paused) {

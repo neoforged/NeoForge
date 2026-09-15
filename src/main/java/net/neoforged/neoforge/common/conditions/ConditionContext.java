@@ -16,7 +16,6 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.flag.FeatureFlagSet;
 
@@ -33,14 +32,7 @@ public class ConditionContext implements ICondition.IContext {
     }
 
     public ConditionContext(List<Registry.PendingTags<?>> pendingTags, RegistryOps.RegistryInfoLookup context, FeatureFlagSet enabledFeatures) {
-        HolderGetter.Provider registries = new HolderGetter.Provider() {
-            @Override
-            public <T> Optional<? extends HolderGetter<T>> lookup(ResourceKey<? extends Registry<? extends T>> key) {
-                Optional<RegistryOps.RegistryInfo<T>> lookup = context.lookup(key);
-                return lookup.map(RegistryOps.RegistryInfo::getter);
-            }
-        };
-        this(pendingTags, RegistryAccess.EMPTY, registries, enabledFeatures);
+        this(pendingTags, RegistryAccess.EMPTY, context::lookup, enabledFeatures);
     }
 
     public ConditionContext(List<Registry.PendingTags<?>> pendingTags, RegistryAccess registryAccess, HolderGetter.Provider registries, FeatureFlagSet enabledFeatures) {

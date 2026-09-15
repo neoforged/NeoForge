@@ -14,11 +14,13 @@ import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.predicates.DataComponentMatchers;
 import net.minecraft.advancements.predicates.ItemPredicate;
 import net.minecraft.advancements.triggers.InventoryChangeTrigger;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.predicates.DataComponentPredicate;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.advancements.AdvancementProvider;
+import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -95,16 +97,17 @@ public class AdvancementTests {
         reg.registrar(Registries.DATA_COMPONENT_PREDICATE_TYPE)
                 .register("custom_name", () -> type);
 
-        reg.addClientProvider(event -> new AdvancementProvider(
-                event.getGenerator().getPackOutput(),
-                event.getLookupProvider(),
-                List.of((registries, saver) -> {
-                    Advancement.Builder.advancement()
-                            .parent(Identifier.withDefaultNamespace("story/root"))
-                            .display(Items.ANVIL, Component.literal("Named!"), Component.literal("Get a named item"), null, AdvancementType.TASK, true, true, false)
-                            .addCriterion("has_named_item", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().withComponents(DataComponentMatchers.Builder.components().partial(type, new CustomNamePredicate(1, 2)).build())))
-                            .save(saver, Identifier.fromNamespaceAndPath(reg.modId(), "named_item"));
-                })));
+        reg.generateReloadableRegistries(new RegistrySetBuilder().add(Registries.ADVANCEMENT, new AdvancementProvider(
+                List.of(context -> new AdvancementSubProvider(context) {
+                    @Override
+                    public void generate() {
+                        Advancement.Builder.advancement()
+                                .parent(Identifier.withDefaultNamespace("story/root"))
+                                .display(Items.ANVIL, Component.literal("Named!"), Component.literal("Get a named item"), AdvancementType.TASK, true, true, false)
+                                .addCriterion("has_named_item", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().withComponents(DataComponentMatchers.Builder.components().partial(type, new CustomNamePredicate(1, 2)).build())))
+                                .save(context, Identifier.fromNamespaceAndPath(reg.modId(), "named_item"));
+                    }
+                }))));
 
         test.onGameTest(helper -> {
             final ServerPlayer player = helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL);

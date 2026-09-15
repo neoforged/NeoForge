@@ -1,11 +1,11 @@
 --- a/net/minecraft/data/registries/RegistryPatchGenerator.java
 +++ b/net/minecraft/data/registries/RegistryPatchGenerator.java
-@@ -21,7 +_,7 @@
-             parent -> {
-                 RegistryAccess.Frozen staticRegistries = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
-                 Cloner.Factory cloner = new Cloner.Factory();
--                RegistryDataLoader.WORLDGEN_REGISTRIES.forEach(registryData -> registryData.runWithArguments(cloner::addCodec));
-+                net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistriesWithDimensions().forEach(registryData -> registryData.runWithArguments(cloner::addCodec));
-                 RegistrySetBuilder.PatchedRegistries newRegistries = packBuilder.buildPatch(staticRegistries, parent, cloner);
-                 HolderLookup.Provider fullPatchedRegistry = newRegistries.full();
-                 Optional<? extends HolderLookup.RegistryLookup<Biome>> biomes = fullPatchedRegistry.lookup(Registries.BIOME);
+@@ -23,7 +_,7 @@
+         return vanilla.thenApply(parent -> {
+             RegistryAccess.Frozen staticRegistries = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
+             Cloner.Factory cloner = new Cloner.Factory();
+-            RegistryDataLoader.WORLD_REGISTRIES.forEach(registryData -> registryData.runWithArguments(cloner::addCodec));
++            net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistriesWithDimensions().forEach(registryData -> registryData.runWithArguments(cloner::addCodec));
+             RegistrySetBuilder.PatchedRegistries newRegistries = packBuilder.buildPatch(staticRegistries, parent, cloner);
+             boolean hasAnyPatchedBiomes = hasAnyPatchedElement(newRegistries, Registries.BIOME);
+             boolean hasAnyPatchedFeatures = hasAnyPatchedElement(newRegistries, Registries.PLACED_FEATURE);

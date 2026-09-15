@@ -1,15 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
 +++ b/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
-@@ -209,7 +_,7 @@
-             result.add(
-                 jigsaw.withInfo(
-                     new StructureTemplate.StructureBlockInfo(
--                        calculateRelativePosition(settings, blockInfo.pos()).offset(position), blockInfo.state.rotate(settings.getRotation()), blockInfo.nbt
-+                        calculateRelativePosition(settings, blockInfo.pos()).offset(position), blockInfo.state.rotate(settings.getRotation()), net.neoforged.neoforge.common.CommonHooks.captureStructureRotation(blockInfo.nbt, rotation)
-                     )
-                 )
-             );
-@@ -228,7 +_,7 @@
+@@ -217,7 +_,7 @@
          for (StructureTemplate.StructureBlockInfo blockInfo : settings.getRandomPalette(this.palettes, position).blocks(block)) {
              BlockPos blockPos = absolute ? calculateRelativePosition(settings, blockInfo.pos).offset(position) : blockInfo.pos;
              if (boundingBox == null || boundingBox.isInside(blockPos)) {
@@ -18,7 +9,7 @@
              }
          }
  
-@@ -245,6 +_,10 @@
+@@ -234,6 +_,10 @@
          return transform(pos, settings.getMirror(), settings.getRotation(), settings.getRotationPivot());
      }
  
@@ -29,7 +20,7 @@
      public boolean placeInWorld(
          ServerLevelAccessor level,
          BlockPos position,
-@@ -272,7 +_,7 @@
+@@ -261,7 +_,7 @@
              int maxX = Integer.MIN_VALUE;
              int maxY = Integer.MIN_VALUE;
              int maxZ = Integer.MIN_VALUE;
@@ -38,7 +29,7 @@
  
              try (ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(LOGGER)) {
                  for (StructureTemplate.StructureBlockInfo blockInfo : processedBlockInfoList) {
-@@ -302,6 +_,7 @@
+@@ -291,6 +_,7 @@
                                      blockEntity.loadWithComponents(
                                          TagValueInput.create(reporter.forChild(blockEntity.problemPath()), level.registryAccess(), blockInfo.nbt)
                                      );
@@ -46,7 +37,7 @@
                                  }
                              }
  
-@@ -386,16 +_,7 @@
+@@ -375,16 +_,7 @@
                  }
  
                  if (!settings.isIgnoreEntities()) {
@@ -64,7 +55,7 @@
                  }
              }
  
-@@ -429,6 +_,10 @@
+@@ -418,6 +_,10 @@
          });
      }
  
@@ -75,7 +66,7 @@
      public static List<StructureTemplate.StructureBlockInfo> processBlockInfos(
          ServerLevelAccessor level,
          BlockPos position,
-@@ -436,6 +_,10 @@
+@@ -425,6 +_,10 @@
          StructurePlaceSettings settings,
          List<StructureTemplate.StructureBlockInfo> blockInfoList
      ) {
@@ -86,7 +77,7 @@
          List<StructureTemplate.StructureBlockInfo> originalBlockInfoList = new ArrayList<>();
          List<StructureTemplate.StructureBlockInfo> processedBlockInfoList = new ArrayList<>();
          boolean processOnlyInCurrentChunk = true;
-@@ -458,7 +_,7 @@
+@@ -447,7 +_,7 @@
                  Iterator<StructureProcessor> iterator = settings.getProcessors().iterator();
  
                  while (processedBlockInfo != null && iterator.hasNext()) {
@@ -95,7 +86,7 @@
                  }
  
                  if (processedBlockInfo != null) {
-@@ -475,22 +_,30 @@
+@@ -464,22 +_,30 @@
          return processedBlockInfoList;
      }
  
@@ -132,8 +123,8 @@
 +
 +    private void addEntitiesToWorld(ServerLevelAccessor level, BlockPos position, StructurePlaceSettings placementIn, ProblemReporter problemReporter) {
 +        for(StructureTemplate.StructureEntityInfo entityInfo : processEntityInfos(this, level, position, placementIn, this.entityInfoList)) {
-+            BlockPos blockpos = entityInfo.blockPos; // FORGE: Position will have already been transformed by processEntityInfos
-+            if (placementIn.getBoundingBox() == null || placementIn.getBoundingBox().isInside(blockpos)) {
++            BlockPos blockPos = entityInfo.blockPos; // FORGE: Position will have already been transformed by processEntityInfos
++            if (placementIn.getBoundingBox() == null || placementIn.getBoundingBox().isInside(blockPos)) {
                  CompoundTag tag = entityInfo.nbt.copy();
 -                Vec3 relativePos = transform(entityInfo.pos, mirror, rotation, pivot);
 -                Vec3 pos = relativePos.add(position.getX(), position.getY(), position.getZ());
@@ -141,9 +132,9 @@
                  ListTag posTag = new ListTag();
                  posTag.add(DoubleTag.valueOf(pos.x));
                  posTag.add(DoubleTag.valueOf(pos.y));
-@@ -498,12 +_,12 @@
-                 tag.put("Pos", posTag);
-                 tag.remove("UUID");
+@@ -491,12 +_,12 @@
+                 }
+ 
                  createEntityIgnoreException(problemReporter, level, tag).ifPresent(entity -> {
 -                    float yRot = entity.rotate(rotation);
 -                    yRot += entity.mirror(mirror) - entity.getYRot();
@@ -157,7 +148,7 @@
                          mob.finalizeSpawn(level, level.getCurrentDifficultyAt(BlockPos.containing(pos)), EntitySpawnReason.STRUCTURE, null);
                      }
  
-@@ -817,7 +_,7 @@
+@@ -811,7 +_,7 @@
  
      public static final class Palette {
          private final List<StructureTemplate.StructureBlockInfo> blocks;

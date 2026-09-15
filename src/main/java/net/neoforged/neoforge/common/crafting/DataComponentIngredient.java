@@ -19,7 +19,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.HolderSetCodec;
+import net.minecraft.core.registries.codec.HolderSetCodec;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
@@ -61,7 +61,7 @@ public class DataComponentIngredient implements ICustomIngredient {
 
         if (exhaustive) {
             for (var type : stack.getComponents().keySet()) {
-                if (components.getPatch(type) == null) {
+                if (!components.isPatched(type)) {
                     return false; // Patch does not list the component
                 }
             }
@@ -70,10 +70,9 @@ public class DataComponentIngredient implements ICustomIngredient {
     }
 
     private boolean testComponents(DataComponentGetter getter) {
-        for (var entry : components.entrySet()) {
-            var type = entry.getKey();
-            var value = entry.getValue();
-            if (value.isEmpty() && getter.has(type) || value.isPresent() && !value.get().equals(getter.get(type))) {
+        for (DataComponentType<?> type : components.keySet()) {
+            Object value = components.getPatch(type);
+            if (value == null && getter.has(type) || value != null && !value.equals(getter.get(type))) {
                 return false; // One of the patch entries doesn't match
             }
         }

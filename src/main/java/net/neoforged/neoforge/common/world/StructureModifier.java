@@ -10,8 +10,8 @@ import com.mojang.serialization.MapCodec;
 import java.util.function.Function;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.RegistryCodecs;
-import net.minecraft.resources.RegistryFileCodec;
+import net.minecraft.core.registries.codec.RegistryCodecs;
+import net.minecraft.core.registries.codec.RegistryFileCodec;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.neoforged.neoforge.common.world.ModifiableStructureInfo.StructureInfo;
@@ -45,13 +45,13 @@ public interface StructureModifier {
      * Codec for referring to structure modifiers by id in other datapack registry files.
      * Can only be used with {@link RegistryOps}.
      */
-    Codec<Holder<StructureModifier>> REFERENCE_CODEC = RegistryFileCodec.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIERS, DIRECT_CODEC);
+    Codec<Holder<StructureModifier>> REFERENCE_CODEC = RegistryFileCodec.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIERS, DIRECT_CODEC, false);
 
     /**
      * Codec for referring to structure modifiers by id, list of id, or tags.
      * Can only be used with {@link RegistryOps}.
      */
-    Codec<HolderSet<StructureModifier>> LIST_CODEC = RegistryCodecs.homogeneousList(NeoForgeRegistries.Keys.STRUCTURE_MODIFIERS, DIRECT_CODEC);
+    Codec<HolderSet<StructureModifier>> LIST_CODEC = RegistryCodecs.holderSet(NeoForgeRegistries.Keys.STRUCTURE_MODIFIERS, DIRECT_CODEC);
 
     /**
      * Modifies the information via the provided structure builder.

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/SmallDripleafBlock.java
 +++ b/net/minecraft/world/level/block/SmallDripleafBlock.java
-@@ -87,6 +_,8 @@
+@@ -80,6 +_,8 @@
  
          BlockPos belowPos = pos.below();
          BlockState belowState = level.getBlockState(belowPos);

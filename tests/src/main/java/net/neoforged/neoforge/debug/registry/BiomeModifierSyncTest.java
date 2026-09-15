@@ -8,7 +8,6 @@ package net.neoforged.neoforge.debug.registry;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Set;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryAccess;
@@ -21,7 +20,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.ModifiableBiomeInfo;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -73,16 +71,13 @@ public class BiomeModifierSyncTest {
     @WithListener(Listener.class)
     static void biomeModifierSync(final DynamicTest test) {
         ResourceKey<BiomeModifier> modifyTaigaModifier = ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, Identifier.fromNamespaceAndPath(HELPER.modId(), "modify_taiga"));
-        HELPER.addClientProvider(event -> new DatapackBuiltinEntriesProvider(
-                event.getGenerator().getPackOutput(),
-                event.getLookupProvider(),
+        HELPER.generateWorldRegistries(
                 new RegistrySetBuilder().add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, context -> {
                     var taigaTag = context.lookup(Registries.BIOME).getOrThrow(BiomeTags.IS_TAIGA);
                     context.register(modifyTaigaModifier, new TestModifier(
                             taigaTag,
                             MODIFIED_WATER_COLOR));
-                }),
-                Set.of(HELPER.modId())));
+                }));
     }
 
     public static class Listener implements TestListener {

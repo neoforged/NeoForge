@@ -5,10 +5,11 @@
 
 package net.neoforged.neoforge.debug.client;
 
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import java.util.Objects;
 import java.util.Random;
 import net.minecraft.ChatFormatting;
@@ -284,7 +285,9 @@ public class GuiTests {
                 .withLocation(Identifier.fromNamespaceAndPath(modId, "tri_strip"))
                 .withVertexShader("core/position_color")
                 .withFragmentShader("core/position_color")
-                .withBindGroupLayout(BindGroupLayouts.MATRICES_PROJECTION)
+                .withBindGroupLayout(BindGroupLayouts.DYNAMIC_TRANSFORMS)
+                .withBindGroupLayout(BindGroupLayouts.PROJECTION)
+                .withColorTargetState(ColorTargetState.DEFAULT)
                 .withCull(false)
                 .withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR)
                 .withPrimitiveTopology(PrimitiveTopology.TRIANGLE_FAN)

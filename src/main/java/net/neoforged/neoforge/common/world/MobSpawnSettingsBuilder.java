@@ -7,6 +7,8 @@ package net.neoforged.neoforge.common.world;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Predicate;
+import net.minecraft.util.random.Weighted;
 import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -14,21 +16,20 @@ import net.minecraft.world.level.biome.MobSpawnSettings;
 import org.jspecify.annotations.Nullable;
 
 public class MobSpawnSettingsBuilder extends MobSpawnSettings.Builder {
-    private final Set<MobCategory> typesView = Collections.unmodifiableSet(this.spawners.keySet());
+    private final Set<MobCategory> typesView = Collections.unmodifiableSet(this.spawnsByCategory.keySet());
     private final Set<EntityType<?>> costView = Collections.unmodifiableSet(this.mobSpawnCosts.keySet());
 
     public MobSpawnSettingsBuilder(MobSpawnSettings orig) {
-        orig.getSpawnerTypes().forEach(k -> spawners.get(k).addAll(orig.getMobs(k)));
-        orig.getEntityTypes().forEach(k -> mobSpawnCosts.put(k, orig.getMobSpawnCost(k)));
-        creatureGenerationProbability = orig.getCreatureProbability();
+        orig.definedCategories().forEach(k -> forCategory(k).addAll(orig.getMobsInCategory(k)));
+        this.mobSpawnCosts.putAll(orig.allSpawnCosts());
     }
 
     public Set<MobCategory> getSpawnerTypes() {
         return this.typesView;
     }
 
-    public WeightedList.Builder<MobSpawnSettings.SpawnerData> getSpawner(MobCategory type) {
-        return this.spawners.get(type);
+    public WeightedList.@Nullable Builder<MobSpawnSettings.SpawnerData> getSpawner(MobCategory type) {
+        return this.spawnsByCategory.get(type);
     }
 
     public Set<EntityType<?>> getEntityTypes() {
@@ -39,11 +40,14 @@ public class MobSpawnSettingsBuilder extends MobSpawnSettings.Builder {
         return this.mobSpawnCosts.get(type);
     }
 
-    public float getProbability() {
-        return this.creatureGenerationProbability;
+    public MobSpawnSettingsBuilder disablePlayerSpawn() {
+        return this;
     }
 
-    public MobSpawnSettingsBuilder disablePlayerSpawn() {
+    public MobSpawnSettingsBuilder removeSpawns(Predicate<Weighted<MobSpawnSettings.SpawnerData>> filter) {
+        for (WeightedList.Builder<MobSpawnSettings.SpawnerData> list : this.spawnsByCategory.values()) {
+            list.removeIf(filter);
+        }
         return this;
     }
 

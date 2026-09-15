@@ -10,7 +10,7 @@ import java.util.List;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.levelgen.GenerationStep;
-import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
+import net.minecraft.world.level.levelgen.carver.WorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 public class BiomeGenerationSettingsBuilder extends BiomeGenerationSettings.PlainBuilder {
@@ -28,7 +28,7 @@ public class BiomeGenerationSettingsBuilder extends BiomeGenerationSettings.Plai
         return features.get(stage.ordinal());
     }
 
-    public List<Holder<ConfiguredWorldCarver<?>>> getCarvers() {
+    public List<Holder<WorldCarver>> getCarvers() {
         return carvers;
     }
 }

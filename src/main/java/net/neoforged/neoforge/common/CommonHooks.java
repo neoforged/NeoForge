@@ -91,9 +91,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.stats.RecipeBookSettings;
 import net.minecraft.stats.Stats;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.CrudeIncrementalIntIdentityHashBiMap;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Prediction;
 import net.minecraft.util.Util;
 import net.minecraft.util.datafix.fixes.StructuresBecomeConfiguredFix;
 import net.minecraft.world.Container;
@@ -116,7 +116,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -204,7 +204,7 @@ import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
-import net.neoforged.neoforge.event.entity.living.EnderManAngerEvent;
+import net.neoforged.neoforge.event.entity.living.EndermanAngerEvent;
 import net.neoforged.neoforge.event.entity.living.LivingBreatheEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
@@ -406,7 +406,7 @@ public class CommonHooks {
         return NeoForge.EVENT_BUS.post(event);
     }
 
-    public static double getEntityVisibilityMultiplier(LivingEntity entity, Entity lookingEntity, double originalMultiplier) {
+    public static double getEntityVisibilityMultiplier(LivingEntity entity, @Nullable Entity lookingEntity, double originalMultiplier) {
         LivingEvent.LivingVisibilityEvent event = new LivingEvent.LivingVisibilityEvent(entity, lookingEntity, originalMultiplier);
         NeoForge.EVENT_BUS.post(event);
         return Math.max(0, event.getVisibilityModifier());
@@ -443,20 +443,23 @@ public class CommonHooks {
     }
 
     @Nullable
-    public static ItemEntity onPlayerTossEvent(Player player, ItemStack item, boolean dropAround, boolean includeName) {
+    public static ItemEntity onPlayerTossEvent(Player player, ItemStack item, boolean thrownFromHand, Prediction prediction) {
         player.captureDrops(Lists.newArrayList());
-        ItemEntity ret = player.drop(item, dropAround, includeName);
+        ItemEntity ret = player.dropWithoutEvent(item, thrownFromHand, prediction);
         player.captureDrops(null);
 
-        if (ret == null)
+        if (ret == null) {
             return null;
+        }
 
         ItemTossEvent event = new ItemTossEvent(ret, player);
-        if (NeoForge.EVENT_BUS.post(event).isCanceled())
+        if (NeoForge.EVENT_BUS.post(event).isCanceled()) {
             return null;
+        }
 
-        if (!player.level().isClientSide())
+        if (!player.level().isClientSide()) {
             player.level().addFreshEntity(event.getEntity());
+        }
         return event.getEntity();
     }
 
@@ -1349,8 +1352,8 @@ public class CommonHooks {
         }
     }
 
-    public static boolean shouldSuppressEnderManAnger(EnderMan enderMan, Player player) {
-        return NeoForge.EVENT_BUS.post(new EnderManAngerEvent(enderMan, player)).isCanceled();
+    public static boolean shouldSuppressEnderManAnger(Enderman enderMan, Player player) {
+        return NeoForge.EVENT_BUS.post(new EndermanAngerEvent(enderMan, player)).isCanceled();
     }
 
     private static final Lazy<Map<String, StructuresBecomeConfiguredFix.Conversion>> FORGE_CONVERSION_MAP = Lazy.of(() -> {
@@ -1405,26 +1408,6 @@ public class CommonHooks {
             return PermissionAPI.getPermission(player, NeoForgeMod.USE_SELECTORS_PERMISSION);
         }
         return false;
-    }
-
-    @ApiStatus.Internal
-    public static <T> HolderLookup.RegistryLookup<T> wrapRegistryLookup(final HolderLookup.RegistryLookup<T> lookup) {
-        return new HolderLookup.RegistryLookup.Delegate<>() {
-            @Override
-            public RegistryLookup<T> parent() {
-                return lookup;
-            }
-
-            @Override
-            public Stream<HolderSet.Named<T>> listTags() {
-                return Stream.empty();
-            }
-
-            @Override
-            public Optional<HolderSet.Named<T>> get(TagKey<T> key) {
-                return Optional.of(HolderSet.emptyNamed(lookup, key));
-            }
-        };
     }
 
     /**
@@ -1903,5 +1886,22 @@ public class CommonHooks {
                 entriesStreamCodec.encode(output, modifiers);
             }
         };
+    }
+
+    /// {@return the translation key for this dimension}.
+    /// Used when looking up the matching translation.
+    ///
+    /// @see Level#TRANSLATION_PREFIX
+    /// @see Level#getDescriptionKey()
+    public static String getDimensionDescriptionKey(ResourceKey<Level> dimensionKey) {
+        return dimensionKey.identifier().toLanguageKey(Level.TRANSLATION_PREFIX);
+    }
+
+    /// {@return the translated description of this dimension, with a fallback to the registry name}
+    ///
+    /// @see CommonHooks#getDimensionDescriptionKey(ResourceKey)
+    /// @see Level#getDescription()
+    public static Component getDimensionDescription(ResourceKey<Level> dimensionKey) {
+        return Component.translatableWithFallback(getDimensionDescriptionKey(dimensionKey), dimensionKey.identifier().toString());
     }
 }

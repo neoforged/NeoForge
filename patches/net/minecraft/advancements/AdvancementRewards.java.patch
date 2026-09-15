@@ -1,6 +1,6 @@
 --- a/net/minecraft/advancements/AdvancementRewards.java
 +++ b/net/minecraft/advancements/AdvancementRewards.java
-@@ -43,6 +_,7 @@
+@@ -46,6 +_,7 @@
          LootParams params = new LootParams.Builder(level)
              .withParameter(LootContextParams.THIS_ENTITY, player)
              .withParameter(LootContextParams.ORIGIN, player.position())

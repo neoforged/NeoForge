@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/components/EditBox.java
 +++ b/net/minecraft/client/gui/components/EditBox.java
-@@ -630,6 +_,10 @@
+@@ -632,6 +_,10 @@
          this.hint = hasNoStyle ? hint.copy().withStyle(DEFAULT_HINT_STYLE) : hint;
      }
  

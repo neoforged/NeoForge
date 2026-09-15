@@ -5,11 +5,11 @@
   "ore_veins_enabled": true,
   "legacy_random_source": false,
   "default_block": {
-    "Name": "minecraft:stone"
+    "id": "minecraft:stone"
   },
   "default_fluid": {
-    "Name": "minecraft:water",
-    "Properties": {
+    "id": "minecraft:water",
+    "properties": {
       "level": "0"
     }
   },
@@ -42,26 +42,21 @@
     }
   },
   "noise_router": {
-    "barrier": 0,
-    "fluid_level_floodedness": 0,
-    "fluid_level_spread": 0,
-    "lava": 0,
-    "temperature": 0,
-    "vegetation": 0,
-    "continents": 0,
-    "erosion": 0,
-    "depth": 0,
-    "ridges": 0,
-    "preliminary_surface_level": 0,
+    "temperature": "minecraft:zero",
+    "vegetation": "minecraft:zero",
+    "continents": "minecraft:zero",
+    "erosion": "minecraft:zero",
+    "depth": "minecraft:zero",
+    "ridges": "minecraft:zero",
+    "chunk_surface_level": "minecraft:zero",
     "final_density": {
       "type": "minecraft:interpolated",
-      "argument": "minecraft:overworld/base_3d_noise"
-    },
-    "vein_toggle": 0,
-    "vein_ridged": 0,
-    "vein_gap": 0
+      "cell_size_xz": 4,
+      "cell_size_y": 8,
+      "input": "minecraft:overworld/base_3d_noise"
+    }
   },
-  "surface_rule": {
+  "material_rule": {
     "type": "minecraft:sequence",
     "sequence": []
   }

@@ -5,8 +5,12 @@
 
 package net.neoforged.neoforge.common.crafting;
 
+import java.util.stream.Stream;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderGetter;
+import net.minecraft.core.Registry;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
@@ -48,7 +52,13 @@ public class ConditionalRecipeOutput implements RecipeOutput {
     }
 
     @Override
-    public void includeRootAdvancement() {
-        inner.includeRootAdvancement();
+    public <S> HolderGetter<S> lookup(ResourceKey<? extends Registry<? extends S>> key) {
+        return inner.lookup(key);
+    }
+
+    @Override
+    @Deprecated
+    public <S> Stream<Holder.Reference<S>> listContextElements(ResourceKey<? extends Registry<? extends S>> key) {
+        return inner.listContextElements(key);
     }
 }

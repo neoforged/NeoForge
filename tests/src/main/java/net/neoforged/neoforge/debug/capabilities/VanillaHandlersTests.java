@@ -10,10 +10,10 @@ import static net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
@@ -91,7 +91,7 @@ public class VanillaHandlersTests {
         helper.setBlock(composterPos, Blocks.COMPOSTER.defaultBlockState());
 
         var nonCompostable = new ItemStack(Blocks.BARRIER, 1);
-        if (ComposterBlock.getValue(nonCompostable) > 0)
+        if (nonCompostable.has(DataComponents.COMPOSTABLE))
             helper.fail("Assumption failed: expected " + nonCompostable + " to be non-compostable");
 
         // Of particular note to be tested here is the 'null' side; see #2572

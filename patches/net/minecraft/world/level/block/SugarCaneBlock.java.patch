@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/SugarCaneBlock.java
 +++ b/net/minecraft/world/level/block/SugarCaneBlock.java
-@@ -57,12 +_,15 @@
+@@ -50,12 +_,15 @@
  
              if (height < 3) {
                  int age = state.getValue(AGE);
@@ -16,7 +16,7 @@
              }
          }
      }
-@@ -92,13 +_,16 @@
+@@ -85,13 +_,16 @@
              return true;
          }
  
@@ -30,7 +30,7 @@
                  FluidState fluidState = level.getFluidState(below.relative(direction));
 -                if (fluidState.is(FluidTags.SUPPORTS_SUGAR_CANE_ADJACENTLY) || blockState.is(BlockTags.SUPPORTS_SUGAR_CANE_ADJACENTLY)) {
 +                // Neo: Allow the fluid state to dynamically decide whether it hydrates here if the tag-based checks fail
-+                if (fluidState.is(FluidTags.SUPPORTS_SUGAR_CANE_ADJACENTLY) || blockState.is(BlockTags.SUPPORTS_SUGAR_CANE_ADJACENTLY) || state.canBeHydrated(level, pos, fluidState, below.relative(direction))) {
++                if (fluidState.is(FluidTags.SUPPORTS_SUGAR_CANE_ADJACENTLY) || blockState.is(BlockTags.SUPPORTS_SUGAR_CANE_ADJACENTLY) || state.canBeHydrated(level, pos, fluidState)) {
                      return true;
                  }
              }

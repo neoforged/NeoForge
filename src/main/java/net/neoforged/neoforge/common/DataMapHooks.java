@@ -8,16 +8,15 @@ package net.neoforged.neoforge.common;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
+import java.util.function.Function;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.HoneycombItem;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.BlockTransformers;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WeatheringCopper;
-import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.registries.datamaps.DataMapsUpdatedEvent;
@@ -69,11 +68,19 @@ public class DataMapHooks {
     }
 
     @ApiStatus.Internal
-    public static FuelValues populateFuelValues(RegistryAccess lookupProvider, FeatureFlagSet features) {
-        FuelValues.Builder builder = new FuelValues.Builder(lookupProvider, features);
-        Registry<Item> registry = lookupProvider.lookupOrThrow(Registries.ITEM);
-        registry.getDataMap(NeoForgeDataMaps.FURNACE_FUELS).forEach((key, fuel) -> builder.add(registry.getValue(key), fuel.burnTime()));
-        return builder.build();
+    public static Function<BlockState, @Nullable BlockState> axeBlockTransformer(ItemStack stack) {
+        var component = stack.get(DataComponents.BLOCK_TRANSFORMER);
+        if (component != null && component.is(BlockTransformers.AXE)) {
+            return blockState -> {
+                var stripped = blockState.typeHolder().getData(NeoForgeDataMaps.STRIPPABLES);
+                if (stripped != null) {
+                    return stripped.strippedBlock().withPropertiesOf(blockState);
+                }
+                var unwaxed = getBlockUnwaxed(blockState.getBlock());
+                return unwaxed == null ? null : unwaxed.withPropertiesOf(blockState);
+            };
+        }
+        return _ -> null;
     }
 
     @SubscribeEvent

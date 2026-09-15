@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/vehicle/minecart/OldMinecartBehavior.java
 +++ b/net/minecraft/world/entity/vehicle/minecart/OldMinecartBehavior.java
-@@ -62,7 +_,7 @@
+@@ -56,7 +_,7 @@
              this.minecart.setOnRails(onRails);
              if (onRails) {
                  this.moveAlongTrack(level);
@@ -9,7 +9,7 @@
                      this.minecart.activateMinecart(level, var11.getX(), var11.getY(), var11.getZ(), state.getValue(PoweredRailBlock.POWERED));
                  }
              } else {
-@@ -112,7 +_,7 @@
+@@ -104,7 +_,7 @@
          y = pos.getY();
          boolean powerTrack = false;
          boolean haltTrack = false;
@@ -18,7 +18,7 @@
              powerTrack = state.getValue(PoweredRailBlock.POWERED);
              haltTrack = !powerTrack;
          }
-@@ -123,7 +_,7 @@
+@@ -115,7 +_,7 @@
          }
  
          Vec3 movement = this.getDeltaMovement();
@@ -27,7 +27,7 @@
          switch (shape) {
              case ASCENDING_EAST:
                  this.setDeltaMovement(movement.add(-slideSpeed, 0.0, 0.0));
-@@ -279,9 +_,10 @@
+@@ -271,9 +_,10 @@
              yt--;
          }
  
@@ -40,7 +40,7 @@
              y = yt;
              if (shape.isSlope()) {
                  y = yt + 1;
-@@ -317,9 +_,10 @@
+@@ -309,9 +_,10 @@
              yt--;
          }
  

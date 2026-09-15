@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/Animal.java
 +++ b/net/minecraft/world/entity/animal/Animal.java
-@@ -208,6 +_,17 @@
+@@ -209,6 +_,17 @@
  
      public void spawnChildFromBreeding(ServerLevel level, Animal partner) {
          AgeableMob offspring = this.getBreedOffspring(level, partner);

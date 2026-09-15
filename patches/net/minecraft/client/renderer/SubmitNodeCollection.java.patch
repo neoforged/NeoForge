@@ -1,15 +1,15 @@
 --- a/net/minecraft/client/renderer/SubmitNodeCollection.java
 +++ b/net/minecraft/client/renderer/SubmitNodeCollection.java
-@@ -206,7 +_,7 @@
+@@ -288,7 +_,7 @@
+     @Override
      public void submitMovingBlock(PoseStack poseStack, MovingBlockRenderState movingBlockRenderState, int outlineColor) {
-         MovingBlockFeatureRenderer.Submit submit = new MovingBlockFeatureRenderer.Submit(new Matrix4f(poseStack.last().pose()), movingBlockRenderState, 0);
          BlockStateModel model = Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(movingBlockRenderState.blockState);
--        if (model.hasMaterialFlag(1)) {
-+        if (model.hasMaterialFlag(movingBlockRenderState, movingBlockRenderState.blockPos, movingBlockRenderState.blockState, 1)) {
-             this.translucentBlocksAndItems.submit(submit);
-         } else {
-             this.solid.submit(submit);
-@@ -252,6 +_,27 @@
+-        boolean isTranslucent = model.hasMaterialFlag(1);
++        boolean isTranslucent = model.hasMaterialFlag(movingBlockRenderState, movingBlockRenderState.blockPos, movingBlockRenderState.blockState, 1);
+         MovingBlockFeatureRenderer.Submit submit = new MovingBlockFeatureRenderer.Submit(
+             new Matrix4f(poseStack.last().pose()), movingBlockRenderState, 0, isTranslucent
+         );
+@@ -338,6 +_,27 @@
          }
      }
  
@@ -37,9 +37,9 @@
      private static @Nullable RenderType getOutlineRenderType(RenderType renderType) {
          if (renderType.isOutline()) {
              return renderType;
-@@ -350,6 +_,13 @@
+@@ -438,6 +_,13 @@
          } else {
-             this.gizmos.submit(submit);
+             this.translucentGizmos.submit(submit);
          }
 +    }
 +
