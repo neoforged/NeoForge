@@ -11,6 +11,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -146,12 +147,14 @@ public class GlobalLootModifiersTest {
                 return generatedLoot;
             ItemStack fakeTool = ctxTool.copy();
             fakeTool.enchant(reg.getOrThrow(Enchantments.SILK_TOUCH), 1);
-            LootParams.Builder builder = new LootParams.Builder(context.getLevel());
-            builder.withParameter(LootContextParams.TOOL, fakeTool);
-            return context.getOptional(LootContextParams.BLOCK_STATE).getBlock().getLootTable()
+            LootParams.Builder builder = new LootParams.Builder(context.getLevel())
+                    .withParameter(LootContextParams.BLOCK_STATE, Objects.requireNonNull(context.getOptional(LootContextParams.BLOCK_STATE)))
+                    .withParameter(LootContextParams.ORIGIN, Objects.requireNonNull(context.getOptional(LootContextParams.ORIGIN)))
+                    .withParameter(LootContextParams.TOOL, fakeTool);
+            return Objects.requireNonNull(context.getOptional(LootContextParams.BLOCK_STATE)).getBlock().getLootTable()
                     .map(key -> {
                         var loottable = context.getLevel().getServer().reloadableRegistries().getLootTable(key);
-                        return loottable.getRandomItems(builder.create(LootContextParamSets.EMPTY));
+                        return loottable.getRandomItems(builder.create(LootContextParamSets.BLOCK));
                     })
                     .orElseGet(ObjectArrayList::of);
         }
