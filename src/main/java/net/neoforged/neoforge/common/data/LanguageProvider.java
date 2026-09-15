@@ -27,6 +27,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.gamerules.GameRule;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.extensions.ILevelExtension;
 
@@ -122,5 +123,22 @@ public abstract class LanguageProvider implements DataProvider {
 
     public void addBiome(ResourceKey<Biome> biome, String value) {
         add(biome.identifier().toLanguageKey("biome"), value);
+    }
+
+    public void add(GameRule<?> gameRule, String value) {
+        add(gameRule.getDescriptionId(), value);
+    }
+
+    public void add(GameRule<?> gameRule, String value, String description) {
+        add(gameRule, value);
+        add(gameRule.getDescriptionId() + ".description", description);
+    }
+
+    public void addGameRule(Supplier<? extends GameRule<?>> gameRule, String value) {
+        add(gameRule.get(), value);
+    }
+
+    public void addGameRule(Supplier<? extends GameRule<?>> gameRule, String value, String description) {
+        add(gameRule.get(), value, description);
     }
 }
