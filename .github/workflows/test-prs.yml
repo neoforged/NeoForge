@@ -39,14 +39,11 @@ jobs:
       - name: Run JUnit tests with Gradle
         run: ./gradlew :tests:runUnitTests
 
-# This fails in CI for 26.3 with the error message from RenderPearl: "Failed to create window for OpenGL context: Couldn't find matching GLX visual"
-# TODO: find the root cause and fix it, then bring back the production client self-test
-# ~ sciwhiz12(2026-09-16)
-#      - name: Install software OpenGL rendering
-#        run: sudo apt-get install xvfb libgl1-mesa-dri
-#
-#      - name: Run production client self-test
-#        run: xvfb-run ./gradlew :neoforge:testProductionClient
+      - name: Install software Vulkan rendering
+        run: sudo apt-get install mesa-vulkan-drivers
+
+      - name: Run production client self-test
+        run: ./gradlew :neoforge:testProductionClient
 
       - name: Run production server self-test
         run: ./gradlew :neoforge:testProductionServer
