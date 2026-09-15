@@ -36,6 +36,14 @@
                          gameConfig.game.vulkanValidation
                      )
                  );
+@@ -527,6 +_,7 @@
+         LOGGER.info("Using graphics backend {}, using drivers: {}", deviceInfo.backendName(), deviceInfo.driverInfo());
+         LOGGER.info("Using graphics device: {} ({})", deviceInfo.name(), deviceInfo.vendorName());
+         LOGGER.info("Using graphics device extensions: {}", String.join(", ", deviceInfo.underlyingExtensions()));
++        net.neoforged.neoforge.client.loading.earlydisplay.EarlyWindowHandoff.startWindowHandoff();
+         int maxSize = deviceInfo.limits().maxTextureSizeForFormat(GpuFormat.RGBA8_UNORM);
+         this.window = new Window(
+             this,
 @@ -547,6 +_,7 @@
  
          this.windowSurface = device.createSurface(this.window.handle(), this.window::isIconified);

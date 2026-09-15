@@ -5,11 +5,20 @@
 
 package net.neoforged.neoforge.client.loading.earlydisplay;
 
+import java.nio.IntBuffer;
 import com.mojang.blaze3d.platform.Window;
 import net.neoforged.fml.loading.EarlyLoadingScreenController;
 import org.lwjgl.sdl.SDLVideo;
+import org.lwjgl.system.MemoryStack;
 
 public final class EarlyWindowHandoff {
+    public static void startWindowHandoff() {
+        EarlyLoadingScreenController earlyLoadingScreen = EarlyLoadingScreenController.current();
+        if (earlyLoadingScreen != null) {
+            earlyLoadingScreen.stopEventPolling();
+        }
+    }
+
     /// Completes the renderer handoff and restores the early display's native window state.
     public static void completeWindowHandoff(Window window) {
         EarlyLoadingScreenController earlyLoadingScreen = EarlyLoadingScreenController.current();
@@ -33,16 +42,25 @@ public final class EarlyWindowHandoff {
             } else {
                 SDLVideo.SDL_SetWindowSize(windowHandle, state.width(), state.height());
             }
-            window.onResize(state.width(), state.height());
-            window.onFramebufferResize(state.width(), state.height());
 
             if (state.minimized()) {
                 SDLVideo.SDL_MinimizeWindow(windowHandle);
                 window.onIconified(true);
             }
+
+            window.syncWindow();
+
+            try (MemoryStack stack = MemoryStack.stackPush()) {
+                IntBuffer width = stack.callocInt(1);
+                IntBuffer height = stack.callocInt(1);
+                if (SDLVideo.SDL_GetWindowSize(windowHandle, width, height)) {
+                    window.onResize(width.get(), height.get());
+                }
+            }
+            Window.FramebufferSize framebufferSize = window.queryFramebufferSize();
+            window.onFramebufferResize(framebufferSize.width(), framebufferSize.height());
         }
 
-        window.syncWindow();
         SDLVideo.SDL_ShowWindow(windowHandle);
         earlyLoadingScreen.periodicTick();
     }
