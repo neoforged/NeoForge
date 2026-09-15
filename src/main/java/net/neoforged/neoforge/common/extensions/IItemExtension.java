@@ -343,6 +343,8 @@ public interface IItemExtension {
     default boolean canPerformAction(ItemInstance stack, ItemAbility itemAbility) {
         if (itemAbility == ItemAbilities.SWORD_SWEEP) {
             return stack.is(ItemTags.SWORDS);
+        } else if (itemAbility == ItemAbilities.SHOVEL_DOUSE) {
+            return stack.is(ItemTags.DOUSES_CAMPFIRES);
         }
         return false;
     }

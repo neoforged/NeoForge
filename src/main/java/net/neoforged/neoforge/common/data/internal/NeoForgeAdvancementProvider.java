@@ -41,7 +41,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.advancements.AdvancementProvider;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.data.advancements.packs.VanillaAdvancementProvider;
-import net.minecraft.data.advancements.packs.VanillaHusbandryAdvancements;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.data.worldgen.BootstrapContextAccess;
 import net.minecraft.resources.RegistryOps;
@@ -79,7 +78,6 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
 
     private static List<AdvancementSubProvider.Factory> getVanillaAdvancementProviders() {
         List<BiFunction<Criterion<?>, BootstrapContextAccess, @Nullable Criterion<?>>> criteriaReplacers = new ArrayList<>();
-        criteriaReplacers.add(replaceMatchToolCriteria(ItemAbilities.AXE_WAX_OFF, getPrivateValue(VanillaHusbandryAdvancements.class, null, "WAX_SCRAPING_TOOLS")));
         criteriaReplacers.add(replaceInteractCriteria(ItemPredicate.Builder.item().withComponents(DataComponentMatchers.Builder.components().partial(ItemAbilityPredicate.TYPE, new ItemAbilityPredicate(ItemAbilities.SHEARS_REMOVE_ARMOR)).build()).build(), Items.SHEARS));
         criteriaReplacers.add(replaceInteractCriteria(ItemPredicate.Builder.item().withComponents(DataComponentMatchers.Builder.components().partial(PiglinCurrencyItemPredicate.TYPE, PiglinCurrencyItemPredicate.INSTANCE).build()).build(), PiglinAi.BARTERING_ITEM));
         criteriaReplacers.add(replaceLootEntityPredicate(helper -> {

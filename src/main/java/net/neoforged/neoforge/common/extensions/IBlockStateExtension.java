@@ -41,7 +41,6 @@ import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
-import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
 import net.neoforged.neoforge.common.util.BlockRelocability;
@@ -606,8 +605,6 @@ public interface IBlockStateExtension {
 
     /**
      * Returns the state that this block should transform into when right-clicked by a tool.
-     * For example: Used to determine if {@link ItemAbilities#AXE_STRIP an axe can strip},
-     * {@link ItemAbilities#SHOVEL_FLATTEN a shovel can path}, or {@link ItemAbilities#HOE_TILL a hoe can till}.
      * Returns {@code null} if nothing should happen.
      *
      * @param context     The use on context that the action was performed in

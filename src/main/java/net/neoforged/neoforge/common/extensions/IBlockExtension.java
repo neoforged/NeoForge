@@ -55,7 +55,6 @@ import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.TrapDoorBlock;
-import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -69,7 +68,6 @@ import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
-import net.neoforged.neoforge.common.DataMapHooks;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.Tags;
@@ -726,8 +724,6 @@ public interface IBlockExtension {
 
     /**
      * Returns the state that this block should transform into when right-clicked by a tool.
-     * For example: Used to determine if {@link ItemAbilities#AXE_STRIP an axe can strip},
-     * {@link ItemAbilities#SHOVEL_FLATTEN a shovel can path}, or {@link ItemAbilities#HOE_TILL a hoe can till}.
      * Returns {@code null} if nothing should happen.
      *
      * @param state       The current state
@@ -739,42 +735,20 @@ public interface IBlockExtension {
     @Nullable
     default BlockState getToolModifiedState(BlockState state, UseOnContext context, ItemAbility itemAbility, boolean simulate) {
         ItemStack itemStack = context.getItemInHand();
-        if (!itemStack.canPerformAction(itemAbility))
+        if (!itemStack.canPerformAction(itemAbility)) {
             return null;
+        }
 
-        if (ItemAbilities.AXE_SCRAPE == itemAbility) {
-            return WeatheringCopper.getPrevious(state).orElse(null);
-        } else if (ItemAbilities.AXE_WAX_OFF == itemAbility) {
-            Block waxOffBlock = DataMapHooks.getBlockUnwaxed(state.getBlock());
-            return Optional.ofNullable(waxOffBlock).map(block -> block.withPropertiesOf(state)).orElse(null);
-        } else if (ItemAbilities.HOE_TILL == itemAbility) {
-            // Logic copied from HoeItem#TILLABLES; needs to be kept in sync during updating
-            Block block = state.getBlock();
-            if (block == Blocks.ROOTED_DIRT) {
-                if (!simulate && !context.getLevel().isClientSide()) {
-                    Block.popResourceFromFace(context.getLevel(), context.getClickedPos(), context.getClickedFace(), new ItemStack(Items.HANGING_ROOTS));
-                }
-                return Blocks.DIRT.defaultBlockState();
-            } else if ((block == Blocks.GRASS_BLOCK || block == Blocks.DIRT_PATH || block == Blocks.DIRT || block == Blocks.COARSE_DIRT) &&
-                    context.getLevel().getBlockState(context.getClickedPos().above()).isAir()) {
-                        return block == Blocks.COARSE_DIRT ? Blocks.DIRT.defaultBlockState() : Blocks.FARMLAND.defaultBlockState();
-                    }
-        } else if (ItemAbilities.SHEARS_TRIM == itemAbility) {
+        if (ItemAbilities.SHEARS_TRIM == itemAbility) {
             if (state.getBlock() instanceof GrowingPlantHeadBlock growingPlant && !growingPlant.isMaxAge(state)) {
-                if (!simulate)
-                    context.getLevel().playSound(context.getPlayer(), context.getClickedPos(), SoundEvents.GROWING_PLANT_CROP, SoundSource.BLOCKS, 1.0F, 1.0F);
-                return growingPlant.getMaxAgeState(state);
-            }
-        } else if (ItemAbilities.SHOVEL_DOUSE == itemAbility) {
-            if (state.getBlock() instanceof CampfireBlock && state.getValue(CampfireBlock.LIT)) {
                 if (!simulate) {
-                    CampfireBlock.douse(context.getPlayer(), context.getLevel(), context.getClickedPos(), state);
+                    context.getLevel().playSound(context.getPlayer(), context.getClickedPos(), SoundEvents.GROWING_PLANT_CROP, SoundSource.BLOCKS, 1.0F, 1.0F);
                 }
-                return state.setValue(CampfireBlock.LIT, Boolean.valueOf(false));
+                return growingPlant.getMaxAgeState(state);
             }
         } else if (ItemAbilities.FIRESTARTER_LIGHT == itemAbility) {
             if (CampfireBlock.canLight(state) || CandleBlock.canLight(state) || CandleCakeBlock.canLight(state)) {
-                return state.setValue(BlockStateProperties.LIT, Boolean.valueOf(true));
+                return state.setValue(BlockStateProperties.LIT, true);
             }
         }
 

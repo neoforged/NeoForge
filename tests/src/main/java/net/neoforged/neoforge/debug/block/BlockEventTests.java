@@ -16,6 +16,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CandleBlock;
 import net.minecraft.world.level.block.RedstoneLampBlock;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -150,26 +151,31 @@ public class BlockEventTests {
     @TestHolder(description = "Tests if the block modification event is fired")
     public static void blockModificationEvent(final DynamicTest test) {
         test.eventListeners().forge().addListener((final BlockEvent.BlockToolModificationEvent event) -> {
-            if (event.getItemAbility() == ItemAbilities.AXE_STRIP) {
-                if (event.getLevel().getBlockState(event.getContext().getClickedPos()).is(Blocks.ACACIA_LOG)) {
+            if (event.getItemAbility() == ItemAbilities.FIRESTARTER_LIGHT) {
+                if (event.getLevel().getBlockState(event.getContext().getClickedPos()).is(Blocks.DYED_CANDLE.white())) {
                     event.setCanceled(true);
-                } else if (event.getFinalState().is(Blocks.DIAMOND_BLOCK) && event.getContext().getClickedFace() == Direction.UP) {
-                    event.setFinalState(Blocks.EMERALD_BLOCK.defaultBlockState());
+                } else if (event.getLevel().getBlockState(event.getContext().getClickedPos()).is(Blocks.DYED_CANDLE.yellow()) && event.getContext().getClickedFace() == Direction.UP) {
+                    event.setFinalState(Blocks.DYED_CANDLE.green().defaultBlockState());
                 }
             }
-            test.pass();
         });
 
         test.onGameTest(helper -> helper.startSequence()
-                .thenExecute(() -> helper.setBlock(new BlockPos(1, 1, 1), Blocks.ACACIA_LOG))
-                .thenExecute(() -> helper.useOn(new BlockPos(1, 1, 1), Items.DIAMOND_AXE.getDefaultInstance(), helper.makeMockPlayer(), Direction.UP))
-                .thenExecuteAfter(1, () -> helper.assertBlockPresent(Blocks.ACACIA_LOG, new BlockPos(1, 1, 1)))
+                .thenExecute(() -> helper.setBlock(new BlockPos(1, 1, 1), Blocks.CANDLE))
+                .thenExecute(() -> helper.useOn(new BlockPos(1, 1, 1), Items.FLINT_AND_STEEL.getDefaultInstance(), helper.makeMockPlayer(), Direction.UP))
+                .thenExecuteAfter(1, () -> helper.assertBlockProperty(new BlockPos(1, 1, 1), CandleBlock.LIT, true))
 
                 .thenIdle(3)
 
-                .thenExecute(() -> helper.setBlock(new BlockPos(1, 2, 1), Blocks.DIAMOND_BLOCK))
-                .thenExecute(() -> helper.useOn(new BlockPos(1, 2, 1), Items.DIAMOND_AXE.getDefaultInstance(), helper.makeMockPlayer(), Direction.UP))
-                .thenExecuteAfter(1, () -> helper.assertBlockPresent(Blocks.EMERALD_BLOCK, new BlockPos(1, 2, 1)))
+                .thenExecute(() -> helper.setBlock(new BlockPos(1, 1, 1), Blocks.DYED_CANDLE.white()))
+                .thenExecute(() -> helper.useOn(new BlockPos(1, 1, 1), Items.FLINT_AND_STEEL.getDefaultInstance(), helper.makeMockPlayer(), Direction.UP))
+                .thenExecuteAfter(1, () -> helper.assertBlockProperty(new BlockPos(1, 1, 1), CandleBlock.LIT, false))
+
+                .thenIdle(3)
+
+                .thenExecute(() -> helper.setBlock(new BlockPos(1, 2, 1), Blocks.DYED_CANDLE.yellow()))
+                .thenExecute(() -> helper.useOn(new BlockPos(1, 2, 1), Items.FLINT_AND_STEEL.getDefaultInstance(), helper.makeMockPlayer(), Direction.UP))
+                .thenExecuteAfter(1, () -> helper.assertBlockPresent(Blocks.DYED_CANDLE.green(), new BlockPos(1, 2, 1)))
                 .thenSucceed());
     }
 

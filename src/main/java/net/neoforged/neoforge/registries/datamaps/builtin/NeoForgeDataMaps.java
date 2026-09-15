@@ -26,7 +26,6 @@ import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.level.levelgen.feature.MonsterRoomFeature;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.DataMapHooks;
-import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.extensions.IBlockExtension;
@@ -161,8 +160,6 @@ public class NeoForgeDataMaps {
      * The {@linkplain Block} data map that replaces {@link HoneycombItem#WAXABLES}.
      * <p>
      * The location of this data map is {@code neoforge/data_maps/block/waxables.json}, and the values are objects with 1 field:
-     * <ul>
-     * <li>{@code waxed}, a block that the object should convert into once it is right clicked with a {@link ItemAbilities#AXE_WAX_OFF} ability</li>
      * </ul>
      *
      * The inverted map of this can be found at {@link DataMapHooks#INVERSE_WAXABLES_DATAMAP}
