@@ -28,6 +28,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.gamerules.GameRule;
+import net.minecraft.world.level.gamerules.GameRuleCategory;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.extensions.ILevelExtension;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -133,6 +134,12 @@ public abstract class LanguageProvider implements DataProvider {
     public void add(GameRule<?> gameRule, String value, String description) {
         add(gameRule, value);
         add(gameRule.getDescriptionId() + ".description", description);
+    }
+
+    public void add(GameRuleCategory gameRuleCategory, String value) {
+        // GameRuleCategory#getDescriptionId - this is not the translation key as one would expect, its the registry name
+        // GameRuleCategory#label() - this uses #id to build the translation key by adding the below hardcoded prefix
+        add(gameRuleCategory.id().toLanguageKey("gamerule.category"), value);
     }
 
     public void addGameRule(Supplier<? extends GameRule<?>> gameRule, String value) {
