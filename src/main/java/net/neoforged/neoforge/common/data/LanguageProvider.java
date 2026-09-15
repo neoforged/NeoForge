@@ -11,7 +11,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -35,7 +34,6 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.extensions.ILevelExtension;
 import net.neoforged.neoforge.fluids.FluidType;
-import org.jetbrains.annotations.UnknownNullability;
 
 public abstract class LanguageProvider implements DataProvider {
     private static final Codec<Map<String, Component>> CODEC = Codec.unboundedMap(Codec.STRING, ComponentSerialization.CODEC);
@@ -183,7 +181,7 @@ public abstract class LanguageProvider implements DataProvider {
     public void addConfigValue(ModConfigSpec.ConfigValue<?> configValue, String value) {
         var translationKey = configValue.getSpec().getTranslationKey();
 
-        if(translationKey == null) {
+        if (translationKey == null) {
             return;
         }
 
@@ -191,7 +189,7 @@ public abstract class LanguageProvider implements DataProvider {
 
         var comment = configValue.getSpec().getComment();
 
-        if(comment != null) {
+        if (comment != null) {
             add(translationKey + ".tooltip", comment);
         }
     }
