@@ -21,7 +21,7 @@
              if (section.maybeHas(predicate)) {
                  BlockPos origin = SectionPos.of(this.chunkPos, sectionY).origin();
 -                BlockScanUtils.findBlocksInSection(section, origin, 0, 0, 0, 15, 15, 15, predicate, blockStateConsumer);
-+                BlockScanUtils.findBlocksInSection(section, origin, 0, 0, 0, 15, 15, 15, fineFilter, blockStateConsumer);
++                BlockScanUtils.findBlocksInSection(section, origin, 0, 0, 0, 15, 15, 15, predicate, fineFilter, blockStateConsumer);
              }
          }
      }

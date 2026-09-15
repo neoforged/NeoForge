@@ -1,0 +1,63 @@
+--- a/net/minecraft/world/level/blockscan/BlockMatcher.java
++++ b/net/minecraft/world/level/blockscan/BlockMatcher.java
+@@ -8,8 +_,10 @@
+ 
+ public abstract class BlockMatcher {
+     private static final Predicate<BlockState> NO_PREDICATE = var0 -> true;
++    static final java.util.function.BiPredicate<BlockState, BlockPos> NO_POSITION_PREDICATE = (_, _) -> true;
+     protected final LevelReader level;
+     protected Predicate<BlockState> statePredicate = NO_PREDICATE;
++    protected java.util.function.BiPredicate<BlockState, BlockPos> positionPredicate = NO_POSITION_PREDICATE;
+ 
+     public BlockMatcher(LevelReader levelReader) {
+         this.level = levelReader;
+@@ -20,6 +_,22 @@
+         return this;
+     }
+ 
++    /// Neo: Filter against the state and position context, after the [states are filtered][#filterState(Predicate)].
++    /// This is only called for positions that the block state filter **did not reject**.
++    ///
++    /// All filters registered using this method are applied in sequence, so only the intersection of all filters are matched.
++    ///
++    /// The position passed to this method may be mutable; do **not** modify it or store it directly without first making it [immutable][BlockPos#immutable()].
++    ///
++    /// For filtering out states without reference to the position, prefer using [#filterState(Predicate)].
++    ///
++    /// @param predicate a filter based on state and (mutable) position
++    /// @return this matcher, for chaining
++    public BlockMatcher filterPosition(java.util.function.BiPredicate<BlockState, BlockPos> predicate) {
++        this.positionPredicate = this.positionPredicate == NO_POSITION_PREDICATE ? predicate : this.positionPredicate.and(predicate);
++        return this;
++    }
++
+     public abstract boolean atLeastMatched(final int n);
+ 
+     public boolean atMostMatched(int n) {
+@@ -27,17 +_,21 @@
+     }
+ 
+     public boolean anyMatched() {
+-        return this.anyMatched(this.statePredicate);
+-    }
+-
+-    protected abstract boolean anyMatched(final Predicate<BlockState> statePredicate);
++        return this.anyMatched(this.statePredicate, this.positionPredicate);
++    }
++
++    protected boolean anyMatched(final Predicate<BlockState> statePredicate) {
++        return this.anyMatched(statePredicate, NO_POSITION_PREDICATE);
++    }
++
++    protected abstract boolean anyMatched(final Predicate<BlockState> statePredicate, final java.util.function.BiPredicate<BlockState, BlockPos> predicate);
+ 
+     public boolean noneMatched() {
+         return !this.anyMatched();
+     }
+ 
+     public boolean allMatched() {
+-        return !this.anyMatched(state -> !this.statePredicate.test(state));
++        return !this.anyMatched(state -> !this.statePredicate.test(state), (state, pos) -> !this.positionPredicate.test(state, pos));
+     }
+ 
+     public abstract void forEach(final BiConsumer<BlockPos, BlockState> consumer);
