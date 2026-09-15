@@ -354,7 +354,7 @@ public class ExtendedGameTestHelper extends GameTestHelper {
     }
 
     public void assertBlock(BlockPos pos, Predicate<Block> predicate, String message) {
-        this.assertBlock(pos, predicate, block -> Component.translatable(message, block));
+        this.assertBlock(pos, predicate, block -> Component.translatable(message, BuiltInRegistries.BLOCK.getKey(block).toString()));
     }
 
     @Override
