@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/monster/zombie/Zombie.java
 +++ b/net/minecraft/world/entity/monster/zombie/Zombie.java
+@@ -102,7 +_,7 @@
+         DATA_DROWNED_CONVERSION_ID,
+         this::convertsToWhenDrowning,
+         this::getConversionSound,
+-        () -> this.isEyeInFluid(FluidTags.WATER),
++        () -> this.getFluidInteraction().isEyeInFluidMatching(this, (_, type, _) -> type.getIsWaterLike()),
+         "InWaterTime",
+         600,
+         "DrownedConversionTime",
 @@ -243,6 +_,7 @@
                  zombie.setGossips(villager.getGossips().copy());
                  zombie.setTradeOffers(villager.getOffers().copy());
