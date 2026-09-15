@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.event;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.ReloadableServerResources;
 import net.neoforged.bus.api.Event;
@@ -26,22 +25,6 @@ public sealed class TagsUpdatedEvent extends Event {
     /// {@return the registries that have had their tags rebound}
     public RegistryAccess getRegistries() {
         return registries;
-    }
-
-    /// @return The dynamic registries that have had their tags rebound.
-    ///
-    /// @deprecated Use [#getRegistries()] instead
-    @Deprecated(forRemoval = true, since = "26.1.2")
-    public HolderLookup.Provider getLookupProvider() {
-        return registries;
-    }
-
-    /// {@return the cause for this tag update}
-    ///
-    /// @deprecated Subscribe to subclasses instead
-    @Deprecated(forRemoval = true, since = "26.1.2")
-    public UpdateCause getUpdateCause() {
-        return UpdateCause.SERVER_DATA_LOAD;
     }
 
     /// Whether static data (which in single player is shared between server and client thread) should be updated as a
@@ -77,28 +60,8 @@ public sealed class TagsUpdatedEvent extends Event {
         }
 
         @Override
-        @Deprecated(forRemoval = true, since = "26.1.2")
-        public UpdateCause getUpdateCause() {
-            return UpdateCause.CLIENT_PACKET_RECEIVED;
-        }
-
-        @Override
         public boolean shouldUpdateStaticData() {
             return !integratedServer;
         }
-    }
-
-    /// Represents the cause for a tag update.
-    @Deprecated(forRemoval = true, since = "26.1.2")
-    public enum UpdateCause {
-        /**
-         * The tag update is caused by the server loading datapack data. Note that in single player this still happens
-         * on the client thread.
-         */
-        SERVER_DATA_LOAD,
-        /**
-         * The tag update is caused by the client receiving the tag data from the server.
-         */
-        CLIENT_PACKET_RECEIVED
     }
 }

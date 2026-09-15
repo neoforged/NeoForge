@@ -185,8 +185,6 @@ modId="gametest_test"
 [[mods]]
 modId="many_mob_effects_test"
 [[mods]]
-modId="fluid_util_test"
-[[mods]]
 modId="login_packet_split_test"
 [[mods]]
 modId="recipe_book_extension_test"
