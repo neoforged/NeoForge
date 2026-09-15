@@ -86,6 +86,16 @@
          boolean showDeathMessage = this.level().getGameRules().get(GameRules.SHOW_DEATH_MESSAGES);
          if (showDeathMessage) {
              Component deathMessage = this.getCombatTracker().getDeathMessage();
+@@ -1114,7 +_,8 @@
+                 .map(p -> ServerPlayer.RespawnPosAngle.of(p, pos, 0.0F));
+         } else {
+             if (!forced) {
+-                return Optional.empty();
++                // Neo: Hook for custom respawn position controlled by blocks
++                return blockState.getRespawnPosition(EntityTypes.PLAYER, level, pos, yaw);
+             }
+ 
+             boolean freeBottom = block.isPossibleToRespawnInThis(blockState);
 @@ -1137,6 +_,7 @@
      }
  
