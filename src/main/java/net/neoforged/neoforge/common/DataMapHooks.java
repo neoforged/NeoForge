@@ -8,9 +8,13 @@ package net.neoforged.neoforge.common;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.HoneycombItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.BlockTransformers;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.state.BlockState;
@@ -61,6 +65,22 @@ public class DataMapHooks {
     @SuppressWarnings("deprecation")
     public static Block getBlockUnwaxed(Block block) {
         return INVERSE_WAXABLES_DATAMAP.containsKey(block) ? INVERSE_WAXABLES_DATAMAP.get(block) : HoneycombItem.WAX_OFF_BY_BLOCK.get().get(block);
+    }
+
+    @ApiStatus.Internal
+    public static Function<BlockState, @Nullable BlockState> axeBlockTransformer(ItemStack stack) {
+        var component = stack.get(DataComponents.BLOCK_TRANSFORMER);
+        if (component != null && component.is(BlockTransformers.AXE)) {
+            return blockState -> {
+                var stripped = blockState.typeHolder().getData(NeoForgeDataMaps.STRIPPABLES);
+                if (stripped != null) {
+                    return stripped.strippedBlock().withPropertiesOf(blockState);
+                }
+                var unwaxed = getBlockUnwaxed(blockState.getBlock());
+                return unwaxed == null ? null : unwaxed.withPropertiesOf(blockState);
+            };
+        }
+        return _ -> null;
     }
 
     @SubscribeEvent

@@ -1,22 +1,11 @@
 --- a/net/minecraft/core/component/BlockTransformer.java
 +++ b/net/minecraft/core/component/BlockTransformer.java
-@@ -60,10 +_,25 @@
+@@ -60,10 +_,14 @@
          BlockPos pos = context.getClickedPos();
          Level level = context.getLevel();
  
-+        java.util.function.Function<BlockState, @Nullable BlockState> dataMapProvider = s -> null;
-+        var component = context.getItemInHand().get(net.minecraft.core.component.DataComponents.BLOCK_TRANSFORMER);
 +        // Neo: take the strippables and oxidizables datamap into consideration first if this is an axe
-+        if (component != null && component.is(net.minecraft.world.item.component.BlockTransformers.AXE)) {
-+            dataMapProvider = blockState -> {
-+                var stripped = blockState.typeHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
-+                if (stripped != null) {
-+                    return stripped.strippedBlock().withPropertiesOf(blockState);
-+                }
-+                var unwaxed = net.neoforged.neoforge.common.DataMapHooks.getBlockUnwaxed(blockState.getBlock());
-+                return unwaxed == null ? null : unwaxed.withPropertiesOf(blockState);
-+            };
-+        }
++        java.util.function.Function<BlockState, @Nullable BlockState> dataMapProvider = net.neoforged.neoforge.common.DataMapHooks.axeBlockTransformer(context.getItemInHand());
 +
          for (BlockTransformer.BlockTransformData transformData : this.transforms) {
              Direction clickedFace = context.getClickedFace();
