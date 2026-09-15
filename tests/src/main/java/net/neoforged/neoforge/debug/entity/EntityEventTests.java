@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug.entity;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -26,6 +27,7 @@ import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
+import net.neoforged.neoforge.event.entity.EntityMountEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
@@ -201,6 +203,52 @@ public class EntityEventTests {
                     helper.assertEntityNotPresent(EntityTypes.PIG);
                 })
                 .thenWaitUntil(() -> helper.assertValueEqual(test.status(), Test.Status.PASSED, "listener called"))
+                .thenExecute(helper::killAllEntities)
+                .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests that the EntityMountEvent is cancellable and does not trigger an infinite loop on the client")
+    static void entityMountEventIsCancellable(final DynamicTest test) {
+        //We keep track of how often the entity mount event is called.
+        AtomicInteger callCount = new AtomicInteger(0);
+
+        test.eventListeners().forge().addListener((final EntityMountEvent event) -> {
+            event.setCanceled(true);
+            callCount.incrementAndGet();
+            if (callCount.get() > 1) {
+                test.fail("Infinite loop detected");
+            }
+        });
+
+        test.onGameTest(helper -> helper.startSequence()
+                .thenExecute(() -> {
+                    var spawnPos = helper.absolutePos(BlockPos.ZERO);
+                    var riddenPig = EntityTypes.PIG.create(
+                            helper.getLevel(),
+                            ignored -> {},
+                            spawnPos,
+                            EntitySpawnReason.SPAWN_ITEM_USE,
+                            false,
+                            false);
+
+                    var ridingPig = EntityTypes.PIG.create(
+                            helper.getLevel(),
+                            ignored -> {},
+                            spawnPos,
+                            EntitySpawnReason.SPAWN_ITEM_USE,
+                            false,
+                            false);
+
+                    if (riddenPig == null || ridingPig == null) {
+                        test.fail("Failed to create entities");
+                        return;
+                    }
+
+                    ridingPig.startRiding(riddenPig);
+                })
+                .thenIdle(20)
                 .thenExecute(helper::killAllEntities)
                 .thenSucceed());
     }
