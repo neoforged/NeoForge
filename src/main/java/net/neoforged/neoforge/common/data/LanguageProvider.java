@@ -119,11 +119,11 @@ public abstract class LanguageProvider implements DataProvider {
     }
 
     public void addDimension(ResourceKey<Level> dimension, String value) {
-        add(dimension.identifier().toLanguageKey(ILevelExtension.TRANSLATION_PREFIX), value);
+        addKey(dimension, ILevelExtension.TRANSLATION_PREFIX, value);
     }
 
     public void addBiome(ResourceKey<Biome> biome, String value) {
-        add(biome.identifier().toLanguageKey("biome"), value);
+        addKey(biome, "biome", value);
     }
 
     public void add(GameRule<?> gameRule, String value) {
@@ -149,5 +149,9 @@ public abstract class LanguageProvider implements DataProvider {
 
     public void addFluidType(Supplier<? extends FluidType> fluidType, String value) {
         add(fluidType.get(), value);
+    }
+
+    public void addKey(ResourceKey<?> registryKey, String type, String value) {
+        add(registryKey.identifier().toLanguageKey(type), value);
     }
 }
