@@ -42,23 +42,17 @@
      }
  
      public Portal.Transition getActivePortalLocalTransition() {
-@@ -1002,8 +_,19 @@
-     }
+@@ -999,6 +_,13 @@
  
-     @Override
+     public float getSpinningEffectAngle(float partialTick) {
+         return this.spinningEffectTime + partialTick * this.spinningEffectSpeed;
++    }
++
++    @Override
 +    protected boolean canGlide() {
 +        // Neo: Override canGlide for the client to check if it is connected to a neo forge server, and if not then fall back to checking the worn items.
 +        // This way when Player#tryToStartFallFlying is called, on the client, it is able to check for the vanilla components on equipped items
 +        return !getAbilities().flying && canGlide(connection.getConnectionType().isNeoForge());
-+    }
-+
-+    @Override
-     public void rideTick() {
-         super.rideTick();
-+        if (this.wantsToStopRiding() && this.isPassenger()) {
-+            Input input = this.input.keyPresses;
-+            this.input.keyPresses = new Input(input.forward(), input.backward(), input.left(), input.right(), input.jump(), false, input.sprint());
-+        }
-         this.handsBusy = false;
-         if (this.getControlledVehicle() instanceof AbstractBoat boat) {
-             boat.setInput(this.input.keyPresses.left(), this.input.keyPresses.right(), this.input.keyPresses.forward(), this.input.keyPresses.backward());
+     }
+ 
+     @Override
