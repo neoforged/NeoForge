@@ -40,10 +40,10 @@ jobs:
         run: ./gradlew :tests:runUnitTests
 
       - name: Install software Vulkan rendering
-        run: sudo apt-get install mesa-vulkan-drivers
+        run: sudo apt-get install xvfb mesa-vulkan-drivers
 
       - name: Run production client self-test
-        run: ./gradlew :neoforge:testProductionClient
+        run: xvfb-run ./gradlew :neoforge:testProductionClient
 
       - name: Run production server self-test
         run: ./gradlew :neoforge:testProductionServer
