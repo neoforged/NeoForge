@@ -24,7 +24,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -715,7 +715,7 @@ public class EventHooks {
      */
     @Nullable
     @ApiStatus.Internal
-    public static LootTable loadLootTable(HolderLookup.Provider registries, Identifier name, LootTable table) {
+    public static LootTable loadLootTable(HolderGetter.Provider registries, Identifier name, LootTable table) {
         if (table == LootTable.EMPTY) // Empty table has a null name, and shouldn't be modified anyway.
             return null;
         LootTableLoadEvent event = new LootTableLoadEvent(registries, name, table);
