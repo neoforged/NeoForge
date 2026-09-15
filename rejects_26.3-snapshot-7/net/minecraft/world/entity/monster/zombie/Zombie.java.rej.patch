@@ -11,23 +11,3 @@
                          this.startUnderWaterConversion(300);
 @@ -238,6 +238,7 @@
      }
- 
-     protected void doUnderWaterConversion(ServerLevel level) {
-+        if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityTypes.DROWNED, (timer) -> this.conversionTime = timer)) return;
-         this.convertToZombieType(level, EntityTypes.DROWNED);
-         if (!this.isSilent()) {
-             level.levelEvent(null, 1040, this.blockPosition(), 0);
-@@ -248,9 +249,10 @@
-         this.convertTo(
-             zombieType,
-             ConversionParams.single(this, true, true),
--            newZombie -> newZombie.handleAttributes(
--                level.getCurrentDifficultyAt(newZombie.blockPosition()).getSpecialMultiplier(), EntitySpawnReason.CONVERSION
--            )
-+            newZombie -> {
-+                newZombie.handleAttributes(level.getCurrentDifficultyAt(newZombie.blockPosition()).getSpecialMultiplier(), EntitySpawnReason.CONVERSION);
-+                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, newZombie);
-+            }
-         );
-     }
- 
