@@ -82,7 +82,7 @@ public class BlockTests {
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
 
                 // Mine pot with sword
-                .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.DECORATED_POT.defaultBlockState()))
+                .thenExecute(() -> helper.placeBlock(1, 1, 1, Blocks.DECORATED_POT, Direction.DOWN))
                 .thenExecute(player -> player.setItemInHand(InteractionHand.MAIN_HAND, Items.DIAMOND_SWORD.getDefaultInstance()))
                 .thenExecute(player -> player.gameMode.destroyBlock(helper.absolutePos(new BlockPos(1, 1, 1))))
                 .thenExecute(player -> helper.assertTrue(
@@ -90,7 +90,7 @@ public class BlockTests {
                         "Decorated Pot should had dropped Bricks"))
                 .thenExecute(player -> helper.getLevel().getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().expandTowards(2, 2, 2)).forEach(itemEntity -> itemEntity.remove(Entity.RemovalReason.DISCARDED)))
 
-                .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.DECORATED_POT.defaultBlockState()))
+                .thenExecute(() -> helper.placeBlock(1, 1, 1, Blocks.DECORATED_POT, Direction.DOWN))
                 .thenExecute(player -> player.setItemInHand(InteractionHand.MAIN_HAND, Items.DANDELION.getDefaultInstance()))
                 .thenExecute(player -> player.gameMode.destroyBlock(helper.absolutePos(new BlockPos(1, 1, 1))))
                 .thenExecute(player -> helper.assertTrue(
