@@ -30,6 +30,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.gamerules.GameRule;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.extensions.ILevelExtension;
+import net.neoforged.neoforge.fluids.FluidType;
 
 public abstract class LanguageProvider implements DataProvider {
     private static final Codec<Map<String, Component>> CODEC = Codec.unboundedMap(Codec.STRING, ComponentSerialization.CODEC);
@@ -140,5 +141,13 @@ public abstract class LanguageProvider implements DataProvider {
 
     public void addGameRule(Supplier<? extends GameRule<?>> gameRule, String value, String description) {
         add(gameRule.get(), value, description);
+    }
+
+    public void add(FluidType fluidType, String value) {
+        add(fluidType.getDescriptionId(), value);
+    }
+
+    public void addFluidType(Supplier<? extends FluidType> fluidType, String value) {
+        add(fluidType.get(), value);
     }
 }
