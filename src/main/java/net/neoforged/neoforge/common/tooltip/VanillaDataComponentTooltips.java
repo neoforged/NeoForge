@@ -20,6 +20,7 @@ import net.minecraft.world.item.component.TooltipProvider;
 import net.minecraft.world.item.component.TypedEntityData;
 import net.minecraft.world.level.Spawner;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.SignText;
 import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 import net.neoforged.neoforge.common.util.AttributeUtil;
 
@@ -53,6 +54,8 @@ final class VanillaDataComponentTooltips {
         appenders.put(DataComponents.ATTRIBUTE_MODIFIERS, (stack, context, display, player, flag, builder) -> AttributeUtil.addAttributeTooltips(stack, builder, display, AttributeTooltipContext.of(player, context, display, flag)));
         putUnitEntry(appenders, DataComponents.INTANGIBLE_PROJECTILE, ItemStack.INTANGIBLE_TOOLTIP);
         putUnitEntry(appenders, DataComponents.UNBREAKABLE, ItemStack.UNBREAKABLE_TOOLTIP);
+        appenders.put(DataComponents.SIGN_TEXT_FRONT, TooltipAppender.createComponentAppender(DataComponents.SIGN_TEXT_FRONT, SignText.FRONT_TEXT));
+        appenders.put(DataComponents.SIGN_TEXT_BACK, TooltipAppender.createComponentAppender(DataComponents.SIGN_TEXT_BACK, SignText.BACK_TEXT));
         putDefaultEntry(appenders, DataComponents.OMINOUS_BOTTLE_AMPLIFIER);
         putDefaultEntry(appenders, DataComponents.SUSPICIOUS_STEW_EFFECTS);
         putDefaultEntry(appenders, DataComponents.BLOCK_STATE);
