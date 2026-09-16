@@ -15,7 +15,7 @@
              if (state.handRenderSelection.renderMainHand) {
                  float mainHandAttack = attackHand == InteractionHand.MAIN_HAND ? attackValue : 0.0F;
                  float mainhandInverseArmHeight = state.mainHandSwapScale * (1.0F - Mth.lerp(partialTicks, state.oldMainHandHeight, state.mainHandHeight));
-+                if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonHand(InteractionHand.MAIN_HAND, poseStack, submitNodeCollector, playerState.avatarRenderState.lightCoords, partialTicks, xRot, mainHandAttack, mainhandInverseArmHeight, state.mainHandItem))
++                if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonHand(InteractionHand.MAIN_HAND, poseStack, submitNodeCollector, playerState, partialTicks, xRot, mainHandAttack, mainhandInverseArmHeight, state.mainHandItem))
                  this.submitArmWithItem(
                      playerState,
                      state,
@@ -23,7 +23,7 @@
              if (state.handRenderSelection.renderOffHand) {
                  float offHandAttack = attackHand == InteractionHand.OFF_HAND ? attackValue : 0.0F;
                  float offhandInverseArmHeight = state.offHandSwapScale * (1.0F - Mth.lerp(partialTicks, state.oldOffHandHeight, state.offHandHeight));
-+                if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonHand(InteractionHand.OFF_HAND, poseStack, submitNodeCollector, playerState.avatarRenderState.lightCoords, partialTicks, xRot, offHandAttack, offhandInverseArmHeight, state.offHandItem))
++                if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonHand(InteractionHand.OFF_HAND, poseStack, submitNodeCollector, playerState, partialTicks, xRot, offHandAttack, offhandInverseArmHeight, state.offHandItem))
                  this.submitArmWithItem(
                      playerState,
                      state,

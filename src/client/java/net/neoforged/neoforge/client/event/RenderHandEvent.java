@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.state.level.PlayerRenderState;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
@@ -30,7 +31,7 @@ public class RenderHandEvent extends Event implements ICancellableEvent {
     private final InteractionHand hand;
     private final PoseStack poseStack;
     private final SubmitNodeCollector submitNodeCollector;
-    private final int packedLight;
+    private final PlayerRenderState playerState;
     private final float partialTick;
     private final float interpolatedPitch;
     private final float swingProgress;
@@ -38,13 +39,13 @@ public class RenderHandEvent extends Event implements ICancellableEvent {
     private final ItemStack stack;
 
     @ApiStatus.Internal
-    public RenderHandEvent(InteractionHand hand, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight,
+    public RenderHandEvent(InteractionHand hand, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, PlayerRenderState playerState,
             float partialTick, float interpolatedPitch,
             float swingProgress, float equipProgress, ItemStack stack) {
         this.hand = hand;
         this.poseStack = poseStack;
         this.submitNodeCollector = submitNodeCollector;
-        this.packedLight = packedLight;
+        this.playerState = playerState;
         this.partialTick = partialTick;
         this.interpolatedPitch = interpolatedPitch;
         this.swingProgress = swingProgress;
@@ -74,12 +75,19 @@ public class RenderHandEvent extends Event implements ICancellableEvent {
     }
 
     /**
+     * {@return the player's render state}
+     */
+    public PlayerRenderState getPlayerState() {
+        return playerState;
+    }
+
+    /**
      * {@return the amount of packed (sky and block) light for rendering}
      *
      * @see net.minecraft.util.LightCoordsUtil
      */
     public int getPackedLight() {
-        return packedLight;
+        return playerState.avatarRenderState.lightCoords;
     }
 
     /**
