@@ -181,11 +181,7 @@ modId="renderable_test"
 [[mods]]
 modId="ingredient_invalidation"
 [[mods]]
-modId="gametest_test"
-[[mods]]
 modId="many_mob_effects_test"
-[[mods]]
-modId="fluid_util_test"
 [[mods]]
 modId="login_packet_split_test"
 [[mods]]

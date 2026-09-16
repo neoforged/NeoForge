@@ -5,9 +5,6 @@
 
 package net.neoforged.neoforge.debug.capabilities;
 
-import static net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE;
-import static net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.SIMULATE;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
@@ -18,9 +15,9 @@ import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -49,32 +46,32 @@ public class VanillaHandlersTests {
             helper.fail("Expected no capability", composterPos);
         if (capCache.getCapability() != null) // check again just in case
             helper.fail("Expected no capability", composterPos);
-        if (invalidationCount.getValue() != 0)
+        if (invalidationCount.intValue() != 0)
             helper.fail("Should not have been invalidated yet", composterPos);
 
         // The cache should only be invalidated once until it is queried again
         helper.setBlock(composterPos, Blocks.COMPOSTER.defaultBlockState());
-        if (invalidationCount.getValue() != 1)
+        if (invalidationCount.intValue() != 1)
             helper.fail("Should have invalidated once");
 
         helper.setBlock(composterPos, Blocks.AIR.defaultBlockState());
-        if (invalidationCount.getValue() != 1) // capability not re-queried, so no invalidation
+        if (invalidationCount.intValue() != 1) // capability not re-queried, so no invalidation
             helper.fail("Should have invalidated once");
 
         helper.setBlock(composterPos, Blocks.COMPOSTER.defaultBlockState());
-        if (invalidationCount.getValue() != 1) // capability not re-queried, so no invalidation
+        if (invalidationCount.intValue() != 1) // capability not re-queried, so no invalidation
             helper.fail("Should have invalidated once");
 
         // Should be ok to query now
         if (capCache.getCapability() == null)
             helper.fail("Expected capability", composterPos);
-        if (invalidationCount.getValue() != 1)
+        if (invalidationCount.intValue() != 1)
             helper.fail("Should have invalidated once");
 
         // Should be notified of disappearance if the composter is removed
         helper.setBlock(composterPos, Blocks.AIR.defaultBlockState());
 
-        if (invalidationCount.getValue() != 2)
+        if (invalidationCount.intValue() != 2)
             helper.fail("Should have invalidated a second time");
         if (capCache.getCapability() != null)
             helper.fail("Expected no capability", composterPos);
@@ -90,7 +87,7 @@ public class VanillaHandlersTests {
 
         helper.setBlock(composterPos, Blocks.COMPOSTER.defaultBlockState());
 
-        var nonCompostable = new ItemStack(Blocks.BARRIER, 1);
+        var nonCompostable = ItemResource.of(new ItemStack(Blocks.BARRIER, 1));
         if (nonCompostable.has(DataComponents.COMPOSTABLE))
             helper.fail("Assumption failed: expected " + nonCompostable + " to be non-compostable");
 
@@ -100,10 +97,13 @@ public class VanillaHandlersTests {
         var sides = new Direction[] { Direction.UP, Direction.DOWN };
 
         for (Direction side : sides) {
-            var capability = IItemHandler.of(helper.requireCapability(Capabilities.Item.BLOCK, composterPos, side));
-            var result = capability.insertItem(0, nonCompostable, false);
-            if (result.isEmpty())
-                helper.fail("Expected failure to insert non-compostable item for side " + side);
+            var capability = helper.requireCapability(Capabilities.Item.BLOCK, composterPos, side);
+            try (Transaction tx = Transaction.openRoot()) {
+                var result = capability.insert(0, nonCompostable, 1, tx);
+                if (result > 0) {
+                    helper.fail("Expected failure to insert non-compostable item for side " + side);
+                }
+            }
         }
 
         helper.succeed();
@@ -114,6 +114,8 @@ public class VanillaHandlersTests {
     @TestHolder(description = "Test cauldron interactions via the fluid handler capability")
     public static void testCauldronCapability(ExtendedGameTestHelper helper) {
         var cauldronPos = new BlockPos(1, 1, 1);
+        FluidResource water = FluidResource.of(Fluids.WATER);
+        FluidResource lava = FluidResource.of(Fluids.LAVA);
 
         MutableInt invalidationCount = new MutableInt();
         var capCache = BlockCapabilityCache.create(
@@ -131,45 +133,60 @@ public class VanillaHandlersTests {
         helper.setBlock(cauldronPos, Blocks.CAULDRON);
         var fluidHandler = capCache.getCapability();
         helper.assertNotNull(fluidHandler, "Expected fluid handler");
-        // Note: this uses the legacy wrappers, testing the wrappers and that the new CauldronWrapper matches the old one.
-        var wrapper = IFluidHandler.of(fluidHandler);
         helper.assertTrue(invalidationCount.intValue() == 1, "Expected 1 invalidation only");
 
-        helper.assertTrue(wrapper.getTanks() == 1, "Got %d tanks".formatted(wrapper.getTanks()));
+        helper.assertTrue(fluidHandler.size() == 1, "Got %d tanks".formatted(fluidHandler.size()));
 
         // Simulate filling with water
-        var fillResult = wrapper.fill(new FluidStack(Fluids.WATER, 2000), SIMULATE);
-        helper.assertTrue(fillResult == 1000, "Filled " + fillResult);
+        try (Transaction tx = Transaction.openRoot()) {
+            var fillResult = fluidHandler.insert(water, 2000, tx);
+            helper.assertTrue(fillResult == 1000, "Filled " + fillResult);
+        }
         helper.assertBlockPresent(Blocks.CAULDRON, cauldronPos);
-        // Can't fill with less than 1000 though...
-        helper.assertTrue(wrapper.fill(new FluidStack(Fluids.WATER, 999), SIMULATE) == 0, "Expected 0 fill result");
+        try (Transaction tx = Transaction.openRoot()) {
+            // Can't fill with less than 1000 though...
+            helper.assertTrue(fluidHandler.insert(water, 999, tx) == 0, "Expected 0 fill result");
+        }
 
         // Action!
-        fillResult = wrapper.fill(new FluidStack(Fluids.WATER, 2000), EXECUTE);
-        helper.assertTrue(fillResult == 1000, "Filled " + fillResult);
-        helper.assertBlockState(cauldronPos, state -> state.is(Blocks.WATER_CAULDRON) && state.getValue(LayeredCauldronBlock.LEVEL) == 3, $ -> Component.literal("Expected level 3 cauldron"));
+        try (Transaction tx = Transaction.openRoot()) {
+            var fillResult = fluidHandler.insert(water, 2000, tx);
+            helper.assertTrue(fillResult == 1000, "Filled " + fillResult);
+            tx.commit();
+        }
+        helper.assertBlockState(cauldronPos, state -> state.is(Blocks.WATER_CAULDRON) && state.getValue(LayeredCauldronBlock.LEVEL) == 3, _ -> Component.literal("Expected level 3 cauldron"));
 
-        helper.assertTrue(FluidStack.matches(wrapper.getFluidInTank(0), new FluidStack(Fluids.WATER, 1000)), "Expected 1000 water");
+        helper.assertTrue(fluidHandler.getResource(0).is(Fluids.WATER) && fluidHandler.getAmountAsInt(0) == 1000, "Expected 1000 water");
 
         // Try to empty as well
-        helper.assertTrue(wrapper.drain(new FluidStack(Fluids.LAVA, 1000), EXECUTE).isEmpty(), "Cannot drain lava");
-        helper.assertTrue(wrapper.drain(new FluidStack(Fluids.WATER, 999), EXECUTE).isEmpty(), "Cannot drain less than 1000 water");
-        helper.assertTrue(FluidStack.matches(wrapper.drain(new FluidStack(Fluids.WATER, 1000), EXECUTE), new FluidStack(Fluids.WATER, 1000)), "Expected drain of 1000 water");
+        try (Transaction tx = Transaction.openRoot()) {
+            helper.assertTrue(fluidHandler.extract(lava, 1000, tx) == 0, "Cannot drain lava");
+            helper.assertTrue(fluidHandler.extract(water, 999, tx) == 0, "Cannot drain less than 1000 water");
+        }
+        try (Transaction tx = Transaction.openRoot()) {
+            helper.assertTrue(fluidHandler.extract(water, 1000, tx) == 1000, "Expected drain of 1000 water");
+            tx.commit();
+        }
 
         helper.assertBlockPresent(Blocks.CAULDRON, cauldronPos);
-        helper.assertTrue(wrapper.getFluidInTank(0).isEmpty(), "Expected empty handler");
+        helper.assertTrue(fluidHandler.getResource(0).isEmpty(), "Expected empty handler");
 
         // Try lava cauldron
         helper.setBlock(cauldronPos, Blocks.LAVA_CAULDRON);
-        helper.assertTrue(FluidStack.matches(wrapper.getFluidInTank(0), new FluidStack(Fluids.LAVA, 1000)), "Expected 1000 lava");
-        helper.assertTrue(FluidStack.matches(wrapper.drain(1000, EXECUTE), new FluidStack(Fluids.LAVA, 1000)), "Expected drain of 1000 lava");
+        helper.assertTrue(fluidHandler.getResource(0).is(Fluids.LAVA) && fluidHandler.getAmountAsInt(0) == 1000, "Expected 1000 lava");
+        try (Transaction tx = Transaction.openRoot()) {
+            helper.assertTrue(fluidHandler.extract(lava, 1000, tx) == 1000, "Expected drain of 1000 lava");
+            tx.commit();
+        }
         helper.assertBlockPresent(Blocks.CAULDRON, cauldronPos);
 
         // Try partial water filling
         helper.setBlock(cauldronPos, Blocks.WATER_CAULDRON.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, 2));
-        helper.assertTrue(FluidStack.matches(wrapper.getFluidInTank(0), new FluidStack(Fluids.WATER, 666)), "Expected 666 water");
-        helper.assertTrue(wrapper.drain(1000, EXECUTE).isEmpty(), "Expected no water drain from partial cauldron");
-        helper.assertTrue(wrapper.fill(new FluidStack(Fluids.WATER, 1000), EXECUTE) == 0, "Expected no water fill to partial cauldron");
+        helper.assertTrue(fluidHandler.getResource(0).is(Fluids.WATER) && fluidHandler.getAmountAsInt(0) == 666, "Expected 666 water");
+        try (Transaction tx = Transaction.openRoot()) {
+            helper.assertTrue(fluidHandler.extract(water, 1000, tx) == 0, "Expected no water drain from partial cauldron");
+            helper.assertTrue(fluidHandler.insert(water, 1000, tx) == 0, "Expected no water fill to partial cauldron");
+        }
 
         // None of this should have invalidated the capability
         helper.assertTrue(invalidationCount.intValue() == 1, "Expected 1 invalidation only after the whole test");

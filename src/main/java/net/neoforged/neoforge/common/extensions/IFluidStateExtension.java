@@ -7,7 +7,6 @@ package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.level.BlockGetter;
@@ -15,7 +14,6 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jspecify.annotations.Nullable;
 
@@ -43,24 +41,6 @@ public interface IFluidStateExtension {
      */
     default FluidType getFluidType() {
         return self().getType().getFluidType();
-    }
-
-    /**
-     * Performs how an entity moves when within the fluid. If using custom
-     * movement logic, the method should return {@code true}. Otherwise, the
-     * movement logic will default to water if {@link FluidType#getIsWaterLike()} returns
-     * {@code true} or no movement if it returns {@code false}.
-     *
-     * @param entity         the entity moving within the fluid
-     * @param movementVector the velocity of how the entity wants to move
-     * @param gravity        the gravity to apply to the entity
-     * @return {@code true} if custom movement logic is performed, {@code false} otherwise
-     *
-     * @deprecated Use {@link FluidType#move(LivingEntity, Vec3, double)} instead
-     */
-    @Deprecated(forRemoval = true, since = "26.2")
-    default boolean move(LivingEntity entity, Vec3 movementVector, double gravity) {
-        return self().getType().move(self(), entity, movementVector, gravity);
     }
 
     /**
