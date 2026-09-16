@@ -87,7 +87,7 @@ public class VanillaHandlersTests {
 
         helper.setBlock(composterPos, Blocks.COMPOSTER.defaultBlockState());
 
-        var nonCompostable = new ItemStack(Blocks.BARRIER, 1);
+        var nonCompostable = ItemResource.of(new ItemStack(Blocks.BARRIER, 1));
         if (nonCompostable.has(DataComponents.COMPOSTABLE))
             helper.fail("Assumption failed: expected " + nonCompostable + " to be non-compostable");
 
@@ -99,7 +99,7 @@ public class VanillaHandlersTests {
         for (Direction side : sides) {
             var capability = helper.requireCapability(Capabilities.Item.BLOCK, composterPos, side);
             try (Transaction tx = Transaction.openRoot()) {
-                var result = capability.insert(0, ItemResource.of(nonCompostable), 1, tx);
+                var result = capability.insert(0, nonCompostable, 1, tx);
                 if (result > 0) {
                     helper.fail("Expected failure to insert non-compostable item for side " + side);
                 }
@@ -114,6 +114,8 @@ public class VanillaHandlersTests {
     @TestHolder(description = "Test cauldron interactions via the fluid handler capability")
     public static void testCauldronCapability(ExtendedGameTestHelper helper) {
         var cauldronPos = new BlockPos(1, 1, 1);
+        FluidResource water = FluidResource.of(Fluids.WATER);
+        FluidResource lava = FluidResource.of(Fluids.LAVA);
 
         MutableInt invalidationCount = new MutableInt();
         var capCache = BlockCapabilityCache.create(
@@ -137,32 +139,32 @@ public class VanillaHandlersTests {
 
         // Simulate filling with water
         try (Transaction tx = Transaction.openRoot()) {
-            var fillResult = fluidHandler.insert(FluidResource.of(Fluids.WATER), 2000, tx);
+            var fillResult = fluidHandler.insert(water, 2000, tx);
             helper.assertTrue(fillResult == 1000, "Filled " + fillResult);
         }
         helper.assertBlockPresent(Blocks.CAULDRON, cauldronPos);
         try (Transaction tx = Transaction.openRoot()) {
             // Can't fill with less than 1000 though...
-            helper.assertTrue(fluidHandler.insert(FluidResource.of(Fluids.WATER), 999, tx) == 0, "Expected 0 fill result");
+            helper.assertTrue(fluidHandler.insert(water, 999, tx) == 0, "Expected 0 fill result");
         }
 
         // Action!
         try (Transaction tx = Transaction.openRoot()) {
-            var fillResult = fluidHandler.insert(FluidResource.of(Fluids.WATER), 2000, tx);
+            var fillResult = fluidHandler.insert(water, 2000, tx);
             helper.assertTrue(fillResult == 1000, "Filled " + fillResult);
             tx.commit();
         }
         helper.assertBlockState(cauldronPos, state -> state.is(Blocks.WATER_CAULDRON) && state.getValue(LayeredCauldronBlock.LEVEL) == 3, _ -> Component.literal("Expected level 3 cauldron"));
 
-        helper.assertTrue(fluidHandler.getResource(0).getFluid() == Fluids.WATER && fluidHandler.getAmountAsInt(0) == 1000, "Expected 1000 water");
+        helper.assertTrue(fluidHandler.getResource(0).is(Fluids.WATER) && fluidHandler.getAmountAsInt(0) == 1000, "Expected 1000 water");
 
         // Try to empty as well
         try (Transaction tx = Transaction.openRoot()) {
-            helper.assertTrue(fluidHandler.extract(FluidResource.of(Fluids.LAVA), 1000, tx) == 0, "Cannot drain lava");
-            helper.assertTrue(fluidHandler.extract(FluidResource.of(Fluids.WATER), 999, tx) == 0, "Cannot drain less than 1000 water");
+            helper.assertTrue(fluidHandler.extract(lava, 1000, tx) == 0, "Cannot drain lava");
+            helper.assertTrue(fluidHandler.extract(water, 999, tx) == 0, "Cannot drain less than 1000 water");
         }
         try (Transaction tx = Transaction.openRoot()) {
-            helper.assertTrue(fluidHandler.extract(FluidResource.of(Fluids.WATER), 1000, tx) == 1000, "Expected drain of 1000 water");
+            helper.assertTrue(fluidHandler.extract(water, 1000, tx) == 1000, "Expected drain of 1000 water");
             tx.commit();
         }
 
@@ -171,19 +173,19 @@ public class VanillaHandlersTests {
 
         // Try lava cauldron
         helper.setBlock(cauldronPos, Blocks.LAVA_CAULDRON);
-        helper.assertTrue(fluidHandler.getResource(0).getFluid() == Fluids.LAVA && fluidHandler.getAmountAsInt(0) == 1000, "Expected 1000 lava");
+        helper.assertTrue(fluidHandler.getResource(0).is(Fluids.LAVA) && fluidHandler.getAmountAsInt(0) == 1000, "Expected 1000 lava");
         try (Transaction tx = Transaction.openRoot()) {
-            helper.assertTrue(fluidHandler.extract(FluidResource.of(Fluids.LAVA), 1000, tx) == 1000, "Expected drain of 1000 lava");
+            helper.assertTrue(fluidHandler.extract(lava, 1000, tx) == 1000, "Expected drain of 1000 lava");
             tx.commit();
         }
         helper.assertBlockPresent(Blocks.CAULDRON, cauldronPos);
 
         // Try partial water filling
         helper.setBlock(cauldronPos, Blocks.WATER_CAULDRON.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, 2));
-        helper.assertTrue(fluidHandler.getResource(0).getFluid() == Fluids.WATER && fluidHandler.getAmountAsInt(0) == 666, "Expected 666 water");
+        helper.assertTrue(fluidHandler.getResource(0).is(Fluids.WATER) && fluidHandler.getAmountAsInt(0) == 666, "Expected 666 water");
         try (Transaction tx = Transaction.openRoot()) {
-            helper.assertTrue(fluidHandler.extract(FluidResource.of(Fluids.WATER), 1000, tx) == 0, "Expected no water drain from partial cauldron");
-            helper.assertTrue(fluidHandler.insert(FluidResource.of(Fluids.WATER), 1000, tx) == 0, "Expected no water fill to partial cauldron");
+            helper.assertTrue(fluidHandler.extract(water, 1000, tx) == 0, "Expected no water drain from partial cauldron");
+            helper.assertTrue(fluidHandler.insert(water, 1000, tx) == 0, "Expected no water fill to partial cauldron");
         }
 
         // None of this should have invalidated the capability
