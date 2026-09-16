@@ -5,20 +5,22 @@
      public static final Codec<Biome> DIRECT_CODEC = RecordCodecBuilder.create(
          i -> i.group(
 -                Biome.ClimateSettings.CODEC.forGetter(b -> b.climateSettings),
-+                Biome.ClimateSettings.CODEC.forGetter(b -> b.modifiableBiomeInfo().getOriginalBiomeInfo().climateSettings()), // FORGE: Patch codec to ignore field redirect coremods.
-                 EnvironmentAttributeMap.CODEC_ONLY_POSITIONAL.optionalFieldOf("attributes", EnvironmentAttributeMap.EMPTY).forGetter(b -> b.attributes),
+-                EnvironmentAttributeMap.CODEC_ONLY_POSITIONAL.optionalFieldOf("attributes", EnvironmentAttributeMap.EMPTY).forGetter(b -> b.attributes),
 -                BiomeSpecialEffects.CODEC.fieldOf("effects").forGetter(b -> b.specialEffects),
++                Biome.ClimateSettings.CODEC.forGetter(b -> b.modifiableBiomeInfo().getOriginalBiomeInfo().climateSettings()), // FORGE: Patch codec to ignore field redirect coremods.
++                EnvironmentAttributeMap.CODEC_ONLY_POSITIONAL.optionalFieldOf("attributes", EnvironmentAttributeMap.EMPTY).forGetter(b -> b.modifiableBiomeInfo().getOriginalBiomeInfo().attributes()), // FORGE: Patch codec to ignore field redirect coremods.
 +                BiomeSpecialEffects.CODEC.fieldOf("effects").forGetter(b -> b.modifiableBiomeInfo().getOriginalBiomeInfo().effects()), // FORGE: Patch codec to ignore field redirect coremods.
                  BiomeGenerationSettings.CODEC.forGetter(b -> b.generationSettings)
              )
              .apply(i, Biome::new)
-@@ -71,9 +_,11 @@
+@@ -71,9 +_,12 @@
      @Deprecated(forRemoval = true)
      public static final Noise BIOME_INFO_NOISE = new SimplexNoise(new WorldgenRandom(new LegacyRandomSource(2345L)), true);
      private static final int TEMPERATURE_CACHE_SIZE = 1024;
 +    /// Neo: Field accesses are redirected to [#getModifiedClimateSettings()] with a coremod.
      private final Biome.ClimateSettings climateSettings;
      private final BiomeGenerationSettings generationSettings;
++    /// Neo: Field accesses are redirected to [#getModifiedEnvironmentAttributes()()] with a coremod.
      private final EnvironmentAttributeMap attributes;
 +    /// Neo: Field accesses are redirected to [#getModifiedSpecialEffects()] with a coremod.
      private final BiomeSpecialEffects specialEffects;
@@ -41,7 +43,7 @@
      }
  
      public int getGrassColor(double x, double z) {
-@@ -420,5 +_,32 @@
+@@ -420,5 +_,39 @@
          public String getSerializedName() {
              return this.name;
          }
@@ -72,5 +74,12 @@
 +     */
 +    public BiomeSpecialEffects getModifiedSpecialEffects() {
 +        return this.modifiableBiomeInfo().get().effects();
++    }
++
++    /**
++     * {@return The biome's environment attributes, with modifications if called after modifiers are applied in server init.}
++     */
++    public EnvironmentAttributeMap getModifiedEnvironmentAttributes() {
++        return this.modifiableBiomeInfo().get().attributes();
      }
  }
