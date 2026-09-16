@@ -20,12 +20,21 @@
 +    /// Neo: Field accesses are redirected to [#getModifiedClimateSettings()] with a coremod.
      private final Biome.ClimateSettings climateSettings;
      private final BiomeGenerationSettings generationSettings;
-+    /// Neo: Field accesses are redirected to [#getModifiedEnvironmentAttributes()()] with a coremod.
++    /// Neo: Field accesses are redirected to [#getModifiedEnvironmentAttributes()] with a coremod.
      private final EnvironmentAttributeMap attributes;
 +    /// Neo: Field accesses are redirected to [#getModifiedSpecialEffects()] with a coremod.
      private final BiomeSpecialEffects specialEffects;
      private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> {
          Long2FloatLinkedOpenHashMap map = new Long2FloatLinkedOpenHashMap(1024, 0.25F) {
+@@ -84,6 +_,8 @@
+         map.defaultReturnValue(Float.NaN);
+         return map;
+     });
++    /// Neo: Grant ability to modify Biomes in specific ways such as adding new features or change temperature
++    private final net.neoforged.neoforge.common.world.ModifiableBiomeInfo modifiableBiomeInfo;
+ 
+     private Biome(
+         Biome.ClimateSettings climateSettings,
 @@ -95,6 +_,7 @@
          this.attributes = attributes;
          this.specialEffects = specialEffects;
@@ -43,14 +52,11 @@
      }
  
      public int getGrassColor(double x, double z) {
-@@ -420,5 +_,39 @@
-         public String getSerializedName() {
-             return this.name;
-         }
+@@ -249,6 +_,37 @@
+ 
+     public int getWaterColor() {
+         return this.specialEffects.waterColor();
 +    }
-+
-+    // Neo: Grant ability to modify Biomes in specific ways such as adding new features or change temperature
-+    private final net.neoforged.neoforge.common.world.ModifiableBiomeInfo modifiableBiomeInfo;
 +
 +    /**
 +     * {@return Cache of original biome data and biome data modified by biome modifiers}
@@ -59,7 +65,7 @@
 +     **/
 +    public net.neoforged.neoforge.common.world.ModifiableBiomeInfo modifiableBiomeInfo()
 +    {
-+         return this.modifiableBiomeInfo;
++        return this.modifiableBiomeInfo;
 +    }
 +
 +    /**
@@ -82,4 +88,5 @@
 +    public EnvironmentAttributeMap getModifiedEnvironmentAttributes() {
 +        return this.modifiableBiomeInfo().get().attributes();
      }
- }
+ 
+     public static class BiomeBuilder {
