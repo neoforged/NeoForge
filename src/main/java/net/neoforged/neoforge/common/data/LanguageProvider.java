@@ -166,7 +166,7 @@ public abstract class LanguageProvider implements DataProvider {
         if (key.getContents() instanceof TranslatableContents translatable) {
             add(translatable.getKey(), value);
         } else {
-            add(key.getString(), value);
+            throw new IllegalStateException("Only TranslatableContents Components are allowed!");
         }
     }
 
