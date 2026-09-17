@@ -139,9 +139,7 @@ public abstract class LanguageProvider implements DataProvider {
     }
 
     public void add(GameRuleCategory gameRuleCategory, String value) {
-        // GameRuleCategory#getDescriptionId - this is not the translation key as one would expect, its the registry name
-        // GameRuleCategory#label() - this uses #id to build the translation key by adding the below hardcoded prefix
-        add(gameRuleCategory.id().toLanguageKey("gamerule.category"), value);
+        add(gameRuleCategory.label(), value);
     }
 
     public void addGameRule(Supplier<? extends GameRule<?>> gameRule, String value) {
