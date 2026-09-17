@@ -6,7 +6,7 @@
              BlockState clicked = level.getBlockState(pos);
 -            BlockPos placePos = clicked.getBlock() instanceof LiquidBlockContainer && this.content == Fluids.WATER ? pos : directionOffsetPos;
 -            if (this.emptyContents(player, level, placePos, hitResult)) {
-+            BlockPos placePos = canBlockContainFluid(player, level, pos, clicked) && this.content == Fluids.WATER ? pos : directionOffsetPos;
++            BlockPos placePos = clicked.getBlock() instanceof LiquidBlockContainer container && container.canPlaceLiquid(player, level, pos, clicked, this.content) ? pos : directionOffsetPos;
 +            if (this.emptyContents(player, level, placePos, hitResult, itemStack)) {
                  this.checkExtraContent(player, level, itemStack, placePos);
                  if (player instanceof ServerPlayer serverPlayer && this.content != Fluids.EMPTY) {
@@ -50,7 +50,16 @@
                  if (level.environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, pos) && this.content.is(FluidTags.WATER)) {
                      int x = pos.getX();
                      int y = pos.getY();
-@@ -149,15 +_,21 @@
+@@ -132,7 +_,7 @@
+                     }
+ 
+                     return true;
+-                } else if (block instanceof LiquidBlockContainer container && this.content == Fluids.WATER) {
++                } else if (block instanceof LiquidBlockContainer container && container.canPlaceLiquid(user, level, pos, blockState, this.content)) {
+                     container.placeLiquid(level, pos, blockState, flowingFluid.getSource(false));
+                     this.playEmptySound(user, level, pos);
+                     return true;
+@@ -149,13 +_,14 @@
                      return true;
                  }
              } else {
@@ -66,11 +75,4 @@
 +        if(soundEvent == null) soundEvent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
          level.playSound(user, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
          level.gameEvent(user, GameEvent.FLUID_PLACE, pos);
-+    }
-+
-+    protected boolean canBlockContainFluid(@Nullable Player player, Level worldIn, BlockPos posIn, BlockState blockstate)
-+    {
-+        return blockstate.getBlock() instanceof LiquidBlockContainer && ((LiquidBlockContainer)blockstate.getBlock()).canPlaceLiquid(player, worldIn, posIn, blockstate, this.content);
      }
- 
-     public Fluid getContent() {
