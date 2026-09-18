@@ -21,10 +21,13 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.BlockTransformer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.references.BlockItemIds;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
@@ -38,10 +41,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.BlockTransformers;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.WeatheringCopperFullBlock;
+import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.neoforge.common.DataMapHooks;
 import net.neoforged.neoforge.common.NeoForge;
@@ -57,8 +62,10 @@ import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover.Default;
 import net.neoforged.neoforge.registries.datamaps.DataMapsUpdatedEvent;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
+import net.neoforged.neoforge.registries.datamaps.builtin.BlockTransformAppender;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import net.neoforged.neoforge.registries.datamaps.builtin.Oxidizable;
+import net.neoforged.neoforge.registries.datamaps.builtin.Transformable;
 import net.neoforged.neoforge.registries.datamaps.builtin.Waxable;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -457,6 +464,53 @@ public class DataMapTests {
                 helper.assertValueEqual(DataMapHooks.getBlockUnwaxed(after), before, "unwaxed version of " + before.getName());
             });
 
+            helper.succeed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if block transforms appended via the transformables datamap work")
+    static void transformablesMapTest(final DynamicTest test, final RegistrationHelper reg) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
+            @Override
+            protected void gather(HolderLookup.Provider provider) {
+                builder(NeoForgeDataMaps.TRANSFORMABLES)
+                        .add(BlockItemIds.ANDESITE.block(), Transformable.stripping(Blocks.ANDESITE, Blocks.POLISHED_ANDESITE), false);
+            }
+        });
+
+        BlockPos blockPos = new BlockPos(1, 1, 1);
+        test.onGameTest(helper -> {
+            helper.setBlock(blockPos, Blocks.ANDESITE);
+            helper.useOn(blockPos, Items.IRON_AXE.getDefaultInstance(), helper.makeMockPlayer(), Direction.NORTH);
+            helper.assertBlock(blockPos, Blocks.POLISHED_ANDESITE::equals, "Wanted: Polished Andesite but found something else!");
+            helper.succeed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if block transforms appended via the block transform appenders datamap work")
+    static void transformAppendersMapTest(final DynamicTest test, final RegistrationHelper reg) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
+            @Override
+            protected void gather(HolderLookup.Provider provider) {
+                BlockTransformer.BlockTransformData transformer = BlockTransformer.BlockTransformData.builder(
+                        BlockPredicate.matchesBlocks(Blocks.QUARTZ_BLOCK),
+                        Blocks.CHISELED_QUARTZ_BLOCK)
+                        .sound(SoundEvents.ARMOR_EQUIP_GOLD)
+                        .build();
+                builder(NeoForgeDataMaps.BLOCK_TRANSFORM_APPENDERS)
+                        .add(BlockTransformers.SHOVEL, new BlockTransformAppender(List.of(transformer)), false);
+            }
+        });
+
+        BlockPos blockPos = new BlockPos(1, 1, 1);
+        test.onGameTest(helper -> {
+            helper.setBlock(blockPos, Blocks.QUARTZ_BLOCK);
+            helper.useOn(blockPos, Items.IRON_SHOVEL.getDefaultInstance(), helper.makeMockPlayer(), Direction.NORTH);
+            helper.assertBlock(blockPos, Blocks.CHISELED_QUARTZ_BLOCK::equals, "Wanted: Polished Andesite but found something else!");
             helper.succeed();
         });
     }
