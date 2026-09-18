@@ -8,6 +8,7 @@ package net.neoforged.neoforge.debug.fluid;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -51,12 +52,12 @@ public class FluidTests {
     static void lavaBucketFluidlogging(final DynamicTest test, final RegistrationHelper reg) {
         final var container = reg.blocks().registerBlock("lava_loggable_block", LavaLoggableBlock::new);
 
-        test.onGameTest(helper -> {
+        test.onGameTest(TestHelper.class, helper -> {
             final var pos = new BlockPos(1, 1, 1);
             helper.setBlock(pos, container.get());
 
             final var player = helper.makeMockPlayer(GameType.SURVIVAL);
-            assertBucketResult(helper, useBucket(helper, pos, player, Items.LAVA_BUCKET), Items.BUCKET);
+            helper.assertBucketResult(helper.useBucket(pos, player, Items.LAVA_BUCKET), Items.BUCKET);
             helper.assertBlockState(pos, container.get().defaultBlockState().setValue(LavaLoggableBlock.LAVA_LOGGED, true));
             helper.assertValueEqual(Fluids.LAVA, helper.getBlockState(pos).getFluidState().getType(), "contained fluid");
             helper.assertBlockPresent(Blocks.AIR, pos.above());
@@ -67,18 +68,18 @@ public class FluidTests {
     @GameTest
     @EmptyTemplate("3x5x3")
     @TestHolder(description = "Tests that buckets can waterlog a slab and pick the water back up without removing the slab")
-    static void waterBucketFluidlogging(final ExtendedGameTestHelper helper) {
+    static void waterBucketFluidlogging(final TestHelper helper) {
         final var pos = new BlockPos(1, 1, 1);
         final var drySlab = Blocks.STONE_SLAB.defaultBlockState();
         helper.setBlock(pos, drySlab);
         final var player = helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL);
 
-        assertBucketResult(helper, useBucket(helper, pos, player, Items.WATER_BUCKET), Items.BUCKET);
+        helper.assertBucketResult(helper.useBucket(pos, player, Items.WATER_BUCKET), Items.BUCKET);
         helper.assertBlockState(pos, drySlab.setValue(BlockStateProperties.WATERLOGGED, true));
         helper.assertValueEqual(Fluids.WATER, helper.getBlockState(pos).getFluidState().getType(), "contained fluid");
         helper.assertBlockPresent(Blocks.AIR, pos.above());
 
-        assertBucketResult(helper, useBucket(helper, pos, player, Items.BUCKET), Items.WATER_BUCKET);
+        helper.assertBucketResult(helper.useBucket(pos, player, Items.BUCKET), Items.WATER_BUCKET);
         helper.assertBlockState(pos, drySlab);
         helper.assertTrue(helper.getBlockState(pos).getFluidState().isEmpty(), "The slab should no longer contain water");
         helper.assertBlockPresent(Blocks.AIR, pos.above());
@@ -88,12 +89,12 @@ public class FluidTests {
     @GameTest
     @EmptyTemplate("3x5x3")
     @TestHolder(description = "Tests that a lava bucket places lava beside a waterloggable slab without replacing the slab")
-    static void rejectedLavaBucketFluidlogging(final ExtendedGameTestHelper helper) {
+    static void rejectedLavaBucketFluidlogging(final TestHelper helper) {
         final var pos = new BlockPos(1, 1, 1);
         final var slab = Blocks.STONE_SLAB.defaultBlockState();
         helper.setBlock(pos, slab);
 
-        assertBucketResult(helper, useBucket(helper, pos, helper.makeMockPlayer(GameType.SURVIVAL), Items.LAVA_BUCKET), Items.BUCKET);
+        helper.assertBucketResult(helper.useBucket(pos, helper.makeMockPlayer(GameType.SURVIVAL), Items.LAVA_BUCKET), Items.BUCKET);
         helper.assertBlockState(pos, slab);
         helper.assertBlockState(pos.above(), Blocks.LAVA.defaultBlockState());
         helper.succeed();
@@ -105,11 +106,11 @@ public class FluidTests {
     static void rejectedWaterBucketFluidlogging(final DynamicTest test, final RegistrationHelper reg) {
         final var container = reg.blocks().registerBlock("lava_loggable_block", LavaLoggableBlock::new);
 
-        test.onGameTest(helper -> {
+        test.onGameTest(TestHelper.class, helper -> {
             final var pos = new BlockPos(1, 1, 1);
             helper.setBlock(pos, container.get());
 
-            assertBucketResult(helper, useBucket(helper, pos, helper.makeMockPlayer(GameType.SURVIVAL), Items.WATER_BUCKET), Items.BUCKET);
+            helper.assertBucketResult(helper.useBucket(pos, helper.makeMockPlayer(GameType.SURVIVAL), Items.WATER_BUCKET), Items.BUCKET);
             helper.assertBlockState(pos, container.get().defaultBlockState());
             helper.assertBlockState(pos.above(), Blocks.WATER.defaultBlockState());
             helper.succeed();
@@ -122,12 +123,12 @@ public class FluidTests {
     static void filledLavaBucketFluidlogging(final DynamicTest test, final RegistrationHelper reg) {
         final var container = reg.blocks().registerBlock("lava_loggable_block", LavaLoggableBlock::new);
 
-        test.onGameTest(helper -> {
+        test.onGameTest(TestHelper.class, helper -> {
             final var pos = new BlockPos(1, 1, 1);
             final var filled = container.get().defaultBlockState().setValue(LavaLoggableBlock.LAVA_LOGGED, true);
             helper.setBlock(pos, filled);
 
-            assertBucketResult(helper, useBucket(helper, pos, helper.makeMockPlayer(GameType.SURVIVAL), Items.LAVA_BUCKET), Items.BUCKET);
+            helper.assertBucketResult(helper.useBucket(pos, helper.makeMockPlayer(GameType.SURVIVAL), Items.LAVA_BUCKET), Items.BUCKET);
             helper.assertBlockState(pos, filled);
             helper.assertBlockState(pos.above(), Blocks.LAVA.defaultBlockState());
             helper.succeed();
@@ -140,13 +141,13 @@ public class FluidTests {
     static void sneakingLavaBucketFluidlogging(final DynamicTest test, final RegistrationHelper reg) {
         final var container = reg.blocks().registerBlock("lava_loggable_block", LavaLoggableBlock::new);
 
-        test.onGameTest(helper -> {
+        test.onGameTest(TestHelper.class, helper -> {
             final var pos = new BlockPos(1, 1, 1);
             helper.setBlock(pos, container.get());
             final var player = helper.makeMockPlayer(GameType.SURVIVAL);
             player.setShiftKeyDown(true);
 
-            assertBucketResult(helper, useBucket(helper, pos, player, Items.LAVA_BUCKET), Items.BUCKET);
+            helper.assertBucketResult(helper.useBucket(pos, player, Items.LAVA_BUCKET), Items.BUCKET);
             helper.assertBlockState(pos, container.get().defaultBlockState());
             helper.assertBlockState(pos.above(), Blocks.LAVA.defaultBlockState());
             helper.succeed();
@@ -165,11 +166,11 @@ public class FluidTests {
             }
         });
 
-        test.onGameTest(helper -> {
+        test.onGameTest(TestHelper.class, helper -> {
             final var pos = new BlockPos(1, 1, 1);
             helper.setBlock(pos, container.get());
 
-            assertBucketResult(helper, useBucket(helper, pos, helper.makeMockPlayer(GameType.SURVIVAL), bucket.get()), Items.BUCKET);
+            helper.assertBucketResult(helper.useBucket(pos, helper.makeMockPlayer(GameType.SURVIVAL), bucket.get()), Items.BUCKET);
             helper.assertBlockState(pos, container.get().defaultBlockState());
             helper.assertBlockState(pos.above(), Blocks.LAVA.defaultBlockState());
             helper.succeed();
@@ -182,7 +183,7 @@ public class FluidTests {
     static void dispenserLavaFluidlogging(final DynamicTest test, final RegistrationHelper reg) {
         final var container = reg.blocks().registerBlock("lava_loggable_block", LavaLoggableBlock::new);
 
-        test.onGameTest(helper -> {
+        test.onGameTest(TestHelper.class, helper -> {
             final var dispenserPos = new BlockPos(1, 1, 1);
             final var containerPos = dispenserPos.above();
             helper.setBlock(containerPos, container.get());
@@ -207,7 +208,7 @@ public class FluidTests {
     static void rejectedDispenserFluidlogging(final DynamicTest test, final RegistrationHelper reg) {
         final var container = reg.blocks().registerBlock("lava_loggable_block", LavaLoggableBlock::new);
 
-        test.onGameTest(helper -> {
+        test.onGameTest(TestHelper.class, helper -> {
             final var dispenserPos = new BlockPos(1, 1, 1);
             final var containerPos = dispenserPos.above();
             helper.setBlock(containerPos, container.get());
@@ -226,18 +227,24 @@ public class FluidTests {
         });
     }
 
-    private static InteractionResult useBucket(ExtendedGameTestHelper helper, BlockPos pos, Player player, Item bucket) {
-        player.snapTo(Vec3.atBottomCenterOf(helper.absolutePos(pos.above())));
-        player.lookAt(EntityAnchorArgument.Anchor.EYES, Vec3.atCenterOf(helper.absolutePos(pos)));
-        player.setItemInHand(InteractionHand.MAIN_HAND, bucket.getDefaultInstance());
-        // Use the bucket normally so both target selection and emptyContents are exercised.
-        return bucket.use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
-    }
+    private static class TestHelper extends ExtendedGameTestHelper {
+        public TestHelper(GameTestInfo info) {
+            super(info);
+        }
 
-    private static void assertBucketResult(ExtendedGameTestHelper helper, InteractionResult result, Item expectedItem) {
-        helper.assertTrue(result instanceof InteractionResult.Success, "Using the bucket should succeed");
-        final var remainder = ((InteractionResult.Success) result).heldItemTransformedTo();
-        helper.assertTrue(remainder != null && remainder.is(expectedItem), "The bucket should become " + expectedItem);
+        InteractionResult useBucket(BlockPos pos, Player player, Item bucket) {
+            player.snapTo(Vec3.atBottomCenterOf(this.absolutePos(pos.above())));
+            player.lookAt(EntityAnchorArgument.Anchor.EYES, Vec3.atCenterOf(this.absolutePos(pos)));
+            player.setItemInHand(InteractionHand.MAIN_HAND, bucket.getDefaultInstance());
+            // Use the bucket normally so both target selection and emptyContents are exercised.
+            return bucket.use(this.getLevel(), player, InteractionHand.MAIN_HAND);
+        }
+
+        void assertBucketResult(InteractionResult result, Item expectedItem) {
+            this.assertTrue(result instanceof InteractionResult.Success, "Using the bucket should succeed");
+            final var remainder = ((InteractionResult.Success) result).heldItemTransformedTo();
+            this.assertTrue(remainder != null && remainder.is(expectedItem), "The bucket should become " + expectedItem);
+        }
     }
 
     private static class LavaLoggableBlock extends Block implements LiquidBlockContainer {
