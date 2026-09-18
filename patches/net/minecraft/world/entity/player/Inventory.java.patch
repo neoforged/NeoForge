@@ -9,3 +9,12 @@
              category.setDetail("Item ID", Item.getId(itemStack.getItem()));
              category.setDetail("Item data", itemStack.getDamageValue());
              category.setDetail("Item name", () -> itemStack.getHoverName().getString());
+@@ -448,6 +_,8 @@
+             if (!itemStack.isEmpty()) {
+                 ItemEntity drop = this.player.createItemStackToDrop(itemStack, true, false);
+                 if (drop != null) {
++                    if (player.captureDrops() != null) player.captureDrops().add(drop);
++                    else
+                     this.player.level().addFreshEntity(drop);
+                 }
+ 
