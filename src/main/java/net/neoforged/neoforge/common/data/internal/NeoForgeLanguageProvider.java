@@ -14,7 +14,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.LanguageProvider;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 public final class NeoForgeLanguageProvider extends LanguageProvider {
     public NeoForgeLanguageProvider(PackOutput gen) {
@@ -51,6 +51,9 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.CONCRETES, "Concretes");
         add(Tags.Blocks.DYED, "Dyed Blocks");
         addColored(Tags.Blocks.DYED, "{color} Dyed Blocks");
+        add(Tags.Blocks.DYEABLE, "Dyeable Blocks");
+        add(Tags.Blocks.DYEABLE_REDYEABLE_SIMPLE, "Redyeable Blocks");
+        add(Tags.Blocks.DYEABLE_UNDYED_SIMPLE, "Undyed Blocks");
         add(Tags.Blocks.END_STONES, "End Stones");
         add(Tags.Blocks.ENDERMAN_PLACE_ON_BLACKLIST, "Enderman Place On Blacklist");
         add(Tags.Blocks.FENCE_GATES, "Fence Gates");
@@ -210,6 +213,11 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.DUSTS_REDSTONE, "Redstone Dusts");
         add(Tags.Items.DYED, "Dyed Items");
         addColored(Tags.Items.DYED, "{color} Dyed Items");
+        add(Tags.Items.DYEABLE, "Dyeable Items");
+        add(Tags.Items.DYEABLE_SIMPLE, "Simple Dyeable Items");
+        add(Tags.Items.DYEABLE_DYNAMIC, "Dynamically Dyeable Items");
+        add(Tags.Items.DYEABLE_REDYEABLE_SIMPLE, "Redyeable Items");
+        add(Tags.Items.DYEABLE_UNDYED_SIMPLE, "Undyed Items");
         add(Tags.Items.DYES, "Dyes");
         add(Tags.Items.DYES_BLACK, "Black Dyes");
         add(Tags.Items.DYES_RED, "Red Dyes");
@@ -482,6 +490,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Biomes.PRIMARY_WOOD_TYPE_JUNGLE, "Jungle Primary Wood Type");
         add(Tags.Biomes.PRIMARY_WOOD_TYPE_ACACIA, "Acacia Primary Wood Type");
         add(Tags.Biomes.PRIMARY_WOOD_TYPE_DARK_OAK, "Dark Oak Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_POPLAR, "Poplar Primary Wood Type");
         add(Tags.Biomes.PRIMARY_WOOD_TYPE_MANGROVE, "Mangrove Primary Wood Type");
         add(Tags.Biomes.PRIMARY_WOOD_TYPE_CHERRY, "Cherry Primary Wood Type");
         add(Tags.Biomes.PRIMARY_WOOD_TYPE_PALE_OAK, "Pale Oak Primary Wood Type");
@@ -554,7 +563,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
                     baseTagKey.registry(),
                     Identifier.fromNamespaceAndPath(baseTagKey.location().getNamespace(), baseTagKey.location().getPath() + "/" + color.name().toLowerCase(Locale.ROOT)));
 
-            add(coloredTag, pattern.replace("{color}", StringUtils.capitalize(color.getName())));
+            add(coloredTag, pattern.replace("{color}", WordUtils.capitalizeFully(color.getName().replace("_", " "))));
         }
     }
 
