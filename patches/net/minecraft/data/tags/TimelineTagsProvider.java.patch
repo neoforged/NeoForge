@@ -1,0 +1,17 @@
+--- a/net/minecraft/data/tags/TimelineTagsProvider.java
++++ b/net/minecraft/data/tags/TimelineTagsProvider.java
+@@ -9,8 +_,14 @@
+ import net.minecraft.world.timeline.Timelines;
+ 
+ public class TimelineTagsProvider extends TagsProvider<Timeline> {
++    /// @deprecated Neo: Use the [TimelineTagsProvider(PackOutput, CompletableFuture, String)] mod id variant
++    @Deprecated
+     public TimelineTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+         super(output, Registries.TIMELINE, lookupProvider);
++    }
++
++    public TimelineTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
++        super(output, Registries.TIMELINE, lookupProvider, modId);
+     }
+ 
+     @Override

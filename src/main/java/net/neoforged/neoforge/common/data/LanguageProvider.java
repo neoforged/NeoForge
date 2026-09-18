@@ -19,6 +19,7 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
@@ -27,8 +28,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.gamerules.GameRule;
+import net.minecraft.world.level.gamerules.GameRuleCategory;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.extensions.ILevelExtension;
+import net.neoforged.neoforge.fluids.FluidType;
 
 public abstract class LanguageProvider implements DataProvider {
     private static final Codec<Map<String, Component>> CODEC = Codec.unboundedMap(Codec.STRING, ComponentSerialization.CODEC);
@@ -117,10 +122,78 @@ public abstract class LanguageProvider implements DataProvider {
     }
 
     public void addDimension(ResourceKey<Level> dimension, String value) {
-        add(dimension.identifier().toLanguageKey(ILevelExtension.TRANSLATION_PREFIX), value);
+        addKey(dimension, ILevelExtension.TRANSLATION_PREFIX, value);
     }
 
     public void addBiome(ResourceKey<Biome> biome, String value) {
-        add(biome.identifier().toLanguageKey("biome"), value);
+        addKey(biome, "biome", value);
+    }
+
+    public void add(GameRule<?> gameRule, String value) {
+        add(gameRule.getDescriptionId(), value);
+    }
+
+    public void add(GameRule<?> gameRule, String value, String description) {
+        add(gameRule, value);
+        add(gameRule.getDescriptionId() + ".description", description);
+    }
+
+    public void add(GameRuleCategory gameRuleCategory, String value) {
+        addTranslatableComponent(gameRuleCategory.label(), value);
+    }
+
+    public void addGameRule(Supplier<? extends GameRule<?>> gameRule, String value) {
+        add(gameRule.get(), value);
+    }
+
+    public void addGameRule(Supplier<? extends GameRule<?>> gameRule, String value, String description) {
+        add(gameRule.get(), value, description);
+    }
+
+    public void add(FluidType fluidType, String value) {
+        add(fluidType.getDescriptionId(), value);
+    }
+
+    public void addFluidType(Supplier<? extends FluidType> fluidType, String value) {
+        add(fluidType.get(), value);
+    }
+
+    public void addKey(ResourceKey<?> registryKey, String type, String value) {
+        add(registryKey.identifier().toLanguageKey(type), value);
+    }
+
+    /// Adds a translation by extracting its key from the given [translatable][TranslatableContents] [Component].
+    ///
+    /// @param key the [Component] containing the [TranslatableContents] used to extract the key
+    /// @param value the translation value
+    /// @throws IllegalArgumentException if the given [Component] does not contain [TranslatableContents]
+    public void addTranslatableComponent(Component key, String value) {
+        if (key.getContents() instanceof TranslatableContents translatable) {
+            add(translatable.getKey(), value);
+        } else {
+            throw new IllegalArgumentException("Only TranslatableContents Components are allowed!");
+        }
+    }
+
+    public void addConfigCategory(String key, String catValue, String catButtonValue, String catTooltipValue) {
+        add(key, catValue);
+        add(key + ".button", catButtonValue);
+        add(key + ".tooltip", catTooltipValue);
+    }
+
+    public void addConfigValue(ModConfigSpec.ConfigValue<?> configValue, String value) {
+        var translationKey = configValue.getSpec().getTranslationKey();
+
+        if (translationKey == null) {
+            return;
+        }
+
+        add(translationKey, value);
+
+        var comment = configValue.getSpec().getComment();
+
+        if (comment != null) {
+            add(translationKey + ".tooltip", comment);
+        }
     }
 }
