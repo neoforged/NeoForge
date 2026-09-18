@@ -665,6 +665,28 @@ public class Tags {
         public static final TagKey<Item> DYES_WHITE = DyeColor.WHITE.getTag();
 
         /**
+         * Dye color tags as a color collection, for convenience.
+         */
+        public static final ColorCollection<TagKey<Item>> DYE_COLORS = new ColorCollection<>(
+                DYES_WHITE,
+                DYES_ORANGE,
+                DYES_MAGENTA,
+                DYES_LIGHT_BLUE,
+                DYES_YELLOW,
+                DYES_LIME,
+                DYES_PINK,
+                DYES_GRAY,
+                DYES_LIGHT_GRAY,
+                DYES_CYAN,
+                DYES_PURPLE,
+                DYES_BLUE,
+                DYES_BROWN,
+                DYES_GREEN,
+                DYES_RED,
+                DYES_BLACK
+        );
+
+        /**
          * For eggs to use for culinary purposes in recipes such as baking a cake.
          */
         public static final TagKey<Item> EGGS = tag("eggs");
