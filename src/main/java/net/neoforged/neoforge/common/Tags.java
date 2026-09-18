@@ -139,8 +139,7 @@ public class Tags {
                 DYED_BROWN,
                 DYED_GREEN,
                 DYED_RED,
-                DYED_BLACK
-        );
+                DYED_BLACK);
 
         /**
          * Tag that holds blocks which can be dyed but do not have their own color already, like glass.
@@ -169,7 +168,6 @@ public class Tags {
          * Tag that holds blocks which can have dye applied to them, whether they have a color already or not.
          */
         public static final TagKey<Block> DYEABLE = tag("dyeable");
-
 
         public static final TagKey<Block> END_STONES = tag("end_stones");
         public static final TagKey<Block> FENCE_GATES = tag("fence_gates");
@@ -613,8 +611,7 @@ public class Tags {
                 DYED_BROWN,
                 DYED_GREEN,
                 DYED_RED,
-                DYED_BLACK
-        );
+                DYED_BLACK);
 
         /**
          * Tag that holds items which can be dyed but do not have their own color already, like glass.
@@ -644,7 +641,6 @@ public class Tags {
          * Tag that holds items which can have dye applied to them, whether they have a color already or not.
          */
         public static final TagKey<Item> DYEABLE = tag("dyeable");
-
 
         public static final TagKey<Item> DYES = tag("dyes");
         public static final TagKey<Item> DYES_BLACK = DyeColor.BLACK.getTag();
@@ -683,8 +679,7 @@ public class Tags {
                 DYES_BROWN,
                 DYES_GREEN,
                 DYES_RED,
-                DYES_BLACK
-        );
+                DYES_BLACK);
 
         /**
          * For eggs to use for culinary purposes in recipes such as baking a cake.
