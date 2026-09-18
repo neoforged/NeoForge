@@ -401,10 +401,6 @@ public class DataMapTests {
             }
         });
         test.onGameTest(helper -> {
-            helper.assertFalse(
-                    DataMapHooks.didHaveToFallbackToVanillaMaps,
-                    "The Oxidizable and Waxable Data Map's should not have to fallback to vanilla maps in this gametest, something is very wrong!");
-
             // -------------- Test added blocks -------------- \\
             // Test Lightly Oxidized Iron -> More Oxidized Iron
             helper.setBlock(blockPos, lightlyOxidizedIron.value());

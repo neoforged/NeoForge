@@ -1,23 +1,19 @@
 --- a/net/minecraft/world/level/block/WeatheringCopper.java
 +++ b/net/minecraft/world/level/block/WeatheringCopper.java
-@@ -18,6 +_,10 @@
+@@ -18,6 +_,8 @@
  import net.minecraft.world.level.block.state.BlockState;
  
  public interface WeatheringCopper extends ChangeOverTimeBlock<WeatheringCopper.WeatherState> {
-+    /**
-+     * @deprecated Neo: Use {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#OXIDIZABLES the data map}, this field will be ignored in a future version
-+     */
++    /// @deprecated Neo: Use [`the data map`][net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#OXIDIZABLES], this field is ignored
 +    @Deprecated
      Supplier<BiMap<Block, Block>> NEXT_BY_BLOCK = Suppliers.memoize(
          () -> {
              Builder<Block, Block> builder = ImmutableBiMap.builder();
-@@ -42,16 +_,20 @@
+@@ -42,16 +_,18 @@
              return builder.build();
          }
      );
-+    /**
-+     * @deprecated Neo: Use the {@link net.neoforged.neoforge.common.DataMapHooks#INVERSE_OXIDIZABLES_DATAMAP inverse map} generated from the data map, this field will be ignored in a future version
-+     */
++    /// @deprecated Neo: Use the [`inverse map`][net.neoforged.neoforge.common.DataMapHooks#INVERSE_OXIDIZABLES_DATAMAP] generated from the data map, this field is ignored
 +    @Deprecated
      Supplier<BiMap<Block, Block>> PREVIOUS_BY_BLOCK = Suppliers.memoize(() -> NEXT_BY_BLOCK.get().inverse());
  
