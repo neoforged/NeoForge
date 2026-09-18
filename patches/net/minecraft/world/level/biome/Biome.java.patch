@@ -5,25 +5,36 @@
      public static final Codec<Biome> DIRECT_CODEC = RecordCodecBuilder.create(
          i -> i.group(
 -                Biome.ClimateSettings.CODEC.forGetter(b -> b.climateSettings),
-+                Biome.ClimateSettings.CODEC.forGetter(b -> b.modifiableBiomeInfo().getOriginalBiomeInfo().climateSettings()), // FORGE: Patch codec to ignore field redirect coremods.
-                 EnvironmentAttributeMap.CODEC_ONLY_POSITIONAL.optionalFieldOf("attributes", EnvironmentAttributeMap.EMPTY).forGetter(b -> b.attributes),
+-                EnvironmentAttributeMap.CODEC_ONLY_POSITIONAL.optionalFieldOf("attributes", EnvironmentAttributeMap.EMPTY).forGetter(b -> b.attributes),
 -                BiomeSpecialEffects.CODEC.fieldOf("effects").forGetter(b -> b.specialEffects),
++                Biome.ClimateSettings.CODEC.forGetter(b -> b.modifiableBiomeInfo().getOriginalBiomeInfo().climateSettings()), // FORGE: Patch codec to ignore field redirect coremods.
++                EnvironmentAttributeMap.CODEC_ONLY_POSITIONAL.optionalFieldOf("attributes", EnvironmentAttributeMap.EMPTY).forGetter(b -> b.modifiableBiomeInfo().getOriginalBiomeInfo().attributes()), // FORGE: Patch codec to ignore field redirect coremods.
 +                BiomeSpecialEffects.CODEC.fieldOf("effects").forGetter(b -> b.modifiableBiomeInfo().getOriginalBiomeInfo().effects()), // FORGE: Patch codec to ignore field redirect coremods.
                  BiomeGenerationSettings.CODEC.forGetter(b -> b.generationSettings)
              )
              .apply(i, Biome::new)
-@@ -71,9 +_,11 @@
+@@ -71,9 +_,12 @@
      @Deprecated(forRemoval = true)
      public static final Noise BIOME_INFO_NOISE = new SimplexNoise(new WorldgenRandom(new LegacyRandomSource(2345L)), true);
      private static final int TEMPERATURE_CACHE_SIZE = 1024;
 +    /// Neo: Field accesses are redirected to [#getModifiedClimateSettings()] with a coremod.
      private final Biome.ClimateSettings climateSettings;
      private final BiomeGenerationSettings generationSettings;
++    /// Neo: Field accesses are redirected to [#getModifiedEnvironmentAttributes()] with a coremod.
      private final EnvironmentAttributeMap attributes;
 +    /// Neo: Field accesses are redirected to [#getModifiedSpecialEffects()] with a coremod.
      private final BiomeSpecialEffects specialEffects;
      private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> {
          Long2FloatLinkedOpenHashMap map = new Long2FloatLinkedOpenHashMap(1024, 0.25F) {
+@@ -84,6 +_,8 @@
+         map.defaultReturnValue(Float.NaN);
+         return map;
+     });
++    /// Neo: Grant ability to modify Biomes in specific ways such as adding new features or change temperature
++    private final net.neoforged.neoforge.common.world.ModifiableBiomeInfo modifiableBiomeInfo;
+ 
+     private Biome(
+         Biome.ClimateSettings climateSettings,
 @@ -95,6 +_,7 @@
          this.attributes = attributes;
          this.specialEffects = specialEffects;
@@ -41,14 +52,11 @@
      }
  
      public int getGrassColor(double x, double z) {
-@@ -420,5 +_,32 @@
-         public String getSerializedName() {
-             return this.name;
-         }
+@@ -249,6 +_,37 @@
+ 
+     public int getWaterColor() {
+         return this.specialEffects.waterColor();
 +    }
-+
-+    // Neo: Grant ability to modify Biomes in specific ways such as adding new features or change temperature
-+    private final net.neoforged.neoforge.common.world.ModifiableBiomeInfo modifiableBiomeInfo;
 +
 +    /**
 +     * {@return Cache of original biome data and biome data modified by biome modifiers}
@@ -57,7 +65,7 @@
 +     **/
 +    public net.neoforged.neoforge.common.world.ModifiableBiomeInfo modifiableBiomeInfo()
 +    {
-+         return this.modifiableBiomeInfo;
++        return this.modifiableBiomeInfo;
 +    }
 +
 +    /**
@@ -72,5 +80,13 @@
 +     */
 +    public BiomeSpecialEffects getModifiedSpecialEffects() {
 +        return this.modifiableBiomeInfo().get().effects();
++    }
++
++    /**
++     * {@return The biome's environment attributes, with modifications if called after modifiers are applied in server init.}
++     */
++    public EnvironmentAttributeMap getModifiedEnvironmentAttributes() {
++        return this.modifiableBiomeInfo().get().attributes();
      }
- }
+ 
+     public static class BiomeBuilder {

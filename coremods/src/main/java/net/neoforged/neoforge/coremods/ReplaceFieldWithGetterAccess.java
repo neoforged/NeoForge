@@ -69,7 +69,7 @@ public class ReplaceFieldWithGetterAccess extends SimpleClassProcessor {
 
         for (var methodNode : classNode.methods) {
             // skip the found getter method
-            if (methodNode != foundMethod && !Objects.equals(methodNode.desc, methodDescriptor)) {
+            if (methodNode != foundMethod) {
                 var iterator = methodNode.instructions.iterator();
                 while (iterator.hasNext()) {
                     var insnNode = iterator.next();

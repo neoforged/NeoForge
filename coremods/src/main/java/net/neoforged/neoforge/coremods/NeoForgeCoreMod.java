@@ -13,7 +13,8 @@ public class NeoForgeCoreMod implements ClassProcessorProvider {
     public void createProcessors(Context context, Collector collector) {
         collector.add(new ReplaceFieldWithGetterAccess("net.minecraft.world.level.biome.Biome", Map.of(
                 "climateSettings", "getModifiedClimateSettings",
-                "specialEffects", "getModifiedSpecialEffects")));
+                "specialEffects", "getModifiedSpecialEffects",
+                "attributes", "getModifiedEnvironmentAttributes")));
         collector.add(new ReplaceFieldWithGetterAccess("net.minecraft.world.level.levelgen.structure.Structure", Map.of(
                 "settings", "getModifiedStructureSettings")));
         collector.add(new ReplaceFieldWithGetterAccess("net.minecraft.world.level.block.FlowerPotBlock", Map.of(

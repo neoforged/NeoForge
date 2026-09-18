@@ -105,6 +105,7 @@ public class ModifiableBiomeInfo {
      * Record containing raw biome data.
      * 
      * @param climateSettings    Weather and temperature settings.
+     * @param attributes         Environment attributes.
      * @param effects            Client-relevant effects for rendering and sound.
      * @param generationSettings Worldgen features and carvers.
      */
