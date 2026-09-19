@@ -5,7 +5,7 @@
          return new HolderSet.Named<T>(owner, key) {
              @Override
 -            protected List<Holder<T>> contents() {
-+            public List<Holder<T>> contents() {
++            /* Neo: Comment to bypass access level check */ public List<Holder<T>> contents() {
                  throw new UnsupportedOperationException("Tag " + this.key() + " can't be dereferenced during construction");
              }
          };
