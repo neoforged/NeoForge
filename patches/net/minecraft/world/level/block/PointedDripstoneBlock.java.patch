@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/PointedDripstoneBlock.java
 +++ b/net/minecraft/world/level/block/PointedDripstoneBlock.java
-@@ -79,7 +_,7 @@
+@@ -79,23 +_,13 @@
  
      @VisibleForTesting
      public static void maybeTransferFluid(BlockState state, ServerLevel level, BlockPos pos, float randomValue) {
@@ -9,17 +9,18 @@
              if (isStalactiteStartPos(state, level, pos)) {
                  Optional<PointedDripstoneBlock.FluidInfo> fluidInfo = getFluidAboveStalactite(level, pos, state);
                  if (!fluidInfo.isEmpty()) {
-@@ -88,14 +_,12 @@
-                     if (fluid == Fluids.WATER) {
-                         transferProbability = 0.17578125F;
-                     } else {
+                     Fluid fluid = fluidInfo.get().fluid;
+-                    float transferProbability;
+-                    if (fluid == Fluids.WATER) {
+-                        transferProbability = 0.17578125F;
+-                    } else {
 -                        if (fluid != Fluids.LAVA) {
 -                            return;
 -                        }
- 
-                         transferProbability = 0.05859375F;
-                     }
- 
+-
+-                        transferProbability = 0.05859375F;
+-                    }
+-
 -                    if (!(randomValue >= transferProbability)) {
 +                    net.neoforged.neoforge.fluids.FluidType.DripstoneDripInfo dripInfo = fluid.getFluidType().getDripInfo();
 +                    if (dripInfo != null && !(randomValue >= dripInfo.chance())) {
