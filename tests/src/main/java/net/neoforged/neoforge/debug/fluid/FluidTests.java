@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.debug.fluid;
 
-import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestInfo;
@@ -56,7 +55,7 @@ public class FluidTests {
             final var pos = new BlockPos(1, 1, 1);
             helper.setBlock(pos, container.get());
 
-            final var player = helper.makeMockPlayer(GameType.SURVIVAL);
+            final var player = helper.makeMockServerPlayer(GameType.SURVIVAL);
             helper.assertBucketResult(helper.useBucket(pos, player, Items.LAVA_BUCKET), Items.BUCKET);
             helper.assertBlockState(pos, container.get().defaultBlockState().setValue(LavaLoggableBlock.LAVA_LOGGED, true));
             helper.assertValueEqual(Fluids.LAVA, helper.getBlockState(pos).getFluidState().getType(), "contained fluid");
@@ -68,36 +67,41 @@ public class FluidTests {
     @GameTest
     @EmptyTemplate("3x5x3")
     @TestHolder(description = "Tests that buckets can waterlog a slab and pick the water back up without removing the slab")
-    static void waterBucketFluidlogging(final TestHelper helper) {
-        final var pos = new BlockPos(1, 1, 1);
-        final var drySlab = Blocks.STONE_SLAB.defaultBlockState();
-        helper.setBlock(pos, drySlab);
-        final var player = helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL);
+    static void waterBucketFluidlogging(final DynamicTest test) {
+        test.onGameTest(TestHelper.class, helper -> {
+            final var pos = new BlockPos(1, 1, 1);
+            final var drySlab = Blocks.STONE_SLAB.defaultBlockState();
+            helper.setBlock(pos, drySlab);
+            final var player = helper.makeMockServerPlayer(GameType.SURVIVAL);
 
-        helper.assertBucketResult(helper.useBucket(pos, player, Items.WATER_BUCKET), Items.BUCKET);
-        helper.assertBlockState(pos, drySlab.setValue(BlockStateProperties.WATERLOGGED, true));
-        helper.assertValueEqual(Fluids.WATER, helper.getBlockState(pos).getFluidState().getType(), "contained fluid");
-        helper.assertBlockPresent(Blocks.AIR, pos.above());
+            helper.assertBucketResult(helper.useBucket(pos, player, Items.WATER_BUCKET), Items.BUCKET);
+            helper.assertBlockState(pos, drySlab.setValue(BlockStateProperties.WATERLOGGED, true));
+            helper.assertValueEqual(Fluids.WATER, helper.getBlockState(pos).getFluidState().getType(), "contained fluid");
+            helper.assertBlockPresent(Blocks.AIR, pos.above());
 
-        helper.assertBucketResult(helper.useBucket(pos, player, Items.BUCKET), Items.WATER_BUCKET);
-        helper.assertBlockState(pos, drySlab);
-        helper.assertTrue(helper.getBlockState(pos).getFluidState().isEmpty(), "The slab should no longer contain water");
-        helper.assertBlockPresent(Blocks.AIR, pos.above());
-        helper.succeed();
+            helper.assertBucketResult(helper.useBucket(pos, player, Items.BUCKET), Items.WATER_BUCKET);
+            helper.assertBlockState(pos, drySlab);
+            helper.assertTrue(helper.getBlockState(pos).getFluidState().isEmpty(), "The slab should no longer contain water");
+            helper.assertBlockPresent(Blocks.AIR, pos.above());
+            helper.succeed();
+        });
     }
 
     @GameTest
     @EmptyTemplate("3x5x3")
     @TestHolder(description = "Tests that a lava bucket places lava beside a waterloggable slab without replacing the slab")
-    static void rejectedLavaBucketFluidlogging(final TestHelper helper) {
-        final var pos = new BlockPos(1, 1, 1);
-        final var slab = Blocks.STONE_SLAB.defaultBlockState();
-        helper.setBlock(pos, slab);
+    static void rejectedLavaBucketFluidlogging(final DynamicTest test) {
+        test.onGameTest(TestHelper.class, helper -> {
+            final var pos = new BlockPos(1, 1, 1);
+            final var slab = Blocks.STONE_SLAB.defaultBlockState();
+            helper.setBlock(pos, slab);
+            final var player = helper.makeMockServerPlayer(GameType.SURVIVAL);
 
-        helper.assertBucketResult(helper.useBucket(pos, helper.makeMockPlayer(GameType.SURVIVAL), Items.LAVA_BUCKET), Items.BUCKET);
-        helper.assertBlockState(pos, slab);
-        helper.assertBlockState(pos.above(), Blocks.LAVA.defaultBlockState());
-        helper.succeed();
+            helper.assertBucketResult(helper.useBucket(pos, player, Items.LAVA_BUCKET), Items.BUCKET);
+            helper.assertBlockState(pos, slab);
+            helper.assertBlockState(pos.above(), Blocks.LAVA.defaultBlockState());
+            helper.succeed();
+        });
     }
 
     @GameTest
@@ -109,8 +113,9 @@ public class FluidTests {
         test.onGameTest(TestHelper.class, helper -> {
             final var pos = new BlockPos(1, 1, 1);
             helper.setBlock(pos, container.get());
+            final var player = helper.makeMockServerPlayer(GameType.SURVIVAL);
 
-            helper.assertBucketResult(helper.useBucket(pos, helper.makeMockPlayer(GameType.SURVIVAL), Items.WATER_BUCKET), Items.BUCKET);
+            helper.assertBucketResult(helper.useBucket(pos, player, Items.WATER_BUCKET), Items.BUCKET);
             helper.assertBlockState(pos, container.get().defaultBlockState());
             helper.assertBlockState(pos.above(), Blocks.WATER.defaultBlockState());
             helper.succeed();
@@ -127,8 +132,9 @@ public class FluidTests {
             final var pos = new BlockPos(1, 1, 1);
             final var filled = container.get().defaultBlockState().setValue(LavaLoggableBlock.LAVA_LOGGED, true);
             helper.setBlock(pos, filled);
+            final var player = helper.makeMockServerPlayer(GameType.SURVIVAL);
 
-            helper.assertBucketResult(helper.useBucket(pos, helper.makeMockPlayer(GameType.SURVIVAL), Items.LAVA_BUCKET), Items.BUCKET);
+            helper.assertBucketResult(helper.useBucket(pos, player, Items.LAVA_BUCKET), Items.BUCKET);
             helper.assertBlockState(pos, filled);
             helper.assertBlockState(pos.above(), Blocks.LAVA.defaultBlockState());
             helper.succeed();
@@ -144,7 +150,7 @@ public class FluidTests {
         test.onGameTest(TestHelper.class, helper -> {
             final var pos = new BlockPos(1, 1, 1);
             helper.setBlock(pos, container.get());
-            final var player = helper.makeMockPlayer(GameType.SURVIVAL);
+            final var player = helper.makeMockServerPlayer(GameType.SURVIVAL);
             player.setShiftKeyDown(true);
 
             helper.assertBucketResult(helper.useBucket(pos, player, Items.LAVA_BUCKET), Items.BUCKET);
@@ -169,8 +175,9 @@ public class FluidTests {
         test.onGameTest(TestHelper.class, helper -> {
             final var pos = new BlockPos(1, 1, 1);
             helper.setBlock(pos, container.get());
+            final var player = helper.makeMockServerPlayer(GameType.SURVIVAL);
 
-            helper.assertBucketResult(helper.useBucket(pos, helper.makeMockPlayer(GameType.SURVIVAL), bucket.get()), Items.BUCKET);
+            helper.assertBucketResult(helper.useBucket(pos, player, bucket.get()), Items.BUCKET);
             helper.assertBlockState(pos, container.get().defaultBlockState());
             helper.assertBlockState(pos.above(), Blocks.LAVA.defaultBlockState());
             helper.succeed();
@@ -233,8 +240,8 @@ public class FluidTests {
         }
 
         InteractionResult useBucket(BlockPos pos, Player player, Item bucket) {
-            player.snapTo(Vec3.atBottomCenterOf(this.absolutePos(pos.above())));
-            player.lookAt(EntityAnchorArgument.Anchor.EYES, Vec3.atCenterOf(this.absolutePos(pos)));
+            player.setPos(Vec3.atBottomCenterOf(this.absolutePos(pos.above())));
+            player.setXRot(90.0F);
             player.setItemInHand(InteractionHand.MAIN_HAND, bucket.getDefaultInstance());
             // Use the bucket normally so both target selection and emptyContents are exercised.
             return bucket.use(this.getLevel(), player, InteractionHand.MAIN_HAND);
