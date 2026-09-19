@@ -80,21 +80,11 @@ public class LevelTests {
         test.eventListeners().mod().addListener((RegisterGameRuleCategoryEvent event) -> event.register(category));
 
         reg.clientProvider(LanguageProvider.class, provider -> {
-            // GameRuleCategory#getDescriptionId - this is not the translation key as one would expect, its the registry name
-            // GameRuleCategory#label() - this uses #id to build the translation key by adding the below hardcoded prefix
-            provider.add(category.id().toLanguageKey("gamerule.category"), "Custom GameRules");
-
-            provider.add(booleanGameRule.value().getDescriptionId(), "Custom Boolean");
-            provider.add(booleanGameRule.value().getDescriptionId() + ".description", "A custom boolean game rule");
-
-            provider.add(integerGameRule.value().getDescriptionId(), "Custom Integer");
-            provider.add(integerGameRule.value().getDescriptionId() + ".description", "A custom integer game rule");
-
-            provider.add(doubleGameRule.value().getDescriptionId(), "Custom Double");
-            provider.add(doubleGameRule.value().getDescriptionId() + ".description", "A custom double game rule");
-
-            provider.add(stringGameRule.value().getDescriptionId(), "Custom String");
-            provider.add(stringGameRule.value().getDescriptionId() + ".description", "A custom string game rule");
+            provider.add(category, "Custom GameRules");
+            provider.addGameRule(booleanGameRule, "Custom Boolean", "A custom boolean game rule");
+            provider.addGameRule(integerGameRule, "Custom Integer", "A custom integer game rule");
+            provider.addGameRule(doubleGameRule, "Custom Double", "A custom double game rule");
+            provider.addGameRule(stringGameRule, "Custom String", "A custom string game rule");
         });
 
         test.onGameTest(helper -> {

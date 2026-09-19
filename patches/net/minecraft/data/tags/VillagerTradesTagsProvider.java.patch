@@ -1,0 +1,17 @@
+--- a/net/minecraft/data/tags/VillagerTradesTagsProvider.java
++++ b/net/minecraft/data/tags/VillagerTradesTagsProvider.java
+@@ -9,8 +_,14 @@
+ import net.minecraft.world.item.trading.VillagerTrades;
+ 
+ public class VillagerTradesTagsProvider extends TagsProvider<VillagerTrade> {
++    /// @deprecated Neo: Use the [VillagerTradesTagsProvider(PackOutput, CompletableFuture, String)] mod id variant
++    @Deprecated
+     public VillagerTradesTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+         super(output, Registries.VILLAGER_TRADE, lookupProvider);
++    }
++
++    public VillagerTradesTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
++        super(output, Registries.VILLAGER_TRADE, lookupProvider, modId);
+     }
+ 
+     @Override

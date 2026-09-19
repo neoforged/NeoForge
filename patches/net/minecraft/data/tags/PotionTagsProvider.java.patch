@@ -1,0 +1,17 @@
+--- a/net/minecraft/data/tags/PotionTagsProvider.java
++++ b/net/minecraft/data/tags/PotionTagsProvider.java
+@@ -9,8 +_,14 @@
+ import net.minecraft.world.item.alchemy.PotionIds;
+ 
+ public class PotionTagsProvider extends TagsProvider<Potion> {
++    /// @deprecated Neo: Use the [PotionTagsProvider(PackOutput, CompletableFuture, String)] mod id variant
++    @Deprecated
+     public PotionTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+         super(output, Registries.POTION, lookupProvider);
++    }
++
++    public PotionTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
++        super(output, Registries.POTION, lookupProvider, modId);
+     }
+ 
+     @Override
