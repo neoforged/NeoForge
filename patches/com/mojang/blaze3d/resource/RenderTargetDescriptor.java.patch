@@ -1,0 +1,12 @@
+--- a/com/mojang/blaze3d/resource/RenderTargetDescriptor.java
++++ b/com/mojang/blaze3d/resource/RenderTargetDescriptor.java
+@@ -29,6 +_,9 @@
+         } else if (this.depth != null && this.depth.clearColor != null) {
+             RenderSystem.getDevice().createCommandEncoder().clearDepthTexture(resource.getDepthTexture(), this.depth.clearColor.x());
+         }
++        if (this.depth != null && this.depth.format.hasStencilAspect()) {
++            RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(resource.getDepthTexture(), 0);
++        }
+     }
+ 
+     public void free(RenderTarget resource) {
