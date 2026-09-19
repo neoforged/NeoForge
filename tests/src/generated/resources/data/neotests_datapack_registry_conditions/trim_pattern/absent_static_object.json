@@ -1,0 +1,14 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:registered",
+        "value": "nope:no_such_item"
+      }
+    }
+  ],
+  "asset_id": "neotests_datapack_registry_conditions:absent_static_object",
+  "decal": false,
+  "description": ""
+}

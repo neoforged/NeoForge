@@ -1,0 +1,10 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:tag_empty",
+      "registry": "minecraft:worldgen/biome",
+      "tag": "c:hidden_from_locator_selection"
+    }
+  ],
+  "type": "minecraft:crafting_special_repairitem"
+}

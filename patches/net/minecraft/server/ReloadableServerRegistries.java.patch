@@ -1,5 +1,15 @@
 --- a/net/minecraft/server/ReloadableServerRegistries.java
 +++ b/net/minecraft/server/ReloadableServerRegistries.java
+@@ -44,7 +_,8 @@
+             context.getAccessForLoading(RegistryLayer.RELOADABLE), updatedContextTags
+         );
+         HolderLookup.Provider loadingContextWithTags = HolderLookup.Provider.create(contextRegistriesWithTags.stream());
+-        RegistryOps<JsonElement> ops = loadingContextWithTags.createSerializationContext(JsonOps.INSTANCE);
++        var conditionContext = new net.neoforged.neoforge.common.conditions.ConditionContext(updatedContextTags, RegistryAccess.EMPTY, loadingContextWithTags, net.minecraft.world.flag.FeatureFlags.VANILLA_SET);
++        RegistryOps<JsonElement> ops = new net.neoforged.neoforge.common.conditions.ConditionalOps<>(loadingContextWithTags.createSerializationContext(JsonOps.INSTANCE), conditionContext);
+         List<CompletableFuture<WritableRegistry<?>>> registryLoads = LootDataType.values()
+             .map(type -> scheduleRegistryLoad((LootDataType<?>)type, ops, manager, executor))
+             .toList();
 @@ -60,7 +_,16 @@
          return CompletableFuture.supplyAsync(() -> {
              WritableRegistry<T> registry = new MappedRegistry<>(type.registryKey(), Lifecycle.experimental());
