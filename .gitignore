@@ -28,9 +28,9 @@ src/generated/resources/.cache/
 tests/src/generated/resources/.cache/
 
 #Patch rejects
-#/patches-/
-#*.patch.rej
-#/projects/*/rejects/
+*.patch.rej
+*.rej.patch
+/rejects/
 
 # FML changelog
 changelog.txt
