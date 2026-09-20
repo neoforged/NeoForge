@@ -1,12 +1,23 @@
 --- a/com/mojang/blaze3d/resource/RenderTargetDescriptor.java
 +++ b/com/mojang/blaze3d/resource/RenderTargetDescriptor.java
-@@ -29,6 +_,9 @@
-         } else if (this.depth != null && this.depth.clearColor != null) {
-             RenderSystem.getDevice().createCommandEncoder().clearDepthTexture(resource.getDepthTexture(), this.depth.clearColor.x());
-         }
-+        if (this.depth != null && this.depth.format.hasStencilAspect()) {
-+            RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(resource.getDepthTexture(), 0);
-+        }
+@@ -20,14 +_,18 @@
      }
  
-     public void free(RenderTarget resource) {
+     public void prepare(RenderTarget resource) {
+-        if (this.color != null && this.depth != null && this.color.clearColor != null && this.depth.clearColor != null) {
++        if (this.color != null && this.depth != null && this.color.clearColor != null && this.depth.clearColor != null && this.depth.format.hasDepthAspect()) {
+             RenderSystem.getDevice()
+                 .createCommandEncoder()
+                 .clearColorAndDepthTextures(resource.getColorTexture(), this.color.clearColor, resource.getDepthTexture(), this.depth.clearColor.x());
+         } else if (this.color != null && this.color.clearColor != null) {
+             RenderSystem.getDevice().createCommandEncoder().clearColorTexture(resource.getColorTexture(), this.color.clearColor);
+-        } else if (this.depth != null && this.depth.clearColor != null) {
++        } else if (this.depth != null && this.depth.clearColor != null && this.depth.format.hasDepthAspect()) {
+             RenderSystem.getDevice().createCommandEncoder().clearDepthTexture(resource.getDepthTexture(), this.depth.clearColor.x());
++        }
++        if (this.depth != null && this.depth.clearColor != null && this.depth.format.hasStencilAspect()) {
++            int value = (int) (this.depth.format.hasDepthAspect() ? this.depth.clearColor.y() : this.depth.clearColor.x());
++            RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(resource.getDepthTexture(), value);
+         }
+     }
+ 
