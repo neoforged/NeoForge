@@ -19,12 +19,12 @@ public interface OrderedSubmitNodeCollectorExtension {
     ///
     /// Primarily intended to be used via [BlockModelRenderState#submitMultiLayer(PoseStack, SubmitNodeCollector, int, int, int)].
     ///
-    /// @param poseStack           The transformations to apply to the parts
-    /// @param modelParts          The model parts to submit
-    /// @param translucent         Whether the parts contain any translucent quads
-    /// @param lightCoords         The packed light coordinates to render the parts with
-    /// @param overlayCoords       The overlay texture coordinates to render the parts with
-    /// @param outlineColor        The outline color to render the parts with, or `0` to render no outline
+    /// @param poseStack     The transformations to apply to the parts
+    /// @param modelParts    The model parts to submit
+    /// @param translucent   Whether the parts contain any translucent quads
+    /// @param lightCoords   The packed light coordinates to render the parts with
+    /// @param overlayCoords The overlay texture coordinates to render the parts with
+    /// @param outlineColor  The outline color to render the parts with, or `0` to render no outline
     default void submitMultiLayerBlockModel(
             PoseStack poseStack,
             List<BlockStateModelPart> modelParts,

@@ -932,10 +932,10 @@ public interface IBlockExtension {
 
     /// Returns this blocks bounce restitution for the given state and position. Normally between 0 and 1
     ///
-    /// @param level The level this block is in
-    /// @param pos The position this block is located at in the given level
+    /// @param level      The level this block is in
+    /// @param pos        The position this block is located at in the given level
     /// @param blockState The state of this block
-    /// @param entity The entity currently querying for bounce restitution
+    /// @param entity     The entity currently querying for bounce restitution
     /// @return This blocks bounce restitution for the given state and position
     default float getBounceRestitution(Level level, BlockPos pos, BlockState blockState, Entity entity) {
         return self().getBounceRestitution();
@@ -953,7 +953,7 @@ public interface IBlockExtension {
     /// {@link Tags.Blocks#RELOCATION_NOT_SUPPORTED}, in which case this method does not need to be overridden.
     ///
     /// @param level LevelReader which the block is being relocated from
-    /// @param pos BlockPos which the block is being relocated from
+    /// @param pos   BlockPos which the block is being relocated from
     /// @param state BlockState of the block being relocated
     /// @return BlockRelocability declaring whether the block may be relocated
     default BlockRelocability getRelocability(LevelReader level, BlockPos pos, BlockState state) {

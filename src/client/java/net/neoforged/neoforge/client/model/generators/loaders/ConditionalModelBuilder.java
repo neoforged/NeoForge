@@ -59,7 +59,7 @@ public final class ConditionalModelBuilder extends CustomLoaderBuilder {
     /// Specify the model to fall back to when any condition fails, as a reference to another file.
     ///
     /// @param fallback The fallback model
-    ///                 
+    /// 
     /// @see #setInlineFallback(ModelTemplate, TextureMapping)
     public ConditionalModelBuilder setFallback(Identifier fallback) {
         Preconditions.checkNotNull(fallback, "Fallback must not be null");

@@ -26,20 +26,23 @@ import org.jetbrains.annotations.ApiStatus;
 ///
 /// Example usage:
 /// ```java
-///  import net.minecraft.core.component.DataComponents;
-///  import net.minecraft.world.item.Items;
-///  public void modifyComponents(ModifyDefaultComponentsEvent event) {
-///      event.modify(Items.MELON_SEEDS, builder -> builder
-///              .set(DataComponents.MAX_STACK_SIZE, 16)); // Stack melon seeds to at most 16 items
-///      event.modify(Items.APPLE, builder -> builder
-///              .remove(DataComponents.FOOD)); // Remove the ability of eating apples
-///  }
-///  // Lowest priority listener
-///  public void modifyComponentsLow(ModifyDefaultComponentsEvent event) {
-///      event.modifyMatching((item, componentTypes) -> componentTypes.contains(DataComponents.FIRE_RESISTANT), builder -> builder
-///              .set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)); // Make all fire-resistant items have a glint
-///  }
+/// import net.minecraft.core.component.DataComponents;
+/// import net.minecraft.world.item.Items;
+/// 
+/// public void modifyComponents(ModifyDefaultComponentsEvent event) {
+///     event.modify(Items.MELON_SEEDS, builder -> builder
+///             .set(DataComponents.MAX_STACK_SIZE, 16)); // Stack melon seeds to at most 16 items
+///     event.modify(Items.APPLE, builder -> builder
+///             .remove(DataComponents.FOOD)); // Remove the ability of eating apples
+/// }
+/// 
+/// // Lowest priority listener
+/// public void modifyComponentsLow(ModifyDefaultComponentsEvent event) {
+///     event.modifyMatching((item, componentTypes) -> componentTypes.contains(DataComponents.FIRE_RESISTANT), builder -> builder
+///             .set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)); // Make all fire-resistant items have a glint
+/// }
 ///  ```
+/// 
 public final class ModifyDefaultComponentsEvent extends Event implements IModBusEvent {
     private final Map<Item, Initializer> modifiersByItem;
     private final List<Pair<ItemWithComponentsPredicate, Initializer>> modifiersByPredicate;
@@ -91,8 +94,8 @@ public final class ModifyDefaultComponentsEvent extends Event implements IModBus
         /// Initializes or modifies the default components of a given item.
         ///
         /// @param components the default components of the item
-        /// @param context the registry context
-        /// @param item the item
+        /// @param context    the registry context
+        /// @param item       the item
         void run(DataComponentMap.Builder components, HolderLookup.Provider context, Item item);
 
         /// {@return a composed initializer that first runs this initializer, and then runs the given initializer}

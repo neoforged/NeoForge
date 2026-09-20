@@ -18,8 +18,8 @@ import org.jetbrains.annotations.ApiStatus;
 
 /// This event provides the functionality of the pair of functions used for the Bundle, in one event:
 ///
-///   - [Item#overrideOtherStackedOnMe(ItemStack, ItemStack, Slot, ClickAction, Player, SlotAccess)]
-///   - [Item#overrideStackedOnOther(ItemStack, Slot, ClickAction, Player)]
+/// - [Item#overrideOtherStackedOnMe(ItemStack, ItemStack, Slot, ClickAction, Player, SlotAccess)]
+/// - [Item#overrideStackedOnOther(ItemStack, Slot, ClickAction, Player)]
 ///
 /// This event is fired before either of the above are called, when a carried item is clicked on top of another in a GUI slot.
 ///
@@ -29,9 +29,9 @@ import org.jetbrains.annotations.ApiStatus;
 /// This event is [cancellable][ICancellableEvent]. If the event is cancelled, the two vanilla methods described above
 /// will not be called. The remaining logic depends on the [cancellation result][#getCancellationResult()]:
 ///
-///   - If it is `true`, then the container's logic halts, the carried item and the slot will not be swapped, and
-///     handling is assumed to have been done by the event listener.
-///   - If it is `false`, vanilla processing continues except for the two vanilla methods mentioned above.
+/// - If it is `true`, then the container's logic halts, the carried item and the slot will not be swapped, and
+///   handling is assumed to have been done by the event listener.
+/// - If it is `false`, vanilla processing continues except for the two vanilla methods mentioned above.
 public class ItemStackedOnOtherEvent extends Event implements ICancellableEvent {
     private final ItemStack carriedItem;
     private final ItemStack stackedOnItem;

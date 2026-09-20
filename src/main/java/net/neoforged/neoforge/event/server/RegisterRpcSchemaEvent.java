@@ -22,8 +22,8 @@ import org.jetbrains.annotations.ApiStatus;
 ///
 /// This event is [non-cancellable][ICancellableEvent].
 ///
-/// This event is fired on the [game event bus][NeoForge#EVENT_BUS], 
-/// only on the [dedicated server][Dist#DEDICATED_SERVER] 
+/// This event is fired on the [game event bus][NeoForge#EVENT_BUS],
+/// only on the [dedicated server][Dist#DEDICATED_SERVER]
 /// before the [ManagementServer] is instantiated in [JsonRpc#create(DedicatedServerSettings, NotificationManager)].
 public class RegisterRpcSchemaEvent extends Event {
     private final Map<String, SchemaComponent<?>> components;

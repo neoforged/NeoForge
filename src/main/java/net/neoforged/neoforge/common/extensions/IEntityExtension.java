@@ -339,7 +339,7 @@ public interface IEntityExtension {
 
     /// Returns the block bounciness for the given block state. Normally between 0 and 1
     ///
-    /// @param pos Position of the block to query bounciness at
+    /// @param pos        Position of the block to query bounciness at
     /// @param blockState The block state to query bounciness for
     /// @return The block bounciness for the given block state and position
     /// @see IBlockStateExtension#getBounceRestitution(Level, BlockPos, Entity)

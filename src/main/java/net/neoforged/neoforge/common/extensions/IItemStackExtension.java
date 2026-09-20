@@ -369,7 +369,7 @@ public interface IItemStackExtension extends ItemInstanceExtension {
     /// to be called with this method.
     ///
     /// @param wearer the entity wearing the item
-    /// @param slot the equipment slot occupied by the item
+    /// @param slot   the equipment slot occupied by the item
     /// @see IItemExtension#onGlideDamage(ItemStack, LivingEntity, EquipmentSlot)
     default void onGlideDamage(LivingEntity wearer, EquipmentSlot slot) {
         self().getItem().onGlideDamage(self(), wearer, slot);
