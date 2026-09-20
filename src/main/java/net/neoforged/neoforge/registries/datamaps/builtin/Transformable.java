@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.UnaryOperator;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.BlockTransformer;
@@ -59,6 +58,42 @@ public record Transformable(Map<ResourceKey<BlockTransformer>, BlockTransformer.
         return axe(BlockTransformer.BlockTransformData.builder(provider).sound(SoundEvents.AXE_STRIP).build());
     }
 
+    /// Create a transformable appending a basic scraping transform to the [BlockTransformers#AXE].
+    ///
+    /// Blocks which are part of the [NeoForgeDataMaps#OXIDIZABLES] datamap will have this transform
+    /// automatically generated for them and should not declare one explicitly.
+    ///
+    /// @param original The original block (the one this value will be attached to)
+    /// @param scraped  The scraped block
+    /// @return a new transformable
+    public static Transformable scraping(Block original, Block scraped) {
+        RuleBasedStateProvider provider = RuleBasedStateProvider.builder()
+                .ifTrueThenProvide(BlockPredicate.matchesBlocks(original), new CopyPropertiesProvider(scraped))
+                .build();
+        return axe(BlockTransformer.BlockTransformData.builder(provider)
+                .sound(SoundEvents.AXE_SCRAPE)
+                .particle(BlockTransformer.TransformParticle.SCRAPE)
+                .build());
+    }
+
+    /// Create a transformable appending a basic wax-off transform to the [BlockTransformers#AXE].
+    ///
+    /// Blocks which are part of the [NeoForgeDataMaps#WAXABLES] datamap will have this transform
+    /// automatically generated for them and should not declare one explicitly.
+    ///
+    /// @param original The original block (the one this value will be attached to)
+    /// @param unwaxed  The block with wax removed
+    /// @return a new transformable
+    public static Transformable waxOff(Block original, Block unwaxed) {
+        RuleBasedStateProvider provider = RuleBasedStateProvider.builder()
+                .ifTrueThenProvide(BlockPredicate.matchesBlocks(original), new CopyPropertiesProvider(unwaxed))
+                .build();
+        return axe(BlockTransformer.BlockTransformData.builder(provider)
+                .sound(SoundEvents.AXE_WAX_OFF)
+                .particle(BlockTransformer.TransformParticle.WAX_OFF)
+                .build());
+    }
+
     /// Create a transformable appending the given transform to the [BlockTransformers#AXE].
     ///
     /// @param transformData The transform to append
@@ -67,7 +102,8 @@ public record Transformable(Map<ResourceKey<BlockTransformer>, BlockTransformer.
         return new Transformable(BlockTransformers.AXE, transformData);
     }
 
-    /// Create a transformable appending a basic flattening transform to the [BlockTransformers#SHOVEL].
+    /// Create a transformable appending a basic flattening transform to the [BlockTransformers#SHOVEL]
+    /// which disallows transformation via the block's bottom face and requires the block above to be air.
     ///
     /// @param original  The original block (the one this value will be attached to)
     /// @param flattened The flattened block
@@ -90,35 +126,36 @@ public record Transformable(Map<ResourceKey<BlockTransformer>, BlockTransformer.
         return new Transformable(BlockTransformers.SHOVEL, transformData);
     }
 
-    /// Create a transformable appending a simple tilling transform to the [BlockTransformers#HOE].
+    /// Create a transformable appending a farmland-esque tilling transform to the [BlockTransformers#HOE].
+    ///
+    /// The transform converts the block, requires the block above to be air and disallows transformation
+    /// via the block's bottom face, matching the vanilla dirt->farmland transformation.
     ///
     /// @param original The original block (the one this value will be attached to)
     /// @param tilled   The tilled block
     /// @return a new transformable
     public static Transformable tilling(Block original, Block tilled) {
-        return tilling(original, tilled, builder -> builder.disallowedFaces(List.of(Direction.DOWN)));
+        BlockPredicate predicate = BlockPredicate.allOf(
+                BlockPredicate.matchesBlocks(original),
+                BlockPredicate.matchesTag(Direction.UP, BlockTags.AIR));
+        return hoe(BlockTransformer.BlockTransformData.builder(predicate, tilled).sound(SoundEvents.HOE_TILL).build());
     }
 
     /// Create a transformable appending a tilling transform with drops to the [BlockTransformers#HOE].
+    ///
+    /// The transform converts the block and drops loot from the given table from the interacted face,
+    /// matching the vanilla rooted dirt->dirt transformation.
     ///
     /// @param original The original block (the one this value will be attached to)
     /// @param tilled   The tilled block
     /// @param loot     The loot table to roll when the transform succeeds
     /// @return a new transformable
     public static Transformable tilling(Block original, Block tilled, ResourceKey<LootTable> loot) {
-        return tilling(original, tilled, builder -> builder.loot(loot).dropStrategy(BlockTransformer.DropStrategy.CLICKED_FACE));
-    }
-
-    /// Create a transformable appending a tilling transform to the [BlockTransformers#HOE].
-    ///
-    /// @param original        The original block (the one this value will be attached to)
-    /// @param tilled          The tilled block
-    /// @param builderOperator A function for adjusting the transform
-    /// @return a new transformable
-    public static Transformable tilling(Block original, Block tilled, UnaryOperator<BlockTransformer.BlockTransformData.Builder> builderOperator) {
-        BlockTransformer.BlockTransformData.Builder builder = BlockTransformer.BlockTransformData.builder(BlockPredicate.matchesBlocks(original), tilled)
-                .sound(SoundEvents.HOE_TILL);
-        return hoe(builderOperator.apply(builder).build());
+        return hoe(BlockTransformer.BlockTransformData.builder(BlockPredicate.matchesBlocks(original), tilled)
+                .sound(SoundEvents.HOE_TILL)
+                .loot(loot)
+                .dropStrategy(BlockTransformer.DropStrategy.CLICKED_FACE)
+                .build());
     }
 
     /// Create a transformable appending the given transform to the [BlockTransformers#HOE].

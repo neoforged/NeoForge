@@ -58,7 +58,7 @@ public class NeoForgeDataMaps {
     /// The location of this data map is {@code neoforge/data_maps/block_transformer/block_transform_appenders.json}, and the values are
     /// lists of [BlockTransformer.BlockTransformData]s
     ///
-    /// Transforms targetting a single block or state thereof should use [#TRANSFORMABLES] instead.
+    /// Transforms targeting a single block or state thereof should use [#TRANSFORMABLES] instead.
     public static final DataMapType<BlockTransformer, BlockTransformAppender> BLOCK_TRANSFORM_APPENDERS = AdvancedDataMapType
             .builder(id("block_transform_appenders"), Registries.BLOCK_TRANSFORMER, BlockTransformAppender.CODEC)
             .synced(BlockTransformAppender.CODEC, false)
@@ -125,7 +125,8 @@ public class NeoForgeDataMaps {
     ///   - `transform_data`, a [BlockTransformer.BlockTransformData] describing how the block should be transformed
     ///
     /// The [BlockStateProvider] specified by the transform data entry/entries should ensure that the specified transformation only
-    /// applies to the block this datamap value is attached to.
+    /// applies to the block this datamap value is attached to and datamap values of this type should not be attached to multiple
+    /// blocks via tags.
     /// Transformations applying to multiple blocks (i.e. via tag or custom block predicates) should use [#BLOCK_TRANSFORM_APPENDERS] instead.
     public static final DataMapType<Block, Transformable> TRANSFORMABLES = AdvancedDataMapType.builder(id("transformables"), Registries.BLOCK, Transformable.CODEC)
             .synced(Transformable.CODEC, false)
