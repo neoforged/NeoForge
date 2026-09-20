@@ -51,7 +51,7 @@ public abstract class BaseRenderState implements IRenderStateExtension {
     /// This allows for hiding parts that are not normally configurable by the render state, for example hiding the player's head.
     ///
     /// @param modelPart Name of the model part. This will be looked up from [net.minecraft.client.model.Model#root()] via [net.minecraft.client.model.geom.ModelPart#getChild]
-    /// @param visible `false` to disable rendering of the part.
+    /// @param visible   `false` to disable rendering of the part.
     ///
     /// @see net.minecraft.client.model.geom.PartNames
     public void overrideModelPartVisibility(String modelPart, boolean visible) {

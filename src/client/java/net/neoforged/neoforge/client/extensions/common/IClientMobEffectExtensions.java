@@ -27,13 +27,13 @@ public interface IClientMobEffectExtensions {
     }
 
     /// @return whether the given effect should be shown in the player's inventory.
-    /// By default, this returns `true`.
+    ///         By default, this returns `true`.
     default boolean isVisibleInInventory(MobEffectInstance instance) {
         return true;
     }
 
     /// @return whether the given effect should be shown in the HUD.
-    /// By default, this returns `true`.
+    ///         By default, this returns `true`.
     default boolean isVisibleInGui(MobEffectInstance instance) {
         return true;
     }

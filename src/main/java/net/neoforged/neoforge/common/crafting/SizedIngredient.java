@@ -34,6 +34,7 @@ public final class SizedIngredient {
     ///     "count": 3
     /// }
     /// ```
+    /// 
     public static final Codec<SizedIngredient> NESTED_CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Ingredient.CODEC.fieldOf("ingredient").forGetter(SizedIngredient::ingredient),
             NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.POSITIVE_INT, "count", 1).forGetter(SizedIngredient::count))

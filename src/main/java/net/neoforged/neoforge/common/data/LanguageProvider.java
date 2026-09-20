@@ -164,7 +164,7 @@ public abstract class LanguageProvider implements DataProvider {
 
     /// Adds a translation by extracting its key from the given [translatable][TranslatableContents] [Component].
     ///
-    /// @param key the [Component] containing the [TranslatableContents] used to extract the key
+    /// @param key   the [Component] containing the [TranslatableContents] used to extract the key
     /// @param value the translation value
     /// @throws IllegalArgumentException if the given [Component] does not contain [TranslatableContents]
     public void addTranslatableComponent(Component key, String value) {
