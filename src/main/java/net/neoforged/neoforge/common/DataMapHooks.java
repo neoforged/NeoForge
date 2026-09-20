@@ -19,11 +19,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.BlockTransformers;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -94,7 +92,6 @@ public class DataMapHooks {
     }
 
     @SubscribeEvent
-    @SuppressWarnings("deprecation")
     static void onDataMapsUpdated(DataMapsUpdatedEvent event) {
         event.ifRegistry(Registries.BLOCK, registry -> {
             INVERSE_OXIDIZABLES_DATAMAP_INTERNAL.clear();
@@ -112,8 +109,7 @@ public class DataMapHooks {
                     state.initCache();
                 }
 
-                // Only append transformers for blocks which vanilla does not already include
-                if (!WeatheringCopper.PREVIOUS_BY_BLOCK.get().containsKey(oxidizable.nextOxidationStage())) {
+                if (oxidizable.generateBlockTransform()) {
                     BlockPredicate predicate = BlockPredicate.matchesBlocks(oxidizable.nextOxidationStage());
                     BlockTransformer.BlockTransformData transformer = BlockTransformer.BlockTransformData.builder(predicate, block)
                             .sound(SoundEvents.AXE_SCRAPE)
@@ -128,8 +124,7 @@ public class DataMapHooks {
 
                 INVERSE_WAXABLES_DATAMAP_INTERNAL.put(waxable.waxed(), block);
 
-                // Only append transformers for blocks which vanilla does not already include
-                if (!HoneycombItem.WAX_OFF_BY_BLOCK.get().containsKey(waxable.waxed())) {
+                if (waxable.generateBlockTransform()) {
                     BlockPredicate predicate = BlockPredicate.matchesBlocks(waxable.waxed());
                     BlockTransformer.BlockTransformData transformer = BlockTransformer.BlockTransformData.builder(predicate, block)
                             .sound(SoundEvents.AXE_WAX_OFF)

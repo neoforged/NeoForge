@@ -89,7 +89,7 @@ public class NeoForgeDataMaps {
      * The inverted map of this can be found at {@link DataMapHooks#INVERSE_OXIDIZABLES_DATAMAP}
      */
     public static final DataMapType<Block, Oxidizable> OXIDIZABLES = DataMapType.builder(
-            id("oxidizables"), Registries.BLOCK, Oxidizable.CODEC).synced(Oxidizable.OXIDIZABLE_CODEC, false).build();
+            id("oxidizables"), Registries.BLOCK, Oxidizable.CODEC).synced(Oxidizable.CODEC, false).build();
 
     /**
      * The {@linkplain EntityType} data map that replaces {@link Parrot#MOB_SOUND_MAP}.
@@ -182,7 +182,7 @@ public class NeoForgeDataMaps {
      * The inverted map of this can be found at {@link DataMapHooks#INVERSE_WAXABLES_DATAMAP}
      */
     public static final DataMapType<Block, Waxable> WAXABLES = DataMapType.builder(
-            id("waxables"), Registries.BLOCK, Waxable.CODEC).synced(Waxable.WAXABLE_CODEC, false).build();
+            id("waxables"), Registries.BLOCK, Waxable.CODEC).synced(Waxable.CODEC, false).build();
 
     private static Identifier id(final String name) {
         return Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, name);
