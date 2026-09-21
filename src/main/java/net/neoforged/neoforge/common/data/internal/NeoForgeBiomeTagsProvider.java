@@ -93,6 +93,7 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
                 .add(Biomes.BIRCH_FOREST)
                 .add(Biomes.OLD_GROWTH_BIRCH_FOREST)
                 .add(Biomes.DARK_FOREST)
+                .add(Biomes.DAPPLED_FOREST)
                 .add(Biomes.CHERRY_GROVE)
                 .add(Biomes.MEADOW)
                 .add(Biomes.SWAMP)
@@ -190,6 +191,8 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
                 .add(Biomes.WINDSWEPT_SAVANNA);
         tag(Tags.Biomes.PRIMARY_WOOD_TYPE_DARK_OAK)
                 .add(Biomes.DARK_FOREST);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_POPLAR)
+                .add(Biomes.DAPPLED_FOREST);
         tag(Tags.Biomes.PRIMARY_WOOD_TYPE_MANGROVE)
                 .add(Biomes.MANGROVE_SWAMP);
         tag(Tags.Biomes.PRIMARY_WOOD_TYPE_CHERRY)
@@ -209,6 +212,7 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
                 Tags.Biomes.PRIMARY_WOOD_TYPE_JUNGLE,
                 Tags.Biomes.PRIMARY_WOOD_TYPE_ACACIA,
                 Tags.Biomes.PRIMARY_WOOD_TYPE_DARK_OAK,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_POPLAR,
                 Tags.Biomes.PRIMARY_WOOD_TYPE_MANGROVE,
                 Tags.Biomes.PRIMARY_WOOD_TYPE_CHERRY,
                 Tags.Biomes.PRIMARY_WOOD_TYPE_PALE_OAK,
@@ -219,7 +223,7 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
         tag(Tags.Biomes.IS_CONIFEROUS_TREE).addTags(Tags.Biomes.IS_TAIGA).add(Biomes.GROVE);
         tag(Tags.Biomes.IS_SAVANNA_TREE).addTags(Tags.Biomes.IS_SAVANNA);
         tag(Tags.Biomes.IS_JUNGLE_TREE).addTags(Tags.Biomes.IS_JUNGLE);
-        tag(Tags.Biomes.IS_DECIDUOUS_TREE).add(Biomes.FOREST, Biomes.FLOWER_FOREST, Biomes.BIRCH_FOREST, Biomes.OLD_GROWTH_BIRCH_FOREST, Biomes.DARK_FOREST, Biomes.PALE_GARDEN, Biomes.WINDSWEPT_FOREST);
+        tag(Tags.Biomes.IS_DECIDUOUS_TREE).add(Biomes.FOREST, Biomes.FLOWER_FOREST, Biomes.BIRCH_FOREST, Biomes.OLD_GROWTH_BIRCH_FOREST, Biomes.DARK_FOREST, Biomes.DAPPLED_FOREST, Biomes.PALE_GARDEN, Biomes.WINDSWEPT_FOREST);
 
         tag(Tags.Biomes.IS_MOUNTAIN_SLOPE).add(Biomes.SNOWY_SLOPES, Biomes.MEADOW, Biomes.GROVE, Biomes.CHERRY_GROVE);
         tag(Tags.Biomes.IS_MOUNTAIN_PEAK).add(Biomes.JAGGED_PEAKS, Biomes.FROZEN_PEAKS, Biomes.STONY_PEAKS);
