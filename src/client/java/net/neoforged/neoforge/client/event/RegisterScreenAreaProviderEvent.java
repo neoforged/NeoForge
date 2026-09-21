@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.event;
 
 import com.google.common.base.Preconditions;
-import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 import net.minecraft.client.gui.screens.Screen;
@@ -14,11 +14,11 @@ import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
-import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.client.gui.ScreenAreaContext;
 import net.neoforged.neoforge.client.gui.ScreenAreaManager;
 import net.neoforged.neoforge.client.gui.ScreenAreaProvider;
 import net.neoforged.neoforge.client.gui.VanillaScreenAreas;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
@@ -35,12 +35,12 @@ import org.jspecify.annotations.Nullable;
 ///
 /// This event is not [cancellable][ICancellableEvent].
 ///
-/// This event is fired on the mod-specific event bus, only on the [logical client][LogicalSide#CLIENT].
-public class RegisterScreenAreaProviderEvent extends Event implements IModBusEvent {
-    private final List<ScreenAreaManager.ScreenAreaRegistration> registrations;
+/// This event is fired on the [main NeoForge event bus][NeoForge#EVENT_BUS], only on the [logical client][LogicalSide#CLIENT].
+public class RegisterScreenAreaProviderEvent extends Event {
+    private final Map<Identifier, ScreenAreaManager.ScreenAreaRegistration> registrations;
 
     @ApiStatus.Internal
-    public RegisterScreenAreaProviderEvent(List<ScreenAreaManager.ScreenAreaRegistration> registrations) {
+    public RegisterScreenAreaProviderEvent(Map<Identifier, ScreenAreaManager.ScreenAreaRegistration> registrations) {
         this.registrations = registrations;
     }
 
@@ -83,25 +83,18 @@ public class RegisterScreenAreaProviderEvent extends Event implements IModBusEve
         Objects.requireNonNull(id, "id");
         Objects.requireNonNull(wrapper, "wrapper");
 
-        for (int i = 0; i < this.registrations.size(); i++) {
-            ScreenAreaManager.ScreenAreaRegistration registration = this.registrations.get(i);
-            if (registration.id().equals(id)) {
-                ScreenAreaProvider wrapped = wrapper.apply(registration.provider());
-                Objects.requireNonNull(wrapped, "wrapping provider must not be null");
-                this.registrations.set(i, new ScreenAreaManager.ScreenAreaRegistration(id, registration.screenClass(), wrapped));
-                return;
-            }
+        ScreenAreaManager.ScreenAreaRegistration registration = this.registrations.get(id);
+        if (registration == null) {
+            throw new IllegalArgumentException("Attempted to wrap screen area with id '" + id + "', which does not exist!");
         }
-
-        throw new IllegalArgumentException("Attempted to wrap screen area with id '" + id + "', which does not exist!");
+        ScreenAreaProvider wrapped = Objects.requireNonNull(wrapper.apply(registration.provider()), "wrapping provider must not be null");
+        this.registrations.put(id, new ScreenAreaManager.ScreenAreaRegistration(registration.screenClass(), wrapped));
     }
 
     private void register(Identifier id, @Nullable Class<? extends Screen> screenClass, ScreenAreaProvider provider) {
         Objects.requireNonNull(id, "id");
         Objects.requireNonNull(provider, "provider");
-        for (ScreenAreaManager.ScreenAreaRegistration registration : this.registrations) {
-            Preconditions.checkArgument(!registration.id().equals(id), "Screen area already registered: %s", id);
-        }
-        this.registrations.add(new ScreenAreaManager.ScreenAreaRegistration(id, screenClass, provider));
+        Preconditions.checkArgument(!this.registrations.containsKey(id), "Screen area already registered: %s", id);
+        this.registrations.put(id, new ScreenAreaManager.ScreenAreaRegistration(screenClass, provider));
     }
 }

@@ -7,15 +7,17 @@ package net.neoforged.neoforge.client.gui;
 
 import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.Identifier;
 import net.neoforged.fml.LogicalSide;
-import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.client.event.RegisterScreenAreaProviderEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -30,18 +32,17 @@ import org.slf4j.Logger;
 /// This manager is only usable on the [logical client][LogicalSide#CLIENT].
 public class ScreenAreaManager {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final List<ScreenAreaRegistration> REGISTRATIONS = new ArrayList<>();
+    private static final Map<Identifier, ScreenAreaRegistration> REGISTRATIONS = new LinkedHashMap<>();
     private static boolean initialized = false;
 
     private ScreenAreaManager() {}
 
     /// A registered area provider, see [RegisterScreenAreaProviderEvent].
     ///
-    /// @param id          the id of the registered area
     /// @param screenClass the screen class this provider is queried for, or `null` if it is always queried
     /// @param provider    the provider
     @ApiStatus.Internal
-    public record ScreenAreaRegistration(Identifier id, @Nullable Class<? extends Screen> screenClass, ScreenAreaProvider provider) {}
+    public record ScreenAreaRegistration(@Nullable Class<? extends Screen> screenClass, ScreenAreaProvider provider) {}
 
     @ApiStatus.Internal
     public static void init() {
@@ -50,7 +51,7 @@ public class ScreenAreaManager {
         }
         initialized = true;
         VanillaScreenAreas.register(REGISTRATIONS);
-        ModLoader.postEvent(new RegisterScreenAreaProviderEvent(REGISTRATIONS));
+        NeoForge.EVENT_BUS.post(new RegisterScreenAreaProviderEvent(REGISTRATIONS));
     }
 
     /// Evaluates all registered providers and returns the areas currently occupied by UIs,
@@ -60,11 +61,27 @@ public class ScreenAreaManager {
     public static List<ScreenRectangle> getOccupiedAreas() {
         ScreenAreaContext context = createContext();
         List<ScreenRectangle> areas = new ArrayList<>();
-        for (ScreenAreaRegistration registration : REGISTRATIONS) {
+        for (ScreenAreaRegistration registration : REGISTRATIONS.values()) {
             if (appliesTo(registration, context.screen())) {
                 collectAreas(registration.provider(), context, areas);
             }
         }
+        return List.copyOf(areas);
+    }
+
+    /// Evaluates the provider registered with the given id and returns the areas it currently
+    /// declares, in GUI-scaled absolute screen coordinates.
+    ///
+    /// @param id the id of the registered area, see [RegisterScreenAreaProviderEvent] and [VanillaScreenAreas]
+    /// @return the declared areas, or an empty list if no provider with the given id is registered or applies
+    public static List<ScreenRectangle> getOccupiedAreas(Identifier id) {
+        ScreenAreaRegistration registration = REGISTRATIONS.get(id);
+        ScreenAreaContext context = createContext();
+        if (registration == null || !appliesTo(registration, context.screen())) {
+            return List.of();
+        }
+        List<ScreenRectangle> areas = new ArrayList<>();
+        collectAreas(registration.provider(), context, areas);
         return List.copyOf(areas);
     }
 
@@ -150,7 +167,7 @@ public class ScreenAreaManager {
 
     private static boolean anyOccupied(Predicate<ScreenRectangle> test) {
         ScreenAreaContext context = createContext();
-        for (ScreenAreaRegistration registration : REGISTRATIONS) {
+        for (ScreenAreaRegistration registration : REGISTRATIONS.values()) {
             if (appliesTo(registration, context.screen()) && anyMatch(registration.provider(), context, test)) {
                 return true;
             }

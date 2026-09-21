@@ -10,8 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.resources.Identifier;
@@ -22,6 +23,10 @@ import org.junit.jupiter.api.Test;
 
 public class ScreenAreaTests {
     private static final Identifier TEST_AREA = Identifier.fromNamespaceAndPath("test", "area");
+
+    private static Map<Identifier, ScreenAreaManager.ScreenAreaRegistration> newRegistrations() {
+        return new LinkedHashMap<>();
+    }
 
     @Test
     void freeAreaWithoutOccupiedAreas() {
@@ -69,7 +74,7 @@ public class ScreenAreaTests {
 
     @Test
     void registrationRejectsDuplicateIds() {
-        RegisterScreenAreaProviderEvent event = new RegisterScreenAreaProviderEvent(new ArrayList<>());
+        RegisterScreenAreaProviderEvent event = new RegisterScreenAreaProviderEvent(newRegistrations());
         event.registerGlobal(TEST_AREA, context -> List.of());
 
         assertThrows(IllegalArgumentException.class, () -> event.registerGlobal(TEST_AREA, context -> List.of()));
@@ -78,35 +83,33 @@ public class ScreenAreaTests {
 
     @Test
     void replaceRequiresRegisteredId() {
-        RegisterScreenAreaProviderEvent event = new RegisterScreenAreaProviderEvent(new ArrayList<>());
+        RegisterScreenAreaProviderEvent event = new RegisterScreenAreaProviderEvent(newRegistrations());
         assertThrows(IllegalArgumentException.class, () -> event.replace(TEST_AREA, context -> List.of()));
     }
 
     @Test
     void replaceSwapsProviderAndKeepsScope() {
-        List<ScreenAreaManager.ScreenAreaRegistration> registrations = new ArrayList<>();
+        Map<Identifier, ScreenAreaManager.ScreenAreaRegistration> registrations = newRegistrations();
         RegisterScreenAreaProviderEvent event = new RegisterScreenAreaProviderEvent(registrations);
         event.registerFor(ChatScreen.class, TEST_AREA, context -> List.of(new ScreenRectangle(0, 0, 10, 10)));
 
         ScreenRectangle replacementArea = new ScreenRectangle(1, 1, 11, 11);
         event.replace(TEST_AREA, context -> List.of(replacementArea));
 
-        assertEquals(1, registrations.size());
-        ScreenAreaManager.ScreenAreaRegistration registration = registrations.get(0);
+        ScreenAreaManager.ScreenAreaRegistration registration = registrations.get(TEST_AREA);
         assertEquals(ChatScreen.class, registration.screenClass());
         assertEquals(List.of(replacementArea), List.copyOf(registration.provider().getAreas(new ScreenAreaContext(null, 100, 100))));
     }
 
     @Test
     void wrapCanDelegateToTheWrappedProvider() {
-        List<ScreenAreaManager.ScreenAreaRegistration> registrations = new ArrayList<>();
+        Map<Identifier, ScreenAreaManager.ScreenAreaRegistration> registrations = newRegistrations();
         RegisterScreenAreaProviderEvent event = new RegisterScreenAreaProviderEvent(registrations);
         ScreenRectangle area = new ScreenRectangle(0, 0, 10, 10);
         event.registerGlobal(TEST_AREA, context -> List.of(area));
 
         event.wrap(TEST_AREA, old -> context -> old.getAreas(context));
 
-        ScreenAreaManager.ScreenAreaRegistration registration = registrations.get(0);
-        assertSame(area, registration.provider().getAreas(new ScreenAreaContext(null, 100, 100)).iterator().next());
+        assertSame(area, registrations.get(TEST_AREA).provider().getAreas(new ScreenAreaContext(null, 100, 100)).iterator().next());
     }
 }
