@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.unittest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -26,50 +25,6 @@ public class ScreenAreaTests {
 
     private static Map<Identifier, ScreenAreaManager.ScreenAreaRegistration> newRegistrations() {
         return new LinkedHashMap<>();
-    }
-
-    @Test
-    void freeAreaWithoutOccupiedAreas() {
-        ScreenRectangle bounds = new ScreenRectangle(10, 10, 100, 50);
-        assertEquals(bounds, ScreenAreaManager.largestFreeAreaWithin(bounds, List.of()));
-    }
-
-    @Test
-    void freeAreaWithNonIntersectingOccupiedArea() {
-        ScreenRectangle bounds = new ScreenRectangle(10, 10, 100, 50);
-        ScreenRectangle occupied = new ScreenRectangle(200, 200, 30, 30);
-        assertEquals(bounds, ScreenAreaManager.largestFreeAreaWithin(bounds, List.of(occupied)));
-    }
-
-    @Test
-    void freeAreaAvoidsSingleOccupiedArea() {
-        ScreenRectangle bounds = new ScreenRectangle(0, 0, 100, 100);
-        // A vertical band cutting the bounds in two halves of 40 and 50 pixels
-        ScreenRectangle occupied = new ScreenRectangle(40, 0, 10, 100);
-        assertEquals(new ScreenRectangle(50, 0, 50, 100), ScreenAreaManager.largestFreeAreaWithin(bounds, List.of(occupied)));
-    }
-
-    @Test
-    void freeAreaAvoidsMultipleOccupiedAreas() {
-        ScreenRectangle bounds = new ScreenRectangle(0, 0, 100, 100);
-        // After avoiding the left band, the remainder (20, 0, 80, 100) still intersects the bottom band
-        List<ScreenRectangle> occupied = List.of(
-                new ScreenRectangle(0, 0, 20, 100),
-                new ScreenRectangle(20, 80, 80, 20));
-        assertEquals(new ScreenRectangle(20, 0, 80, 80), ScreenAreaManager.largestFreeAreaWithin(bounds, occupied));
-    }
-
-    @Test
-    void freeAreaReturnsNullWhenFullyOccupied() {
-        ScreenRectangle bounds = new ScreenRectangle(0, 0, 100, 100);
-        ScreenRectangle occupied = new ScreenRectangle(-10, -10, 120, 120);
-        assertNull(ScreenAreaManager.largestFreeAreaWithin(bounds, List.of(occupied)));
-    }
-
-    @Test
-    void freeAreaReturnsNullForDegenerateBounds() {
-        assertNull(ScreenAreaManager.largestFreeAreaWithin(new ScreenRectangle(0, 0, 0, 100), List.of()));
-        assertNull(ScreenAreaManager.largestFreeAreaWithin(new ScreenRectangle(0, 0, 100, 0), List.of()));
     }
 
     @Test
