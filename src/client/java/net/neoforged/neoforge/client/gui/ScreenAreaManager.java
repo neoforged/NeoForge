@@ -29,6 +29,10 @@ import org.slf4j.Logger;
 /// always reflect current UI state. NeoForge itself declares the areas occupied by vanilla
 /// UI elements, see [VanillaScreenAreas].
 ///
+/// UIs that declare areas are expected to also query the areas of others to avoid overlapping
+/// them, excluding their own areas where necessary. How to resolve overlaps beyond that is up
+/// to the UIs involved.
+///
 /// This manager is only usable on the [logical client][LogicalSide#CLIENT].
 public class ScreenAreaManager {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -59,14 +63,7 @@ public class ScreenAreaManager {
     ///
     /// @return the occupied areas
     public static List<ScreenRectangle> getOccupiedAreas() {
-        ScreenAreaContext context = createContext();
-        List<ScreenRectangle> areas = new ArrayList<>();
-        for (ScreenAreaRegistration registration : REGISTRATIONS.values()) {
-            if (appliesTo(registration, context.screen())) {
-                collectAreas(registration.provider(), context, areas);
-            }
-        }
-        return List.copyOf(areas);
+        return queryAreas(id -> true);
     }
 
     /// Evaluates the provider registered with the given id and returns the areas it currently
@@ -75,14 +72,19 @@ public class ScreenAreaManager {
     /// @param id the id of the registered area, see [RegisterScreenAreaProviderEvent] and [VanillaScreenAreas]
     /// @return the declared areas, or an empty list if no provider with the given id is registered or applies
     public static List<ScreenRectangle> getOccupiedAreas(Identifier id) {
-        ScreenAreaRegistration registration = REGISTRATIONS.get(id);
-        ScreenAreaContext context = createContext();
-        if (registration == null || !appliesTo(registration, context.screen())) {
-            return List.of();
-        }
-        List<ScreenRectangle> areas = new ArrayList<>();
-        collectAreas(registration.provider(), context, areas);
-        return List.copyOf(areas);
+        return queryAreas(id::equals);
+    }
+
+    /// Evaluates all registered providers except the ones registered with the given ids and returns
+    /// the areas currently occupied by the other UIs, in GUI-scaled absolute screen coordinates.
+    ///
+    /// This is meant for UIs that declare their own areas, which must exclude them when placing
+    /// themselves to avoid blocking or oscillating around themselves.
+    ///
+    /// @param excludedIds the ids of the areas to exclude, e.g. the caller's own areas
+    /// @return the occupied areas of all other UIs
+    public static List<ScreenRectangle> getOccupiedAreasExcluding(Identifier... excludedIds) {
+        return queryAreas(notIn(excludedIds));
     }
 
     /// Checks whether the given area intersects any currently occupied area.
@@ -91,7 +93,17 @@ public class ScreenAreaManager {
     /// @param area the area to check, in GUI-scaled absolute screen coordinates
     /// @return true if the area intersects an occupied area
     public static boolean intersectsOccupied(ScreenRectangle area) {
-        return anyOccupied(occupied -> occupied.intersects(area));
+        return anyOccupied(id -> true, occupied -> occupied.intersects(area));
+    }
+
+    /// Checks whether the given area intersects any currently occupied area, excluding the areas
+    /// registered with the given ids.
+    ///
+    /// @param area        the area to check, in GUI-scaled absolute screen coordinates
+    /// @param excludedIds the ids of the areas to exclude, e.g. the caller's own areas
+    /// @return true if the area intersects an occupied area of another UI
+    public static boolean intersectsOccupied(ScreenRectangle area, Identifier... excludedIds) {
+        return anyOccupied(notIn(excludedIds), occupied -> occupied.intersects(area));
     }
 
     /// Checks whether the given point lies within any currently occupied area.
@@ -101,47 +113,23 @@ public class ScreenAreaManager {
     /// @param y the y coordinate, in GUI-scaled absolute screen coordinates
     /// @return true if the point lies within an occupied area
     public static boolean containsOccupiedPoint(int x, int y) {
-        return anyOccupied(occupied -> occupied.containsPoint(x, y));
+        return anyOccupied(id -> true, occupied -> occupied.containsPoint(x, y));
     }
 
-    /// Finds the largest sub-area of `bounds` that does not intersect any currently occupied
-    /// area. This is the standard way for a UI to negotiate its placement with the UIs that have
-    /// declared occupied areas.
+    /// Checks whether the given point lies within any currently occupied area, excluding the areas
+    /// registered with the given ids.
     ///
-    /// @param bounds the area the UI would like to occupy, in GUI-scaled absolute screen coordinates
-    /// @return the largest free sub-area, or `null` if no part of `bounds` is free
-    public static @Nullable ScreenRectangle largestFreeAreaWithin(ScreenRectangle bounds) {
-        return largestFreeAreaWithin(bounds, getOccupiedAreas());
+    /// @param x           the x coordinate, in GUI-scaled absolute screen coordinates
+    /// @param y           the y coordinate, in GUI-scaled absolute screen coordinates
+    /// @param excludedIds the ids of the areas to exclude, e.g. the caller's own areas
+    /// @return true if the point lies within an occupied area of another UI
+    public static boolean containsOccupiedPoint(int x, int y, Identifier... excludedIds) {
+        return anyOccupied(notIn(excludedIds), occupied -> occupied.containsPoint(x, y));
     }
 
-    /// Finds the largest sub-area of `bounds` that does not intersect any of the given
-    /// occupied areas.
-    ///
-    /// @param bounds        the area the UI would like to occupy, in GUI-scaled absolute screen coordinates
-    /// @param occupiedAreas the occupied areas to avoid
-    /// @return the largest free sub-area, or `null` if no part of `bounds` is free
-    public static @Nullable ScreenRectangle largestFreeAreaWithin(ScreenRectangle bounds, List<ScreenRectangle> occupiedAreas) {
-        if (bounds.width() <= 0 || bounds.height() <= 0) {
-            return null;
-        }
-        ScreenRectangle candidate = bounds;
-        while (true) {
-            ScreenRectangle next = candidate;
-            for (ScreenRectangle occupied : occupiedAreas) {
-                ScreenRectangle overlap = occupied.intersection(candidate);
-                if (overlap != null) {
-                    next = largestRemainder(candidate, overlap);
-                    if (next == null) {
-                        return null;
-                    }
-                    break;
-                }
-            }
-            if (next == candidate) {
-                return candidate;
-            }
-            candidate = next;
-        }
+    private static Predicate<Identifier> notIn(Identifier[] excludedIds) {
+        List<Identifier> excluded = List.of(excludedIds);
+        return id -> !excluded.contains(id);
     }
 
     private static ScreenAreaContext createContext() {
@@ -151,6 +139,27 @@ public class ScreenAreaManager {
 
     private static boolean appliesTo(ScreenAreaRegistration registration, @Nullable Screen screen) {
         return registration.screenClass() == null || (screen != null && registration.screenClass().isInstance(screen));
+    }
+
+    private static List<ScreenRectangle> queryAreas(Predicate<Identifier> idFilter) {
+        ScreenAreaContext context = createContext();
+        List<ScreenRectangle> areas = new ArrayList<>();
+        for (Map.Entry<Identifier, ScreenAreaRegistration> entry : REGISTRATIONS.entrySet()) {
+            if (idFilter.test(entry.getKey()) && appliesTo(entry.getValue(), context.screen())) {
+                collectAreas(entry.getValue().provider(), context, areas);
+            }
+        }
+        return List.copyOf(areas);
+    }
+
+    private static boolean anyOccupied(Predicate<Identifier> idFilter, Predicate<ScreenRectangle> test) {
+        ScreenAreaContext context = createContext();
+        for (Map.Entry<Identifier, ScreenAreaRegistration> entry : REGISTRATIONS.entrySet()) {
+            if (idFilter.test(entry.getKey()) && appliesTo(entry.getValue(), context.screen()) && anyMatch(entry.getValue().provider(), context, test)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void collectAreas(ScreenAreaProvider provider, ScreenAreaContext context, List<ScreenRectangle> areas) {
@@ -165,16 +174,6 @@ public class ScreenAreaManager {
         }
     }
 
-    private static boolean anyOccupied(Predicate<ScreenRectangle> test) {
-        ScreenAreaContext context = createContext();
-        for (ScreenAreaRegistration registration : REGISTRATIONS.values()) {
-            if (appliesTo(registration, context.screen()) && anyMatch(registration.provider(), context, test)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private static boolean anyMatch(ScreenAreaProvider provider, ScreenAreaContext context, Predicate<ScreenRectangle> test) {
         try {
             for (ScreenRectangle area : provider.getAreas(context)) {
@@ -186,24 +185,5 @@ public class ScreenAreaManager {
             LOGGER.error("Screen area provider {} threw an exception", provider, exception);
         }
         return false;
-    }
-
-    private static @Nullable ScreenRectangle largestRemainder(ScreenRectangle candidate, ScreenRectangle overlap) {
-        ScreenRectangle best = null;
-        best = larger(best, new ScreenRectangle(candidate.left(), candidate.top(), overlap.left() - candidate.left(), candidate.height()));
-        best = larger(best, new ScreenRectangle(overlap.right(), candidate.top(), candidate.right() - overlap.right(), candidate.height()));
-        best = larger(best, new ScreenRectangle(candidate.left(), candidate.top(), candidate.width(), overlap.top() - candidate.top()));
-        best = larger(best, new ScreenRectangle(candidate.left(), overlap.bottom(), candidate.width(), candidate.bottom() - overlap.bottom()));
-        return best;
-    }
-
-    private static @Nullable ScreenRectangle larger(@Nullable ScreenRectangle a, ScreenRectangle b) {
-        if (b.width() <= 0 || b.height() <= 0) {
-            return a;
-        }
-        if (a == null) {
-            return b;
-        }
-        return b.width() * b.height() > a.width() * a.height() ? b : a;
     }
 }

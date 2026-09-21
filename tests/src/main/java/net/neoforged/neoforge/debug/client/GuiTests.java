@@ -340,10 +340,11 @@ public class GuiTests {
         });
     }
 
-    @TestHolder(description = "Checks that screen areas can be declared, queried and replaced")
+    @TestHolder(description = "Checks that screen areas can be declared, queried by id, excluded and replaced")
     static void testScreenAreas(DynamicTest test) {
+        Identifier bandId = Identifier.fromNamespaceAndPath(test.createModId(), "occupied_band");
         NeoForge.EVENT_BUS.addListener((RegisterScreenAreaProviderEvent event) -> {
-            event.registerGlobal(Identifier.fromNamespaceAndPath(test.createModId(), "occupied_band"), context -> {
+            event.registerGlobal(bandId, context -> {
                 if (!test.framework().tests().isEnabled(test.id())) return List.of();
                 // Occupy a band on the left edge of the screen
                 return List.of(new ScreenRectangle(0, 0, 20, context.guiHeight()));
@@ -359,17 +360,16 @@ public class GuiTests {
         test.framework().modEventBus().addListener((RegisterGuiLayersEvent event) -> {
             event.registerAboveAll(Identifier.fromNamespaceAndPath(test.createModId(), "screen_area_test"), (graphics, _) -> {
                 if (!test.framework().tests().isEnabled(test.id())) return;
-                // Draw the declared occupied band
-                graphics.fill(0, 0, 20, graphics.guiHeight(), 0x8000FF00);
+                // Draw the areas of all other UIs, as an example of excluding the caller's own areas
+                for (ScreenRectangle other : ScreenAreaManager.getOccupiedAreasExcluding(bandId)) {
+                    graphics.fill(other.left(), other.top(), other.right(), other.bottom(), 0x30FF0000);
+                }
                 // Draw the area declared under the vanilla hotbar id, as an example of querying areas by id
                 for (ScreenRectangle hotbar : ScreenAreaManager.getOccupiedAreas(VanillaScreenAreas.HOTBAR)) {
                     graphics.fill(hotbar.left(), hotbar.top(), hotbar.right(), hotbar.bottom(), 0x4000FFFF);
                 }
-                // Draw the largest area of the screen that avoids all occupied areas (the band and the vanilla hotbar)
-                ScreenRectangle free = ScreenAreaManager.largestFreeAreaWithin(new ScreenRectangle(0, 0, graphics.guiWidth(), graphics.guiHeight()));
-                if (free != null) {
-                    graphics.fill(free.left(), free.top(), free.right(), free.bottom(), 0x40FF0000);
-                }
+                // Draw the declared occupied band, which is not part of the areas of the other UIs
+                graphics.fill(0, 0, 20, graphics.guiHeight(), 0x8000FF00);
             });
         });
 
@@ -377,8 +377,9 @@ public class GuiTests {
             if (chatEvent.getMessage().equalsIgnoreCase("screen area test")) {
                 test.requestConfirmation(Minecraft.getInstance().player, Component.literal(
                         """
-                                Do you see a green band on the left edge, a blue overlay over the hotbar, and a red overlay that avoids both?
-                                With a container screen open, does the red overlay cover its panel? (this test disables the vanilla container area)
+                                Do you see a green band on the left edge (this test's own area), a blue overlay over the hotbar,
+                                and a red overlay covering the areas of other UIs but not the band?
+                                With a container screen open, is its panel not covered? (this test disables the vanilla container area)
                                 """));
             }
         });
