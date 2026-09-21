@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.renderpearl.api.pipeline.ColorTargetState;
 import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
 import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import net.minecraft.ChatFormatting;
@@ -40,9 +41,12 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.event.RegisterScreenAreaProviderEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.gui.GuiLayer;
+import net.neoforged.neoforge.client.gui.ScreenAreaManager;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.client.gui.VanillaScreenAreas;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 import net.neoforged.neoforge.client.gui.widget.ExtendedSlider;
 import net.neoforged.neoforge.common.util.Lazy;
@@ -332,6 +336,46 @@ public class GuiTests {
                 graphics.submitGuiElementRenderState(CircleGuiElementRenderState.create(centerX, 20, 15, 8, 0xFFAA0000, triStripPipeline));
                 graphics.submitGuiElementRenderState(CircleGuiElementRenderState.create(centerX, 60, 15, 8, 0xFFAA0000, triStripPipeline));
             });
+        });
+    }
+
+    @TestHolder(description = "Checks that screen areas can be declared, queried and replaced")
+    static void testScreenAreas(DynamicTest test) {
+        test.framework().modEventBus().addListener((RegisterScreenAreaProviderEvent event) -> {
+            event.registerGlobal(Identifier.fromNamespaceAndPath(test.createModId(), "occupied_band"), context -> {
+                if (!test.framework().tests().isEnabled(test.id())) return List.of();
+                // Occupy a band on the left edge of the screen
+                return List.of(new ScreenRectangle(0, 0, 20, context.guiHeight()));
+            });
+            // Disable the vanilla container panel area while the test is enabled, to demonstrate
+            // replacing an area declared by NeoForge
+            event.wrap(VanillaScreenAreas.CONTAINER, provider -> context -> {
+                if (test.framework().tests().isEnabled(test.id())) return List.of();
+                return provider.getAreas(context);
+            });
+        });
+
+        test.framework().modEventBus().addListener((RegisterGuiLayersEvent event) -> {
+            event.registerAboveAll(Identifier.fromNamespaceAndPath(test.createModId(), "screen_area_test"), (graphics, _) -> {
+                if (!test.framework().tests().isEnabled(test.id())) return;
+                // Draw the declared occupied band
+                graphics.fill(0, 0, 20, graphics.guiHeight(), 0x8000FF00);
+                // Draw the largest area of the screen that avoids all occupied areas (the band and the vanilla hotbar)
+                ScreenRectangle free = ScreenAreaManager.largestFreeAreaWithin(new ScreenRectangle(0, 0, graphics.guiWidth(), graphics.guiHeight()));
+                if (free != null) {
+                    graphics.fill(free.left(), free.top(), free.right(), free.bottom(), 0x40FF0000);
+                }
+            });
+        });
+
+        test.eventListeners().forge().addListener((ClientChatEvent chatEvent) -> {
+            if (chatEvent.getMessage().equalsIgnoreCase("screen area test")) {
+                test.requestConfirmation(Minecraft.getInstance().player, Component.literal(
+                        """
+                                Do you see a green band on the left edge, and a red overlay that avoids both the band and the hotbar?
+                                With a container screen open, does the red overlay cover its panel? (this test disables the vanilla container area)
+                                """));
+            }
         });
     }
 }
