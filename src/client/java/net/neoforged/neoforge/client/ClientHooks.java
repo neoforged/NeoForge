@@ -192,6 +192,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtension
 import net.neoforged.neoforge.client.gamerules.GameRuleEntryFactoryManager;
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
 import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
+import net.neoforged.neoforge.client.gui.ScreenAreaManager;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
@@ -820,6 +821,7 @@ public class ClientHooks {
         EntitySpectatorShaderManager.init();
         RecipeBookManager.init();
         mc.gui.hud.initModdedOverlays();
+        ScreenAreaManager.init();
         CustomEnvironmentEffectsRendererManager.init();
         ColorResolverManager.init();
         ItemDecoratorHandler.init();
