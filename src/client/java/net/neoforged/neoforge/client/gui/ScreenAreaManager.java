@@ -25,13 +25,11 @@ import org.slf4j.Logger;
 /// Keeps track of screen areas occupied by UIs, so that other UIs can query and avoid them.
 ///
 /// Occupied areas are declared by [providers][ScreenAreaProvider], registered by id via
-/// [RegisterScreenAreaProviderEvent]. The areas are re-evaluated on every query, so they
-/// always reflect current UI state. NeoForge itself declares the areas occupied by vanilla
+/// [RegisterScreenAreaProviderEvent]. NeoForge itself declares the areas occupied by vanilla
 /// UI elements, see [VanillaScreenAreas].
 ///
-/// UIs that declare areas are expected to also query the areas of others to avoid overlapping
-/// them, excluding their own areas where necessary. How to resolve overlaps beyond that is up
-/// to the UIs involved.
+/// The areas are reported in GUI-scaled absolute screen coordinates and are re-evaluated for
+/// every query. The queries only report these areas, resolving overlaps is up to the UIs involved.
 ///
 /// This manager is only usable on the [logical client][LogicalSide#CLIENT].
 public class ScreenAreaManager {
@@ -58,132 +56,56 @@ public class ScreenAreaManager {
         NeoForge.EVENT_BUS.post(new RegisterScreenAreaProviderEvent(REGISTRATIONS));
     }
 
-    /// Evaluates all registered providers and returns the areas currently occupied by UIs,
-    /// in GUI-scaled absolute screen coordinates.
+    /// Evaluates all registered providers and returns the areas they currently declare.
     ///
     /// @return the occupied areas
-    public static List<ScreenRectangle> getOccupiedAreas() {
-        return queryAreas(id -> true);
+    public static List<ScreenArea> getOccupiedAreas() {
+        return getOccupiedAreas(_ -> true);
     }
 
-    /// Evaluates the provider registered with the given id and returns the areas it currently
-    /// declares, in GUI-scaled absolute screen coordinates.
+    /// Evaluates the providers whose id matches the given predicate and returns the areas they
+    /// currently declare.
     ///
-    /// @param id the id of the registered area, see [RegisterScreenAreaProviderEvent] and [VanillaScreenAreas]
-    /// @return the declared areas, or an empty list if no provider with the given id is registered or applies
-    public static List<ScreenRectangle> getOccupiedAreas(Identifier id) {
-        return queryAreas(id::equals);
-    }
-
-    /// Evaluates all registered providers except the ones registered with the given ids and returns
-    /// the areas currently occupied by the other UIs, in GUI-scaled absolute screen coordinates.
-    ///
-    /// This is meant for UIs that declare their own areas, which must exclude them when placing
-    /// themselves to avoid blocking or oscillating around themselves.
-    ///
-    /// @param excludedIds the ids of the areas to exclude, e.g. the caller's own areas
-    /// @return the occupied areas of all other UIs
-    public static List<ScreenRectangle> getOccupiedAreasExcluding(Identifier... excludedIds) {
-        return queryAreas(notIn(excludedIds));
-    }
-
-    /// Checks whether the given area intersects any currently occupied area.
-    /// Stops at the first match, so providers after it are not evaluated.
-    ///
-    /// @param area the area to check, in GUI-scaled absolute screen coordinates
-    /// @return true if the area intersects an occupied area
-    public static boolean intersectsOccupied(ScreenRectangle area) {
-        return anyOccupied(id -> true, occupied -> occupied.intersects(area));
-    }
-
-    /// Checks whether the given area intersects any currently occupied area, excluding the areas
-    /// registered with the given ids.
-    ///
-    /// @param area        the area to check, in GUI-scaled absolute screen coordinates
-    /// @param excludedIds the ids of the areas to exclude, e.g. the caller's own areas
-    /// @return true if the area intersects an occupied area of another UI
-    public static boolean intersectsOccupied(ScreenRectangle area, Identifier... excludedIds) {
-        return anyOccupied(notIn(excludedIds), occupied -> occupied.intersects(area));
-    }
-
-    /// Checks whether the given point lies within any currently occupied area.
-    /// Stops at the first match, so providers after it are not evaluated.
-    ///
-    /// @param x the x coordinate, in GUI-scaled absolute screen coordinates
-    /// @param y the y coordinate, in GUI-scaled absolute screen coordinates
-    /// @return true if the point lies within an occupied area
-    public static boolean containsOccupiedPoint(int x, int y) {
-        return anyOccupied(id -> true, occupied -> occupied.containsPoint(x, y));
-    }
-
-    /// Checks whether the given point lies within any currently occupied area, excluding the areas
-    /// registered with the given ids.
-    ///
-    /// @param x           the x coordinate, in GUI-scaled absolute screen coordinates
-    /// @param y           the y coordinate, in GUI-scaled absolute screen coordinates
-    /// @param excludedIds the ids of the areas to exclude, e.g. the caller's own areas
-    /// @return true if the point lies within an occupied area of another UI
-    public static boolean containsOccupiedPoint(int x, int y, Identifier... excludedIds) {
-        return anyOccupied(notIn(excludedIds), occupied -> occupied.containsPoint(x, y));
-    }
-
-    private static Predicate<Identifier> notIn(Identifier[] excludedIds) {
-        List<Identifier> excluded = List.of(excludedIds);
-        return id -> !excluded.contains(id);
-    }
-
-    private static ScreenAreaContext createContext() {
-        Minecraft minecraft = Minecraft.getInstance();
-        return new ScreenAreaContext(minecraft.gui.screen(), minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight());
-    }
-
-    private static boolean appliesTo(ScreenAreaRegistration registration, @Nullable Screen screen) {
-        return registration.screenClass() == null || (screen != null && registration.screenClass().isInstance(screen));
-    }
-
-    private static List<ScreenRectangle> queryAreas(Predicate<Identifier> idFilter) {
+    /// @param idFilter the predicate to test provider ids with
+    /// @return the occupied areas
+    public static List<ScreenArea> getOccupiedAreas(Predicate<Identifier> idFilter) {
         ScreenAreaContext context = createContext();
-        List<ScreenRectangle> areas = new ArrayList<>();
+        List<ScreenArea> areas = new ArrayList<>();
         for (Map.Entry<Identifier, ScreenAreaRegistration> entry : REGISTRATIONS.entrySet()) {
-            if (idFilter.test(entry.getKey()) && appliesTo(entry.getValue(), context.screen())) {
-                collectAreas(entry.getValue().provider(), context, areas);
+            if (idFilter.test(entry.getKey()) && appliesTo(entry.getValue(), context)) {
+                collectAreas(entry.getKey(), entry.getValue().provider(), context, areas);
             }
         }
         return List.copyOf(areas);
     }
 
-    private static boolean anyOccupied(Predicate<Identifier> idFilter, Predicate<ScreenRectangle> test) {
-        ScreenAreaContext context = createContext();
-        for (Map.Entry<Identifier, ScreenAreaRegistration> entry : REGISTRATIONS.entrySet()) {
-            if (idFilter.test(entry.getKey()) && appliesTo(entry.getValue(), context.screen()) && anyMatch(entry.getValue().provider(), context, test)) {
-                return true;
-            }
-        }
-        return false;
+    /// Evaluates all registered providers except the provider registered with the given id and
+    /// returns the areas they currently declare.
+    ///
+    /// @param excludedId the id of the provider to exclude
+    /// @return the occupied areas
+    public static List<ScreenArea> getOccupiedAreasExcluding(Identifier excludedId) {
+        return getOccupiedAreas(id -> !excludedId.equals(id));
     }
 
-    private static void collectAreas(ScreenAreaProvider provider, ScreenAreaContext context, List<ScreenRectangle> areas) {
+    private static ScreenAreaContext createContext() {
+        Minecraft minecraft = Minecraft.getInstance();
+        return new ScreenAreaContext(minecraft.gui.visibleScreens(), minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight());
+    }
+
+    private static boolean appliesTo(ScreenAreaRegistration registration, ScreenAreaContext context) {
+        return registration.screenClass() == null || context.screens().stream().anyMatch(registration.screenClass()::isInstance);
+    }
+
+    private static void collectAreas(Identifier id, ScreenAreaProvider provider, ScreenAreaContext context, List<ScreenArea> areas) {
         try {
             for (ScreenRectangle area : provider.getAreas(context)) {
-                if (area != null && area.width() > 0 && area.height() > 0) {
-                    areas.add(area);
+                if (area.width() > 0 && area.height() > 0) {
+                    areas.add(new ScreenArea(id, area));
                 }
             }
         } catch (Exception exception) {
             LOGGER.error("Screen area provider {} threw an exception", provider, exception);
         }
-    }
-
-    private static boolean anyMatch(ScreenAreaProvider provider, ScreenAreaContext context, Predicate<ScreenRectangle> test) {
-        try {
-            for (ScreenRectangle area : provider.getAreas(context)) {
-                if (area != null && area.width() > 0 && area.height() > 0 && test.test(area)) {
-                    return true;
-                }
-            }
-        } catch (Exception exception) {
-            LOGGER.error("Screen area provider {} threw an exception", provider, exception);
-        }
-        return false;
     }
 }

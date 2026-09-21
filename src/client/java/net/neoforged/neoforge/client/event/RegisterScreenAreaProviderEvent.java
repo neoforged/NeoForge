@@ -30,8 +30,7 @@ import org.jspecify.annotations.Nullable;
 /// it, for example to replace the areas that NeoForge declares for vanilla UI elements,
 /// see [VanillaScreenAreas].
 ///
-/// Providers are queried on demand, so they should be cheap to evaluate and must not be
-/// registered after this event has been fired.
+/// Providers are queried on demand and must not be registered after this event has been fired.
 ///
 /// This event is not [cancellable][ICancellableEvent].
 ///
