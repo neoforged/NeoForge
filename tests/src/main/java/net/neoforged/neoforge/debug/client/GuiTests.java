@@ -44,6 +44,7 @@ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterScreenAreaProviderEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.gui.GuiLayer;
+import net.neoforged.neoforge.client.gui.ScreenArea;
 import net.neoforged.neoforge.client.gui.ScreenAreaManager;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.gui.VanillaScreenAreas;
@@ -340,7 +341,7 @@ public class GuiTests {
         });
     }
 
-    @TestHolder(description = "Checks that screen areas can be declared, queried by id, excluded and replaced")
+    @TestHolder(description = "Checks that screen areas can be declared, queried with their ids and replaced")
     static void testScreenAreas(DynamicTest test) {
         Identifier bandId = Identifier.fromNamespaceAndPath(test.createModId(), "occupied_band");
         NeoForge.EVENT_BUS.addListener((RegisterScreenAreaProviderEvent event) -> {
@@ -360,13 +361,20 @@ public class GuiTests {
         test.framework().modEventBus().addListener((RegisterGuiLayersEvent event) -> {
             event.registerAboveAll(Identifier.fromNamespaceAndPath(test.createModId(), "screen_area_test"), (graphics, _) -> {
                 if (!test.framework().tests().isEnabled(test.id())) return;
-                // Draw the areas of all other UIs, as an example of excluding the caller's own areas
-                for (ScreenRectangle other : ScreenAreaManager.getOccupiedAreasExcluding(bandId)) {
-                    graphics.fill(other.left(), other.top(), other.right(), other.bottom(), 0x30FF0000);
+                // Draw the areas of all other UIs, as an example of excluding the areas of one id
+                for (ScreenArea area : ScreenAreaManager.getOccupiedAreasExcluding(bandId)) {
+                    graphics.fill(area.bounds().left(), area.bounds().top(), area.bounds().right(), area.bounds().bottom(), 0x30FF0000);
                 }
-                // Draw the area declared under the vanilla hotbar id, as an example of querying areas by id
-                for (ScreenRectangle hotbar : ScreenAreaManager.getOccupiedAreas(VanillaScreenAreas.HOTBAR)) {
-                    graphics.fill(hotbar.left(), hotbar.top(), hotbar.right(), hotbar.bottom(), 0x4000FFFF);
+                // Draw the area declared under the vanilla hotbar id, as an example of filtering areas by their ids
+                for (ScreenArea area : ScreenAreaManager.getOccupiedAreas(VanillaScreenAreas.HOTBAR::equals)) {
+                    graphics.fill(area.bounds().left(), area.bounds().top(), area.bounds().right(), area.bounds().bottom(), 0x4000FFFF);
+                }
+                // Highlight the areas blocking the centre of the screen, as an example of finding the blockers of an area
+                ScreenRectangle centre = new ScreenRectangle(graphics.guiWidth() / 2 - 40, graphics.guiHeight() / 2 - 20, 80, 40);
+                for (ScreenArea area : ScreenAreaManager.getOccupiedAreas()) {
+                    if (area.bounds().intersects(centre)) {
+                        graphics.fill(area.bounds().left(), area.bounds().top(), area.bounds().right(), area.bounds().bottom(), 0x80FFFF00);
+                    }
                 }
                 // Draw the declared occupied band, which is not part of the areas of the other UIs
                 graphics.fill(0, 0, 20, graphics.guiHeight(), 0x8000FF00);
@@ -379,6 +387,7 @@ public class GuiTests {
                         """
                                 Do you see a green band on the left edge (this test's own area), a blue overlay over the hotbar,
                                 and a red overlay covering the areas of other UIs but not the band?
+                                Is anything blocking the centre of the screen highlighted in yellow?
                                 With a container screen open, is its panel not covered? (this test disables the vanilla container area)
                                 """));
             }

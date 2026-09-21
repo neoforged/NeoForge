@@ -18,6 +18,7 @@ import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
@@ -42,9 +43,8 @@ import org.jetbrains.annotations.ApiStatus;
 
 /// Identifiers for the areas occupied by vanilla UI elements, and the providers declaring them.
 ///
-/// The corresponding layout code can be found in the source code of the rendered elements, e.g.
-/// [Hud] for HUD elements and [AbstractContainerScreen] for container screens. Mods replacing
-/// vanilla UI elements can replace these areas with their own through [RegisterScreenAreaProviderEvent#replace].
+/// Mods replacing vanilla UI elements can declare their own areas with these ids through
+/// [RegisterScreenAreaProviderEvent#replace].
 public final class VanillaScreenAreas {
     /// The hotbar and its decoration columns (health, armor, food, air, ...).
     public static final Identifier HOTBAR = Identifier.withDefaultNamespace("hotbar");
@@ -110,7 +110,7 @@ public final class VanillaScreenAreas {
     // Mirrors Hud.extractEffects
     private static List<ScreenRectangle> getHudEffectAreas(ScreenAreaContext context) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (!isInGame(minecraft) || (context.screen() != null && context.screen().showsActiveEffects())) {
+        if (!isInGame(minecraft) || context.screens().stream().anyMatch(Screen::showsActiveEffects)) {
             return List.of();
         }
         int beneficialCount = 0;
@@ -241,35 +241,45 @@ public final class VanillaScreenAreas {
     }
 
     private static List<ScreenRectangle> getContainerAreas(ScreenAreaContext context) {
-        if (!(context.screen() instanceof AbstractContainerScreen<?> screen)) {
-            return List.of();
+        List<ScreenRectangle> areas = new ArrayList<>();
+        for (Screen screen : context.screens()) {
+            if (screen instanceof AbstractContainerScreen<?> containerScreen) {
+                areas.add(new ScreenRectangle(containerScreen.getLeftPos(), containerScreen.getTopPos(), containerScreen.getImageWidth(), containerScreen.getImageHeight()));
+            }
         }
-        return List.of(new ScreenRectangle(screen.getLeftPos(), screen.getTopPos(), screen.getImageWidth(), screen.getImageHeight()));
+        return areas;
     }
 
     // Mirrors the layout logic of EffectsInInventory to compute the vanilla effect stack
     private static List<ScreenRectangle> getContainerEffectAreas(ScreenAreaContext context) {
-        if (!(context.screen() instanceof AbstractContainerScreen<?> screen) || !screen.showsActiveEffects()) {
-            return List.of();
-        }
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.player == null || minecraft.level == null) {
             return List.of();
         }
+        List<ScreenRectangle> areas = new ArrayList<>();
+        for (Screen screen : context.screens()) {
+            if (screen instanceof AbstractContainerScreen<?> containerScreen && containerScreen.showsActiveEffects()) {
+                addContainerEffectAreas(containerScreen, context, areas);
+            }
+        }
+        return areas;
+    }
+
+    private static void addContainerEffectAreas(AbstractContainerScreen<?> screen, ScreenAreaContext context, List<ScreenRectangle> areas) {
+        Minecraft minecraft = Minecraft.getInstance();
         List<MobEffectInstance> effects = minecraft.player.getActiveEffects().stream().sorted().toList();
         if (effects.isEmpty()) {
-            return List.of();
+            return;
         }
         int x = screen.getLeftPos() + screen.getImageWidth() + 2;
         int availableWidth = context.guiWidth() - x;
         if (availableWidth < 32) {
-            return List.of();
+            return;
         }
         boolean wideDisplay = availableWidth >= 120;
         int maxWidth = wideDisplay ? availableWidth - 7 : 32;
         int yStep = effects.size() > 5 ? 132 / (effects.size() - 1) : 33;
         Font font = minecraft.font;
-        List<ScreenRectangle> areas = new ArrayList<>(effects.size());
         int y = screen.getTopPos();
         for (MobEffectInstance effect : effects) {
             int width = maxWidth;
@@ -281,30 +291,34 @@ public final class VanillaScreenAreas {
             areas.add(new ScreenRectangle(x, y, width, 32));
             y += yStep;
         }
-        return areas;
     }
 
     // Mirrors RecipeBookComponent position and size, including the tab buttons column on the left
     private static List<ScreenRectangle> getRecipeBookAreas(ScreenAreaContext context) {
-        if (!(context.screen() instanceof AbstractRecipeBookScreen<?> screen) || !screen.recipeBookComponent.isVisible()) {
-            return List.of();
-        }
+        List<ScreenRectangle> areas = new ArrayList<>();
         boolean widthTooNarrow = context.guiWidth() < 379;
-        int x = (context.guiWidth() - 147) / 2 - (widthTooNarrow ? 0 : 86);
-        int y = (context.guiHeight() - 166) / 2;
-        return List.of(new ScreenRectangle(x - 28, y, 147 + 28, 166));
+        for (Screen screen : context.screens()) {
+            if (screen instanceof AbstractRecipeBookScreen<?> recipeBookScreen && recipeBookScreen.recipeBookComponent.isVisible()) {
+                int x = (context.guiWidth() - 147) / 2 - (widthTooNarrow ? 0 : 86);
+                int y = (context.guiHeight() - 166) / 2;
+                areas.add(new ScreenRectangle(x - 28, y, 147 + 28, 166));
+            }
+        }
+        return areas;
     }
 
     // Mirrors CreativeModeInventoryScreen rendering of the item group tabs
     private static List<ScreenRectangle> getCreativeTabAreas(ScreenAreaContext context) {
-        if (!(context.screen() instanceof CreativeModeInventoryScreen screen)) {
-            return List.of();
-        }
-        return List.of(
+        List<ScreenRectangle> areas = new ArrayList<>();
+        for (Screen screen : context.screens()) {
+            if (screen instanceof CreativeModeInventoryScreen creativeScreen) {
                 // The tabs above the panel
-                new ScreenRectangle(screen.getLeftPos(), screen.getTopPos() - 28, screen.getImageWidth(), 28),
+                areas.add(new ScreenRectangle(creativeScreen.getLeftPos(), creativeScreen.getTopPos() - 28, creativeScreen.getImageWidth(), 28));
                 // The tabs below the panel
-                new ScreenRectangle(screen.getLeftPos(), screen.getTopPos() + screen.getImageHeight() - 4, screen.getImageWidth(), 32));
+                areas.add(new ScreenRectangle(creativeScreen.getLeftPos(), creativeScreen.getTopPos() + creativeScreen.getImageHeight() - 4, creativeScreen.getImageWidth(), 32));
+            }
+        }
+        return areas;
     }
 
     private static boolean isInGame(Minecraft minecraft) {

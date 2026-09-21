@@ -8,10 +8,10 @@ package net.neoforged.neoforge.client.gui;
 import java.util.Collection;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 
-/// Declares screen areas that are occupied by a UI, so that other UIs can avoid them.
+/// Declares the screen areas occupied by a UI, so that other UIs can query and avoid them.
 ///
 /// Providers are registered via [RegisterScreenAreaProviderEvent][net.neoforged.neoforge.client.event.RegisterScreenAreaProviderEvent]
-/// and are queried on demand, so the returned areas may change between calls.
+/// and are queried on demand, so the declared areas may change between calls.
 @FunctionalInterface
 public interface ScreenAreaProvider {
     /// Returns the areas currently occupied by this UI, in GUI-scaled absolute screen

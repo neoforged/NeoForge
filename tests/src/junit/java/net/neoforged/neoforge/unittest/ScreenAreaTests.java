@@ -53,7 +53,7 @@ public class ScreenAreaTests {
 
         ScreenAreaManager.ScreenAreaRegistration registration = registrations.get(TEST_AREA);
         assertEquals(ChatScreen.class, registration.screenClass());
-        assertEquals(List.of(replacementArea), List.copyOf(registration.provider().getAreas(new ScreenAreaContext(null, 100, 100))));
+        assertEquals(List.of(replacementArea), List.copyOf(registration.provider().getAreas(new ScreenAreaContext(List.of(), 100, 100))));
     }
 
     @Test
@@ -65,6 +65,6 @@ public class ScreenAreaTests {
 
         event.wrap(TEST_AREA, old -> context -> old.getAreas(context));
 
-        assertSame(area, registrations.get(TEST_AREA).provider().getAreas(new ScreenAreaContext(null, 100, 100)).iterator().next());
+        assertSame(area, registrations.get(TEST_AREA).provider().getAreas(new ScreenAreaContext(List.of(), 100, 100)).iterator().next());
     }
 }
