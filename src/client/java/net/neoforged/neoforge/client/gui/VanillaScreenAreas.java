@@ -8,6 +8,7 @@ package net.neoforged.neoforge.client.gui;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -71,18 +72,18 @@ public final class VanillaScreenAreas {
     private VanillaScreenAreas() {}
 
     @ApiStatus.Internal
-    static void register(List<ScreenAreaManager.ScreenAreaRegistration> registrations) {
-        registrations.add(new ScreenAreaManager.ScreenAreaRegistration(HOTBAR, null, VanillaScreenAreas::getHotbarAreas));
-        registrations.add(new ScreenAreaManager.ScreenAreaRegistration(HUD_EFFECTS, null, VanillaScreenAreas::getHudEffectAreas));
-        registrations.add(new ScreenAreaManager.ScreenAreaRegistration(BOSS_BAR, null, VanillaScreenAreas::getBossBarAreas));
-        registrations.add(new ScreenAreaManager.ScreenAreaRegistration(SCOREBOARD, null, VanillaScreenAreas::getScoreboardAreas));
-        registrations.add(new ScreenAreaManager.ScreenAreaRegistration(CHAT, null, VanillaScreenAreas::getChatAreas));
-        registrations.add(new ScreenAreaManager.ScreenAreaRegistration(TOASTS, null, VanillaScreenAreas::getToastAreas));
-        registrations.add(new ScreenAreaManager.ScreenAreaRegistration(CHAT_INPUT, ChatScreen.class, VanillaScreenAreas::getChatInputAreas));
-        registrations.add(new ScreenAreaManager.ScreenAreaRegistration(CONTAINER, AbstractContainerScreen.class, VanillaScreenAreas::getContainerAreas));
-        registrations.add(new ScreenAreaManager.ScreenAreaRegistration(CONTAINER_EFFECTS, AbstractContainerScreen.class, VanillaScreenAreas::getContainerEffectAreas));
-        registrations.add(new ScreenAreaManager.ScreenAreaRegistration(RECIPE_BOOK, AbstractRecipeBookScreen.class, VanillaScreenAreas::getRecipeBookAreas));
-        registrations.add(new ScreenAreaManager.ScreenAreaRegistration(CREATIVE_TABS, CreativeModeInventoryScreen.class, VanillaScreenAreas::getCreativeTabAreas));
+    static void register(Map<Identifier, ScreenAreaManager.ScreenAreaRegistration> registrations) {
+        registrations.put(HOTBAR, new ScreenAreaManager.ScreenAreaRegistration(null, VanillaScreenAreas::getHotbarAreas));
+        registrations.put(HUD_EFFECTS, new ScreenAreaManager.ScreenAreaRegistration(null, VanillaScreenAreas::getHudEffectAreas));
+        registrations.put(BOSS_BAR, new ScreenAreaManager.ScreenAreaRegistration(null, VanillaScreenAreas::getBossBarAreas));
+        registrations.put(SCOREBOARD, new ScreenAreaManager.ScreenAreaRegistration(null, VanillaScreenAreas::getScoreboardAreas));
+        registrations.put(CHAT, new ScreenAreaManager.ScreenAreaRegistration(null, VanillaScreenAreas::getChatAreas));
+        registrations.put(TOASTS, new ScreenAreaManager.ScreenAreaRegistration(null, VanillaScreenAreas::getToastAreas));
+        registrations.put(CHAT_INPUT, new ScreenAreaManager.ScreenAreaRegistration(ChatScreen.class, VanillaScreenAreas::getChatInputAreas));
+        registrations.put(CONTAINER, new ScreenAreaManager.ScreenAreaRegistration(AbstractContainerScreen.class, VanillaScreenAreas::getContainerAreas));
+        registrations.put(CONTAINER_EFFECTS, new ScreenAreaManager.ScreenAreaRegistration(AbstractContainerScreen.class, VanillaScreenAreas::getContainerEffectAreas));
+        registrations.put(RECIPE_BOOK, new ScreenAreaManager.ScreenAreaRegistration(AbstractRecipeBookScreen.class, VanillaScreenAreas::getRecipeBookAreas));
+        registrations.put(CREATIVE_TABS, new ScreenAreaManager.ScreenAreaRegistration(CreativeModeInventoryScreen.class, VanillaScreenAreas::getCreativeTabAreas));
     }
 
     // Mirrors Hud rendering of the hotbar and its decoration columns

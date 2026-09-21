@@ -49,6 +49,7 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.gui.VanillaScreenAreas;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 import net.neoforged.neoforge.client.gui.widget.ExtendedSlider;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.Test;
@@ -341,7 +342,7 @@ public class GuiTests {
 
     @TestHolder(description = "Checks that screen areas can be declared, queried and replaced")
     static void testScreenAreas(DynamicTest test) {
-        test.framework().modEventBus().addListener((RegisterScreenAreaProviderEvent event) -> {
+        NeoForge.EVENT_BUS.addListener((RegisterScreenAreaProviderEvent event) -> {
             event.registerGlobal(Identifier.fromNamespaceAndPath(test.createModId(), "occupied_band"), context -> {
                 if (!test.framework().tests().isEnabled(test.id())) return List.of();
                 // Occupy a band on the left edge of the screen
@@ -360,6 +361,10 @@ public class GuiTests {
                 if (!test.framework().tests().isEnabled(test.id())) return;
                 // Draw the declared occupied band
                 graphics.fill(0, 0, 20, graphics.guiHeight(), 0x8000FF00);
+                // Draw the area declared under the vanilla hotbar id, as an example of querying areas by id
+                for (ScreenRectangle hotbar : ScreenAreaManager.getOccupiedAreas(VanillaScreenAreas.HOTBAR)) {
+                    graphics.fill(hotbar.left(), hotbar.top(), hotbar.right(), hotbar.bottom(), 0x4000FFFF);
+                }
                 // Draw the largest area of the screen that avoids all occupied areas (the band and the vanilla hotbar)
                 ScreenRectangle free = ScreenAreaManager.largestFreeAreaWithin(new ScreenRectangle(0, 0, graphics.guiWidth(), graphics.guiHeight()));
                 if (free != null) {
@@ -372,7 +377,7 @@ public class GuiTests {
             if (chatEvent.getMessage().equalsIgnoreCase("screen area test")) {
                 test.requestConfirmation(Minecraft.getInstance().player, Component.literal(
                         """
-                                Do you see a green band on the left edge, and a red overlay that avoids both the band and the hotbar?
+                                Do you see a green band on the left edge, a blue overlay over the hotbar, and a red overlay that avoids both?
                                 With a container screen open, does the red overlay cover its panel? (this test disables the vanilla container area)
                                 """));
             }
