@@ -26,7 +26,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.event.RegisterScreenAreaProviderEvent;
-import net.neoforged.neoforge.client.gui.RecordedScreenAreas;
 import net.neoforged.neoforge.client.gui.ScreenArea;
 import net.neoforged.neoforge.client.gui.ScreenAreaManager;
 import net.neoforged.neoforge.client.gui.ScreenAreaProvider;
@@ -364,32 +363,6 @@ public class ScreenAreaTests {
         // The global providers are reported by the queries that ask for them.
         assertEquals(List.of(new ScreenArea(GLOBAL, BOUNDS), area(A)), queryAreas(registrations, List.of(screen), id -> true));
         assertEquals(List.of(new ScreenArea(GLOBAL, BOUNDS)), queryAreas(registrations, List.of(screen), GLOBAL::equals));
-    }
-
-    @Test
-    void recordedAreasAreDroppedOneFrameAfterTheirFrameEnds() {
-        RecordedScreenAreas recorded = new RecordedScreenAreas();
-
-        ScreenAreaManager.beginFrame();
-        recorded.clear();
-        recorded.record(BOUNDS);
-        assertEquals(List.of(BOUNDS), recorded.areas());
-
-        // The areas of a UI that does not render in the next frame stay visible for that frame,
-        // so the elements rendered earlier in the frame can still see them.
-        ScreenAreaManager.beginFrame();
-        assertEquals(List.of(BOUNDS), recorded.areas());
-
-        // One frame later they are dropped.
-        ScreenAreaManager.beginFrame();
-        assertEquals(List.of(), recorded.areas());
-
-        recorded.clear();
-        recorded.record(BOUNDS);
-        assertEquals(List.of(BOUNDS), recorded.areas());
-
-        recorded.clear();
-        assertEquals(List.of(), recorded.areas());
     }
 
     /// Records the providers that were evaluated and what they were given.

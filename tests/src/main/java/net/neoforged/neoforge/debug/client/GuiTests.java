@@ -5,13 +5,11 @@
 
 package net.neoforged.neoforge.debug.client;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.renderpearl.api.pipeline.ColorTargetState;
 import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
 import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import net.minecraft.ChatFormatting;
@@ -41,7 +39,6 @@ import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterScreenAreaProviderEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
@@ -95,72 +92,6 @@ public class GuiTests {
         }
 
         test.pass();
-    }
-
-    @TestHolder(description = {
-            "Checks that the effect stack rendered next to a container screen declares the area it occupies",
-            "Open a container screen showing at least one effect: this test moves the effect stack 20px to the right, and the declared area should follow",
-            "Press G while the screen is open to hide the effect stack, which should stop declaring its area; the test passes once both cases have been verified" })
-    static void testContainerEffectAreas(final DynamicTest test) {
-        // The areas of a frame are recorded while it renders, after the events that change the
-        // effect stack, so they can only be checked on the next client tick, for which the frame the
-        // areas were recorded in is still the current one, see ScreenAreaManager#beginFrame().
-        boolean[] hidden = { false };
-        // The horizontal offset the effect stack was rendered with, or -1 while it is hidden.
-        int[] renderedOffset = { 0 };
-        boolean[] rendered = { false };
-        Screen[] eventScreen = { null };
-        test.eventListeners().forge().addListener((ScreenEvent.RenderInventoryMobEffects event) -> {
-            if (!test.framework().tests().isEnabled(test.id())) {
-                return;
-            }
-            eventScreen[0] = event.getScreen();
-            rendered[0] = true;
-            if (hidden[0]) {
-                event.setCanceled(true);
-                renderedOffset[0] = -1;
-            } else {
-                event.addHorizontalOffset(20);
-                renderedOffset[0] = event.getHorizontalOffset();
-            }
-        });
-
-        test.eventListeners().forge().addListener((ScreenEvent.KeyPressed.Pre event) -> {
-            if (event.getKey() == InputConstants.KEY_G) {
-                hidden[0] = !hidden[0];
-            }
-        });
-
-        boolean[] offsetChecked = { false };
-        boolean[] hiddenChecked = { false };
-        test.eventListeners().forge().addListener((ClientTickEvent.Post event) -> {
-            Minecraft minecraft = Minecraft.getInstance();
-            if (!test.framework().tests().isEnabled(test.id()) || !rendered[0] || minecraft.gui.screen() != eventScreen[0]) {
-                return;
-            }
-
-            List<ScreenArea> areas = ScreenAreaManager.getOccupiedAreas(VanillaScreenAreas.CONTAINER_EFFECTS::equals);
-            if (renderedOffset[0] < 0) {
-                if (!areas.isEmpty()) {
-                    test.fail("The effect stack is hidden, but it still declares the areas " + areas);
-                    return;
-                }
-                hiddenChecked[0] = true;
-            } else if (!areas.isEmpty()) {
-                // The effect stack is only rendered when the container screen has effects to show.
-                for (ScreenArea area : areas) {
-                    if (area.bounds().left() != renderedOffset[0]) {
-                        test.fail("The effect stack was moved to x=" + renderedOffset[0] + ", but its area starts at x=" + area.bounds().left());
-                        return;
-                    }
-                }
-                offsetChecked[0] = true;
-            }
-
-            if (offsetChecked[0] && hiddenChecked[0]) {
-                test.pass();
-            }
-        });
     }
 
     private static class TestLayer extends Screen {

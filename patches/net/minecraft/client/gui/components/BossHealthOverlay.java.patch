@@ -1,34 +1,6 @@
 --- a/net/minecraft/client/gui/components/BossHealthOverlay.java
 +++ b/net/minecraft/client/gui/components/BossHealthOverlay.java
-@@ -52,12 +_,27 @@
-     };
-     private final Minecraft minecraft;
-     public final Map<UUID, LerpingBossEvent> events = Maps.newLinkedHashMap();
-+    /// Neo: The areas occupied by the boss bars rendered during the last frame, in GUI-scaled screen coordinates.
-+    private final net.neoforged.neoforge.client.gui.RecordedScreenAreas barAreas = new net.neoforged.neoforge.client.gui.RecordedScreenAreas();
- 
-     public BossHealthOverlay(Minecraft minecraft) {
-         this.minecraft = minecraft;
-     }
- 
-+    /// Neo: {@return the areas occupied by the boss bars rendered during the last frame, in GUI-scaled screen coordinates}
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> barAreas() {
-+        return this.barAreas.areas();
-+    }
-+
-+    /// Neo: Clears the areas recorded for the previous frame. The HUD calls this at the start of every frame.
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public void clearRecordedAreas() {
-+        this.barAreas.clear();
-+    }
-+
-     public void extractRenderState(GuiGraphicsExtractor graphics) {
-+        this.clearRecordedAreas();
-         if (!this.events.isEmpty()) {
-             graphics.nextStratum();
-             ProfilerFiller profiler = Profiler.get();
-@@ -68,13 +_,18 @@
+@@ -68,13 +_,17 @@
              for (LerpingBossEvent event : this.events.values()) {
                  int xLeft = screenWidth / 2 - 91;
                  int yo = yOffset;
@@ -41,7 +13,6 @@
                  int y = yo - 9;
                  graphics.text(this.minecraft.font, msg, x, y, -1);
 -                yOffset += 10 + 9;
-+                this.barAreas.record(new net.minecraft.client.gui.navigation.ScreenRectangle(xLeft, y, 182, 14));
 +                }
 +                // Neo: Always increment the yOffset, to make room for any custom rendered elements
 +                yOffset += customizeEvent.getIncrement();

@@ -90,9 +90,4 @@ public class GuiLayerManager {
     public int getLayerCount() {
         return this.layers.size();
     }
-
-    /// {@return the ids of the layers, in rendering order}
-    public List<Identifier> getLayerIds() {
-        return this.layers.stream().map(NamedLayer::name).toList();
-    }
 }

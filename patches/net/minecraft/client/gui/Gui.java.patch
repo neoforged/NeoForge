@@ -9,15 +9,6 @@
  
      public Gui(Minecraft minecraft, Hud hud, GuiRenderState guiRenderState) {
          this.minecraft = minecraft;
-@@ -150,6 +_,8 @@
-         int yMouse = (int)this.minecraft.mouseHandler.getScaledYPos(this.minecraft.getWindow());
-         profiler.push("gui");
-         this.guiRenderState.reset();
-+        // Neo: Start the frame the recorded screen areas are stamped with.
-+        net.neoforged.neoforge.client.gui.ScreenAreaManager.beginFrame();
-         GuiGraphicsExtractor graphics = new GuiGraphicsExtractor(this.minecraft, this.guiRenderState, xMouse, yMouse);
-         if (shouldRenderLevel) {
-             profiler.push("hud");
 @@ -174,7 +_,8 @@
              profiler.push("screen");
  
@@ -28,7 +19,7 @@
              } catch (Throwable t) {
                  CrashReport report = CrashReport.forThrowable(t, "Rendering screen");
                  CrashReportCategory category = report.addCategory("Screen render details");
-@@ -218,6 +_,24 @@
+@@ -218,6 +_,25 @@
          return this.screen;
      }
  
@@ -44,9 +35,10 @@
 +        return List.copyOf(screens);
 +    }
 +
-+    /// Neo: {@return an iterator over a snapshot of the screens currently rendered by the GUI, from the bottom-most
-+    /// background layer to the top-most screen}
-+    public java.util.ListIterator<net.minecraft.client.gui.screens.Screen> screenStackIterator() {
++    /// Neo: {@return an iterator over the screens currently rendered by the GUI, from the bottom-most background layer
++    /// to the top-most screen} The returned iterator is over an immutable snapshot.
++    @Contract(pure = true)
++    public java.util.ListIterator<Screen> screenStackIterator() {
 +        return this.visibleScreens().listIterator();
 +    }
 +

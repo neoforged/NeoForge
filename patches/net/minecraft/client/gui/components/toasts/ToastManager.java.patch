@@ -1,35 +1,5 @@
 --- a/net/minecraft/client/gui/components/toasts/ToastManager.java
 +++ b/net/minecraft/client/gui/components/toasts/ToastManager.java
-@@ -32,6 +_,8 @@
-     private final Deque<Toast> queued = Queues.newArrayDeque();
-     private final Set<SoundEvent> playedToastSounds = new HashSet<>();
-     private ToastManager.@Nullable ToastInstance<NowPlayingToast> nowPlayingToast;
-+    /// Neo: The areas occupied by the toasts rendered during the last frame, in GUI-scaled screen coordinates.
-+    private final net.neoforged.neoforge.client.gui.RecordedScreenAreas toastAreas = new net.neoforged.neoforge.client.gui.RecordedScreenAreas();
- 
-     public ToastManager(Minecraft minecraft, Options options) {
-         this.minecraft = minecraft;
-@@ -81,6 +_,7 @@
-     }
- 
-     public void extractRenderState(GuiGraphicsExtractor graphics) {
-+        this.toastAreas.clear();
-         if (!this.minecraft.gui.hud.isHidden()) {
-             int screenWidth = graphics.guiWidth();
-             if (!this.visibleToasts.isEmpty()) {
-@@ -99,6 +_,12 @@
-         }
-     }
- 
-+    /// Neo: {@return the areas occupied by the toasts rendered during the last frame, in GUI-scaled screen coordinates}
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> toastAreas() {
-+        return this.toastAreas.areas();
-+    }
-+
-     private int findFreeSlotsIndex(int requiredCount) {
-         if (this.freeSlotCount() >= requiredCount) {
-             int consecutiveFreeSlotCount = 0;
 @@ -142,6 +_,7 @@
      }
  
@@ -38,11 +8,3 @@
          this.queued.add(toast);
      }
  
-@@ -268,6 +_,7 @@
-                 graphics.pose().pushMatrix();
-                 graphics.pose().translate(this.toast.xPos(screenWidth, this.visiblePortion), this.toast.yPos(this.firstSlotIndex));
-                 this.toast.extractRenderState(graphics, ToastManager.this.minecraft.font, this.fullyVisibleFor);
-+                ToastManager.this.toastAreas.record(new net.minecraft.client.gui.navigation.ScreenRectangle(Mth.floor(this.toast.xPos(screenWidth, this.visiblePortion)), Mth.floor(this.toast.yPos(this.firstSlotIndex)), this.toast.width(), this.toast.height()));
-                 graphics.pose().popMatrix();
-             }
-         }

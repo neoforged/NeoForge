@@ -1,17 +1,5 @@
 --- a/net/minecraft/client/gui/screens/inventory/InventoryScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/InventoryScreen.java
-@@ -91,6 +_,11 @@
-     }
- 
-     @Override
-+    public EffectsInInventory getEffectsInInventory() {
-+        return this.effects;
-+    }
-+
-+    @Override
-     protected boolean isBiggerResultSlot() {
-         return false;
-     }
 @@ -111,6 +_,13 @@
          float centerY = (y0 + y1) / 2.0F;
          float xAngle = (float)Math.atan((centerX - mouseX) / 40.0F);

@@ -1,14 +1,5 @@
 --- a/net/minecraft/client/gui/screens/recipebook/RecipeBookComponent.java
 +++ b/net/minecraft/client/gui/screens/recipebook/RecipeBookComponent.java
-@@ -93,6 +_,8 @@
-     private boolean visible;
-     private boolean widthTooNarrow;
-     private @Nullable ScreenRectangle magnifierIconPlacement;
-+    /// Neo: The areas the recipe book occupies on screen during the last frame, in GUI-scaled screen coordinates.
-+    private final net.neoforged.neoforge.client.gui.RecordedScreenAreas renderedAreas = new net.neoforged.neoforge.client.gui.RecordedScreenAreas();
- 
-     public RecipeBookComponent(T menu, List<RecipeBookComponent.TabInfo> tabInfos) {
-         this.menu = menu;
 @@ -262,7 +_,7 @@
  
          for (RecipeBookTabButton tabButton : this.tabButtons) {
@@ -18,34 +9,3 @@
                  tabButton.visible = true;
                  tabButton.setPosition(xPosTab, yPosTab + 27 * index++);
              } else if (tabButton.updateVisibility(this.book)) {
-@@ -298,8 +_,15 @@
-         return this.book.isFiltering(this.menu.getRecipeBookType());
-     }
- 
-+    /// Neo: {@return the areas the recipe book occupies on screen during the last frame, in GUI-scaled screen coordinates}
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> renderedAreas() {
-+        return this.renderedAreas.areas();
-+    }
-+
-     @Override
-     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-+        this.renderedAreas.clear();
-         if (this.isVisible()) {
-             if (!this.minecraft.hasControlDown()) {
-                 this.time += a;
-@@ -308,10 +_,14 @@
-             int xo = this.getXOrigin();
-             int yo = this.getYOrigin();
-             graphics.blit(RenderPipelines.GUI_TEXTURED, RECIPE_BOOK_LOCATION, xo, yo, 1.0F, 1.0F, 147, 166, 256, 256);
-+            this.renderedAreas.record(new net.minecraft.client.gui.navigation.ScreenRectangle(xo, yo, 147, 166));
-             this.searchBox.extractRenderState(graphics, mouseX, mouseY, a);
- 
-             for (RecipeBookTabButton tabButton : this.tabButtons) {
-                 tabButton.extractRenderState(graphics, mouseX, mouseY, a);
-+                if (tabButton.visible) {
-+                    this.renderedAreas.record(new net.minecraft.client.gui.navigation.ScreenRectangle(tabButton.getX(), tabButton.getY(), tabButton.getWidth(), tabButton.getHeight()));
-+                }
-             }
- 
-             this.filterButton.extractRenderState(graphics, mouseX, mouseY, a);

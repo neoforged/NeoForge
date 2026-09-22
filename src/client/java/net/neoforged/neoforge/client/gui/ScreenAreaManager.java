@@ -44,7 +44,6 @@ public class ScreenAreaManager {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Map<Identifier, ScreenAreaRegistration> REGISTRATIONS = new LinkedHashMap<>();
     private static final ThreadLocal<Boolean> EVALUATING = new ThreadLocal<>();
-    private static long frameIndex;
     private static boolean initialized;
 
     private ScreenAreaManager() {}
@@ -154,20 +153,6 @@ public class ScreenAreaManager {
         NeoForge.EVENT_BUS.post(new RegisterScreenAreaProviderEvent(REGISTRATIONS));
     }
 
-    /// Starts a new frame. Recorded areas stay available for the frame after the one they were
-    /// recorded in, so the areas of an element that is not rendered anymore are dropped one frame
-    /// later, see [RecordedScreenAreas].
-    ///
-    /// This must be called once at the start of every frame the areas may be queried in.
-    @ApiStatus.Internal
-    public static void beginFrame() {
-        frameIndex++;
-    }
-
-    static long frameIndex() {
-        return frameIndex;
-    }
-
     /// Registers a global provider under the given id, for example the provider of the areas
     /// declared by a HUD layer, see [RegisterGuiLayersEvent].
     ///
@@ -252,11 +237,6 @@ public class ScreenAreaManager {
     public static List<ScreenArea> getOccupiedAreasExcluding(Identifier excludedId) {
         Objects.requireNonNull(excludedId, "excludedId");
         return getOccupiedAreas(id -> !excludedId.equals(id));
-    }
-
-    /// {@return the ids of the layers rendered by the HUD, in rendering order}
-    public static List<Identifier> getHudLayerIds() {
-        return Minecraft.getInstance().gui.hud.getLayerManager().getLayerIds();
     }
 
     private static List<Screen> visibleScreens() {
