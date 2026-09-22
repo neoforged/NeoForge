@@ -60,13 +60,7 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.Blocks.CONCRETES).addAll(Blocks.CONCRETE.asList());
 
         ColorCollection<NeoForgeBlockTagsProvider.Appender> builders = Tags.Blocks.DYED_COLORS.map(this::tag);
-        var dyeableBlocks = List.of(
-                BlockItemIds.BANNER, BlockItemIds.BED, BlockItemIds.DYED_CANDLE,
-                BlockItemIds.CARPET, BlockItemIds.CONCRETE, BlockItemIds.CONCRETE_SLAB,
-                BlockItemIds.CONCRETE_STAIRS, BlockItemIds.CONCRETE_POWDER, BlockItemIds.GLAZED_TERRACOTTA,
-                BlockItemIds.DYED_SHULKER_BOX, BlockItemIds.STAINED_GLASS, BlockItemIds.STAINED_GLASS_PANE,
-                BlockItemIds.DYED_TERRACOTTA, BlockItemIds.WOOL, BlockItemIds.WOOL_SLAB, BlockItemIds.WOOL_STAIRS);
-        for (ColorCollection<BlockItemId> colorCollection : dyeableBlocks) {
+        for (ColorCollection<BlockItemId> colorCollection : dyeableBlockItems()) {
             ColorCollection.zipApply(builders, colorCollection, NeoForgeBlockTagsProvider.Appender::add);
         }
         for (ColorCollection<ResourceKey<Block>> colorCollection : List.of(BlockIds.WALL_BANNER)) {
@@ -335,5 +329,15 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
             throw new IllegalStateException(Tags.Blocks.class.getName() + " is missing tag name: " + name);
         }
+    }
+
+    static List<ColorCollection<BlockItemId>> dyeableBlockItems() {
+        return List.of(
+              BlockItemIds.BANNER, BlockItemIds.BED, BlockItemIds.DYED_CANDLE,
+              BlockItemIds.CARPET, BlockItemIds.CONCRETE, BlockItemIds.CONCRETE_SLAB,
+              BlockItemIds.CONCRETE_STAIRS, BlockItemIds.CONCRETE_POWDER, BlockItemIds.GLAZED_TERRACOTTA,
+              BlockItemIds.DYED_SHULKER_BOX, BlockItemIds.STAINED_GLASS, BlockItemIds.STAINED_GLASS_PANE,
+              BlockItemIds.DYED_TERRACOTTA, BlockItemIds.WOOL, BlockItemIds.WOOL_SLAB, BlockItemIds.WOOL_STAIRS
+        );
     }
 }
