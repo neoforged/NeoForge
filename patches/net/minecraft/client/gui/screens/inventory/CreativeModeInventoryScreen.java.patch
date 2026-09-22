@@ -1,11 +1,13 @@
 --- a/net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen.java
-@@ -117,6 +_,8 @@
+@@ -117,6 +_,10 @@
      private final Set<TagKey<Item>> visibleTags = new HashSet<>();
      private final boolean displayOperatorCreativeTab;
      private final EffectsInInventory effects;
 +    private final List<net.neoforged.neoforge.client.gui.CreativeTabsScreenPage> pages = new java.util.ArrayList<>();
 +    private net.neoforged.neoforge.client.gui.CreativeTabsScreenPage currentPage = new net.neoforged.neoforge.client.gui.CreativeTabsScreenPage(new java.util.ArrayList<>());
++    /// Neo: The areas occupied by the item group tabs rendered by this screen during the last frame, in GUI-scaled screen coordinates.
++    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> tabAreas = new java.util.ArrayList<>();
  
      public CreativeModeInventoryScreen(LocalPlayer player, FeatureFlagSet enabledFeatures, boolean displayOperatorCreativeTab) {
          super(new CreativeModeInventoryScreen.ItemPickerMenu(player), player.getInventory(), CommonComponents.EMPTY, 195, 136);
@@ -151,7 +153,11 @@
  
              this.refreshSearchResults();
          } else {
-@@ -688,8 +_,14 @@
+@@ -685,11 +_,29 @@
+ 
+     @Override
+     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
++        this.tabAreas.clear();
          this.effects.extractRenderState(graphics, mouseX, mouseY);
          super.extractRenderState(graphics, mouseX, mouseY, a);
  
@@ -163,17 +169,34 @@
 +            graphics.text(font, page.getVisualOrderText(), leftPos + (imageWidth / 2) - (font.width(page) / 2), topPos - 44, -1);
 +        }
 +
++        // Neo: extractTabButton draws every tab of the current page, using the same position and size as the rects recorded here
++        for (CreativeModeTab creativemodetab : currentPage.getVisibleTabs()) {
++            this.tabAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(this.leftPos + this.getTabX(creativemodetab), this.topPos - (currentPage.isTop(creativemodetab) ? 28 : -(this.imageHeight - 4)), 26, 32));
++        }
++
++        if (this.pages.size() > 1) {
++            // Neo: The page navigation buttons added by init(), drawn by Screen#extractRenderState at the position and size given to their builder
++            this.tabAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(this.leftPos, this.topPos - 50, 20, 20));
++            this.tabAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(this.leftPos + this.imageWidth - 20, this.topPos - 50, 20, 20));
++        }
++
 +        for (CreativeModeTab creativemodetab : currentPage.getVisibleTabs()) {
 +            if (this.checkTabHovering(graphics, creativemodetab, mouseX, mouseY)) {
                  break;
              }
          }
-@@ -707,13 +_,18 @@
+@@ -707,13 +_,24 @@
      }
  
      @Override
 +    public EffectsInInventory getEffectsInInventory() {
 +        return this.effects;
++    }
++
++    /// Neo: {@return the areas occupied by the item group tabs rendered by this screen during the last frame, in GUI-scaled screen coordinates}
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> tabAreas() {
++        return java.util.List.copyOf(this.tabAreas);
 +    }
 +
 +    @Override

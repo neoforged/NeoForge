@@ -1,5 +1,14 @@
 --- a/net/minecraft/client/gui/screens/ChatScreen.java
 +++ b/net/minecraft/client/gui/screens/ChatScreen.java
+@@ -41,6 +_,8 @@
+     private ChatComponent.DisplayMode displayMode = ChatComponent.DisplayMode.FOREGROUND;
+     protected ChatScreen.ExitReason exitReason = ChatScreen.ExitReason.INTERRUPTED;
+     private CommandSuggestions commandSuggestions;
++    /// Neo: The areas the chat input box occupies on screen during the last frame, in GUI-scaled screen coordinates.
++    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> renderedAreas = new java.util.ArrayList<>();
+ 
+     public ChatScreen(String initial, boolean isDraft) {
+         this(initial, isDraft, true);
 @@ -141,6 +_,8 @@
              this.handleChatInput(this.input.getValue(), true);
              if (this.closeOnSubmit) {
@@ -9,3 +18,21 @@
                  this.minecraft.gui.setScreen(null);
              } else {
                  this.input.setValue("");
+@@ -273,9 +_,17 @@
+         return this.isDraft ? FormattedCharSequence.forward(text, Style.EMPTY.withColor(ChatFormatting.GRAY).withItalic(true)) : null;
+     }
+ 
++    /// Neo: {@return the areas the chat input box occupies on screen during the last frame, in GUI-scaled screen coordinates}
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> chatInputAreas() {
++        return java.util.List.copyOf(this.renderedAreas);
++    }
++
+     @Override
+     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
++        this.renderedAreas.clear();
+         graphics.fill(2, this.height - 14, this.width - 2, this.height - 2, this.minecraft.options.getBackgroundColor(Integer.MIN_VALUE));
++        this.renderedAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(2, this.height - 14, this.width - 4, 12));
+         this.minecraft
+             .gui
+             .hud

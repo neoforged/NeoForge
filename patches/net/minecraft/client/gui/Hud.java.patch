@@ -9,7 +9,7 @@
  
  @OnlyIn(Dist.CLIENT)
  public class Hud {
-@@ -181,6 +_,17 @@
+@@ -181,6 +_,19 @@
      private Pair<Hud.ContextualInfo, ContextualBar> contextualInfoBar = Pair.of(Hud.ContextualInfo.EMPTY, ContextualBar.EMPTY);
      private final Map<Hud.ContextualInfo, Supplier<ContextualBar>> contextualInfoBars;
      private float scopeScale;
@@ -24,6 +24,8 @@
 +    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> chatAreas = new java.util.ArrayList<>();
 +    /// Neo: The area occupied by the scoreboard sidebar rendered by the HUD during the last frame, in GUI-scaled screen coordinates.
 +    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> scoreboardSidebarAreas = new java.util.ArrayList<>();
++    /// Neo: The areas occupied by the hotbar and its decoration columns rendered by the HUD during the last frame, in GUI-scaled screen coordinates.
++    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> hotbarAreas = new java.util.ArrayList<>();
  
      public Hud(Minecraft minecraft) {
          this.minecraft = minecraft;
@@ -35,7 +37,7 @@
      }
  
      public void registerReloadListeners(ReloadableResourceManager resourceManager) {
-@@ -215,6 +_,24 @@
+@@ -215,6 +_,30 @@
          return this.isHidden;
      }
  
@@ -55,6 +57,12 @@
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> scoreboardSidebarAreas() {
 +        return java.util.List.copyOf(this.scoreboardSidebarAreas);
++    }
++
++    /// Neo: {@return the areas occupied by the hotbar and its decoration columns rendered by the HUD during the last frame, in GUI-scaled screen coordinates}
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> hotbarAreas() {
++        return java.util.List.copyOf(this.hotbarAreas);
 +    }
 +
      public void resetTitleTimes() {
@@ -218,13 +226,14 @@
                      graphics.blitSprite(RenderPipelines.GUI_TEXTURED, getMobEffectSprite(effect), x + 3, y + 3, 18, 18, ARGB.white(alpha));
                  }
              }
-@@ -542,32 +_,51 @@
+@@ -542,32 +_,52 @@
          return effect.unwrapKey().map(ResourceKey::identifier).map(id -> id.withPrefix("mob_effect/")).orElseGet(MissingTextureAtlasSprite::getLocation);
      }
  
 -    private void extractHotbarAndDecorations(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 +    // Neo: Split off into separate method to wrap in a layer
 +    private void extractHotbar(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
++        this.hotbarAreas.clear();
          if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR) {
              this.spectatorGui.extractHotbar(graphics);
          } else {
@@ -279,6 +288,14 @@
              this.spectatorGui.extractAction(graphics);
          }
      }
+@@ -581,6 +_,7 @@
+             int hotbarWidth = 182;
+             int halfHotbar = 91;
+             graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR_SPRITE, screenCenter - 91, graphics.guiHeight() - 22, 182, 22);
++            this.hotbarAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(screenCenter - 91, graphics.guiHeight() - 22, 182, 22));
+             graphics.blitSprite(
+                 RenderPipelines.GUI_TEXTURED,
+                 HOTBAR_SELECTION_SPRITE,
 @@ -634,15 +_,20 @@
      }
  
@@ -342,7 +359,7 @@
          Player player = this.getCameraPlayer();
          if (player != null) {
              int currentHealth = Mth.ceil(player.getHealth());
-@@ -794,33 +_,62 @@
+@@ -794,34 +_,65 @@
              this.random.setSeed(this.tickCount * 312871);
              int xLeft = graphics.guiWidth() / 2 - 91;
              int xRight = graphics.guiWidth() / 2 + 91;
@@ -380,6 +397,7 @@
 +            if (player.getArmorValue() > 0) {
 +                leftHeight += 10;
 +            }
++            this.hotbarAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(graphics.guiWidth() / 2 - 91, graphics.guiHeight() - leftHeight, 91, leftHeight));
 +        }
 +    }
 +
@@ -411,8 +429,10 @@
 +            Profiler.get().push("air");
 +            this.extractAirBubbles(graphics, player, 10, yLineAir, xRight);
              Profiler.get().pop();
++            this.hotbarAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(graphics.guiWidth() / 2, graphics.guiHeight() - rightHeight, 91, rightHeight));
          }
      }
+ 
 @@ -909,7 +_,7 @@
      private void extractAirBubbles(GuiGraphicsExtractor graphics, Player player, int vehicleHearts, int yLineAir, int xRight) {
          int maxAirSupplyTicks = player.getMaxAirSupply();

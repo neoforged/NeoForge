@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -65,25 +64,13 @@ public final class VanillaScreenAreas {
         registrations.put(CREATIVE_TABS, new ScreenAreaManager.ScreenAreaRegistration(CreativeModeInventoryScreen.class, VanillaScreenAreas::getCreativeTabAreas));
     }
 
-    // Mirrors Hud rendering of the hotbar and its decoration columns
+    // The areas are recorded by the HUD while rendering, see Hud#hotbarAreas()
     private static List<ScreenRectangle> getHotbarAreas(ScreenAreaContext context) {
         Minecraft minecraft = Minecraft.getInstance();
         if (!isInGame(minecraft) || minecraft.gui.hud.isHidden()) {
             return List.of();
         }
-        Hud hud = minecraft.gui.hud;
-        int guiWidth = context.guiWidth();
-        int guiHeight = context.guiHeight();
-        List<ScreenRectangle> areas = new ArrayList<>();
-        // The hotbar itself
-        areas.add(new ScreenRectangle(guiWidth / 2 - 91, guiHeight - 22, 182, 22));
-        // The decoration columns on the left and right of the hotbar (health, armor, food, air, ...).
-        // They are not rendered for spectators, whose hotbar decorations stay at their initial height.
-        if (!minecraft.player.isSpectator()) {
-            areas.add(new ScreenRectangle(guiWidth / 2 - 91, guiHeight - hud.leftHeight, 91, hud.leftHeight));
-            areas.add(new ScreenRectangle(guiWidth / 2, guiHeight - hud.rightHeight, 91, hud.rightHeight));
-        }
-        return areas;
+        return minecraft.gui.hud.hotbarAreas();
     }
 
     // The areas are recorded by the HUD while rendering, see Hud#effectAreas()
@@ -122,9 +109,15 @@ public final class VanillaScreenAreas {
         return minecraft.gui.hud.chatAreas();
     }
 
-    // Mirrors ChatScreen rendering of its input box
+    // The areas are recorded by the chat screen while rendering, see ChatScreen#chatInputAreas()
     private static List<ScreenRectangle> getChatInputAreas(ScreenAreaContext context) {
-        return List.of(new ScreenRectangle(2, context.guiHeight() - 14, context.guiWidth() - 4, 12));
+        List<ScreenRectangle> areas = new ArrayList<>();
+        for (Screen screen : context.screens()) {
+            if (screen instanceof ChatScreen chatScreen) {
+                areas.addAll(chatScreen.chatInputAreas());
+            }
+        }
+        return areas;
     }
 
     // The areas are recorded by the toast manager while rendering, see ToastManager#toastAreas()
@@ -160,29 +153,23 @@ public final class VanillaScreenAreas {
         return areas;
     }
 
-    // Mirrors RecipeBookComponent position and size, including the tab buttons column on the left
+    // The areas are recorded by the recipe book while rendering, see RecipeBookComponent#renderedAreas()
     private static List<ScreenRectangle> getRecipeBookAreas(ScreenAreaContext context) {
         List<ScreenRectangle> areas = new ArrayList<>();
-        boolean widthTooNarrow = context.guiWidth() < 379;
         for (Screen screen : context.screens()) {
-            if (screen instanceof AbstractRecipeBookScreen<?> recipeBookScreen && recipeBookScreen.recipeBookComponent.isVisible()) {
-                int x = (context.guiWidth() - 147) / 2 - (widthTooNarrow ? 0 : 86);
-                int y = (context.guiHeight() - 166) / 2;
-                areas.add(new ScreenRectangle(x - 28, y, 147 + 28, 166));
+            if (screen instanceof AbstractRecipeBookScreen<?> recipeBookScreen) {
+                areas.addAll(recipeBookScreen.recipeBookComponent.renderedAreas());
             }
         }
         return areas;
     }
 
-    // Mirrors CreativeModeInventoryScreen rendering of the item group tabs
+    // The areas are recorded by the creative screen while rendering, see CreativeModeInventoryScreen#tabAreas()
     private static List<ScreenRectangle> getCreativeTabAreas(ScreenAreaContext context) {
         List<ScreenRectangle> areas = new ArrayList<>();
         for (Screen screen : context.screens()) {
             if (screen instanceof CreativeModeInventoryScreen creativeScreen) {
-                // The tabs above the panel
-                areas.add(new ScreenRectangle(creativeScreen.getLeftPos(), creativeScreen.getTopPos() - 28, creativeScreen.getImageWidth(), 28));
-                // The tabs below the panel
-                areas.add(new ScreenRectangle(creativeScreen.getLeftPos(), creativeScreen.getTopPos() + creativeScreen.getImageHeight() - 4, creativeScreen.getImageWidth(), 32));
+                areas.addAll(creativeScreen.tabAreas());
             }
         }
         return areas;
