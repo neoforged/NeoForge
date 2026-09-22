@@ -5,7 +5,7 @@
      private final Set<SoundEvent> playedToastSounds = new HashSet<>();
      private ToastManager.@Nullable ToastInstance<NowPlayingToast> nowPlayingToast;
 +    /// Neo: The areas occupied by the toasts rendered during the last frame, in GUI-scaled screen coordinates.
-+    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> toastAreas = new java.util.ArrayList<>();
++    private final net.neoforged.neoforge.client.gui.RecordedScreenAreas toastAreas = new net.neoforged.neoforge.client.gui.RecordedScreenAreas();
  
      public ToastManager(Minecraft minecraft, Options options) {
          this.minecraft = minecraft;
@@ -24,7 +24,7 @@
 +    /// Neo: {@return the areas occupied by the toasts rendered during the last frame, in GUI-scaled screen coordinates}
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> toastAreas() {
-+        return java.util.List.copyOf(this.toastAreas);
++        return this.toastAreas.areas();
 +    }
 +
      private int findFreeSlotsIndex(int requiredCount) {
@@ -42,7 +42,7 @@
                  graphics.pose().pushMatrix();
                  graphics.pose().translate(this.toast.xPos(screenWidth, this.visiblePortion), this.toast.yPos(this.firstSlotIndex));
                  this.toast.extractRenderState(graphics, ToastManager.this.minecraft.font, this.fullyVisibleFor);
-+                ToastManager.this.toastAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(Mth.floor(this.toast.xPos(screenWidth, this.visiblePortion)), Mth.floor(this.toast.yPos(this.firstSlotIndex)), this.toast.width(), this.toast.height()));
++                ToastManager.this.toastAreas.record(new net.minecraft.client.gui.navigation.ScreenRectangle(Mth.floor(this.toast.xPos(screenWidth, this.visiblePortion)), Mth.floor(this.toast.yPos(this.firstSlotIndex)), this.toast.width(), this.toast.height()));
                  graphics.pose().popMatrix();
              }
          }

@@ -5,7 +5,7 @@
      private boolean visible;
      private final Map<UUID, PlayerTabOverlay.HealthState> healthStates = new Object2ObjectOpenHashMap<>();
 +    /// Neo: The areas occupied by the player list panels rendered by the overlay during the last frame, in GUI-scaled screen coordinates.
-+    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas = new java.util.ArrayList<>();
++    private final net.neoforged.neoforge.client.gui.RecordedScreenAreas recordedAreas = new net.neoforged.neoforge.client.gui.RecordedScreenAreas();
  
      public PlayerTabOverlay(Minecraft minecraft, Hud hud) {
          this.minecraft = minecraft;
@@ -15,7 +15,7 @@
 +    /// Neo: {@return the areas occupied by the player list panels rendered during the last frame, in GUI-scaled screen coordinates}
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas() {
-+        return java.util.List.copyOf(this.recordedAreas);
++        return this.recordedAreas.areas();
 +    }
 +
 +    /// Neo: Discards the areas recorded by the last frame, for when the player list is not rendered.
@@ -70,7 +70,7 @@
 +
 +    /// Neo: Records the area a panel of the player list is filled with, in GUI-scaled screen coordinates.
 +    private void recordArea(GuiGraphicsExtractor graphics, int x0, int y0, int x1, int y1) {
-+        this.recordedAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(x0, y0, x1 - x0, y1 - y0).transformAxisAligned(graphics.pose()));
++        this.recordedAreas.record(new net.minecraft.client.gui.navigation.ScreenRectangle(x0, y0, x1 - x0, y1 - y0).transformAxisAligned(graphics.pose()));
      }
  
      protected void extractPingIcon(GuiGraphicsExtractor graphics, int slotWidth, int xo, int yo, PlayerInfo info) {

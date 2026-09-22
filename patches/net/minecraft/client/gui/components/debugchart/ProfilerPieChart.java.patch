@@ -5,7 +5,7 @@
      private String profilerTreePath = "root";
      private int bottomOffset = 0;
 +    /// Neo: The areas the pie chart drew during the last frame, in GUI-scaled screen coordinates.
-+    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas = new java.util.ArrayList<>();
++    private final net.neoforged.neoforge.client.gui.RecordedScreenAreas recordedAreas = new net.neoforged.neoforge.client.gui.RecordedScreenAreas();
  
      public ProfilerPieChart(Font font) {
          this.font = font;
@@ -16,7 +16,7 @@
 +    /// Neo: {@return the areas the pie chart drew during the last frame, in GUI-scaled screen coordinates}
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas() {
-+        return java.util.List.copyOf(this.recordedAreas);
++        return this.recordedAreas.areas();
 +    }
 +
 +    /// Neo: Discards the areas recorded during the last frame, for example while the pie chart is not drawn.
@@ -35,7 +35,7 @@
              int currentNodeNameTop = chartCenterY - 62 - (currentNodeNameLines.size() - 1) * 9;
              graphics.fill(left - 5, currentNodeNameTop - 5, right + 5, bottom + 5, -1873784752);
 +            // Neo: Record the area of the panel the pie chart is drawn in
-+            this.recordedAreas.add(
++            this.recordedAreas.record(
 +                new net.minecraft.client.gui.navigation.ScreenRectangle(left - 5, currentNodeNameTop - 5, right - left + 10, bottom - currentNodeNameTop + 10)
 +                    .transformAxisAligned(graphics.pose())
 +            );

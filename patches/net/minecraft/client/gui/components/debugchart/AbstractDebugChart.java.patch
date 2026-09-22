@@ -5,7 +5,7 @@
      protected final Font font;
      protected final SampleStorage sampleStorage;
 +    /// Neo: The areas the chart drew during the last frame, in GUI-scaled screen coordinates.
-+    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas = new java.util.ArrayList<>();
++    private final net.neoforged.neoforge.client.gui.RecordedScreenAreas recordedAreas = new net.neoforged.neoforge.client.gui.RecordedScreenAreas();
  
      protected AbstractDebugChart(Font font, SampleStorage sampleStorage) {
          this.font = font;
@@ -16,7 +16,7 @@
 +    /// Neo: {@return the areas the chart drew during the last frame, in GUI-scaled screen coordinates}
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas() {
-+        return java.util.List.copyOf(this.recordedAreas);
++        return this.recordedAreas.areas();
 +    }
 +
 +    /// Neo: Discards the areas recorded during the last frame, for example while the chart is not drawn.
@@ -28,7 +28,7 @@
      public void extractRenderState(GuiGraphicsExtractor graphics, int left, int width, int bottom) {
 +        this.recordedAreas.clear();
 +        // Neo: Record the area the chart and its labels occupy
-+        this.recordedAreas.add(
++        this.recordedAreas.record(
 +            new net.minecraft.client.gui.navigation.ScreenRectangle(left, bottom - this.getFullHeight(), width, this.getFullHeight())
 +                .transformAxisAligned(graphics.pose())
 +        );

@@ -5,7 +5,7 @@
      private final List<ChatComponent.DelayedMessageDeletion> messageDeletionQueue = new ArrayList<>();
      private Predicate<GuiMessage> visibleMessageFilter = var0 -> true;
 +    /// Neo: The areas occupied by the chat block rendered during the last frame, in screen space.
-+    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> renderedAreas = new java.util.ArrayList<>();
++    private final net.neoforged.neoforge.client.gui.RecordedScreenAreas renderedAreas = new net.neoforged.neoforge.client.gui.RecordedScreenAreas();
  
      public ChatComponent(Minecraft minecraft) {
          this.minecraft = minecraft;
@@ -19,7 +19,7 @@
 +    /// offset and the chat scale the HUD applies to the chat block.
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> renderedAreas() {
-+        return java.util.List.copyOf(this.renderedAreas);
++        return this.renderedAreas.areas();
 +    }
 +
 +    /// Neo: Clears the areas recorded for the previous frame. The HUD calls this at the start of every frame.
@@ -43,7 +43,7 @@
                  graphics.fill(-4, entryTop, maxWidth + 4 + 4, entryBottom, ARGB.black(alphax * backgroundOpacity));
              });
              int lineAboveMessagesY = chatBottom - (count + 1) * entryHeight;
-+            this.renderedAreas.add(graphics.toScreenSpace(new net.minecraft.client.gui.navigation.ScreenRectangle(-4, lineAboveMessagesY, maxWidth + 4 + 4, chatBottom + messageHeight - lineAboveMessagesY)));
++            this.renderedAreas.record(graphics.toScreenSpace(new net.minecraft.client.gui.navigation.ScreenRectangle(-4, lineAboveMessagesY, maxWidth + 4 + 4, chatBottom + messageHeight - lineAboveMessagesY)));
              if (queueSize > 0L) {
                  graphics.fill(-2, chatBottom, maxWidth + 4, chatBottom + messageHeight, ARGB.black(backgroundOpacity));
              }

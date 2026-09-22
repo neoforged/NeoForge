@@ -5,7 +5,7 @@
      private static final Identifier EXPERIENCE_BAR_PROGRESS_SPRITE = Identifier.withDefaultNamespace("hud/experience_bar_progress");
      private final Minecraft minecraft;
 +    /// Neo: The area occupied by the experience bar rendered during the last frame, in GUI-scaled screen coordinates.
-+    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas = new java.util.ArrayList<>();
++    private final net.neoforged.neoforge.client.gui.RecordedScreenAreas recordedAreas = new net.neoforged.neoforge.client.gui.RecordedScreenAreas();
  
      public ExperienceBar(Minecraft minecraft) {
          this.minecraft = minecraft;
@@ -15,7 +15,7 @@
 +    @Override
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas() {
-+        return java.util.List.copyOf(this.recordedAreas);
++        return this.recordedAreas.areas();
 +    }
 +
 +    /// Neo: Clears the areas recorded for the previous frame. The HUD calls this at the start of every frame.
@@ -35,7 +35,7 @@
          if (xpNeededForNextLevel > 0) {
              int progress = (int)(player.experienceProgress * 183.0F);
              graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EXPERIENCE_BAR_BACKGROUND_SPRITE, left, top, 182, 5);
-+            this.recordedAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(left, top, 182, 5).transformAxisAligned(graphics.pose()));
++            this.recordedAreas.record(new net.minecraft.client.gui.navigation.ScreenRectangle(left, top, 182, 5).transformAxisAligned(graphics.pose()));
              if (progress > 0) {
                  graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EXPERIENCE_BAR_PROGRESS_SPRITE, 182, 5, 0, 0, left, top, progress, 5);
              }

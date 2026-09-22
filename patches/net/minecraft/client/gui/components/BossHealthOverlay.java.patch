@@ -5,7 +5,7 @@
      private final Minecraft minecraft;
      public final Map<UUID, LerpingBossEvent> events = Maps.newLinkedHashMap();
 +    /// Neo: The areas occupied by the boss bars rendered during the last frame, in GUI-scaled screen coordinates.
-+    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> barAreas = new java.util.ArrayList<>();
++    private final net.neoforged.neoforge.client.gui.RecordedScreenAreas barAreas = new net.neoforged.neoforge.client.gui.RecordedScreenAreas();
  
      public BossHealthOverlay(Minecraft minecraft) {
          this.minecraft = minecraft;
@@ -14,7 +14,7 @@
 +    /// Neo: {@return the areas occupied by the boss bars rendered during the last frame, in GUI-scaled screen coordinates}
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> barAreas() {
-+        return java.util.List.copyOf(this.barAreas);
++        return this.barAreas.areas();
 +    }
 +
 +    /// Neo: Clears the areas recorded for the previous frame. The HUD calls this at the start of every frame.
@@ -41,7 +41,7 @@
                  int y = yo - 9;
                  graphics.text(this.minecraft.font, msg, x, y, -1);
 -                yOffset += 10 + 9;
-+                this.barAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(xLeft, y, 182, 14));
++                this.barAreas.record(new net.minecraft.client.gui.navigation.ScreenRectangle(xLeft, y, 182, 14));
 +                }
 +                // Neo: Always increment the yOffset, to make room for any custom rendered elements
 +                yOffset += customizeEvent.getIncrement();

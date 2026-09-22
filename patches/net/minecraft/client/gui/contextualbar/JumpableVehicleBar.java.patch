@@ -5,7 +5,7 @@
      private final Minecraft minecraft;
      private final PlayerRideableJumping playerJumpableVehicle;
 +    /// Neo: The areas occupied by the jumpable vehicle bar, its cooldown overlay and its progress rendered during the last frame, in GUI-scaled screen coordinates.
-+    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas = new java.util.ArrayList<>();
++    private final net.neoforged.neoforge.client.gui.RecordedScreenAreas recordedAreas = new net.neoforged.neoforge.client.gui.RecordedScreenAreas();
  
      public JumpableVehicleBar(Minecraft minecraft) {
          this.minecraft = minecraft;
@@ -16,7 +16,7 @@
 +    @Override
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas() {
-+        return java.util.List.copyOf(this.recordedAreas);
++        return this.recordedAreas.areas();
 +    }
 +
 +    /// Neo: Clears the areas recorded for the previous frame. The HUD calls this at the start of every frame.
@@ -32,15 +32,15 @@
          int left = this.left(this.minecraft.getWindow());
          int top = this.top(this.minecraft.getWindow());
          graphics.blitSprite(RenderPipelines.GUI_TEXTURED, JUMP_BAR_BACKGROUND_SPRITE, left, top, 182, 5);
-+        this.recordedAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(left, top, 182, 5).transformAxisAligned(graphics.pose()));
++        this.recordedAreas.record(new net.minecraft.client.gui.navigation.ScreenRectangle(left, top, 182, 5).transformAxisAligned(graphics.pose()));
          if (this.playerJumpableVehicle.getJumpCooldown() > 0) {
              graphics.blitSprite(RenderPipelines.GUI_TEXTURED, JUMP_BAR_COOLDOWN_SPRITE, left, top, 182, 5);
-+            this.recordedAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(left, top, 182, 5).transformAxisAligned(graphics.pose()));
++            this.recordedAreas.record(new net.minecraft.client.gui.navigation.ScreenRectangle(left, top, 182, 5).transformAxisAligned(graphics.pose()));
          } else {
              int progress = Mth.lerpDiscrete(this.minecraft.player.getJumpRidingScale(), 0, 182);
              if (progress > 0) {
                  graphics.blitSprite(RenderPipelines.GUI_TEXTURED, JUMP_BAR_PROGRESS_SPRITE, 182, 5, 0, 0, left, top, progress, 5);
-+                this.recordedAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(left, top, progress, 5).transformAxisAligned(graphics.pose()));
++                this.recordedAreas.record(new net.minecraft.client.gui.navigation.ScreenRectangle(left, top, progress, 5).transformAxisAligned(graphics.pose()));
              }
          }
      }

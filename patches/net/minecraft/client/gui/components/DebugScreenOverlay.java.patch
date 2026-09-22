@@ -5,7 +5,7 @@
      private final BandwidthDebugChart bandwidthChart;
      private final ProfilerPieChart profilerPieChart;
 +    /// Neo: The areas the debug screen drew during the last frame, in GUI-scaled screen coordinates.
-+    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas = new java.util.ArrayList<>();
++    private final net.neoforged.neoforge.client.gui.RecordedScreenAreas recordedAreas = new net.neoforged.neoforge.client.gui.RecordedScreenAreas();
  
      public DebugScreenOverlay(Minecraft minecraft) {
          this.minecraft = minecraft;
@@ -16,7 +16,7 @@
 +    /// Neo: {@return the areas the debug screen drew during the last frame, in GUI-scaled screen coordinates}
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas() {
-+        java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> areas = new java.util.ArrayList<>(this.recordedAreas);
++        java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> areas = new java.util.ArrayList<>(this.recordedAreas.areas());
 +        areas.addAll(this.fpsChart.recordedAreas());
 +        areas.addAll(this.tpsChart.recordedAreas());
 +        areas.addAll(this.pingChart.recordedAreas());
@@ -48,7 +48,7 @@
                      int y = scaledScreenHeight - 64 - 2;
                      graphics.fill(x - 1, y - 1, x + 64 + 1, y + 64 + 1, -16777216);
 +                    // Neo: Record the area the lightmap texture, including its border, is drawn in
-+                    this.recordedAreas.add(
++                    this.recordedAreas.record(
 +                        new net.minecraft.client.gui.navigation.ScreenRectangle(x - 1, y - 1, displaySize + 2, displaySize + 2).transformAxisAligned(graphics.pose())
 +                    );
                      graphics.blit(
@@ -60,7 +60,7 @@
                          LevelLoadingScreen.extractChunksForRendering(graphics, scaledScreenWidth / 2, scaledScreenHeight / 2, 4, 1, statusView);
 +                        // Neo: Record the area the chunk visualization occupies, using the cell size and margin passed above
 +                        int chunkViewSize = (statusView.radius() * 2 + 1) * (4 + 1) - 1;
-+                        this.recordedAreas.add(
++                        this.recordedAreas.record(
 +                            new net.minecraft.client.gui.navigation.ScreenRectangle(
 +                                    scaledScreenWidth / 2 - chunkViewSize / 2, scaledScreenHeight / 2 - chunkViewSize / 2, chunkViewSize, chunkViewSize
 +                                )
@@ -94,7 +94,7 @@
 +
 +        // Neo: Record the area this column of lines occupies
 +        if (areaLeft != Integer.MAX_VALUE) {
-+            this.recordedAreas.add(
++            this.recordedAreas.record(
 +                new net.minecraft.client.gui.navigation.ScreenRectangle(areaLeft, areaTop, areaRight - areaLeft, areaBottom - areaTop)
 +                    .transformAxisAligned(graphics.pose())
 +            );

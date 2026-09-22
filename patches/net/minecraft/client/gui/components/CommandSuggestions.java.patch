@@ -5,7 +5,7 @@
      private boolean messagesAllowed = true;
      private boolean commandsAllowed = true;
 +    /// Neo: The areas the suggestions and the usage hint occupied on screen during the last frame, in GUI-scaled screen coordinates.
-+    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas = new java.util.ArrayList<>();
++    private final net.neoforged.neoforge.client.gui.RecordedScreenAreas recordedAreas = new net.neoforged.neoforge.client.gui.RecordedScreenAreas();
  
      public CommandSuggestions(
          Minecraft minecraft,
@@ -16,7 +16,7 @@
 +    /// Neo: {@return the areas the suggestions and the usage hint occupied on screen during the last frame, in GUI-scaled screen coordinates}
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas() {
-+        return java.util.List.copyOf(this.recordedAreas);
++        return this.recordedAreas.areas();
 +    }
 +
      public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
@@ -31,7 +31,7 @@
              graphics.fill(this.commandUsagePosition - 1, lineY, this.commandUsagePosition + this.commandUsageWidth + 1, lineY + 12, this.fillColor);
 +            // Neo: Record the area of the usage hint line drawn above
 +            this.recordedAreas
-+                .add(
++                .record(
 +                    new net.minecraft.client.gui.navigation.ScreenRectangle(
 +                        this.commandUsagePosition - 1, lineY, this.commandUsageWidth + 2, 12
 +                    )
@@ -46,7 +46,7 @@
          public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
 +            // Neo: Record the area the suggestions are drawn in
 +            CommandSuggestions.this.recordedAreas
-+                .add(
++                .record(
 +                    new net.minecraft.client.gui.navigation.ScreenRectangle(this.rect.getX(), this.rect.getY(), this.rect.getWidth(), this.rect.getHeight())
 +                        .transformAxisAligned(graphics.pose())
 +                );
