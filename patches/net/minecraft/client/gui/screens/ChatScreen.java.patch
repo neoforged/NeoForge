@@ -18,7 +18,7 @@
                  this.minecraft.gui.setScreen(null);
              } else {
                  this.input.setValue("");
-@@ -273,9 +_,17 @@
+@@ -273,9 +_,29 @@
          return this.isDraft ? FormattedCharSequence.forward(text, Style.EMPTY.withColor(ChatFormatting.GRAY).withItalic(true)) : null;
      }
  
@@ -26,6 +26,18 @@
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> chatInputAreas() {
 +        return java.util.List.copyOf(this.renderedAreas);
++    }
++
++    /// Neo: {@return the areas the chat history drawn by this screen occupies during the last frame, in GUI-scaled screen coordinates}
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> chatHistoryAreas() {
++        return this.minecraft.gui.hud.getChat().renderedAreas();
++    }
++
++    /// Neo: {@return the areas the command suggestions occupy on screen during the last frame, in GUI-scaled screen coordinates}
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> commandSuggestionAreas() {
++        return this.commandSuggestions.recordedAreas();
 +    }
 +
      @Override

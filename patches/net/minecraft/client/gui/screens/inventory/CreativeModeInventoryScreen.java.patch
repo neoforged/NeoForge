@@ -153,7 +153,7 @@
  
              this.refreshSearchResults();
          } else {
-@@ -685,11 +_,29 @@
+@@ -685,11 +_,31 @@
  
      @Override
      public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
@@ -167,6 +167,8 @@
 +            Component page = Component.literal(String.format("%d / %d", this.pages.indexOf(this.currentPage) + 1, this.pages.size()));
 +            // TODO 1.21.6: This previously bumped Z by 300, investigate if this needs nextStratum
 +            graphics.text(font, page.getVisualOrderText(), leftPos + (imageWidth / 2) - (font.width(page) / 2), topPos - 44, -1);
++            // Neo: The page indicator text is drawn above the tabs, so it is part of the areas they occupy
++            this.tabAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(leftPos + (imageWidth / 2) - (font.width(page) / 2), topPos - 44, font.width(page), 9).transformAxisAligned(graphics.pose()));
 +        }
 +
 +        // Neo: extractTabButton draws every tab of the current page, using the same position and size as the rects recorded here

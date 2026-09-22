@@ -1,0 +1,76 @@
+--- a/net/minecraft/client/gui/components/PlayerTabOverlay.java
++++ b/net/minecraft/client/gui/components/PlayerTabOverlay.java
+@@ -65,12 +_,26 @@
+     private @Nullable Component header;
+     private boolean visible;
+     private final Map<UUID, PlayerTabOverlay.HealthState> healthStates = new Object2ObjectOpenHashMap<>();
++    /// Neo: The areas occupied by the player list panels rendered by the overlay during the last frame, in GUI-scaled screen coordinates.
++    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas = new java.util.ArrayList<>();
+ 
+     public PlayerTabOverlay(Minecraft minecraft, Hud hud) {
+         this.minecraft = minecraft;
+         this.hud = hud;
+     }
+ 
++    /// Neo: {@return the areas occupied by the player list panels rendered during the last frame, in GUI-scaled screen coordinates}
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas() {
++        return java.util.List.copyOf(this.recordedAreas);
++    }
++
++    /// Neo: Discards the areas recorded by the last frame, for when the player list is not rendered.
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public void clearRecordedAreas() {
++        this.recordedAreas.clear();
++    }
++
+     public Component getNameForDisplay(PlayerInfo info) {
+         return info.getTabListDisplayName() != null
+             ? this.decorateName(info, info.getTabListDisplayName().copy())
+@@ -97,6 +_,7 @@
+     }
+ 
+     public void extractRenderState(GuiGraphicsExtractor graphics, int screenWidth, Scoreboard scoreboard, @Nullable Objective displayObjective) {
++        this.recordedAreas.clear();
+         List<PlayerInfo> playerInfos = this.getPlayerInfos();
+         List<PlayerTabOverlay.ScoreDisplayEntry> entriesToDisplay = new ArrayList<>(playerInfos.size());
+         int spacerWidth = this.minecraft.font.width(" ");
+@@ -181,6 +_,8 @@
+             graphics.fill(
+                 screenWidth / 2 - maxLineWidth / 2 - 1, yyo - 1, screenWidth / 2 + maxLineWidth / 2 + 1, yyo + headerLines.size() * 9, Integer.MIN_VALUE
+             );
++            // Neo: Record the header panel filled above
++            this.recordArea(graphics, screenWidth / 2 - maxLineWidth / 2 - 1, yyo - 1, screenWidth / 2 + maxLineWidth / 2 + 1, yyo + headerLines.size() * 9);
+ 
+             for (FormattedCharSequence line : headerLines) {
+                 int lineWidth = this.minecraft.font.width(line);
+@@ -192,6 +_,8 @@
+         }
+ 
+         graphics.fill(screenWidth / 2 - maxLineWidth / 2 - 1, yyo - 1, screenWidth / 2 + maxLineWidth / 2 + 1, yyo + rows * 9, Integer.MIN_VALUE);
++        // Neo: Record the main panel of the player list filled above
++        this.recordArea(graphics, screenWidth / 2 - maxLineWidth / 2 - 1, yyo - 1, screenWidth / 2 + maxLineWidth / 2 + 1, yyo + rows * 9);
+         int background = this.minecraft.options.getBackgroundColor(553648127);
+ 
+         for (int i = 0; i < slots; i++) {
+@@ -229,6 +_,8 @@
+             graphics.fill(
+                 screenWidth / 2 - maxLineWidth / 2 - 1, yyo - 1, screenWidth / 2 + maxLineWidth / 2 + 1, yyo + footerLines.size() * 9, Integer.MIN_VALUE
+             );
++            // Neo: Record the footer panel filled above
++            this.recordArea(graphics, screenWidth / 2 - maxLineWidth / 2 - 1, yyo - 1, screenWidth / 2 + maxLineWidth / 2 + 1, yyo + footerLines.size() * 9);
+ 
+             for (FormattedCharSequence line : footerLines) {
+                 int lineWidth = this.minecraft.font.width(line);
+@@ -236,6 +_,11 @@
+                 yyo += 9;
+             }
+         }
++    }
++
++    /// Neo: Records the area a panel of the player list is filled with, in GUI-scaled screen coordinates.
++    private void recordArea(GuiGraphicsExtractor graphics, int x0, int y0, int x1, int y1) {
++        this.recordedAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(x0, y0, x1 - x0, y1 - y0).transformAxisAligned(graphics.pose()));
+     }
+ 
+     protected void extractPingIcon(GuiGraphicsExtractor graphics, int slotWidth, int xo, int yo, PlayerInfo info) {

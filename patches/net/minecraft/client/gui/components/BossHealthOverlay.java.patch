@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/components/BossHealthOverlay.java
 +++ b/net/minecraft/client/gui/components/BossHealthOverlay.java
-@@ -52,12 +_,21 @@
+@@ -52,12 +_,27 @@
      };
      private final Minecraft minecraft;
      public final Map<UUID, LerpingBossEvent> events = Maps.newLinkedHashMap();
@@ -17,8 +17,14 @@
 +        return java.util.List.copyOf(this.barAreas);
 +    }
 +
-     public void extractRenderState(GuiGraphicsExtractor graphics) {
++    /// Neo: Clears the areas recorded for the previous frame. The HUD calls this at the start of every frame.
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public void clearRecordedAreas() {
 +        this.barAreas.clear();
++    }
++
+     public void extractRenderState(GuiGraphicsExtractor graphics) {
++        this.clearRecordedAreas();
          if (!this.events.isEmpty()) {
              graphics.nextStratum();
              ProfilerFiller profiler = Profiler.get();

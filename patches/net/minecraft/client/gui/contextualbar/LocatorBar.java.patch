@@ -1,0 +1,53 @@
+--- a/net/minecraft/client/gui/contextualbar/LocatorBar.java
++++ b/net/minecraft/client/gui/contextualbar/LocatorBar.java
+@@ -29,16 +_,34 @@
+     private static final int ARROW_LEFT = 1;
+     private static final int ARROW_PADDING = 1;
+     private final Minecraft minecraft;
++    /// Neo: The areas occupied by the locator bar and its waypoint markers rendered during the last frame, in GUI-scaled screen coordinates.
++    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas = new java.util.ArrayList<>();
+ 
+     public LocatorBar(Minecraft minecraft) {
+         this.minecraft = minecraft;
+     }
+ 
++    /// Neo: {@return the areas occupied by this bar rendered during the last frame, in GUI-scaled screen coordinates}
++    @Override
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas() {
++        return java.util.List.copyOf(this.recordedAreas);
++    }
++
++    /// Neo: Clears the areas recorded for the previous frame. The HUD calls this at the start of every frame.
++    @Override
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public void clearRecordedAreas() {
++        this.recordedAreas.clear();
++    }
++
+     @Override
+     public void extractBackground(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
++        this.recordedAreas.clear();
+         graphics.blitSprite(
+             RenderPipelines.GUI_TEXTURED, LOCATOR_BAR_BACKGROUND, this.left(this.minecraft.getWindow()), this.top(this.minecraft.getWindow()), 182, 5
+         );
++        this.recordedAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(this.left(this.minecraft.getWindow()), this.top(this.minecraft.getWindow()), 182, 5).transformAxisAligned(graphics.pose()));
+     }
+ 
+     @Override
+@@ -74,6 +_,7 @@
+                                     );
+                                 int dotPosition = Mth.floor(angle * 173.0 / 2.0 / 60.0);
+                                 graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, screenMiddle + dotPosition, top - 2, 9, 9, color);
++                                this.recordedAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(screenMiddle + dotPosition, top - 2, 9, 9).transformAxisAligned(graphics.pose()));
+                                 TrackedWaypoint.PitchDirection pitchDirection = waypoint.pitchDirectionToCamera(
+                                     level, this.minecraft.gameRenderer, partialTickSupplier
+                                 );
+@@ -89,6 +_,7 @@
+                                     }
+ 
+                                     graphics.blitSprite(RenderPipelines.GUI_TEXTURED, arrowSprite, screenMiddle + dotPosition + 1, top + arrowTop, 7, 5);
++                                    this.recordedAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(screenMiddle + dotPosition + 1, top + arrowTop, 7, 5).transformAxisAligned(graphics.pose()));
+                                 }
+                             }
+                         }

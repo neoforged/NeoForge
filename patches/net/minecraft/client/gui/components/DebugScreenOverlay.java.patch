@@ -1,0 +1,103 @@
+--- a/net/minecraft/client/gui/components/DebugScreenOverlay.java
++++ b/net/minecraft/client/gui/components/DebugScreenOverlay.java
+@@ -73,6 +_,8 @@
+     private final PingDebugChart pingChart;
+     private final BandwidthDebugChart bandwidthChart;
+     private final ProfilerPieChart profilerPieChart;
++    /// Neo: The areas the debug screen drew during the last frame, in GUI-scaled screen coordinates.
++    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas = new java.util.ArrayList<>();
+ 
+     public DebugScreenOverlay(Minecraft minecraft) {
+         this.minecraft = minecraft;
+@@ -86,12 +_,33 @@
+         this.profilerPieChart = new ProfilerPieChart(this.font);
+     }
+ 
++    /// Neo: {@return the areas the debug screen drew during the last frame, in GUI-scaled screen coordinates}
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas() {
++        java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> areas = new java.util.ArrayList<>(this.recordedAreas);
++        areas.addAll(this.fpsChart.recordedAreas());
++        areas.addAll(this.tpsChart.recordedAreas());
++        areas.addAll(this.pingChart.recordedAreas());
++        areas.addAll(this.bandwidthChart.recordedAreas());
++        areas.addAll(this.profilerPieChart.recordedAreas());
++        return java.util.List.copyOf(areas);
++    }
++
+     public void clearChunkCache() {
+         this.serverChunk = null;
+         this.clientChunk = null;
+     }
+ 
+     public void extractRenderState(GuiGraphicsExtractor graphics) {
++        // Neo: Discard the areas recorded during the last frame before the visibility check below, so that
++        // they do not linger while the debug screen is hidden. The charts are only drawn under some
++        // conditions, so they are reset here as well and record their areas again when they are drawn.
++        this.recordedAreas.clear();
++        this.fpsChart.clearRecordedAreas();
++        this.tpsChart.clearRecordedAreas();
++        this.pingChart.clearRecordedAreas();
++        this.bandwidthChart.clearRecordedAreas();
++        this.profilerPieChart.clearRecordedAreas();
+         Options options = this.minecraft.options;
+         if (this.minecraft.isGameLoadFinished() && (!this.minecraft.gui.hud.isHidden() || this.minecraft.gui.screen() != null)) {
+             Collection<Identifier> visibleEntries = this.minecraft.debugEntries.getCurrentlyEnabled();
+@@ -266,6 +_,10 @@
+                     int x = scaledScreenWidth - 64 - 2;
+                     int y = scaledScreenHeight - 64 - 2;
+                     graphics.fill(x - 1, y - 1, x + 64 + 1, y + 64 + 1, -16777216);
++                    // Neo: Record the area the lightmap texture, including its border, is drawn in
++                    this.recordedAreas.add(
++                        new net.minecraft.client.gui.navigation.ScreenRectangle(x - 1, y - 1, displaySize + 2, displaySize + 2).transformAxisAligned(graphics.pose())
++                    );
+                     graphics.blit(
+                         lightmapTextureView, RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST), x, y, x + 64, y + 64, 0.0F, 1.0F, 1.0F, 0.0F
+                     );
+@@ -277,6 +_,14 @@
+                         ChunkLoadStatusView statusView = singleplayerServer.createChunkLoadStatusView(16 + ChunkLevel.RADIUS_AROUND_FULL_CHUNK);
+                         statusView.moveTo(this.minecraft.player.level().dimension(), this.minecraft.player.chunkPosition());
+                         LevelLoadingScreen.extractChunksForRendering(graphics, scaledScreenWidth / 2, scaledScreenHeight / 2, 4, 1, statusView);
++                        // Neo: Record the area the chunk visualization occupies, using the cell size and margin passed above
++                        int chunkViewSize = (statusView.radius() * 2 + 1) * (4 + 1) - 1;
++                        this.recordedAreas.add(
++                            new net.minecraft.client.gui.navigation.ScreenRectangle(
++                                    scaledScreenWidth / 2 - chunkViewSize / 2, scaledScreenHeight / 2 - chunkViewSize / 2, chunkViewSize, chunkViewSize
++                                )
++                                .transformAxisAligned(graphics.pose())
++                        );
+                     }
+                 }
+ 
+@@ -303,6 +_,11 @@
+ 
+     private void extractLines(GuiGraphicsExtractor graphics, List<String> lines, boolean alignLeft, int scaledScreenWidth) {
+         int height = 9;
++        // Neo: The bounding box of the line backgrounds drawn below, in the coordinates the lines are drawn in
++        int areaLeft = Integer.MAX_VALUE;
++        int areaTop = Integer.MAX_VALUE;
++        int areaRight = Integer.MIN_VALUE;
++        int areaBottom = Integer.MIN_VALUE;
+ 
+         for (int i = 0; i < lines.size(); i++) {
+             String line = lines.get(i);
+@@ -311,7 +_,19 @@
+                 int left = alignLeft ? 2 : scaledScreenWidth - 2 - width;
+                 int top = 2 + height * i;
+                 graphics.fill(left - 1, top - 1, left + width + 1, top + height - 1, -1873784752);
++                areaLeft = Math.min(areaLeft, left - 1);
++                areaTop = Math.min(areaTop, top - 1);
++                areaRight = Math.max(areaRight, left + width + 1);
++                areaBottom = Math.max(areaBottom, top + height - 1);
+             }
++        }
++
++        // Neo: Record the area this column of lines occupies
++        if (areaLeft != Integer.MAX_VALUE) {
++            this.recordedAreas.add(
++                new net.minecraft.client.gui.navigation.ScreenRectangle(areaLeft, areaTop, areaRight - areaLeft, areaBottom - areaTop)
++                    .transformAxisAligned(graphics.pose())
++            );
+         }
+ 
+         for (int i = 0; i < lines.size(); i++) {

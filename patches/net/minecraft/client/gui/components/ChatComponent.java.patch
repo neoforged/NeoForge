@@ -4,37 +4,84 @@
      private @Nullable ChatScreen preservedScreen;
      private final List<ChatComponent.DelayedMessageDeletion> messageDeletionQueue = new ArrayList<>();
      private Predicate<GuiMessage> visibleMessageFilter = var0 -> true;
-+    /// Neo: The areas occupied by the chat block rendered during the last frame, in the coordinates this component draws in.
++    /// Neo: The areas occupied by the chat block rendered during the last frame, in screen space.
 +    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> renderedAreas = new java.util.ArrayList<>();
  
      public ChatComponent(Minecraft minecraft) {
          this.minecraft = minecraft;
-@@ -82,6 +_,12 @@
+@@ -82,6 +_,21 @@
          this.recentChat.addAll(this.commandHistory.history());
      }
  
-+    /// Neo: {@return the areas occupied by the chat block rendered during the last frame, in the coordinates this component draws in}
++    /// Neo: {@return the areas occupied by the chat block rendered during the last frame, in screen space}
++    ///
++    /// The rectangles already include the pose transform applied by the caller that rendered the chat, for example the
++    /// offset and the chat scale the HUD applies to the chat block.
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> renderedAreas() {
 +        return java.util.List.copyOf(this.renderedAreas);
 +    }
 +
++    /// Neo: Clears the areas recorded for the previous frame. The HUD calls this at the start of every frame.
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public void clearRecordedAreas() {
++        this.renderedAreas.clear();
++    }
++
      public void tick() {
          if (!this.messageDeletionQueue.isEmpty()) {
              this.processMessageDeletionQueue();
-@@ -136,6 +_,7 @@
-         if (total > 0 || isRestricted) {
-             ProfilerFiller profiler = Profiler.get();
-             profiler.push("chat");
-+            this.renderedAreas.clear();
-             float scale = (float)this.getScale();
-             int maxWidth = Mth.ceil(this.getWidth() / scale);
-             final int chatBottom = Mth.floor((screenHeight - 40) / scale);
+@@ -130,6 +_,7 @@
+     }
+ 
+     private void extractRenderState(ChatComponent.ChatGraphicsAccess graphics, int screenHeight, int ticks, ChatComponent.DisplayMode displayMode) {
++        this.renderedAreas.clear();
+         boolean isForeground = displayMode.foreground;
+         boolean isRestricted = displayMode.showRestrictedPrompt;
+         int total = this.trimmedMessages.size();
 @@ -160,6 +_,7 @@
                  graphics.fill(-4, entryTop, maxWidth + 4 + 4, entryBottom, ARGB.black(alphax * backgroundOpacity));
              });
              int lineAboveMessagesY = chatBottom - (count + 1) * entryHeight;
-+            this.renderedAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(-4, lineAboveMessagesY, maxWidth + 4 + 4, chatBottom + messageHeight - lineAboveMessagesY));
++            this.renderedAreas.add(graphics.toScreenSpace(new net.minecraft.client.gui.navigation.ScreenRectangle(-4, lineAboveMessagesY, maxWidth + 4 + 4, chatBottom + messageHeight - lineAboveMessagesY)));
              if (queueSize > 0L) {
                  graphics.fill(-2, chatBottom, maxWidth + 4, chatBottom + messageHeight, ARGB.black(backgroundOpacity));
              }
+@@ -497,6 +_,13 @@
+     public interface ChatGraphicsAccess {
+         void updatePose(final Consumer<Matrix3x2f> updater);
+ 
++        /// Neo: {@return the given rectangle transformed into screen space by the pose this access draws with}
++        ///
++        /// Accesses that do not draw anything return the rectangle unchanged.
++        default net.minecraft.client.gui.navigation.ScreenRectangle toScreenSpace(net.minecraft.client.gui.navigation.ScreenRectangle rectangle) {
++            return rectangle;
++        }
++
+         void fill(int x0, int y0, int x1, int y1, int color);
+ 
+         boolean handleMessage(int textTop, float opacity, FormattedCharSequence message);
+@@ -605,6 +_,11 @@
+         }
+ 
+         @Override
++        public net.minecraft.client.gui.navigation.ScreenRectangle toScreenSpace(net.minecraft.client.gui.navigation.ScreenRectangle rectangle) {
++            return rectangle.transformAxisAligned(this.graphics.pose());
++        }
++
++        @Override
+         public void fill(int x0, int y0, int x1, int y1, int color) {
+             this.graphics.fill(x0, y0, x1, y1, color);
+         }
+@@ -657,6 +_,11 @@
+             updater.accept(this.graphics.pose());
+             this.parameters = this.parameters.withPose(new Matrix3x2f(this.graphics.pose()));
+             this.updateLocalMousePos();
++        }
++
++        @Override
++        public net.minecraft.client.gui.navigation.ScreenRectangle toScreenSpace(net.minecraft.client.gui.navigation.ScreenRectangle rectangle) {
++            return rectangle.transformAxisAligned(this.graphics.pose());
+         }
+ 
+         @Override

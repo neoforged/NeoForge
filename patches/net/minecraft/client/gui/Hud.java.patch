@@ -9,7 +9,7 @@
  
  @OnlyIn(Dist.CLIENT)
  public class Hud {
-@@ -181,6 +_,19 @@
+@@ -181,6 +_,25 @@
      private Pair<Hud.ContextualInfo, ContextualBar> contextualInfoBar = Pair.of(Hud.ContextualInfo.EMPTY, ContextualBar.EMPTY);
      private final Map<Hud.ContextualInfo, Supplier<ContextualBar>> contextualInfoBars;
      private float scopeScale;
@@ -26,6 +26,12 @@
 +    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> scoreboardSidebarAreas = new java.util.ArrayList<>();
 +    /// Neo: The areas occupied by the hotbar and its decoration columns rendered by the HUD during the last frame, in GUI-scaled screen coordinates.
 +    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> hotbarAreas = new java.util.ArrayList<>();
++    /// Neo: The areas occupied by the overlay message rendered by the HUD during the last frame, in GUI-scaled screen coordinates.
++    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> overlayMessageAreas = new java.util.ArrayList<>();
++    /// Neo: The areas occupied by the title and the subtitle rendered by the HUD during the last frame, in GUI-scaled screen coordinates.
++    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> titleAreas = new java.util.ArrayList<>();
++    /// Neo: The area occupied by the selected item name rendered by the HUD during the last frame, in GUI-scaled screen coordinates.
++    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> selectedItemNameAreas = new java.util.ArrayList<>();
  
      public Hud(Minecraft minecraft) {
          this.minecraft = minecraft;
@@ -37,7 +43,7 @@
      }
  
      public void registerReloadListeners(ReloadableResourceManager resourceManager) {
-@@ -215,6 +_,30 @@
+@@ -215,6 +_,69 @@
          return this.isHidden;
      }
  
@@ -65,11 +71,53 @@
 +        return java.util.List.copyOf(this.hotbarAreas);
 +    }
 +
++    /// Neo: {@return the areas occupied by the overlay message rendered by the HUD during the last frame, in GUI-scaled screen coordinates}
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> overlayMessageAreas() {
++        return java.util.List.copyOf(this.overlayMessageAreas);
++    }
++
++    /// Neo: {@return the areas occupied by the title and the subtitle rendered by the HUD during the last frame, in GUI-scaled screen coordinates}
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> titleAreas() {
++        return java.util.List.copyOf(this.titleAreas);
++    }
++
++    /// Neo: {@return the area occupied by the selected item name rendered by the HUD during the last frame, in GUI-scaled screen coordinates}
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> selectedItemNameAreas() {
++        return java.util.List.copyOf(this.selectedItemNameAreas);
++    }
++
++    /// Neo: {@return the areas occupied by the contextual info bar rendered by the HUD during the last frame, in GUI-scaled screen coordinates}
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> contextualBarAreas() {
++        return this.contextualInfoBar.getSecond().recordedAreas();
++    }
++
++    // Neo: Clears the areas recorded during the previous frame.
++    private void clearRecordedAreas() {
++        this.effectAreas.clear();
++        this.chatAreas.clear();
++        this.scoreboardSidebarAreas.clear();
++        this.hotbarAreas.clear();
++        this.overlayMessageAreas.clear();
++        this.titleAreas.clear();
++        this.selectedItemNameAreas.clear();
++        this.chat.clearRecordedAreas();
++        this.tabList.clearRecordedAreas();
++        this.contextualInfoBar.getSecond().clearRecordedAreas();
++        this.bossOverlay.clearRecordedAreas();
++    }
++
      public void resetTitleTimes() {
          this.titleFadeInTime = 10;
          this.titleStayTime = 70;
-@@ -224,28 +_,48 @@
+@@ -222,30 +_,51 @@
+     }
+ 
      public void extractRenderState(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
++        this.clearRecordedAreas();
          this.minecraft.gameRenderer.gameRenderState().guiRenderState.isHudHidden = this.isHidden;
          if (!(this.minecraft.gui.screen() instanceof LevelLoadingScreen)) {
 -            if (!this.isHidden) {
@@ -162,11 +210,34 @@
                  int color;
                  if (this.animateOverlayMessageColor) {
                      color = Mth.hsvToArgb(t / 50.0F, 0.7F, 0.6F, alpha);
-@@ -402,16 +_,31 @@
-     }
+@@ -353,6 +_,8 @@
  
+                 int width = font.width(this.overlayMessageString);
+                 graphics.textWithBackdrop(font, this.overlayMessageString, -width / 2, -4, width, color);
++                // Neo: Record the area the overlay message actually occupies, including the background backdrop
++                this.overlayMessageAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(-width / 2 - 2, -6, width + 4, 13).transformAxisAligned(graphics.pose()));
+                 graphics.pose().popMatrix();
+             }
+ 
+@@ -385,12 +_,16 @@
+                 int titleWidth = font.width(this.title);
+                 int textColor = ARGB.white(alpha);
+                 graphics.textWithBackdrop(font, this.title, -titleWidth / 2, -10, titleWidth, textColor);
++                // Neo: Record the area the title actually occupies, including the background backdrop
++                this.titleAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(-titleWidth / 2 - 2, -12, titleWidth + 4, 13).transformAxisAligned(graphics.pose()));
+                 graphics.pose().popMatrix();
+                 if (this.subtitle != null) {
+                     graphics.pose().pushMatrix();
+                     graphics.pose().scale(2.0F, 2.0F);
+                     int subtitleWidth = font.width(this.subtitle);
+                     graphics.textWithBackdrop(font, this.subtitle, -subtitleWidth / 2, 5, subtitleWidth, textColor);
++                    // Neo: Record the area the subtitle actually occupies, including the background backdrop
++                    this.titleAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(-subtitleWidth / 2 - 2, 3, subtitleWidth + 4, 13).transformAxisAligned(graphics.pose()));
+                     graphics.pose().popMatrix();
+                 }
+ 
+@@ -404,10 +_,21 @@
      private void extractChat(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-+        this.chatAreas.clear();
          if (this.minecraft.player != null && !this.chat.isChatFocused()) {
              Window window = this.minecraft.getWindow();
 +            // Neo: Allow customizing position of chat component
@@ -181,27 +252,13 @@
              int mouseY = Mth.floor(this.minecraft.mouseHandler.getScaledYPos(window));
              graphics.nextStratum();
              this.chat.extractRenderState(graphics, this.getFont(), this.tickCount, mouseX, mouseY, ChatComponent.DisplayMode.BACKGROUND, false);
-+            // Neo: Record the areas the chat actually occupies, including the offset applied above
-+            for (net.minecraft.client.gui.navigation.ScreenRectangle area : this.chat.renderedAreas()) {
-+                this.chatAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(area.left() + event.getPosX(), area.top() + event.getPosY() - graphics.guiHeight() + chatBottomMargin, area.width(), area.height()));
-+            }
++            // Neo: Record the areas the chat actually occupies, in screen space
++            this.chatAreas.addAll(this.chat.renderedAreas());
 +            graphics.pose().popMatrix();
          }
      }
  
-     private void extractScoreboardSidebar(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-+        this.scoreboardSidebarAreas.clear();
-         Scoreboard scoreboard = this.minecraft.level.getScoreboard();
-         Objective teamObjective = null;
-         PlayerTeam playerTeam = scoreboard.getPlayersTeam(this.minecraft.player.getScoreboardName());
-@@ -495,12 +_,15 @@
-     }
- 
-     private void extractEffects(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-+        this.effectAreas.clear();
-         Collection<MobEffectInstance> activeEffects = this.minecraft.player.getActiveEffects();
-         if (!activeEffects.isEmpty() && (this.minecraft.gui.screen() == null || !this.minecraft.gui.screen().showsActiveEffects())) {
-             int beneficialCount = 0;
+@@ -501,6 +_,8 @@
              int harmfulCount = 0;
  
              for (MobEffectInstance instance : Ordering.natural().reverse().sortedCopy(activeEffects)) {
@@ -226,14 +283,13 @@
                      graphics.blitSprite(RenderPipelines.GUI_TEXTURED, getMobEffectSprite(effect), x + 3, y + 3, 18, 18, ARGB.white(alpha));
                  }
              }
-@@ -542,32 +_,52 @@
+@@ -542,32 +_,51 @@
          return effect.unwrapKey().map(ResourceKey::identifier).map(id -> id.withPrefix("mob_effect/")).orElseGet(MissingTextureAtlasSprite::getLocation);
      }
  
 -    private void extractHotbarAndDecorations(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 +    // Neo: Split off into separate method to wrap in a layer
 +    private void extractHotbar(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-+        this.hotbarAreas.clear();
          if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR) {
              this.spectatorGui.extractHotbar(graphics);
          } else {
@@ -320,7 +376,7 @@
              if (!this.minecraft.gameMode.canHurtPlayer()) {
                  y += 14;
              }
-@@ -653,7 +_,13 @@
+@@ -653,7 +_,15 @@
              }
  
              if (alpha > 0) {
@@ -332,6 +388,8 @@
 +                    x = (graphics.guiWidth() - font.width(highlightTip)) / 2;
 +                    graphics.textWithBackdrop(font, highlightTip, x, y, strWidth, ARGB.white(alpha));
 +                }
++                // Neo: Record the area the selected item name actually occupies, including the background backdrop
++                this.selectedItemNameAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(x - 2, y - 2, strWidth + 4, 13).transformAxisAligned(graphics.pose()));
              }
          }
      }

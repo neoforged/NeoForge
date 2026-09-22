@@ -1,0 +1,41 @@
+--- a/net/minecraft/client/gui/contextualbar/ExperienceBar.java
++++ b/net/minecraft/client/gui/contextualbar/ExperienceBar.java
+@@ -14,13 +_,30 @@
+     private static final Identifier EXPERIENCE_BAR_BACKGROUND_SPRITE = Identifier.withDefaultNamespace("hud/experience_bar_background");
+     private static final Identifier EXPERIENCE_BAR_PROGRESS_SPRITE = Identifier.withDefaultNamespace("hud/experience_bar_progress");
+     private final Minecraft minecraft;
++    /// Neo: The area occupied by the experience bar rendered during the last frame, in GUI-scaled screen coordinates.
++    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas = new java.util.ArrayList<>();
+ 
+     public ExperienceBar(Minecraft minecraft) {
+         this.minecraft = minecraft;
+     }
+ 
++    /// Neo: {@return the areas occupied by this bar rendered during the last frame, in GUI-scaled screen coordinates}
++    @Override
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> recordedAreas() {
++        return java.util.List.copyOf(this.recordedAreas);
++    }
++
++    /// Neo: Clears the areas recorded for the previous frame. The HUD calls this at the start of every frame.
++    @Override
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public void clearRecordedAreas() {
++        this.recordedAreas.clear();
++    }
++
+     @Override
+     public void extractBackground(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
++        this.recordedAreas.clear();
+         LocalPlayer player = this.minecraft.player;
+         int left = this.left(this.minecraft.getWindow());
+         int top = this.top(this.minecraft.getWindow());
+@@ -28,6 +_,7 @@
+         if (xpNeededForNextLevel > 0) {
+             int progress = (int)(player.experienceProgress * 183.0F);
+             graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EXPERIENCE_BAR_BACKGROUND_SPRITE, left, top, 182, 5);
++            this.recordedAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(left, top, 182, 5).transformAxisAligned(graphics.pose()));
+             if (progress > 0) {
+                 graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EXPERIENCE_BAR_PROGRESS_SPRITE, 182, 5, 0, 0, left, top, progress, 5);
+             }

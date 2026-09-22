@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractCommandBlockEditScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
@@ -46,6 +47,20 @@ public final class VanillaScreenAreas {
     public static final Identifier RECIPE_BOOK = Identifier.withDefaultNamespace("recipe_book");
     /// The item group tabs of the creative mode inventory.
     public static final Identifier CREATIVE_TABS = Identifier.withDefaultNamespace("creative_tabs");
+    /// The player list shown while the tab key is held.
+    public static final Identifier PLAYER_LIST = Identifier.withDefaultNamespace("player_list");
+    /// The overlay message shown above the hotbar.
+    public static final Identifier OVERLAY_MESSAGE = Identifier.withDefaultNamespace("overlay_message");
+    /// The name of the selected item, shown above the hotbar.
+    public static final Identifier SELECTED_ITEM_NAME = Identifier.withDefaultNamespace("selected_item_name");
+    /// The title and subtitle in the middle of the screen.
+    public static final Identifier TITLE = Identifier.withDefaultNamespace("title");
+    /// The contextual info bar (experience, locator, ...) above the hotbar.
+    public static final Identifier CONTEXTUAL_BAR = Identifier.withDefaultNamespace("contextual_bar");
+    /// The debug overlay shown while the debug screen is open.
+    public static final Identifier DEBUG = Identifier.withDefaultNamespace("debug");
+    /// The command suggestions shown above the chat input box or a command edit box.
+    public static final Identifier COMMAND_SUGGESTIONS = Identifier.withDefaultNamespace("command_suggestions");
 
     private VanillaScreenAreas() {}
 
@@ -62,6 +77,13 @@ public final class VanillaScreenAreas {
         registrations.put(CONTAINER_EFFECTS, new ScreenAreaManager.ScreenAreaRegistration(AbstractContainerScreen.class, VanillaScreenAreas::getContainerEffectAreas));
         registrations.put(RECIPE_BOOK, new ScreenAreaManager.ScreenAreaRegistration(AbstractRecipeBookScreen.class, VanillaScreenAreas::getRecipeBookAreas));
         registrations.put(CREATIVE_TABS, new ScreenAreaManager.ScreenAreaRegistration(CreativeModeInventoryScreen.class, VanillaScreenAreas::getCreativeTabAreas));
+        registrations.put(PLAYER_LIST, new ScreenAreaManager.ScreenAreaRegistration(null, VanillaScreenAreas::getPlayerListAreas));
+        registrations.put(OVERLAY_MESSAGE, new ScreenAreaManager.ScreenAreaRegistration(null, VanillaScreenAreas::getOverlayMessageAreas));
+        registrations.put(SELECTED_ITEM_NAME, new ScreenAreaManager.ScreenAreaRegistration(null, VanillaScreenAreas::getSelectedItemNameAreas));
+        registrations.put(TITLE, new ScreenAreaManager.ScreenAreaRegistration(null, VanillaScreenAreas::getTitleAreas));
+        registrations.put(CONTEXTUAL_BAR, new ScreenAreaManager.ScreenAreaRegistration(null, VanillaScreenAreas::getContextualBarAreas));
+        registrations.put(DEBUG, new ScreenAreaManager.ScreenAreaRegistration(null, VanillaScreenAreas::getDebugAreas));
+        registrations.put(COMMAND_SUGGESTIONS, new ScreenAreaManager.ScreenAreaRegistration(null, VanillaScreenAreas::getCommandSuggestionAreas));
     }
 
     // The areas are recorded by the HUD while rendering, see Hud#hotbarAreas()
@@ -103,10 +125,81 @@ public final class VanillaScreenAreas {
     // The areas are recorded by the HUD while rendering, see Hud#chatAreas()
     private static List<ScreenRectangle> getChatAreas(ScreenAreaContext context) {
         Minecraft minecraft = Minecraft.getInstance();
+        List<ScreenRectangle> areas = new ArrayList<>();
+        if (isInGame(minecraft) && !minecraft.gui.hud.isHidden()) {
+            areas.addAll(minecraft.gui.hud.chatAreas());
+        }
+        // The chat history is drawn by the chat screen while it is open, see ChatScreen#chatHistoryAreas()
+        for (Screen screen : context.screens()) {
+            if (screen instanceof ChatScreen chatScreen) {
+                areas.addAll(chatScreen.chatHistoryAreas());
+            }
+        }
+        return areas;
+    }
+
+    // The areas are recorded by the player list overlay while rendering, see PlayerTabOverlay#recordedAreas()
+    private static List<ScreenRectangle> getPlayerListAreas(ScreenAreaContext context) {
+        Minecraft minecraft = Minecraft.getInstance();
         if (!isInGame(minecraft) || minecraft.gui.hud.isHidden()) {
             return List.of();
         }
-        return minecraft.gui.hud.chatAreas();
+        return minecraft.gui.hud.getTabList().recordedAreas();
+    }
+
+    // The areas are recorded by the HUD while rendering, see Hud#overlayMessageAreas()
+    private static List<ScreenRectangle> getOverlayMessageAreas(ScreenAreaContext context) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (!isInGame(minecraft) || minecraft.gui.hud.isHidden()) {
+            return List.of();
+        }
+        return minecraft.gui.hud.overlayMessageAreas();
+    }
+
+    // The areas are recorded by the HUD while rendering, see Hud#selectedItemNameAreas()
+    private static List<ScreenRectangle> getSelectedItemNameAreas(ScreenAreaContext context) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (!isInGame(minecraft) || minecraft.gui.hud.isHidden()) {
+            return List.of();
+        }
+        return minecraft.gui.hud.selectedItemNameAreas();
+    }
+
+    // The areas are recorded by the HUD while rendering, see Hud#titleAreas()
+    private static List<ScreenRectangle> getTitleAreas(ScreenAreaContext context) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (!isInGame(minecraft) || minecraft.gui.hud.isHidden()) {
+            return List.of();
+        }
+        return minecraft.gui.hud.titleAreas();
+    }
+
+    // The areas are recorded by the HUD while rendering, see Hud#contextualBarAreas()
+    private static List<ScreenRectangle> getContextualBarAreas(ScreenAreaContext context) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (!isInGame(minecraft) || minecraft.gui.hud.isHidden()) {
+            return List.of();
+        }
+        return minecraft.gui.hud.contextualBarAreas();
+    }
+
+    // The areas are recorded by the debug overlay while rendering, see DebugScreenOverlay#recordedAreas().
+    // The debug overlay keeps rendering while screens are open or the HUD is hidden, so it is not gated here.
+    private static List<ScreenRectangle> getDebugAreas(ScreenAreaContext context) {
+        return Minecraft.getInstance().gui.hud.getDebugOverlay().recordedAreas();
+    }
+
+    // The areas are recorded by the command suggestions while rendering, see CommandSuggestions#renderedAreas()
+    private static List<ScreenRectangle> getCommandSuggestionAreas(ScreenAreaContext context) {
+        List<ScreenRectangle> areas = new ArrayList<>();
+        for (Screen screen : context.screens()) {
+            if (screen instanceof ChatScreen chatScreen) {
+                areas.addAll(chatScreen.commandSuggestionAreas());
+            } else if (screen instanceof AbstractCommandBlockEditScreen commandBlockScreen) {
+                areas.addAll(commandBlockScreen.commandSuggestionAreas());
+            }
+        }
+        return areas;
     }
 
     // The areas are recorded by the chat screen while rendering, see ChatScreen#chatInputAreas()
