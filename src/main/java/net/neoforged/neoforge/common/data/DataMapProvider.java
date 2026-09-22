@@ -109,12 +109,14 @@ public abstract class DataMapProvider implements DataProvider {
         protected final ResourceKey<Registry<R>> registryKey;
         private final DataMapType<R, T> type;
         private final List<ICondition> conditions = new ArrayList<>();
+        private final boolean supportsTags;
 
         private boolean replace;
 
         public Builder(DataMapType<R, T> type) {
             this.type = type;
             this.registryKey = type.registryKey();
+            this.supportsTags = !(type instanceof AdvancedDataMapType<R, T, ?> adv) || adv.supportsTags();
         }
 
         public Builder<T, R> add(ResourceKey<R> key, T value, boolean replace, ICondition... conditions) {
@@ -131,6 +133,9 @@ public abstract class DataMapProvider implements DataProvider {
         }
 
         public Builder<T, R> add(TagKey<R> tag, T value, boolean replace, ICondition... conditions) {
+            if (!supportsTags) {
+                throw new IllegalArgumentException("DataMapType " + type.id() + " does not support tags: " + ((AdvancedDataMapType<R, T, ?>) type).getNoTagsReason());
+            }
             this.values.put(Either.left(tag), Optional.of(new WithConditions<>(new DataMapEntry<>(value, replace), conditions)));
             return this;
         }

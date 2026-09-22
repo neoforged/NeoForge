@@ -166,15 +166,29 @@ public class DataMapLoader extends ContextAwareReloadListener {
     private static <A, T> List<DataMapFile<A, T>> readData(RegistryOps<JsonElement> ops, DataMapType<T, A> attachmentType, ResourceKey<Registry<T>> registryKey, List<Resource> resources) {
         final var codec = DataMapFile.codec(registryKey, attachmentType);
         final List<DataMapFile<A, T>> entries = new LinkedList<>();
+        boolean supportsTags = !(attachmentType instanceof AdvancedDataMapType<T, A, ?> adv) || adv.supportsTags();
         for (final Resource resource : resources) {
             try (Reader reader = resource.openAsReader()) {
                 JsonElement jsonelement = JsonParser.parseReader(reader);
-                entries.add(codec.decode(ops, jsonelement).getOrThrow().getFirst());
+                DataMapFile<A, T> file = codec.decode(ops, jsonelement).getOrThrow().getFirst();
+                if (!supportsTags && checkTagUsage(attachmentType, file, resource)) {
+                    entries.add(file);
+                }
             } catch (Exception exception) {
                 LOGGER.error("Could not read data map of type {} for registry {}", attachmentType.id(), registryKey, exception);
             }
         }
         return entries;
+    }
+
+    private static <A, T> boolean checkTagUsage(DataMapType<T, A> type, DataMapFile<A, T> file, Resource resource) {
+        for (Either<TagKey<T>, ResourceKey<T>> key : file.values().keySet()) {
+            if (key.left().isPresent()) {
+                LOGGER.error("Found tags in {} datamap file from pack {} but this DataMapType does not support tags: {}. ", type.id(), resource.sourcePackId(), ((AdvancedDataMapType<T, A, ?>) type).getNoTagsReason());
+                return false;
+            }
+        }
+        return true;
     }
 
     private record LoadResult<T>(Map<DataMapType<T, ?>, List<DataMapFile<?, T>>> results) {}
