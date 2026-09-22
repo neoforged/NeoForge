@@ -5,8 +5,10 @@
 
 package net.neoforged.neoforge.registries.datamaps.builtin;
 
+import net.minecraft.core.component.BlockTransformer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.behavior.GiveGiftToHero;
 import net.minecraft.world.entity.ai.behavior.WorkAtComposter;
@@ -16,21 +18,19 @@ import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.world.entity.npc.villager.VillagerType;
 import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WeatheringCopper;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.level.levelgen.feature.MonsterRoomFeature;
+import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.DataMapHooks;
-import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.extensions.IBlockExtension;
-import net.neoforged.neoforge.event.level.BlockEvent.BlockToolModificationEvent;
+import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
+import net.neoforged.neoforge.registries.datamaps.DataMapValueMerger;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 
 /**
@@ -53,6 +53,18 @@ public class NeoForgeDataMaps {
     public static final DataMapType<EntityType<?>, AcceptableVillagerDistance> ACCEPTABLE_VILLAGER_DISTANCES = DataMapType.builder(id("acceptable_villager_distances"), Registries.ENTITY_TYPE, AcceptableVillagerDistance.CODEC)
             .synced(AcceptableVillagerDistance.DISTANCE_CODEC, false).build();
 
+    /// The [BlockTransformer][BlockTransformer] data map that allows appending additional entries to existing [BlockTransformer]s.
+    ///
+    /// The location of this data map is {@code neoforge/data_maps/block_transformer/block_transform_appenders.json}, and the values are
+    /// lists of [BlockTransformer.BlockTransformData]s
+    ///
+    /// Transforms targeting a single block or state thereof should use [#TRANSFORMABLES] instead.
+    public static final DataMapType<BlockTransformer, BlockTransformAppender> BLOCK_TRANSFORM_APPENDERS = AdvancedDataMapType
+            .builder(id("block_transform_appenders"), Registries.BLOCK_TRANSFORMER, BlockTransformAppender.CODEC)
+            .synced(BlockTransformAppender.CODEC, false)
+            .merger(DataMapValueMerger.wrappedListMerger(BlockTransformAppender::entries, BlockTransformAppender::new))
+            .build();
+
     /**
      * The {@linkplain EntityType} data map that replaces {@link MonsterRoomFeature#MOBS}.
      * <p>
@@ -74,10 +86,10 @@ public class NeoForgeDataMaps {
      * <li>{@code next_oxidation_stage}, a block that the object should convert into once it changes oxidizing states</li>
      * </ul>
      *
-     * The inverted map of this can be found at {@link DataMapHooks#getInverseOxidizablesMap()}
+     * The inverted map of this can be found at {@link DataMapHooks#INVERSE_OXIDIZABLES_DATAMAP}
      */
     public static final DataMapType<Block, Oxidizable> OXIDIZABLES = DataMapType.builder(
-            id("oxidizables"), Registries.BLOCK, Oxidizable.CODEC).synced(Oxidizable.OXIDIZABLE_CODEC, false).build();
+            id("oxidizables"), Registries.BLOCK, Oxidizable.CODEC).synced(Oxidizable.CODEC, false).build();
 
     /**
      * The {@linkplain EntityType} data map that replaces {@link Parrot#MOB_SOUND_MAP}.
@@ -103,19 +115,24 @@ public class NeoForgeDataMaps {
     public static final DataMapType<VillagerProfession, RaidHeroGift> RAID_HERO_GIFTS = DataMapType.builder(
             id("raid_hero_gifts"), Registries.VILLAGER_PROFESSION, RaidHeroGift.CODEC).synced(RaidHeroGift.LOOT_TABLE_CODEC, false).build();
 
-    /**
-     * The {@linkplain Block} data map that replaces {@link AxeItem#STRIPPABLES}.
-     * <p>
-     * The location of this data map is {@code neoforge/data_maps/block/strippables.json}, and the values are objects with 1 field:
-     * <ul>
-     * <li>{@code stripped_block} - the stripped equivalent of the block after being right-clicked on by an axe.</li>
-     * </ul>
-     *
-     * Note that, upon stripping, all common properties will be copied from the unstripped state to the stripped state.
-     * If you want more advanced behavior, see {@link IBlockExtension#getToolModifiedState(BlockState, UseOnContext, ItemAbility, boolean)} and {@link BlockToolModificationEvent}.
-     */
-    public static final DataMapType<Block, Strippable> STRIPPABLES = DataMapType.builder(
-            id("strippables"), Registries.BLOCK, Strippable.CODEC).synced(Strippable.STRIPPED_BLOCK_CODEC, false).build();
+    /// The [Block][Block] data map that allows appending additional entries to existing [BlockTransformer]s.
+    ///
+    /// The location of this data map is `neoforge/data_maps/block/transformables.json`, and the values are objects with either:
+    /// - 1 field
+    ///   - `transformers`, an object representing a map of [BlockTransformer] keys to [BlockTransformer.BlockTransformData] entries
+    /// - 2 fields
+    ///   - `transformer`, the [ResourceKey] of a [BlockTransformer]
+    ///   - `transform_data`, a [BlockTransformer.BlockTransformData] describing how the block should be transformed
+    ///
+    /// The [BlockStateProvider] specified by the transform data entry/entries should ensure that the specified transformation only
+    /// applies to the block this datamap value is attached to and datamap values of this type should not be attached to multiple
+    /// blocks via tags.
+    /// Transformations applying to multiple blocks (i.e. via tag or custom block predicates) should use [#BLOCK_TRANSFORM_APPENDERS] instead.
+    public static final DataMapType<Block, Transformable> TRANSFORMABLES = AdvancedDataMapType.builder(id("transformables"), Registries.BLOCK, Transformable.CODEC)
+            .synced(Transformable.CODEC, false)
+            .merger(DataMapValueMerger.wrappedMapMerger(Transformable::transformers, Transformable::new))
+            .remover(Transformable.Remover.CODEC)
+            .build();
 
     /**
      * The {@linkplain GameEvent} data map that replaces {@link VibrationSystem#VIBRATION_FREQUENCY_FOR_EVENT}.
@@ -165,7 +182,7 @@ public class NeoForgeDataMaps {
      * The inverted map of this can be found at {@link DataMapHooks#INVERSE_WAXABLES_DATAMAP}
      */
     public static final DataMapType<Block, Waxable> WAXABLES = DataMapType.builder(
-            id("waxables"), Registries.BLOCK, Waxable.CODEC).synced(Waxable.WAXABLE_CODEC, false).build();
+            id("waxables"), Registries.BLOCK, Waxable.CODEC).synced(Waxable.CODEC, false).build();
 
     private static Identifier id(final String name) {
         return Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, name);
@@ -174,11 +191,12 @@ public class NeoForgeDataMaps {
     @SubscribeEvent
     private static void register(final RegisterDataMapTypesEvent event) {
         event.register(ACCEPTABLE_VILLAGER_DISTANCES);
+        event.register(BLOCK_TRANSFORM_APPENDERS);
         event.register(MONSTER_ROOM_MOBS);
         event.register(OXIDIZABLES);
         event.register(PARROT_IMITATIONS);
         event.register(RAID_HERO_GIFTS);
-        event.register(STRIPPABLES);
+        event.register(TRANSFORMABLES);
         event.register(VIBRATION_FREQUENCIES);
         event.register(VILLAGER_COMPOSTABLES);
         event.register(VILLAGER_TYPES);

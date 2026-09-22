@@ -80,7 +80,7 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
 
         final var oxidizables = builder(NeoForgeDataMaps.OXIDIZABLES);
         WeatheringCopper.NEXT_BY_BLOCK.get().forEach((now, after) -> {
-            oxidizables.add(now.builtInRegistryHolder(), new Oxidizable(after), false);
+            oxidizables.add(now.builtInRegistryHolder(), new Oxidizable(after, false), false);
         });
 
         final var compostables = builder(NeoForgeDataMaps.VILLAGER_COMPOSTABLES);
@@ -89,7 +89,7 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
 
         final var waxables = builder(NeoForgeDataMaps.WAXABLES);
         HoneycombItem.WAXABLES.get().forEach((now, after) -> {
-            waxables.add(now.builtInRegistryHolder(), new Waxable(after), false);
+            waxables.add(now.builtInRegistryHolder(), new Waxable(after, false), false);
         });
     }
 }
