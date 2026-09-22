@@ -5,23 +5,29 @@
 
 package net.neoforged.neoforge.client.gui;
 
-import java.util.Collection;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
+import java.util.function.Consumer;
+import net.minecraft.client.gui.screens.Screen;
 
-/// Declares the screen areas occupied by a UI, so that other UIs can query and avoid them.
+/// Declares the screen areas occupied by a screen, so that other UIs can query and avoid them.
 ///
 /// Providers are registered via [RegisterScreenAreaProviderEvent][net.neoforged.neoforge.client.event.RegisterScreenAreaProviderEvent]
-/// and are queried on demand, so the declared areas may change between calls.
+/// and are queried on demand with the live screen instance, so the declared areas may change between queries.
+///
+/// @param <S> the type of screen the areas are declared for
 @FunctionalInterface
-public interface ScreenAreaProvider {
-    /// Returns the areas currently occupied by this UI, in GUI-scaled absolute screen
-    /// coordinates (origin at the top-left, y pointing down).
+public interface ScreenAreaProvider<S extends Screen> {
+    /// Collects the areas currently occupied by this UI, in GUI-scaled absolute screen coordinates
+    /// (origin at the top-left, y pointing down).
     ///
-    /// An empty collection may be returned to declare that nothing is currently occupied
-    /// (for example because the UI is hidden). Degenerate areas (width or height `<= 0`)
-    /// are ignored.
+    /// A provider may declare nothing (for example because the UI is hidden). Degenerate areas
+    /// (width or height `<= 0`) are ignored.
     ///
-    /// @param context the context the areas are queried in
-    /// @return the occupied areas
-    Collection<ScreenRectangle> getAreas(ScreenAreaContext context);
+    /// The provider is only queried for screens that are instances of the screen class it was
+    /// registered for. It must not query [ScreenAreaManager] while it is being evaluated; the areas
+    /// of the providers evaluated before it are available through the given lookup.
+    ///
+    /// @param screen  the screen the areas are queried for
+    /// @param earlier the areas declared by the providers evaluated before this one
+    /// @param out     accepts the declared areas
+    void collectAreas(S screen, ScreenAreaLookup earlier, Consumer<ScreenArea> out);
 }

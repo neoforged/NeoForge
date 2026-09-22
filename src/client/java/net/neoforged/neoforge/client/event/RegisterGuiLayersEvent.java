@@ -15,8 +15,10 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.neoforge.client.gui.GlobalScreenAreaProvider;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.neoforge.client.gui.GuiLayerManager;
+import net.neoforged.neoforge.client.gui.ScreenAreaManager;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
@@ -25,6 +27,10 @@ import org.jspecify.annotations.Nullable;
  * Allows users to register custom {@link GuiLayer layers} for GUI rendering.
  *
  * <p>See also {@link RenderGuiLayerEvent} to intercept rendering of registered layers.
+ *
+ * <p>A layer can also declare the areas it occupies on screen, so that other UIs can query and avoid them,
+ * by passing a {@link GlobalScreenAreaProvider} to the overloads of the registration methods.
+ * See {@link net.neoforged.neoforge.client.gui.ScreenAreaManager} for how these areas are queried.
  *
  * <p>This event is not {@linkplain ICancellableEvent cancellable}.
  *
@@ -48,6 +54,18 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
         register(Ordering.BEFORE, null, id, layer);
     }
 
+    /// Registers a layer that renders below all others, and binds the areas it occupies to its id,
+    /// so that other UIs can query and avoid them.
+    ///
+    /// @param id    a unique resource id for this layer
+    /// @param layer the layer
+    /// @param areas the provider of the areas the layer occupies
+    /// @param after the ids of the areas to evaluate the given provider after
+    public void registerBelowAll(Identifier id, GuiLayer layer, GlobalScreenAreaProvider areas, Identifier... after) {
+        register(Ordering.BEFORE, null, id, layer);
+        ScreenAreaManager.registerGlobalArea(id, areas, after);
+    }
+
     /**
      * Registers a layer that renders below another.
      *
@@ -58,6 +76,19 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      */
     public void registerBelow(Identifier other, Identifier id, GuiLayer layer) {
         register(Ordering.BEFORE, other, id, layer);
+    }
+
+    /// Registers a layer that renders below another, and binds the areas it occupies to its id,
+    /// so that other UIs can query and avoid them.
+    ///
+    /// @param other the id of the layer to render below
+    /// @param id    a unique resource id for this layer
+    /// @param layer the layer
+    /// @param areas the provider of the areas the layer occupies
+    /// @param after the ids of the areas to evaluate the given provider after
+    public void registerBelow(Identifier other, Identifier id, GuiLayer layer, GlobalScreenAreaProvider areas, Identifier... after) {
+        register(Ordering.BEFORE, other, id, layer);
+        ScreenAreaManager.registerGlobalArea(id, areas, after);
     }
 
     /**
@@ -72,6 +103,19 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
         register(Ordering.AFTER, other, id, layer);
     }
 
+    /// Registers a layer that renders above another, and binds the areas it occupies to its id,
+    /// so that other UIs can query and avoid them.
+    ///
+    /// @param other the id of the layer to render above
+    /// @param id    a unique resource id for this layer
+    /// @param layer the layer
+    /// @param areas the provider of the areas the layer occupies
+    /// @param after the ids of the areas to evaluate the given provider after
+    public void registerAbove(Identifier other, Identifier id, GuiLayer layer, GlobalScreenAreaProvider areas, Identifier... after) {
+        register(Ordering.AFTER, other, id, layer);
+        ScreenAreaManager.registerGlobalArea(id, areas, after);
+    }
+
     /**
      * Registers a layer that renders above all others.
      *
@@ -82,8 +126,23 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
         register(Ordering.AFTER, null, id, layer);
     }
 
+    /// Registers a layer that renders above all others, and binds the areas it occupies to its id,
+    /// so that other UIs can query and avoid them.
+    ///
+    /// @param id    a unique resource id for this layer
+    /// @param layer the layer
+    /// @param areas the provider of the areas the layer occupies
+    /// @param after the ids of the areas to evaluate the given provider after
+    public void registerAboveAll(Identifier id, GuiLayer layer, GlobalScreenAreaProvider areas, Identifier... after) {
+        register(Ordering.AFTER, null, id, layer);
+        ScreenAreaManager.registerGlobalArea(id, areas, after);
+    }
+
     /**
      * Replace the layer with the given {@code id} with a new one.
+     *
+     * <p>The areas declared by the replaced layer are kept, as they are recorded while the layer renders.
+     * Use {@link #replaceLayer(Identifier, GuiLayer, GlobalScreenAreaProvider, Identifier...)} to replace them too.
      *
      * @param id          the id of the layer to replace
      * @param replacement the layer to replace it with
@@ -93,6 +152,19 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      */
     public void replaceLayer(Identifier id, GuiLayer replacement) {
         wrapLayer(id, old -> replacement);
+    }
+
+    /// Replaces the layer with the given {@code id} with a new one, and replaces the areas it
+    /// occupies with the ones declared by the given provider.
+    ///
+    /// @param id          the id of the layer to replace
+    /// @param replacement the layer to replace it with
+    /// @param areas       the provider of the areas the replacement layer occupies
+    /// @param after       the ids of the areas to evaluate the given provider after
+    /// @throws IllegalArgumentException if a layer with the given {@code id} is not yet registered
+    public void replaceLayer(Identifier id, GuiLayer replacement, GlobalScreenAreaProvider areas, Identifier... after) {
+        replaceLayer(id, replacement);
+        ScreenAreaManager.replaceGlobalArea(id, areas, after);
     }
 
     /**
