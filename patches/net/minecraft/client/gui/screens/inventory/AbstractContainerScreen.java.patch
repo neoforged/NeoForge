@@ -146,7 +146,7 @@
                      this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, i, ContainerInput.SWAP);
                      return true;
                  }
-@@ -588,6 +_,28 @@
+@@ -588,6 +_,34 @@
      @Override
      public T getMenu() {
          return this.menu;
@@ -172,6 +172,12 @@
 +
 +    public int getImageHeight() {
 +        return imageHeight;
++    }
++
++    /// Neo: {@return the effect stack rendered by this screen, or `null` if it does not render one}
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public @Nullable EffectsInInventory getEffectsInInventory() {
++        return null;
      }
  
      @Override

@@ -1,0 +1,40 @@
+--- a/net/minecraft/client/gui/components/ChatComponent.java
++++ b/net/minecraft/client/gui/components/ChatComponent.java
+@@ -75,6 +_,8 @@
+     private @Nullable ChatScreen preservedScreen;
+     private final List<ChatComponent.DelayedMessageDeletion> messageDeletionQueue = new ArrayList<>();
+     private Predicate<GuiMessage> visibleMessageFilter = var0 -> true;
++    /// Neo: The areas occupied by the chat block rendered during the last frame, in the coordinates this component draws in.
++    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> renderedAreas = new java.util.ArrayList<>();
+ 
+     public ChatComponent(Minecraft minecraft) {
+         this.minecraft = minecraft;
+@@ -82,6 +_,12 @@
+         this.recentChat.addAll(this.commandHistory.history());
+     }
+ 
++    /// Neo: {@return the areas occupied by the chat block rendered during the last frame, in the coordinates this component draws in}
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> renderedAreas() {
++        return java.util.List.copyOf(this.renderedAreas);
++    }
++
+     public void tick() {
+         if (!this.messageDeletionQueue.isEmpty()) {
+             this.processMessageDeletionQueue();
+@@ -136,6 +_,7 @@
+         if (total > 0 || isRestricted) {
+             ProfilerFiller profiler = Profiler.get();
+             profiler.push("chat");
++            this.renderedAreas.clear();
+             float scale = (float)this.getScale();
+             int maxWidth = Mth.ceil(this.getWidth() / scale);
+             final int chatBottom = Mth.floor((screenHeight - 40) / scale);
+@@ -160,6 +_,7 @@
+                 graphics.fill(-4, entryTop, maxWidth + 4 + 4, entryBottom, ARGB.black(alphax * backgroundOpacity));
+             });
+             int lineAboveMessagesY = chatBottom - (count + 1) * entryHeight;
++            this.renderedAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(-4, lineAboveMessagesY, maxWidth + 4 + 4, chatBottom + messageHeight - lineAboveMessagesY));
+             if (queueSize > 0L) {
+                 graphics.fill(-2, chatBottom, maxWidth + 4, chatBottom + messageHeight, ARGB.black(backgroundOpacity));
+             }

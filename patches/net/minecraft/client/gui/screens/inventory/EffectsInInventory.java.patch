@@ -1,6 +1,27 @@
 --- a/net/minecraft/client/gui/screens/inventory/EffectsInInventory.java
 +++ b/net/minecraft/client/gui/screens/inventory/EffectsInInventory.java
-@@ -47,7 +_,15 @@
+@@ -30,6 +_,8 @@
+     public static final int SPRITE_SQUARE_SIZE = 32;
+     private final AbstractContainerScreen<?> screen;
+     private final Minecraft minecraft;
++    /// Neo: The areas occupied by the effect list rendered next to the screen during the last frame, in GUI-scaled screen coordinates.
++    private final List<net.minecraft.client.gui.navigation.ScreenRectangle> effectAreas = new java.util.ArrayList<>();
+ 
+     public EffectsInInventory(AbstractContainerScreen<?> screen) {
+         this.screen = screen;
+@@ -42,12 +_,27 @@
+         return availableWidth >= 32;
+     }
+ 
++    /// Neo: {@return the areas occupied by the effect list rendered next to the screen during the last frame, in GUI-scaled screen coordinates}
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public List<net.minecraft.client.gui.navigation.ScreenRectangle> effectAreas() {
++        return List.copyOf(this.effectAreas);
++    }
++
+     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
++        this.effectAreas.clear();
+         int xo = this.screen.leftPos + this.screen.imageWidth + 2;
          int availableWidth = this.screen.width - xo;
          Collection<MobEffectInstance> activeEffects = this.minecraft.player.getActiveEffects();
          if (!activeEffects.isEmpty() && availableWidth >= 32) {
@@ -17,7 +38,7 @@
              int yStep = 33;
              if (activeEffects.size() > 5) {
                  yStep = 132 / (activeEffects.size() - 1);
-@@ -65,11 +_,14 @@
+@@ -65,11 +_,15 @@
          Font font = this.screen.getFont();
  
          for (MobEffectInstance effect : sortedEffects) {
@@ -27,6 +48,7 @@
              Component duration = MobEffectUtil.formatDuration(effect, 1.0F, this.minecraft.level.tickRateManager().tickrate());
              int textureWidth = this.extractBackground(graphics, font, effectText, duration, x0, y0, isAmbient, maxWidth);
 -            this.extractText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, mouseX, mouseY);
++            this.effectAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(x0, y0, textureWidth, 32));
 +            if (!renderer.extractInventoryText(effect, screen, graphics, x0 + 32, y0 + 7, textureWidth - 32 - 7, net.minecraft.util.CommonColors.WHITE)) // Neo: Re-align coordinates the same way as vanilla extractText does
 +            this.extractText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, mouseX, mouseY, effect);
 +            if (!renderer.extractInventoryIcon(effect, screen, graphics, x0 + 7, y0 + 7, 18, 18, net.minecraft.util.CommonColors.WHITE)) // Neo: Re-align coordinates the same way as vanilla call to blitSprite

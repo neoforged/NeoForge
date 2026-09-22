@@ -168,7 +168,15 @@
                  break;
              }
          }
-@@ -710,10 +_,10 @@
+@@ -707,13 +_,18 @@
+     }
+ 
+     @Override
++    public EffectsInInventory getEffectsInInventory() {
++        return this.effects;
++    }
++
++    @Override
      public List<Component> getTooltipFromContainerItem(ItemStack itemStack) {
          boolean isCreativeSlot = this.hoveredSlot != null && this.hoveredSlot instanceof CreativeModeInventoryScreen.CustomCreativeSlot;
          boolean isSingleCategoryTab = selectedTab.getType() == CreativeModeTab.Type.CATEGORY;

@@ -9,7 +9,7 @@
  
  @OnlyIn(Dist.CLIENT)
  public class Hud {
-@@ -181,6 +_,11 @@
+@@ -181,6 +_,17 @@
      private Pair<Hud.ContextualInfo, ContextualBar> contextualInfoBar = Pair.of(Hud.ContextualInfo.EMPTY, ContextualBar.EMPTY);
      private final Map<Hud.ContextualInfo, Supplier<ContextualBar>> contextualInfoBars;
      private float scopeScale;
@@ -18,6 +18,12 @@
 +    public int leftHeight;
 +    /// Neo: This variable controls the height of overlays on the right of the hotbar (e.g. food, vehicle health, air).
 +    public int rightHeight;
++    /// Neo: The areas occupied by the effect icons rendered by the HUD during the last frame, in GUI-scaled screen coordinates.
++    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> effectAreas = new java.util.ArrayList<>();
++    /// Neo: The areas occupied by the chat rendered by the HUD during the last frame, in GUI-scaled screen coordinates.
++    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> chatAreas = new java.util.ArrayList<>();
++    /// Neo: The area occupied by the scoreboard sidebar rendered by the HUD during the last frame, in GUI-scaled screen coordinates.
++    private final java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> scoreboardSidebarAreas = new java.util.ArrayList<>();
  
      public Hud(Minecraft minecraft) {
          this.minecraft = minecraft;
@@ -29,6 +35,31 @@
      }
  
      public void registerReloadListeners(ReloadableResourceManager resourceManager) {
+@@ -215,6 +_,24 @@
+         return this.isHidden;
+     }
+ 
++    /// Neo: {@return the areas occupied by the effect icons rendered by the HUD during the last frame, in GUI-scaled screen coordinates}
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> effectAreas() {
++        return java.util.List.copyOf(this.effectAreas);
++    }
++
++    /// Neo: {@return the areas occupied by the chat rendered by the HUD during the last frame, in GUI-scaled screen coordinates}
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> chatAreas() {
++        return java.util.List.copyOf(this.chatAreas);
++    }
++
++    /// Neo: {@return the area occupied by the scoreboard sidebar rendered by the HUD during the last frame, in GUI-scaled screen coordinates}
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public java.util.List<net.minecraft.client.gui.navigation.ScreenRectangle> scoreboardSidebarAreas() {
++        return java.util.List.copyOf(this.scoreboardSidebarAreas);
++    }
++
+     public void resetTitleTimes() {
+         this.titleFadeInTime = 10;
+         this.titleStayTime = 70;
 @@ -224,28 +_,48 @@
      public void extractRenderState(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
          this.minecraft.gameRenderer.gameRenderState().guiRenderState.isHudHidden = this.isHidden;
@@ -123,8 +154,11 @@
                  int color;
                  if (this.animateOverlayMessageColor) {
                      color = Mth.hsvToArgb(t / 50.0F, 0.7F, 0.6F, alpha);
-@@ -404,10 +_,19 @@
+@@ -402,16 +_,31 @@
+     }
+ 
      private void extractChat(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
++        this.chatAreas.clear();
          if (this.minecraft.player != null && !this.chat.isChatFocused()) {
              Window window = this.minecraft.getWindow();
 +            // Neo: Allow customizing position of chat component
@@ -139,11 +173,27 @@
              int mouseY = Mth.floor(this.minecraft.mouseHandler.getScaledYPos(window));
              graphics.nextStratum();
              this.chat.extractRenderState(graphics, this.getFont(), this.tickCount, mouseX, mouseY, ChatComponent.DisplayMode.BACKGROUND, false);
++            // Neo: Record the areas the chat actually occupies, including the offset applied above
++            for (net.minecraft.client.gui.navigation.ScreenRectangle area : this.chat.renderedAreas()) {
++                this.chatAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(area.left() + event.getPosX(), area.top() + event.getPosY() - graphics.guiHeight() + chatBottomMargin, area.width(), area.height()));
++            }
 +            graphics.pose().popMatrix();
          }
      }
  
-@@ -501,6 +_,8 @@
+     private void extractScoreboardSidebar(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
++        this.scoreboardSidebarAreas.clear();
+         Scoreboard scoreboard = this.minecraft.level.getScoreboard();
+         Objective teamObjective = null;
+         PlayerTeam playerTeam = scoreboard.getPlayersTeam(this.minecraft.player.getScoreboardName());
+@@ -495,12 +_,15 @@
+     }
+ 
+     private void extractEffects(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
++        this.effectAreas.clear();
+         Collection<MobEffectInstance> activeEffects = this.minecraft.player.getActiveEffects();
+         if (!activeEffects.isEmpty() && (this.minecraft.gui.screen() == null || !this.minecraft.gui.screen().showsActiveEffects())) {
+             int beneficialCount = 0;
              int harmfulCount = 0;
  
              for (MobEffectInstance instance : Ordering.natural().reverse().sortedCopy(activeEffects)) {
@@ -152,6 +202,14 @@
                  Holder<MobEffect> effect = instance.getEffect();
                  if (instance.showIcon()) {
                      int x = graphics.guiWidth();
+@@ -517,6 +_,7 @@
+                         x -= 25 * harmfulCount;
+                         y += 26;
+                     }
++                    this.effectAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(x, y, 24, 24));
+ 
+                     float alpha = 1.0F;
+                     if (instance.isAmbient()) {
 @@ -532,6 +_,7 @@
                          }
                      }
@@ -260,6 +318,14 @@
              }
          }
      }
+@@ -722,6 +_,7 @@
+         int headerY = bottom - entriesCount * 9;
+         graphics.fill(left - 2, headerY - 9 - 1, right, headerY - 1, headerBackgroundColor);
+         graphics.fill(left - 2, headerY - 1, right, bottom, backgroundColor);
++        this.scoreboardSidebarAreas.add(new net.minecraft.client.gui.navigation.ScreenRectangle(left - 2, headerY - 10, right - left + 2, bottom - headerY + 10));
+         graphics.text(this.getFont(), objectiveDisplayName, left + width / 2 - objectiveDisplayNameWidth / 2, headerY - 9, -1, false);
+ 
+         for (int i = 0; i < entriesCount; i++) {
 @@ -770,7 +_,15 @@
          return (int)Math.ceil(hearts / 10.0);
      }
