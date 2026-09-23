@@ -15,10 +15,10 @@ import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
@@ -32,7 +32,9 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
+import net.neoforged.neoforge.registries.datamaps.DataMapEntry;
 import net.neoforged.neoforge.registries.datamaps.DataMapFile;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueMerger;
@@ -186,13 +188,19 @@ public class DataMapLoader extends ContextAwareReloadListener {
     private static <A, T> DataMapFile<A, T> checkTagUsage(DataMapType<T, A> type, DataMapFile<A, T> file, Resource resource) {
         for (Either<TagKey<T>, ResourceKey<T>> key : file.values().keySet()) {
             if (key.left().isPresent()) {
-                LOGGER.error("Found tags in {} datamap file from pack {} but this DataMapType does not support tags: {}. ", type.id(), resource.sourcePackId(), ((AdvancedDataMapType<T, A, ?>) type).getNoTagsReason());
-
-                var values = file.values().entrySet()
-                        .stream()
-                        .filter(e -> e.getKey().left().isEmpty())
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                file = new DataMapFile<>(file.replace(), values, file.removals());
+                Map<Either<TagKey<T>, ResourceKey<T>>, Optional<WithConditions<DataMapEntry<A>>>> values = new HashMap<>();
+                StringBuilder tagList = new StringBuilder();
+                for (var entry : file.values().entrySet()) {
+                    entry.getKey().ifLeft(tag -> tagList.append("\n\t- ").append(tag.location()))
+                            .ifRight(_ -> values.put(entry.getKey(), entry.getValue()));
+                }
+                LOGGER.error(
+                        "Found tags in {} datamap file from pack {} but this DataMapType does not support tags: {}.{}",
+                        type.id(),
+                        resource.sourcePackId(),
+                        ((AdvancedDataMapType<T, A, ?>) type).getNoTagsReason(),
+                        tagList);
+                return new DataMapFile<>(file.replace(), values, file.removals());
             }
         }
         return file;
