@@ -61,7 +61,7 @@ public final class NewDatapackRegistryEvent extends Event implements IModBusEven
     ///                     If `networkCodec` is null, data will not be synced, and clients are not required to have this
     ///                     datapack registry to join a server.
     ///
-    /// If `networkCodec` is not null, clients must have this datapack registry/mod
+    ///                     If `networkCodec` is not null, clients must have this datapack registry/mod
     ///                     when joining a server that has this datapack registry/mod.
     ///                     The data will be synced using the network codec and accessible via [ClientPacketListener#registryAccess()].
     /// @see #worldRegistry(ResourceKey, Codec)
@@ -82,7 +82,7 @@ public final class NewDatapackRegistryEvent extends Event implements IModBusEven
     ///                     If `networkCodec` is null, data will not be synced, and clients are not required to have this
     ///                     datapack registry to join a server.
     ///
-    /// If `networkCodec` is not null, clients must have this datapack registry/mod
+    ///                     If `networkCodec` is not null, clients must have this datapack registry/mod
     ///                     when joining a server that has this datapack registry/mod.
     ///                     The data will be synced using the network codec and accessible via [ClientPacketListener#registryAccess()].
     /// @param consumer     A consumer that configures the provided RegistryBuilder

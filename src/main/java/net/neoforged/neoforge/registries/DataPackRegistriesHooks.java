@@ -16,6 +16,7 @@ import net.minecraft.resources.RegistryDataLoader;
 import net.minecraft.resources.RegistryValidator;
 import net.minecraft.resources.ResourceKey;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.UnmodifiableView;
 
 @ApiStatus.Internal
 public final class DataPackRegistriesHooks {
@@ -60,23 +61,25 @@ public final class DataPackRegistriesHooks {
         RELOADABLE_REGISTRY_KEYS.add(loaderData.key());
     }
 
-    /// {@return An unmodifiable view of the list of "world" datapack registries}.
+    /// {@return an unmodifiable view of the list of "world" datapack registries}.
     ///
     /// These registries are loaded from per-world datapacks on server startup.
+    @UnmodifiableView
     public static List<RegistryDataLoader.RegistryData<?>> getWorldRegistries() {
         return WORLD_REGISTRIES_VIEW;
     }
 
-    /// {@return A stream of the "world" and dimension datapack registries}.
+    /// {@return a stream of the "world" and dimension datapack registries}.
     ///
     /// These registries are loaded from per-world datapacks on server startup.
     public static Stream<RegistryDataLoader.RegistryData<?>> getWorldRegistriesWithDimensions() {
         return Stream.concat(WORLD_REGISTRIES_VIEW.stream(), RegistryDataLoader.DIMENSION_REGISTRIES.stream());
     }
 
-    /// {@return An unmodifiable view of the list of reloadable datapack registries}.
+    /// {@return an unmodifiable view of the list of reloadable datapack registries}.
     ///
     /// These registries are loaded from per-world datapacks on server startup and reloaded by `/reload`.
+    @UnmodifiableView
     public static List<RegistryDataLoader.RegistryData<?>> getReloadableRegistries() {
         return RELOADABLE_REGISTRIES_VIEW;
     }
