@@ -15,7 +15,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.TagAppender;
 import net.minecraft.references.BlockItemId;
-import net.minecraft.references.BlockItemIds;
 import net.minecraft.references.ItemIds;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
@@ -104,12 +103,7 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         tag(Tags.Items.DRINKS_JUICE);
 
         ColorCollection<NeoForgeItemTagsProvider.Appender> builders = Tags.Items.DYED_COLORS.map(this::tag);
-        var dyeableBlockItems = List.of(
-                BlockItemIds.BANNER, BlockItemIds.BED, BlockItemIds.DYED_CANDLE, BlockItemIds.CARPET,
-                BlockItemIds.CONCRETE, BlockItemIds.CONCRETE_POWDER, BlockItemIds.GLAZED_TERRACOTTA,
-                BlockItemIds.DYED_SHULKER_BOX, BlockItemIds.STAINED_GLASS, BlockItemIds.STAINED_GLASS_PANE,
-                BlockItemIds.DYED_TERRACOTTA, BlockItemIds.WOOL, BlockItemIds.WOOL_SLAB, BlockItemIds.WOOL_STAIRS);
-        for (ColorCollection<BlockItemId> colorCollection : dyeableBlockItems) {
+        for (ColorCollection<BlockItemId> colorCollection : NeoForgeBlockTagsProvider.dyeableBlockItems()) {
             ColorCollection.zipApply(builders, colorCollection, NeoForgeItemTagsProvider.Appender::add);
         }
         var dyeableItems = List.of(ItemIds.DYED_BUNDLE, ItemIds.CUSHION, ItemIds.HARNESS);
