@@ -21,14 +21,14 @@ import org.jetbrains.annotations.ApiStatus;
 public final class DataPackRegistriesHooks {
     private DataPackRegistriesHooks() {} // utility class
 
+    private static final List<RegistryDataLoader.RegistryData<?>> SYNCED_REGISTRIES = new ArrayList<>();
+    private static final Set<ResourceKey<? extends Registry<?>>> SYNCED_REGISTRY_KEYS = new ReferenceOpenHashSet<>();
     private static final List<RegistryDataLoader.RegistryData<?>> WORLD_REGISTRIES = new ArrayList<>(RegistryDataLoader.WORLD_REGISTRIES);
     private static final List<RegistryDataLoader.RegistryData<?>> WORLD_REGISTRIES_VIEW = Collections.unmodifiableList(WORLD_REGISTRIES);
     private static final Set<ResourceKey<? extends Registry<?>>> WORLD_REGISTRY_KEYS = new ReferenceOpenHashSet<>(WORLD_REGISTRIES.stream().map(RegistryDataLoader.RegistryData::key).toList());
     private static final List<RegistryDataLoader.RegistryData<?>> RELOADABLE_REGISTRIES = new ArrayList<>(RegistryDataLoader.RELOADABLE_REGISTRIES);
     private static final List<RegistryDataLoader.RegistryData<?>> RELOADABLE_REGISTRIES_VIEW = Collections.unmodifiableList(RELOADABLE_REGISTRIES);
     private static final Set<ResourceKey<? extends Registry<?>>> RELOADABLE_REGISTRY_KEYS = new ReferenceOpenHashSet<>(RELOADABLE_REGISTRIES.stream().map(RegistryDataLoader.RegistryData::key).toList());
-    private static final List<RegistryDataLoader.RegistryData<?>> SYNCED_REGISTRIES = new ArrayList<>();
-    private static final Set<ResourceKey<? extends Registry<?>>> SYNCED_REGISTRY_KEYS = new ReferenceOpenHashSet<>();
 
     /// Internal hook for retaining mutable access to [RegistryDataLoader]'s codec registry when it bootstraps.
     public static List<RegistryDataLoader.RegistryData<?>> captureSyncedRegistries(List<RegistryDataLoader.RegistryData<?>> list) {
