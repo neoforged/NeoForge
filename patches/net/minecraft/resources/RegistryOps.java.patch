@@ -12,24 +12,53 @@
      public <U> RegistryOps<U> withParent(DynamicOps<U> parent) {
          return (RegistryOps<U>)(parent == this.delegate ? this : new RegistryOps<>(parent, this.lookupProvider));
      }
-@@ -69,6 +_,20 @@
-                     : DataResult.error(() -> "Not a registry ops")
-             )
+@@ -71,6 +_,24 @@
              .forGetter(var0 -> null);
-+    }
-+
+     }
+ 
++    /// Neo: Returns a codec extracting the registry backing the [HolderGetter] which would be extracted by the codec
++    /// created by [#retrieveGetter(ResourceKey)].
++    /// The extracted lookup must not be used during deserialization, it is only usable during runtime, such
++    /// as within a custom holderset like `AnyHolderSet` or `NotHolderSet`.
 +    public static <E> com.mojang.serialization.MapCodec<HolderLookup.RegistryLookup<E>> retrieveRegistryLookup(ResourceKey<? extends Registry<? extends E>> resourceKey) {
 +        return ExtraCodecs.retrieveContext(ops -> {
 +            if (!(ops instanceof RegistryOps<?> registryOps))
 +                return DataResult.error(() -> "Not a registry ops");
 +
-+            return registryOps.lookupProvider.lookup(resourceKey).map(registryInfo -> {
++            return registryOps.lookupProvider.fullLookup(resourceKey).map(registryInfo -> {
 +                if (!(registryInfo instanceof HolderLookup.RegistryLookup<E> registryLookup))
 +                    return DataResult.<HolderLookup.RegistryLookup<E>>error(() -> "Found holder getter but was not a registry lookup for " + resourceKey);
 +
 +                return DataResult.success(registryLookup, registryLookup.registryLifecycle());
 +            }).orElseGet(() -> DataResult.error(() -> "Unknown registry: " + resourceKey));
 +        });
-     }
- 
++    }
++
      public static <E, O> RecordCodecBuilder<O, Holder.Reference<E>> retrieveElement(ResourceKey<E> key) {
+         ResourceKey<? extends Registry<E>> registryKey = ResourceKey.createRegistryKey(key.registry());
+         return ExtraCodecs.retrieveContext(
+@@ -99,6 +_,11 @@
+         }
+ 
+         @Override
++        public <E> Optional<HolderLookup<E>> fullLookup(ResourceKey<? extends Registry<? extends E>> registryKey) {
++            return (Optional<HolderLookup<E>>)this.lookups.computeIfAbsent(registryKey, this.lookupProvider::lookup);
++        }
++
++        @Override
+         public boolean equals(Object obj) {
+             return this == obj ? true : obj instanceof RegistryOps.HolderLookupAdapter adapter && this.lookupProvider.equals(adapter.lookupProvider);
+         }
+@@ -111,5 +_,12 @@
+ 
+     public interface RegistryInfoLookup {
+         <T> Optional<HolderGetter<T>> lookup(ResourceKey<? extends Registry<? extends T>> registryKey);
++
++        /// Neo: Returns the registry backing the [HolderGetter] returned by [#lookup(ResourceKey)], if available.
++        /// The returned lookup must not be used during deserialization, it is only usable during runtime, such
++        /// as within a custom holderset like `AnyHolderSet` or `NotHolderSet`.
++        default <T> Optional<HolderLookup<T>> fullLookup(ResourceKey<? extends Registry<? extends T>> registryKey) {
++            return Optional.empty();
++        }
+     }
+ }
