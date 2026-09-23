@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
@@ -171,9 +172,10 @@ public class DataMapLoader extends ContextAwareReloadListener {
             try (Reader reader = resource.openAsReader()) {
                 JsonElement jsonelement = JsonParser.parseReader(reader);
                 DataMapFile<A, T> file = codec.decode(ops, jsonelement).getOrThrow().getFirst();
-                if (!supportsTags && checkTagUsage(attachmentType, file, resource)) {
-                    entries.add(file);
+                if (!supportsTags) {
+                    file = checkTagUsage(attachmentType, file, resource);
                 }
+                entries.add(file);
             } catch (Exception exception) {
                 LOGGER.error("Could not read data map of type {} for registry {}", attachmentType.id(), registryKey, exception);
             }
@@ -181,14 +183,19 @@ public class DataMapLoader extends ContextAwareReloadListener {
         return entries;
     }
 
-    private static <A, T> boolean checkTagUsage(DataMapType<T, A> type, DataMapFile<A, T> file, Resource resource) {
+    private static <A, T> DataMapFile<A, T> checkTagUsage(DataMapType<T, A> type, DataMapFile<A, T> file, Resource resource) {
         for (Either<TagKey<T>, ResourceKey<T>> key : file.values().keySet()) {
             if (key.left().isPresent()) {
                 LOGGER.error("Found tags in {} datamap file from pack {} but this DataMapType does not support tags: {}. ", type.id(), resource.sourcePackId(), ((AdvancedDataMapType<T, A, ?>) type).getNoTagsReason());
-                return false;
+
+                var values = file.values().entrySet()
+                        .stream()
+                        .filter(e -> e.getKey().left().isEmpty())
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                file = new DataMapFile<>(file.replace(), values, file.removals());
             }
         }
-        return true;
+        return file;
     }
 
     private record LoadResult<T>(Map<DataMapType<T, ?>, List<DataMapFile<?, T>>> results) {}

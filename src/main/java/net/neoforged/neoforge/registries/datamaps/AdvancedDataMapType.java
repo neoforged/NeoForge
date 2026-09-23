@@ -179,6 +179,9 @@ public final class AdvancedDataMapType<R, T, VR extends DataMapValueRemover<R, T
         /// @param reason The reason why tag support is disabled
         /// @return the builder instance
         public AdvancedDataMapType.Builder<T, R, VR> disableTagSupport(String reason) {
+            if (this.noTagsReason != null) {
+                throw new IllegalStateException("Tag support previously disabled with reason: " + this.noTagsReason);
+            }
             if (reason == null || reason.isBlank()) {
                 throw new IllegalArgumentException("No reason specified");
             }
