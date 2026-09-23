@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/registries/RegistriesDatapackGenerator.java
 +++ b/net/minecraft/data/registries/RegistriesDatapackGenerator.java
-@@ -16,23 +_,37 @@
+@@ -16,32 +_,46 @@
  import net.minecraft.resources.RegistryDataLoader;
  import net.minecraft.resources.ResourceKey;
  
@@ -36,11 +36,13 @@
  
      public static RegistriesDatapackGenerator forWorldLayer(PackOutput output, CompletableFuture<HolderLookup.Provider> registryContents) {
 -        return new RegistriesDatapackGenerator(output, "world", RegistryDataLoader.WORLD_REGISTRIES, registryContents);
-+        return new RegistriesDatapackGenerator(output, "world", net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistriesWithDimensions().toList(), registryContents);
++        return new RegistriesDatapackGenerator(output, "world", net.neoforged.neoforge.registries.DataPackRegistriesHooks.getWorldRegistriesWithDimensions().toList(), registryContents);
      }
  
      public static DataProvider forReloadableLayer(PackOutput output, CompletableFuture<HolderLookup.Provider> registryContents) {
-@@ -41,7 +_,7 @@
+-        return new RegistriesDatapackGenerator(output, "reloadable", RegistryDataLoader.RELOADABLE_REGISTRIES, registryContents);
++        return new RegistriesDatapackGenerator(output, "reloadable", net.neoforged.neoforge.registries.DataPackRegistriesHooks.getReloadableRegistries(), registryContents);
+     }
  
      @Override
      public CompletableFuture<?> run(CachedOutput cache) {

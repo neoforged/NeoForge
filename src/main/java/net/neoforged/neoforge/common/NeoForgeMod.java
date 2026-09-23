@@ -149,11 +149,11 @@ import net.neoforged.neoforge.fluids.crafting.display.FluidStackSlotDisplay;
 import net.neoforged.neoforge.fluids.crafting.display.FluidTagSlotDisplay;
 import net.neoforged.neoforge.network.ConfigSync;
 import net.neoforged.neoforge.network.DualStackUtils;
-import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.NeoForgeRegistriesSetup;
+import net.neoforged.neoforge.registries.NewDatapackRegistryEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import net.neoforged.neoforge.registries.holdersets.AndHolderSet;
@@ -560,9 +560,9 @@ public class NeoForgeMod {
         ENVIRONMENT_ATTRIBUTES.register("custom_skybox", () -> NeoForgeEnvironmentAttributes.CUSTOM_SKYBOX);
 
         // Forge-provided datapack registries
-        modEventBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
-            event.dataPackRegistry(NeoForgeRegistries.Keys.BIOME_MODIFIERS, BiomeModifier.DIRECT_CODEC);
-            event.dataPackRegistry(NeoForgeRegistries.Keys.STRUCTURE_MODIFIERS, StructureModifier.DIRECT_CODEC);
+        modEventBus.addListener((NewDatapackRegistryEvent event) -> {
+            event.worldRegistry(NeoForgeRegistries.Keys.BIOME_MODIFIERS, BiomeModifier.DIRECT_CODEC);
+            event.worldRegistry(NeoForgeRegistries.Keys.STRUCTURE_MODIFIERS, StructureModifier.DIRECT_CODEC);
         });
         modEventBus.addListener(this::preInit);
         modEventBus.addListener(this::loadComplete);

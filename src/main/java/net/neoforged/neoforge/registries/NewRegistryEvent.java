@@ -21,7 +21,7 @@ import net.neoforged.fml.event.IModBusEvent;
  * Builtin registries are registries which can only load entries registered in code.
  *
  * <p>
- * For registering datapack registries that only load entries through JSON, see {@link DataPackRegistryEvent.NewRegistry}.
+ * For registering datapack registries that only load entries through JSON, see {@link NewDatapackRegistryEvent}.
  * </p>
  *
  * <p>This event is fired on the mod-specific event bus, on both {@linkplain net.neoforged.fml.LogicalSide logical sides}.</p>

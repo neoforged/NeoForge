@@ -37,9 +37,11 @@ public class RegisterDataMapTypesEvent extends Event implements IModBusEvent {
      */
     public <T, R> void register(DataMapType<R, T> type) {
         final var registry = type.registryKey();
-        if (DataPackRegistriesHooks.getDataPackRegistries().stream().anyMatch(data -> data.key().equals(registry))) {
-            if (type.networkCodec() != null && DataPackRegistriesHooks.getSyncedRegistry(registry) == null) {
-                throw new UnsupportedOperationException("Cannot register synced data map " + type.id() + " for datapack registry " + registry.identifier() + " that is not synced!");
+        if (type.networkCodec() != null) {
+            if (DataPackRegistriesHooks.isWorldRegistry(registry) && !DataPackRegistriesHooks.isSyncedRegistry(registry)) {
+                throw new UnsupportedOperationException("Cannot register synced data map " + type.id() + " for world datapack registry " + registry.identifier() + " that is not synced!");
+            } else if (DataPackRegistriesHooks.isReloadableRegistry(registry)) {
+                throw new UnsupportedOperationException("Cannot register synced data map " + type.id() + " for reloadable datapack registry " + registry.identifier() + ", reloadable registries do not support sync");
             }
         }
 

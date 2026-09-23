@@ -5,7 +5,7 @@
          );
          HolderLookup.Provider loadingContextWithTags = HolderLookup.Provider.create(contextRegistriesWithTags.stream());
 -        return RegistryDataLoader.load(manager, contextRegistriesWithTags, RegistryDataLoader.RELOADABLE_REGISTRIES, executor)
-+        return RegistryDataLoader.load(manager, contextRegistriesWithTags, RegistryDataLoader.RELOADABLE_REGISTRIES, executor, updatedContextTags)
++        return RegistryDataLoader.load(manager, contextRegistriesWithTags, net.neoforged.neoforge.registries.DataPackRegistriesHooks.getReloadableRegistries(), executor, updatedContextTags)
              .thenApplyAsync(newlyLoadedRegistries -> createAndValidateFullContext(context, loadingContextWithTags, newlyLoadedRegistries), executor);
      }
  
