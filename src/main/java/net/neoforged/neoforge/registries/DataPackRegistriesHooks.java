@@ -12,9 +12,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 import net.minecraft.core.Registry;
+import net.minecraft.data.registries.RegistriesDatapackGenerator;
+import net.minecraft.data.registries.RegistryPatchGenerator;
 import net.minecraft.resources.RegistryDataLoader;
 import net.minecraft.resources.RegistryValidator;
 import net.minecraft.resources.ResourceKey;
+import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -37,11 +40,8 @@ public final class DataPackRegistriesHooks {
             throw new IllegalCallerException("Attempted to call DataPackRegistriesHooks#captureSyncedWorldRegistries()!");
         }
 
-        List<RegistryDataLoader.RegistryData<?>> builder = new ArrayList<>(list);
-        builder.addAll(SYNCED_REGISTRIES);
-        SYNCED_REGISTRIES.clear();
-        SYNCED_REGISTRIES.addAll(builder);
-        SYNCED_REGISTRY_KEYS.addAll(list.stream().map(RegistryDataLoader.RegistryData::key).toList());
+        list.reversed().forEach(SYNCED_REGISTRIES::addFirst);
+        list.stream().map(RegistryDataLoader.RegistryData::key).forEach(SYNCED_REGISTRY_KEYS::add);
         return Collections.unmodifiableList(SYNCED_REGISTRIES);
     }
 
@@ -72,6 +72,9 @@ public final class DataPackRegistriesHooks {
     /// {@return a stream of the "world" and dimension datapack registries}.
     ///
     /// These registries are loaded from per-world datapacks on server startup.
+    ///
+    /// This method is used in datagen ([RegistryPatchGenerator], [RegistriesDatapackGenerator], [DatapackBuiltinEntriesProvider]) in place
+    /// of [RegistryDataLoader#WORLD_REGISTRIES] to ensure mods can datagen [dimensions][RegistryDataLoader#DIMENSION_REGISTRIES].
     public static Stream<RegistryDataLoader.RegistryData<?>> getWorldRegistriesWithDimensions() {
         return Stream.concat(WORLD_REGISTRIES_VIEW.stream(), RegistryDataLoader.DIMENSION_REGISTRIES.stream());
     }
