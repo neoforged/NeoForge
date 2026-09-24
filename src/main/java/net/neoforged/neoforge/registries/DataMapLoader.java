@@ -195,7 +195,7 @@ public class DataMapLoader extends ContextAwareReloadListener {
                             .ifRight(_ -> values.put(entry.getKey(), entry.getValue()));
                 }
                 LOGGER.error(
-                        "Found tags in {} datamap file from pack {} but this DataMapType does not support tags: {}.{}",
+                        "Found attachment to tags in {} datamap file from pack {} but this DataMapType does not support attaching values via tags. The values have been ignored: {}.{}",
                         type.id(),
                         resource.sourcePackId(),
                         ((AdvancedDataMapType<T, A, ?>) type).getNoTagsReason(),
