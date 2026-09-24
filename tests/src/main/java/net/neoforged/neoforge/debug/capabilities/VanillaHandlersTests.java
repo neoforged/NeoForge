@@ -259,7 +259,7 @@ public class VanillaHandlersTests {
             //Like GameTestEntityBuilder#spawn
             Entity entity = entry.getValue().create(helper.getLevel(), EntitySpawnReason.STRUCTURE);
             if (entity instanceof ContainerEntity) {
-                helper.assertNotNull(Capabilities.Item.ENTITY.getCapability(entity, null), "Expected entity type " + entityId + " that has is a ContainerEntity to expose a capability");
+                helper.assertNotNull(Capabilities.Item.ENTITY.getCapability(entity, null), "Expected entity type " + entityId + " that is a ContainerEntity to expose a capability");
             }
         }
 
