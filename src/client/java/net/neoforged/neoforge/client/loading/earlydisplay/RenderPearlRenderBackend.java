@@ -54,22 +54,11 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 @SuppressWarnings("UnstableApiUsage")
-public final class Blaze3DRenderBackend extends ELSRenderBackend {
+public final class RenderPearlRenderBackend extends ELSRenderBackend {
     private static final Logger LOGGER = LogUtils.getLogger();
     @GpuTexture.Usage
     private static final int TEX_USAGE = GpuTexture.USAGE_COPY_DST | GpuTexture.USAGE_COPY_SRC | GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_RENDER_ATTACHMENT;
     private static final ColorTargetState COLOR_STATE = new ColorTargetState(new BlendFunction(BlendFactor.SRC_ALPHA, BlendFactor.ONE_MINUS_SRC_ALPHA, BlendFactor.ZERO, BlendFactor.ONE));
-    private static final VertexFormat FORMAT_POS = VertexFormat.builder(0)
-            .addAttribute("position", GpuFormat.RG32_FLOAT)
-            .build();
-    private static final VertexFormat FORMAT_POS_TEX = VertexFormat.builder(0)
-            .addAttribute("position", GpuFormat.RG32_FLOAT)
-            .addAttribute("uv", GpuFormat.RG32_FLOAT)
-            .build();
-    private static final VertexFormat FORMAT_POS_COLOR = VertexFormat.builder(0)
-            .addAttribute("position", GpuFormat.RG32_FLOAT)
-            .addAttribute("color", GpuFormat.RGBA8_UNORM)
-            .build();
     private static final VertexFormat FORMAT_POS_TEX_COLOR = VertexFormat.builder(0)
             .addAttribute("position", GpuFormat.RG32_FLOAT)
             .addAttribute("uv", GpuFormat.RG32_FLOAT)
@@ -80,7 +69,7 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
     private final Window window;
     private final Map<ELSRenderPipeline, CompiledRenderPipeline> pipelines = new IdentityHashMap<>();
 
-    public Blaze3DRenderBackend(Window window) {
+    public RenderPearlRenderBackend(Window window) {
         this.device = RenderSystem.getDevice();
         this.window = window;
         super();
@@ -107,9 +96,6 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
                     })
                     .withColorTargetState(COLOR_STATE)
                     .withVertexBinding(0, switch (elsPipeline.vertexFormat()) {
-                        case POS -> FORMAT_POS;
-                        case POS_TEX -> FORMAT_POS_TEX;
-                        case POS_COLOR -> FORMAT_POS_COLOR;
                         case POS_TEX_COLOR -> FORMAT_POS_TEX_COLOR;
                     })
                     .withBindGroupLayout(layoutBuilder.build())
@@ -127,53 +113,54 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
     @Override
     public ELSTexture createTexture(String debugName, int width, int height, TextureFormat format, boolean linearFilter) {
         GpuFormat b3dFormat = switch (format) {
-            case RGBA -> GpuFormat.RGBA8_UNORM;
-            case RED -> GpuFormat.R8_UNORM;
+            case RGBA8_UNORM -> GpuFormat.RGBA8_UNORM;
+            case RED8_UNORM -> GpuFormat.R8_UNORM;
+            case RG32_FLOAT -> GpuFormat.RG32_FLOAT;
         };
         GpuTexture texture = this.device.createTexture(debugName, TEX_USAGE, b3dFormat, width, height, 1, 1);
         GpuSampler sampler = RenderSystem.getSamplerCache().getClampToEdge(linearFilter ? FilterMode.LINEAR : FilterMode.NEAREST);
-        return new Blaze3DTexture(format, texture, this.device.createTextureView(texture), sampler);
+        return new RenderPearlTexture(format, texture, this.device.createTextureView(texture), sampler);
     }
 
     @Override
     public void writeToTexture(ELSTexture texture, ByteBuffer pixels) {
-        this.device.createCommandEncoder().writeToTexture(((Blaze3DTexture) texture).unwrap(), pixels, 0, 0, 0, 0, texture.width(), texture.height());
+        this.device.createCommandEncoder().writeToTexture(((RenderPearlTexture) texture).unwrap(), pixels, 0, 0, 0, 0, texture.width(), texture.height());
     }
 
     @Override
     public ELSBuffer createBuffer(String label, Set<ELSBuffer.Usage> usage, long size) {
-        int usageMask = Blaze3DConst.elsUsageToB3D(usage);
-        return new Blaze3DBuffer(this.device.createBuffer(() -> label, usageMask, size), usage, usageMask);
+        int usageMask = RenderPearlConst.elsUsageToB3D(usage);
+        return new RenderPearlBuffer(this.device.createBuffer(() -> label, usageMask, size), usage, usageMask);
     }
 
     @Override
     public ELSBuffer createBuffer(String label, Set<ELSBuffer.Usage> usage, ByteBuffer data) {
-        int usageMask = Blaze3DConst.elsUsageToB3D(usage);
-        return new Blaze3DBuffer(this.device.createBuffer(() -> label, usageMask, data), usage, usageMask);
+        int usageMask = RenderPearlConst.elsUsageToB3D(usage);
+        return new RenderPearlBuffer(this.device.createBuffer(() -> label, usageMask, data), usage, usageMask);
     }
 
     @Override
     public void writeToBuffer(ELSBufferSlice buffer, ByteBuffer data) {
-        this.device.createCommandEncoder().writeToBuffer(((Blaze3DBufferSlice) buffer).unwrap(), data);
+        this.device.createCommandEncoder().writeToBuffer(((RenderPearlBufferSlice) buffer).unwrap(), data);
     }
 
     @Override
     public void copyBufferToBuffer(ELSBufferSlice source, ELSBufferSlice destination) {
         this.device.createCommandEncoder().copyToBuffer(
-                ((Blaze3DBufferSlice) source).unwrap(),
-                ((Blaze3DBufferSlice) destination).unwrap());
+                ((RenderPearlBufferSlice) source).unwrap(),
+                ((RenderPearlBufferSlice) destination).unwrap());
     }
 
     @Override
     public ELSBuffer getQuadAutoIndexBuffer(int indexCount) {
-        return new Blaze3DBuffer(RenderSystem.getSequentialBuffer(PrimitiveTopology.QUADS).getBuffer(indexCount), Set.of(ELSBuffer.Usage.INDEX), GpuBuffer.USAGE_INDEX);
+        return new RenderPearlBuffer(RenderSystem.getSequentialBuffer(PrimitiveTopology.QUADS).getBuffer(indexCount), Set.of(ELSBuffer.Usage.INDEX), GpuBuffer.USAGE_INDEX);
     }
 
     @Override
     public ELSRenderPass createRenderPass(String label, ELSTexture target, ThemeColor clearColor) {
-        GpuTextureView texture = ((Blaze3DTexture) target).view();
+        GpuTextureView texture = ((RenderPearlTexture) target).view();
         Optional<Vector4fc> clearColorVec = Optional.of(new Vector4f(clearColor.r(), clearColor.g(), clearColor.b(), clearColor.a()));
-        return new Blaze3DRenderPass(this, this.device.createCommandEncoder().createRenderPass(() -> label, texture, clearColorVec));
+        return new RenderPearlRenderPass(this, this.device.createCommandEncoder().createRenderPass(() -> label, texture, clearColorVec));
     }
 
     @Override
@@ -219,7 +206,7 @@ public final class Blaze3DRenderBackend extends ELSRenderBackend {
     public void presentTexture(ELSTexture texture, ThemeColor backgroundColor, int windowFBWidth, int windowFBHeight) {
         GpuSurface gpuSurface = Minecraft.getInstance().windowSurface();
         if (gpuSurface.isAcquired()) {
-            gpuSurface.blitFromTexture(this.device.createCommandEncoder(), ((Blaze3DTexture) texture).view());
+            gpuSurface.blitFromTexture(this.device.createCommandEncoder(), ((RenderPearlTexture) texture).view());
         }
         this.device.createCommandEncoder().submit();
         if (gpuSurface.isAcquired()) {

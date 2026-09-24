@@ -12,13 +12,13 @@ import net.neoforged.fml.earlydisplay.render.backend.ELSTexture;
 import net.neoforged.fml.earlydisplay.render.backend.TextureFormat;
 
 @SuppressWarnings("UnstableApiUsage")
-final class Blaze3DTexture implements ELSTexture {
+final class RenderPearlTexture implements ELSTexture {
     private final TextureFormat format;
     private final GpuTexture b3dTexture;
     private final GpuTextureView b3dTextureView;
     final GpuSampler sampler;
 
-    Blaze3DTexture(TextureFormat format, GpuTexture b3dTexture, GpuTextureView b3dTextureView, GpuSampler sampler) {
+    RenderPearlTexture(TextureFormat format, GpuTexture b3dTexture, GpuTextureView b3dTextureView, GpuSampler sampler) {
         this.format = format;
         this.b3dTexture = b3dTexture;
         this.b3dTextureView = b3dTextureView;

@@ -9,17 +9,17 @@ import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
 import net.neoforged.fml.earlydisplay.render.backend.ELSBufferSlice;
 
 @SuppressWarnings("UnstableApiUsage")
-final class Blaze3DBufferSlice implements ELSBufferSlice {
-    private final Blaze3DBuffer buffer;
+final class RenderPearlBufferSlice implements ELSBufferSlice {
+    private final RenderPearlBuffer buffer;
     private final GpuBufferSlice b3dBufferSlice;
 
-    Blaze3DBufferSlice(Blaze3DBuffer buffer, GpuBufferSlice b3dBufferSlice) {
+    RenderPearlBufferSlice(RenderPearlBuffer buffer, GpuBufferSlice b3dBufferSlice) {
         this.buffer = buffer;
         this.b3dBufferSlice = b3dBufferSlice;
     }
 
     @Override
-    public Blaze3DBuffer buffer() {
+    public RenderPearlBuffer buffer() {
         return this.buffer;
     }
 

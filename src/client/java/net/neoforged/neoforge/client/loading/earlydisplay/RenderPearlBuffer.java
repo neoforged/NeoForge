@@ -10,17 +10,17 @@ import java.util.Set;
 import net.neoforged.fml.earlydisplay.render.backend.ELSBuffer;
 
 @SuppressWarnings("UnstableApiUsage")
-final class Blaze3DBuffer implements ELSBuffer {
+final class RenderPearlBuffer implements ELSBuffer {
     private final GpuBuffer b3dBuffer;
     private final Set<Usage> usage;
     private final int usageMask;
-    private final Blaze3DBufferSlice defaultSlice;
+    private final RenderPearlBufferSlice defaultSlice;
 
-    Blaze3DBuffer(GpuBuffer b3dBuffer, Set<Usage> usage, int usageMask) {
+    RenderPearlBuffer(GpuBuffer b3dBuffer, Set<Usage> usage, int usageMask) {
         this.b3dBuffer = b3dBuffer;
         this.usage = usage;
         this.usageMask = usageMask;
-        this.defaultSlice = new Blaze3DBufferSlice(this, b3dBuffer.slice(0, b3dBuffer.size()));
+        this.defaultSlice = new RenderPearlBufferSlice(this, b3dBuffer.slice(0, b3dBuffer.size()));
     }
 
     @Override
@@ -34,13 +34,13 @@ final class Blaze3DBuffer implements ELSBuffer {
     }
 
     @Override
-    public Blaze3DBufferSlice slice() {
+    public RenderPearlBufferSlice slice() {
         return this.defaultSlice;
     }
 
     @Override
-    public Blaze3DBufferSlice slice(long offset, long length) {
-        return new Blaze3DBufferSlice(this, this.b3dBuffer.slice(offset, length));
+    public RenderPearlBufferSlice slice(long offset, long length) {
+        return new RenderPearlBufferSlice(this, this.b3dBuffer.slice(offset, length));
     }
 
     @Override

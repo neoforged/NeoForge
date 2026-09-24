@@ -15,11 +15,11 @@ import net.neoforged.fml.earlydisplay.render.backend.ELSTexture;
 import org.jspecify.annotations.Nullable;
 
 @SuppressWarnings("UnstableApiUsage")
-final class Blaze3DRenderPass implements ELSRenderPass {
-    private final Blaze3DRenderBackend backend;
+final class RenderPearlRenderPass implements ELSRenderPass {
+    private final RenderPearlRenderBackend backend;
     private final RenderPass renderPass;
 
-    Blaze3DRenderPass(Blaze3DRenderBackend backend, RenderPass renderPass) {
+    RenderPearlRenderPass(RenderPearlRenderBackend backend, RenderPass renderPass) {
         this.backend = backend;
         this.renderPass = renderPass;
     }
@@ -47,7 +47,7 @@ final class Blaze3DRenderPass implements ELSRenderPass {
     @Override
     public void bindTexture(String name, @Nullable ELSTexture texture) {
         if (texture != null) {
-            Blaze3DTexture b3dTexture = (Blaze3DTexture) texture;
+            RenderPearlTexture b3dTexture = (RenderPearlTexture) texture;
             this.renderPass.setUniform(name, b3dTexture.view(), b3dTexture.sampler);
         } else {
             this.renderPass.setUniform(name, null, null);
@@ -56,29 +56,29 @@ final class Blaze3DRenderPass implements ELSRenderPass {
 
     @Override
     public void bindUniform(String name, ELSBuffer buffer) {
-        this.renderPass.setUniform(name, ((Blaze3DBuffer) buffer).unwrap());
+        this.renderPass.setUniform(name, ((RenderPearlBuffer) buffer).unwrap());
     }
 
     @Override
     public void bindVertexBuffer(ELSBufferSlice buffer) {
-        this.renderPass.setVertexBuffer(0, ((Blaze3DBufferSlice) buffer).unwrap());
+        this.renderPass.setVertexBuffer(0, ((RenderPearlBufferSlice) buffer).unwrap());
     }
 
     @Override
     public void bindIndexBuffer(@Nullable ELSBuffer buffer) {
         if (buffer != null) {
-            this.renderPass.setIndexBuffer(((Blaze3DBuffer) buffer).unwrap(), IndexType.SHORT);
+            this.renderPass.setIndexBuffer(((RenderPearlBuffer) buffer).unwrap(), IndexType.SHORT);
         }
     }
 
     @Override
-    public void draw(int vertexCount) {
-        this.renderPass.draw(vertexCount, 1, 0, 0);
+    public void draw(int firstVertex, int vertexCount) {
+        this.renderPass.draw(vertexCount, 1, firstVertex, 0);
     }
 
     @Override
-    public void drawIndexed(int indexCount) {
-        this.renderPass.drawIndexed(indexCount, 1, 0, 0, 0);
+    public void drawIndexed(int firstVertex, int indexCount) {
+        this.renderPass.drawIndexed(indexCount, 1, 0, firstVertex, 0);
     }
 
     @Override

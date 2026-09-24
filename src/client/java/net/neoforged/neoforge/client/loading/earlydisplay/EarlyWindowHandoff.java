@@ -27,7 +27,7 @@ public final class EarlyWindowHandoff {
             return;
         }
 
-        EarlyLoadingScreenController.WindowState state = earlyLoadingScreen.handOverToMinecraft(() -> new Blaze3DRenderBackend(window));
+        EarlyLoadingScreenController.WindowState state = earlyLoadingScreen.handOverToMinecraft(() -> new RenderPearlRenderBackend(window));
         long windowHandle = window.handle();
 
         if (!window.isWindowFullscreen()) {
