@@ -61,7 +61,7 @@ public final class DataPackRegistriesHooks {
         RELOADABLE_REGISTRY_KEYS.add(loaderData.key());
     }
 
-    /// {@return an unmodifiable view of the list of "world" datapack registries}.
+    /// {@return an unmodifiable view of the list of "world" datapack registries}
     ///
     /// These registries are loaded from per-world datapacks on server startup.
     @UnmodifiableView
@@ -69,7 +69,7 @@ public final class DataPackRegistriesHooks {
         return WORLD_REGISTRIES_VIEW;
     }
 
-    /// {@return a stream of the "world" and dimension datapack registries}.
+    /// {@return a stream of the "world" and dimension datapack registries}
     ///
     /// These registries are loaded from per-world datapacks on server startup.
     ///
@@ -79,7 +79,7 @@ public final class DataPackRegistriesHooks {
         return Stream.concat(WORLD_REGISTRIES_VIEW.stream(), RegistryDataLoader.DIMENSION_REGISTRIES.stream());
     }
 
-    /// {@return an unmodifiable view of the list of reloadable datapack registries}.
+    /// {@return an unmodifiable view of the list of reloadable datapack registries}
     ///
     /// These registries are loaded from per-world datapacks on server startup and reloaded by `/reload`.
     @UnmodifiableView
