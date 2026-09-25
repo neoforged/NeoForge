@@ -82,12 +82,10 @@ public class CapabilityHooks {
 
     public static void registerVanillaProviders(RegisterCapabilitiesEvent event) {
         // Blocks
-        event.registerBlock(Capabilities.Item.BLOCK, (level, pos, state, blockEntity, side) -> {
-            return ComposterWrapper.get(level, pos, side);
-        }, Blocks.COMPOSTER);
+        event.registerBlock(Capabilities.Item.BLOCK, (level, pos, _, _, side) -> ComposterWrapper.get(level, pos, side), Blocks.COMPOSTER);
 
-        event.registerBlock(Capabilities.Item.BLOCK, (level, pos, state, blockEntity, side) -> ((ChestBlock) state.getBlock()).combine(state, level, pos, true).apply(CHEST_COMBINER_HANDLER), Blocks.CHEST, Blocks.TRAPPED_CHEST);
-        event.registerBlock(Capabilities.Item.BLOCK, (level, pos, state, blockEntity, side) -> ((ChestBlock) state.getBlock()).combine(state, level, pos, true).apply(CHEST_COMBINER_HANDLER), Blocks.COPPER_CHEST.asList().toArray(Block[]::new));
+        event.registerBlock(Capabilities.Item.BLOCK, (level, pos, state, _, _) -> ((ChestBlock) state.getBlock()).combine(state, level, pos, true).apply(CHEST_COMBINER_HANDLER), Blocks.CHEST, Blocks.TRAPPED_CHEST);
+        event.registerBlock(Capabilities.Item.BLOCK, (level, pos, state, _, _) -> ((ChestBlock) state.getBlock()).combine(state, level, pos, true).apply(CHEST_COMBINER_HANDLER), Blocks.COPPER_CHEST.asList().toArray(Block[]::new));
 
         var sidedVanillaContainers = List.of(
                 BlockEntityTypes.BLAST_FURNACE,
@@ -110,7 +108,7 @@ public class CapabilityHooks {
                 BlockEntityTypes.DECORATED_POT,
                 BlockEntityTypes.SHELF);
         for (var type : nonSidedVanillaContainers) {
-            event.registerBlockEntity(Capabilities.Item.BLOCK, type, (container, side) -> VanillaContainerWrapper.of(container));
+            event.registerBlockEntity(Capabilities.Item.BLOCK, type, (container, _) -> VanillaContainerWrapper.of(container));
         }
 
         // Entities
@@ -125,27 +123,28 @@ public class CapabilityHooks {
                 EntityTypes.SPRUCE_CHEST_BOAT,
                 EntityTypes.BAMBOO_CHEST_RAFT,
                 EntityTypes.PALE_OAK_CHEST_BOAT,
+                EntityTypes.POPLAR_CHEST_BOAT,
                 EntityTypes.CHEST_MINECART,
                 EntityTypes.HOPPER_MINECART);
         for (var entityType : containerEntities) {
-            event.registerEntity(Capabilities.Item.ENTITY, entityType, (entity, ctx) -> VanillaContainerWrapper.of(entity));
-            event.registerEntity(Capabilities.Item.ENTITY_AUTOMATION, entityType, (entity, ctx) -> VanillaContainerWrapper.of(entity));
+            event.registerEntity(Capabilities.Item.ENTITY, entityType, (entity, _) -> VanillaContainerWrapper.of(entity));
+            event.registerEntity(Capabilities.Item.ENTITY_AUTOMATION, entityType, (entity, _) -> VanillaContainerWrapper.of(entity));
         }
-        event.registerEntity(Capabilities.Item.ENTITY, EntityTypes.PLAYER, (player, ctx) -> PlayerInventoryWrapper.of(player.getInventory()));
+        event.registerEntity(Capabilities.Item.ENTITY, EntityTypes.PLAYER, (player, _) -> PlayerInventoryWrapper.of(player.getInventory()));
 
         // Items
-        event.registerItem(Capabilities.Item.ITEM, (stack, access) -> new ItemAccessItemHandler(access, DataComponents.CONTAINER, 27), Items.SHULKER_BOX);
-        event.registerItem(Capabilities.Item.ITEM, (stack, access) -> new ItemAccessItemHandler(access, DataComponents.CONTAINER, 27), Items.DYED_SHULKER_BOX.asList().toArray(ItemLike[]::new));
+        event.registerItem(Capabilities.Item.ITEM, (_, access) -> new ItemAccessItemHandler(access, DataComponents.CONTAINER, 27), Items.SHULKER_BOX);
+        event.registerItem(Capabilities.Item.ITEM, (_, access) -> new ItemAccessItemHandler(access, DataComponents.CONTAINER, 27), Items.DYED_SHULKER_BOX.asList().toArray(ItemLike[]::new));
 
-        event.registerItem(Capabilities.Item.ITEM, (stack, access) -> new BundleItemHandler(access, DataComponents.BUNDLE_CONTENTS), Items.BUNDLE);
-        event.registerItem(Capabilities.Item.ITEM, (stack, access) -> new BundleItemHandler(access, DataComponents.BUNDLE_CONTENTS), Items.DYED_BUNDLE.asList().toArray(ItemLike[]::new));
+        event.registerItem(Capabilities.Item.ITEM, (_, access) -> new BundleItemHandler(access, DataComponents.BUNDLE_CONTENTS), Items.BUNDLE);
+        event.registerItem(Capabilities.Item.ITEM, (_, access) -> new BundleItemHandler(access, DataComponents.BUNDLE_CONTENTS), Items.DYED_BUNDLE.asList().toArray(ItemLike[]::new));
     }
 
     public static void registerFallbackVanillaProviders(RegisterCapabilitiesEvent event) {
         // Entities
         // Register to all entity types to make sure we support all living entity subclasses.
         for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
-            event.registerEntity(Capabilities.Item.ENTITY, entityType, (entity, ctx) -> {
+            event.registerEntity(Capabilities.Item.ENTITY, entityType, (entity, _) -> {
                 if (entity instanceof AbstractHorse horse)
                     return VanillaContainerWrapper.of(horse.getInventory());
                 else if (entity instanceof LivingEntity livingEntity) {
@@ -161,12 +160,12 @@ public class CapabilityHooks {
         // Items
         for (Item item : BuiltInRegistries.ITEM) {
             if (item.getClass() == BucketItem.class)
-                event.registerItem(Capabilities.Fluid.ITEM, (stack, access) -> new BucketResourceHandler(access), item);
+                event.registerItem(Capabilities.Fluid.ITEM, (_, access) -> new BucketResourceHandler(access), item);
         }
 
         // We want mods to be able to override our milk cap by default
         if (NeoForgeMod.MILK.isBound()) {
-            event.registerItem(Capabilities.Fluid.ITEM, (stack, access) -> new BucketResourceHandler(access), Items.MILK_BUCKET);
+            event.registerItem(Capabilities.Fluid.ITEM, (_, access) -> new BucketResourceHandler(access), Items.MILK_BUCKET);
         }
     }
 

@@ -5,16 +5,31 @@
 
 package net.neoforged.neoforge.debug.capabilities;
 
+import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.Container;
+import net.minecraft.world.WorldlyContainerHolder;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.vehicle.ContainerEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
@@ -194,6 +209,70 @@ public class VanillaHandlersTests {
         helper.destroyBlock(cauldronPos);
         helper.assertTrue(invalidationCount.intValue() == 2, "Expected a second invalidation after cauldron destruction");
 
+        helper.succeed();
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Test that item capabilities are exposed on all base vanilla types")
+    public static void testItemCapabilitiesExposed(ExtendedGameTestHelper helper) {
+        var targetPos = new BlockPos(1, 1, 1);
+        var absoluteTarget = helper.absolutePos(targetPos);
+
+        //Blocks
+        for (Map.Entry<ResourceKey<Block>, Block> entry : BuiltInRegistries.BLOCK.entrySet()) {
+            Identifier blockId = entry.getKey().identifier();
+            if (!blockId.getNamespace().equals(Identifier.DEFAULT_NAMESPACE))
+                continue;
+            Block block = entry.getValue();
+            helper.setBlock(targetPos, block.defaultBlockState());
+            boolean expectsCapability = false;
+            if (block instanceof WorldlyContainerHolder) {
+                expectsCapability = true;
+            } else if (block instanceof EntityBlock) {
+                BlockEntity blockEntity = helper.getLevel().getBlockEntity(absoluteTarget);
+                if (blockEntity instanceof Container) {
+                    expectsCapability = true;
+                }
+            }
+            if (expectsCapability) {
+                boolean hasCapability = false;
+                if (helper.getCapability(Capabilities.Item.BLOCK, targetPos, null) == null) {
+                    for (Direction side : Direction.values()) {
+                        if (helper.getCapability(Capabilities.Item.BLOCK, targetPos, side) != null) {
+                            hasCapability = true;
+                            break;
+                        }
+                    }
+                } else {
+                    hasCapability = true;
+                }
+                helper.assertTrue(hasCapability, "Expected " + blockId + " to have an item handler capability exposed on at least one side");
+            }
+        }
+
+        //Entities
+        for (Map.Entry<ResourceKey<EntityType<?>>, EntityType<?>> entry : BuiltInRegistries.ENTITY_TYPE.entrySet()) {
+            Identifier entityId = entry.getKey().identifier();
+            if (!entityId.getNamespace().equals(Identifier.DEFAULT_NAMESPACE))
+                continue;
+            //Like GameTestEntityBuilder#spawn
+            Entity entity = entry.getValue().create(helper.getLevel(), EntitySpawnReason.STRUCTURE);
+            if (entity instanceof ContainerEntity) {
+                helper.assertNotNull(Capabilities.Item.ENTITY.getCapability(entity, null), "Expected entity type " + entityId + " that is a ContainerEntity to expose a capability");
+            }
+        }
+
+        //Items
+        for (Map.Entry<ResourceKey<Item>, Item> entry : BuiltInRegistries.ITEM.entrySet()) {
+            Identifier itemId = entry.getKey().identifier();
+            if (!itemId.getNamespace().equals(Identifier.DEFAULT_NAMESPACE))
+                continue;
+            ItemStack stack = new ItemStack(entry.getValue());
+            if (stack.has(DataComponents.CONTAINER) && stack.getMaxStackSize() == 1) {
+                helper.assertNotNull(Capabilities.Item.ITEM.getCapability(stack, ItemAccess.forStack(stack)), "Expected item " + itemId + " that has a container component to expose a capability");
+            }
+        }
         helper.succeed();
     }
 }
