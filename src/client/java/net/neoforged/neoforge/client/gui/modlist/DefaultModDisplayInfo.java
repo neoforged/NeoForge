@@ -9,7 +9,6 @@ import com.mojang.logging.LogUtils;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
-import net.minecraft.locale.Language;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
