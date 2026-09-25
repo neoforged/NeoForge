@@ -81,6 +81,34 @@
                                  List<RegistryLoadTask<?>> frozenRegistries = loadTasks.stream().filter(task -> task.freezeRegistry(loadingErrors)).toList();
                                  if (!loadingErrors.isEmpty()) {
                                      throw logErrors(loadingErrors);
+@@ -276,13 +_,25 @@
+         List<HolderLookup.RegistryLookup<?>> contextRegistries, List<RegistryLoadTask<?>> newRegistriesAndLoaders
+     ) {
+         final Map<ResourceKey<? extends Registry<?>>, HolderGetter<?>> result = new HashMap<>();
+-        contextRegistries.forEach(e -> result.put(e.key(), e));
+-        newRegistriesAndLoaders.forEach(e -> result.put(e.registryKey(), e.concurrentRegistrationGetter));
++        final Map<ResourceKey<? extends Registry<?>>, HolderLookup<?>> fullLookups = new HashMap<>();
++        contextRegistries.forEach(e -> {
++            result.put(e.key(), e);
++            fullLookups.put(e.key(), e);
++        });
++        newRegistriesAndLoaders.forEach(e -> {
++            result.put(e.registryKey(), e.concurrentRegistrationGetter);
++            fullLookups.put(e.registryKey(), e.registry);
++        });
+         return new RegistryOps.RegistryInfoLookup() {
+             @Override
+             public <T> Optional<HolderGetter<T>> lookup(ResourceKey<? extends Registry<? extends T>> key) {
+                 return Optional.ofNullable((HolderGetter<T>)result.get(key));
+             }
++
++            @Override
++            public <T> Optional<HolderLookup<T>> fullLookup(ResourceKey<? extends Registry<? extends T>> key) {
++                return Optional.ofNullable((HolderLookup<T>)fullLookups.get(key));
++            }
+         };
+     }
+ 
 @@ -340,7 +_,11 @@
      public record NetworkedRegistryData(List<RegistrySynchronization.PackedRegistryEntry> elements, TagNetworkSerialization.NetworkPayload tags) {
      }
