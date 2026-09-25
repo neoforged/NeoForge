@@ -38,11 +38,11 @@ public class DatapackBuiltinEntriesProvider extends RegistriesDatapackGenerator 
     }
 
     public static DatapackBuiltinEntriesProvider forWorldLayer(PackOutput output, String name, CompletableFuture<HolderLookup.Provider> worldRegistries, RegistrySetBuilder entriesBuilder, Set<String> modIds) {
-        return new DatapackBuiltinEntriesProvider(output, name, DataPackRegistriesHooks.getDataPackRegistriesWithDimensions().toList(), RegistryPatchGenerator.createWorldLookup(worldRegistries, entriesBuilder), modIds);
+        return new DatapackBuiltinEntriesProvider(output, name, DataPackRegistriesHooks.getWorldRegistriesWithDimensions().toList(), RegistryPatchGenerator.createWorldLookup(worldRegistries, entriesBuilder), modIds);
     }
 
     public static DatapackBuiltinEntriesProvider forReloadableLayer(PackOutput output, String name, CompletableFuture<HolderLookup.Provider> worldRegistries, CompletableFuture<HolderLookup.Provider> reloadableRegistries, RegistrySetBuilder entriesBuilder, Set<String> modIds) {
-        return new DatapackBuiltinEntriesProvider(output, name, RegistryDataLoader.RELOADABLE_REGISTRIES, RegistryPatchGenerator.createReloadableLookup(worldRegistries, reloadableRegistries, entriesBuilder), modIds);
+        return new DatapackBuiltinEntriesProvider(output, name, DataPackRegistriesHooks.getReloadableRegistries(), RegistryPatchGenerator.createReloadableLookup(worldRegistries, reloadableRegistries, entriesBuilder), modIds);
     }
 
     /**

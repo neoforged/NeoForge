@@ -26,20 +26,20 @@ public class RegisterDataMapTypesEvent extends Event implements IModBusEvent {
         this.attachments = attachments;
     }
 
-    /**
-     * Register a registry data map.
-     *
-     * @param type the data map type to register
-     * @param <T>  the type of the data map
-     * @param <R>  the type of the registry
-     * @throws IllegalArgumentException      if a type with the same ID has already been registered for that registry
-     * @throws UnsupportedOperationException if the registry is a non-synced datapack registry and the data map is synced
-     */
+    /// Register a registry data map.
+    ///
+    /// @param type The data map type to register
+    /// @param <T>  The type of the data map
+    /// @param <R>  The type of the registry
+    /// @throws IllegalArgumentException      If a type with the same ID has already been registered for that registry
+    /// @throws UnsupportedOperationException If the registry is a reloadable datapack registry or a non-synced "world" datapack registry and the data map is synced
     public <T, R> void register(DataMapType<R, T> type) {
         final var registry = type.registryKey();
-        if (DataPackRegistriesHooks.getDataPackRegistries().stream().anyMatch(data -> data.key().equals(registry))) {
-            if (type.networkCodec() != null && DataPackRegistriesHooks.getSyncedRegistry(registry) == null) {
-                throw new UnsupportedOperationException("Cannot register synced data map " + type.id() + " for datapack registry " + registry.identifier() + " that is not synced!");
+        if (type.networkCodec() != null) {
+            if (DataPackRegistriesHooks.isWorldRegistry(registry) && !DataPackRegistriesHooks.isSyncedRegistry(registry)) {
+                throw new UnsupportedOperationException("Cannot register synced data map " + type.id() + " for world datapack registry " + registry.identifier() + " that is not synced!");
+            } else if (DataPackRegistriesHooks.isReloadableRegistry(registry)) {
+                throw new UnsupportedOperationException("Cannot register synced data map " + type.id() + " for reloadable datapack registry " + registry.identifier() + ", reloadable registries do not support sync");
             }
         }
 

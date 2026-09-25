@@ -5,7 +5,16 @@
              RegistryAccess.Frozen staticRegistries = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
              Cloner.Factory cloner = new Cloner.Factory();
 -            RegistryDataLoader.WORLD_REGISTRIES.forEach(registryData -> registryData.runWithArguments(cloner::addCodec));
-+            net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistriesWithDimensions().forEach(registryData -> registryData.runWithArguments(cloner::addCodec));
++            net.neoforged.neoforge.registries.DataPackRegistriesHooks.getWorldRegistriesWithDimensions().forEach(registryData -> registryData.runWithArguments(cloner::addCodec));
              RegistrySetBuilder.PatchedRegistries newRegistries = packBuilder.buildPatch(staticRegistries, parent, cloner);
              boolean hasAnyPatchedBiomes = hasAnyPatchedElement(newRegistries, Registries.BIOME);
              boolean hasAnyPatchedFeatures = hasAnyPatchedElement(newRegistries, Registries.PLACED_FEATURE);
+@@ -40,7 +_,7 @@
+     ) {
+         return contextFuture.thenCombine(vanillaFuture, (context, vanilla) -> {
+             Cloner.Factory cloner = new Cloner.Factory();
+-            RegistryDataLoader.RELOADABLE_REGISTRIES.forEach(registryData -> registryData.runWithArguments(cloner::addCodec));
++            net.neoforged.neoforge.registries.DataPackRegistriesHooks.getReloadableRegistries().forEach(registryData -> registryData.runWithArguments(cloner::addCodec));
+             RegistrySetBuilder.PatchedRegistries newRegistries = packBuilder.buildPatch(context, vanilla, cloner);
+             boolean hasAnyPatchedLootData = LootDataType.values().anyMatch(type -> hasAnyPatchedElement(newRegistries, type.registryKey()));
+             if (hasAnyPatchedLootData) {
