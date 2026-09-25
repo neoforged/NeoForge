@@ -1118,8 +1118,7 @@ public class EventHooks {
                 throw new IllegalArgumentException("The stack count must be 1");
 
             if (BuildCreativeModeTabContentsEvent.isParentTab(vis)) {
-                // TODO 26.3: Remove the dev-only check, so this runs in production as well
-                if (!parentEntries.add(stack) && !FMLEnvironment.isProduction())
+                if (!parentEntries.add(stack))
                     throw new IllegalArgumentException("Stack " + stack.getDisplayName().getString() + "has already been added to the tab " + tab.getDisplayName().getString() + " previously");
             }
 
