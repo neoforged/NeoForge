@@ -56,11 +56,24 @@ import org.jspecify.annotations.Nullable;
 public final class AdvancedDataMapType<R, T, VR extends DataMapValueRemover<R, T>> extends DataMapType<R, T> {
     private final Codec<VR> remover;
     private final DataMapValueMerger<R, T> merger;
+    private final boolean supportsTags;
+    @Nullable
+    private final String noTagsReason;
 
-    private AdvancedDataMapType(ResourceKey<Registry<R>> registryKey, Identifier id, Codec<T> codec, @Nullable Codec<T> networkCodec, boolean mandatorySync, Codec<VR> remover, DataMapValueMerger<R, T> merger) {
+    private AdvancedDataMapType(
+            ResourceKey<Registry<R>> registryKey,
+            Identifier id,
+            Codec<T> codec,
+            @Nullable Codec<T> networkCodec,
+            boolean mandatorySync,
+            Codec<VR> remover,
+            DataMapValueMerger<R, T> merger,
+            @Nullable String noTagsReason) {
         super(registryKey, id, codec, networkCodec, mandatorySync);
         this.remover = Objects.requireNonNull(remover, "remover must not be null");
         this.merger = Objects.requireNonNull(merger, "merger must not be null");
+        this.supportsTags = noTagsReason == null;
+        this.noTagsReason = noTagsReason;
     }
 
     /**
@@ -75,6 +88,21 @@ public final class AdvancedDataMapType<R, T, VR extends DataMapValueRemover<R, T
      */
     public DataMapValueMerger<R, T> merger() {
         return merger;
+    }
+
+    /// {@return whether this datamap supports assigning values to elements via tags}
+    public boolean supportsTags() {
+        return supportsTags;
+    }
+
+    /// {@return the reason why this datamap does not support tags}
+    ///
+    /// @throws IllegalStateException if this datamap supports tags
+    public String getNoTagsReason() {
+        if (noTagsReason == null) {
+            throw new IllegalStateException("DataMapType supports tags");
+        }
+        return noTagsReason;
     }
 
     /**
@@ -101,6 +129,8 @@ public final class AdvancedDataMapType<R, T, VR extends DataMapValueRemover<R, T
         // The remover will be set in the default builder factory, as otherwise it's not generically safe
         private Codec<VR> remover;
         private DataMapValueMerger<R, T> merger = DataMapValueMerger.defaultMerger();
+        @Nullable
+        private String noTagsReason = null;
 
         Builder(ResourceKey<Registry<R>> registryKey, Identifier id, Codec<T> codec) {
             super(registryKey, id, codec);
@@ -144,12 +174,27 @@ public final class AdvancedDataMapType<R, T, VR extends DataMapValueRemover<R, T
             return this;
         }
 
+        /// Disable support for assigning values to elements via tags.
+        ///
+        /// @param reason The reason why tag support is disabled
+        /// @return the builder instance
+        public AdvancedDataMapType.Builder<T, R, VR> disableTagSupport(String reason) {
+            if (this.noTagsReason != null) {
+                throw new IllegalStateException("Tag support previously disabled with reason: " + this.noTagsReason);
+            }
+            if (reason == null || reason.isBlank()) {
+                throw new IllegalArgumentException("No reason specified");
+            }
+            this.noTagsReason = reason;
+            return this;
+        }
+
         /**
          * {@return a built advanced data map type}
          */
         @Override
         public AdvancedDataMapType<R, T, VR> build() {
-            return new AdvancedDataMapType<>(registryKey, id, codec, networkCodec, mandatorySync, remover, merger);
+            return new AdvancedDataMapType<>(registryKey, id, codec, networkCodec, mandatorySync, remover, merger, noTagsReason);
         }
     }
 }

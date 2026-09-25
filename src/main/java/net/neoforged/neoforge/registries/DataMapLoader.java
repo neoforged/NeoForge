@@ -15,6 +15,7 @@ import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
@@ -31,7 +32,9 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
+import net.neoforged.neoforge.registries.datamaps.DataMapEntry;
 import net.neoforged.neoforge.registries.datamaps.DataMapFile;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueMerger;
@@ -166,15 +169,41 @@ public class DataMapLoader extends ContextAwareReloadListener {
     private static <A, T> List<DataMapFile<A, T>> readData(RegistryOps<JsonElement> ops, DataMapType<T, A> attachmentType, ResourceKey<Registry<T>> registryKey, List<Resource> resources) {
         final var codec = DataMapFile.codec(registryKey, attachmentType);
         final List<DataMapFile<A, T>> entries = new LinkedList<>();
+        boolean supportsTags = !(attachmentType instanceof AdvancedDataMapType<T, A, ?> adv) || adv.supportsTags();
         for (final Resource resource : resources) {
             try (Reader reader = resource.openAsReader()) {
                 JsonElement jsonelement = JsonParser.parseReader(reader);
-                entries.add(codec.decode(ops, jsonelement).getOrThrow().getFirst());
+                DataMapFile<A, T> file = codec.decode(ops, jsonelement).getOrThrow().getFirst();
+                if (!supportsTags) {
+                    file = checkTagUsage(attachmentType, file, resource);
+                }
+                entries.add(file);
             } catch (Exception exception) {
                 LOGGER.error("Could not read data map of type {} for registry {}", attachmentType.id(), registryKey, exception);
             }
         }
         return entries;
+    }
+
+    private static <A, T> DataMapFile<A, T> checkTagUsage(DataMapType<T, A> type, DataMapFile<A, T> file, Resource resource) {
+        for (Either<TagKey<T>, ResourceKey<T>> key : file.values().keySet()) {
+            if (key.left().isPresent()) {
+                Map<Either<TagKey<T>, ResourceKey<T>>, Optional<WithConditions<DataMapEntry<A>>>> values = new HashMap<>();
+                StringBuilder tagList = new StringBuilder();
+                for (var entry : file.values().entrySet()) {
+                    entry.getKey().ifLeft(tag -> tagList.append("\n\t- ").append(tag.location()))
+                            .ifRight(_ -> values.put(entry.getKey(), entry.getValue()));
+                }
+                LOGGER.error(
+                        "Found attachment to tags in {} datamap file from pack {} but this DataMapType does not support attaching values via tags. The values have been ignored: {}.{}",
+                        type.id(),
+                        resource.sourcePackId(),
+                        ((AdvancedDataMapType<T, A, ?>) type).getNoTagsReason(),
+                        tagList);
+                return new DataMapFile<>(file.replace(), values, file.removals());
+            }
+        }
+        return file;
     }
 
     private record LoadResult<T>(Map<DataMapType<T, ?>, List<DataMapFile<?, T>>> results) {}

@@ -124,14 +124,15 @@ public class NeoForgeDataMaps {
     ///   - `transformer`, the [ResourceKey] of a [BlockTransformer]
     ///   - `transform_data`, a [BlockTransformer.BlockTransformData] describing how the block should be transformed
     ///
-    /// The [BlockStateProvider] specified by the transform data entry/entries should ensure that the specified transformation only
-    /// applies to the block this datamap value is attached to and datamap values of this type should not be attached to multiple
+    /// The [BlockStateProvider] specified by the transform data entry/entries must ensure that the specified transformation only
+    /// applies to the block this datamap value is attached to. Datamap values of this type cannot be attached to multiple
     /// blocks via tags.
     /// Transformations applying to multiple blocks (i.e. via tag or custom block predicates) should use [#BLOCK_TRANSFORM_APPENDERS] instead.
     public static final DataMapType<Block, Transformable> TRANSFORMABLES = AdvancedDataMapType.builder(id("transformables"), Registries.BLOCK, Transformable.CODEC)
             .synced(Transformable.CODEC, false)
             .merger(DataMapValueMerger.wrappedMapMerger(Transformable::transformers, Transformable::new))
             .remover(Transformable.Remover.CODEC)
+            .disableTagSupport("A Transformable and its BlockTransformData must only target and attach to a single block to prevent duplicate transforms and support datamap removers")
             .build();
 
     /**
