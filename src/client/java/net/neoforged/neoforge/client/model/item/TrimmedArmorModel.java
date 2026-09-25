@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemModels;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.item.ModelRenderProperties;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.cuboid.ItemModelGenerator;
@@ -25,12 +26,15 @@ import net.minecraft.client.resources.model.cuboid.ItemTransforms;
 import net.minecraft.client.resources.model.geometry.QuadCollection;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.client.resources.model.sprite.MaterialBaker;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.Equippable;
+import net.minecraft.world.item.equipment.trim.ArmorTrim;
+import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import org.joml.Matrix4fc;
 import org.jspecify.annotations.Nullable;
 
@@ -69,15 +73,17 @@ public class TrimmedArmorModel implements ItemModel {
     public void update(ItemStackRenderState state, ItemStack stack, ItemModelResolver resolver, ItemDisplayContext context, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
         this.baseModel.update(state, stack, resolver, context, level, owner, seed);
 
-        if (stack.has(DataComponents.TRIM) && stack.has(DataComponents.EQUIPPABLE)) {
+        if (stack.has(DataComponents.TRIM)) {
             Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
-
-            if (equippable.assetId().isPresent()) {
-                // TODO 26.3
-//                Holder<TrimMaterial> material = Objects.requireNonNull(stack.get(DataComponents.TRIM)).material();
-//                String suffix = material.value().assets().assetId(equippable.assetId().get()).suffix();
-//
-//                this.itemsWithTrims.computeIfAbsent(suffix, this::createTrimLayer).update(state, stack, resolver, context, level, owner, seed);
+            if (equippable != null && equippable.assetId().isPresent()) {
+                Identifier equipmentAsset = equippable.assetId().get().identifier();
+                ArmorTrim armorTrim = stack.get(DataComponents.TRIM);
+                Holder<TrimMaterial> material = armorTrim.material();
+                String suffix = material.value().paletteId().getPath().replaceFirst("trim/", "");
+                if (equipmentAsset.getPath().equals(suffix)) {
+                    suffix += "_darker";
+                }
+                this.itemsWithTrims.computeIfAbsent(suffix, this::createTrimLayer).update(state, stack, resolver, context, level, owner, seed);
             }
         }
     }
@@ -87,6 +93,9 @@ public class TrimmedArmorModel implements ItemModel {
         MaterialBaker materials = baker.materials();
 
         Material.Baked overlayMat = materials.get(new Material(this.baseTrimTexture.withSuffix("_" + suffix)), DEBUG_NAME);
+        if (suffix.endsWith("_darker") && overlayMat.sprite().contents().name().equals(MissingTextureAtlasSprite.getLocation())) {
+            overlayMat = materials.get(new Material(this.baseTrimTexture.withSuffix("_" + suffix.substring(0, suffix.length() - 7))), DEBUG_NAME);
+        }
         ModelRenderProperties overlayRenderProps = new ModelRenderProperties(false, overlayMat, this.itemTransforms);
         QuadCollection overlayQuads = baker.compute(new ItemModelGenerator.ItemLayerKey(overlayMat, BlockModelRotation.IDENTITY, 0));
         return new CuboidItemModelWrapper(List.of(), overlayQuads, overlayRenderProps, this.transformation);
