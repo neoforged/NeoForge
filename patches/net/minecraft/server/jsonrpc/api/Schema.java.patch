@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/jsonrpc/api/Schema.java
++++ b/net/minecraft/server/jsonrpc/api/Schema.java
+@@ -154,6 +_,8 @@
+         );
+     }
+ 
++    /// @deprecated Neo: Use the [RegisterRpcSchemaEvent][net.neoforged.neoforge.event.server.RegisterRpcSchemaEvent]
++    @Deprecated
+     private static <T> SchemaComponent<T> registerSchema(String name, Schema<T> schema) {
+         SchemaComponent<T> entry = new SchemaComponent<>(name, ReferenceUtil.createLocalReference(name), schema);
+         SCHEMA_REGISTRY.add(entry);
