@@ -14,6 +14,9 @@
   "net/minecraft/client/Minecraft": [
     "net/neoforged/neoforge/client/extensions/IMinecraftExtension"
   ],
+  "net/minecraft/client/data/models/ItemModelGenerators": [
+    "net/neoforged/neoforge/client/extensions/ItemModelGeneratorsExtension"
+  ],
   "net/minecraft/client/gui/Font": [
     "net/neoforged/neoforge/client/extensions/IFontExtension"
   ],

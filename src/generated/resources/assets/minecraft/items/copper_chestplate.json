@@ -3,12 +3,12 @@
     "type": "neoforge:trimmed_armor",
     "base_model": {
       "type": "minecraft:model",
-      "model": "minecraft:item/netherite_chestplate"
+      "model": "minecraft:item/copper_chestplate"
     },
     "base_trim_texture": "minecraft:trims/items/chestplate_trim",
     "palette_replacement": {
-      "replacement": "minecraft:trim/netherite_darker",
-      "target": "minecraft:trim/netherite"
+      "replacement": "minecraft:trim/copper_darker",
+      "target": "minecraft:trim/copper"
     }
   }
 }

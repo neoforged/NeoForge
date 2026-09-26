@@ -5,11 +5,13 @@
 
 package net.neoforged.neoforge.client.model.item;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
 import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
@@ -18,7 +20,6 @@ import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemModels;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.item.ModelRenderProperties;
-import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.cuboid.ItemModelGenerator;
@@ -26,15 +27,13 @@ import net.minecraft.client.resources.model.cuboid.ItemTransforms;
 import net.minecraft.client.resources.model.geometry.QuadCollection;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.client.resources.model.sprite.MaterialBaker;
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
-import net.minecraft.world.item.equipment.trim.TrimMaterial;
+import net.minecraft.world.item.equipment.trim.TrimMaterials;
 import org.joml.Matrix4fc;
 import org.jspecify.annotations.Nullable;
 
@@ -59,10 +58,13 @@ public class TrimmedArmorModel implements ItemModel {
     private final BakingContext bakingContext;
     private final Matrix4fc transformation;
     private final ItemTransforms itemTransforms;
+    @Nullable
+    private final PaletteTransform paletteToReplace;
 
-    private TrimmedArmorModel(ItemModel baseModel, Identifier baseTrimTexture, BakingContext bakingContext, Matrix4fc transformation) {
+    private TrimmedArmorModel(ItemModel baseModel, Identifier baseTrimTexture, @Nullable PaletteTransform paletteToReplace, BakingContext bakingContext, Matrix4fc transformation) {
         this.baseModel = baseModel;
         this.baseTrimTexture = baseTrimTexture;
+        this.paletteToReplace = paletteToReplace;
         this.bakingContext = bakingContext;
         this.transformation = transformation;
         var baseItemModel = bakingContext.blockModelBaker().getModel(Identifier.withDefaultNamespace("item/generated"));
@@ -73,18 +75,15 @@ public class TrimmedArmorModel implements ItemModel {
     public void update(ItemStackRenderState state, ItemStack stack, ItemModelResolver resolver, ItemDisplayContext context, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
         this.baseModel.update(state, stack, resolver, context, level, owner, seed);
 
-        if (stack.has(DataComponents.TRIM)) {
-            Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
-            if (equippable != null && equippable.assetId().isPresent()) {
-                Identifier equipmentAsset = equippable.assetId().get().identifier();
-                ArmorTrim armorTrim = stack.get(DataComponents.TRIM);
-                Holder<TrimMaterial> material = armorTrim.material();
-                String suffix = material.value().paletteId().getPath().replaceFirst("trim/", "");
-                if (equipmentAsset.getPath().equals(suffix)) {
-                    suffix += "_darker";
-                }
-                this.itemsWithTrims.computeIfAbsent(suffix, this::createTrimLayer).update(state, stack, resolver, context, level, owner, seed);
+        ArmorTrim armorTrim = stack.get(DataComponents.TRIM);
+        if (armorTrim != null) {
+            Identifier palette = armorTrim.material().value().paletteId();
+            if (paletteToReplace != null && paletteToReplace.target().equals(palette)) {
+                palette = paletteToReplace.replacement();
             }
+            //Extract the suffix based on how TrimMaterials.Palette creates the id from the suffix
+            String suffix = palette.getPath().replaceFirst("trim/", "");
+            this.itemsWithTrims.computeIfAbsent(suffix, this::createTrimLayer).update(state, stack, resolver, context, level, owner, seed);
         }
     }
 
@@ -93,23 +92,31 @@ public class TrimmedArmorModel implements ItemModel {
         MaterialBaker materials = baker.materials();
 
         Material.Baked overlayMat = materials.get(new Material(this.baseTrimTexture.withSuffix("_" + suffix)), DEBUG_NAME);
-        if (suffix.endsWith("_darker") && overlayMat.sprite().contents().name().equals(MissingTextureAtlasSprite.getLocation())) {
-            overlayMat = materials.get(new Material(this.baseTrimTexture.withSuffix("_" + suffix.substring(0, suffix.length() - 7))), DEBUG_NAME);
-        }
         ModelRenderProperties overlayRenderProps = new ModelRenderProperties(false, overlayMat, this.itemTransforms);
         QuadCollection overlayQuads = baker.compute(new ItemModelGenerator.ItemLayerKey(overlayMat, BlockModelRotation.IDENTITY, 0));
         return new CuboidItemModelWrapper(List.of(), overlayQuads, overlayRenderProps, this.transformation);
     }
 
-    public record Unbaked(ItemModel.Unbaked baseModel, Identifier baseTrimTexture) implements ItemModel.Unbaked {
+    public record PaletteTransform(Identifier target, Identifier replacement) {
+        public static final Codec<PaletteTransform> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Identifier.CODEC.fieldOf("target").forGetter(PaletteTransform::target),
+                Identifier.CODEC.fieldOf("replacement").forGetter(PaletteTransform::replacement))
+                .apply(instance, PaletteTransform::new));
+
+        public PaletteTransform(TrimMaterials.Palette target, TrimMaterials.Palette replacement) {
+            this(target.id(), replacement.id());
+        }
+    }
+
+    public record Unbaked(ItemModel.Unbaked baseModel, Identifier baseTrimTexture, Optional<PaletteTransform> paletteToReplace) implements ItemModel.Unbaked {
         public static final MapCodec<TrimmedArmorModel.Unbaked> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 ItemModels.CODEC.fieldOf("base_model").forGetter(Unbaked::baseModel),
-                Identifier.CODEC.fieldOf("base_trim_texture").forGetter(Unbaked::baseTrimTexture))
-                .apply(instance, Unbaked::new));
+                Identifier.CODEC.fieldOf("base_trim_texture").forGetter(Unbaked::baseTrimTexture),
+                PaletteTransform.CODEC.optionalFieldOf("palette_replacement").forGetter(Unbaked::paletteToReplace)).apply(instance, Unbaked::new));
 
         @Override
         public ItemModel bake(BakingContext context, Matrix4fc transformation) {
-            return new TrimmedArmorModel(this.baseModel().bake(context, transformation), this.baseTrimTexture(), context, transformation);
+            return new TrimmedArmorModel(baseModel().bake(context, transformation), baseTrimTexture(), paletteToReplace().orElse(null), context, transformation);
         }
 
         @Override
