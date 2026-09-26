@@ -34,7 +34,7 @@
      public abstract boolean atLeastMatched(final int n);
  
      public boolean atMostMatched(int n) {
-@@ -27,17 +_,21 @@
+@@ -27,17 +_,27 @@
      }
  
      public boolean anyMatched() {
@@ -57,7 +57,13 @@
  
      public boolean allMatched() {
 -        return !this.anyMatched(state -> !this.statePredicate.test(state));
-+        return !this.anyMatched(state -> !this.statePredicate.test(state), (state, pos) -> !this.positionPredicate.test(state, pos));
++        if (this.positionPredicate == NO_POSITION_PREDICATE) {
++            return !this.anyMatched(this.statePredicate.negate());
++        } else {
++            // Neo: Use only the position filter in order to properly check against both state and position
++            // All states and positions must match, so check if any state or any position do not match; i.e., !state || !position
++            return !this.anyMatched(NO_PREDICATE, (state, pos) -> !this.statePredicate.test(state) || !this.positionPredicate.test(state, pos));
++        }
      }
  
      public abstract void forEach(final BiConsumer<BlockPos, BlockState> consumer);
