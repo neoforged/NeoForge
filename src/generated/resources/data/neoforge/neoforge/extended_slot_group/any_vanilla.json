@@ -1,0 +1,12 @@
+{
+  "slots": [
+    "neoforge:mainhand",
+    "neoforge:offhand",
+    "neoforge:head",
+    "neoforge:chest",
+    "neoforge:legs",
+    "neoforge:feet",
+    "neoforge:body",
+    "neoforge:saddle"
+  ]
+}

@@ -73,6 +73,7 @@ public class NeoForgeRegistriesSetup {
         event.register(NeoForgeRegistries.CONDITION_SERIALIZERS);
         event.register(NeoForgeRegistries.ATTACHMENT_TYPES);
         event.register(AttachmentSync.SYNCED_ATTACHMENT_TYPES);
+        event.register(NeoForgeRegistries.EXTENDED_EQUIPMENT_SLOT_SERIALIZERS);
     }
 
     private static void modifyRegistries(ModifyRegistriesEvent event) {
