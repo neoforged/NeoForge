@@ -18,6 +18,7 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.util.Util;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.data.event.DataGeneratorConfig;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.internal.CommonModLoader;
 import org.apache.logging.log4j.LogManager;
@@ -26,7 +27,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 public class DatagenModLoader extends CommonModLoader {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static GatherDataEvent.DataGeneratorConfig dataGeneratorConfig;
+    private static DataGeneratorConfig dataGeneratorConfig;
     private static boolean runningDataGen;
 
     public static boolean isRunningDataGen() {
@@ -55,7 +56,7 @@ public class DatagenModLoader extends CommonModLoader {
         Bootstrap.bootStrap();
         begin(() -> {}, true);
         CompletableFuture<HolderLookup.Provider> worldLookupProvider = CompletableFuture.supplyAsync(VanillaRegistries::createWorldLookup, Util.backgroundExecutor());
-        dataGeneratorConfig = new GatherDataEvent.DataGeneratorConfig(mods, path, inputs, worldLookupProvider, devToolGenerators, reportsGenerator, structureValidator, flat, vanillaGenerator, existingPacks, vanillaClientAssets);
+        dataGeneratorConfig = new DataGeneratorConfig(mods, path, inputs, worldLookupProvider, devToolGenerators, reportsGenerator, structureValidator, flat, vanillaGenerator, existingPacks, vanillaClientAssets);
         setup.run();
 
         // Only fire the event for mods that have their generators enabled
