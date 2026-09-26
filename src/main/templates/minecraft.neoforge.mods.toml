@@ -1,8 +1,11 @@
 modLoader="minecraft"
 license="Minecraft EULA"
+licenseURL="https://aka.ms/MinecraftEULA"
 [[mods]]
 modId="minecraft"
 version="${minecraft_version}"
 displayName="Minecraft"
 authors="Mojang Studios"
 description=""
+bannerFile="minecraft:textures/gui/title/minecraft.png" # For completeness; the mod list screen will use the logo renderer
+iconFile="vanilla#pack.png"
