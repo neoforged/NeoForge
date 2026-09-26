@@ -1,0 +1,21 @@
+--- a/com/mojang/blaze3d/platform/Window.java
++++ b/com/mojang/blaze3d/platform/Window.java
+@@ -149,7 +_,7 @@
+ 
+     private long createWindow(GpuBackend backend, int width, int height, String title) {
+         long flags = 8224L;
+-        long windowHandle = backend.createWindow(title, width, height, 8224L);
++        long windowHandle = backend.createWindow(title, width, height, 8224L | SDLVideo.SDL_WINDOW_HIDDEN); // Neo: keep window hidden until after ELS handover
+         if (windowHandle == 0L) {
+             throw new IllegalStateException("Failed to create window: " + Objects.requireNonNullElse(SDLError.SDL_GetError(), "<no error>"));
+         }
+@@ -347,7 +_,8 @@
+         }
+ 
+         this.updateWindowMouseGrab();
+-        if (Minecraft.getInstance().mouseHandler.isMouseGrabbed()) {
++        // Neo: prevent crash during ELS handover
++        if (Minecraft.getInstance().mouseHandler != null && Minecraft.getInstance().mouseHandler.isMouseGrabbed()) {
+             double xpos = this.getScreenWidth() / 2.0;
+             double ypos = this.getScreenHeight() / 2.0;
+             InputConstants.grabMouse(this, xpos, ypos);
