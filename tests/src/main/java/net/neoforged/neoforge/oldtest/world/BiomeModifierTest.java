@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Set;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.NetherFeatures;
@@ -128,7 +129,7 @@ public class BiomeModifierTest {
 
     public record TestModifier(HolderSet<Biome> biomes, Precipitation precipitation, int waterColor) implements BiomeModifier {
         @Override
-        public void modify(Holder<Biome> biome, Phase phase, Builder builder) {
+        public void modify(RegistryAccess registries, Holder<Biome> biome, Phase phase, Builder builder) {
             if (phase == Phase.MODIFY && this.biomes.contains(biome)) {
                 builder.getClimateSettings().setHasPrecipitation(true);
                 builder.getSpecialEffects().waterColor(this.waterColor);
