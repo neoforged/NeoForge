@@ -10,6 +10,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.core.registries.codec.RegistryCodecs;
 import net.minecraft.resources.Identifier;
@@ -87,7 +88,7 @@ generator.addProvider(event.includeServer(), structureModifierProvider);*/
         private static final DeferredHolder<MapCodec<? extends StructureModifier>, MapCodec<? extends StructureModifier>> SERIALIZER = DeferredHolder.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, ADD_SPAWNS_TO_STRUCTURE_RL);
 
         @Override
-        public void modify(Holder<Structure> structure, Phase phase, Builder builder) {
+        public void modify(RegistryAccess registries, Holder<Structure> structure, Phase phase, Builder builder) {
             if (phase == Phase.ADD && this.structures.contains(structure)) {
                 builder.getStructureSettings()
                         .getOrAddSpawnOverrides(category)
