@@ -23,26 +23,25 @@ public final class AttachmentInternals {
      * Copy some attachments to another holder.
      */
     private static <H extends AttachmentHolder> void copyAttachments(HolderLookup.Provider provider, H from, H to, Predicate<AttachmentType<?>> filter) {
-        if (from.attachments == null) {
-            return;
-        }
-        for (var entry : from.attachments.entrySet()) {
-            AttachmentType<?> type = entry.getKey();
-            if (type.serializer == null) {
-                continue;
-            }
+        final var copyable = from.attachmentDataStorage()
+                .storedTypes()
+                .filter(t -> t.serializer != null)
+                .toList();
+
+        for (var type : copyable) {
             @SuppressWarnings("unchecked")
             var copyHandler = (IAttachmentCopyHandler<Object>) type.copyHandler;
             if (filter.test(type)) {
-                Object copy = copyHandler.copy(entry.getValue(), to.getExposedHolder(), provider);
+                final var v = from.getExistingDataOrNull(type);
+                Object copy = copyHandler.copy(v, to, provider);
                 if (copy != null) {
-                    to.getAttachmentMap().put(type, copy);
+                    to.putDataNoSync(type, copy);
                 }
             }
         }
     }
 
-    public static void copyChunkAttachmentsOnPromotion(HolderLookup.Provider provider, AttachmentHolder.AsField from, AttachmentHolder.AsField to) {
+    public static void copyChunkAttachmentsOnPromotion(HolderLookup.Provider provider, AttachmentHolder from, AttachmentHolder to) {
         copyAttachments(provider, from, to, type -> true);
     }
 
