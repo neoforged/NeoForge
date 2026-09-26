@@ -5,6 +5,10 @@
       "type": "minecraft:model",
       "model": "minecraft:item/golden_helmet"
     },
-    "base_trim_texture": "minecraft:trims/items/helmet_trim"
+    "base_trim_texture": "minecraft:trims/items/helmet_trim",
+    "palette_replacement": {
+      "replacement": "minecraft:trim/gold_darker",
+      "target": "minecraft:trim/gold"
+    }
   }
 }

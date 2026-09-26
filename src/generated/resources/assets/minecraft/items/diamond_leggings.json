@@ -5,6 +5,10 @@
       "type": "minecraft:model",
       "model": "minecraft:item/diamond_leggings"
     },
-    "base_trim_texture": "minecraft:trims/items/leggings_trim"
+    "base_trim_texture": "minecraft:trims/items/leggings_trim",
+    "palette_replacement": {
+      "replacement": "minecraft:trim/diamond_darker",
+      "target": "minecraft:trim/diamond"
+    }
   }
 }

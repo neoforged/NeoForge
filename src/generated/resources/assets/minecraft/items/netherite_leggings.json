@@ -5,6 +5,10 @@
       "type": "minecraft:model",
       "model": "minecraft:item/netherite_leggings"
     },
-    "base_trim_texture": "minecraft:trims/items/leggings_trim"
+    "base_trim_texture": "minecraft:trims/items/leggings_trim",
+    "palette_replacement": {
+      "replacement": "minecraft:trim/netherite_darker",
+      "target": "minecraft:trim/netherite"
+    }
   }
 }
