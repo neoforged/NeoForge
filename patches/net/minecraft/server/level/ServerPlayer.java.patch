@@ -129,6 +129,62 @@
          return this;
      }
  
+@@ -1231,10 +_,21 @@
+ 
+     @Override
+     public Either<Player.BedSleepingProblem, Unit> startSleepInBed(AbstractBedBlock bedBlock, BlockState bedBlockState, BedRule rule, BlockPos pos) {
++        // Neo: Move this earlier, because it is used later on (outside the encapsulated logic)
++        boolean canSetSpawn = rule.canSetSpawn(this.level());
++
++        // Neo: Encapsulate the vanilla logic for whether the player can sleep
++        var vanillaResult = ((java.util.function.Supplier<Either<BedSleepingProblem, Unit>>) () -> {
++
++        // Neo: For bed blocks without the FACING property, assume success
++        // Mods will have to implement their own logic using the CanPlayerSleepEvent
++        if (!bedBlockState.hasProperty(HorizontalDirectionalBlock.FACING)) {
++            return Either.right(Unit.INSTANCE);
++        }
++
+         Direction direction = bedBlockState.getValue(HorizontalDirectionalBlock.FACING);
+         if (!this.isSleeping() && this.isAlive()) {
+             boolean canSleep = rule.canSleep(this.level());
+-            boolean canSetSpawn = rule.canSetSpawn(this.level());
+             if (!this.bedInRange(pos, direction)) {
+                 return Either.left(Player.BedSleepingProblem.TOO_FAR_AWAY);
+             }
+@@ -1267,7 +_,20 @@
+                     return Either.left(Player.BedSleepingProblem.NOT_SAFE);
+                 }
+             }
+-
++        } else { // Neo: Moved from end of method
++            return Either.left(Player.BedSleepingProblem.OTHER_PROBLEM);
++        }
++
++        return Either.right(Unit.INSTANCE); // Neo: Nothing blocks sleep
++        }).get();
++
++        // Neo: Fire the CanPlayerStartSleeping event, and return the error if it exists
++        vanillaResult = net.neoforged.neoforge.event.EventHooks.canPlayerStartSleeping(this, pos, vanillaResult);
++        if (vanillaResult.left().isPresent()) {
++            return vanillaResult;
++        }
++
++        // Neo: Continue with the vanilla code to start sleeping
+             Either<Player.BedSleepingProblem, Unit> result = super.startSleepInBed(bedBlock, bedBlockState, rule, pos).ifRight(unit -> {
+                 this.awardStat(bedBlock.getSleptInBedStatType());
+                 if (canSetSpawn) {
+@@ -1280,9 +_,7 @@
+ 
+             this.level().updateSleepingPlayerList();
+             return result;
+-        } else {
+-            return Either.left(Player.BedSleepingProblem.OTHER_PROBLEM);
+-        }
++        // Neo: The 'else' clause here attached to the first 'if'-expression is moved earlier
+     }
+ 
+     @Override
 @@ -1300,6 +_,7 @@
      }
  
