@@ -1,11 +1,35 @@
 --- a/net/minecraft/resources/ResourceManagerRegistryLoadTask.java
 +++ b/net/minecraft/resources/ResourceManagerRegistryLoadTask.java
-@@ -40,7 +_,7 @@
+@@ -26,12 +_,22 @@
+         return new RegistrationInfo(knownPack, lifecycle);
+     });
+     private final ResourceManager resourceManager;
++    private final List<net.minecraft.core.Registry.PendingTags<?>> pendingTags;
+ 
++    /// @deprecated Neo: use [#ResourceManagerRegistryLoadTask(RegistryDataLoader.RegistryData, Lifecycle, Map, ResourceManager, List)] instead
++    @Deprecated
+     public ResourceManagerRegistryLoadTask(
+         RegistryDataLoader.RegistryData<T> data, Lifecycle lifecycle, Map<ResourceKey<?>, Exception> loadingErrors, ResourceManager resourceManager
+     ) {
++        this(data, lifecycle, loadingErrors, resourceManager, List.of());
++    }
++
++    public ResourceManagerRegistryLoadTask(
++        RegistryDataLoader.RegistryData<T> data, Lifecycle lifecycle, Map<ResourceKey<?>, Exception> loadingErrors, ResourceManager resourceManager, List<net.minecraft.core.Registry.PendingTags<?>> pendingTags
++    ) {
+         super(data, lifecycle, loadingErrors);
+         this.resourceManager = resourceManager;
++        this.pendingTags = pendingTags;
+     }
+ 
+     @Override
+@@ -40,7 +_,8 @@
          return CompletableFuture.<Map<Identifier, Resource>>supplyAsync(() -> lister.listMatchingResources(this.resourceManager), executor)
              .thenCompose(
                  registryResources -> {
 -                    RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, context);
-+                    RegistryOps<JsonElement> ops = new net.neoforged.neoforge.common.conditions.ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, context), net.neoforged.neoforge.common.conditions.ICondition.IContext.TAGS_INVALID);
++                    var conditionContext = new net.neoforged.neoforge.common.conditions.ConditionContext(pendingTags, context, net.minecraft.world.flag.FeatureFlags.VANILLA_SET);
++                    RegistryOps<JsonElement> ops = new net.neoforged.neoforge.common.conditions.ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, context), conditionContext);
                      return ParallelMapTransform.schedule(
                          (Map<Identifier, Resource>)registryResources,
                          (resourceId, thunk) -> {

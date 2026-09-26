@@ -215,7 +215,12 @@ public class ConditionalOps<T> extends RegistryOps<T> {
                     return contextDataResult.flatMap(contextCarrier -> {
                         final ICondition.IContext context = contextCarrier.getFirst();
 
-                        final boolean conditionsMatch = conditions.stream().allMatch(c -> c.test(context));
+                        final boolean conditionsMatch;
+                        try {
+                            conditionsMatch = conditions.stream().allMatch(c -> c.test(context));
+                        } catch (Throwable t) {
+                            return DataResult.error(t::getMessage);
+                        }
                         if (!conditionsMatch)
                             return DataResult.success(Pair.of(Optional.empty(), input));
 

@@ -23,7 +23,7 @@ import net.neoforged.neoforge.gametest.GameTestHooks;
 
 /**
  * Game tests are registered on client or server startup.
- * It is run in {@link net.minecraft.resources.RegistryDataLoader#load(ResourceManager, List, List, java.util.concurrent.Executor)} if {@link GameTestHooks#isGametestEnabled} returns true.
+ * It is run in {@link net.minecraft.resources.RegistryDataLoader#load(ResourceManager, List, List, List, java.util.concurrent.Executor)} if {@link GameTestHooks#isGametestEnabled} returns true.
  * <p>
  * Fired on the Mod bus, see {@link IModBusEvent}.
  */
