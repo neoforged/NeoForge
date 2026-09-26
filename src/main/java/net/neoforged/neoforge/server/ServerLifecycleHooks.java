@@ -264,7 +264,7 @@ public class ServerLifecycleHooks {
 
         // Apply sorted structure modifiers to each structure.
         registries.lookupOrThrow(Registries.STRUCTURE).listElements().forEach(structureHolder -> {
-            structureHolder.value().modifiableStructureInfo().applyStructureModifiers(structureHolder, structureModifiers);
+            structureHolder.value().modifiableStructureInfo().applyStructureModifiers(registries, structureHolder, structureModifiers);
         });
 
         if (!entitiesWithoutPlacements.isEmpty() && !FMLEnvironment.isProduction()) {
