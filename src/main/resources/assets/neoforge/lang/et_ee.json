@@ -124,8 +124,6 @@
   "commands.neoforge.data_components.list.tooltip.added": "Component %s was added with value %s",
   "commands.neoforge.debug_class_loading_transformations.message": "Transformed/total loaded classes: %s and %s parsed for mixin",
   "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "Recipe lookup is not possible in client commands",
-  "commands.config.getwithtype": "Seadistus %s jaoks tüübiga %s leiti asukohast %s",
-  "commands.config.noconfig": "Seadistust %s jaoks tüübiga %s ei leitud",
   "neoforge.update.beta.1": "%sHOIATUS: %sNeoForge beeta",
   "neoforge.update.beta.2": "Võivad esineda tõsised vead, veendu enne teatamist.",
   "neoforge.update.newversion": "Uus NeoForge versioon on saadaval: %s",
