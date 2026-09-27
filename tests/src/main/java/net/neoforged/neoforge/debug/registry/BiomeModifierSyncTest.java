@@ -50,7 +50,7 @@ public class BiomeModifierSyncTest {
 
     public record TestModifier(HolderSet<Biome> biomes, int waterColor) implements BiomeModifier {
         @Override
-        public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
+        public void modify(RegistryAccess registries, Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
             if (phase == Phase.MODIFY && this.biomes.contains(biome)) {
                 builder.getSpecialEffects().waterColor(this.waterColor);
             }

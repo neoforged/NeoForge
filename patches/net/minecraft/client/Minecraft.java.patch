@@ -36,6 +36,22 @@
                          gameConfig.game.vulkanValidation
                      )
                  );
+@@ -527,6 +_,7 @@
+         LOGGER.info("Using graphics backend {}, using drivers: {}", deviceInfo.backendName(), deviceInfo.driverInfo());
+         LOGGER.info("Using graphics device: {} ({})", deviceInfo.name(), deviceInfo.vendorName());
+         LOGGER.info("Using graphics device extensions: {}", String.join(", ", deviceInfo.underlyingExtensions()));
++        net.neoforged.neoforge.client.loading.earlydisplay.EarlyWindowHandoff.startWindowHandoff();
+         int maxSize = deviceInfo.limits().maxTextureSizeForFormat(GpuFormat.RGBA8_UNORM);
+         this.window = new Window(
+             this,
+@@ -547,6 +_,7 @@
+ 
+         this.windowSurface = device.createSurface(this.window.handle(), this.window::isIconified);
+         this.sdlEventHandler = new SDLEventHandler(this, this.window);
++        net.neoforged.neoforge.client.loading.earlydisplay.EarlyWindowHandoff.completeWindowHandoff(this.window);
+         this.textInputManager = new TextInputManager(this.window);
+         this.sdlEventHandler.flushInputEvents();
+         this.window
 @@ -570,6 +_,9 @@
          this.keyboardHandler = new KeyboardHandler(this);
          this.options.applyGraphicsPreset(this.options.graphicsPreset().get());
@@ -194,17 +210,25 @@
              profiler.popPush("frameLimiter");
              int framerateLimit = this.gameRenderer.gameRenderState().framerateLimit;
              if (framerateLimit < 260) {
-@@ -1430,8 +_,10 @@
+@@ -1430,12 +_,18 @@
      public void resizeGui() {
          int guiScale = this.window.calculateScale(this.options.guiScale().get(), this.isEnforceUnicode());
          this.window.setGuiScale(guiScale);
++        if (this.gui != null) { // Neo: prevent crash during ELS handover
 +        net.neoforged.neoforge.client.ClientHooks.fireWindowResize(this.window);
          if (this.gui.screen() != null) {
              this.gui.screen().resize(this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
 +            this.gui.resizeScreenLayers(this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
++        }
          }
  
++        if (this.mouseHandler != null) { // Neo: prevent crash during ELS handover
          this.mouseHandler.resyncMousePosition();
+         this.mouseHandler.setIgnoreFirstMove();
++        }
+     }
+ 
+     @Override
 @@ -1595,6 +_,7 @@
      }
  

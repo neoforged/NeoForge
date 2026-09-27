@@ -34,7 +34,6 @@ import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.neoforge.client.color.item.FluidContentsTint;
-import net.neoforged.neoforge.client.command.ClientConfigCommand;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.data.internal.NeoForgeSpriteSourceProvider;
 import net.neoforged.neoforge.client.data.internal.VanillaModelProvider;
@@ -123,10 +122,6 @@ public class ClientNeoForgeMod {
             if (event.getConnection() != null && !event.getConnection().isMemoryConnection()) {
                 ConfigTracker.INSTANCE.unloadConfigs(ModConfig.Type.SERVER);
             }
-        });
-
-        NeoForge.EVENT_BUS.addListener(RegisterClientCommandsEvent.class, event -> {
-            ClientConfigCommand.register(event.getDispatcher());
         });
 
         NeoForge.EVENT_BUS.addListener(ClientResourceLoadFinishedEvent.class, event -> {
