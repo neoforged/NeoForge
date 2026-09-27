@@ -124,8 +124,6 @@
   "commands.neoforge.data_components.list.tooltip.added": "Onderdeel %s is toegevoegd met de waarde %s",
   "commands.neoforge.debug_class_loading_transformations.message": "Transformed/total loaded classes: %s and %s parsed for mixin",
   "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "Recept zoeken is niet mogelijk in client commando's",
-  "commands.config.getwithtype": "Configuratie voor %s van type %s gevonden bij %s",
-  "commands.config.noconfig": "Configuratie voor %s van type %s niet gevonden",
   "neoforge.update.beta.1": "%sWAARSCHUWING: %sNeoForge Beta",
   "neoforge.update.beta.2": "Grote problemen kunnen opduiken, controleer voordat u het rapporteert.",
   "neoforge.update.newversion": "Nieuwe versie van NeoForge beschikbaar: %s",
