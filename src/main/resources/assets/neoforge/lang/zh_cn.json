@@ -124,8 +124,6 @@
   "commands.neoforge.data_components.list.tooltip.added": "组件%s添加了值%s",
   "commands.neoforge.debug_class_loading_transformations.message": "为Mixin解析的变换/总共类：%s/%s",
   "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "配方无法通过客户端命令查找",
-  "commands.config.getwithtype": "%s类型%s的配置在%s发现",
-  "commands.config.noconfig": "未发现%s（类型为%s）的配置",
   "neoforge.update.beta.1": "%s警告：%s NeoForge为测试版",
   "neoforge.update.beta.2": "可能会出现重大问题，请在报告之前进行核实。",
   "neoforge.update.newversion": "新版本NeoForge可用：%s",
