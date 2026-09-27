@@ -41,7 +41,7 @@
 +		Material itemTexture = TextureMapping.getItemTexture(armor);
 +
 +		ModelTemplates.FLAT_ITEM.create(baseArmorModel, TextureMapping.layer0(itemTexture), this.modelOutput);
-+
++		
 +        ItemModel.Unbaked armorModel;
 +        if (color != -1) {
 +            armorModel = ItemModelUtils.tintedModel(baseArmorModel, new Dye(color));
