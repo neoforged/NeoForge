@@ -124,8 +124,6 @@
   "commands.neoforge.data_components.list.tooltip.added": "元件 %s 已新增，其值為 %s",
   "commands.neoforge.debug_class_loading_transformations.message": "已加載類總數：%s 個類，其中%s 個已解析以用於 mixin",
   "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "配方查詢無法在用戶端指令中使用",
-  "commands.config.getwithtype": "%s 類型 %s 的配置在 %s 發現",
-  "commands.config.noconfig": "%s 類型 %s 的配置未發現",
   "neoforge.update.beta.1": "%s警告：%s NeoForge Beta 版",
   "neoforge.update.beta.2": "可能會發生重大問題，請在回報前確認。",
   "neoforge.update.newversion": "有新的 NeoForge 版本可用：%s",
