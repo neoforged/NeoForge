@@ -124,8 +124,6 @@
   "commands.neoforge.data_components.list.tooltip.added": "Komponente %s wurde mit dem Wert %s hinzugefügt",
   "commands.neoforge.debug_class_loading_transformations.message": "Transformierte/insgesamt geladene Klassen: %s und %s für Mixin verarbeitet",
   "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "Das Abrufen von Rezepten ist nicht verfügbar unter Client-Commands",
-  "commands.config.getwithtype": "Konfiguration für %s vom Typ %s gefunden bei %s",
-  "commands.config.noconfig": "Konfiguration für %s vom Typ %s nicht gefunden",
   "neoforge.update.beta.1": "%sWARNUNG: %sNeoForge Beta",
   "neoforge.update.beta.2": "Es könnten gravierende Probleme auftreten, bitte überprüfe diese, bevor du sie meldest.",
   "neoforge.update.newversion": "Neue NeoForge-Version verfügbar: %s",
