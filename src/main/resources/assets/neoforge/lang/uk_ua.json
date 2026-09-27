@@ -124,8 +124,6 @@
   "commands.neoforge.data_components.list.tooltip.added": "Компонент %s було додано зі значенням %s",
   "commands.neoforge.debug_class_loading_transformations.message": "Трансформована/загальна кількість завантажених класів: %s і %s проаналізовано для mixin",
   "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "Пошук рецептів неможливий у командах клієнта",
-  "commands.config.getwithtype": "Параметр для %s типу %s знайдена в %s",
-  "commands.config.noconfig": "Параметр для %s типу %s не знайдено",
   "neoforge.update.beta.1": "%sПОПЕРЕДЖЕННЯ: %sNeoForge Beta",
   "neoforge.update.beta.2": "Можуть виникнути серйозні проблеми, перевірте їх перед надсиланням звіту.",
   "neoforge.update.newversion": "Нова версія NeoForge доступна: %s",
