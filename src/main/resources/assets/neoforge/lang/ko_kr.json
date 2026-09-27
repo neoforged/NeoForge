@@ -124,8 +124,6 @@
   "commands.neoforge.data_components.list.tooltip.added": "Component %s was added with value %s",
   "commands.neoforge.debug_class_loading_transformations.message": "Transformed/total loaded classes: %s and %s parsed for mixin",
   "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "Recipe lookup is not possible in client commands",
-  "commands.config.getwithtype": "모드 %s의 설정 %s이(가) %s에서 발견됨",
-  "commands.config.noconfig": "모드 %s의 설정 %s을(를) 찾을 수 없음",
   "neoforge.update.beta.1": "%s경고: %s 네오 포지 베타 버전입니다",
   "neoforge.update.beta.2": "아직 불안정하니, 오류 발생 시 확인 후 신고해 주세요.",
   "neoforge.update.newversion": "새로운 네오 포지 버전으로 업데이트할 수 있습니다: %s",
