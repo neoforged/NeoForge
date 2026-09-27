@@ -80,7 +80,7 @@ public class TrimmedArmorModel implements ItemModel {
                 //Get the trim material
                 Holder<TrimMaterial> material = Objects.requireNonNull(stack.get(DataComponents.TRIM)).material();
 
-				//Ex. minecraft:trim/diamond -> diamond
+                //Ex. minecraft:trim/diamond -> diamond
                 String suffix = material.value().paletteId().getPath().substring(material.value().paletteId().getPath().lastIndexOf('/') + 1);
 
                 this.itemsWithTrims.computeIfAbsent(suffix, this::createTrimLayer).update(state, stack, resolver, context, level, owner, seed);
