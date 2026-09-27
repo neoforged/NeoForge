@@ -28,6 +28,7 @@ import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.client.resources.model.sprite.MaterialBaker;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -82,6 +83,13 @@ public class TrimmedArmorModel implements ItemModel {
 
                 //Ex. minecraft:trim/diamond -> diamond
                 String suffix = material.value().paletteId().getPath().substring(material.value().paletteId().getPath().lastIndexOf('/') + 1);
+
+                Item item = stack.getItem();
+                String itemPath = BuiltInRegistries.ITEM.getKey(item).getPath();
+
+                if (itemPath.contains(suffix)) {
+                    suffix += "_darker";
+                }
 
                 this.itemsWithTrims.computeIfAbsent(suffix, this::createTrimLayer).update(state, stack, resolver, context, level, owner, seed);
 
