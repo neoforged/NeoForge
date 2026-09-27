@@ -124,8 +124,6 @@
   "commands.neoforge.data_components.list.tooltip.added": "Le composant %s a été ajouté avec la valeur %s",
   "commands.neoforge.debug_class_loading_transformations.message": "Classes chargées transformées/totales : %s et %s analysées pour mixin",
   "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "La recherche de recette n'est pas possible dans les commandes du client",
-  "commands.config.getwithtype": "Configuration pour %s de type %s trouvée dans %s",
-  "commands.config.noconfig": "La configuration pour %s du type %s est introuvable",
   "neoforge.update.beta.1": "%sATTENTION: %sNeoForge Bêta",
   "neoforge.update.beta.2": "Des problèmes majeurs peuvent survenir, vérifier avant de signaler.",
   "neoforge.update.newversion": "Nouvelle version de NeoForge disponible : %s",
