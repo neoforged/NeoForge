@@ -87,7 +87,7 @@ public class ModifiableBiomeInfo {
         final BiomeInfo.Builder builder = BiomeInfo.Builder.copyOf(biome.getKey(), original);
         for (BiomeModifier.Phase phase : BiomeModifier.Phase.values()) {
             for (BiomeModifier modifier : biomeModifiers) {
-                modifier.modify(biome, phase, builder);
+                modifier.modify(registryAccess, biome, phase, builder);
             }
         }
         DynamicOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, registryAccess);
