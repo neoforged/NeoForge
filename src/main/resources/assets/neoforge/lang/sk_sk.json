@@ -124,8 +124,6 @@
   "commands.neoforge.data_components.list.tooltip.added": "Komponent %s bol pridaný s hodnotou %s",
   "commands.neoforge.debug_class_loading_transformations.message": "Transformed/total loaded classes: %s and %s parsed for mixin",
   "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "V príkazoch klienta nie je možné vyhľadávať recepty",
-  "commands.config.getwithtype": "Konfigurácia pre %s typu %s nájdená v %s",
-  "commands.config.noconfig": "Konfigurácia pre %s typu %s nenájdená",
   "neoforge.update.beta.1": "%sVAROVANIE: %sNeoForge Beta",
   "neoforge.update.beta.2": "Môžu sa vyskytnúť závažné problémy, overte ich pred nahlásením.",
   "neoforge.update.newversion": "K dispozícii je nová verzia NeoForge: %s",
