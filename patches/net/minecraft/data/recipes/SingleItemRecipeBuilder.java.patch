@@ -1,0 +1,14 @@
+--- a/net/minecraft/data/recipes/SingleItemRecipeBuilder.java
++++ b/net/minecraft/data/recipes/SingleItemRecipeBuilder.java
+@@ -32,6 +_,11 @@
+         return new SingleItemRecipeBuilder(category, StonecutterRecipe::new, ingredient, result, count);
+     }
+ 
++    // Neo: All passing in ItemStackTemplate for results with components
++    public static SingleItemRecipeBuilder stonecutting(Ingredient ingredient, RecipeCategory category, ItemStackTemplate template) {
++        return new SingleItemRecipeBuilder(category, StonecutterRecipe::new, ingredient, template);
++    }
++
+     public SingleItemRecipeBuilder unlockedBy(String name, Criterion<?> criterion) {
+         this.advancementBuilder.unlockedBy(name, criterion);
+         return this;

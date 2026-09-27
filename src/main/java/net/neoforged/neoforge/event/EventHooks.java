@@ -27,13 +27,11 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.ReloadableServerRegistries;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
@@ -119,7 +117,6 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWit
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IFluidStateExtension;
@@ -831,16 +828,12 @@ public class EventHooks {
      * Fires the {@link AddServerReloadListenersEvent} and returns the sorted list of reload listeners.
      * 
      * @param serverResources The just-created {@link ReloadableServerResources} instance.
-     * @param registryAccess  The registry access from the {@link ReloadableServerRegistries.LoadResult}.
      * @return The sorted list of reload listeners.
      * 
      * @throws IllegalArgumentException if {@link ReloadListenerSort#sort(SortedReloadListenerEvent)} detects a cycle.
      */
-    public static List<PreparableReloadListener> onResourceReload(
-            ReloadableServerResources serverResources,
-            RegistryAccess registryAccess,
-            Map<ListenerKey<?>, PreparableReloadListener> retainedListeners) {
-        AddServerReloadListenersEvent event = new AddServerReloadListenersEvent(serverResources, registryAccess, retainedListeners);
+    public static List<PreparableReloadListener> onResourceReload(ReloadableServerResources serverResources, Map<ListenerKey<?>, PreparableReloadListener> retainedListeners) {
+        AddServerReloadListenersEvent event = new AddServerReloadListenersEvent(serverResources, retainedListeners);
         NeoForge.EVENT_BUS.post(event);
         return ReloadListenerSort.sort(event);
     }
@@ -1124,8 +1117,7 @@ public class EventHooks {
                 throw new IllegalArgumentException("The stack count must be 1");
 
             if (BuildCreativeModeTabContentsEvent.isParentTab(vis)) {
-                // TODO 26.3: Remove the dev-only check, so this runs in production as well
-                if (!parentEntries.add(stack) && !FMLEnvironment.isProduction())
+                if (!parentEntries.add(stack))
                     throw new IllegalArgumentException("Stack " + stack.getDisplayName().getString() + "has already been added to the tab " + tab.getDisplayName().getString() + " previously");
             }
 

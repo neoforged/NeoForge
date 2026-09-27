@@ -1,18 +1,11 @@
 --- a/net/minecraft/core/component/BlockTransformer.java
 +++ b/net/minecraft/core/component/BlockTransformer.java
-@@ -60,10 +_,14 @@
+@@ -60,7 +_,7 @@
          BlockPos pos = context.getClickedPos();
          Level level = context.getLevel();
  
-+        // Neo: take the strippables and oxidizables datamap into consideration first if this is an axe
-+        java.util.function.Function<BlockState, @Nullable BlockState> dataMapProvider = net.neoforged.neoforge.common.DataMapHooks.axeBlockTransformer(context.getItemInHand());
-+
-         for (BlockTransformer.BlockTransformData transformData : this.transforms) {
+-        for (BlockTransformer.BlockTransformData transformData : this.transforms) {
++        for (BlockTransformer.BlockTransformData transformData : net.neoforged.neoforge.common.DataMapHooks.appendDatamapTransformers(context.getItemInHand(), this.transforms)) {
              Direction clickedFace = context.getClickedFace();
              if (!transformData.disallowedFaces().contains(clickedFace)) {
--                BlockState newBlockState = transformData.blockStateProvider.value().getOptionalState(level, level.getRandom(), pos);
-+                BlockState newBlockState = dataMapProvider.apply(level.getBlockState(pos));
-+                if (newBlockState == null) newBlockState = transformData.blockStateProvider.value().getOptionalState(level, level.getRandom(), pos);
-                 if (newBlockState != null) {
-                     BlockState updatedShape = transformData.updateFromNeighbors ? Block.updateFromNeighbourShapes(newBlockState, level, pos) : newBlockState;
-                     Player player = context.getPlayer();
+                 BlockState newBlockState = transformData.blockStateProvider.value().getOptionalState(level, level.getRandom(), pos);

@@ -87,7 +87,7 @@ public class ModifiableBiomeInfo {
         final BiomeInfo.Builder builder = BiomeInfo.Builder.copyOf(biome.getKey(), original);
         for (BiomeModifier.Phase phase : BiomeModifier.Phase.values()) {
             for (BiomeModifier modifier : biomeModifiers) {
-                modifier.modify(biome, phase, builder);
+                modifier.modify(registryAccess, biome, phase, builder);
             }
         }
         DynamicOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, registryAccess);
@@ -105,6 +105,7 @@ public class ModifiableBiomeInfo {
      * Record containing raw biome data.
      * 
      * @param climateSettings    Weather and temperature settings.
+     * @param attributes         Environment attributes.
      * @param effects            Client-relevant effects for rendering and sound.
      * @param generationSettings Worldgen features and carvers.
      */

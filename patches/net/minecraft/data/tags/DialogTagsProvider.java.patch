@@ -1,0 +1,17 @@
+--- a/net/minecraft/data/tags/DialogTagsProvider.java
++++ b/net/minecraft/data/tags/DialogTagsProvider.java
+@@ -8,8 +_,14 @@
+ import net.minecraft.tags.DialogTags;
+ 
+ public class DialogTagsProvider extends TagsProvider<Dialog> {
++    /// @deprecated Neo: Use the [DialogTagsProvider(PackOutput, CompletableFuture, String)] mod id variant
++    @Deprecated
+     public DialogTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+         super(output, Registries.DIALOG, lookupProvider);
++    }
++
++    public DialogTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
++        super(output, Registries.DIALOG, lookupProvider, modId);
+     }
+ 
+     @Override

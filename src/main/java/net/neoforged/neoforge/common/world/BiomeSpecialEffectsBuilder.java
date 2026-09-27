@@ -8,10 +8,8 @@ package net.neoforged.neoforge.common.world;
 import java.util.Optional;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
 
-/**
- * Extension of the vanilla builder but also provides read access and a copy-from-existing-data helper.
- * Also, the base builder crashes if certain values aren't specified on build, so this enforces the setting of those.
- */
+/// Extension of the vanilla [BiomeSpecialEffects.Builder]. Provides read access, support for removing overrides and a
+/// helper for creating a builder from an existing [BiomeSpecialEffects] and enforces specification of required fields.
 public class BiomeSpecialEffectsBuilder extends BiomeSpecialEffects.Builder {
     public static BiomeSpecialEffectsBuilder copyOf(BiomeSpecialEffects baseEffects) {
         BiomeSpecialEffectsBuilder builder = BiomeSpecialEffectsBuilder.create(baseEffects.waterColor());
@@ -29,6 +27,21 @@ public class BiomeSpecialEffectsBuilder extends BiomeSpecialEffects.Builder {
     protected BiomeSpecialEffectsBuilder(int waterColor) {
         super();
         this.waterColor(waterColor);
+    }
+
+    public BiomeSpecialEffectsBuilder foliageColorOverride(Optional<Integer> foliageColor) {
+        this.foliageColorOverride = foliageColor;
+        return this;
+    }
+
+    public BiomeSpecialEffectsBuilder dryFoliageColorOverride(Optional<Integer> dryFoliageColor) {
+        this.dryFoliageColorOverride = dryFoliageColor;
+        return this;
+    }
+
+    public BiomeSpecialEffectsBuilder grassColorOverride(Optional<Integer> grassColor) {
+        this.grassColorOverride = grassColor;
+        return this;
     }
 
     public int waterColor() {

@@ -24,6 +24,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ColorCollection;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gamerules.GameRules;
@@ -98,8 +99,8 @@ public class Tags {
         public static final TagKey<Block> CONCRETES = tag("concretes");
 
         /**
-         * Tag that holds all blocks that can be dyed a specific color.
-         * (Does not include color blending blocks that would behave similar to leather armor item)
+         * Tag that holds all blocks which can be dyed a specific color.
+         * (Does not include color blending blocks which would behave similarly to leather armor items)
          */
         public static final TagKey<Block> DYED = tag("dyed");
         public static final TagKey<Block> DYED_BLACK = tag("dyed/black");
@@ -118,6 +119,56 @@ public class Tags {
         public static final TagKey<Block> DYED_RED = tag("dyed/red");
         public static final TagKey<Block> DYED_WHITE = tag("dyed/white");
         public static final TagKey<Block> DYED_YELLOW = tag("dyed/yellow");
+
+        /**
+         * Dyed color tags as a color collection, for convenience.
+         */
+        public static final ColorCollection<TagKey<Block>> DYED_COLORS = new ColorCollection<>(
+                DYED_WHITE,
+                DYED_ORANGE,
+                DYED_MAGENTA,
+                DYED_LIGHT_BLUE,
+                DYED_YELLOW,
+                DYED_LIME,
+                DYED_PINK,
+                DYED_GRAY,
+                DYED_LIGHT_GRAY,
+                DYED_CYAN,
+                DYED_PURPLE,
+                DYED_BLUE,
+                DYED_BROWN,
+                DYED_GREEN,
+                DYED_RED,
+                DYED_BLACK);
+
+        /**
+         * Tag that holds blocks which can be dyed but do not have their own color already, like glass.
+         * (Does not include color blending blocks which would behave similarly to leather armor items)
+         */
+        public static final TagKey<Block> DYEABLE_UNDYED_SIMPLE = tag("dyeable/simple/undyed");
+
+        /**
+         * Tag that holds blocks which can be dyed despite already having a color, like wool.
+         * (Does not include color blending blocks which would behave similarly to leather armor items)
+         */
+        public static final TagKey<Block> DYEABLE_REDYEABLE_SIMPLE = tag("dyeable/simple/redyeable");
+
+        /**
+         * Tag that holds blocks which can be dyed in a simple fashion without color blending, typically
+         * in the standard 16 colors, whether they have a color already or not.
+         */
+        public static final TagKey<Block> DYEABLE_SIMPLE = tag("dyeable/simple");
+
+        /**
+         * Tag that holds blocks which can be dyed in a dynamic color blending fashion, similarly to leather armor items.
+         */
+        public static final TagKey<Block> DYEABLE_DYNAMIC = tag("dyeable/dynamic");
+
+        /**
+         * Tag that holds blocks which can have dye applied to them, whether they have a color already or not.
+         */
+        public static final TagKey<Block> DYEABLE = tag("dyeable");
+
         public static final TagKey<Block> END_STONES = tag("end_stones");
         public static final TagKey<Block> FENCE_GATES = tag("fence_gates");
         public static final TagKey<Block> FENCE_GATES_WOODEN = tag("fence_gates/wooden");
@@ -514,7 +565,7 @@ public class Tags {
         public static final TagKey<Item> DUSTS_GLOWSTONE = tag("dusts/glowstone");
 
         /**
-         * Tag that holds all blocks and items that can be dyed a specific color.
+         * Tag that holds all blocks and items which are dyed a specific color.
          * (Does not include color blending items like leather armor
          * Use {@link net.minecraft.tags.ItemTags#DYEABLE} tag instead for color blending items)
          * <p>
@@ -541,6 +592,56 @@ public class Tags {
         public static final TagKey<Item> DYED_WHITE = tag("dyed/white");
         public static final TagKey<Item> DYED_YELLOW = tag("dyed/yellow");
 
+        /**
+         * Dyed color tags as a color collection, for convenience.
+         */
+        public static final ColorCollection<TagKey<Item>> DYED_COLORS = new ColorCollection<>(
+                DYED_WHITE,
+                DYED_ORANGE,
+                DYED_MAGENTA,
+                DYED_LIGHT_BLUE,
+                DYED_YELLOW,
+                DYED_LIME,
+                DYED_PINK,
+                DYED_GRAY,
+                DYED_LIGHT_GRAY,
+                DYED_CYAN,
+                DYED_PURPLE,
+                DYED_BLUE,
+                DYED_BROWN,
+                DYED_GREEN,
+                DYED_RED,
+                DYED_BLACK);
+
+        /**
+         * Tag that holds items which can be dyed but do not have their own color already, like glass.
+         * (Does not include color blending items like leather armor)
+         */
+        public static final TagKey<Item> DYEABLE_UNDYED_SIMPLE = tag("dyeable/simple/undyed");
+
+        /**
+         * Tag that holds items which can be dyed despite already having a color, like wool.
+         * (Does not include color blending items like leather armor)
+         */
+        public static final TagKey<Item> DYEABLE_REDYEABLE_SIMPLE = tag("dyeable/simple/redyeable");
+
+        /**
+         * Tag that holds items which can be dyed in a simple fashion without color blending, typically
+         * in the standard 16 colors, whether they have a color already or not.
+         */
+        public static final TagKey<Item> DYEABLE_SIMPLE = tag("dyeable/simple");
+
+        /**
+         * Tag that holds items which can be dyed in a dynamic color blending fashion, like leather armor.
+         * <br>Note this also includes Firework Stars, which store colors in a different fashion to most.
+         */
+        public static final TagKey<Item> DYEABLE_DYNAMIC = tag("dyeable/dynamic");
+
+        /**
+         * Tag that holds items which can have dye applied to them, whether they have a color already or not.
+         */
+        public static final TagKey<Item> DYEABLE = tag("dyeable");
+
         public static final TagKey<Item> DYES = tag("dyes");
         public static final TagKey<Item> DYES_BLACK = DyeColor.BLACK.getTag();
         public static final TagKey<Item> DYES_RED = DyeColor.RED.getTag();
@@ -558,6 +659,27 @@ public class Tags {
         public static final TagKey<Item> DYES_MAGENTA = DyeColor.MAGENTA.getTag();
         public static final TagKey<Item> DYES_ORANGE = DyeColor.ORANGE.getTag();
         public static final TagKey<Item> DYES_WHITE = DyeColor.WHITE.getTag();
+
+        /**
+         * Dye color tags as a color collection, for convenience.
+         */
+        public static final ColorCollection<TagKey<Item>> DYE_COLORS = new ColorCollection<>(
+                DYES_WHITE,
+                DYES_ORANGE,
+                DYES_MAGENTA,
+                DYES_LIGHT_BLUE,
+                DYES_YELLOW,
+                DYES_LIME,
+                DYES_PINK,
+                DYES_GRAY,
+                DYES_LIGHT_GRAY,
+                DYES_CYAN,
+                DYES_PURPLE,
+                DYES_BLUE,
+                DYES_BROWN,
+                DYES_GREEN,
+                DYES_RED,
+                DYES_BLACK);
 
         /**
          * For eggs to use for culinary purposes in recipes such as baking a cake.
@@ -1268,6 +1390,7 @@ public class Tags {
         public static final TagKey<Biome> PRIMARY_WOOD_TYPE_JUNGLE = tag("primary_wood_type/jungle");
         public static final TagKey<Biome> PRIMARY_WOOD_TYPE_ACACIA = tag("primary_wood_type/acacia");
         public static final TagKey<Biome> PRIMARY_WOOD_TYPE_DARK_OAK = tag("primary_wood_type/dark_oak");
+        public static final TagKey<Biome> PRIMARY_WOOD_TYPE_POPLAR = tag("primary_wood_type/poplar");
         public static final TagKey<Biome> PRIMARY_WOOD_TYPE_MANGROVE = tag("primary_wood_type/mangrove");
         public static final TagKey<Biome> PRIMARY_WOOD_TYPE_CHERRY = tag("primary_wood_type/cherry");
         public static final TagKey<Biome> PRIMARY_WOOD_TYPE_PALE_OAK = tag("primary_wood_type/pale_oak");

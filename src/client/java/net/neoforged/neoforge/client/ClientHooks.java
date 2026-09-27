@@ -250,8 +250,8 @@ public class ClientHooks {
         NeoForge.EVENT_BUS.post(new ClientPauseChangeEvent.Post(pause));
     }
 
-    public static boolean renderSpecificFirstPersonHand(InteractionHand hand, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight, float partialTick, float interpPitch, float swingProgress, float equipProgress, ItemStack stack) {
-        return NeoForge.EVENT_BUS.post(new RenderHandEvent(hand, poseStack, submitNodeCollector, packedLight, partialTick, interpPitch, swingProgress, equipProgress, stack)).isCanceled();
+    public static boolean renderSpecificFirstPersonHand(InteractionHand hand, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, PlayerRenderState playerState, float partialTick, float interpPitch, float swingProgress, float equipProgress, ItemStack stack) {
+        return NeoForge.EVENT_BUS.post(new RenderHandEvent(hand, poseStack, submitNodeCollector, playerState, partialTick, interpPitch, swingProgress, equipProgress, stack)).isCanceled();
     }
 
     public static boolean renderSpecificFirstPersonArm(

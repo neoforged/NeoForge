@@ -156,6 +156,8 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
         this.sprite = sprite;
         this.chunkLayer = chunkLayer;
         this.itemRenderType = itemRenderType;
+        this.itemGlintRenderType = itemGlintRenderType;
+        this.itemGlintSpecialRenderType = itemGlintSpecialRenderType;
     }
 
     public void setShadeOverride(@Nullable Direction shadeOverride) {
@@ -184,8 +186,12 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
         if (chunkLayer == null) {
             throw new IllegalStateException("No ChunkSectionLayer set");
         }
-        if (itemRenderType == null || itemGlintRenderType == null || itemGlintSpecialRenderType == null) {
+        if (itemRenderType == null) {
             throw new IllegalStateException("No item RenderType set");
+        } else if (itemGlintRenderType == null) {
+            throw new IllegalStateException("No item glint RenderType set");
+        } else if (itemGlintSpecialRenderType == null) {
+            throw new IllegalStateException("No item glint special RenderType set");
         }
 
         BakedQuad.MaterialInfo materialInfo = new BakedQuad.MaterialInfo(sprite, chunkLayer, itemRenderType, itemGlintRenderType, itemGlintSpecialRenderType, tintIndex, shadeOverride, lightEmission, ambientOcclusion);

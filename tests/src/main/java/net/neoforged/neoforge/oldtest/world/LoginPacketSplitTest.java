@@ -58,7 +58,7 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
-import net.neoforged.neoforge.registries.DataPackRegistryEvent;
+import net.neoforged.neoforge.registries.NewDatapackRegistryEvent;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -82,7 +82,7 @@ public class LoginPacketSplitTest {
     public static final ResourceKey<Registry<BigData>> BIG_DATA = ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(MOD_ID, "big_data"));
 
     public LoginPacketSplitTest(IEventBus bus) {
-        bus.addListener((final DataPackRegistryEvent.NewRegistry event) -> event.dataPackRegistry(BIG_DATA, BigData.CODEC, BigData.CODEC));
+        bus.addListener((final NewDatapackRegistryEvent event) -> event.worldRegistry(BIG_DATA, BigData.CODEC, BigData.CODEC));
         if (ENABLED) {
             bus.addListener((final AddPackFindersEvent event) -> {
                 if (event.getPackType() == PackType.SERVER_DATA) {

@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.common.data.internal;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -12,6 +14,9 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.TagAppender;
+import net.minecraft.references.BlockIds;
+import net.minecraft.references.BlockItemId;
+import net.minecraft.references.BlockItemIds;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockItemTags;
@@ -21,6 +26,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ColorCollection;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 
@@ -52,20 +58,36 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.Blocks.COBBLESTONES_MOSSY).add(Blocks.MOSSY_COBBLESTONE);
         tag(Tags.Blocks.COBBLESTONES_DEEPSLATE).add(Blocks.COBBLED_DEEPSLATE);
         tag(Tags.Blocks.CONCRETES).addAll(Blocks.CONCRETE.asList());
-        addColored(Tags.Blocks.DYED, "{color}_banner");
-        addColored(Tags.Blocks.DYED, "{color}_bed");
-        addColored(Tags.Blocks.DYED, "{color}_candle");
-        addColored(Tags.Blocks.DYED, "{color}_carpet");
-        addColored(Tags.Blocks.DYED, "{color}_concrete");
-        addColored(Tags.Blocks.DYED, "{color}_concrete_powder");
-        addColored(Tags.Blocks.DYED, "{color}_glazed_terracotta");
-        addColored(Tags.Blocks.DYED, "{color}_shulker_box");
-        addColored(Tags.Blocks.DYED, "{color}_stained_glass");
-        addColored(Tags.Blocks.DYED, "{color}_stained_glass_pane");
-        addColored(Tags.Blocks.DYED, "{color}_terracotta");
-        addColored(Tags.Blocks.DYED, "{color}_wall_banner");
-        addColored(Tags.Blocks.DYED, "{color}_wool");
+
+        ColorCollection<NeoForgeBlockTagsProvider.Appender> builders = Tags.Blocks.DYED_COLORS.map(this::tag);
+        for (ColorCollection<BlockItemId> colorCollection : dyeableBlockItems()) {
+            ColorCollection.zipApply(builders, colorCollection, NeoForgeBlockTagsProvider.Appender::add);
+        }
+        for (ColorCollection<ResourceKey<Block>> colorCollection : List.of(BlockIds.WALL_BANNER)) {
+            ColorCollection.zipApply(builders, colorCollection, NeoForgeBlockTagsProvider.Appender::add);
+        }
         addColoredTags(tag(Tags.Blocks.DYED)::addTag, Tags.Blocks.DYED);
+        tag(Tags.Blocks.DYEABLE_UNDYED_SIMPLE)
+                .add(Blocks.CANDLE)
+                .add(Blocks.GLASS)
+                .add(Blocks.GLASS_PANE)
+                .add(Blocks.SHULKER_BOX)
+                .add(Blocks.TERRACOTTA);
+        tag(Tags.Blocks.DYEABLE_REDYEABLE_SIMPLE)
+                .addOptionalTag(BlockItemTags.BEDS.block())
+                .addOptionalTag(BlockItemTags.WOOL.block())
+                .addOptionalTag(BlockItemTags.WOOL_CARPETS.block())
+                .addOptionalTag(BlockItemTags.WOOL_SLABS.block())
+                .addOptionalTag(BlockItemTags.WOOL_STAIRS.block())
+                .addAll(BlockItemIds.DYED_SHULKER_BOX.map(BlockItemId::block).asList());
+        tag(Tags.Blocks.DYEABLE_SIMPLE)
+                .addTag(Tags.Blocks.DYEABLE_UNDYED_SIMPLE)
+                .addTag(Tags.Blocks.DYEABLE_REDYEABLE_SIMPLE);
+        tag(Tags.Blocks.DYEABLE_DYNAMIC);
+        tag(Tags.Blocks.DYEABLE)
+                .addTag(Tags.Blocks.DYEABLE_SIMPLE)
+                .addTag(Tags.Blocks.DYEABLE_DYNAMIC);
+
         tag(Tags.Blocks.END_STONES).add(Blocks.END_STONE);
         tag(Tags.Blocks.ENDERMAN_PLACE_ON_BLACKLIST);
         tag(Tags.Blocks.FENCE_GATES).addTags(Tags.Blocks.FENCE_GATES_WOODEN);
@@ -85,7 +107,13 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.Blocks.GLASS_PANES_COLORLESS).add(Blocks.GLASS_PANE);
         tag(Tags.Blocks.GLAZED_TERRACOTTAS).addAll(Blocks.GLAZED_TERRACOTTA.asList());
         tag(Tags.Blocks.GRAVELS).add(Blocks.GRAVEL);
-        tag(Tags.Blocks.SKULLS).add(Blocks.SKELETON_SKULL, Blocks.SKELETON_WALL_SKULL, Blocks.WITHER_SKELETON_SKULL, Blocks.WITHER_SKELETON_WALL_SKULL, Blocks.PLAYER_HEAD, Blocks.PLAYER_WALL_HEAD, Blocks.ZOMBIE_HEAD, Blocks.ZOMBIE_WALL_HEAD, Blocks.CREEPER_HEAD, Blocks.CREEPER_WALL_HEAD, Blocks.PIGLIN_HEAD, Blocks.PIGLIN_WALL_HEAD, Blocks.DRAGON_HEAD, Blocks.DRAGON_WALL_HEAD);
+        tag(Tags.Blocks.SKULLS).add(
+                Blocks.SKELETON_SKULL, Blocks.SKELETON_WALL_SKULL, Blocks.WITHER_SKELETON_SKULL,
+                Blocks.WITHER_SKELETON_WALL_SKULL, Blocks.PLAYER_HEAD, Blocks.PLAYER_WALL_HEAD,
+                Blocks.ZOMBIE_HEAD, Blocks.ZOMBIE_WALL_HEAD, Blocks.CREEPER_HEAD,
+                Blocks.CREEPER_WALL_HEAD, Blocks.PIGLIN_HEAD, Blocks.PIGLIN_WALL_HEAD,
+                Blocks.DRAGON_HEAD, Blocks.DRAGON_WALL_HEAD)
+                .addTag(BlockTags.SKULLS);
         tag(Tags.Blocks.HIDDEN_FROM_RECIPE_VIEWERS);
         tag(Tags.Blocks.NETHERRACKS).add(Blocks.NETHERRACK);
         tag(Tags.Blocks.OBSIDIANS_NORMAL).add(Blocks.OBSIDIAN);
@@ -97,7 +125,7 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.Blocks.ORE_RATES_DENSE).add(Blocks.COPPER_ORE, Blocks.DEEPSLATE_COPPER_ORE, Blocks.DEEPSLATE_LAPIS_ORE, Blocks.DEEPSLATE_REDSTONE_ORE, Blocks.LAPIS_ORE, Blocks.REDSTONE_ORE);
         tag(Tags.Blocks.ORE_RATES_SINGULAR).add(Blocks.ANCIENT_DEBRIS, Blocks.COAL_ORE, Blocks.DEEPSLATE_COAL_ORE, Blocks.DEEPSLATE_DIAMOND_ORE, Blocks.DEEPSLATE_EMERALD_ORE, Blocks.DEEPSLATE_GOLD_ORE, Blocks.DEEPSLATE_IRON_ORE, Blocks.DIAMOND_ORE, Blocks.EMERALD_ORE, Blocks.GOLD_ORE, Blocks.IRON_ORE, Blocks.NETHER_QUARTZ_ORE);
         tag(Tags.Blocks.ORE_RATES_SPARSE).add(Blocks.NETHER_GOLD_ORE);
-        tag(Tags.Blocks.ORES).addTags(Tags.Blocks.ORES_COAL, Tags.Blocks.ORES_COPPER, Tags.Blocks.ORES_DIAMOND, Tags.Blocks.ORES_EMERALD, Tags.Blocks.ORES_GOLD, Tags.Blocks.ORES_IRON, Tags.Blocks.ORES_LAPIS, Tags.Blocks.ORES_NETHERITE_SCRAP, Tags.Blocks.ORES_REDSTONE, Tags.Blocks.ORES_QUARTZ);
+        tag(Tags.Blocks.ORES).addTags(BlockTags.ORES, Tags.Blocks.ORES_COAL, Tags.Blocks.ORES_COPPER, Tags.Blocks.ORES_DIAMOND, Tags.Blocks.ORES_EMERALD, Tags.Blocks.ORES_GOLD, Tags.Blocks.ORES_IRON, Tags.Blocks.ORES_LAPIS, Tags.Blocks.ORES_NETHERITE_SCRAP, Tags.Blocks.ORES_REDSTONE, Tags.Blocks.ORES_QUARTZ);
         tag(Tags.Blocks.ORES_COAL).addTag(BlockItemTags.COAL_ORES.block());
         tag(Tags.Blocks.ORES_COPPER).addTag(BlockTags.COPPER_ORES);
         tag(Tags.Blocks.ORES_DIAMOND).addTag(BlockItemTags.DIAMOND_ORES.block());
@@ -167,17 +195,18 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
                 Blocks.ACACIA_WOOD, Blocks.BIRCH_WOOD, Blocks.CHERRY_WOOD,
                 Blocks.DARK_OAK_WOOD, Blocks.JUNGLE_WOOD, Blocks.MANGROVE_WOOD,
                 Blocks.OAK_WOOD, Blocks.PALE_OAK_WOOD, Blocks.SPRUCE_WOOD,
-                Blocks.CRIMSON_HYPHAE, Blocks.WARPED_HYPHAE);
+                Blocks.POPLAR_WOOD, Blocks.CRIMSON_HYPHAE, Blocks.WARPED_HYPHAE);
         tag(Tags.Blocks.STRIPPED_LOGS).add(
                 Blocks.STRIPPED_ACACIA_LOG, Blocks.STRIPPED_BAMBOO_BLOCK, Blocks.STRIPPED_BIRCH_LOG,
                 Blocks.STRIPPED_CHERRY_LOG, Blocks.STRIPPED_DARK_OAK_LOG, Blocks.STRIPPED_JUNGLE_LOG,
                 Blocks.STRIPPED_MANGROVE_LOG, Blocks.STRIPPED_OAK_LOG, Blocks.STRIPPED_PALE_OAK_LOG,
-                Blocks.STRIPPED_SPRUCE_LOG, Blocks.STRIPPED_CRIMSON_STEM, Blocks.STRIPPED_WARPED_STEM);
+                Blocks.STRIPPED_SPRUCE_LOG, Blocks.STRIPPED_POPLAR_LOG, Blocks.STRIPPED_CRIMSON_STEM,
+                Blocks.STRIPPED_WARPED_STEM);
         tag(Tags.Blocks.STRIPPED_WOODS).add(
                 Blocks.STRIPPED_ACACIA_WOOD, Blocks.STRIPPED_BIRCH_WOOD, Blocks.STRIPPED_CHERRY_WOOD,
                 Blocks.STRIPPED_DARK_OAK_WOOD, Blocks.STRIPPED_JUNGLE_WOOD, Blocks.STRIPPED_MANGROVE_WOOD,
                 Blocks.STRIPPED_OAK_WOOD, Blocks.STRIPPED_PALE_OAK_WOOD, Blocks.STRIPPED_SPRUCE_WOOD,
-                Blocks.STRIPPED_CRIMSON_HYPHAE, Blocks.STRIPPED_WARPED_HYPHAE);
+                Blocks.STRIPPED_POPLAR_WOOD, Blocks.STRIPPED_CRIMSON_HYPHAE, Blocks.STRIPPED_WARPED_HYPHAE);
         tag(Tags.Blocks.VILLAGER_JOB_SITES).add(
                 Blocks.BARREL, Blocks.BLAST_FURNACE, Blocks.BREWING_STAND, Blocks.CARTOGRAPHY_TABLE,
                 Blocks.CAULDRON, Blocks.WATER_CAULDRON, Blocks.LAVA_CAULDRON, Blocks.POWDER_SNOW_CAULDRON,
@@ -264,6 +293,13 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
             return this;
         }
 
+        public Appender add(BlockItemId... ids) {
+            for (ResourceKey<Block> blockResourceKey : Arrays.stream(ids).map(BlockItemId::block).toList()) {
+                add(blockResourceKey);
+            }
+            return this;
+        }
+
         public Appender addAll(Iterable<Block> blocks) {
             for (Block block : blocks) {
                 add(block);
@@ -293,5 +329,14 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
             throw new IllegalStateException(Tags.Blocks.class.getName() + " is missing tag name: " + name);
         }
+    }
+
+    static List<ColorCollection<BlockItemId>> dyeableBlockItems() {
+        return List.of(
+                BlockItemIds.BANNER, BlockItemIds.BED, BlockItemIds.DYED_CANDLE,
+                BlockItemIds.CARPET, BlockItemIds.CONCRETE, BlockItemIds.CONCRETE_SLAB,
+                BlockItemIds.CONCRETE_STAIRS, BlockItemIds.CONCRETE_POWDER, BlockItemIds.GLAZED_TERRACOTTA,
+                BlockItemIds.DYED_SHULKER_BOX, BlockItemIds.STAINED_GLASS, BlockItemIds.STAINED_GLASS_PANE,
+                BlockItemIds.DYED_TERRACOTTA, BlockItemIds.WOOL, BlockItemIds.WOOL_SLAB, BlockItemIds.WOOL_STAIRS);
     }
 }

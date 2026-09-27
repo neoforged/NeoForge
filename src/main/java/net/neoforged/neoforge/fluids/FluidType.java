@@ -294,25 +294,6 @@ public class FluidType {
         return this.canExtinguish;
     }
 
-    /**
-     * Performs how an entity moves when within the fluid. If using custom
-     * movement logic, the method should return {@code true}. Otherwise, the
-     * movement logic will default to water if {@link #getIsWaterLike()} returns
-     * {@code true} or no movement if it returns {@code false}.
-     *
-     * @param state          the state of the fluid
-     * @param entity         the entity moving within the fluid
-     * @param movementVector the velocity of how the entity wants to move
-     * @param gravity        the gravity to apply to the entity
-     * @return {@code true} if custom movement logic is performed, {@code false} otherwise
-     *
-     * @deprecated Use {@link #move(LivingEntity, Vec3, double)} instead
-     */
-    @Deprecated(forRemoval = true, since = "26.2")
-    public boolean move(FluidState state, LivingEntity entity, Vec3 movementVector, double gravity) {
-        return move(entity, movementVector, gravity);
-    }
-
     /// Performs how an entity moves when within the fluid. If using custom
     /// movement logic, the method should return `true`. Otherwise, the
     /// movement logic will default to water if [#getIsWaterLike()] returns

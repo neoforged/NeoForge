@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.common.data.internal;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -12,7 +14,8 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.TagAppender;
-import net.minecraft.resources.Identifier;
+import net.minecraft.references.BlockItemId;
+import net.minecraft.references.ItemIds;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagEntry;
@@ -21,6 +24,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ColorCollection;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.BlockTagCopyingItemTagProvider;
 
@@ -97,24 +101,24 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         tag(Tags.Items.DRINKS_MAGIC).add(Items.POTION).addTags(Tags.Items.DRINKS_OMINOUS);
         tag(Tags.Items.DRINKS_OMINOUS).add(Items.OMINOUS_BOTTLE);
         tag(Tags.Items.DRINKS_JUICE);
-        addColored(Tags.Items.DYED, "{color}_banner");
-        addColored(Tags.Items.DYED, "{color}_bed");
-        addColored(Tags.Items.DYED, "{color}_candle");
-        addColored(Tags.Items.DYED, "{color}_carpet");
-        addColored(Tags.Items.DYED, "{color}_concrete");
-        addColored(Tags.Items.DYED, "{color}_concrete_powder");
-        addColored(Tags.Items.DYED, "{color}_glazed_terracotta");
-        addColored(Tags.Items.DYED, "{color}_shulker_box");
-        addColored(Tags.Items.DYED, "{color}_stained_glass");
-        addColored(Tags.Items.DYED, "{color}_stained_glass_pane");
-        addColored(Tags.Items.DYED, "{color}_terracotta");
-        addColored(Tags.Items.DYED, "{color}_wool");
-        addColoredTags(tag(Tags.Items.DYED)::addTags, Tags.Items.DYED);
+
+        ColorCollection<NeoForgeItemTagsProvider.Appender> builders = Tags.Items.DYED_COLORS.map(this::tag);
+        for (ColorCollection<BlockItemId> colorCollection : NeoForgeBlockTagsProvider.dyeableBlockItems()) {
+            ColorCollection.zipApply(builders, colorCollection, NeoForgeItemTagsProvider.Appender::add);
+        }
+        var dyeableItems = List.of(ItemIds.DYED_BUNDLE, ItemIds.CUSHION, ItemIds.HARNESS);
+        for (ColorCollection<ResourceKey<Item>> colorCollection : dyeableItems) {
+            ColorCollection.zipApply(builders, colorCollection, NeoForgeItemTagsProvider.Appender::add);
+        }
+        addColoredTags(tag(Tags.Items.DYED)::addTag, Tags.Items.DYED);
+
+        ColorCollection<NeoForgeItemTagsProvider.Appender> dyesBuilders = Tags.Items.DYE_COLORS.map(this::tag);
+        ColorCollection.zipApply(dyesBuilders, ItemIds.DYE, NeoForgeItemTagsProvider.Appender::add);
+        addColoredTags(tag(Tags.Items.DYES)::addTags, Tags.Items.DYES);
+
         tag(Tags.Items.DUSTS).addTags(Tags.Items.DUSTS_GLOWSTONE, Tags.Items.DUSTS_REDSTONE);
         tag(Tags.Items.DUSTS_GLOWSTONE).add(Items.GLOWSTONE_DUST);
         tag(Tags.Items.DUSTS_REDSTONE).add(Items.REDSTONE);
-        addColored(Tags.Items.DYES, "{color}_dye");
-        addColoredTags(tag(Tags.Items.DYES)::addTags, Tags.Items.DYES);
         tag(Tags.Items.EGGS).add(Items.EGG, Items.BROWN_EGG, Items.BLUE_EGG);
         tag(Tags.Items.ENCHANTING_FUELS).addTag(Tags.Items.GEMS_LAPIS);
         copy(Tags.Blocks.END_STONES, Tags.Items.END_STONES);
@@ -181,7 +185,7 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         tag(Tags.Items.INGOTS_IRON).add(Items.IRON_INGOT);
         tag(Tags.Items.INGOTS_NETHERITE).add(Items.NETHERITE_INGOT);
         tag(Tags.Items.LEATHERS).add(Items.LEATHER);
-        tag(Tags.Items.MUSHROOMS).add(Items.BROWN_MUSHROOM, Items.RED_MUSHROOM);
+        tag(Tags.Items.MUSHROOMS).addTags(ItemTags.MUSHROOMS);
         tag(Tags.Items.MUSIC_DISCS).add(
                 Items.MUSIC_DISC_13, Items.MUSIC_DISC_CAT, Items.MUSIC_DISC_BLOCKS, Items.MUSIC_DISC_CHIRP, Items.MUSIC_DISC_FAR,
                 Items.MUSIC_DISC_MALL, Items.MUSIC_DISC_MELLOHI, Items.MUSIC_DISC_STAL, Items.MUSIC_DISC_STRAD, Items.MUSIC_DISC_WARD,
@@ -399,23 +403,18 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
             }
             return this;
         }
+
+        public Appender add(BlockItemId... ids) {
+            for (ResourceKey<Item> itemResourceKey : Arrays.stream(ids).map(BlockItemId::item).toList()) {
+                add(itemResourceKey);
+            }
+            return this;
+        }
     }
 
     @Override
     protected Appender tag(TagKey<Item> tag) {
         return new Appender(super.tag(tag));
-    }
-
-    private void addColored(TagKey<Item> group, String pattern) {
-        String prefix = group.location().getPath().toUpperCase(Locale.ENGLISH) + '_';
-        for (DyeColor color : DyeColor.values()) {
-            Identifier key = Identifier.fromNamespaceAndPath("minecraft", pattern.replace("{color}", color.getName()));
-            TagKey<Item> tag = getForgeItemTag(prefix + color.getName());
-            Item item = BuiltInRegistries.ITEM.getValue(key);
-            if (item == null || item == Items.AIR)
-                throw new IllegalStateException("Unknown vanilla item: " + key);
-            tag(tag).add(item);
-        }
     }
 
     private void addColoredTags(Consumer<TagKey<Item>> consumer, TagKey<Item> group) {

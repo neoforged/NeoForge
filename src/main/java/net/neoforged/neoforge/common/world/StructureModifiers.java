@@ -9,6 +9,7 @@ import com.mojang.serialization.MapCodec;
 import java.util.Set;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -81,7 +82,7 @@ public final class StructureModifiers {
         }
 
         @Override
-        public void modify(Holder<Structure> structure, Phase phase, ModifiableStructureInfo.StructureInfo.Builder builder) {
+        public void modify(RegistryAccess registries, Holder<Structure> structure, Phase phase, ModifiableStructureInfo.StructureInfo.Builder builder) {
             if (phase == Phase.ADD && this.structures.contains(structure)) {
                 StructureSettingsBuilder settingsBuilder = builder.getStructureSettings();
                 for (Weighted<SpawnerData> spawner : this.spawners.unwrap()) {
@@ -118,7 +119,7 @@ public final class StructureModifiers {
     public record RemoveSpawnsStructureModifier(HolderSet<Structure> structures,
             HolderSet<EntityType<?>> entityTypes) implements StructureModifier {
         @Override
-        public void modify(Holder<Structure> structure, Phase phase, ModifiableStructureInfo.StructureInfo.Builder builder) {
+        public void modify(RegistryAccess registries, Holder<Structure> structure, Phase phase, ModifiableStructureInfo.StructureInfo.Builder builder) {
             if (phase == Phase.REMOVE && this.structures.contains(structure)) {
                 StructureSettingsBuilder settingsBuilder = builder.getStructureSettings();
                 for (MobCategory category : MobCategory.values()) {
@@ -160,7 +161,7 @@ public final class StructureModifiers {
     public record ClearSpawnsStructureModifier(HolderSet<Structure> structures,
             Set<MobCategory> categories) implements StructureModifier {
         @Override
-        public void modify(Holder<Structure> structure, Phase phase, ModifiableStructureInfo.StructureInfo.Builder builder) {
+        public void modify(RegistryAccess registries, Holder<Structure> structure, Phase phase, ModifiableStructureInfo.StructureInfo.Builder builder) {
             if (phase == Phase.REMOVE && this.structures.contains(structure)) {
                 StructureSettingsBuilder settingsBuilder = builder.getStructureSettings();
                 for (MobCategory category : this.categories) {

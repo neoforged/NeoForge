@@ -11,7 +11,7 @@
 +    private static final Exception SKIPPED_ELEMENT_MARKER = new Exception();
      private final Object registryWriteLock = new Object();
      protected final RegistryDataLoader.RegistryData<T> data;
-     private final WritableRegistry<T> registry;
+     final WritableRegistry<T> registry;
 @@ -35,8 +_,11 @@
      private volatile boolean elementsRegistered;
  

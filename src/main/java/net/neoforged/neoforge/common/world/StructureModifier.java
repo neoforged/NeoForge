@@ -10,6 +10,7 @@ import com.mojang.serialization.MapCodec;
 import java.util.function.Function;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.codec.RegistryCodecs;
 import net.minecraft.core.registries.codec.RegistryFileCodec;
 import net.minecraft.resources.RegistryOps;
@@ -53,16 +54,15 @@ public interface StructureModifier {
      */
     Codec<HolderSet<StructureModifier>> LIST_CODEC = RegistryCodecs.holderSet(NeoForgeRegistries.Keys.STRUCTURE_MODIFIERS, DIRECT_CODEC);
 
-    /**
-     * Modifies the information via the provided structure builder.
-     * Allows mob spawns and world-gen features to be added or removed,
-     * and climate and client effects to be modified.
-     *
-     * @param structure the named structure being modified (with original data readable).
-     * @param phase     structure modification phase. Structure modifiers apply in each phase in order of the enum constants.
-     * @param builder   mutable structure info builder. Apply changes to this.
-     */
-    void modify(Holder<Structure> structure, Phase phase, StructureInfo.Builder builder);
+    /// Modifies the information via the provided structure builder.
+    ///
+    /// Allows mob spawns and world-gen features to be added or removed, and climate and client effects to be modified.
+    ///
+    /// @param registries the registries
+    /// @param structure  the named structure being modified (with original data readable).
+    /// @param phase      structure modification phase. Structure modifiers apply in each phase in order of the enum constants.
+    /// @param builder    mutable structure info builder. Apply changes to this.
+    void modify(RegistryAccess registries, Holder<Structure> structure, Phase phase, StructureInfo.Builder builder);
 
     /**
      * @return the codec which serializes and deserializes this structure modifier
