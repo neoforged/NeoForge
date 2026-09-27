@@ -26,20 +26,21 @@ public class DualStackUtils {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     /**
-     * Called by {@link NeoForge} to load this class so that the initial network
-     * property constants are set before any of the other methods in this class are called. This is so we can
-     * distinguish what Java's read once on JVM start vs what we've set for Netty.
+     * Called by {@link NeoForge} to capture the initial networking preferences before checking addresses.
+     * These values are used for diagnostics and when an address's protocol family is unknown.
      */
     @ApiStatus.Internal
     public static void initialise() {}
 
     /**
-     * Checks if an address is an IPv6 one or an IPv4 one, lets Netty know accordingly and returns the result.
+     * Checks whether an address is IPv6 without changing the JVM's networking preferences.
+     * Those preferences are process-wide and may be cached by Java and Netty, so checking one address
+     * must not change how other connections resolve addresses or create sockets.
      *
-     * @param inetAddress The address you want to check
-     * @return true if IPv6, false if IPv4
+     * @param inetAddress the address to check, or {@code null} if no address is known
+     * @return true for IPv6, false for IPv4; the initial preferences are used for an unknown address
      */
-    public static boolean checkIPv6(final InetAddress inetAddress) {
+    public static boolean checkIPv6(@Nullable final InetAddress inetAddress) {
         // only log debug messages if we're not in the server pinger thread, as otherwise it's unclear which IP
         // corresponds to which server as soon as you have more than one server in the multiplayer server list
         final String currentThreadName = Thread.currentThread().getName();
@@ -48,16 +49,10 @@ public class DualStackUtils {
         if (inetAddress instanceof Inet6Address addr) {
             if (shouldLogDebug)
                 LOGGER.debug("Detected IPv6 address: \"" + addr.getHostAddress() + "\"");
-
-            System.setProperty("java.net.preferIPv4Stack", "false");
-            System.setProperty("java.net.preferIPv6Addresses", "true");
             return true;
         } else if (inetAddress instanceof Inet4Address addr) {
             if (shouldLogDebug)
                 LOGGER.debug("Detected IPv4 address: \"" + addr.getHostAddress() + "\"");
-
-            System.setProperty("java.net.preferIPv4Stack", "true");
-            System.setProperty("java.net.preferIPv6Addresses", "false");
             return false;
         } else {
             if (shouldLogDebug) {
@@ -68,17 +63,11 @@ public class DualStackUtils {
             if (INITIAL_PREFER_IPv4_STACK.equalsIgnoreCase("false") && INITIAL_PREFER_IPv6_ADDRESSES.equalsIgnoreCase("true")) {
                 if (shouldLogDebug)
                     LOGGER.debug("Assuming IPv6 as Java was explicitly told to prefer it...");
-
-                System.setProperty("java.net.preferIPv4Stack", "false");
-                System.setProperty("java.net.preferIPv6Addresses", "true");
                 return true;
             }
 
             if (shouldLogDebug)
                 LOGGER.debug("Assuming IPv4...");
-
-            System.setProperty("java.net.preferIPv4Stack", "true");
-            System.setProperty("java.net.preferIPv6Addresses", "false");
             return false;
         }
     }
