@@ -124,8 +124,6 @@
   "commands.neoforge.data_components.list.tooltip.added": "Componenta %s a fost adăugată cu valoarea %s",
   "commands.neoforge.debug_class_loading_transformations.message": "Transformed/total loaded classes: %s and %s parsed for mixin",
   "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "Căutarea rețetelor nu este posibilă în comenzile de client",
-  "commands.config.getwithtype": "Configurare pentru %s de tip %s găsită la %s",
-  "commands.config.noconfig": "Configurare pentru %s de tip %s nu a fost găsită",
   "neoforge.update.beta.1": "%sATENŢIE: %sNeoForge Beta",
   "neoforge.update.beta.2": "Pot apărea probleme majore, verificați înainte să raportați.",
   "neoforge.update.newversion": "Versiune nouă de NeoForge disponibilă: %s",
