@@ -42,22 +42,22 @@ public record DirectoryPalettedPermutations(String texturePath, Identifier palet
     public void run(ResourceManager manager, SpriteSource.Output output) {
         Map<Identifier, Resource> trimTextures = new HashMap<>();
 
-        FileToIdConverter trimID = new FileToIdConverter("textures/" + this.texturePath(), ".png");
+        FileToIdConverter trimID = new FileToIdConverter(TEXTURE_ID_CONVERTER.prefix() + "/" + texturePath(), TEXTURE_ID_CONVERTER.extension());
         trimID.listMatchingResources(manager).forEach((identifier, resource) -> {
-            Identifier id = trimID.fileToId(identifier).withPrefix(this.texturePath() + "/");
+            Identifier id = trimID.fileToId(identifier).withPrefix(texturePath() + "/");
             trimTextures.put(id, resource);
         });
 
         Map<String, Identifier> paletteTextures = new HashMap<>();
 
-        FileToIdConverter paletteID = new FileToIdConverter("textures/" + this.palettePath(), ".png");
-        paletteID.listMatchingResources(manager).forEach((identifier, resource) -> {
-            Identifier id = paletteID.fileToId(identifier).withPrefix(this.palettePath() + "/");
+        FileToIdConverter paletteID = new FileToIdConverter(Palette.ID_CONVERTER.prefix() + "/" + palettePath(), Palette.ID_CONVERTER.extension());
+        paletteID.listMatchingResources(manager).forEach((identifier, _) -> {
+            Identifier id = paletteID.fileToId(identifier).withPrefix(palettePath() + "/");
             String path = paletteID.fileToId(identifier).getPath();
             paletteTextures.put(path, id);
         });
 
-        Supplier<Palette> palette = Suppliers.memoize(() -> PalettedPermutations.loadPaletteEntryFromImage(manager, this.paletteKey()));
+        Supplier<Palette> palette = Suppliers.memoize(() -> PalettedPermutations.loadPaletteEntryFromImage(manager, paletteKey()));
         Map<String, Supplier<PaletteMapping>> mappedTextures = new HashMap<>();
         paletteTextures.forEach((name, location) -> mappedTextures.put(name, Suppliers.memoize(() -> PaletteMapping.create(palette.get(), PalettedPermutations.loadPaletteEntryFromImage(manager, location)))));
 
