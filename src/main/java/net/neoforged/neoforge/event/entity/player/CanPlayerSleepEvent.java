@@ -22,7 +22,7 @@ import org.jspecify.annotations.Nullable;
 /// for whether a sleep attempt is valid.
 ///
 /// Mods which provide a [AbstractBedBlock] without the [`FACING` property][HorizontalDirectionalBlock#FACING] will almost
-/// always need to override this method and provide their own logic, because the vanilla logic is modified to assume success
+/// always need to use this event to provide their own logic, because the vanilla logic is modified to assume success
 /// for those blocks.
 ///
 /// This event is not [cancellable][ICancellableEvent].
