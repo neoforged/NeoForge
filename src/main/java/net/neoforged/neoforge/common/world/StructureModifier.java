@@ -30,9 +30,6 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
  *   // Additional fields can be specified here according to the codec
  * }
  * </pre>
- * 
- * <p>
- * Datapacks can also disable a structure modifier by overriding the json and using {@code "type": "neoforge:none"}.</p>
  */
 public interface StructureModifier {
     /**
