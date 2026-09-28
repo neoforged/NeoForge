@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.data.event;
 
-import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
@@ -75,10 +74,8 @@ public final class DataGeneratorConfig {
         this.reports = reports;
         this.validate = validate;
         this.flat = flat;
-
-        clientResourceManager = createResourceManager(PackType.CLIENT_RESOURCES, mods::contains, existingPacks, vanillaClientAssets);
-
-        serverResourceManager = createResourceManager(PackType.SERVER_DATA, mods::contains, existingPacks, consumer -> consumer.accept(ServerPacksSource.createVanillaPackSource().fullResources()));
+        this.clientResourceManager = createResourceManager(PackType.CLIENT_RESOURCES, mods::contains, existingPacks, vanillaClientAssets);
+        this.serverResourceManager = createResourceManager(PackType.SERVER_DATA, mods::contains, existingPacks, consumer -> consumer.accept(ServerPacksSource.createVanillaPackSource().fullResources()));
 
         if (mods.contains("minecraft") || mods.isEmpty()) {
             this.generators.add(vanillaGenerator);
@@ -90,24 +87,25 @@ public final class DataGeneratorConfig {
     }
 
     public Set<String> getMods() {
-        return mods;
+        return this.mods;
     }
 
     public boolean isFlat() {
-        return flat || getMods().size() == 1;
+        return this.flat || getMods().size() == 1;
     }
 
     public DataGenerator makeGenerator(final Function<Path, Path> pathEnhancer, boolean uncached) {
-        final DataGenerator generator = uncached ? new DataGenerator.Uncached(pathEnhancer.apply(path)) : new DataGenerator.Cached(pathEnhancer.apply(path), DetectedVersion.tryDetectVersion(), true);
-        generators.add(generator);
+        Path path = pathEnhancer.apply(this.path);
+        final DataGenerator generator = uncached ? new DataGenerator.Uncached(path) : new DataGenerator.Cached(path, DetectedVersion.tryDetectVersion(), true);
+        this.generators.add(generator);
         return generator;
     }
 
     public void runAll() {
-        Map<Path, List<DataGenerator>> paths = generators.stream().collect(Collectors.groupingBy(gen -> gen.getPackOutput().getOutputFolder(), LinkedHashMap::new, Collectors.toList()));
+        Map<Path, List<DataGenerator>> paths = this.generators.stream().collect(Collectors.groupingBy(gen -> gen.getPackOutput().getOutputFolder(), LinkedHashMap::new, Collectors.toList()));
 
         paths.values().forEach(lst -> {
-            DataGenerator parent = lst.get(0);
+            DataGenerator parent = lst.getFirst();
             for (int x = 1; x < lst.size(); x++) {
                 parent.merge(lst.get(x));
             }
@@ -120,7 +118,7 @@ public final class DataGeneratorConfig {
     }
 
     private static ResourceManager createResourceManager(PackType packType, Predicate<String> isGeneratedMod, Collection<Path> existingPacks, Consumer<Consumer<PackResources>> consumer) {
-        var packs = Lists.<PackResources>newArrayList();
+        List<PackResources> packs = new ArrayList<>();
         // include vanilla resource packs first
         consumer.accept(packs::add);
 

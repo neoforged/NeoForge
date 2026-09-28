@@ -15,6 +15,7 @@ import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
+import org.jspecify.annotations.Nullable;
 
 public final class PackGenerator {
     private final GatherDataEvent owner;
@@ -62,7 +63,7 @@ public final class PackGenerator {
         this.createWorldRegistryObjects(entriesBuilder, modIds, "world");
     }
 
-    public void createWorldRegistryObjects(RegistrySetBuilder entriesBuilder, Set<String> modIds, String name) {
+    public void createWorldRegistryObjects(RegistrySetBuilder entriesBuilder, @Nullable Set<String> modIds, String name) {
         var registries = this.createProvider((output) -> DatapackBuiltinEntriesProvider.forWorldLayer(output, name, this.getWorldLookupProvider(), entriesBuilder, modIds));
         this.owner.worldRegistriesWithModdedEntries = registries.getRegistryProvider();
     }
@@ -75,7 +76,7 @@ public final class PackGenerator {
         this.createReloadableRegistryObjects(entriesBuilder, modIds, "reloadable");
     }
 
-    public void createReloadableRegistryObjects(RegistrySetBuilder entriesBuilder, Set<String> modIds, String name) {
+    public void createReloadableRegistryObjects(RegistrySetBuilder entriesBuilder, @Nullable Set<String> modIds, String name) {
         var registries = this.createProvider((output) -> DatapackBuiltinEntriesProvider.forReloadableLayer(output, name, this.getWorldLookupProvider(), this.getReloadableLookupProvider(), entriesBuilder, modIds));
         this.owner.reloadableRegistriesWithModdedEntries = registries.getRegistryProvider();
     }
