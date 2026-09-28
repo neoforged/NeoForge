@@ -30,6 +30,10 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 /// Because Mod A doesn't list Mod B's materials in their atlas JSON, and Mod B doesn't list Mod A's pattern in their atlas JSON, the 2 don't work together.
 ///
 /// This system makes it so only the owner of the atlas needs to create a JSON file, all other mods will be supported by default if they put their textures in the proper directory.
+/// 
+/// @param texturePath The base directory used for the textures passed to [PalettedPermutations#textures()], that will be loaded from `textures/<texturePath>/*.png`
+/// @param paletteKey  The palette key from [PalettedPermutations#paletteKey()], that will be loaded from `textures/palettes/<paletteKey>.png`
+/// @param palettePath The base directory used for the values of [PalettedPermutations#permutations()], that will be loaded from `textures/palettes/<palettePath>/*.png`
 public record DirectoryPalettedPermutations(String texturePath, Identifier paletteKey, String palettePath) implements SpriteSource {
     public static final Identifier ID = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "directory_paletted_permutations");
     public static final MapCodec<DirectoryPalettedPermutations> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -42,22 +46,22 @@ public record DirectoryPalettedPermutations(String texturePath, Identifier palet
     public void run(ResourceManager manager, SpriteSource.Output output) {
         Map<Identifier, Resource> trimTextures = new HashMap<>();
 
-        FileToIdConverter trimID = new FileToIdConverter("textures/" + this.texturePath(), ".png");
+        FileToIdConverter trimID = new FileToIdConverter(TEXTURE_ID_CONVERTER.prefix() + "/" + texturePath(), TEXTURE_ID_CONVERTER.extension());
         trimID.listMatchingResources(manager).forEach((identifier, resource) -> {
-            Identifier id = trimID.fileToId(identifier).withPrefix(this.texturePath() + "/");
+            Identifier id = trimID.fileToId(identifier).withPrefix(texturePath() + "/");
             trimTextures.put(id, resource);
         });
 
         Map<String, Identifier> paletteTextures = new HashMap<>();
 
-        FileToIdConverter paletteID = new FileToIdConverter("textures/" + this.palettePath(), ".png");
-        paletteID.listMatchingResources(manager).forEach((identifier, resource) -> {
-            Identifier id = paletteID.fileToId(identifier).withPrefix(this.palettePath() + "/");
+        FileToIdConverter paletteID = new FileToIdConverter(Palette.ID_CONVERTER.prefix() + "/" + palettePath(), Palette.ID_CONVERTER.extension());
+        paletteID.listMatchingResources(manager).forEach((identifier, _) -> {
+            Identifier id = paletteID.fileToId(identifier).withPrefix(palettePath() + "/");
             String path = paletteID.fileToId(identifier).getPath();
             paletteTextures.put(path, id);
         });
 
-        Supplier<Palette> palette = Suppliers.memoize(() -> PalettedPermutations.loadPaletteEntryFromImage(manager, this.paletteKey()));
+        Supplier<Palette> palette = Suppliers.memoize(() -> PalettedPermutations.loadPaletteEntryFromImage(manager, paletteKey()));
         Map<String, Supplier<PaletteMapping>> mappedTextures = new HashMap<>();
         paletteTextures.forEach((name, location) -> mappedTextures.put(name, Suppliers.memoize(() -> PaletteMapping.create(palette.get(), PalettedPermutations.loadPaletteEntryFromImage(manager, location)))));
 
