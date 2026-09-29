@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/item/crafting/RecipePropertySet.java
++++ b/net/minecraft/world/item/crafting/RecipePropertySet.java
+@@ -45,6 +_,10 @@
+         return this.items.contains(itemStack.typeHolder());
+     }
+ 
++    public boolean test(net.neoforged.neoforge.transfer.item.ItemResource itemResource) {
++        return this.items.contains(itemResource.typeHolder());
++    }
++
+     public static RecipePropertySet create(Collection<Ingredient> ingredients) {
+         Set<Holder<Item>> items = ingredients.stream().flatMap(Ingredient::items).collect(Collectors.toUnmodifiableSet());
+         return new RecipePropertySet(items);
