@@ -1,28 +1,13 @@
 --- a/net/minecraft/world/level/block/FenceGateBlock.java
 +++ b/net/minecraft/world/level/block/FenceGateBlock.java
-@@ -39,7 +_,10 @@
- 
- public class FenceGateBlock extends HorizontalDirectionalBlock {
-     public static final MapCodec<FenceGateBlock> CODEC = RecordCodecBuilder.mapCodec(
--        i -> i.group(WoodType.CODEC.fieldOf("wood_type").forGetter(b -> b.type), propertiesCodec()).apply(i, FenceGateBlock::new)
-+        i -> i.group(WoodType.CODEC.optionalFieldOf("wood_type").forGetter(b -> java.util.Optional.ofNullable(b.type)), propertiesCodec(),
-+                        net.minecraft.sounds.SoundEvent.DIRECT_CODEC.optionalFieldOf("open_sound").forGetter(fence -> java.util.Optional.of(fence.openSound).filter(s -> fence.type == null || s != fence.type.fenceGateOpen())),
-+                        net.minecraft.sounds.SoundEvent.DIRECT_CODEC.optionalFieldOf("close_sound").forGetter(fence -> java.util.Optional.of(fence.closeSound).filter(s -> fence.type == null || s != fence.type.fenceGateClose())))
-+                .apply(i, FenceGateBlock::new)
-     );
-     public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
-     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
-@@ -56,6 +_,8 @@
+@@ -51,11 +_,25 @@
      private static final Map<Direction.Axis, VoxelShape> SHAPE_OCCLUSION_WALL = Maps.newEnumMap(
          Util.mapValues(SHAPE_OCCLUSION, v -> v.move(0.0, -0.1875, 0.0).optimize())
      );
-+    public final net.minecraft.sounds.SoundEvent openSound, closeSound;
++    public final net.minecraft.sounds.SoundEvent openSound;
++    public final net.minecraft.sounds.SoundEvent closeSound;
 +    @org.jspecify.annotations.Nullable
      private final WoodType type;
- 
-     @Override
-@@ -64,8 +_,19 @@
-     }
  
      public FenceGateBlock(WoodType type, BlockBehaviour.Properties properties) {
 -        super(properties.sound(type.soundType()));
@@ -43,7 +28,7 @@
          this.registerDefaultState(this.stateDefinition.any().setValue(OPEN, false).setValue(POWERED, false).setValue(IN_WALL, false));
      }
  
-@@ -156,7 +_,7 @@
+@@ -146,7 +_,7 @@
  
          boolean opens = state.getValue(OPEN);
          level.playSound(
@@ -52,7 +37,7 @@
          );
          level.gameEvent(player, opens ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
          return InteractionResult.SUCCESS;
-@@ -168,7 +_,7 @@
+@@ -158,7 +_,7 @@
              boolean open = state.getValue(OPEN);
              level.setBlockAndUpdate(pos, state.setValue(OPEN, !open));
              level.playSound(
@@ -61,7 +46,7 @@
              );
              level.gameEvent(open ? GameEvent.BLOCK_CLOSE : GameEvent.BLOCK_OPEN, pos, GameEvent.Context.of(state));
          }
-@@ -186,7 +_,7 @@
+@@ -176,7 +_,7 @@
                      level.playSound(
                          null,
                          pos,

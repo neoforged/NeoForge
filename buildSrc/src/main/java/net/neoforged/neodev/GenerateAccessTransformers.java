@@ -40,6 +40,7 @@ public abstract class GenerateAccessTransformers extends DefaultTask {
     @Input
     public abstract ListProperty<AtGroup> getGroups();
 
+    @SuppressWarnings("unchecked")
     @TaskAction
     public void exec() throws IOException {
         // First we collect all classes

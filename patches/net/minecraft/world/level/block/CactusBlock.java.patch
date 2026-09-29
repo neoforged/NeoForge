@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/CactusBlock.java
 +++ b/net/minecraft/world/level/block/CactusBlock.java
-@@ -45,6 +_,7 @@
+@@ -38,6 +_,7 @@
  
      @Override
      protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
@@ -8,7 +8,7 @@
          if (!state.canSurvive(level, pos)) {
              level.destroyBlock(pos, true);
          }
-@@ -57,6 +_,7 @@
+@@ -50,6 +_,7 @@
              int height = 1;
              int age = state.getValue(AGE);
  
@@ -16,7 +16,7 @@
              while (level.getBlockState(pos.below(height)).is(this)) {
                  if (++height == 3 && age == 15) {
                      return;
-@@ -78,6 +_,8 @@
+@@ -71,6 +_,8 @@
              if (age < 15) {
                  level.setBlock(pos, state.setValue(AGE, age + 1), 260);
              }
@@ -25,7 +25,7 @@
          }
      }
  
-@@ -119,6 +_,8 @@
+@@ -112,6 +_,8 @@
          }
  
          BlockState belowState = level.getBlockState(pos.below());

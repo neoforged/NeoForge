@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/MushroomBlock.java
 +++ b/net/minecraft/world/level/block/MushroomBlock.java
-@@ -83,11 +_,20 @@
+@@ -72,11 +_,20 @@
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
          BlockPos belowPos = pos.below();
          BlockState below = level.getBlockState(belowPos);
@@ -10,7 +10,7 @@
      }
  
      public boolean growMushroom(ServerLevel level, BlockPos pos, BlockState state, RandomSource random) {
-         Optional<? extends Holder<ConfiguredFeature<?, ?>>> feature = level.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).get(this.feature);
+         Optional<? extends Holder<Feature>> feature = level.registryAccess().lookupOrThrow(Registries.FEATURE).get(this.feature);
 +
 +        // Neo: Fire the BlockGrowFeatureEvent and update the result of the Optional local with the new feature.
 +        var event = net.neoforged.neoforge.event.EventHooks.fireBlockGrowFeature(level, random, pos, feature.orElse(null));

@@ -8,7 +8,7 @@
          poseStack.pushPose();
          if (state.hasPose(Pose.SLEEPING)) {
              Direction bedOrientation = state.bedOrientation;
-@@ -110,6 +_,7 @@
+@@ -108,6 +_,7 @@
  
          poseStack.popPose();
          super.submit(state, poseStack, submitNodeCollector, camera);
@@ -16,3 +16,12 @@
      }
  
      protected boolean shouldRenderLayers(S state) {
+@@ -276,7 +_,7 @@
+ 
+         state.isFullyFrozen = entity.isFullyFrozen();
+         state.isBaby = entity.isBaby();
+-        state.isInWater = entity.isInWater();
++        state.isInWater = entity.isInWater() || entity.getFluidInteraction().isInFluidMatching(entity, (e, fluidType, _) -> e.canSwimInFluidType(fluidType));
+         state.isAutoSpinAttack = entity.isAutoSpinAttack();
+         state.ticksSinceKineticHitFeedback = entity.getTicksSinceLastKineticHitFeedback(partialTicks);
+         state.hasRedOverlay = entity.hurtTime > 0 || entity.deathTime > 0;

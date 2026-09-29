@@ -18,6 +18,7 @@ import net.minecraft.client.gui.screens.inventory.EffectsInInventory;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.PreeditEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -25,7 +26,8 @@ import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.sdl.SDLKeycode;
+import org.lwjgl.sdl.SDLScancode;
 
 /**
  * Fired on different events/actions when a {@link Screen} is active and visible.
@@ -38,6 +40,7 @@ import org.lwjgl.glfw.GLFW;
  * @see Render
  * @see MouseInput
  * @see KeyInput
+ * @see Preedit
  */
 public abstract class ScreenEvent extends Event {
     private final Screen screen;
@@ -745,15 +748,13 @@ public abstract class ScreenEvent extends Event {
         }
     }
 
-    /**
-     * <p>Fired whenever a keyboard key is pressed or released.
-     * See the various subclasses to listen for key pressing or releasing.</p>
-     *
-     * @see KeyPressed
-     * @see KeyReleased
-     * @see InputConstants
-     * @see <a href="https://www.glfw.org/docs/latest/input_guide.html#input_key" target="_top">the online GLFW documentation</a>
-     */
+    /// Fired whenever a keyboard key is pressed or released.
+    /// See the various subclasses to listen for key pressing or releasing.
+    ///
+    /// @see KeyPressed
+    /// @see KeyReleased
+    /// @see InputConstants
+    /// @see <a href="https://wiki.libsdl.org/SDL3/SDL_KeyboardEvent">the online SDL documentation</a>
     private static abstract class KeyInput extends ScreenEvent {
         private final KeyEvent keyEvent;
 
@@ -767,41 +768,34 @@ public abstract class ScreenEvent extends Event {
             return keyEvent;
         }
 
-        /**
-         * {@return the {@code GLFW} (platform-agnostic) key code}
-         *
-         * @see InputConstants input constants starting with {@code KEY_}
-         * @see GLFW key constants starting with {@code GLFW_KEY_}
-         * @see <a href="https://www.glfw.org/docs/latest/group__keys.html" target="_top">the online GLFW documentation</a>
-         */
-        public int getKeyCode() {
+        /// {@return the {@code SDL} physical key code}
+        ///
+        /// @see InputConstants input constants starting with `KEY_`
+        /// @see SDLScancode key constants
+        /// @see <a href="https://wiki.libsdl.org/SDL3/SDL_Scancode">the online SDL documentation</a>
+        public int getKey() {
             return this.keyEvent.key();
         }
 
-        /**
-         * {@return the platform-specific scan code}
-         * <p>
-         * The scan code is unique for every key, regardless of whether it has a key code.
-         * Scan codes are platform-specific but consistent over time, so keys will have different scan codes depending
-         * on the platform but they are safe to save to disk as custom key bindings.
-         *
-         * @see InputConstants#getKey(KeyEvent)
-         */
-        public int getScanCode() {
-            return this.keyEvent.scancode();
+        /// {@return the {@code SDL} virtual key code}
+        ///
+        /// @see InputConstants input constants starting with `KEYCODE_`
+        /// @see SDLKeycode key constants starting with `SDLK_`
+        /// @see <a href="https://wiki.libsdl.org/SDL3/SDL_Keycode">the online SDL documentation</a>
+        public int getKeycode() {
+            return this.keyEvent.keycode();
         }
 
-        /**
-         * {@return a bit field representing the active modifier keys}
-         *
-         * @see InputConstants#MOD_CONTROL CTRL modifier key bit
-         * @see GLFW#GLFW_MOD_SHIFT SHIFT modifier key bit
-         * @see GLFW#GLFW_MOD_ALT ALT modifier key bit
-         * @see GLFW#GLFW_MOD_SUPER SUPER modifier key bit
-         * @see GLFW#GLFW_KEY_CAPS_LOCK CAPS LOCK modifier key bit
-         * @see GLFW#GLFW_KEY_NUM_LOCK NUM LOCK modifier key bit
-         * @see <a href="https://www.glfw.org/docs/latest/group__mods.html" target="_top">the online GLFW documentation</a>
-         */
+        /// {@return a bit field representing the active modifier keys}
+        ///
+        /// @see InputConstants#MOD_CONTROL CTRL modifier key bit
+        /// @see InputConstants#MOD_SHIFT SHIFT modifier key bit
+        /// @see InputConstants#MOD_ALT ALT modifier key bit
+        /// @see InputConstants#MOD_SUPER SUPER modifier key bit
+        /// @see InputConstants#MOD_CAPS_LOCK CAPS LOCK modifier key bit
+        /// @see InputConstants#MOD_NUM_LOCK NUM LOCK modifier key bit
+        /// @see SDLKeycode key constants starting with `SDL_KMOD`
+        /// @see <a href="https://wiki.libsdl.org/SDL3/SDL_Keymod">the online SDL documentation</a>
         public int getModifiers() {
             return this.keyEvent.modifiers();
         }
@@ -962,6 +956,58 @@ public abstract class ScreenEvent extends Event {
             @ApiStatus.Internal
             public Post(Screen screen, CharacterEvent charEvent) {
                 super(screen, charEvent);
+            }
+        }
+    }
+
+    /// Fired when an [Input Method Editor (IME) preedit event][PreeditEvent] is received by a screen.
+    ///
+    /// An IME lets users enter text that is not directly available from their keyboard, such as Chinese, Japanese,
+    /// and Korean characters. While input is being composed, the IME supplies temporary preedit text that can change
+    /// until the user commits it.
+    ///
+    /// @see Preedit.Pre
+    /// @see Preedit.Post
+    /// @see GuiEventListener#preeditUpdated(PreeditEvent)
+    public static abstract class Preedit extends ScreenEvent {
+        private final @Nullable PreeditEvent preeditEvent;
+
+        @ApiStatus.Internal
+        public Preedit(Screen screen, @Nullable PreeditEvent preeditEvent) {
+            super(screen);
+            this.preeditEvent = preeditEvent;
+        }
+
+        /// {@return the current preedit composition, or `null` if there is no active composition}
+        public @Nullable PreeditEvent getPreeditEvent() {
+            return preeditEvent;
+        }
+
+        /// Fired **before** the preedit event is received by the screen's preedit handler.
+        ///
+        /// This event is [cancellable][ICancellableEvent]. If this event is canceled, the screen's preedit handler will
+        /// be bypassed and the corresponding [Post][Preedit.Post] will not be fired.
+        ///
+        /// This event is fired on the [main NeoForge event bus][NeoForge#EVENT_BUS],
+        /// only on the [logical client][LogicalSide#CLIENT].
+        public static class Pre extends Preedit implements ICancellableEvent {
+            @ApiStatus.Internal
+            public Pre(Screen screen, @Nullable PreeditEvent preeditEvent) {
+                super(screen, preeditEvent);
+            }
+        }
+
+        /// Fired **after** the screen's preedit handler, only if the corresponding [Pre][Preedit.Pre] event is not
+        /// canceled and the screen's preedit handler returns `false`.
+        ///
+        /// This event is not [cancellable][ICancellableEvent].
+        ///
+        /// This event is fired on the [main NeoForge event bus][NeoForge#EVENT_BUS],
+        /// only on the [logical client][LogicalSide#CLIENT].
+        public static class Post extends Preedit {
+            @ApiStatus.Internal
+            public Post(Screen screen, @Nullable PreeditEvent preeditEvent) {
+                super(screen, preeditEvent);
             }
         }
     }

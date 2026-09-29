@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "recipe_book_extension_test:recipe_book_extension_recipe_1"
+        "recipes": "recipe_book_extension_test:recipe_book_extension_recipe_1"
       }
     }
   },

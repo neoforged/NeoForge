@@ -346,9 +346,9 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
         if (emissiveAmbient) {
             int fakeLight = (int) ((ambientColor.x() + ambientColor.y() + ambientColor.z()) * 15 / 3.0f);
             quadBaker.setLightEmission(fakeLight);
-            quadBaker.setShade(fakeLight == 0 && shadeQuads);
+            quadBaker.setShadeOverride(fakeLight == 0 && shadeQuads ? null : Direction.UP);
         } else {
-            quadBaker.setShade(shadeQuads);
+            quadBaker.setShadeOverride(shadeQuads ? null : Direction.UP);
         }
 
         Transformation transform = modelState.transformation();

@@ -6,22 +6,21 @@
          int spacing = 24;
 -        int topPos = this.height / 4 + 48;
 +        int topPos = this.height / 4 + 32;
-+        int numberOfButtons = 4;
-+        int currentButton = 0;
          if (this.minecraft.isDemo()) {
              topPos = this.createDemoMenuOptions(topPos, 24);
          } else {
              topPos = this.createNormalMenuOptions(topPos, 24);
-+            this.addRenderableWidget(net.neoforged.neoforge.client.gui.widget.ModsButton.create(this)).setPosition(getHorizontalPosition(++currentButton, numberOfButtons, Button.DEFAULT_HEIGHT), topPos + spacing);
          }
  
 -        int numberOfButtons = 3;
--        int currentButton = 0;
++        int numberOfButtons = 4;
+         int currentButton = 0;
++        this.addRenderableWidget(net.neoforged.neoforge.client.gui.widget.ModsButton.create(this)).setPosition(getHorizontalPosition(++currentButton, numberOfButtons, Button.DEFAULT_HEIGHT), topPos + spacing);
          topPos += 24;
          this.friends = this.addRenderableWidget(
              CommonButtons.friends(
 @@ -130,17 +_,17 @@
-                 !this.minecraft.isDemo()
+                 !this.minecraft.isDemo() && !this.minecraft.isOfflineDeveloperMode()
              )
          );
 -        this.friends.setPosition(this.getHorizontalPosition(++currentButton, 3, 20), topPos);
@@ -39,7 +38,7 @@
 -        accessibility.setPosition(this.getHorizontalPosition(++currentButton, 3, 20), topPos);
 +        accessibility.setPosition(this.getHorizontalPosition(++currentButton, numberOfButtons, 20), topPos);
          Button.Builder var10001 = Button.builder(
-             Component.translatable("menu.options"), var1x -> this.minecraft.gui.setScreen(new OptionsScreen(this, this.minecraft.options, false))
+             Component.translatable("menu.options"), var1x -> this.minecraft.gui.setScreen(new OptionsScreen(this, this.minecraft.options))
          );
 @@ -310,6 +_,7 @@
          this.extractPanorama(graphics, a);

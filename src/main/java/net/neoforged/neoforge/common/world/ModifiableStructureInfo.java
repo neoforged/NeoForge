@@ -7,6 +7,7 @@ package net.neoforged.neoforge.common.world;
 
 import java.util.List;
 import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.Structure.StructureSettings;
 import org.jetbrains.annotations.ApiStatus;
@@ -53,15 +54,14 @@ public class ModifiableStructureInfo {
         return this.modifiedStructureInfo;
     }
 
-    /**
-     * Internal NeoForge method. Will do nothing if this modifier had already been applied.
-     * Creates and caches the modified structure info.
-     * 
-     * @param structure          named structure with original data.
-     * @param structureModifiers structure modifiers to apply.
-     */
+    /// Internal NeoForge method. Will do nothing if this modifier had already been applied.
+    /// Creates and caches the modified structure info.
+    ///
+    /// @param registries         the registries
+    /// @param structure          named structure with original data.
+    /// @param structureModifiers structure modifiers to apply.
     @ApiStatus.Internal
-    public void applyStructureModifiers(final Holder<Structure> structure, final List<StructureModifier> structureModifiers) {
+    public void applyStructureModifiers(final RegistryAccess registries, final Holder<Structure> structure, final List<StructureModifier> structureModifiers) {
         if (this.modifiedStructureInfo != null)
             return;
 
@@ -69,7 +69,7 @@ public class ModifiableStructureInfo {
         final StructureInfo.Builder builder = StructureInfo.Builder.copyOf(original);
         for (StructureModifier.Phase phase : StructureModifier.Phase.values()) {
             for (StructureModifier modifier : structureModifiers) {
-                modifier.modify(structure, phase, builder);
+                modifier.modify(registries, structure, phase, builder);
             }
         }
         this.modifiedStructureInfo = builder.build();

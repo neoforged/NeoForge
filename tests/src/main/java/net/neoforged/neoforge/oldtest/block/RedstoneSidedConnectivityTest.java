@@ -57,7 +57,7 @@ public class RedstoneSidedConnectivityTest {
         }
 
         @Override
-        public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
+        protected boolean shouldRedstoneWireConnectTo(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
             //The passed direction is relative to the redstone dust
             //This block connects on the east side relative to this block, which is west for the dust
             return direction == Direction.WEST &&

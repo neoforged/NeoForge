@@ -138,7 +138,7 @@ public class EntityRendererEventsTest {
 
             @Override
             public void submit(PoseStack poseStack, SubmitNodeCollector nodeCollector, int lightness, LivingEntityRenderState renderState, float netHeadYaw, float headPitch) {
-                nodeCollector.submitModel(model, renderState, poseStack, this.getParentModel().renderType(MyEntityRenderer.TEXTURE), lightness, OverlayTexture.NO_OVERLAY, color, null);
+                nodeCollector.submitModel(model, renderState, poseStack, this.getParentModel().renderType(MyEntityRenderer.TEXTURE), lightness, OverlayTexture.NO_OVERLAY, color);
             }
         }
     }

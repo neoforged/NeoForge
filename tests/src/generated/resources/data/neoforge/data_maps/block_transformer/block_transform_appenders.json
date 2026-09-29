@@ -1,0 +1,24 @@
+{
+  "values": {
+    "minecraft:shovel": [
+      {
+        "block_state_provider": {
+          "type": "minecraft:rule_based",
+          "rules": [
+            {
+              "if_true": {
+                "type": "minecraft:matching_blocks",
+                "blocks": "minecraft:quartz_block"
+              },
+              "then": {
+                "id": "minecraft:chiseled_quartz_block"
+              }
+            }
+          ]
+        },
+        "item_damage_per_use": 1,
+        "sound": "minecraft:item.armor.equip_gold"
+      }
+    ]
+  }
+}

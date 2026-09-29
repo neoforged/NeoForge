@@ -1,0 +1,11 @@
+--- a/net/minecraft/core/component/BlockTransformer.java
++++ b/net/minecraft/core/component/BlockTransformer.java
+@@ -60,7 +_,7 @@
+         BlockPos pos = context.getClickedPos();
+         Level level = context.getLevel();
+ 
+-        for (BlockTransformer.BlockTransformData transformData : this.transforms) {
++        for (BlockTransformer.BlockTransformData transformData : net.neoforged.neoforge.common.DataMapHooks.appendDatamapTransformers(context.getItemInHand(), this.transforms)) {
+             Direction clickedFace = context.getClickedFace();
+             if (!transformData.disallowedFaces().contains(clickedFace)) {
+                 BlockState newBlockState = transformData.blockStateProvider.value().getOptionalState(level, level.getRandom(), pos);

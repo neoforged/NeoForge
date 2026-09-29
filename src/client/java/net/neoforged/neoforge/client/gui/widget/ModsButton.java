@@ -16,7 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.loading.FMLConfig;
-import net.neoforged.neoforge.client.gui.ModListScreen;
+import net.neoforged.neoforge.client.gui.modlist.ModListScreen;
 import net.neoforged.neoforge.client.loading.ClientModLoader;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.ApiStatus;
@@ -80,6 +80,7 @@ public class ModsButton extends SpriteIconButton.CenteredIcon {
     }
 
     public static ModsButton create(Screen parentScreen) {
+        //noinspection SuspiciousNameCombination (we pass DEFAULT_HEIGHT for both width and height to get a square)
         return new ModsButton(
                 Button.DEFAULT_HEIGHT,
                 Button.DEFAULT_HEIGHT,
@@ -89,7 +90,7 @@ public class ModsButton extends SpriteIconButton.CenteredIcon {
                 0,
                 -1,
                 new WidgetSprites(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "icon/neo_logo")),
-                button -> Minecraft.getInstance().gui.setScreen(new ModListScreen(parentScreen)),
+                _ -> Minecraft.getInstance().gui.setScreen(ModListScreen.create(parentScreen)),
                 Component.translatable("fml.menu.mods"),
                 null,
                 false);

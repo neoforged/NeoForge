@@ -9,6 +9,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.data.DataProvider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -76,6 +77,10 @@ public interface RegistrationHelper {
     <T extends DataProvider> void serverProvider(Class<T> type, Consumer<T> consumer);
 
     <T extends DataProvider> void clientProvider(Class<T> type, Consumer<T> consumer);
+
+    void generateWorldRegistries(RegistrySetBuilder registrySetBuilder);
+
+    void generateReloadableRegistries(RegistrySetBuilder registrySetBuilder);
 
     Consumer<Consumer<? extends Event>> eventListeners();
 

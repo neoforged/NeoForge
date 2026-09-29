@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/projectile/ThrowableProjectile.java
 +++ b/net/minecraft/world/entity/projectile/ThrowableProjectile.java
-@@ -49,7 +_,7 @@
+@@ -47,7 +_,7 @@
          this.applyInertia();
          HitResult result = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
          Vec3 newPosition;

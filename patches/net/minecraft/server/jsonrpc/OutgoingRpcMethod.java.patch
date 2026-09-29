@@ -1,0 +1,17 @@
+--- a/net/minecraft/server/jsonrpc/OutgoingRpcMethod.java
++++ b/net/minecraft/server/jsonrpc/OutgoingRpcMethod.java
+@@ -126,10 +_,14 @@
+             return this.method.create(methodInfo, attributes);
+         }
+ 
++        /// @deprecated Neo: Use [#build()] and the [RegisterEvent][net.neoforged.neoforge.registries.RegisterEvent] to register instead of this
++        @Deprecated
+         public Holder.Reference<OutgoingRpcMethod<Params, Result>> register(String key) {
+             return this.register(Identifier.withDefaultNamespace("notification/" + key));
+         }
+ 
++        /// @deprecated Neo: Use [#build()] and the [RegisterEvent][net.neoforged.neoforge.registries.RegisterEvent] to register instead of this
++        @Deprecated
+         private Holder.Reference<OutgoingRpcMethod<Params, Result>> register(Identifier id) {
+             return Registry.registerForHolder(BuiltInRegistries.OUTGOING_RPC_METHOD, id, this.build());
+         }

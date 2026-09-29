@@ -9,7 +9,7 @@
          }
      }
  
-@@ -158,5 +_,15 @@
+@@ -166,5 +_,15 @@
          return new Transformation(
              new Matrix4f().translation(0.5F, 0.0F, 0.5F).rotate(Axis.YP.rotationDegrees(-RotationSegment.convertToDegrees(segment))).scale(-1.0F, -1.0F, 1.0F)
          );

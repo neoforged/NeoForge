@@ -9,21 +9,20 @@
      private static final Identifier DEFAULT_BACKGROUND = createTextureLocation("items");
      private final Component displayName;
      private Identifier backgroundTexture = DEFAULT_BACKGROUND;
-@@ -25,6 +_,13 @@
+@@ -25,6 +_,12 @@
      private Set<ItemStack> displayItemsSearchTab = ItemStackLinkedSet.createTypeAndComponentsSet();
      private final Supplier<ItemStack> iconGenerator;
      private final CreativeModeTab.DisplayItemsGenerator displayItemsGenerator;
 +    private final net.minecraft.resources.@Nullable Identifier scrollerSpriteLocation;
 +    private final boolean hasSearchBar;
 +    private final int searchBarWidth;
-+    private final net.minecraft.resources.Identifier tabsImage;
 +    private final int labelColor;
 +    public final java.util.List<net.minecraft.resources.Identifier> tabsBefore;
 +    public final java.util.List<net.minecraft.resources.Identifier> tabsAfter;
  
      private CreativeModeTab(
          CreativeModeTab.Row row,
-@@ -32,7 +_,14 @@
+@@ -32,7 +_,13 @@
          CreativeModeTab.Type type,
          Component displayName,
          Supplier<ItemStack> iconGenerator,
@@ -32,28 +31,26 @@
 +        net.minecraft.resources.Identifier scrollerSpriteLocation,
 +        boolean hasSearchBar,
 +        int searchBarWidth,
-+        net.minecraft.resources.Identifier tabsImage,
 +        int labelColor,
 +        java.util.List<net.minecraft.resources.Identifier> tabsBefore,
 +        java.util.List<net.minecraft.resources.Identifier> tabsAfter
      ) {
          this.row = row;
          this.column = column;
-@@ -40,12 +_,28 @@
+@@ -40,12 +_,27 @@
          this.iconGenerator = iconGenerator;
          this.displayItemsGenerator = displayItemsGenerator;
          this.type = type;
 +        this.scrollerSpriteLocation = scrollerSpriteLocation;
 +        this.hasSearchBar = hasSearchBar;
 +        this.searchBarWidth = searchBarWidth;
-+        this.tabsImage = tabsImage;
 +        this.labelColor = labelColor;
 +        this.tabsBefore = java.util.List.copyOf(tabsBefore);
 +        this.tabsAfter = java.util.List.copyOf(tabsAfter);
 +    }
 +
 +    protected CreativeModeTab(CreativeModeTab.Builder builder) {
-+        this(builder.row, builder.column, builder.type, builder.displayName, builder.iconGenerator, builder.displayItemsGenerator, builder.spriteScrollerLocation, builder.hasSearchBar, builder.searchBarWidth, builder.tabsImage, builder.labelColor, builder.tabsBefore, builder.tabsAfter);
++        this(builder.row, builder.column, builder.type, builder.displayName, builder.iconGenerator, builder.displayItemsGenerator, builder.spriteScrollerLocation, builder.hasSearchBar, builder.searchBarWidth, builder.labelColor, builder.tabsBefore, builder.tabsAfter);
 +    }
 +
 +    public static CreativeModeTab.Builder builder() {
@@ -77,7 +74,7 @@
          this.displayItems = displayList.tabContents;
          this.displayItemsSearchTab = displayList.searchTabContents;
      }
-@@ -117,8 +_,32 @@
+@@ -117,8 +_,27 @@
          return this.displayItemsSearchTab.contains(stack);
      }
  
@@ -87,10 +84,6 @@
 +
 +    public int getSearchBarWidth() {
 +        return searchBarWidth;
-+    }
-+
-+    public net.minecraft.resources.Identifier getTabsImage() {
-+        return tabsImage;
 +    }
 +
 +    public int getLabelColor() {
@@ -105,19 +98,17 @@
 +
      public static class Builder {
          private static final CreativeModeTab.DisplayItemsGenerator EMPTY_GENERATOR = (parameters, output) -> {};
-+        private static final net.minecraft.resources.Identifier CREATIVE_INVENTORY_TABS_IMAGE = net.minecraft.resources.Identifier.withDefaultNamespace("textures/gui/container/creative_inventory/tabs.png");
 +        private static final net.minecraft.resources.Identifier CREATIVE_ITEM_SEARCH_BACKGROUND = createTextureLocation("item_search");
          private final CreativeModeTab.Row row;
          private final int column;
          private Component displayName = Component.empty();
-@@ -129,6 +_,14 @@
+@@ -129,6 +_,13 @@
          private boolean alignedRight = false;
          private CreativeModeTab.Type type = CreativeModeTab.Type.CATEGORY;
          private Identifier backgroundTexture = CreativeModeTab.DEFAULT_BACKGROUND;
 +        private net.minecraft.resources.@Nullable Identifier spriteScrollerLocation;
 +        private boolean hasSearchBar = false;
 +        private int searchBarWidth = 89;
-+        private net.minecraft.resources.Identifier tabsImage = CREATIVE_INVENTORY_TABS_IMAGE;
 +        private int labelColor = -12566464;
 +        private java.util.function.Function<CreativeModeTab.Builder, CreativeModeTab> tabFactory = CreativeModeTab::new;
 +        private final java.util.List<net.minecraft.resources.Identifier> tabsBefore = new java.util.ArrayList<>();
@@ -134,7 +125,7 @@
              return this;
          }
  
-@@ -175,12 +_,102 @@
+@@ -175,12 +_,94 @@
              return this;
          }
  
@@ -163,14 +154,6 @@
 +         */
 +        public CreativeModeTab.Builder withScrollBarSpriteLocation(net.minecraft.resources.Identifier scrollBarSpriteLocation) {
 +            this.spriteScrollerLocation = scrollBarSpriteLocation;
-+            return this;
-+        }
-+
-+        /**
-+         * Sets the image of the tab to a custom resource location, instead of an item's texture.
-+         */
-+        public CreativeModeTab.Builder withTabsImage(net.minecraft.resources.Identifier tabsImage) {
-+            this.tabsImage = tabsImage;
 +            return this;
 +        }
 +

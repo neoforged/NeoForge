@@ -354,12 +354,12 @@ public class ExtendedGameTestHelper extends GameTestHelper {
     }
 
     public void assertBlock(BlockPos pos, Predicate<Block> predicate, String message) {
-        this.assertBlock(pos, predicate, block -> Component.translatable(message, block));
+        this.assertBlock(pos, predicate, block -> Component.translatable(message, BuiltInRegistries.BLOCK.getKey(block).toString()));
     }
 
     @Override
-    public <T> void assertValueEqual(T expected, T actual, String message) {
-        this.assertValueEqual(expected, actual, Component.translatable(message));
+    public <T> void assertValueEqual(T actual, T expected, String message) {
+        this.assertValueEqual(actual, expected, Component.translatable(message));
     }
 
     public <T, E extends Entity> void assertEntityProperty(E entity, Function<E, T> function, String message, T value) {

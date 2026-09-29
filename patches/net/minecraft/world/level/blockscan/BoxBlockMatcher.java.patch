@@ -1,0 +1,43 @@
+--- a/net/minecraft/world/level/blockscan/BoxBlockMatcher.java
++++ b/net/minecraft/world/level/blockscan/BoxBlockMatcher.java
+@@ -23,8 +_,14 @@
+     }
+ 
+     @Override
++    public BlockMatcher filterPosition(java.util.function.BiPredicate<BlockState, BlockPos> predicate) {
++        super.filterPosition(predicate);
++        return this;
++    }
++
++    @Override
+     public boolean atLeastMatched(int n) {
+-        return BlockScanUtils.findBlocks(this.level, this.from, this.to, this.statePredicate, new BlockStateConsumer() {
++        return BlockScanUtils.findBlocks(this.level, this.from, this.to, this.statePredicate, this.positionPredicate, new BlockStateConsumer() {
+             private int count = 0;
+ 
+             @Override
+@@ -35,13 +_,13 @@
+     }
+ 
+     @Override
+-    protected boolean anyMatched(Predicate<BlockState> statePredicate) {
+-        return BlockScanUtils.findBlocks(this.level, this.from, this.to, statePredicate, (var0, var1) -> Continuation.ABORT);
++    protected boolean anyMatched(Predicate<BlockState> statePredicate, java.util.function.BiPredicate<BlockState, BlockPos> positionPredicate) {
++        return BlockScanUtils.findBlocks(this.level, this.from, this.to, statePredicate, positionPredicate, (var0, var1) -> Continuation.ABORT);
+     }
+ 
+     @Override
+     public void forEach(BiConsumer<BlockPos, BlockState> consumer) {
+-        BlockScanUtils.findBlocks(this.level, this.from, this.to, this.statePredicate, (pos, state) -> {
++        BlockScanUtils.findBlocks(this.level, this.from, this.to, this.statePredicate, this.positionPredicate, (pos, state) -> {
+             consumer.accept(pos, state);
+             return Continuation.CONTINUE;
+         });
+@@ -49,6 +_,6 @@
+ 
+     @Override
+     public boolean forEachUntil(BlockStateConsumer consumer) {
+-        return BlockScanUtils.findBlocks(this.level, this.from, this.to, this.statePredicate, consumer);
++        return BlockScanUtils.findBlocks(this.level, this.from, this.to, this.statePredicate, this.positionPredicate, consumer);
+     }
+ }

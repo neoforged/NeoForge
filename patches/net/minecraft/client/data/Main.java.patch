@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/data/Main.java
 +++ b/net/minecraft/client/data/Main.java
-@@ -28,17 +_,37 @@
+@@ -28,17 +_,38 @@
          OptionSpec<Void> clientOption = parser.accepts("client", "Include client generators");
          OptionSpec<Void> allOption = parser.accepts("all", "Include all generators");
          OptionSpec<String> outputOption = parser.accepts("output", "Output folder").withRequiredArg().defaultsTo("generated");
@@ -36,8 +36,9 @@
 +                ClientBootstrap.bootstrap();
 +                net.neoforged.neoforge.client.ClientHooks.initClientRegistries();
 +            }, net.neoforged.neoforge.data.event.GatherDataEvent.Client::new, generator, packConsumer -> {
-+                if (assetsDirValue != null && assetIndexValue != null)
-+                    packConsumer.accept(net.minecraft.client.resources.ClientPackSource.createVanillaPackSource(net.minecraft.client.resources.IndexedAssetSource.createIndexFs(assetsDirValue.toPath(), assetIndexValue)));
++                if (assetsDirValue != null && assetIndexValue != null) {
++                    packConsumer.accept(net.minecraft.client.resources.ClientPackSource.createVanillaPackSource(net.minecraft.client.resources.IndexedAssetSource.createIndexFs(assetsDirValue.toPath(), assetIndexValue)).fullResources());
++                }
 +            });
          } else {
              parser.printHelpOn(System.out);

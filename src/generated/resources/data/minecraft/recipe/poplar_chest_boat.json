@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "chest_boat",
+  "ingredients": [
+    {
+      "neoforge:ingredient_type": "neoforge:difference",
+      "base": "#c:chests/wooden",
+      "subtracted": "#c:chests/trapped"
+    },
+    "minecraft:poplar_boat"
+  ],
+  "result": {
+    "id": "minecraft:poplar_chest_boat"
+  }
+}

@@ -7,7 +7,7 @@
 +        if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderItemInFrameEvent(state, this, poseStack, submitNodeCollector)).isCanceled()) {
          if (state.mapId != null) {
              int rotation = state.rotation % 4 * 2;
-             poseStack.mulPose(Axis.ZP.rotationDegrees(rotation * 360.0F / 8.0F));
+             poseStack.rotateDegrees(Axis.ZP, rotation * 360.0F / 8.0F);
 @@ -93,6 +_,7 @@
              poseStack.scale(0.5F, 0.5F, 0.5F);
              state.item.submit(poseStack, submitNodeCollector, lightVal, OverlayTexture.NO_OVERLAY, state.outlineColor);

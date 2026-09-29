@@ -7,8 +7,10 @@ package net.neoforged.neoforge.client.model;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 import com.mojang.serialization.JsonOps;
 import java.io.IOException;
 import java.io.Reader;
@@ -35,6 +37,8 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 public final class ConditionalModelLoader implements UnbakedModelLoader<UnbakedModel> {
     public static final Identifier ID = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "conditional");
     public static final ConditionalModelLoader INSTANCE = new ConditionalModelLoader();
+    public static final String INLINE_KEY = "model";
+    public static final String FALLBACK_KEY = "fallback";
     private static final FileToIdConverter MODEL_LISTER = FileToIdConverter.json("models");
 
     private ConditionalModelLoader() {}
@@ -46,11 +50,21 @@ public final class ConditionalModelLoader implements UnbakedModelLoader<UnbakedM
                 err -> new JsonParseException("Failed to parse conditions: " + err)).getFirst();
 
         if (conditions.stream().allMatch(cond -> cond.test(ICondition.IContext.EMPTY))) {
+            if (json.has(INLINE_KEY)) {
+                return GsonHelper.getAsObject(json, INLINE_KEY, ctx, UnbakedModel.class);
+            }
+
             json.remove("loader");
             return ctx.deserialize(json, CuboidModel.class);
         }
 
-        Identifier fallback = Identifier.parse(GsonHelper.getAsString(json, "fallback"));
+        JsonElement fallbackElem = GsonHelper.getNonNull(json, FALLBACK_KEY);
+        if (fallbackElem.isJsonObject()) {
+            return ctx.deserialize(fallbackElem, UnbakedModel.class);
+        } else if (!fallbackElem.isJsonPrimitive()) {
+            throw new JsonSyntaxException("Expected fallback to be a string or JsonObject, was " + GsonHelper.getType(fallbackElem));
+        }
+        Identifier fallback = Identifier.parse(GsonHelper.getAsString(json, FALLBACK_KEY));
         // Missing model must be special-cased as it's a "synthetic" model and cannot be loaded from a file
         if (fallback.equals(MissingCuboidModel.LOCATION)) {
             return MissingCuboidModel.missingModel();

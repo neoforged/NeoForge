@@ -7,12 +7,14 @@ package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.model.data.ModelDataManager;
 import org.jspecify.annotations.Nullable;
 
@@ -135,26 +137,20 @@ public interface ILevelExtension {
      */
     default void invalidateCapabilities(ChunkPos pos) {}
 
-    /**
-     * Returns the translation key for this dimension.
-     * <p>
-     * Used when looking up the matching translation.
-     *
-     * @return Translation key used to lookup translation for this dimension.
-     * @see #TRANSLATION_PREFIX
-     */
+    /// {@return the translation key for this dimension}.
+    /// Used when looking up the matching translation.
+    ///
+    /// @see #TRANSLATION_PREFIX
+    /// @see CommonHooks#getDimensionDescriptionKey(ResourceKey)
     default String getDescriptionKey() {
-        return self().dimension().identifier().toLanguageKey(TRANSLATION_PREFIX);
+        return CommonHooks.getDimensionDescriptionKey(self().dimension());
     }
 
-    /**
-     * Returns Component which looks up the matching value for {@linkplain #getDescriptionKey()},
-     * falling back to the registry name if no translation exists.
-     *
-     * @return Translated name or registry name if none exists.
-     * @see #getDescriptionKey()
-     */
+    /// {@return the translated description of this dimension, with a fallback to the registry name}
+    ///
+    /// @see #getDescriptionKey()
+    /// @see CommonHooks#getDimensionDescription(ResourceKey)
     default Component getDescription() {
-        return Component.translatableWithFallback(getDescriptionKey(), self().dimension().identifier().toString());
+        return CommonHooks.getDimensionDescription(self().dimension());
     }
 }

@@ -6,7 +6,7 @@
 package net.neoforged.testframework.junit;
 
 import com.google.common.base.Stopwatch;
-import com.mojang.authlib.yggdrasil.ServicesKeySet;
+import com.mojang.authlib.services.ServicesKeySet;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
 import java.io.IOException;
@@ -170,7 +170,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
                                 worldloader$initconfig,
                                 ctx -> {
                                     Registry<LevelStem> registry = new MappedRegistry<>(Registries.LEVEL_STEM, Lifecycle.stable()).freeze();
-                                    WorldDimensions worldDimensions = ctx.datapackWorldgen()
+                                    WorldDimensions worldDimensions = ctx.datapackWorldRegistries()
                                             .lookupOrThrow(Registries.WORLD_PRESET)
                                             .getOrThrow(WorldPresets.FLAT)
                                             .value()

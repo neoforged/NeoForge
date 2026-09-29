@@ -1,0 +1,63 @@
+--- a/com/mojang/renderpearl/backend/opengl/DirectStateAccess.java
++++ b/com/mojang/renderpearl/backend/opengl/DirectStateAccess.java
+@@ -40,10 +_,18 @@
+ 
+     public abstract int createFrameBufferObject();
+ 
+-    public abstract void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot);
++    public abstract void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot, boolean useStencil);
++
++    public void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot) {
++        this.bindFrameBufferTextures(fbo, color, colorMipLevels, depth, depthMipLevel, bindSlot, false);
++    }
+ 
+     public void bindFrameBufferTextures(int fbo, int color, int depth, int mipLevel, int bindSlot) {
+-        this.bindFrameBufferTextures(fbo, new int[]{color}, new int[]{mipLevel}, depth, mipLevel, bindSlot);
++        this.bindFrameBufferTextures(fbo, color, depth, mipLevel, bindSlot, false);
++    }
++
++    public void bindFrameBufferTextures(int fbo, int color, int depth, int mipLevel, int bindSlot, boolean useStencil) {
++        this.bindFrameBufferTextures(fbo, new int[]{color}, new int[]{mipLevel}, depth, mipLevel, bindSlot, useStencil);
+     }
+ 
+     public abstract void blitFrameBuffers(
+@@ -102,12 +_,17 @@
+         }
+ 
+         @Override
+-        public void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot) {
++        public void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot, boolean useStencil) {
+             for (int i = 0; i < color.length; i++) {
+                 ARBDirectStateAccess.glNamedFramebufferTexture(fbo, 36064 + i, color[i], colorMipLevels[i]);
+             }
+ 
+             ARBDirectStateAccess.glNamedFramebufferTexture(fbo, 36096, depth, depthMipLevel);
++            if (useStencil) {
++                ARBDirectStateAccess.glNamedFramebufferTexture(fbo, GL33C.GL_STENCIL_ATTACHMENT, depth, depthMipLevel);
++            } else {
++                ARBDirectStateAccess.glNamedFramebufferTexture(fbo, GL33C.GL_STENCIL_ATTACHMENT, 0, 0);
++            }
+             if (bindSlot != 0) {
+                 GlStateManager._glBindFramebuffer(bindSlot, fbo);
+             }
+@@ -217,7 +_,7 @@
+         }
+ 
+         @Override
+-        public void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot) {
++        public void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot, boolean useStencil) {
+             int tempBindSlot = bindSlot == 0 ? 36009 : bindSlot;
+             int oldFbo = GlStateManager.getFrameBuffer(tempBindSlot);
+             GlStateManager._glBindFramebuffer(tempBindSlot, fbo);
+@@ -227,6 +_,11 @@
+             }
+ 
+             GlStateManager._glFramebufferTexture2D(tempBindSlot, 36096, 3553, depth, depthMipLevel);
++            if (useStencil) {
++                GlStateManager._glFramebufferTexture2D(tempBindSlot, GL33C.GL_STENCIL_ATTACHMENT, 3553, depth, depthMipLevel);
++            } else {
++                GlStateManager._glFramebufferTexture2D(tempBindSlot, GL33C.GL_STENCIL_ATTACHMENT, 3553, 0, 0);
++            }
+             if (bindSlot == 0) {
+                 GlStateManager._glBindFramebuffer(tempBindSlot, oldFbo);
+             }

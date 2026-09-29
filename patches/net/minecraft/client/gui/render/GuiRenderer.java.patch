@@ -29,7 +29,7 @@
      }
  
      public void endFrame() {
-@@ -134,6 +_,7 @@
+@@ -135,6 +_,7 @@
          this.renderState.reset();
          this.firstDrawIndexAfterBlur = Integer.MAX_VALUE;
          this.clearUnusedOversizedItemRenderers();
@@ -37,7 +37,7 @@
          if (SharedConstants.DEBUG_SHUFFLE_UI_RENDERING_ORDER) {
              RenderPipeline.updateSortKeySeed();
              TextureSetup.updateSortKeySeed();
-@@ -224,6 +_,7 @@
+@@ -229,6 +_,7 @@
          ScreenRectangle scissorArea = elementState.scissorArea();
          if (this.previousDraw == null
              || pipeline != this.previousPipeline
@@ -45,7 +45,7 @@
              || this.scissorChanged(scissorArea, this.previousScissorArea)
              || !textureSetup.equals(this.previousTextureSetup)) {
              this.previousPipeline = pipeline;
-@@ -287,14 +_,31 @@
+@@ -292,14 +_,31 @@
  
      private void preparePictureInPicture() {
          int guiScale = Minecraft.getInstance().gameRenderer.gameRenderState().windowRenderState.guiScale;
@@ -80,7 +80,7 @@
      }
  
      private void submitBlitFromItemAtlas(GuiItemRenderState itemState, GuiItemAtlas.SlotView slotView) {
-@@ -422,7 +_,7 @@
+@@ -427,7 +_,7 @@
              this.itemAtlas = null;
          }
  

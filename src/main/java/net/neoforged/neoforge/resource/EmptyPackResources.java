@@ -8,8 +8,9 @@ package net.neoforged.neoforge.resource;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Stream;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.AbstractPackResources;
+import net.minecraft.server.packs.AbstractPackMetadataResources;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
@@ -19,7 +20,7 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.resources.IoSupplier;
 import org.jspecify.annotations.Nullable;
 
-public class EmptyPackResources extends AbstractPackResources {
+public class EmptyPackResources extends AbstractPackMetadataResources implements PackResources {
     private final PackMetadataSection packMeta;
 
     public EmptyPackResources(PackLocationInfo packId, PackMetadataSection packMeta) {
@@ -37,7 +38,7 @@ public class EmptyPackResources extends AbstractPackResources {
     public void close() {}
 
     @Override
-    public void listResources(PackType type, String resourceNamespace, String paths, ResourceOutput resourceOutput) {}
+    public void listResources(PackType type, String resourceNamespace, String paths, PackResources.ResourceOutput resourceOutput) {}
 
     @Override
     public Set<String> getNamespaces(PackType type) {
@@ -65,13 +66,13 @@ public class EmptyPackResources extends AbstractPackResources {
         }
 
         @Override
-        public PackResources openPrimary(PackLocationInfo id) {
+        public EmptyPackResources openMetadata(PackLocationInfo id) {
             return new EmptyPackResources(id, packMeta);
         }
 
         @Override
-        public PackResources openFull(PackLocationInfo id, Pack.Metadata info) {
-            return openPrimary(id);
+        public Stream<PackResources> openResources(PackLocationInfo id, Pack.Metadata info) {
+            return Stream.of(openMetadata(id));
         }
     }
 }

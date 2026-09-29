@@ -5,8 +5,10 @@
 
 package net.neoforged.neoforge.debug.item;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
@@ -19,8 +21,10 @@ import net.minecraft.client.renderer.entity.PigRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.sounds.SoundEvents;
@@ -29,6 +33,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Util;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -57,6 +62,7 @@ import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -68,6 +74,59 @@ import net.neoforged.testframework.registration.RegistrationHelper;
 @ForEachTest(groups = ItemTests.GROUP)
 public class ItemTests {
     public static final String GROUP = "level.item";
+
+    @GameTest(batch = GROUP + ".boat_dispenser") // Isolate this test because it counts every entity added while the dispenser activates
+    @TestHolder(description = "Tests that dispensing a boat spawns one boat entity in the expected location")
+    static void boatDispenserDoesNotSpawnDuplicate(final DynamicTest test) {
+        test.registerGameTestTemplate(StructureTemplateBuilder.withSize(3, 4, 3)
+                .placeSustainedWater(1, 2, 1, Blocks.IRON_BLOCK.defaultBlockState()));
+
+        final var captureDispensedEntities = new AtomicBoolean();
+        final var dispensedEntities = new ArrayList<Entity>();
+        test.eventListeners().forge().addListener((EntityJoinLevelEvent event) -> {
+            if (captureDispensedEntities.get()) {
+                dispensedEntities.add(event.getEntity());
+            }
+        });
+
+        test.onGameTest(helper -> {
+            final Component boatName = Component.literal("boat dispenser duplicate test");
+            final ItemStack boatStack = Items.OAK_BOAT.getDefaultInstance();
+            final BlockPos expectedPos = new BlockPos(1, 2, 1);
+            boatStack.set(DataComponents.CUSTOM_NAME, boatName);
+
+            helper.startSequence()
+                    .thenExecute(() -> helper.assertFalse(
+                            helper.absolutePos(expectedPos).closerThan(BlockPos.ZERO, 16),
+                            "The expected boat location must be at least 16 blocks from the world origin"))
+                    .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.DISPENSER.defaultBlockState().setValue(DispenserBlock.FACING, Direction.UP)))
+                    .thenExecute(() -> helper.getBlockEntity(1, 1, 1, DispenserBlockEntity.class).setItem(0, boatStack))
+                    .thenExecute(() -> {
+                        dispensedEntities.clear();
+                        captureDispensedEntities.set(true);
+                    })
+                    .thenExecute(() -> helper.pulseRedstone(new BlockPos(1, 1, 2), 3))
+                    .thenExecuteAfter(5, () -> {
+                        captureDispensedEntities.set(false);
+                        try {
+                            helper.assertTrue(
+                                    dispensedEntities.size() == 1,
+                                    "Expected exactly one entity to be dispensed, found " + dispensedEntities.size() + ": " + dispensedEntities.stream()
+                                            .map(entity -> entity.getType() + " at " + entity.blockPosition())
+                                            .toList());
+                            final var boat = dispensedEntities.getFirst();
+                            helper.assertTrue(boat.getType() == EntityTypes.OAK_BOAT, "Expected an oak boat to be dispensed, found " + boat.getType());
+                            helper.assertTrue(boatName.equals(boat.getCustomName()), "The dispensed boat did not retain its identifying name");
+                            helper.assertTrue(
+                                    boat.blockPosition().closerThan(helper.absolutePos(expectedPos), 2),
+                                    "Expected the boat near " + expectedPos + ", found it at " + helper.relativePos(boat.blockPosition()));
+                        } finally {
+                            dispensedEntities.forEach(Entity::discard);
+                        }
+                    })
+                    .thenSucceed();
+        });
+    }
 
     @GameTest
     @TestHolder(description = {

@@ -10,7 +10,7 @@
 +                }
                  poseStack.pushPose();
                  poseStack.translate(decoration.x / 2.0F + 64.0F, decoration.y / 2.0F + 64.0F, -0.02F);
-                 poseStack.mulPose(Axis.ZP.rotationDegrees(decoration.rot * 360 / 16.0F));
+                 poseStack.rotateDegrees(Axis.ZP, decoration.rot * 360 / 16.0F);
 @@ -84,13 +_,15 @@
          mapRenderState.texture = this.mapTextureManager.prepareMapTexture(mapId, mapData);
          mapRenderState.decorations.clear();

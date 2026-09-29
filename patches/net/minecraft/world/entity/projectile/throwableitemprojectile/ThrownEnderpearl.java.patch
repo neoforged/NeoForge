@@ -9,13 +9,12 @@
                          if (this.random.nextFloat() < 0.05F && level.isSpawningMonsters() && level.getLevelData().getDifficulty() != Difficulty.PEACEFUL) {
                              Endermite endermite = EntityTypes.ENDERMITE.create(level, EntitySpawnReason.TRIGGERED);
                              if (endermite != null) {
-@@ -118,16 +_,17 @@
+@@ -117,15 +_,16 @@
+                         }
  
                          ServerPlayer newOwner = player.teleport(
-                             new TeleportTransition(
--                                level, teleportPos, Vec3.ZERO, 0.0F, 0.0F, Relative.union(Relative.ROTATION, Relative.DELTA), TeleportTransition.DO_NOTHING
-+                                level, event.getTarget(), player.getDeltaMovement(), player.getYRot(), player.getXRot(), TeleportTransition.DO_NOTHING
-                             )
+-                            new TeleportTransition(level, teleportPos, Vec3.ZERO, 0.0F, 0.0F, Relative.ROTATION, TeleportTransition.DO_NOTHING)
++                            new TeleportTransition(level, event.getTarget(), Vec3.ZERO, 0.0F, 0.0F, Relative.ROTATION, TeleportTransition.DO_NOTHING)
                          );
                          if (newOwner != null) {
                              newOwner.resetFallDistance();

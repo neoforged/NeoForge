@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/component/BundleContents.java
 +++ b/net/minecraft/world/item/component/BundleContents.java
-@@ -77,7 +_,8 @@
+@@ -81,7 +_,8 @@
      }
  
      public static boolean canItemBeInBundle(ItemStack itemToAdd) {

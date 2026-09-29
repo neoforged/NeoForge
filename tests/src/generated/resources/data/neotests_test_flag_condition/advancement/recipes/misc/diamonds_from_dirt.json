@@ -21,7 +21,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "neotests_test_flag_condition:diamonds_from_dirt"
+        "recipes": "neotests_test_flag_condition:diamonds_from_dirt"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

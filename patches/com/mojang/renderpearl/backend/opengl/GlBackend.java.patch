@@ -1,0 +1,12 @@
+--- a/com/mojang/renderpearl/backend/opengl/GlBackend.java
++++ b/com/mojang/renderpearl/backend/opengl/GlBackend.java
+@@ -33,7 +_,8 @@
+                 throw this.libraryLoadFailure;
+             }
+ 
+-            if (!SDLVideo.SDL_GL_LoadLibrary(((SharedLibrary)GL.getFunctionProvider()).getPath())) {
++            // Neo: Ensure the ELS having already loaded GL does not prevent the GL backend from working
++            if (!SDLVideo.SDL_GL_LoadLibrary(((SharedLibrary)GL.getFunctionProvider()).getPath()) && !Objects.equals(SDLError.SDL_GetError(), "OpenGL library already loaded")) {
+                 this.libraryLoadFailure = new BackendCreationException(
+                     "OpenGL is not supported: " + Objects.requireNonNullElse(SDLError.SDL_GetError(), "<no error>"),
+                     BackendCreationException.Reason.OPENGL_MISSING

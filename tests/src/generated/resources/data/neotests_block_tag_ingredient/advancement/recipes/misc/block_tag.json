@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "neotests_block_tag_ingredient:block_tag"
+        "recipes": "neotests_block_tag_ingredient:block_tag"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

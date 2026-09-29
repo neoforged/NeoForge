@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/ai/behavior/Swim.java
++++ b/net/minecraft/world/entity/ai/behavior/Swim.java
+@@ -22,7 +_,7 @@
+     }
+ 
+     protected boolean checkExtraStartConditions(ServerLevel level, Mob body) {
+-        return body.isInFluidDeeperThan(body.getFluidJumpThreshold(), this.fluid) || body.isInLava();
++        return body.isInFluidDeeperThan(body.getFluidJumpThreshold(), this.fluid) || body.isInLava() || body.getFluidInteraction().isInFluidMatching(body, (entity, fluidType, height) -> entity.canSwimInFluidType(fluidType) && height > entity.getFluidJumpThreshold());
+     }
+ 
+     protected boolean canStillUse(ServerLevel level, Mob body, long timestamp) {

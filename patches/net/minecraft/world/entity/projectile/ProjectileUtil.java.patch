@@ -9,7 +9,7 @@
                          if (nearest == 0.0) {
                              hovered = entity;
                              hoveredPos = location;
-@@ -242,8 +_,13 @@
+@@ -261,8 +_,13 @@
          }
      }
  
