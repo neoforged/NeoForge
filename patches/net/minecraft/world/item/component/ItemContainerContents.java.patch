@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/component/ItemContainerContents.java
 +++ b/net/minecraft/world/item/component/ItemContainerContents.java
-@@ -207,6 +_,36 @@
+@@ -207,6 +_,33 @@
          }
      }
  
@@ -12,17 +12,14 @@
 +        return this.items.size();
 +    }
 +
-+    /**
-+     * Neo: Gets a copy of the stack at a particular slot.
-+     *
-+     * @param slot The slot to check. Must be within [0, {@link #getSlots()}]
-+     * @return A copy of the stack in that slot
-+     * @throws UnsupportedOperationException if the provided slot index is out-of-bounds.
-+     */
-+    public ItemStack getStackInSlot(int slot) {
++    /// Neo: Gets a reference to the item stack template at a particular slot.
++    ///
++    /// @param slot The slot to check. Must be within \[0, [#getSlots()]\]
++    /// @return A copy of the stack in that slot
++    /// @throws UnsupportedOperationException if the provided slot index is out-of-bounds.
++    public Optional<ItemStackTemplate> getTemplateInSlot(int slot) {
 +        validateSlotIndex(slot);
-+        // TODO 26.1: Migrate to ItemStackTemplate or ItemInstance
-+        return this.items.get(slot).map(ItemStackTemplate::create).orElse(ItemStack.EMPTY);
++        return this.items.get(slot);
 +    }
 +
 +    /**
