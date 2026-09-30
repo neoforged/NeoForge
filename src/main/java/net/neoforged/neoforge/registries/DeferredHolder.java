@@ -16,6 +16,7 @@ import net.minecraft.core.HolderOwner;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.PatchedRegistry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
@@ -27,7 +28,7 @@ import org.jspecify.annotations.Nullable;
 ///
 /// @param <T> The type of object being held by this DeferredHolder.
 ///
-/// @implNote Similar to vanilla's [net.minecraft.core.registries.PatchedRegistry.LazyHolder] we override [Holder.Reference]
+/// @implNote Similar to vanilla's [PatchedRegistry.LazyHolder] we extend [Holder.Reference]
 public class DeferredHolder<R, T extends R> extends Holder.Reference<R> implements Supplier<T> {
     /**
      * Creates a new DeferredHolder targeting the value with the specified name in the specified registry.
