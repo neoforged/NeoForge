@@ -34,7 +34,7 @@
 +     * @see #getKnownItems()
 +     */
 +    protected java.util.stream.Stream<? extends net.minecraft.core.Holder<Block>> getKnownBlocks() {
-+        return BuiltInRegistries.BLOCK.listElements().filter(holder -> holder.getKey().identifier().getNamespace().equals(modId));
++        return BuiltInRegistries.BLOCK.listElements().filter(holder -> holder.key().identifier().getNamespace().equals(modId));
 +    }
 +
 +    /**
@@ -47,7 +47,7 @@
 +     * @see #getKnownBlocks()
 +     */
 +    protected java.util.stream.Stream<? extends net.minecraft.core.Holder<Item>> getKnownItems() {
-+        return BuiltInRegistries.ITEM.listElements().filter(holder -> holder.getKey().identifier().getNamespace().equals(modId));
++        return BuiltInRegistries.ITEM.listElements().filter(holder -> holder.key().identifier().getNamespace().equals(modId));
      }
  
      @Override

@@ -78,7 +78,7 @@ public class MapDecorationRenderTests {
             event.register(decorationType.value(), new TestDecorationRenderer(key));
         });
         test.framework().modEventBus().addListener((RegisterRenderStateModifiersEvent event) -> {
-            event.registerMapDecorationModifier(decorationType.getKey(), (mapItemSavedData, mapRenderState, mapDecorationRenderState) -> {
+            event.registerMapDecorationModifier(decorationType.key(), (_, _, mapDecorationRenderState) -> {
                 mapDecorationRenderState.setRenderData(key, 0xFFFFAABB);
             });
         });

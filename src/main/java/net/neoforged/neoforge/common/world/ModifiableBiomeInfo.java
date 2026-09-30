@@ -84,7 +84,7 @@ public class ModifiableBiomeInfo {
             return true;
 
         BiomeInfo original = this.getOriginalBiomeInfo();
-        final BiomeInfo.Builder builder = BiomeInfo.Builder.copyOf(biome.getKey(), original);
+        final BiomeInfo.Builder builder = BiomeInfo.Builder.copyOf(biome.key(), original);
         for (BiomeModifier.Phase phase : BiomeModifier.Phase.values()) {
             for (BiomeModifier modifier : biomeModifiers) {
                 modifier.modify(registryAccess, biome, phase, builder);

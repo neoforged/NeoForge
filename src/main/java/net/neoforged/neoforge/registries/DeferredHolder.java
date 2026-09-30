@@ -5,14 +5,13 @@
 
 package net.neoforged.neoforge.registries;
 
-import com.mojang.datafixers.util.Either;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderOwner;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentMap;
@@ -20,17 +19,16 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
-import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import org.jspecify.annotations.Nullable;
 
-/**
- * A Deferred Holder is a {@link Holder} that is constructed with only a ResourceKey.
- *
- * <p>It will be populated with the underlying Holder from the registry when available.
- *
- * @param <T> The type of object being held by this DeferredHolder.
- */
-public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
+/// A Deferred Holder is a [Holder] that is constructed with only a ResourceKey.
+///
+/// It will be populated with the underlying Holder from the registry when available.
+///
+/// @param <T> The type of object being held by this DeferredHolder.
+///
+/// @implNote Similar to vanilla's [net.minecraft.core.registries.PatchedRegistry.LazyHolder] we override [Holder.Reference]
+public class DeferredHolder<R, T extends R> extends Holder.Reference<R> implements Supplier<T> {
     /**
      * Creates a new DeferredHolder targeting the value with the specified name in the specified registry.
      *
@@ -65,11 +63,6 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     }
 
     /**
-     * The resource key of the target object.
-     */
-    protected final ResourceKey<R> key;
-
-    /**
      * The currently cached value.
      */
     @Nullable
@@ -86,8 +79,17 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
      * @see #create(ResourceKey)
      */
     protected DeferredHolder(ResourceKey<R> key) {
-        this.key = Objects.requireNonNull(key);
+        Objects.requireNonNull(key);
+        //Attempt to get the registry, but if it isn't present just pass null and make sure we override any uses of owner in reference
+        Registry<R> registry = (Registry<R>) BuiltInRegistries.REGISTRY.getValue(key.registry());
+        super(Holder.Reference.Type.STAND_ALONE, registry, key, null);
         this.bind(false);
+    }
+
+    @Override
+    public ResourceKey<R> key() {
+        //Note: We know this is nonnull as we pass a nonnull value to super
+        return Objects.requireNonNull(super.key());
     }
 
     /**
@@ -101,7 +103,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     public T value() {
         bind(true);
         if (this.holder == null) {
-            throw new NullPointerException("Trying to access unbound value: " + this.key);
+            throw new NullPointerException("Trying to access unbound value: " + this.key());
         }
 
         return (T) this.holder.value();
@@ -127,15 +129,11 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
         return isBound() ? Optional.of(value()) : Optional.empty();
     }
 
-    /**
-     * Returns the registry that this DeferredHolder is pointing at, or {@code null} if it doesn't exist.
-     *
-     * @return the registry that this DeferredHolder is pointing at, or {@code null} if it doesn't exist
-     */
-    @Nullable
+    /// {@return the registry that this DeferredHolder is pointing at, or `null` if it doesn't exist}
+    @Override
     @SuppressWarnings("unchecked")
-    protected Registry<R> getRegistry() {
-        return (Registry<R>) BuiltInRegistries.REGISTRY.getValue(this.key.registry());
+    public HolderLookup.@Nullable RegistryLookup<R> unwrapLookup() {
+        return (Registry<R>) BuiltInRegistries.REGISTRY.getValue(this.key().registry());
     }
 
     /**
@@ -149,11 +147,11 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     protected final void bind(boolean throwOnMissingRegistry) {
         if (this.holder != null) return;
 
-        Registry<R> registry = getRegistry();
+        HolderLookup.RegistryLookup<R> registry = unwrapLookup();
         if (registry != null) {
-            this.holder = registry.get(this.key).orElse(null);
+            this.holder = registry.get(this.key()).orElse(null);
         } else if (throwOnMissingRegistry) {
-            throw new IllegalStateException("Registry not present for " + this + ": " + this.key.registry());
+            throw new IllegalStateException("Registry not present for " + this + ": " + this.key().registry());
         }
     }
 
@@ -161,31 +159,12 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
      * @return The ID of the object pointed to by this DeferredHolder.
      */
     public Identifier getId() {
-        return this.key.identifier();
-    }
-
-    /**
-     * @return The ResourceKey of the object pointed to by this DeferredHolder.
-     */
-    @Override
-    public ResourceKey<R> getKey() {
-        return this.key;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        return obj instanceof Holder<?> h && h.kind() == Kind.REFERENCE && h.getKey() == this.key;
-    }
-
-    @Override
-    public int hashCode() {
-        return this.key.hashCode();
+        return this.key().identifier();
     }
 
     @Override
     public String toString() {
-        return String.format(Locale.ENGLISH, "DeferredHolder{%s}", this.key);
+        return String.format(Locale.ENGLISH, "DeferredHolder{%s}", this.key());
     }
 
     /**
@@ -213,32 +192,6 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     }
 
     /**
-     * {@return true if the passed Identifier is the same as the ID of the target object}
-     */
-    @Override
-    public boolean is(Identifier id) {
-        return id.equals(this.key.identifier());
-    }
-
-    /**
-     * {@return true if the passed ResourceKey is the same as this holder's resource key}
-     */
-    @Override
-    public boolean is(ResourceKey<R> key) {
-        return key == this.key;
-    }
-
-    /**
-     * Evaluates the passed predicate against this holder's resource key.
-     *
-     * @return {@code true} if the filter matches {@linkplain #getKey() this DH's resource key}
-     */
-    @Override
-    public boolean is(Predicate<ResourceKey<R>> filter) {
-        return filter.test(this.key);
-    }
-
-    /**
      * {@return true if this holder is a member of the passed tag}
      */
     @Override
@@ -258,15 +211,6 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <Z> @Nullable Z getData(DataMapType<R, Z> type) {
-        bind(false);
-        return holder == null ? null : holder.getData(type);
-    }
-
-    /**
      * {@return all tags present on the underlying object}
      *
      * <p>If the underlying object is not {@linkplain #isBound() bound} yet, and empty stream is returned.
@@ -275,33 +219,6 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     public Stream<TagKey<R>> tags() {
         bind(false);
         return this.holder != null ? this.holder.tags() : Stream.empty();
-    }
-
-    /**
-     * Returns an {@link Either#left()} containing {@linkplain #getKey() the resource key of this holder}.
-     *
-     * @apiNote This method is implemented for {@link Holder} compatibility, but {@link #getKey()} should be preferred.
-     */
-    @Override
-    public Either<ResourceKey<R>, R> unwrap() {
-        // Holder.Reference always returns the key, do the same here.
-        return Either.left(this.key);
-    }
-
-    /**
-     * Returns the resource key of this holder.
-     *
-     * @return a present optional containing {@linkplain #getKey() the resource key of this holder}
-     * @apiNote This method is implemented for {@link Holder} compatibility, but {@link #getKey()} should be preferred.
-     */
-    @Override
-    public Optional<ResourceKey<R>> unwrapKey() {
-        return Optional.of(this.key);
-    }
-
-    @Override
-    public Kind kind() {
-        return Kind.REFERENCE;
     }
 
     @Override

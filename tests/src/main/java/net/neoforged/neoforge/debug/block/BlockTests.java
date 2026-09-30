@@ -266,7 +266,7 @@ public class BlockTests {
             }
             for (BlockState state : states) {
                 Optional<Holder<PoiType>> type = PoiTypes.forState(state);
-                if (type.isEmpty() || type.get().getKey() != PoiTypes.MEETING) {
+                if (type.isEmpty() || !type.get().is(PoiTypes.MEETING)) {
                     test.fail("A state of the test block is missing from or assigned to the wrong PoI in PoiTypes.TYPE_BY_STATE");
                     return;
                 }

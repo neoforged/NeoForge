@@ -34,12 +34,20 @@ public interface IHolderExtension<T> extends IWithData<T> {
         return null;
     }
 
-    /**
-     * Get the resource key held by this Holder, or null if none is present. This method will be overriden
-     * by Holder implementations to avoid allocation associated with {@link Holder#unwrapKey()}
-     */
+    /// Get the resource key held by this Holder, or null if none is present. This method will be overriden
+    /// by Holder implementations to avoid allocation associated with [Holder#unwrapKey()]
+    /// 
+    /// @deprecated Deprecated to lower patch size, and let vanilla's builtin [Holder.Reference#key()] method be the implementation
     @Nullable
+    @Deprecated(forRemoval = true, since = "26.3")
     default ResourceKey<T> getKey() {
+        return key();
+    }
+
+    /// Get the resource key held by this Holder, or null if none is present. This method will be overriden
+    /// by Holder implementations to avoid allocation associated with [Holder#unwrapKey()]
+    @Nullable
+    default ResourceKey<T> key() {
         return ((Holder<T>) this).unwrapKey().orElse(null);
     }
 }
