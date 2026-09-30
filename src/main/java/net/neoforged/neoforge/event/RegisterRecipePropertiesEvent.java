@@ -29,6 +29,7 @@ public final class RegisterRecipePropertiesEvent extends Event implements IModBu
     ///
     /// @param key       The key to register the recipe property set under
     /// @param extractor The ingredient extractor to use for collecting applicable ingredients
+    /// @throws IllegalArgumentException when multiple recipe property sets are registered under the same key
     public void register(ResourceKey<RecipePropertySet> key, RecipeManager.IngredientExtractor extractor) {
         if (this.propertySets.putIfAbsent(key, extractor) != null) {
             throw new IllegalArgumentException("Duplicate property set registration for key " + key.identifier());
