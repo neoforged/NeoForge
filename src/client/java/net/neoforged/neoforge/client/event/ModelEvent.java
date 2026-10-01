@@ -6,12 +6,15 @@
 package net.neoforged.neoforge.client.event;
 
 import com.google.common.base.Preconditions;
+import com.mojang.logging.LogUtils;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
+import net.minecraft.client.renderer.texture.SpriteLoader;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
+import net.minecraft.client.resources.model.sprite.MaterialBaker;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -21,11 +24,14 @@ import net.neoforged.neoforge.client.model.UnbakedModelLoader;
 import net.neoforged.neoforge.client.model.standalone.StandaloneModelKey;
 import net.neoforged.neoforge.client.model.standalone.UnbakedStandaloneModel;
 import org.jetbrains.annotations.ApiStatus;
+import org.slf4j.Logger;
 
 /**
  * Houses events related to models.
  */
 public abstract class ModelEvent extends Event {
+    private static final Logger LOGGER = LogUtils.getLogger();
+
     @ApiStatus.Internal
     protected ModelEvent() {}
 
@@ -46,13 +52,31 @@ public abstract class ModelEvent extends Event {
      */
     public static class ModifyBakingResult extends ModelEvent implements IModBusEvent {
         private final ModelBakery.BakingResult bakingResult;
+        private final MaterialBaker materialBaker;
+        private final SpriteLoader.Preparations blockAtlas;
+        private final SpriteLoader.Preparations itemAtlas;
         private final Function<Identifier, TextureAtlasSprite> textureGetter;
         private final ModelBakery modelBakery;
 
         @ApiStatus.Internal
-        public ModifyBakingResult(ModelBakery.BakingResult bakingResult, Function<Identifier, TextureAtlasSprite> textureGetter, ModelBakery modelBakery) {
+        public ModifyBakingResult(
+                ModelBakery.BakingResult bakingResult,
+                MaterialBaker materialBaker,
+                SpriteLoader.Preparations blockAtlas,
+                SpriteLoader.Preparations itemAtlas,
+                ModelBakery modelBakery) {
             this.bakingResult = bakingResult;
-            this.textureGetter = textureGetter;
+            this.materialBaker = materialBaker;
+            this.blockAtlas = blockAtlas;
+            this.itemAtlas = itemAtlas;
+            this.textureGetter = location -> {
+                TextureAtlasSprite sprite = blockAtlas.getSprite(location);
+                if (sprite != null) {
+                    return sprite;
+                }
+                LOGGER.warn("Failed to retrieve texture '{}' from the block atlas", location, new Throwable());
+                return blockAtlas.missing();
+            };
             this.modelBakery = modelBakery;
         }
 
@@ -61,6 +85,21 @@ public abstract class ModelEvent extends Event {
          */
         public ModelBakery.BakingResult getBakingResult() {
             return bakingResult;
+        }
+
+        /// {@return the material baker used for baking the provided models}
+        public MaterialBaker getMaterialBaker() {
+            return materialBaker;
+        }
+
+        /// {@return the block atlas preparations holding the stitched but not yet uploaded sprites}
+        public SpriteLoader.Preparations getBlockAtlasPreparations() {
+            return blockAtlas;
+        }
+
+        /// {@return the item atlas preparations holding the stitched but not yet uploaded sprites}
+        public SpriteLoader.Preparations getItemAtlasPreparations() {
+            return itemAtlas;
         }
 
         /**
