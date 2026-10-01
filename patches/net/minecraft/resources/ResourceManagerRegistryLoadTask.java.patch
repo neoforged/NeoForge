@@ -1,6 +1,11 @@
 --- a/net/minecraft/resources/ResourceManagerRegistryLoadTask.java
 +++ b/net/minecraft/resources/ResourceManagerRegistryLoadTask.java
-@@ -26,12 +_,22 @@
+@@ -22,38 +_,58 @@
+ 
+ public class ResourceManagerRegistryLoadTask<T> extends RegistryLoadTask<T> {
+     private static final Function<Optional<KnownPack>, RegistrationInfo> REGISTRATION_INFO_CACHE = Util.memoize(knownPack -> {
+-        Lifecycle lifecycle = knownPack.map(KnownPack::isVanilla).map(info -> Lifecycle.stable()).orElse(Lifecycle.experimental());
++        Lifecycle lifecycle = knownPack.map(KnownPack::isVanilla).map(_ -> Lifecycle.stable()).orElse(Lifecycle.experimental());
          return new RegistrationInfo(knownPack, lifecycle);
      });
      private final ResourceManager resourceManager;
@@ -23,13 +28,124 @@
      }
  
      @Override
-@@ -40,7 +_,8 @@
-         return CompletableFuture.<Map<Identifier, Resource>>supplyAsync(() -> lister.listMatchingResources(this.resourceManager), executor)
+     public CompletableFuture<?> load(RegistryOps.RegistryInfoLookup context, Executor executor) {
+         FileToIdConverter lister = FileToIdConverter.registry(this.registryKey());
+-        return CompletableFuture.<Map<Identifier, Resource>>supplyAsync(() -> lister.listMatchingResources(this.resourceManager), executor)
++        return CompletableFuture.supplyAsync(() -> lister.listMatchingResources(this.resourceManager), executor)
              .thenCompose(
-                 registryResources -> {
+-                registryResources -> {
 -                    RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, context);
+-                    return ParallelMapTransform.schedule(
+-                        (Map<Identifier, Resource>)registryResources,
+-                        (resourceId, thunk) -> {
+-                            ResourceKey<T> elementKey = ResourceKey.create(this.registryKey(), lister.fileToId(resourceId));
+-                            RegistrationInfo registrationInfo = REGISTRATION_INFO_CACHE.apply(thunk.knownPackInfo());
+-                            return new RegistryLoadTask.PendingRegistration<>(
+-                                elementKey,
+-                                RegistryLoadTask.PendingRegistration.loadFromResource(this.data.elementCodec(), ops, elementKey, thunk),
+-                                registrationInfo
+-                            );
+-                        },
+-                        executor
+-                    );
++                    resources -> {
 +                    var conditionContext = new net.neoforged.neoforge.common.conditions.ConditionContext(pendingTags, context, net.minecraft.world.flag.FeatureFlags.VANILLA_SET);
 +                    RegistryOps<JsonElement> ops = new net.neoforged.neoforge.common.conditions.ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, context), conditionContext);
-                     return ParallelMapTransform.schedule(
-                         (Map<Identifier, Resource>)registryResources,
-                         (resourceId, thunk) -> {
++
++                    // Neo: Recipes are handed to ModifyRecipeJsonsEvent as raw JSON before anything is deserialized, so mods can add,
++                    // change and remove recipes in bulk instead of reacting to every recipe on its own.
++                    if (this.registryKey().isFor(net.minecraft.core.registries.Registries.RECIPE)) {
++                        return parseJsons(resources, lister, executor).thenCompose(parsed -> {
++                            Map<Identifier, JsonElement> recipeJsons = new java.util.HashMap<>(parsed.size());
++                            parsed.forEach((elementId, json) -> json.left().ifPresent(value -> recipeJsons.put(elementId, value)));
++
++                            net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.event.ModifyRecipeJsonsEvent(ops, recipeJsons));
++
++                            // Neo: The event's map is the source of truth from here on: entries it changed are deserialized from it and
++                            // entries it removed are skipped. Resources that failed to parse are kept regardless, so that they still go
++                            // through the regular path and are reported as loading errors like vanilla does.
++                            Map<Identifier, com.mojang.datafixers.util.Either<JsonElement, Exception>> jsons = new java.util.HashMap<>(parsed);
++                            jsons.keySet().removeIf(elementId -> parsed.get(elementId).left().isPresent() && !recipeJsons.containsKey(elementId));
++                            recipeJsons.forEach((elementId, json) -> jsons.put(elementId, com.mojang.datafixers.util.Either.left(json)));
++
++                            return deserializeJsons(this.data.elementCodec(), ops, jsons, resources, lister, executor);
++                        });
++                    }
++
++                    return deserializeResources(this.data.elementCodec(), ops, resources, lister, executor);
+                 }
+             )
+             .thenAcceptAsync(
+@@ -67,5 +_,72 @@
+                 },
+                 executor
+             );
++    }
++
++    /// Neo: Deserializes every resource of this registry in parallel.
++    private CompletableFuture<Map<Identifier, RegistryLoadTask.PendingRegistration<T>>> deserializeResources(
++        com.mojang.serialization.Decoder<T> elementDecoder, RegistryOps<JsonElement> ops, Map<Identifier, Resource> resources, FileToIdConverter lister, Executor executor
++    ) {
++        return ParallelMapTransform.schedule(
++            resources,
++            (resourceId, thunk) -> {
++                ResourceKey<T> elementKey = ResourceKey.create(this.registryKey(), lister.fileToId(resourceId));
++                return new RegistryLoadTask.PendingRegistration<>(
++                    elementKey,
++                    RegistryLoadTask.PendingRegistration.loadFromResource(elementDecoder, ops, elementKey, thunk),
++                    REGISTRATION_INFO_CACHE.apply(thunk.knownPackInfo())
++                );
++            },
++            executor
++        );
++    }
++
++    /// Neo: Deserializes the given JSONs in parallel, keyed by the id of the element each of them loads as. Since these have already
++    /// been handed to ModifyRecipeJsonsEvent, this picks up the entries that were added, changed or removed by it. JSONs without a
++    /// matching resource were added by the event and are registered as coming from an unknown pack.
++    private CompletableFuture<Map<Identifier, RegistryLoadTask.PendingRegistration<T>>> deserializeJsons(
++        com.mojang.serialization.Decoder<T> elementDecoder, RegistryOps<JsonElement> ops, Map<Identifier, com.mojang.datafixers.util.Either<JsonElement, Exception>> jsons, Map<Identifier, Resource> resources, FileToIdConverter lister, Executor executor
++    ) {
++        return ParallelMapTransform.schedule(
++            jsons,
++            (elementId, parsed) -> {
++                ResourceKey<T> elementKey = ResourceKey.create(this.registryKey(), elementId);
++                Resource resource = resources.get(lister.idToFile(elementId));
++                com.mojang.datafixers.util.Either<T, Exception> value = parsed.left().isPresent()
++                    ? RegistryLoadTask.PendingRegistration.loadFromJson(elementDecoder, ops, elementKey, parsed.left().get(), resource != null ? resource.sourcePackId() : "unknown")
++                    // Neo: The JSON did not parse, so read the resource again to produce the error that gets reported for it
++                    : RegistryLoadTask.PendingRegistration.loadFromResource(elementDecoder, ops, elementKey, resource);
++                return new RegistryLoadTask.PendingRegistration<>(
++                    elementKey,
++                    value,
++                    REGISTRATION_INFO_CACHE.apply(resource != null ? resource.knownPackInfo() : Optional.empty())
++                );
++            },
++            executor
++        );
++    }
++
++    /// Neo: Parses the raw JSON of every resource in parallel, keyed by the id of the element it loads as. Resources that fail to
++    /// parse are kept as the error they produced, so that deserialization can report it as a loading error.
++    private CompletableFuture<Map<Identifier, com.mojang.datafixers.util.Either<JsonElement, Exception>>> parseJsons(Map<Identifier, Resource> resources, FileToIdConverter lister, Executor executor) {
++        CompletableFuture<Map<Identifier, com.mojang.datafixers.util.Either<JsonElement, Exception>>> parsedJsons = ParallelMapTransform.schedule(
++            resources,
++            (resourceId, thunk) -> {
++                Identifier elementId = lister.fileToId(resourceId);
++                try (java.io.Reader reader = thunk.openAsReader()) {
++                    return com.mojang.datafixers.util.Either.left(net.minecraft.util.StrictJsonParser.parse(reader));
++                } catch (Exception e) {
++                    return com.mojang.datafixers.util.Either.right(
++                        new IllegalStateException(String.format(java.util.Locale.ROOT, "Failed to parse %s from pack %s", elementId, thunk.sourcePackId()), e)
++                    );
++                }
++            },
++            executor
++        );
++        return parsedJsons.thenApply(parsed -> {
++            Map<Identifier, com.mojang.datafixers.util.Either<JsonElement, Exception>> jsons = new java.util.HashMap<>(parsed.size());
++            parsed.forEach((resourceId, json) -> jsons.put(lister.fileToId(resourceId), json));
++            return jsons;
++        });
+     }
+ }
