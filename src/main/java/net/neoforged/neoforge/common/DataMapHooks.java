@@ -14,12 +14,10 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.BlockTransformer;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.BlockTransformers;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -70,8 +68,7 @@ public class DataMapHooks {
     }
 
     @ApiStatus.Internal
-    public static Iterable<BlockTransformer.BlockTransformData> appendDatamapTransformers(ItemStack stack, Iterable<BlockTransformer.BlockTransformData> toolTransformers) {
-        Holder<BlockTransformer> component = stack.get(DataComponents.BLOCK_TRANSFORMER);
+    public static Iterable<BlockTransformer.BlockTransformData> appendDatamapTransformers(@Nullable Holder<BlockTransformer> component, Iterable<BlockTransformer.BlockTransformData> toolTransformers) {
         List<BlockTransformer.BlockTransformData> transformerDatamapTransformers = List.of();
         List<BlockTransformer.BlockTransformData> blockDatamapTransformers = List.of();
         if (component != null) {
