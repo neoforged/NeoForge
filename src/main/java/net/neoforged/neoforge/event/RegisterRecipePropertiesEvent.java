@@ -15,6 +15,7 @@ import net.neoforged.fml.event.IModBusEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 /// Fired to register [RecipePropertySet]s, for example for use in input slot validaty checks of crafting blocks.
+/// Use cases which need the entire recipe on the client should use [OnDatapackSyncEvent#sendRecipes] instead.
 ///
 /// Fires on both [physical sides][Dist] on the mod-specific event bus.
 public final class RegisterRecipePropertiesEvent extends Event implements IModBusEvent {
