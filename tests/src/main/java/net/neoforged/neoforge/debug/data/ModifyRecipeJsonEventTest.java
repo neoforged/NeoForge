@@ -27,13 +27,9 @@ import org.jspecify.annotations.Nullable;
 public class ModifyRecipeJsonEventTest {
     /// The recipe that [#exposesMutableRecipeJsons] adds through the event, and that [#addedRecipeIsLoaded] then looks for.
     private static final ResourceKey<Recipe<?>> ADDED_RECIPE = ResourceKey.create(
-        Registries.RECIPE, Identifier.fromNamespaceAndPath("neoforge_testframework", "added_by_modify_recipe_jsons_event")
-    );
+            Registries.RECIPE, Identifier.fromNamespaceAndPath("neoforge_testframework", "added_by_modify_recipe_jsons_event"));
 
-    @TestHolder(
-        description = "Tests that ModifyRecipeJsonsEvent exposes the raw recipe JSONs, a mutable map, mutable values and a registry lookup.",
-        enabledByDefault = true
-    )
+    @TestHolder(description = "Tests that ModifyRecipeJsonsEvent exposes the raw recipe JSONs, a mutable map, mutable values and a registry lookup.", enabledByDefault = true)
     static void exposesMutableRecipeJsons(final ModifyRecipeJsonsEvent event, final MethodBasedEventTest test) {
         // Grab the map of recipe JSONs from the event.
         Map<Identifier, JsonElement> recipeJsons = event.getRecipeJsons();
@@ -65,10 +61,7 @@ public class ModifyRecipeJsonEventTest {
         test.pass();
     }
 
-    @TestHolder(
-        description = "Tests that a recipe added through ModifyRecipeJsonsEvent is deserialized and ends up in the recipe manager.",
-        enabledByDefault = true
-    )
+    @TestHolder(description = "Tests that a recipe added through ModifyRecipeJsonsEvent is deserialized and ends up in the recipe manager.", enabledByDefault = true)
     static void addedRecipeIsLoaded(final DynamicTest test) {
         test.eventListeners().forge().addListener((final ServerStartedEvent event) -> {
             if (event.getServer().getRecipeManager().recipeMap().byKey(ADDED_RECIPE) == null) {
