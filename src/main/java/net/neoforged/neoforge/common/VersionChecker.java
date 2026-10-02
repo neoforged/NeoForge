@@ -110,7 +110,7 @@ public class VersionChecker {
             try {
                 if (mod.getUpdateURL().isEmpty()) return;
                 URL url = mod.getUpdateURL().get();
-                LOGGER.info("[{}] Starting version check at {}", mod.getModId(), url);
+                LOGGER.debug("[{}] Starting version check at {}", mod.getModId(), url);
 
                 var request = HttpRequest.newBuilder()
                         .uri(url.toURI())
