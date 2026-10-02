@@ -16,10 +16,8 @@ import static net.neoforged.neoforge.common.VersionChecker.Status.UP_TO_DATE;
 import com.google.gson.Gson;
 import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -127,28 +125,6 @@ public class VersionChecker {
                     + mod.getModId() + '/' + mod.getVersion();
         }
 
-        private String fetchData(URL url) throws IOException, URISyntaxException, InterruptedException {
-            var request = HttpRequest.newBuilder()
-                    .uri(url.toURI())
-                    .timeout(Duration.ofSeconds(HTTP_TIMEOUT_SECS))
-                    .setHeader("Accept-Encoding", "gzip")
-                    .setHeader("User-Agent", createUserAgent())
-                    .GET()
-                    .build();
-
-            HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
-
-            boolean isGzipEncoded = response.headers().firstValue("Content-Encoding").orElse("").equals("gzip");
-
-            String bodyStr;
-            try (InputStream inStream = isGzipEncoded ? new GZIPInputStream(response.body()) : response.body()) {
-                try (var bufferedReader = new BufferedReader(new InputStreamReader(inStream))) {
-                    bodyStr = bufferedReader.lines().collect(Collectors.joining("\n"));
-                }
-            }
-            return bodyStr;
-        }
-
         @Override
         public void run() {
             Status status;
@@ -160,9 +136,26 @@ public class VersionChecker {
                 URL url = mod.getUpdateURL().get();
                 LOGGER.info("[{}] Starting version check at {}", mod.getModId(), url);
 
-                String data = fetchData(url);
+                var request = HttpRequest.newBuilder()
+                        .uri(url.toURI())
+                        .timeout(Duration.ofSeconds(HTTP_TIMEOUT_SECS))
+                        .setHeader("Accept-Encoding", "gzip")
+                        .setHeader("User-Agent", createUserAgent())
+                        .GET()
+                        .build();
 
-                LOGGER.debug("[{}] Received version check data:\n{}", mod.getModId(), data);
+                HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+
+                boolean isGzipEncoded = response.headers().firstValue("Content-Encoding").orElse("").equals("gzip");
+
+                String data;
+                try (InputStream inStream = isGzipEncoded ? new GZIPInputStream(response.body()) : response.body()) {
+                    try (var bufferedReader = new BufferedReader(new InputStreamReader(inStream))) {
+                        data = bufferedReader.lines().collect(Collectors.joining("\n"));
+                    }
+                }
+
+                LOGGER.debug("[{}] Received version check data", mod.getModId());
 
                 @SuppressWarnings("unchecked")
                 Map<String, Object> json = new Gson().fromJson(data, Map.class);
