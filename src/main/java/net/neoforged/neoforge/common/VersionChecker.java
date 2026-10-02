@@ -120,11 +120,6 @@ public class VersionChecker {
     }
 
     private record VersionCheckRunnable(IModInfo mod, HttpClient client) implements Runnable {
-        @Override
-        public void run() {
-            this.process(mod);
-        }
-
         private String createUserAgent() {
             return "Java-http-client/" + System.getProperty("java.version") + ' '
                     + "FancyModLoader/" + FMLVersion.getVersion() + ' '
@@ -154,7 +149,8 @@ public class VersionChecker {
             return bodyStr;
         }
 
-        private void process(IModInfo mod) {
+        @Override
+        public void run() {
             Status status;
             ComparableVersion target = null;
             Map<ComparableVersion, String> changes = null;
