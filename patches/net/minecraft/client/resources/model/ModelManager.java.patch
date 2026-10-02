@@ -161,7 +161,7 @@
      }
  
      public boolean requiresRender(BlockState oldState, BlockState newState) {
-@@ -284,6 +_,19 @@
+@@ -284,6 +_,20 @@
  
      public Supplier<EntityModelSet> entityModels() {
          return () -> this.entityModelSet;
@@ -176,6 +176,7 @@
 +        return this.bakedStandaloneModels.get(modelKey);
 +    }
 +
++    /// Neo: {@return the baked missing models}
 +    public ModelBakery.MissingModels getMissingModels() {
 +        return this.missingModels;
      }
