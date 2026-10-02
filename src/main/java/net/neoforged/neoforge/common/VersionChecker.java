@@ -41,11 +41,11 @@ import net.neoforged.fml.loading.FMLConfig;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforgespi.language.IModInfo;
 import org.apache.maven.artifact.versioning.ComparableVersion;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 public class VersionChecker {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final int MAX_HTTP_REDIRECTS = Integer.getInteger("http.maxRedirects", 20);
     private static final int HTTP_TIMEOUT_SECS = Integer.getInteger("http.timeoutSecs", 15);
 
     public enum Status {
@@ -62,10 +62,6 @@ public class VersionChecker {
 
         Status() {
             this(0, false, false);
-        }
-
-        Status(int sheetOffset) {
-            this(sheetOffset, true, false);
         }
 
         Status(int sheetOffset, boolean animated) {
@@ -91,7 +87,7 @@ public class VersionChecker {
         }
     }
 
-    public record CheckResult(VersionChecker.Status status, ComparableVersion target, Map<ComparableVersion, String> changes, String url) {}
+    public record CheckResult(VersionChecker.Status status, @Nullable ComparableVersion target, @Nullable Map<ComparableVersion, String> changes, @Nullable String url) {}
 
     public static void startVersionCheck() {
         if (!FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.VERSION_CHECK)) {
@@ -117,7 +113,7 @@ public class VersionChecker {
         return ret;
     }
 
-    private static Map<IModInfo, CheckResult> results = new ConcurrentHashMap<>();
+    private static final Map<IModInfo, CheckResult> results = new ConcurrentHashMap<>();
     private static final CheckResult PENDING_CHECK = new CheckResult(PENDING, null, null, null);
 
     public static CheckResult getResult(IModInfo mod) {
@@ -134,11 +130,9 @@ public class VersionChecker {
          * Returns the response body as a String for the given URL while following redirects
          */
         private String openUrlString(URL url, IModInfo mod) throws IOException, URISyntaxException, InterruptedException {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Java-http-client/").append(System.getProperty("java.version")).append(' ');
-            sb.append("FancyModLoader/").append(FMLVersion.getVersion()).append(' ');
-            sb.append(mod.getModId()).append('/').append(mod.getVersion());
-            String userAgent = sb.toString();
+            String userAgent = "Java-http-client/" + System.getProperty("java.version") + ' '
+                    + "FancyModLoader/" + FMLVersion.getVersion() + ' '
+                    + mod.getModId() + '/' + mod.getVersion();
 
             var request = HttpRequest.newBuilder()
                     .uri(url.toURI())
@@ -162,14 +156,14 @@ public class VersionChecker {
         }
 
         private void process(IModInfo mod) {
-            Status status = PENDING;
+            Status status;
             ComparableVersion target = null;
             Map<ComparableVersion, String> changes = null;
             String display_url = null;
             try {
                 if (mod.getUpdateURL().isEmpty()) return;
                 URL url = mod.getUpdateURL().get();
-                LOGGER.info("[{}] Starting version check at {}", mod.getModId(), url.toString());
+                LOGGER.info("[{}] Starting version check at {}", mod.getModId(), url);
 
                 String data = openUrlString(url, mod);
 
