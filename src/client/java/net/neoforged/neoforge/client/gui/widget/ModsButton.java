@@ -71,7 +71,8 @@ public class ModsButton extends SpriteIconButton.CenteredIcon {
                 x + (w / 2) + 5,
                 y + (h / 2) - 13,
                 8,
-                8);
+                8,
+                this.alpha);
     }
 
     public static ModsButton create(Screen parentScreen) {
