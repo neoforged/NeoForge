@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import net.neoforged.fml.FMLVersion;
@@ -99,7 +100,11 @@ public class VersionChecker {
         }
 
         var client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(HTTP_TIMEOUT_SECS)).build();
-        Thread.ofPlatform().name("NeoForge Version Check").start(new VersionCheckRunnable(client));
+        try (var executor = Executors.newThreadPerTaskExecutor(Thread.ofVirtual().name("version-checker", 0).factory())) {
+            for (IModInfo mod : gatherMods()) {
+                executor.submit(new VersionCheckRunnable(mod, client));
+            }
+        }
     }
 
     // Gather a list of mods that have opted in to this update system by providing a URL.
@@ -120,15 +125,17 @@ public class VersionChecker {
     }
 
     private static class VersionCheckRunnable implements Runnable {
+        private final IModInfo mod;
         private final HttpClient client;
 
-        public VersionCheckRunnable(HttpClient client) {
+        public VersionCheckRunnable(IModInfo mod, HttpClient client) {
+            this.mod = mod;
             this.client = client;
         }
 
         @Override
         public void run() {
-            gatherMods().forEach(this::process);
+            this.process(mod);
         }
 
         /**
