@@ -46,6 +46,8 @@ import org.slf4j.Logger;
 public class VersionChecker {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final int HTTP_TIMEOUT_SECS = Integer.getInteger("http.timeoutSecs", 15);
+    private static final CheckResult PENDING_CHECK = new CheckResult(PENDING, null, null, null);
+    private static final Map<IModInfo, CheckResult> RESULTS = new ConcurrentHashMap<>();
 
     public enum Status {
         PENDING(),
@@ -109,11 +111,8 @@ public class VersionChecker {
         }
     }
 
-    private static final Map<IModInfo, CheckResult> results = new ConcurrentHashMap<>();
-    private static final CheckResult PENDING_CHECK = new CheckResult(PENDING, null, null, null);
-
     public static CheckResult getResult(IModInfo mod) {
-        return results.getOrDefault(mod, PENDING_CHECK);
+        return RESULTS.getOrDefault(mod, PENDING_CHECK);
     }
 
     private record VersionCheckRunnable(IModInfo mod, HttpClient client) implements Runnable {
@@ -228,7 +227,7 @@ public class VersionChecker {
                 LOGGER.warn("Failed to process update information", e);
                 status = FAILED;
             }
-            results.put(mod, new CheckResult(status, target, changes, display_url));
+            RESULTS.put(mod, new CheckResult(status, target, changes, display_url));
         }
     }
 }
