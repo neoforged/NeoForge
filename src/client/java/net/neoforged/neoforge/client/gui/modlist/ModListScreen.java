@@ -665,7 +665,7 @@ public class ModListScreen extends Screen {
             if (checkResult != null) {
                 this.newerVersionWidget.setMessage(Component.translatable(
                         "neoforge.screen.mods.info.update",
-                        Component.literal(checkResult.target().toString())
+                        Component.literal(Objects.toString(checkResult.target()))
                                 .withStyle(style -> style.withItalic(false)))
                         .withStyle(style -> style.withItalic(true)));
                 this.newerVersionWidget.visible = true;

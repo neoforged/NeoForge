@@ -37,11 +37,9 @@ import org.slf4j.Logger;
 public class VersionChecker {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final int HTTP_TIMEOUT_SECS = Integer.getInteger("http.timeoutSecs", 15);
-    private static final CheckResult PENDING_CHECK = new CheckResult(Status.PENDING, null, null, null);
     private static final Map<IModInfo, CheckResult> RESULTS = new ConcurrentHashMap<>();
 
     public enum Status {
-        PENDING(),
         FAILED(),
         UP_TO_DATE(),
         OUTDATED(true),
@@ -91,8 +89,8 @@ public class VersionChecker {
         return FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.VERSION_CHECK);
     }
 
-    public static CheckResult getResult(IModInfo mod) {
-        return RESULTS.getOrDefault(mod, PENDING_CHECK);
+    public static @Nullable CheckResult getResult(IModInfo mod) {
+        return RESULTS.get(mod);
     }
 
     private record VersionCheckRunnable(IModInfo mod, HttpClient client) implements Runnable {
@@ -136,7 +134,7 @@ public class VersionChecker {
                 LOGGER.debug("[{}] Received version check data from {}", mod.getModId(), response.uri());
 
                 JsonObject json = new Gson().fromJson(data, JsonObject.class);
-                display_url = json.get("homepage").getAsString();
+                display_url = json.has("homepage") ? json.get("homepage").getAsString() : null;
                 JsonObject promos = json.getAsJsonObject("promos");
 
                 var mcVersion = FMLLoader.getCurrent().getVersionInfo().mcVersion();
