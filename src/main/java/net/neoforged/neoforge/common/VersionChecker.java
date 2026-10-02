@@ -125,10 +125,9 @@ public class VersionChecker {
                 boolean isGzipEncoded = response.headers().firstValue("Content-Encoding").orElse("").equals("gzip");
 
                 String data;
-                try (InputStream inStream = isGzipEncoded ? new GZIPInputStream(response.body()) : response.body()) {
-                    try (var bufferedReader = new BufferedReader(new InputStreamReader(inStream))) {
-                        data = bufferedReader.lines().collect(Collectors.joining("\n"));
-                    }
+                try (var stream = isGzipEncoded ? new GZIPInputStream(response.body()) : response.body();
+                        var bufferedReader = new BufferedReader(new InputStreamReader(stream))) {
+                    data = bufferedReader.lines().collect(Collectors.joining("\n"));
                 }
 
                 LOGGER.debug("[{}] Received version check data from {}", mod.getModId(), response.uri());
