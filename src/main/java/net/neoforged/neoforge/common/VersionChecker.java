@@ -131,6 +131,7 @@ public class VersionChecker {
         private String openUrlString(URL url, IModInfo mod) throws IOException, URISyntaxException, InterruptedException {
             String userAgent = "Java-http-client/" + System.getProperty("java.version") + ' '
                     + "FancyModLoader/" + FMLVersion.getVersion() + ' '
+                    + "NeoForge/" + NeoForgeVersion.getVersion() + ' '
                     + mod.getModId() + '/' + mod.getVersion();
 
             var request = HttpRequest.newBuilder()
