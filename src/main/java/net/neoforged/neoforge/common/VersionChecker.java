@@ -14,6 +14,7 @@ import static net.neoforged.neoforge.common.VersionChecker.Status.PENDING;
 import static net.neoforged.neoforge.common.VersionChecker.Status.UP_TO_DATE;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -157,15 +158,13 @@ public class VersionChecker {
 
                 LOGGER.debug("[{}] Received version check data from {}", mod.getModId(), response.uri());
 
-                @SuppressWarnings("unchecked")
-                Map<String, Object> json = new Gson().fromJson(data, Map.class);
-                @SuppressWarnings("unchecked")
-                Map<String, String> promos = (Map<String, String>) json.get("promos");
-                display_url = (String) json.get("homepage");
+                JsonObject json = new Gson().fromJson(data, JsonObject.class);
+                display_url = json.get("homepage").getAsString();
+                JsonObject promos = json.getAsJsonObject("promos");
 
                 var mcVersion = FMLLoader.getCurrent().getVersionInfo().mcVersion();
-                String rec = promos.get(mcVersion + "-recommended");
-                String lat = promos.get(mcVersion + "-latest");
+                String rec = promos.get(mcVersion + "-recommended").getAsString();
+                String lat = promos.get(mcVersion + "-latest").getAsString();
                 ComparableVersion current = new ComparableVersion(mod.getVersion().toString());
 
                 if (rec != null) {
@@ -200,8 +199,7 @@ public class VersionChecker {
                 LOGGER.info("[{}] Found status: {} Current: {} Target: {}", mod.getModId(), status, current, target);
 
                 changes = new LinkedHashMap<>();
-                @SuppressWarnings("unchecked")
-                Map<String, String> tmp = (Map<String, String>) json.get(mcVersion);
+                JsonObject tmp = json.getAsJsonObject(mcVersion);
                 if (tmp != null) {
                     List<ComparableVersion> ordered = new ArrayList<>();
                     for (String key : tmp.keySet()) {
@@ -213,7 +211,7 @@ public class VersionChecker {
                     Collections.sort(ordered);
 
                     for (ComparableVersion ver : ordered) {
-                        changes.put(ver, tmp.get(ver.toString()));
+                        changes.put(ver, tmp.get(ver.toString()).getAsString());
                     }
                 }
             } catch (Exception e) {
