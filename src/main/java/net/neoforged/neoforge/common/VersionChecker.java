@@ -14,6 +14,7 @@ import static net.neoforged.neoforge.common.VersionChecker.Status.PENDING;
 import static net.neoforged.neoforge.common.VersionChecker.Status.UP_TO_DATE;
 
 import com.google.gson.Gson;
+import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,12 +39,11 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLConfig;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforgespi.language.IModInfo;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.maven.artifact.versioning.ComparableVersion;
+import org.slf4j.Logger;
 
 public class VersionChecker {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final int MAX_HTTP_REDIRECTS = Integer.getInteger("http.maxRedirects", 20);
     private static final int HTTP_TIMEOUT_SECS = Integer.getInteger("http.timeoutSecs", 15);
 
@@ -93,144 +93,7 @@ public class VersionChecker {
     public record CheckResult(VersionChecker.Status status, ComparableVersion target, Map<ComparableVersion, String> changes, String url) {}
 
     public static void startVersionCheck() {
-        new Thread("NeoForge Version Check") {
-            private HttpClient client;
-
-            @Override
-            public void run() {
-                if (!FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.VERSION_CHECK)) {
-                    LOGGER.info("Global NeoForge version check system disabled, no further processing.");
-                    return;
-                }
-
-                client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(HTTP_TIMEOUT_SECS)).build();
-                gatherMods().forEach(this::process);
-            }
-
-            /**
-             * Returns the response body as a String for the given URL while following redirects
-             */
-            private String openUrlString(URL url, IModInfo mod) throws IOException, URISyntaxException, InterruptedException {
-                URL currentUrl = url;
-
-                StringBuilder sb = new StringBuilder();
-                sb.append("Java-http-client/").append(System.getProperty("java.version")).append(' ');
-                sb.append("FancyModLoader/").append(FMLVersion.getVersion()).append(' ');
-                sb.append(mod.getModId()).append('/').append(mod.getVersion());
-                String userAgent = sb.toString();
-
-                for (int redirects = 0; redirects < MAX_HTTP_REDIRECTS; redirects++) {
-                    var request = HttpRequest.newBuilder()
-                            .uri(currentUrl.toURI())
-                            .timeout(Duration.ofSeconds(HTTP_TIMEOUT_SECS))
-                            .setHeader("Accept-Encoding", "gzip")
-                            .setHeader("User-Agent", userAgent)
-                            .GET()
-                            .build();
-
-                    HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
-
-                    int responseCode = response.statusCode();
-                    if (responseCode >= 300 && responseCode <= 399) {
-                        String newLocation = response.headers().firstValue("Location")
-                                .orElseThrow(() -> new IOException("Got a 3xx response code but Location header was null while trying to fetch " + url));
-                        currentUrl = new URL(currentUrl, newLocation);
-                        continue;
-                    }
-
-                    boolean isGzipEncoded = response.headers().firstValue("Content-Encoding").orElse("").equals("gzip");
-
-                    String bodyStr;
-                    try (InputStream inStream = isGzipEncoded ? new GZIPInputStream(response.body()) : response.body()) {
-                        try (var bufferedReader = new BufferedReader(new InputStreamReader(inStream))) {
-                            bodyStr = bufferedReader.lines().collect(Collectors.joining("\n"));
-                        }
-                    }
-                    return bodyStr;
-                }
-                throw new IOException("Too many redirects while trying to fetch " + url);
-            }
-
-            private void process(IModInfo mod) {
-                Status status = PENDING;
-                ComparableVersion target = null;
-                Map<ComparableVersion, String> changes = null;
-                String display_url = null;
-                try {
-                    if (mod.getUpdateURL().isEmpty()) return;
-                    URL url = mod.getUpdateURL().get();
-                    LOGGER.info("[{}] Starting version check at {}", mod.getModId(), url.toString());
-
-                    String data = openUrlString(url, mod);
-
-                    LOGGER.debug("[{}] Received version check data:\n{}", mod.getModId(), data);
-
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> json = new Gson().fromJson(data, Map.class);
-                    @SuppressWarnings("unchecked")
-                    Map<String, String> promos = (Map<String, String>) json.get("promos");
-                    display_url = (String) json.get("homepage");
-
-                    var mcVersion = FMLLoader.getCurrent().getVersionInfo().mcVersion();
-                    String rec = promos.get(mcVersion + "-recommended");
-                    String lat = promos.get(mcVersion + "-latest");
-                    ComparableVersion current = new ComparableVersion(mod.getVersion().toString());
-
-                    if (rec != null) {
-                        ComparableVersion recommended = new ComparableVersion(rec);
-                        int diff = recommended.compareTo(current);
-
-                        if (diff == 0)
-                            status = UP_TO_DATE;
-                        else if (diff < 0) {
-                            status = AHEAD;
-                            if (lat != null) {
-                                ComparableVersion latest = new ComparableVersion(lat);
-                                if (current.compareTo(latest) < 0) {
-                                    status = OUTDATED;
-                                    target = latest;
-                                }
-                            }
-                        } else {
-                            status = OUTDATED;
-                            target = recommended;
-                        }
-                    } else if (lat != null) {
-                        ComparableVersion latest = new ComparableVersion(lat);
-                        if (current.compareTo(latest) < 0)
-                            status = BETA_OUTDATED;
-                        else
-                            status = BETA;
-                        target = latest;
-                    } else
-                        status = BETA;
-
-                    LOGGER.info("[{}] Found status: {} Current: {} Target: {}", mod.getModId(), status, current, target);
-
-                    changes = new LinkedHashMap<>();
-                    @SuppressWarnings("unchecked")
-                    Map<String, String> tmp = (Map<String, String>) json.get(mcVersion);
-                    if (tmp != null) {
-                        List<ComparableVersion> ordered = new ArrayList<>();
-                        for (String key : tmp.keySet()) {
-                            ComparableVersion ver = new ComparableVersion(key);
-                            if (ver.compareTo(current) > 0 && (target == null || ver.compareTo(target) < 1)) {
-                                ordered.add(ver);
-                            }
-                        }
-                        Collections.sort(ordered);
-
-                        for (ComparableVersion ver : ordered) {
-                            changes.put(ver, tmp.get(ver.toString()));
-                        }
-                    }
-                } catch (Exception e) {
-                    LOGGER.warn("Failed to process update information", e);
-                    status = FAILED;
-                }
-                results.put(mod, new CheckResult(status, target, changes, display_url));
-            }
-        }.start();
+        Thread.ofPlatform().name("NeoForge Version Check").start(new VersionCheckRunnable());
     }
 
     // Gather a list of mods that have opted in to this update system by providing a URL.
@@ -248,5 +111,144 @@ public class VersionChecker {
 
     public static CheckResult getResult(IModInfo mod) {
         return results.getOrDefault(mod, PENDING_CHECK);
+    }
+
+    private static class VersionCheckRunnable implements Runnable {
+        private HttpClient client;
+
+        @Override
+        public void run() {
+            if (!FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.VERSION_CHECK)) {
+                LOGGER.info("Global NeoForge version check system disabled, no further processing.");
+                return;
+            }
+
+            client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(HTTP_TIMEOUT_SECS)).build();
+            gatherMods().forEach(this::process);
+        }
+
+        /**
+         * Returns the response body as a String for the given URL while following redirects
+         */
+        private String openUrlString(URL url, IModInfo mod) throws IOException, URISyntaxException, InterruptedException {
+            URL currentUrl = url;
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("Java-http-client/").append(System.getProperty("java.version")).append(' ');
+            sb.append("FancyModLoader/").append(FMLVersion.getVersion()).append(' ');
+            sb.append(mod.getModId()).append('/').append(mod.getVersion());
+            String userAgent = sb.toString();
+
+            for (int redirects = 0; redirects < MAX_HTTP_REDIRECTS; redirects++) {
+                var request = HttpRequest.newBuilder()
+                        .uri(currentUrl.toURI())
+                        .timeout(Duration.ofSeconds(HTTP_TIMEOUT_SECS))
+                        .setHeader("Accept-Encoding", "gzip")
+                        .setHeader("User-Agent", userAgent)
+                        .GET()
+                        .build();
+
+                HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+
+                int responseCode = response.statusCode();
+                if (responseCode >= 300 && responseCode <= 399) {
+                    String newLocation = response.headers().firstValue("Location")
+                            .orElseThrow(() -> new IOException("Got a 3xx response code but Location header was null while trying to fetch " + url));
+                    currentUrl = new URL(currentUrl, newLocation);
+                    continue;
+                }
+
+                boolean isGzipEncoded = response.headers().firstValue("Content-Encoding").orElse("").equals("gzip");
+
+                String bodyStr;
+                try (InputStream inStream = isGzipEncoded ? new GZIPInputStream(response.body()) : response.body()) {
+                    try (var bufferedReader = new BufferedReader(new InputStreamReader(inStream))) {
+                        bodyStr = bufferedReader.lines().collect(Collectors.joining("\n"));
+                    }
+                }
+                return bodyStr;
+            }
+            throw new IOException("Too many redirects while trying to fetch " + url);
+        }
+
+        private void process(IModInfo mod) {
+            Status status = PENDING;
+            ComparableVersion target = null;
+            Map<ComparableVersion, String> changes = null;
+            String display_url = null;
+            try {
+                if (mod.getUpdateURL().isEmpty()) return;
+                URL url = mod.getUpdateURL().get();
+                LOGGER.info("[{}] Starting version check at {}", mod.getModId(), url.toString());
+
+                String data = openUrlString(url, mod);
+
+                LOGGER.debug("[{}] Received version check data:\n{}", mod.getModId(), data);
+
+                @SuppressWarnings("unchecked")
+                Map<String, Object> json = new Gson().fromJson(data, Map.class);
+                @SuppressWarnings("unchecked")
+                Map<String, String> promos = (Map<String, String>) json.get("promos");
+                display_url = (String) json.get("homepage");
+
+                var mcVersion = FMLLoader.getCurrent().getVersionInfo().mcVersion();
+                String rec = promos.get(mcVersion + "-recommended");
+                String lat = promos.get(mcVersion + "-latest");
+                ComparableVersion current = new ComparableVersion(mod.getVersion().toString());
+
+                if (rec != null) {
+                    ComparableVersion recommended = new ComparableVersion(rec);
+                    int diff = recommended.compareTo(current);
+
+                    if (diff == 0)
+                        status = UP_TO_DATE;
+                    else if (diff < 0) {
+                        status = AHEAD;
+                        if (lat != null) {
+                            ComparableVersion latest = new ComparableVersion(lat);
+                            if (current.compareTo(latest) < 0) {
+                                status = OUTDATED;
+                                target = latest;
+                            }
+                        }
+                    } else {
+                        status = OUTDATED;
+                        target = recommended;
+                    }
+                } else if (lat != null) {
+                    ComparableVersion latest = new ComparableVersion(lat);
+                    if (current.compareTo(latest) < 0)
+                        status = BETA_OUTDATED;
+                    else
+                        status = BETA;
+                    target = latest;
+                } else
+                    status = BETA;
+
+                LOGGER.info("[{}] Found status: {} Current: {} Target: {}", mod.getModId(), status, current, target);
+
+                changes = new LinkedHashMap<>();
+                @SuppressWarnings("unchecked")
+                Map<String, String> tmp = (Map<String, String>) json.get(mcVersion);
+                if (tmp != null) {
+                    List<ComparableVersion> ordered = new ArrayList<>();
+                    for (String key : tmp.keySet()) {
+                        ComparableVersion ver = new ComparableVersion(key);
+                        if (ver.compareTo(current) > 0 && (target == null || ver.compareTo(target) < 1)) {
+                            ordered.add(ver);
+                        }
+                    }
+                    Collections.sort(ordered);
+
+                    for (ComparableVersion ver : ordered) {
+                        changes.put(ver, tmp.get(ver.toString()));
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.warn("Failed to process update information", e);
+                status = FAILED;
+            }
+            results.put(mod, new CheckResult(status, target, changes, display_url));
+        }
     }
 }
