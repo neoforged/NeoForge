@@ -4,7 +4,7 @@
              if (packet != null) {
                  this.broadcast(players, packet);
              }
-+            net.neoforged.neoforge.attachment.AttachmentSync.syncBlockEntityUpdates(blockEntity, players);
++            net.neoforged.neoforge.attachment.sync.AttachmentSync.syncBlockEntityUpdates(blockEntity, players);
          }
      }
  

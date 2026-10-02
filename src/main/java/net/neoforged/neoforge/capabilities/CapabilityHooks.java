@@ -8,6 +8,7 @@ package net.neoforged.neoforge.capabilities;
 import java.util.List;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -22,6 +23,8 @@ import net.minecraft.world.level.block.DoubleBlockCombiner;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
+import net.neoforged.neoforge.attachment.capability.AttachmentCapabilities;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
@@ -178,6 +181,18 @@ public class CapabilityHooks {
                 Items.RED_BUNDLE,
                 Items.WHITE_BUNDLE,
                 Items.YELLOW_BUNDLE);
+    }
+
+    public static void registerVanillaAttachmentHosts(RegisterCapabilitiesEvent event) {
+        event.registerAttachment(MinecraftServer.class, AttachmentCapabilities.ATTACHMENT_HOLDER, s -> s);
+        event.registerAttachment(MinecraftServer.class, AttachmentCapabilities.DATA_STORAGE, s -> s);
+        event.registerAttachment(MinecraftServer.class, AttachmentCapabilities.PERSISTENCE, IAttachmentHolder::attachmentPersistenceHandler);
+        event.registerAttachment(MinecraftServer.class, AttachmentCapabilities.SYNC, IAttachmentHolder::attachmentSyncHandler);
+
+        event.registerAttachment(ServerLevel.class, AttachmentCapabilities.ATTACHMENT_HOLDER, s -> s);
+        event.registerAttachment(ServerLevel.class, AttachmentCapabilities.DATA_STORAGE, s -> s);
+        event.registerAttachment(ServerLevel.class, AttachmentCapabilities.PERSISTENCE, IAttachmentHolder::attachmentPersistenceHandler);
+        event.registerAttachment(ServerLevel.class, AttachmentCapabilities.SYNC, IAttachmentHolder::attachmentSyncHandler);
     }
 
     public static void registerFallbackVanillaProviders(RegisterCapabilitiesEvent event) {

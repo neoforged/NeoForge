@@ -245,7 +245,7 @@
              return configureRepositoryWithSelection(packRepository, selected, forcedFeatures, true);
          }
      }
-@@ -1845,6 +_,31 @@
+@@ -1845,6 +_,43 @@
  
      public abstract boolean isSingleplayerOwner(NameAndId nameAndId);
  
@@ -272,6 +272,18 @@
 +        worldArray = this.levels.values().stream().toArray(x -> new ServerLevel[x]);
 +        worldArrayLast = worldArrayMarker;
 +        return worldArray;
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    private final net.neoforged.neoforge.attachment.vanilla.ServerAttachmentHolder attachments = new net.neoforged.neoforge.attachment.vanilla.ServerAttachmentHolder(this);
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public net.neoforged.neoforge.attachment.IAttachmentHolder getAttachmentHolder() {
++        return attachments;
++    }
++
++    @Override
++    public net.neoforged.neoforge.attachment.storage.AttachmentDataStorage attachmentDataStorage() {
++        return attachments;
 +    }
 +
      public void dumpServerProperties(Path path) throws IOException {

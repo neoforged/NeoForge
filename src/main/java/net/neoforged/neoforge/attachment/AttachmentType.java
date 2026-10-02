@@ -28,8 +28,10 @@ import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.attachment.sync.AttachmentSyncHandler;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -57,13 +59,14 @@ import org.jspecify.annotations.Nullable;
  * </ul>
  */
 public final class AttachmentType<T> {
-    final Function<IAttachmentHolder, T> defaultValueSupplier;
+    @ApiStatus.Internal
+    public final Function<IAttachmentHolder, T> defaultValueSupplier;
     @Nullable
     final IAttachmentSerializer<T> serializer;
     final boolean copyOnDeath;
     final IAttachmentCopyHandler<T> copyHandler;
     @Nullable
-    AttachmentSyncHandler<T> syncHandler;
+    public final AttachmentSyncHandler<T> syncHandler;
 
     private AttachmentType(Builder<T> builder) {
         this.defaultValueSupplier = builder.defaultValueSupplier;
@@ -71,6 +74,14 @@ public final class AttachmentType<T> {
         this.copyOnDeath = builder.copyOnDeath;
         this.copyHandler = builder.copyHandler != null ? builder.copyHandler : defaultCopyHandler(serializer);
         this.syncHandler = builder.syncHandler;
+    }
+
+    public Optional<IAttachmentSerializer<T>> serializer() {
+        return Optional.ofNullable(this.serializer);
+    }
+
+    public Optional<AttachmentSyncHandler<T>> syncHandler() {
+        return Optional.ofNullable(this.syncHandler);
     }
 
     private static <T> IAttachmentCopyHandler<T> defaultCopyHandler(@Nullable IAttachmentSerializer<T> serializer) {
@@ -158,6 +169,11 @@ public final class AttachmentType<T> {
                 return true;
             }
         });
+    }
+
+    @SuppressWarnings("unchecked")
+    public T cast(Object result) {
+        return (T) result;
     }
 
     public static class Builder<T> {
