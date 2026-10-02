@@ -91,7 +91,7 @@ public class VersionChecker {
     public record CheckResult(VersionChecker.Status status, @Nullable ComparableVersion target, @Nullable Map<ComparableVersion, String> changes, @Nullable String url) {}
 
     public static void startVersionCheck() {
-        if (!FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.VERSION_CHECK)) {
+        if (!isEnabled()) {
             LOGGER.info("Global NeoForge version check system disabled, no further processing.");
             return;
         }
@@ -109,6 +109,10 @@ public class VersionChecker {
                 executor.submit(new VersionCheckRunnable(mod, client));
             }
         }
+    }
+
+    public static boolean isEnabled() {
+        return FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.VERSION_CHECK);
     }
 
     public static CheckResult getResult(IModInfo mod) {
