@@ -28,7 +28,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -95,22 +94,19 @@ public class VersionChecker {
             return;
         }
 
+        // Collect mods which are opted-in to the update checker
+        var mods = new ArrayList<IModInfo>();
+        for (IModInfo info : ModList.get().getMods()) {
+            if (info.getUpdateURL().isPresent())
+                mods.add(info);
+        }
+
         var client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).connectTimeout(Duration.ofSeconds(HTTP_TIMEOUT_SECS)).build();
         try (var executor = Executors.newThreadPerTaskExecutor(Thread.ofVirtual().name("version-checker", 0).factory())) {
-            for (IModInfo mod : gatherMods()) {
+            for (IModInfo mod : mods) {
                 executor.submit(new VersionCheckRunnable(mod, client));
             }
         }
-    }
-
-    // Gather a list of mods that have opted in to this update system by providing a URL.
-    private static List<IModInfo> gatherMods() {
-        List<IModInfo> ret = new LinkedList<>();
-        for (IModInfo info : ModList.get().getMods()) {
-            if (info.getUpdateURL().isPresent())
-                ret.add(info);
-        }
-        return ret;
     }
 
     private static final Map<IModInfo, CheckResult> results = new ConcurrentHashMap<>();
