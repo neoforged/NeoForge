@@ -14,6 +14,9 @@ import net.minecraft.resources.RegistryValidator;
 import net.minecraft.resources.ResourceKey;
 import org.jspecify.annotations.Nullable;
 
+/// Builder for world and reloadable datapack registries.
+///
+/// At least a registry key and a [loading codec][#codec(Codec)] are required to create a dapatack registry.
 public final class DatapackRegistryBuilder<T> {
     private final boolean reloadable;
     @Nullable
@@ -30,6 +33,7 @@ public final class DatapackRegistryBuilder<T> {
     }
 
     /// Specify the root registry key of the new datapack registry.
+    /// This property is required in order to create the registry.
     ///
     /// @param key The key of the registry
     /// @return this builder
@@ -39,6 +43,7 @@ public final class DatapackRegistryBuilder<T> {
     }
 
     /// Specify the codec to be used for loading data from datapacks on servers.
+    /// This property is required in order to create the registry.
     ///
     /// @param codec The codec to use
     /// @return this builder
@@ -55,7 +60,7 @@ public final class DatapackRegistryBuilder<T> {
     ///
     /// @param networkCodec The network codec to use
     /// @return this builder
-    /// @throws IllegalArgumentException if this builder is for a reloadable datapack registry, which do not support syncing
+    /// @throws IllegalArgumentException if this builder is for a reloadable datapack registry, which does not support syncing
     public DatapackRegistryBuilder<T> networkCodec(Codec<T> networkCodec) {
         if (this.reloadable) {
             throw new IllegalArgumentException("Reloadable datapack registries cannot be synced");

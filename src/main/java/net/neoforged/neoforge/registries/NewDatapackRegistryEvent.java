@@ -73,6 +73,7 @@ public final class NewDatapackRegistryEvent extends Event implements IModBusEven
 
     /// Registers a world datapack registry as configured by the builder given to the provided consumer, which will cause data to be loaded from
     /// a datapack folder based on the registry's name.
+    /// At least a registry key and a [loading codec][DatapackRegistryBuilder#codec(Codec)] are required to create the registry.
     ///
     /// Data JSONs will be loaded from `data/<datapack_namespace>/modid/registryname/`, where `modid` is the namespace of the registry key.
     ///
@@ -103,6 +104,7 @@ public final class NewDatapackRegistryEvent extends Event implements IModBusEven
 
     /// Registers a reloadable datapack registry as configured by the builder given to the provided consumer, which will cause data to be loaded from
     /// a datapack folder based on the registry's name.
+    /// At least a registry key and a [loading codec][DatapackRegistryBuilder#codec(Codec)] are required to create the registry.
     ///
     /// Data JSONs will be loaded from `data/<datapack_namespace>/modid/registryname/`, where `modid` is the namespace of the registry key.
     ///
