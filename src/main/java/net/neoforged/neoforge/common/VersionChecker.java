@@ -155,7 +155,7 @@ public class VersionChecker {
                     }
                 }
 
-                LOGGER.debug("[{}] Received version check data", mod.getModId());
+                LOGGER.debug("[{}] Received version check data from {}", mod.getModId(), response.uri());
 
                 @SuppressWarnings("unchecked")
                 Map<String, Object> json = new Gson().fromJson(data, Map.class);
