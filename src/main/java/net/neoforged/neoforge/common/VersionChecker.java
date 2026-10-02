@@ -5,14 +5,6 @@
 
 package net.neoforged.neoforge.common;
 
-import static net.neoforged.neoforge.common.VersionChecker.Status.AHEAD;
-import static net.neoforged.neoforge.common.VersionChecker.Status.BETA;
-import static net.neoforged.neoforge.common.VersionChecker.Status.BETA_OUTDATED;
-import static net.neoforged.neoforge.common.VersionChecker.Status.FAILED;
-import static net.neoforged.neoforge.common.VersionChecker.Status.OUTDATED;
-import static net.neoforged.neoforge.common.VersionChecker.Status.PENDING;
-import static net.neoforged.neoforge.common.VersionChecker.Status.UP_TO_DATE;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
@@ -45,7 +37,7 @@ import org.slf4j.Logger;
 public class VersionChecker {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final int HTTP_TIMEOUT_SECS = Integer.getInteger("http.timeoutSecs", 15);
-    private static final CheckResult PENDING_CHECK = new CheckResult(PENDING, null, null, null);
+    private static final CheckResult PENDING_CHECK = new CheckResult(Status.PENDING, null, null, null);
     private static final Map<IModInfo, CheckResult> RESULTS = new ConcurrentHashMap<>();
 
     public enum Status {
@@ -172,29 +164,29 @@ public class VersionChecker {
                     int diff = recommended.compareTo(current);
 
                     if (diff == 0)
-                        status = UP_TO_DATE;
+                        status = Status.UP_TO_DATE;
                     else if (diff < 0) {
-                        status = AHEAD;
+                        status = Status.AHEAD;
                         if (lat != null) {
                             ComparableVersion latest = new ComparableVersion(lat);
                             if (current.compareTo(latest) < 0) {
-                                status = OUTDATED;
+                                status = Status.OUTDATED;
                                 target = latest;
                             }
                         }
                     } else {
-                        status = OUTDATED;
+                        status = Status.OUTDATED;
                         target = recommended;
                     }
                 } else if (lat != null) {
                     ComparableVersion latest = new ComparableVersion(lat);
                     if (current.compareTo(latest) < 0)
-                        status = BETA_OUTDATED;
+                        status = Status.BETA_OUTDATED;
                     else
-                        status = BETA;
+                        status = Status.BETA;
                     target = latest;
                 } else
-                    status = BETA;
+                    status = Status.BETA;
 
                 LOGGER.info("[{}] Found status: {} Current: {} Target: {}", mod.getModId(), status, current, target);
 
@@ -216,7 +208,7 @@ public class VersionChecker {
                 }
             } catch (Exception e) {
                 LOGGER.warn("[{}] Failed to process update information", mod.getModId(), e);
-                status = FAILED;
+                status = Status.FAILED;
             }
             RESULTS.put(mod, new CheckResult(status, target, changes, display_url));
         }
