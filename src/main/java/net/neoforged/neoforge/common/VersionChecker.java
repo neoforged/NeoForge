@@ -132,10 +132,7 @@ public class VersionChecker {
                     + mod.getModId() + '/' + mod.getVersion();
         }
 
-        /**
-         * Returns the response body as a String for the given URL while following redirects
-         */
-        private String openUrlString(URL url) throws IOException, URISyntaxException, InterruptedException {
+        private String fetchData(URL url) throws IOException, URISyntaxException, InterruptedException {
             var request = HttpRequest.newBuilder()
                     .uri(url.toURI())
                     .timeout(Duration.ofSeconds(HTTP_TIMEOUT_SECS))
@@ -167,7 +164,7 @@ public class VersionChecker {
                 URL url = mod.getUpdateURL().get();
                 LOGGER.info("[{}] Starting version check at {}", mod.getModId(), url);
 
-                String data = openUrlString(url);
+                String data = fetchData(url);
 
                 LOGGER.debug("[{}] Received version check data:\n{}", mod.getModId(), data);
 
