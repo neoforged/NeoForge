@@ -124,15 +124,7 @@ public class VersionChecker {
         return results.getOrDefault(mod, PENDING_CHECK);
     }
 
-    private static class VersionCheckRunnable implements Runnable {
-        private final IModInfo mod;
-        private final HttpClient client;
-
-        public VersionCheckRunnable(IModInfo mod, HttpClient client) {
-            this.mod = mod;
-            this.client = client;
-        }
-
+    private record VersionCheckRunnable(IModInfo mod, HttpClient client) implements Runnable {
         @Override
         public void run() {
             this.process(mod);
