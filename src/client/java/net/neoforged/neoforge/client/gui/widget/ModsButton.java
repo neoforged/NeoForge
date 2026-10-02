@@ -27,7 +27,7 @@ import org.jspecify.annotations.Nullable;
  */
 @ApiStatus.Internal
 public class ModsButton extends SpriteIconButton.CenteredIcon {
-    private static final Identifier VERSION_CHECK_ICONS = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "textures/gui/version_check_icons.png");
+    private static final Identifier UPDATE_INDICATOR_ICON = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "update_indicator");
 
     private VersionChecker.@Nullable Status showNotification;
     private boolean hasCheckedForUpdates = false;
@@ -66,17 +66,12 @@ public class ModsButton extends SpriteIconButton.CenteredIcon {
         int w = getWidth();
         int h = getHeight();
 
-        guiGraphics.blit(
-                RenderPipelines.GUI_TEXTURED,
-                VERSION_CHECK_ICONS,
+        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED,
+                UPDATE_INDICATOR_ICON,
                 x + (w / 2) + 5,
                 y + (h / 2) - 13,
-                showNotification.getSheetOffset() * 8,
-                (showNotification.isAnimated() && ((System.currentTimeMillis() / 800 & 1) == 1)) ? 8 : 0,
                 8,
-                8,
-                64,
-                16);
+                8);
     }
 
     public static ModsButton create(Screen parentScreen) {

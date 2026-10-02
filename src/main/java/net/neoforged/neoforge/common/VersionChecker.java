@@ -44,38 +44,23 @@ public class VersionChecker {
         PENDING(),
         FAILED(),
         UP_TO_DATE(),
-        OUTDATED(3, true),
+        OUTDATED(true),
         AHEAD(),
         BETA(),
-        BETA_OUTDATED(6, true);
+        BETA_OUTDATED(true);
 
-        final int sheetOffset;
-        final boolean draw, animated;
+        final boolean draw;
+
+        Status(boolean draw) {
+            this.draw = draw;
+        }
 
         Status() {
-            this(0, false, false);
-        }
-
-        Status(int sheetOffset, boolean animated) {
-            this(sheetOffset, true, animated);
-        }
-
-        Status(int sheetOffset, boolean draw, boolean animated) {
-            this.sheetOffset = sheetOffset;
-            this.draw = draw;
-            this.animated = animated;
-        }
-
-        public int getSheetOffset() {
-            return sheetOffset;
+            this(false);
         }
 
         public boolean shouldDraw() {
             return draw;
-        }
-
-        public boolean isAnimated() {
-            return animated;
         }
     }
 

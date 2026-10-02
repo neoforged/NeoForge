@@ -358,7 +358,7 @@ public class ModListScreen extends Screen {
         }
 
         class Entry extends ObjectSelectionList.Entry<ModsList.Entry> {
-            private static final Identifier VERSION_CHECK_ICONS = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "textures/gui/version_check_icons.png");
+            private static final Identifier UPDATE_INDICATOR_ICON = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "update_indicator");
             final VersionChecker.@Nullable CheckResult checkResult;
             final ModDisplayInfo displayInfo;
             @Nullable
@@ -392,17 +392,12 @@ public class ModListScreen extends Screen {
                 int maxTextWidth = getRowWidth() - textLeft + left - 4;
 
                 if (checkResult != null && checkResult.status().shouldDraw() && FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.VERSION_CHECK)) {
-                    graphics.blit(
-                            RenderPipelines.GUI_TEXTURED,
-                            VERSION_CHECK_ICONS,
+                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED,
+                            UPDATE_INDICATOR_ICON,
                             this.getContentRight() - 10,
                             this.getContentYMiddle() - (8 / 2),
-                            checkResult.status().getSheetOffset() * 8,
-                            (checkResult.status().isAnimated() && ((System.currentTimeMillis() / 800 & 1) == 1)) ? 8 : 0,
                             8,
-                            8,
-                            64,
-                            16);
+                            8);
                     maxTextWidth -= 14;
                 }
 
