@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/component/BlockTransformer.java
 +++ b/net/minecraft/core/component/BlockTransformer.java
-@@ -53,6 +_,10 @@
+@@ -53,6 +_,13 @@
      public static final StreamCodec<RegistryFriendlyByteBuf, Holder<BlockTransformer>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.BLOCK_TRANSFORMER);
  
      public InteractionResult transformBlock(UseOnContext context) {
@@ -8,6 +8,9 @@
 +    }
 +
 +    public InteractionResult transformBlock(UseOnContext context, @Nullable Holder<BlockTransformer> transformer) {
++        if (transformer != null && this != transformer.value()) {
++            throw new IllegalArgumentException("BlockTransformer#transformBlock should only be called with its own transformer");
++        }
          if (playerHasBlockingItemUseIntent(context)) {
              return InteractionResult.PASS;
          }

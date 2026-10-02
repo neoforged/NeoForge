@@ -29,7 +29,6 @@ import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import net.neoforged.neoforge.registries.datamaps.builtin.Oxidizable;
 import net.neoforged.neoforge.registries.datamaps.builtin.Transformable;
 import net.neoforged.neoforge.registries.datamaps.builtin.Waxable;
-import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 public class DataMapHooks {
@@ -67,7 +66,6 @@ public class DataMapHooks {
         return INVERSE_WAXABLES_DATAMAP.get(block);
     }
 
-    @ApiStatus.Internal
     public static Iterable<BlockTransformer.BlockTransformData> appendDatamapTransformers(@Nullable Holder<BlockTransformer> component, Iterable<BlockTransformer.BlockTransformData> toolTransformers) {
         List<BlockTransformer.BlockTransformData> transformerDatamapTransformers = List.of();
         List<BlockTransformer.BlockTransformData> blockDatamapTransformers = List.of();
