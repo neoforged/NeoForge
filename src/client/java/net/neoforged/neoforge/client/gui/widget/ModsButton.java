@@ -14,7 +14,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.neoforged.fml.loading.FMLConfig;
 import net.neoforged.neoforge.client.gui.modlist.ModListScreen;
 import net.neoforged.neoforge.client.loading.ClientModLoader;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -57,7 +56,7 @@ public class ModsButton extends SpriteIconButton.CenteredIcon {
             hasCheckedForUpdates = true;
         }
 
-        if (showNotification == null || !showNotification.shouldDraw() || !FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.VERSION_CHECK)) {
+        if (showNotification == null || !showNotification.shouldDraw() || !VersionChecker.isEnabled()) {
             return;
         }
 

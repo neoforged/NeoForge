@@ -70,7 +70,6 @@ import net.minecraft.util.CommonLinks;
 import net.minecraft.util.SpecialDates;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.loading.FMLConfig;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.gui.widget.BackgroundWithPipingWidget;
@@ -391,7 +390,7 @@ public class ModListScreen extends Screen {
                 }
                 int maxTextWidth = getRowWidth() - textLeft + left - 4;
 
-                if (checkResult != null && checkResult.status().shouldDraw() && FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.VERSION_CHECK)) {
+                if (checkResult != null && checkResult.status().shouldDraw() && VersionChecker.isEnabled()) {
                     graphics.blitSprite(RenderPipelines.GUI_TEXTURED,
                             UPDATE_INDICATOR_ICON,
                             this.getContentRight() - 10,
