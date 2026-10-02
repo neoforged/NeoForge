@@ -99,7 +99,7 @@ public class VersionChecker {
             return;
         }
 
-        var client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(HTTP_TIMEOUT_SECS)).build();
+        var client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).connectTimeout(Duration.ofSeconds(HTTP_TIMEOUT_SECS)).build();
         try (var executor = Executors.newThreadPerTaskExecutor(Thread.ofVirtual().name("version-checker", 0).factory())) {
             for (IModInfo mod : gatherMods()) {
                 executor.submit(new VersionCheckRunnable(mod, client));
@@ -134,44 +134,31 @@ public class VersionChecker {
          * Returns the response body as a String for the given URL while following redirects
          */
         private String openUrlString(URL url, IModInfo mod) throws IOException, URISyntaxException, InterruptedException {
-            URL currentUrl = url;
-
             StringBuilder sb = new StringBuilder();
             sb.append("Java-http-client/").append(System.getProperty("java.version")).append(' ');
             sb.append("FancyModLoader/").append(FMLVersion.getVersion()).append(' ');
             sb.append(mod.getModId()).append('/').append(mod.getVersion());
             String userAgent = sb.toString();
 
-            for (int redirects = 0; redirects < MAX_HTTP_REDIRECTS; redirects++) {
-                var request = HttpRequest.newBuilder()
-                        .uri(currentUrl.toURI())
-                        .timeout(Duration.ofSeconds(HTTP_TIMEOUT_SECS))
-                        .setHeader("Accept-Encoding", "gzip")
-                        .setHeader("User-Agent", userAgent)
-                        .GET()
-                        .build();
+            var request = HttpRequest.newBuilder()
+                    .uri(url.toURI())
+                    .timeout(Duration.ofSeconds(HTTP_TIMEOUT_SECS))
+                    .setHeader("Accept-Encoding", "gzip")
+                    .setHeader("User-Agent", userAgent)
+                    .GET()
+                    .build();
 
-                HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+            HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
 
-                int responseCode = response.statusCode();
-                if (responseCode >= 300 && responseCode <= 399) {
-                    String newLocation = response.headers().firstValue("Location")
-                            .orElseThrow(() -> new IOException("Got a 3xx response code but Location header was null while trying to fetch " + url));
-                    currentUrl = new URL(currentUrl, newLocation);
-                    continue;
+            boolean isGzipEncoded = response.headers().firstValue("Content-Encoding").orElse("").equals("gzip");
+
+            String bodyStr;
+            try (InputStream inStream = isGzipEncoded ? new GZIPInputStream(response.body()) : response.body()) {
+                try (var bufferedReader = new BufferedReader(new InputStreamReader(inStream))) {
+                    bodyStr = bufferedReader.lines().collect(Collectors.joining("\n"));
                 }
-
-                boolean isGzipEncoded = response.headers().firstValue("Content-Encoding").orElse("").equals("gzip");
-
-                String bodyStr;
-                try (InputStream inStream = isGzipEncoded ? new GZIPInputStream(response.body()) : response.body()) {
-                    try (var bufferedReader = new BufferedReader(new InputStreamReader(inStream))) {
-                        bodyStr = bufferedReader.lines().collect(Collectors.joining("\n"));
-                    }
-                }
-                return bodyStr;
             }
-            throw new IOException("Too many redirects while trying to fetch " + url);
+            return bodyStr;
         }
 
         private void process(IModInfo mod) {
