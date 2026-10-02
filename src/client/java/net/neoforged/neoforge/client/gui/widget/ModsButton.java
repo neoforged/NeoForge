@@ -14,11 +14,11 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.loading.FMLConfig;
 import net.neoforged.neoforge.client.gui.modlist.ModListScreen;
 import net.neoforged.neoforge.client.loading.ClientModLoader;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.VersionChecker;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
