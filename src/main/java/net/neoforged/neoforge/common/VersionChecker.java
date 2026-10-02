@@ -93,7 +93,13 @@ public class VersionChecker {
     public record CheckResult(VersionChecker.Status status, ComparableVersion target, Map<ComparableVersion, String> changes, String url) {}
 
     public static void startVersionCheck() {
-        Thread.ofPlatform().name("NeoForge Version Check").start(new VersionCheckRunnable());
+        if (!FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.VERSION_CHECK)) {
+            LOGGER.info("Global NeoForge version check system disabled, no further processing.");
+            return;
+        }
+
+        var client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(HTTP_TIMEOUT_SECS)).build();
+        Thread.ofPlatform().name("NeoForge Version Check").start(new VersionCheckRunnable(client));
     }
 
     // Gather a list of mods that have opted in to this update system by providing a URL.
@@ -114,16 +120,14 @@ public class VersionChecker {
     }
 
     private static class VersionCheckRunnable implements Runnable {
-        private HttpClient client;
+        private final HttpClient client;
+
+        public VersionCheckRunnable(HttpClient client) {
+            this.client = client;
+        }
 
         @Override
         public void run() {
-            if (!FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.VERSION_CHECK)) {
-                LOGGER.info("Global NeoForge version check system disabled, no further processing.");
-                return;
-            }
-
-            client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(HTTP_TIMEOUT_SECS)).build();
             gatherMods().forEach(this::process);
         }
 
