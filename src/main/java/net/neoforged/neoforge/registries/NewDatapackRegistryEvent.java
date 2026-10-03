@@ -44,6 +44,7 @@ public final class NewDatapackRegistryEvent extends Event implements IModBusEven
     /// @param registryKey The root registry key of the new datapack registry
     /// @param codec       The codec to be used for loading data from datapacks on servers
     /// @see #worldRegistry(ResourceKey, Codec, Codec)
+    /// @see #worldRegistry(Consumer)
     public <T> void worldRegistry(ResourceKey<Registry<T>> registryKey, Codec<T> codec) {
         this.worldRegistry(registryKey, codec, null);
     }
@@ -65,31 +66,26 @@ public final class NewDatapackRegistryEvent extends Event implements IModBusEven
     ///                     when joining a server that has this datapack registry/mod.
     ///                     The data will be synced using the network codec and accessible via [ClientPacketListener#registryAccess()].
     /// @see #worldRegistry(ResourceKey, Codec)
+    /// @see #worldRegistry(Consumer)
     public <T> void worldRegistry(ResourceKey<Registry<T>> registryKey, Codec<T> codec, @Nullable Codec<T> networkCodec) {
         this.worldRegistries.add(new RegistryData<>(registryKey, codec, networkCodec));
     }
 
-    /// Registers the registry key as a world datapack registry with a [RegistryBuilder] configurator, which will cause data to be loaded from
+    /// Registers a world datapack registry as configured by the builder given to the provided consumer, which will cause data to be loaded from
     /// a datapack folder based on the registry's name.
+    /// At least a registry key and a [loading codec][DatapackRegistryBuilder#codec(Codec)] are required to create the registry.
     ///
     /// Data JSONs will be loaded from `data/<datapack_namespace>/modid/registryname/`, where `modid` is the namespace of the registry key.
     ///
     /// World registries are only loaded once during server startup.
     ///
-    /// @param registryKey  The root registry key of the new datapack registry
-    /// @param codec        The codec to be used for loading data from datapacks on servers
-    /// @param networkCodec The codec to be used for syncing loaded data to clients.
-    ///                     If `networkCodec` is null, data will not be synced, and clients are not required to have this
-    ///                     datapack registry to join a server.
-    ///
-    ///                     If `networkCodec` is not null, clients must have this datapack registry/mod
-    ///                     when joining a server that has this datapack registry/mod.
-    ///                     The data will be synced using the network codec and accessible via [ClientPacketListener#registryAccess()].
-    /// @param consumer     A consumer that configures the provided RegistryBuilder
+    /// @param builderConsumer A consumer that configures the provided [DatapackRegistryBuilder]
     /// @see #worldRegistry(ResourceKey, Codec)
     /// @see #worldRegistry(ResourceKey, Codec, Codec)
-    public <T> void worldRegistry(ResourceKey<Registry<T>> registryKey, Codec<T> codec, @Nullable Codec<T> networkCodec, Consumer<RegistryBuilder<T>> consumer) {
-        this.worldRegistries.add(new RegistryData<>(registryKey, codec, networkCodec, consumer));
+    public <T> void worldRegistry(Consumer<DatapackRegistryBuilder<T>> builderConsumer) {
+        DatapackRegistryBuilder<T> builder = new DatapackRegistryBuilder<>(false);
+        builderConsumer.accept(builder);
+        this.worldRegistries.add(builder.build());
     }
 
     /// Registers the given registry key as a reloadable datapack registry, which will cause data to be loaded from
@@ -101,24 +97,25 @@ public final class NewDatapackRegistryEvent extends Event implements IModBusEven
     ///
     /// @param registryKey The root registry key of the new datapack registry
     /// @param codec       The codec to be used for loading data from datapacks on servers
-    /// @see #reloadableRegistry(ResourceKey, Codec, Consumer)
+    /// @see #reloadableRegistry(Consumer)
     public <T> void reloadableRegistry(ResourceKey<Registry<T>> registryKey, Codec<T> codec) {
         this.reloadableRegistries.add(new RegistryData<>(registryKey, codec, null));
     }
 
-    /// Registers the given registry key as a reloadable datapack registry with a [RegistryBuilder] configurator, which will cause data to be loaded from
+    /// Registers a reloadable datapack registry as configured by the builder given to the provided consumer, which will cause data to be loaded from
     /// a datapack folder based on the registry's name.
+    /// At least a registry key and a [loading codec][DatapackRegistryBuilder#codec(Codec)] are required to create the registry.
     ///
     /// Data JSONs will be loaded from `data/<datapack_namespace>/modid/registryname/`, where `modid` is the namespace of the registry key.
     ///
     /// Reloadable registries are loaded on server startup and by the `/reload` command.
     ///
-    /// @param registryKey The root registry key of the new datapack registry
-    /// @param codec       The codec to be used for loading data from datapacks on servers
-    /// @param consumer    A consumer that configures the provided RegistryBuilder
+    /// @param builderConsumer A consumer that configures the provided [DatapackRegistryBuilder]
     /// @see #reloadableRegistry(ResourceKey, Codec)
-    public <T> void reloadableRegistry(ResourceKey<Registry<T>> registryKey, Codec<T> codec, Consumer<RegistryBuilder<T>> consumer) {
-        this.reloadableRegistries.add(new RegistryData<>(registryKey, codec, null, consumer));
+    public <T> void reloadableRegistry(Consumer<DatapackRegistryBuilder<T>> builderConsumer) {
+        DatapackRegistryBuilder<T> builder = new DatapackRegistryBuilder<>(true);
+        builderConsumer.accept(builder);
+        this.reloadableRegistries.add(builder.build());
     }
 
     void process() {
@@ -133,10 +130,6 @@ public final class NewDatapackRegistryEvent extends Event implements IModBusEven
     record RegistryData<T>(RegistryDataLoader.RegistryData<T> loaderData, @Nullable Codec<T> networkCodec) {
         RegistryData(ResourceKey<Registry<T>> registryKey, Codec<T> codec, @Nullable Codec<T> networkCodec) {
             this(new RegistryDataLoader.RegistryData<>(registryKey, codec, RegistryValidator.none()), networkCodec);
-        }
-
-        RegistryData(ResourceKey<Registry<T>> registryKey, Codec<T> codec, @Nullable Codec<T> networkCodec, Consumer<RegistryBuilder<T>> consumer) {
-            this(new RegistryDataLoader.RegistryData<>(registryKey, codec, RegistryValidator.none(), consumer), networkCodec);
         }
     }
 }
