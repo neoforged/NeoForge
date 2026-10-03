@@ -67,7 +67,7 @@ public class DataMapHooks {
         return INVERSE_WAXABLES_DATAMAP.get(block);
     }
 
-    /// {@return all the block transformers (including data map) added ones for the given holder}
+    /// {@return all the block transformers (including data map added ones) for the given holder}
     public static Iterable<BlockTransformer.BlockTransformData> getAllTransformers(Holder<BlockTransformer> component) {
         return appendDatamapTransformers(component, component.value().transforms());
     }
