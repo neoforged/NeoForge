@@ -160,7 +160,7 @@
      }
  
      public boolean requiresRender(BlockState oldState, BlockState newState) {
-@@ -284,6 +_,15 @@
+@@ -284,6 +_,20 @@
  
      public Supplier<EntityModelSet> entityModels() {
          return () -> this.entityModelSet;
@@ -173,6 +173,11 @@
 +    @Nullable
 +    public <T> T getStandaloneModel(net.neoforged.neoforge.client.model.standalone.StandaloneModelKey<T> modelKey) {
 +        return this.bakedStandaloneModels.get(modelKey);
++    }
++
++    /// Neo: {@return the baked missing models}
++    public ModelBakery.MissingModels getMissingModels() {
++        return this.missingModels;
      }
  
      private record ReloadState(
