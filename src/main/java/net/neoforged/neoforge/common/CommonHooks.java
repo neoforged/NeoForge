@@ -1877,7 +1877,7 @@ public class CommonHooks {
                 if (output.getConnectionType().isOther()) {
                     List<ItemAttributeModifiers.Entry> filteredModifiers = new ArrayList<>(modifiers.size());
                     for (ItemAttributeModifiers.Entry entry : modifiers) {
-                        if (entry.attribute().getKey().identifier().getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
+                        if (entry.attribute().key().identifier().getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
                             filteredModifiers.add(entry);
                         }
                     }

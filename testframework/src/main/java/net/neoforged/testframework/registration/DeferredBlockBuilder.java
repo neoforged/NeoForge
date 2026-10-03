@@ -107,7 +107,7 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
 
             @Override
             protected Stream<? extends Holder<Item>> getKnownItems() {
-                return hasItem ? Stream.of(helper.items().createHolder(Registries.ITEM, key.identifier())) : Stream.empty();
+                return hasItem ? Stream.of(helper.items().createHolder(Registries.ITEM, key().identifier())) : Stream.empty();
             }
 
             @Override
@@ -117,7 +117,7 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
 
             @Override
             public String getName() {
-                return key.identifier().toDebugFileName() + "-default-white-model-generator";
+                return key().identifier().toDebugFileName() + "-default-white-model-generator";
             }
         }));
         return this;
@@ -138,7 +138,7 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
         helper.eventListeners().accept((final RegisterColorHandlersEvent.BlockTintSources event) -> event.register(List.of(BlockTintSources.constant(color)), value()));
         helper.eventListeners().accept((final RegisterColorHandlersEvent.ItemTintSources event) -> {
             if (hasItem) {
-                event.register(key.identifier(), source.type());
+                event.register(key().identifier(), source.type());
             }
         });
     }

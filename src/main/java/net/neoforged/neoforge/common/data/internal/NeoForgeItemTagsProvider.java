@@ -399,7 +399,7 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
 
         public Appender add(Item... items) {
             for (Item item : items) {
-                add(BuiltInRegistries.ITEM.wrapAsHolder(item).getKey());
+                add(BuiltInRegistries.ITEM.wrapAsHolder(item).key());
             }
             return this;
         }
