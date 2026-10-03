@@ -120,6 +120,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWit
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IFluidStateExtension;
@@ -171,6 +172,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerFlyableFallEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerRespawnPositionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSetSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerSwitchHotbarSlotEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerWakeUpEvent;
 import net.neoforged.neoforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent;
@@ -650,6 +652,14 @@ public class EventHooks {
         return (NeoForge.EVENT_BUS.post(event).isCanceled() ? 0 : event.getAmount());
     }
 
+    public static boolean onSwitchHotbarSlotPre(Player player, int oldSlotIndex, int newSlotIndex) {
+        return NeoForge.EVENT_BUS.post(new PlayerSwitchHotbarSlotEvent.Pre(player, oldSlotIndex, newSlotIndex)).isCanceled();
+    }
+
+    public static void onSwitchHotbarSlotPost(Player player, int oldSlotIndex, int newSlotIndex) {
+        NeoForge.EVENT_BUS.post(new PlayerSwitchHotbarSlotEvent.Post(player, oldSlotIndex, newSlotIndex));
+    }
+
     public static boolean onPotionAttemptBrew(NonNullList<ItemStack> stacks) {
         NonNullList<ItemStack> tmp = NonNullList.withSize(stacks.size(), ItemStack.EMPTY);
         for (int x = 0; x < tmp.size(); x++)
@@ -1116,11 +1126,14 @@ public class EventHooks {
         final var searchEntries = new InsertableLinkedOpenCustomHashSet<ItemStack>(ItemStackLinkedSet.TYPE_AND_TAG);
 
         originalGenerator.accept(params, (stack, vis) -> {
+            // This should mirror the checks in CreativeModeTab.ItemDisplayBuilder#accept
             if (stack.getCount() != 1)
                 throw new IllegalArgumentException("The stack count must be 1");
 
             if (BuildCreativeModeTabContentsEvent.isParentTab(vis)) {
-                parentEntries.add(stack);
+                // TODO 26.3: Remove the dev-only check, so this runs in production as well
+                if (!parentEntries.add(stack) && !FMLEnvironment.isProduction())
+                    throw new IllegalArgumentException("Stack " + stack.getDisplayName().getString() + "has already been added to the tab " + tab.getDisplayName().getString() + " previously");
             }
 
             if (BuildCreativeModeTabContentsEvent.isSearchTab(vis)) {

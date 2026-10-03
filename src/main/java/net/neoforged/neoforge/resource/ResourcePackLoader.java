@@ -105,7 +105,7 @@ public class ResourcePackLoader {
                 continue;
             }
             var modFileInfo = modFile.getModFileInfo();
-            final String name = "mod/" + e.getKey().getModInfos().stream().map(IModInfo::getModId).collect(Collectors.joining(","));
+            final String name = getPackName(modFile);
             final String version = e.getKey().getModInfos().stream().map(IModInfo::getVersion).map(ArtifactVersion::toString).collect(Collectors.joining(","));
             final String packName = e.getKey().getFileName();
 
@@ -210,14 +210,24 @@ public class ResourcePackLoader {
                     .orElse(FeatureFlagSet.of());
 
             MetadataSectionType<OverlayMetadataSection> vanillaOverlayType = OverlayMetadataSection.forPackType(type);
-            final List<String> vanillaOverlays = Optional.ofNullable(primaryResources.getMetadataSection(vanillaOverlayType))
-                    .map(section -> section.overlaysForVersion(currentVersion))
-                    .orElse(List.of());
+            List<String> vanillaOverlays = List.of();
+            try {
+                vanillaOverlays = Optional.ofNullable(primaryResources.getMetadataSection(vanillaOverlayType))
+                        .map(section -> section.overlaysForVersion(currentVersion))
+                        .orElse(List.of());
+            } catch (JsonParseException exception) {
+                LOGGER.warn("Error reading vanilla overlays for {}, falling back to empty overlays", location.id(), exception);
+            }
 
             MetadataSectionType<OverlayMetadataSection> neoOverlayType = OverlayMetadataSection.forPackTypeNeoForge(type);
-            final List<String> neoOverlays = Optional.ofNullable(primaryResources.getMetadataSection(neoOverlayType))
-                    .map(section -> section.overlaysForVersion(currentVersion))
-                    .orElse(List.of());
+            List<String> neoOverlays = List.of();
+            try {
+                neoOverlays = Optional.ofNullable(primaryResources.getMetadataSection(neoOverlayType))
+                        .map(section -> section.overlaysForVersion(currentVersion))
+                        .orElse(List.of());
+            } catch (JsonParseException exception) {
+                LOGGER.warn("Error reading NeoForge-added overlays for {}, falling back to empty overlays", location.id(), exception);
+            }
 
             List<String> overlays = new ArrayList<>(vanillaOverlays);
             overlays.addAll(neoOverlays);
@@ -267,10 +277,14 @@ public class ResourcePackLoader {
                 .filter(packType == PackType.CLIENT_RESOURCES ? IModFileInfo::showAsResourcePack : IModFileInfo::showAsDataPack)
                 .map(IModFileInfo::getFile)
                 .filter(ResourcePackLoader::hasResourcePack)
-                .map(mf -> "mod/" + mf.getModInfos().stream().map(IModInfo::getModId).collect(Collectors.joining()))
+                .map(ResourcePackLoader::getPackName)
                 .toList());
         ids.add(packType == PackType.CLIENT_RESOURCES ? MOD_RESOURCES_ID : MOD_DATA_ID);
         return ids;
+    }
+
+    public static String getPackName(IModFile mf) {
+        return "mod/" + mf.getModInfos().stream().map(IModInfo::getModId).collect(Collectors.joining(","));
     }
 
     private static boolean hasResourcePack(IModFile mf) {

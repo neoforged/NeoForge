@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/component/BlocksAttacks.java
 +++ b/net/minecraft/world/item/component/BlocksAttacks.java
-@@ -110,14 +_,22 @@
+@@ -110,14 +_,23 @@
      }
  
      public void hurtBlockingItem(Level level, ItemStack item, LivingEntity user, InteractionHand hand, float damage) {
@@ -18,9 +18,10 @@
 -                item.hurtAndBreak(itemDamage, user, hand.asEquipmentSlot());
 +            int itemDamage = fixedDamage < 0 ? this.itemDamage.apply(damage) : fixedDamage;
 +            if (itemDamage > 0 && level instanceof ServerLevel serverLevel) {
++                ItemStack original = item.copy();
 +                item.hurtAndBreak(itemDamage, serverLevel, user, it -> {
 +                    user.onEquippedItemBroken(it, hand.asEquipmentSlot());
-+                    net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(player, player.getUseItem(), hand);
++                    net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(player, original, hand);
 +                    player.stopUsingItem(); // Neo: Fix MC-168573 ("After breaking a shield, the player's off-hand can't finish using some items")
 +                });
              }

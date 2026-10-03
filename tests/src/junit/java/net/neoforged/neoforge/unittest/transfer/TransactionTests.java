@@ -137,6 +137,163 @@ public class TransactionTests {
         }
     }
 
+    protected static class OngoingTransactionJournal extends SnapshotJournal<Void> {
+        @Override
+        protected Void createSnapshot() {
+            assertThat(isInTransaction()).isEqualTo(true);
+            return null;
+        }
+
+        @Override
+        protected void revertToSnapshot(Void snapshot) {
+            assertThat(isInTransaction()).isEqualTo(true);
+        }
+
+        @Override
+        protected void onRootCommit(Void originalState) {
+            assertThat(isInTransaction()).isEqualTo(false);
+
+            // Try transaction nested in onRootCommit as an edge case where isInTransaction() could be true momentarily
+            try (var tx = Transaction.openRoot()) {
+                assertThat(isInTransaction()).isEqualTo(false);
+                updateSnapshots(tx);
+                assertThat(isInTransaction()).isEqualTo(true);
+            }
+
+            assertThat(isInTransaction()).isEqualTo(false);
+        }
+    }
+
+    @Test
+    void testIsInTransaction() {
+        var journal = new OngoingTransactionJournal();
+
+        assertThat(journal.isInTransaction()).isEqualTo(false);
+
+        // taking part of all transactions
+        try (var tx = Transaction.openRoot()) {
+            journal.updateSnapshots(tx);
+            assertThat(journal.isInTransaction()).isEqualTo(true);
+
+            try (var tx2 = Transaction.open(tx)) {
+                journal.updateSnapshots(tx2);
+                assertThat(journal.isInTransaction()).isEqualTo(true);
+            }
+
+            assertThat(journal.isInTransaction()).isEqualTo(true);
+            tx.commit();
+            assertThat(journal.isInTransaction()).isEqualTo(false);
+        }
+
+        assertThat(journal.isInTransaction()).isEqualTo(false);
+
+        // taking part of root and somewhere downstream
+        try (var tx = Transaction.openRoot()) {
+            journal.updateSnapshots(tx);
+            assertThat(journal.isInTransaction()).isEqualTo(true);
+
+            try (var tx2 = Transaction.open(tx)) {
+                try (var tx3 = Transaction.open(tx2)) {
+                    journal.updateSnapshots(tx3);
+                    assertThat(journal.isInTransaction()).isEqualTo(true);
+                }
+
+                assertThat(journal.isInTransaction()).isEqualTo(true);
+            }
+
+            assertThat(journal.isInTransaction()).isEqualTo(true);
+            tx.commit();
+            assertThat(journal.isInTransaction()).isEqualTo(false);
+        }
+
+        assertThat(journal.isInTransaction()).isEqualTo(false);
+
+        // taking part only somewhere in downstream, with downstream getting rolled back
+        try (var tx = Transaction.openRoot()) {
+            assertThat(journal.isInTransaction()).isEqualTo(false);
+
+            try (var tx2 = Transaction.open(tx)) {
+                try (var tx3 = Transaction.open(tx2)) {
+                    journal.updateSnapshots(tx3);
+                    assertThat(journal.isInTransaction()).isEqualTo(true);
+                }
+
+                assertThat(journal.isInTransaction()).isEqualTo(false);
+            }
+
+            assertThat(journal.isInTransaction()).isEqualTo(false);
+            tx.commit();
+            assertThat(journal.isInTransaction()).isEqualTo(false);
+        }
+
+        assertThat(journal.isInTransaction()).isEqualTo(false);
+
+        // taking part only somewhere in downstream, with downstream getting commited, then rolled back by parent
+        try (var tx = Transaction.openRoot()) {
+            assertThat(journal.isInTransaction()).isEqualTo(false);
+
+            try (var tx2 = Transaction.open(tx)) {
+                try (var tx3 = Transaction.open(tx2)) {
+                    journal.updateSnapshots(tx3);
+                    assertThat(journal.isInTransaction()).isEqualTo(true);
+                    tx3.commit();
+                }
+
+                assertThat(journal.isInTransaction()).isEqualTo(true);
+            }
+
+            assertThat(journal.isInTransaction()).isEqualTo(false);
+            tx.commit();
+            assertThat(journal.isInTransaction()).isEqualTo(false);
+        }
+
+        assertThat(journal.isInTransaction()).isEqualTo(false);
+
+        // taking part only somewhere in downstream, with everything getting commited
+        try (var tx = Transaction.openRoot()) {
+            assertThat(journal.isInTransaction()).isEqualTo(false);
+
+            try (var tx2 = Transaction.open(tx)) {
+                try (var tx3 = Transaction.open(tx2)) {
+                    journal.updateSnapshots(tx3);
+                    assertThat(journal.isInTransaction()).isEqualTo(true);
+                    tx3.commit();
+                }
+
+                assertThat(journal.isInTransaction()).isEqualTo(true);
+                tx2.commit();
+                assertThat(journal.isInTransaction()).isEqualTo(true);
+            }
+
+            assertThat(journal.isInTransaction()).isEqualTo(true);
+            tx.commit();
+            assertThat(journal.isInTransaction()).isEqualTo(false);
+        }
+
+        assertThat(journal.isInTransaction()).isEqualTo(false);
+
+        // taking part only somewhere in downstream, with everything getting commited except root
+        try (var tx = Transaction.openRoot()) {
+            assertThat(journal.isInTransaction()).isEqualTo(false);
+
+            try (var tx2 = Transaction.open(tx)) {
+                try (var tx3 = Transaction.open(tx2)) {
+                    journal.updateSnapshots(tx3);
+                    assertThat(journal.isInTransaction()).isEqualTo(true);
+                    tx3.commit();
+                }
+
+                assertThat(journal.isInTransaction()).isEqualTo(true);
+                tx2.commit();
+                assertThat(journal.isInTransaction()).isEqualTo(true);
+            }
+
+            assertThat(journal.isInTransaction()).isEqualTo(true);
+        }
+
+        assertThat(journal.isInTransaction()).isEqualTo(false);
+    }
+
     @Test
     void testNullSnapshots() {
         class VoidJournal extends SnapshotJournal<Void> {

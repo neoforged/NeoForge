@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/components/BossHealthOverlay.java
 +++ b/net/minecraft/client/gui/components/BossHealthOverlay.java
-@@ -68,13 +_,16 @@
+@@ -68,13 +_,17 @@
              for (LerpingBossEvent event : this.events.values()) {
                  int xLeft = screenWidth / 2 - 91;
                  int yo = yOffset;
@@ -13,8 +13,9 @@
                  int y = yo - 9;
                  graphics.text(this.minecraft.font, msg, x, y, -1);
 -                yOffset += 10 + 9;
-+                yOffset += customizeEvent.getIncrement();
 +                }
++                // Neo: Always increment the yOffset, to make room for any custom rendered elements
++                yOffset += customizeEvent.getIncrement();
                  if (yOffset >= graphics.guiHeight() / 3) {
                      break;
                  }

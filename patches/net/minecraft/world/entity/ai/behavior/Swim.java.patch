@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/ai/behavior/Swim.java
++++ b/net/minecraft/world/entity/ai/behavior/Swim.java
+@@ -14,7 +_,7 @@
+     }
+ 
+     public static <T extends Mob> boolean shouldSwim(T mob) {
+-        return mob.isInWater() && mob.getFluidHeight(FluidTags.WATER) > mob.getFluidJumpThreshold() || mob.isInLava();
++        return mob.isInWater() && mob.getFluidHeight(FluidTags.WATER) > mob.getFluidJumpThreshold() || mob.isInLava() || mob.getFluidInteraction().isInFluidMatching(mob, (entity, fluidType, height) -> entity.canSwimInFluidType(fluidType) && height > entity.getFluidJumpThreshold());
+     }
+ 
+     protected boolean checkExtraStartConditions(ServerLevel level, Mob body) {

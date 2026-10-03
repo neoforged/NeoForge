@@ -27,34 +27,31 @@ import net.neoforged.neoforge.fluids.FluidType;
  * @see net.neoforged.neoforge.common.crafting.SizedIngredient
  */
 public final class SizedFluidIngredient {
-    /**
-     * The codec for {@link SizedFluidIngredient}.
-     *
-     * <p>With this codec, the amount is serialized separately from the ingredient itself, for example:
-     *
-     * <pre>{@code
-     * {
-     *     "ingredient": "minecraft:lava",
-     *     "amount": 1000
-     * }
-     * }</pre>
-     *
-     * <p>
-     * or for custom ingredients:
-     *
-     * <pre>{@code
-     * {
-     *     "ingredient": {
-     *         "neoforge:type": "neoforge:intersection",
-     *         "children": [
-     *              "#example:tag1",
-     *              "#example:tag2"
-     *         ],
-     *     },
-     *     "amount": 4711
-     * }
-     * }</pre>
-     */
+    /// The codec for [SizedFluidIngredient]. The amount is serialized separately from the ingredient itself.
+    ///
+    /// For example:
+    ///
+    /// ```json
+    /// {
+    ///     "ingredient": "minecraft:lava",
+    ///     "amount": 1000
+    /// }
+    /// ```
+    ///
+    /// For example, with custom ingredients:
+    ///
+    /// ```json
+    /// {
+    ///     "ingredient": {
+    ///         "neoforge:type": "neoforge:intersection",
+    ///         "children": [
+    ///              "#example:tag1",
+    ///              "#example:tag2"
+    ///         ],
+    ///     },
+    ///     "amount": 4711
+    /// }
+    /// ```
     public static final Codec<SizedFluidIngredient> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             FluidIngredient.CODEC.fieldOf("ingredient").forGetter(SizedFluidIngredient::ingredient),
             NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.POSITIVE_INT, "amount", FluidType.BUCKET_VOLUME).forGetter(SizedFluidIngredient::amount))

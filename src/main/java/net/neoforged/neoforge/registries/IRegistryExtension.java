@@ -64,14 +64,14 @@ public interface IRegistryExtension<T> {
         addCallback(callback);
     }
 
-    /**
-     * Adds an alias that maps from the name specified by <code>from</code> to the name specified by <code>to</code>.
-     * <p>
-     * Any registry lookups that target the first name will resolve as the second name, if the first name is not present.
-     *
-     * @param from the source registry name to alias from
-     * @param to   the target registry name to alias to
-     */
+    /// Adds an alias that maps from the name specified by `from` to the name specified by `to`.
+    ///
+    /// Any registry lookups that target the first name will resolve as the second name, if the first name is not present.
+    ///
+    /// @param from the source registry name to alias from
+    /// @param to   the target registry name to alias to
+    /// @throws IllegalArgumentException if an alias already exists for the source registry name that does not point to the
+    ///                                  same target registry name, or if the alias would cause a resolution loop
     void addAlias(Identifier from, Identifier to);
 
     /**

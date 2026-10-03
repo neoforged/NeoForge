@@ -60,15 +60,32 @@ public interface ILivingEntityExtension extends IEntityExtension {
     /**
      * Performs how an entity moves when within the fluid. If using custom
      * movement logic, the method should return {@code true}. Otherwise, the
-     * movement logic will default to water.
+     * movement logic will default to water if {@link FluidType#getIsWaterLike()} returns
+     * {@code true} or no movement if it returns {@code false}.
      *
      * @param state          the state of the fluid
      * @param movementVector the velocity of how the entity wants to move
      * @param gravity        the gravity to apply to the entity
      * @return {@code true} if custom movement logic is performed, {@code false} otherwise
+     *
+     * @deprecated Use {@link #moveInFluid(FluidType, Vec3, double)} instead
      */
+    @Deprecated(forRemoval = true, since = "26.2")
     default boolean moveInFluid(FluidState state, Vec3 movementVector, double gravity) {
-        return state.move(self(), movementVector, gravity);
+        return moveInFluid(state.getFluidType(), movementVector, gravity);
+    }
+
+    /// Performs how an entity moves when within the fluid. If using custom
+    /// movement logic, the method should return `true`. Otherwise, the
+    /// movement logic will default to water if [FluidType#getIsWaterLike()] returns
+    /// `true` or no movement if it returns `false`.
+    ///
+    /// @param type           the type of the fluid
+    /// @param movementVector the velocity of how the entity wants to move
+    /// @param gravity        the gravity to apply to the entity
+    /// @return `true` if custom movement logic is performed, `false` otherwise
+    default boolean moveInFluid(FluidType type, Vec3 movementVector, double gravity) {
+        return type.move(self(), movementVector, gravity);
     }
 
     /**

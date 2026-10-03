@@ -45,3 +45,14 @@
                  } catch (Throwable t) {
                      CrashReport report = CrashReport.forThrowable(t, "charTyped event handler");
                      screen.fillCrashDetails(report);
+@@ -598,7 +_,9 @@
+ 
+     public static void submitPreeditEvent(GuiEventListener element, @Nullable PreeditEvent event) {
+         try {
+-            element.preeditUpdated(event);
++            if (element instanceof Screen screen && net.neoforged.neoforge.client.ClientHooks.onScreenPreeditPre(screen, event)) return;
++            if (element.preeditUpdated(event)) return;
++            if (element instanceof Screen screen) net.neoforged.neoforge.client.ClientHooks.onScreenPreeditPost(screen, event);
+         } catch (Throwable t) {
+             CrashReport report = CrashReport.forThrowable(t, "IME pre-edit event handler");
+             if (element instanceof Screen screen) {

@@ -852,14 +852,6 @@ public final class ConfigurationScreen extends OptionsSubScreen {
 
             final EditBox box = new EditBox(font, Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT, getTranslationComponent(key));
             box.setEditable(true);
-            box.setFilter(newValueString -> {
-                try {
-                    parser.apply(newValueString);
-                    return true;
-                } catch (final NumberFormatException e) {
-                    return isPartialNumber(newValueString, (range == null || range.getMin().compareTo(zero) < 0));
-                }
-            });
             box.setTooltip(Tooltip.create(getTooltipComponent(key, range)));
             box.setValue(source.get() + "");
             box.setResponder(newValueString -> {
@@ -884,23 +876,6 @@ public final class ConfigurationScreen extends OptionsSubScreen {
                 box.setTextColor(0xFFFF0000);
             });
             return new Element(getTranslationComponent(key), getTooltipComponent(key, null), box);
-        }
-
-        protected boolean isPartialNumber(String value, boolean allowNegative) {
-            return switch (value) {
-                case "" -> true;
-                case "0" -> true;
-                case "0x" -> true;
-                case "0X" -> true;
-                case "#" -> true; // not valid for doubles, but not worth making a special case
-                case "-" -> allowNegative;
-                case "-0" -> allowNegative;
-                case "-0x" -> allowNegative;
-                case "-0X" -> allowNegative;
-                // case "-#" -> allowNegative; // Java allows this, but no thanks, that's just cursed.
-                // doubles can also do NaN, inf, and 0e0. Again, not worth making a special case for those, I say.
-                default -> false;
-            };
         }
 
         @Nullable

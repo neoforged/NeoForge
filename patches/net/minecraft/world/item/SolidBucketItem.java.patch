@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/item/SolidBucketItem.java
++++ b/net/minecraft/world/item/SolidBucketItem.java
+@@ -39,6 +_,11 @@
+     }
+ 
+     @Override
++    protected SoundEvent getPlaceSound(BlockState state, Level level, BlockPos pos, Player entity) {
++        return this.getPlaceSound(state);
++    }
++
++    @Override
+     public boolean emptyContents(@Nullable LivingEntity user, Level level, BlockPos pos, @Nullable BlockHitResult hitResult) {
+         if (level.isInWorldBounds(pos) && level.isEmptyBlock(pos)) {
+             if (!level.isClientSide()) {

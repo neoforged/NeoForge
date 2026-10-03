@@ -396,7 +396,7 @@ public class NeoDevPlugin implements Plugin<Project> {
                 spec.rename(s -> "install_profile.json");
             });
             task.from(project.getRootProject().file("src/main/resources/url.png"));
-            task.from(project.getRootProject().file("src/main/resources/neoforged_logo.png"), spec -> {
+            task.from(project.getRootProject().file("src/main/resources/neoforge_logo.png"), spec -> {
                 spec.rename(s -> "big_logo.png");
             });
             task.from(createUnixServerArgsFile.flatMap(CreateArgsFile::getArgsFile), spec -> {
@@ -423,7 +423,7 @@ public class NeoDevPlugin implements Plugin<Project> {
 
             // This is true by default (see gradle.properties), and needs to be disabled explicitly when building (see release.yml).
             String installerDebugProperty = "include_artifacts_in_installer";
-            if (project.getProperties().containsKey(installerDebugProperty) && Boolean.parseBoolean(project.getProperties().get(installerDebugProperty).toString())) {
+            if (project.getProviders().gradleProperty(installerDebugProperty).map(Boolean::parseBoolean).getOrElse(false)) {
                 task.from(universalJar.flatMap(AbstractArchiveTask::getArchiveFile), spec -> {
                     spec.into(String.format("/maven/net/neoforged/neoforge/%s/", neoForgeVersion.get()));
                     spec.rename(name -> String.format("neoforge-%s-universal.jar", neoForgeVersion.get()));

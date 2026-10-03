@@ -1,0 +1,14 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:eggs"
+      }
+    }
+  ],
+  "asset_id": "neotests_datapack_registry_conditions:present_non_empty_static_tag",
+  "decal": false,
+  "description": ""
+}

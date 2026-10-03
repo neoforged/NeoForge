@@ -117,7 +117,7 @@ public class PlayerEventTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if the on entity interact event is fired")
     static void entityInteractEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final PlayerInteractEvent.EntityInteractSpecific event) -> {
+        test.eventListeners().forge().addListener((final PlayerInteractEvent.EntityInteract event) -> {
             if (event.getTarget().getType() == EntityTypes.ILLUSIONER) {
                 String oldName = event.getTarget().getName().getString();
                 event.getTarget().setCustomName(Component.literal(oldName + " entityInteractEventTest"));

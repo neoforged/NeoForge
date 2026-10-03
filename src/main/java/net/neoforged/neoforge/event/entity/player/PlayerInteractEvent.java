@@ -48,85 +48,37 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
         this.face = face;
     }
 
-    /**
-     * This event is fired on both sides whenever a player right clicks an entity.
-     *
-     * "Interact at" is an interact where the local vector (which part of the entity you clicked) is known.
-     * The state of this event affects whether {@link Entity#interactAt(Player, Vec3, InteractionHand)} is called.
-     *
-     * Let result be the return value of {@link Entity#interactAt(Player, Vec3, InteractionHand)}, or {@link #cancellationResult} if the event is cancelled.
-     * If we are on the client and result is not {@link InteractionResult#SUCCESS}, the client will then try {@link EntityInteract}.
-     */
-    public static class EntityInteractSpecific extends PlayerInteractEvent implements ICancellableEvent {
-        private InteractionResult cancellationResult = InteractionResult.PASS;
-
-        private final Vec3 localPos;
-        private final Entity target;
-
-        public EntityInteractSpecific(Player player, InteractionHand hand, Entity target, Vec3 localPos) {
-            super(player, hand, target.blockPosition(), null);
-            this.localPos = localPos;
-            this.target = target;
-        }
-
-        /**
-         * Returns the local interaction position. This is a 3D vector, where (0, 0, 0) is centered exactly at the
-         * center of the entity's bounding box at their feet. This means the X and Z values will be in the range
-         * [-width / 2, width / 2] while Y values will be in the range [0, height]
-         * 
-         * @return The local position
-         */
-        public Vec3 getLocalPos() {
-            return localPos;
-        }
-
-        public Entity getTarget() {
-            return target;
-        }
-
-        /**
-         * @return The InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
-         *         method of the event. By default, this is {@link InteractionResult#PASS}, meaning cancelled events will cause
-         *         the client to keep trying more interactions until something works.
-         */
-        public InteractionResult getCancellationResult() {
-            return cancellationResult;
-        }
-
-        /**
-         * Set the InteractionResult that will be returned to vanilla if the event is cancelled, instead of calling the relevant
-         * method of the event.
-         */
-        public void setCancellationResult(InteractionResult result) {
-            this.cancellationResult = result;
-        }
-    }
-
-    /**
-     * This event is fired on both sides when the player right clicks an entity.
-     * It is responsible for all general entity interactions.
-     *
-     * This event is fired only if the result of the above {@link EntityInteractSpecific} is not {@link InteractionResult#SUCCESS}.
-     * This event's state affects whether {@link Entity#interact(Player, InteractionHand)} and
-     * {@link Item#interactLivingEntity(ItemStack, Player, LivingEntity, InteractionHand)} are called.
-     *
-     * Let result be {@link InteractionResult#SUCCESS} if {@link Entity#interact(Player, InteractionHand)} or
-     * {@link Item#interactLivingEntity(ItemStack, Player, LivingEntity, InteractionHand)} return true,
-     * or {@link #cancellationResult} if the event is cancelled.
-     * If we are on the client and result is not {@link InteractionResult#SUCCESS}, the client will then try {@link RightClickItem}.
-     */
+    /// This event is fired on both sides when a non-spectator player right-clicks an entity.
+    /// It is responsible for all entity interactions.
+    ///
+    /// This event's state affects whether [Entity#interact(Player, InteractionHand, Vec3)] and
+    /// [Item#interactLivingEntity(ItemStack, Player, LivingEntity, InteractionHand)] are called.
+    ///
+    /// Let result be [InteractionResult#SUCCESS] if [Entity#interact(Player, InteractionHand, Vec3)] or
+    /// [Item#interactLivingEntity(ItemStack, Player, LivingEntity, InteractionHand)] return true,
+    /// or [#cancellationResult] if the event is cancelled.
+    /// If we are on the client and result is not [InteractionResult#SUCCESS], the client will then try [RightClickItem].
     public static class EntityInteract extends PlayerInteractEvent implements ICancellableEvent {
         private InteractionResult cancellationResult = InteractionResult.PASS;
 
         private final Entity target;
+        private final Vec3 location;
 
-        public EntityInteract(Player player, InteractionHand hand, Entity target) {
+        public EntityInteract(Player player, InteractionHand hand, Entity target, Vec3 location) {
             super(player, hand, target.blockPosition(), null);
             this.target = target;
+            this.location = location;
         }
 
         public Entity getTarget() {
             return target;
+        }
+
+        /// {@return the local interaction position} This is a 3D vector, where (0, 0, 0) is centered exactly at the
+        /// center of the entity's bounding box at their feet. This means the X and Z values will be in the range
+        /// [-width / 2, width / 2] while Y values will be in the range [0, height].
+        public Vec3 getLocation() {
+            return location;
         }
 
         /**
@@ -241,7 +193,7 @@ public abstract class PlayerInteractEvent extends PlayerEvent {
 
     /**
      * This event is fired on both sides before the player triggers {@link Item#use(Level, Player, InteractionHand)}.
-     * Note that this is NOT fired if the player is targeting a block {@link RightClickBlock} or entity {@link EntityInteract} {@link EntityInteractSpecific}.
+     * Note that this is NOT fired if the player is targeting a block {@link RightClickBlock} or entity {@link EntityInteract}.
      *
      * Let result be the return value of {@link Item#use(Level, Player, InteractionHand)}, or {@link #cancellationResult} if the event is cancelled.
      * If we are on the client and result is not {@link InteractionResult#SUCCESS}, the client will then continue to other hands.

@@ -173,13 +173,3 @@
              }
  
              interactionResult.setValue(resultHolder);
-@@ -443,6 +_,9 @@
-         this.ensureHasSentCarriedItem();
-         Vec3 location = hitResult.getLocation().subtract(entity.getX(), entity.getY(), entity.getZ());
-         this.connection.send(new ServerboundInteractPacket(entity.getId(), hand, location, player.isShiftKeyDown()));
-+        if (this.localPlayerMode == GameType.SPECTATOR) return InteractionResult.PASS; // don't fire for spectators to match non-specific EntityInteract
-+        InteractionResult cancelResult = net.neoforged.neoforge.common.CommonHooks.onInteractEntityAt(player, entity, hitResult, hand);
-+        if(cancelResult != null) return cancelResult;
-         return this.localPlayerMode == GameType.SPECTATOR ? InteractionResult.PASS : player.interactOn(entity, hand, location);
-     }
- 

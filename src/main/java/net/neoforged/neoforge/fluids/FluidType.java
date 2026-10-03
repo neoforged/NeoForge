@@ -295,15 +295,32 @@ public class FluidType {
     /**
      * Performs how an entity moves when within the fluid. If using custom
      * movement logic, the method should return {@code true}. Otherwise, the
-     * movement logic will default to water.
+     * movement logic will default to water if {@link #getIsWaterLike()} returns
+     * {@code true} or no movement if it returns {@code false}.
      *
      * @param state          the state of the fluid
      * @param entity         the entity moving within the fluid
      * @param movementVector the velocity of how the entity wants to move
      * @param gravity        the gravity to apply to the entity
      * @return {@code true} if custom movement logic is performed, {@code false} otherwise
+     *
+     * @deprecated Use {@link #move(LivingEntity, Vec3, double)} instead
      */
+    @Deprecated(forRemoval = true, since = "26.2")
     public boolean move(FluidState state, LivingEntity entity, Vec3 movementVector, double gravity) {
+        return move(entity, movementVector, gravity);
+    }
+
+    /// Performs how an entity moves when within the fluid. If using custom
+    /// movement logic, the method should return `true`. Otherwise, the
+    /// movement logic will default to water if [#getIsWaterLike()] returns
+    /// `true` or no movement if it returns `false`.
+    ///
+    /// @param entity         the entity moving within the fluid
+    /// @param movementVector the velocity of how the entity wants to move
+    /// @param gravity        the gravity to apply to the entity
+    /// @return `true` if custom movement logic is performed, `false` otherwise
+    public boolean move(LivingEntity entity, Vec3 movementVector, double gravity) {
         return false;
     }
 
@@ -323,8 +340,7 @@ public class FluidType {
      * @param entity the item in the fluid
      */
     public void setItemMovement(ItemEntity entity) {
-        Vec3 vec3 = entity.getDeltaMovement();
-        entity.setDeltaMovement(vec3.x * (double) 0.99F, vec3.y + (double) (vec3.y < (double) 0.06F ? 5.0E-4F : 0.0F), vec3.z * (double) 0.99F);
+        entity.setFluidMovement(.99F);
     }
 
     /**
@@ -860,7 +876,7 @@ public class FluidType {
      */
     public static final class Properties {
         private String descriptionId;
-        private double motionScale = 0.014D;
+        private double motionScale = Entity.WATER_FLOW_SCALE;
         private boolean canPushEntity = true;
         private boolean canSwim = true;
         private boolean canDrown = true;
