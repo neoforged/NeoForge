@@ -6,18 +6,15 @@
 package net.neoforged.neoforge.client;
 
 import com.mojang.brigadier.Command;
-import java.util.Set;
 import net.minecraft.DetectedVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.commands.Commands;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.metadata.PackMetadataGenerator;
-import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
@@ -159,6 +156,14 @@ public class ClientNeoForgeMod {
     }
 
     @SubscribeEvent
+    static void onGatherRegistries(GatherDataEvent.Registries event) {
+        event.generateFor("minecraft")
+                .add(Registries.ADVANCEMENT, new NeoForgeAdvancementProvider())
+                .recipe(NeoForgeRecipeProvider::new)
+                .add(Registries.PREDICATE, NeoForgeLootDataProvider::overrideLootPredicates);
+    }
+
+    @SubscribeEvent
     static void onGatherData(GatherDataEvent.Client event) {
         // We perform client and server datagen in a single clientData run to avoid
         // having to juggle two generated resources folders and two runs for no additional benefit.
@@ -167,13 +172,6 @@ public class ClientNeoForgeMod {
                 .add(PackMetadataSection.SERVER_TYPE, new PackMetadataSection(
                         Component.translatable("pack.neoforge.description"),
                         new InclusiveRange<>(DetectedVersion.BUILT_IN.packVersion(PackType.SERVER_DATA)))));
-
-        event.createReloadableRegistryObjects(
-                new RegistrySetBuilder()
-                        .add(Registries.ADVANCEMENT, new NeoForgeAdvancementProvider())
-                        .add(RecipeProvider.asBootstrap(NeoForgeRecipeProvider::new))
-                        .add(Registries.PREDICATE, NeoForgeLootDataProvider::overrideLootPredicates),
-                Set.of("minecraft"));
 
         event.createBlockAndItemTags(NeoForgeBlockTagsProvider::new, NeoForgeItemTagsProvider::new);
         event.createProvider(NeoForgeEntityTypeTagsProvider::new);

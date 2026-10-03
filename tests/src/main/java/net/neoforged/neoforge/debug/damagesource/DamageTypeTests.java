@@ -8,7 +8,6 @@ package net.neoforged.neoforge.debug.damagesource;
 import java.util.function.Supplier;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup.Provider;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.network.chat.Component;
@@ -89,11 +88,9 @@ public class DamageTypeTests {
             }
         });
 
-        RegistrySetBuilder registrySetBuilder = new RegistrySetBuilder();
-        registrySetBuilder.add(Registries.DAMAGE_TYPE, bootstrap -> {
+        reg.registriesForTest(registries -> registries.add(Registries.DAMAGE_TYPE, bootstrap -> {
             bootstrap.register(TEST_DMG_TYPE, new DamageType("test_mod", scaling, 0.0f, effects, msgType));
-        });
-        reg.generateWorldRegistries(registrySetBuilder);
+        }));
         reg.addClientProvider(event -> event.addProvider(new TagsProvider<>(event.getGenerator().getPackOutput(), Registries.DAMAGE_TYPE, event.getWorldLookupProvider(), reg.modId()) {
             @Override
             protected void addTags(Provider registries) {

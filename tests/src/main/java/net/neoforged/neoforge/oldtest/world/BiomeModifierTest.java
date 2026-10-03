@@ -10,11 +10,9 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.NetherFeatures;
 import net.minecraft.data.worldgen.placement.VegetationPlacements;
@@ -81,38 +79,6 @@ public class BiomeModifierTest {
     private static final ResourceKey<BiomeModifier> REMOVE_FOREST_TREES_MODIFIER = ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, Identifier.fromNamespaceAndPath(MODID, "remove_forest_trees"));
     private static final ResourceKey<BiomeModifier> REMOVE_FOREST_SKELETONS_MODIFIER = ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, Identifier.fromNamespaceAndPath(MODID, "remove_forest_skeletons"));
 
-    private static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
-            .add(Registries.PLACED_FEATURE, context -> context.register(LARGE_BASALT_COLUMNS,
-                    new PlacedFeature(
-                            context.lookup(Registries.FEATURE).getOrThrow(NetherFeatures.LARGE_BASALT_COLUMNS),
-                            List.of(CountOnEveryLayerPlacement.of(1), BiomeFilter.biome()))))
-            .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, context -> {
-                var badlandsTag = context.lookup(Registries.BIOME).getOrThrow(BiomeTags.IS_BADLANDS);
-                var forestTag = context.lookup(Registries.BIOME).getOrThrow(BiomeTags.IS_FOREST);
-
-                context.register(ADD_BASALT_MODIFIER, new AddFeaturesBiomeModifier(
-                        badlandsTag,
-                        HolderSet.direct(context.lookup(Registries.PLACED_FEATURE).getOrThrow(LARGE_BASALT_COLUMNS)),
-                        Decoration.TOP_LAYER_MODIFICATION));
-
-                context.register(ADD_MAGMA_CUBES_MODIFIER, AddSpawnsBiomeModifier.singleSpawn(
-                        badlandsTag,
-                        new Weighted<>(new SpawnerData(EntityTypes.MAGMA_CUBE, new UniformInt(1, 4)), 100)));
-
-                context.register(MODIFY_BADLANDS_MODIFIER, new TestModifier(
-                        badlandsTag,
-                        Precipitation.SNOW,
-                        0xFF000));
-
-                context.register(REMOVE_FOREST_TREES_MODIFIER, RemoveFeaturesBiomeModifier.allSteps(
-                        forestTag,
-                        HolderSet.direct(context.lookup(Registries.PLACED_FEATURE).getOrThrow(VegetationPlacements.TREES_BIRCH_AND_OAK_LEAF_LITTER))));
-
-                context.register(REMOVE_FOREST_SKELETONS_MODIFIER, new RemoveSpawnsBiomeModifier(
-                        forestTag,
-                        context.lookup(Registries.ENTITY_TYPE).getOrThrow(EntityTypeTags.SKELETONS)));
-            });
-
     public BiomeModifierTest(IEventBus modBus) {
         if (!ENABLED)
             return;
@@ -120,11 +86,40 @@ public class BiomeModifierTest {
         // Serializer types can be registered via deferred register.
         BIOME_MODIFIER_SERIALIZERS.register(modBus);
 
-        modBus.addListener(this::onGatherData);
+        modBus.addListener(this::onGatherRegistries);
     }
 
-    private void onGatherData(GatherDataEvent.Client event) {
-        event.createWorldRegistryObjects(BUILDER, Set.of(MODID), "world - " + MODID);
+    private void onGatherRegistries(GatherDataEvent.Registries event) {
+        event.add(Registries.PLACED_FEATURE, context -> context.register(LARGE_BASALT_COLUMNS,
+                new PlacedFeature(
+                        context.lookup(Registries.FEATURE).getOrThrow(NetherFeatures.LARGE_BASALT_COLUMNS),
+                        List.of(CountOnEveryLayerPlacement.of(1), BiomeFilter.biome()))))
+                .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, context -> {
+                    var badlandsTag = context.lookup(Registries.BIOME).getOrThrow(BiomeTags.IS_BADLANDS);
+                    var forestTag = context.lookup(Registries.BIOME).getOrThrow(BiomeTags.IS_FOREST);
+
+                    context.register(ADD_BASALT_MODIFIER, new AddFeaturesBiomeModifier(
+                            badlandsTag,
+                            HolderSet.direct(context.lookup(Registries.PLACED_FEATURE).getOrThrow(LARGE_BASALT_COLUMNS)),
+                            Decoration.TOP_LAYER_MODIFICATION));
+
+                    context.register(ADD_MAGMA_CUBES_MODIFIER, AddSpawnsBiomeModifier.singleSpawn(
+                            badlandsTag,
+                            new Weighted<>(new SpawnerData(EntityTypes.MAGMA_CUBE, new UniformInt(1, 4)), 100)));
+
+                    context.register(MODIFY_BADLANDS_MODIFIER, new TestModifier(
+                            badlandsTag,
+                            Precipitation.SNOW,
+                            0xFF000));
+
+                    context.register(REMOVE_FOREST_TREES_MODIFIER, RemoveFeaturesBiomeModifier.allSteps(
+                            forestTag,
+                            HolderSet.direct(context.lookup(Registries.PLACED_FEATURE).getOrThrow(VegetationPlacements.TREES_BIRCH_AND_OAK_LEAF_LITTER))));
+
+                    context.register(REMOVE_FOREST_SKELETONS_MODIFIER, new RemoveSpawnsBiomeModifier(
+                            forestTag,
+                            context.lookup(Registries.ENTITY_TYPE).getOrThrow(EntityTypeTags.SKELETONS)));
+                });
     }
 
     public record TestModifier(HolderSet<Biome> biomes, Precipitation precipitation, int waterColor) implements BiomeModifier {

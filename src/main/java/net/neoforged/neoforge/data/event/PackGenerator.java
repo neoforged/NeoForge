@@ -5,23 +5,33 @@
 
 package net.neoforged.neoforge.data.event;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.registries.RegistryPatchGenerator;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import org.jspecify.annotations.Nullable;
 
+// TODO-ASH: Document
 public final class PackGenerator {
-    private final GatherDataEvent owner;
+    private final GatherDataEvent.Providers owner;
     private final PackOutput output;
 
-    PackGenerator(GatherDataEvent owner, PackOutput output) {
+    @Nullable
+    CompletableFuture<HolderLookup.Provider> worldRegistriesWithModdedEntries = null;
+    @Nullable
+    CompletableFuture<HolderLookup.Provider> reloadableRegistries = null;
+    @Nullable
+    CompletableFuture<HolderLookup.Provider> reloadableRegistriesWithModdedEntries = null;
+
+    PackGenerator(GatherDataEvent.Providers owner, PackOutput output) {
         this.owner = owner;
         this.output = output;
     }
@@ -31,11 +41,18 @@ public final class PackGenerator {
     }
 
     public CompletableFuture<HolderLookup.Provider> getWorldLookupProvider() {
-        return this.owner.getWorldLookupProvider();
+        return Objects.requireNonNullElse(this.worldRegistriesWithModdedEntries, this.owner.getWorldLookupProvider());
     }
 
     public CompletableFuture<HolderLookup.Provider> getReloadableLookupProvider() {
-        return this.owner.getReloadableLookupProvider();
+        if (this.reloadableRegistriesWithModdedEntries != null) {
+            return this.reloadableRegistriesWithModdedEntries;
+        }
+        if (this.reloadableRegistries == null) {
+            this.reloadableRegistries = RegistryPatchGenerator.createReloadableLookup(this.getWorldLookupProvider(), this.owner.getReloadableLookupProvider(), new RegistrySetBuilder())
+                    .thenApply(RegistrySetBuilder.PatchedRegistries::full);
+        }
+        return this.reloadableRegistries;
     }
 
     public <T extends DataProvider> T addProvider(T provider) {
@@ -65,7 +82,7 @@ public final class PackGenerator {
 
     public void createWorldRegistryObjects(RegistrySetBuilder entriesBuilder, @Nullable Set<String> modIds, String name) {
         var registries = this.createProvider((output) -> DatapackBuiltinEntriesProvider.forWorldLayer(output, name, this.getWorldLookupProvider(), entriesBuilder, modIds));
-        this.owner.worldRegistriesWithModdedEntries = registries.getRegistryProvider();
+        this.worldRegistriesWithModdedEntries = registries.getRegistryProvider();
     }
 
     public void createReloadableRegistryObjects(RegistrySetBuilder entriesBuilder) {
@@ -78,7 +95,7 @@ public final class PackGenerator {
 
     public void createReloadableRegistryObjects(RegistrySetBuilder entriesBuilder, @Nullable Set<String> modIds, String name) {
         var registries = this.createProvider((output) -> DatapackBuiltinEntriesProvider.forReloadableLayer(output, name, this.getWorldLookupProvider(), this.getReloadableLookupProvider(), entriesBuilder, modIds));
-        this.owner.reloadableRegistriesWithModdedEntries = registries.getRegistryProvider();
+        this.reloadableRegistriesWithModdedEntries = registries.getRegistryProvider();
     }
 
     @FunctionalInterface

@@ -8,7 +8,6 @@ package net.neoforged.neoforge.debug.resources;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -16,7 +15,6 @@ import java.util.function.BiFunction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
@@ -56,7 +54,7 @@ public final class LoadingConditionsTest {
         ResourceKey<TrimPattern> presentEmptyStaticTag = ResourceKey.create(Registries.TRIM_PATTERN, Identifier.fromNamespaceAndPath(modId, "present_empty_static_tag"));
         ResourceKey<TrimPattern> presentNonEmptyStaticTag = ResourceKey.create(Registries.TRIM_PATTERN, Identifier.fromNamespaceAndPath(modId, "present_non_empty_static_tag"));
 
-        test.registrationHelper().generateWorldRegistries(new RegistrySetBuilder().add(Registries.TRIM_PATTERN, registry -> {
+        test.registrationHelper().registriesForTest(registries -> registries.add(Registries.TRIM_PATTERN, registry -> {
             registry.register(
                     absentStaticObject,
                     new TrimPattern(absentStaticObject.identifier(), Component.empty(), false),
@@ -125,8 +123,7 @@ public final class LoadingConditionsTest {
             context.accept(presentNonEmptyDatapackRegistryTag, LootTable.lootTable()
                     .withCondition(NeoForgeConditions.not(NeoForgeConditions.tagEmpty(Tags.Biomes.IS_PLAINS))));
         }, LootContextParamSets.EMPTY);
-        LootTableProvider lootTableProvider = new LootTableProvider(Set.of(), List.of(entry));
-        test.registrationHelper().generateReloadableRegistries(new RegistrySetBuilder().add(Registries.LOOT_TABLE, lootTableProvider));
+        test.registrationHelper().registriesForTest(registries -> registries.lootTable(entry));
 
         test.eventListeners().forge().addListener((TagsUpdatedEvent.ServerDataLoad event) -> {
             assertEntryPresence(test, event.getRegistries(), RegistryAccess::get, "reloadable registry", Set.of(

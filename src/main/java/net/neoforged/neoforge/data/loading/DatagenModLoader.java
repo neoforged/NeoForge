@@ -6,20 +6,32 @@
 package net.neoforged.neoforge.data.loading;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.MultiRegistryBootstrap;
+import net.minecraft.core.registries.SingleRegistryBootstrap;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.registries.VanillaRegistries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.util.Util;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.data.event.DataGeneratorConfig;
+import net.neoforged.neoforge.data.event.DatapackRegistryGatherer;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GlobalDatapackRegistryGatherer;
 import net.neoforged.neoforge.internal.CommonModLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,11 +71,41 @@ public class DatagenModLoader extends CommonModLoader {
         dataGeneratorConfig = new DataGeneratorConfig(mods, path, inputs, worldLookupProvider, devToolGenerators, reportsGenerator, structureValidator, flat, vanillaGenerator, existingPacks, vanillaClientAssets);
         setup.run();
 
+        // Gather datapack registries first
+        List<DatapackRegistryGathererImpl> registryProviders = new ArrayList<>();
+        var mainGatherer = new DatapackRegistryGathererImpl(dataGeneratorConfig.getMods());
+        for (ModContainer mod : ModList.get().getSortedMods()) {
+            mod.acceptEvent(new GatherDataEvent.Registries(mod, new GlobalDatapackRegistryGatherer() {
+                @Override
+                public DatapackRegistryGatherer generateFor(String modId, String... modIds) {
+                    var subGatherer = new DatapackRegistryGathererImpl(this, mod.getModId(), Stream.concat(Stream.of(modId), Arrays.stream(modIds)).collect(Collectors.toSet()));
+                    if (dataGeneratorConfig.getMods().contains(mod.getModId())) {
+                        registryProviders.add(subGatherer);
+                    }
+                    return subGatherer;
+                }
+
+                @Override
+                public <T> DatapackRegistryGatherer add(ResourceKey<? extends Registry<T>> registryKey, SingleRegistryBootstrap<T> bootstrap) throws IllegalArgumentException {
+                    return mainGatherer.add(registryKey, bootstrap);
+                }
+
+                @Override
+                public <T> DatapackRegistryGatherer add(MultiRegistryBootstrap bootstrap) throws IllegalArgumentException {
+                    return mainGatherer.add(bootstrap);
+                }
+            }));
+        }
+        // Add to data generator
+        var datapackRegistryGenerator = dataGeneratorConfig.makeGenerator(Function.identity(), uncached);
+        var registries = mainGatherer.createMain(datapackRegistryGenerator, worldLookupProvider);
+        for (int i = 0; i < registryProviders.size(); ++i) registryProviders.get(i).createSub(datapackRegistryGenerator, registries, i);
+
         // Only fire the event for mods that have their generators enabled
         for (ModContainer mod : ModList.get().getSortedMods()) {
             if (dataGeneratorConfig.getMods().contains(mod.getModId())) {
                 var generator = dataGeneratorConfig.makeGenerator(p -> dataGeneratorConfig.isFlat() ? p : p.resolve(mod.getModId()), uncached);
-                var event = eventGenerator.create(mod, generator, dataGeneratorConfig);
+                var event = eventGenerator.create(mod, generator, dataGeneratorConfig, registries);
                 mod.acceptEvent(event);
             }
         }

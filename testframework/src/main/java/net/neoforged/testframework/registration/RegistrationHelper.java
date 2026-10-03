@@ -9,14 +9,15 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import net.minecraft.core.Registry;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.data.DataProvider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.neoforge.data.event.DatapackRegistryGatherer;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GlobalDatapackRegistryGatherer;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
@@ -78,9 +79,13 @@ public interface RegistrationHelper {
 
     <T extends DataProvider> void clientProvider(Class<T> type, Consumer<T> consumer);
 
-    void generateWorldRegistries(RegistrySetBuilder registrySetBuilder);
+    // TODO-ASH: Document
+    void registries(Consumer<GlobalDatapackRegistryGatherer> consumer);
 
-    void generateReloadableRegistries(RegistrySetBuilder registrySetBuilder);
+    // TODO-ASH: Document
+    default void registriesForTest(Consumer<DatapackRegistryGatherer> consumer) {
+        this.registries(global -> consumer.accept(global.generateFor(this.modId())));
+    }
 
     Consumer<Consumer<? extends Event>> eventListeners();
 
