@@ -71,6 +71,29 @@
              if (this.isEyeInFluid(FluidTags.WATER)
                  && !level.getBlockState(BlockPos.containing(this.getX(), this.getEyeY(), this.getZ())).is(Blocks.BUBBLE_COLUMN)) {
                  boolean canDrownInWater = !this.canBreatheUnderwater()
+@@ -533,7 +_,13 @@
+         }
+     }
+ 
++    /** @deprecated Neo: use {@link #tryAddFrost(float)} instead. */
++    @Deprecated
+     protected void tryAddFrost() {
++        tryAddFrost(-0.05F);
++    }
++
++    protected void tryAddFrost(float slowPercentage) {
+         if (!this.getBlockStateOnLegacy().isAir()) {
+             int ticksFrozen = this.getTicksFrozen();
+             if (ticksFrozen > 0) {
+@@ -542,7 +_,7 @@
+                     return;
+                 }
+ 
+-                float slowAmount = -0.05F * this.getPercentFrozen();
++                float slowAmount = slowPercentage * this.getPercentFrozen();
+                 speed.addTransientModifier(new AttributeModifier(SPEED_MODIFIER_POWDER_SNOW_ID, slowAmount, AttributeModifier.Operation.ADD_VALUE));
+             }
+         }
 @@ -794,7 +_,11 @@
  
          ItemEntity entity = this.createItemStackToDrop(itemStack, false, thrownFromHand);
@@ -653,6 +676,33 @@
              }
          } else {
              this.noJumpDelay = 0;
+@@ -3119,14 +_,22 @@
+         profiler.pop();
+         if (this.level() instanceof ServerLevel serverLevel) {
+             profiler.push("freezing");
+-            if (!this.isInPowderSnow || !this.canFreeze()) {
++            net.neoforged.neoforge.event.entity.living.LivingFreezeEvent freezeEvent = new net.neoforged.neoforge.event.entity.living.LivingFreezeEvent(this, this.isInPowderSnow && this.canFreeze());
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(freezeEvent);
++            if (!freezeEvent.isFreezing()) {
+                 this.setTicksFrozen(Math.max(0, this.getTicksFrozen() - 2));
+             }
+ 
+             this.removeFrost();
+-            this.tryAddFrost();
+-            if (this.tickCount % 40 == 0 && this.isFullyFrozen() && this.canFreeze()) {
+-                this.hurtServer(serverLevel, this.damageSources().freeze(), 1.0F);
++            this.tryAddFrost(freezeEvent.getSlowAmount());
++            if (this.isFullyFrozen() && this.canFreeze()) {
++                net.neoforged.neoforge.event.entity.living.LivingFrozenEvent frozenEvent = new net.neoforged.neoforge.event.entity.living.LivingFrozenEvent(this);
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(frozenEvent);
++                if (!frozenEvent.isCanceled() || frozenEvent.getDamageAmount() > 0) {
++                    if (this.tickCount % frozenEvent.getDamageTickInterval() == 0) {
++                        this.hurtServer(serverLevel, this.damageSources().freeze(), frozenEvent.getDamageAmount());
++                    }
++                }
+             }
+ 
+             profiler.pop();
 @@ -3171,8 +_,11 @@
                  int freeFallInterval = checkFallFlyTicks / 10;
                  if (freeFallInterval % 2 == 0) {
