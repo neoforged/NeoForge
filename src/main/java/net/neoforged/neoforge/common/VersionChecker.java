@@ -234,7 +234,7 @@ public class VersionChecker {
                     List<ComparableVersion> ordered = new ArrayList<>();
                     for (String key : changesData.keySet()) {
                         ComparableVersion ver = new ComparableVersion(key);
-                        if (ver.compareTo(current) > 0 && (target == null || ver.compareTo(target) < 1)) {
+                        if (ver.compareTo(current) > 0 && (target == null || ver.compareTo(target) <= 0)) {
                             ordered.add(ver);
                         }
                     }
