@@ -12,7 +12,7 @@
 +
 +        // Neo: Add DeferredHolder-compatible equals() overrides
 +        @Override
-+        public boolean equals(Object obj) {
++        public boolean equals(@Nullable Object obj) {
 +            if (this == obj) return true;
 +            return obj instanceof Holder.Reference<?> h && h.key() == this.key();
 +        }
