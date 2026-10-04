@@ -715,7 +715,7 @@ public class NeoForgeMod {
 
         @Override
         public boolean shouldAddAutomatically() {
-            return NeoForgeCommonConfig.INSTANCE.enableGlobalDatapacksAutomatically.getAsBoolean();
+            return NeoForgeLocalConfig.INSTANCE.enableGlobalDatapacksAutomatically.getAsBoolean();
         }
     };
 
