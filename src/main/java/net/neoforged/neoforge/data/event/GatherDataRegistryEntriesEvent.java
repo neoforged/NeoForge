@@ -22,16 +22,16 @@ import org.jetbrains.annotations.ApiStatus;
 /// ```java
 /// @SubscribeEvent
 /// public static void gatherRegistries(GatherDataRegistryEntriesEvent event) {
-///     // Create a bootstrap for the desired registries.
-///     event.add(Registries.PLACED_FEATURE, context -> { /*...*/ })
-///         // All methods are chainable and are added to the appropriate layer.
-///         .add(Registries.PREDICATE, context -> { /*...*/ })
-///         // Extension methods for registries with custom providers.
-///         .advancement(output -> { /*...*/ });
+/// // Create a bootstrap for the desired registries.
+/// event.add(Registries.PLACED_FEATURE, context -> { /*...*/ })
+/// // All methods are chainable and are added to the appropriate layer.
+/// .add(Registries.PREDICATE, context -> { /*...*/ })
+/// // Extension methods for registries with custom providers.
+/// .advancement(output -> { /*...*/ });
 ///
-///     // Generating entries for a different mod id.
-///     event.gatherFor("othermod")
-///         .add(Registries.INSTRUMENT, context -> { /*...*/ });
+/// // Generating entries for a different mod id.
+/// event.gatherFor("othermod")
+/// .add(Registries.INSTRUMENT, context -> { /*...*/ });
 /// }
 /// ```
 ///
