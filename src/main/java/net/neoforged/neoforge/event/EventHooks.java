@@ -948,6 +948,11 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new PlayerEvent.ItemSmeltedEvent(player, smelted, amountRemoved));
     }
 
+    public static void firePlayerSmithedEvent(Player player, Container inputs, ItemStack result) {
+        System.out.println(result);
+        NeoForge.EVENT_BUS.post(new PlayerEvent.ItemSmithedEvent(player, inputs, result));
+    }
+
     /**
      * Fires {@link EntityTickEvent.Pre}. Called from the head of {@link LivingEntity#tick()}.
      * 

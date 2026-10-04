@@ -27,6 +27,7 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
+import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -456,6 +457,34 @@ public abstract class PlayerEvent extends LivingEvent {
 
         public int getAmountRemoved() {
             return this.amountRemoved;
+        }
+    }
+
+    /// Fired when a player takes the result item stack from a [smithing table][net.minecraft.world.inventory.SmithingMenu].
+    /// This is fired before the inputs are decremented.
+    ///
+    /// This event is not [cancellable][ICancellableEvent].
+    ///
+    /// This event is fired on the [game event bus][NeoForge#EVENT_BUS], on both [logical sides][net.neoforged.fml.LogicalSide].
+    public static class ItemSmithedEvent extends PlayerEvent {
+        private final Container inputs;
+        private final ItemStack result;
+
+        @ApiStatus.Internal
+        public ItemSmithedEvent(Player player, Container inputs, ItemStack result) {
+            super(player);
+            this.inputs = inputs;
+            this.result = result;
+        }
+
+        /// {@return the container with the input item stacks}
+        public Container getInputs() {
+            return inputs;
+        }
+
+        /// {@return the result item stack}
+        public ItemStack getResult() {
+            return result;
         }
     }
 
