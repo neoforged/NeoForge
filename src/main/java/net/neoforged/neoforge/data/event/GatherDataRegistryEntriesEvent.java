@@ -18,6 +18,23 @@ import org.jetbrains.annotations.ApiStatus;
 /// Gathers the datapack registry entries used for data generation. This is fired for all mods to collect all registry
 /// objects, but only those added via '--mod' in the run arguments will have their contents generated.
 ///
+/// Usage:
+/// ```java
+/// @SubscribeEvent
+/// public static void gatherRegistries(GatherDataRegistryEntriesEvent event) {
+///     // Create a bootstrap for the desired registries.
+///     event.add(Registries.PLACED_FEATURE, context -> { /*...*/ })
+///         // All methods are chainable and are added to the appropriate layer.
+///         .add(Registries.PREDICATE, context -> { /*...*/ })
+///         // Extension methods for registries with custom providers.
+///         .advancement(output -> { /*...*/ });
+///
+///     // Generating entries for a different mod id.
+///     event.gatherFor("othermod")
+///         .add(Registries.INSTRUMENT, context -> { /*...*/ });
+/// }
+/// ```
+///
 /// This event is not [cancellable][ICancellableEvent].
 ///
 /// This event is fired on the mod-specific event bus, during data generation.
