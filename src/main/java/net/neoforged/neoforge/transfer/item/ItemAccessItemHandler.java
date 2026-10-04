@@ -6,10 +6,12 @@
 package net.neoforged.neoforge.transfer.item;
 
 import com.google.common.base.Preconditions;
+import java.util.Optional;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
@@ -45,34 +47,29 @@ public class ItemAccessItemHandler extends ItemAccessResourceHandler<ItemResourc
         return accessResource.getOrDefault(component, ItemContainerContents.EMPTY);
     }
 
-    /**
-     * Retrieves a copy of a single stack from the underlying data component,
-     * returning {@link ItemStack#EMPTY} if the component does not have a slot present.
-     *
-     * @param contents the existing contents
-     * @param slot     the target slot
-     * @return a copy of the stack in the target slot
-     */
-    protected ItemStack getStackFromContents(ItemContainerContents contents, int slot) {
-        return slot < contents.getSlots() ? contents.getStackInSlot(slot) : ItemStack.EMPTY;
+    /// Retrieves a single item template from the underlying data component, returning [ItemStack#EMPTY] if the component does not have a slot present.
+    ///
+    /// @param contents the existing contents
+    /// @param slot     the target slot
+    /// @return the item template for the target slot
+    protected Optional<ItemStackTemplate> getTemplateFromContents(ItemContainerContents contents, int slot) {
+        return slot < contents.getSlots() ? contents.getTemplateInSlot(slot) : Optional.empty();
     }
 
     @Override
     protected ItemResource getResourceFrom(ItemResource accessResource, int index) {
         if (accessResource.is(validItem)) {
-            return ItemResource.of(getStackFromContents(getContents(accessResource), index));
-        } else {
-            return ItemResource.EMPTY;
+            return getTemplateFromContents(getContents(accessResource), index).map(ItemResource::of).orElse(ItemResource.EMPTY);
         }
+        return ItemResource.EMPTY;
     }
 
     @Override
     protected int getAmountFrom(ItemResource accessResource, int index) {
         if (accessResource.is(validItem)) {
-            return getStackFromContents(getContents(accessResource), index).getCount();
-        } else {
-            return 0;
+            return getTemplateFromContents(getContents(accessResource), index).map(ItemStackTemplate::count).orElse(0);
         }
+        return 0;
     }
 
     @Override
