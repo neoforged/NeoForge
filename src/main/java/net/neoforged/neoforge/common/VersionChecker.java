@@ -77,6 +77,8 @@ public class VersionChecker {
                 mods.add(info);
         }
 
+        LOGGER.info("Starting version check for {} mods", mods.size());
+
         var client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).connectTimeout(Duration.ofSeconds(HTTP_TIMEOUT_SECS)).build();
         try (var executor = Executors.newThreadPerTaskExecutor(Thread.ofVirtual().name("version-checker", 0).factory())) {
             for (IModInfo mod : mods) {
