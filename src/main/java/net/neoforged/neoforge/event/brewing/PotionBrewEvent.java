@@ -43,11 +43,11 @@ public abstract class PotionBrewEvent extends Event {
     ///
     /// This event is [ICancellableEvent]
     /// - If this event is not canceled
-    ///     - Any changes made will be ignored
-    ///     - The vanilla brewing will take place instead of modded brewing
+    ///   - Any changes made will be ignored
+    ///   - The vanilla brewing will take place instead of modded brewing
     /// - If this event is canceled
-    ///     - Any changes made will be applied to the Brewing Stand
-    ///     - [Post] will automaiclly be fired
+    ///   - Any changes made will be applied to the Brewing Stand
+    ///   - [Post] will automaiclly be fired
     ///
     /// This event is fired on the [NeoForge#EVENT_BUS]
     public static class Pre extends PotionBrewEvent implements ICancellableEvent {
