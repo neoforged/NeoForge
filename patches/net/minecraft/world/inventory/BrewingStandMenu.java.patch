@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/inventory/BrewingStandMenu.java
++++ b/net/minecraft/world/inventory/BrewingStandMenu.java
+@@ -186,6 +_,7 @@
+         public void onTake(Player player, ItemStack carried) {
+             PotionContents potionContents = carried.get(DataComponents.POTION_CONTENTS);
+             if (potionContents != null && player instanceof ServerPlayer serverPlayer) {
++                net.neoforged.neoforge.event.EventHooks.onPlayerBrewedPotion(player, carried);
+                 CriteriaTriggers.BREWED_POTION.trigger(serverPlayer, potionContents);
+             }
+ 
