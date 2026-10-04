@@ -204,6 +204,7 @@ public class VersionChecker {
                 ComparableVersion current = new ComparableVersion(mod.getVersion().toString());
 
                 if (recommended != null) {
+                    target = recommended;
                     if (recommended.compareTo(current) == 0) {
                         status = Status.UP_TO_DATE;
                     } else if (recommended.compareTo(current) < 0) {
@@ -214,15 +215,14 @@ public class VersionChecker {
                         }
                     } else {
                         status = Status.OUTDATED;
-                        target = recommended;
                     }
                 } else if (latest != null) {
+                    target = latest;
                     if (current.compareTo(latest) < 0) {
                         status = Status.BETA_OUTDATED;
                     } else {
                         status = Status.BETA;
                     }
-                    target = latest;
                 } else {
                     status = Status.BETA;
                 }
