@@ -117,9 +117,9 @@ public class VersionChecker {
     ///
     /// @param status  the check status
     /// @param target  the target version which was used to determine the check status, or `null` if there is no target
-    /// @param changes the map of versions to changelog entries, for all version between the current version and the target version, or `null` if there was an processing error
+    /// @param changes the map of versions to changelog entries, for all versions between the current version and the target version
     /// @param url     the `homepage` url taken from the update checker data, which may be `null` if not present
-    public record CheckResult(VersionChecker.Status status, @Nullable ComparableVersion target, @Nullable Map<ComparableVersion, String> changes, @Nullable String url) {}
+    public record CheckResult(VersionChecker.Status status, @Nullable ComparableVersion target, Map<ComparableVersion, String> changes, @Nullable String url) {}
 
     /// {@return whether the version check system is enabled}. This is controlled by the FML config value [FMLConfig.ConfigValue#VERSION_CHECK].
     public static boolean isEnabled() {
@@ -167,7 +167,7 @@ public class VersionChecker {
         public void run() {
             Status status;
             ComparableVersion target = null;
-            Map<ComparableVersion, String> changes = null;
+            Map<ComparableVersion, String> changes = new LinkedHashMap<>();
             String display_url = null;
             try {
                 if (mod.getUpdateURL().isEmpty()) return;
@@ -234,7 +234,6 @@ public class VersionChecker {
 
                 LOGGER.info("[{}] Found status: {} Current: {} Target: {}", mod.getModId(), status, current, target);
 
-                changes = new LinkedHashMap<>();
                 JsonObject tmp = json.getAsJsonObject(mcVersion);
                 if (tmp != null) {
                     List<ComparableVersion> ordered = new ArrayList<>();
