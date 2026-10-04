@@ -31,6 +31,7 @@ import net.neoforged.fml.loading.FMLConfig;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforgespi.language.IModInfo;
 import org.apache.maven.artifact.versioning.ComparableVersion;
+import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -120,6 +121,7 @@ public class VersionChecker {
     /// @param url     the `homepage` url taken from the update checker data, which may be `null` if not present
     public record CheckResult(VersionChecker.Status status, @Nullable ComparableVersion target, @Nullable Map<ComparableVersion, String> changes, @Nullable String url) {}
 
+    @ApiStatus.Internal
     public static void startVersionCheck() {
         if (!isEnabled()) {
             LOGGER.info("Global NeoForge version check system disabled, no further processing.");
