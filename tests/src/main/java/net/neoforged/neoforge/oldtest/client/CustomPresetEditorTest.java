@@ -34,7 +34,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterPresetEditorsEvent;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GatherDataRegistryEntriesEvent;
 
 @Mod(CustomPresetEditorTest.MODID)
 public class CustomPresetEditorTest {
@@ -44,7 +44,7 @@ public class CustomPresetEditorTest {
     @EventBusSubscriber(modid = MODID)
     public static class CommonModEvents {
         @SubscribeEvent
-        public static void onGatherRegistries(GatherDataEvent.Registries event) {
+        public static void onGatherRegistries(GatherDataRegistryEntriesEvent event) {
             event.add(Registries.WORLD_PRESET, context -> context.register(WORLD_PRESET_KEY, makeWorldPreset(context)));
         }
 

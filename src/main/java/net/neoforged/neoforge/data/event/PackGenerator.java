@@ -19,9 +19,8 @@ import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import org.jspecify.annotations.Nullable;
 
-// TODO-ASH: Document
 public final class PackGenerator {
-    private final GatherDataEvent.Providers owner;
+    private final GatherDataEvent owner;
     private final PackOutput output;
 
     @Nullable
@@ -31,7 +30,7 @@ public final class PackGenerator {
     @Nullable
     CompletableFuture<HolderLookup.Provider> reloadableRegistriesWithModdedEntries = null;
 
-    PackGenerator(GatherDataEvent.Providers owner, PackOutput output) {
+    PackGenerator(GatherDataEvent owner, PackOutput output) {
         this.owner = owner;
         this.output = output;
     }
@@ -72,27 +71,69 @@ public final class PackGenerator {
         addProvider(itemTagsProvider.create(this.output, this.getReloadableLookupProvider(), blockTags.contentsGetter()));
     }
 
+    /// Generates the datapack registry entries in the world layer for the owner's mod id.
+    ///
+    /// This should only be used when generating a built-in datapack. If generating entries for the
+    /// main mod, use [GatherDataRegistryEntriesEvent] instead.
+    ///
+    /// @param entriesBuilder The registry entries to generate.
     public void createWorldRegistryObjects(RegistrySetBuilder entriesBuilder) {
         this.createWorldRegistryObjects(entriesBuilder, Set.of(this.owner.getModContainer().getModId()));
     }
 
+    /// Generates the datapack registry entries in the world layer for provided mod ids.
+    ///
+    /// This should only be used when generating a built-in datapack. If generating entries for the
+    /// main mod, use [GatherDataRegistryEntriesEvent] instead.
+    ///
+    /// @param entriesBuilder The registry entries to generate.
+    /// @param modIds         The set of mod ids to generate the registry elements of.
     public void createWorldRegistryObjects(RegistrySetBuilder entriesBuilder, Set<String> modIds) {
         this.createWorldRegistryObjects(entriesBuilder, modIds, "world");
     }
 
+    /// Generates the datapack registry entries in the world layer for provided mod ids.
+    ///
+    /// This should only be used when generating a built-in datapack. If generating entries for the
+    /// main mod, use [GatherDataRegistryEntriesEvent] instead.
+    ///
+    /// @param entriesBuilder The registry entries to generate.
+    /// @param modIds         The set of mod ids to generate the registry elements of, or `null` to generate all elements.
+    /// @param name           The name of the data provider. Must be unique to prevent collisions with other providers.
     public void createWorldRegistryObjects(RegistrySetBuilder entriesBuilder, @Nullable Set<String> modIds, String name) {
         var registries = this.createProvider((output) -> DatapackBuiltinEntriesProvider.forWorldLayer(output, name, this.getWorldLookupProvider(), entriesBuilder, modIds));
         this.worldRegistriesWithModdedEntries = registries.getRegistryProvider();
     }
 
+    /// Generates the datapack registry entries in the reloadable layer for the owner's mod id.
+    ///
+    /// This should only be used when generating a built-in datapack. If generating entries for the
+    /// main mod, use [GatherDataRegistryEntriesEvent] instead.
+    ///
+    /// @param entriesBuilder The registry entries to generate.
     public void createReloadableRegistryObjects(RegistrySetBuilder entriesBuilder) {
         this.createReloadableRegistryObjects(entriesBuilder, Set.of(this.owner.getModContainer().getModId()));
     }
 
+    /// Generates the datapack registry entries in the reloadable layer for provided mod ids.
+    ///
+    /// This should only be used when generating a built-in datapack. If generating entries for the
+    /// main mod, use [GatherDataRegistryEntriesEvent] instead.
+    ///
+    /// @param entriesBuilder The registry entries to generate.
+    /// @param modIds         The set of mod ids to generate the registry elements of.
     public void createReloadableRegistryObjects(RegistrySetBuilder entriesBuilder, Set<String> modIds) {
         this.createReloadableRegistryObjects(entriesBuilder, modIds, "reloadable");
     }
 
+    /// Generates the datapack registry entries in the reloadable layer for provided mod ids.
+    ///
+    /// This should only be used when generating a built-in datapack. If generating entries for the
+    /// main mod, use [GatherDataRegistryEntriesEvent] instead.
+    ///
+    /// @param entriesBuilder The registry entries to generate.
+    /// @param modIds         The set of mod ids to generate the registry elements of, or `null` to generate all elements.
+    /// @param name           The name of the data provider. Must be unique to prevent collisions with other providers.
     public void createReloadableRegistryObjects(RegistrySetBuilder entriesBuilder, @Nullable Set<String> modIds, String name) {
         var registries = this.createProvider((output) -> DatapackBuiltinEntriesProvider.forReloadableLayer(output, name, this.getWorldLookupProvider(), this.getReloadableLookupProvider(), entriesBuilder, modIds));
         this.reloadableRegistriesWithModdedEntries = registries.getRegistryProvider();

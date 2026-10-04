@@ -49,7 +49,7 @@ public class LootPoolTest {
     @EmptyTemplate
     @TestHolder(description = "Tests if loading loot pools with custom names works")
     public static void testPoolLoading(DynamicTest test, RegistrationHelper reg) {
-        reg.registries(registries -> registries.generateFor("neoforge").lootTable(
+        reg.registries(registries -> registries.gatherFor("neoforge").lootTable(
                 new LootTableProvider.SubProviderEntry(context -> () -> {
                     context.accept(
                             TEST_LOOT_TABLE_1,
@@ -77,7 +77,7 @@ public class LootPoolTest {
     static void pinkConcreteLootTableCanceled(final DynamicTest test, final RegistrationHelper reg) {
         ResourceKey<LootTable> lootTableToUse = TEST_LOOT_TABLE_2;
 
-        reg.registries(registries -> registries.generateFor("neoforge").lootTable(
+        reg.registries(registries -> registries.gatherFor("neoforge").lootTable(
                 new LootTableProvider.SubProviderEntry(context -> () -> {
                     context.accept(
                             lootTableToUse,
@@ -112,7 +112,7 @@ public class LootPoolTest {
     static void orangeConcreteLootTableReplaced(final DynamicTest test, final RegistrationHelper reg) {
         ResourceKey<LootTable> lootTableToUse = TEST_LOOT_TABLE_3;
 
-        reg.registries(registries -> registries.generateFor("neoforge").lootTable(
+        reg.registries(registries -> registries.gatherFor("neoforge").lootTable(
                 new LootTableProvider.SubProviderEntry(context -> () -> {
                     context.accept(
                             lootTableToUse,
@@ -149,7 +149,7 @@ public class LootPoolTest {
     static void yellowConcreteLootTableAppended(final DynamicTest test, final RegistrationHelper reg) {
         ResourceKey<LootTable> lootTableToUse = TEST_LOOT_TABLE_4;
 
-        reg.registries(registries -> registries.generateFor("neoforge").lootTable(
+        reg.registries(registries -> registries.gatherFor("neoforge").lootTable(
                 new LootTableProvider.SubProviderEntry(context -> () -> {
                     context.accept(
                             lootTableToUse,

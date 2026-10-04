@@ -31,6 +31,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.data.event.DataGeneratorConfig;
 import net.neoforged.neoforge.data.event.DatapackRegistryGatherer;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GatherDataRegistryEntriesEvent;
 import net.neoforged.neoforge.data.event.GlobalDatapackRegistryGatherer;
 import net.neoforged.neoforge.internal.CommonModLoader;
 import org.apache.logging.log4j.LogManager;
@@ -75,9 +76,9 @@ public class DatagenModLoader extends CommonModLoader {
         List<DatapackRegistryGathererImpl> registryProviders = new ArrayList<>();
         var mainGatherer = new DatapackRegistryGathererImpl(dataGeneratorConfig.getMods());
         for (ModContainer mod : ModList.get().getSortedMods()) {
-            mod.acceptEvent(new GatherDataEvent.Registries(mod, new GlobalDatapackRegistryGatherer() {
+            mod.acceptEvent(new GatherDataRegistryEntriesEvent(mod, new GlobalDatapackRegistryGatherer() {
                 @Override
-                public DatapackRegistryGatherer generateFor(String modId, String... modIds) {
+                public DatapackRegistryGatherer gatherFor(String modId, String... modIds) {
                     var subGatherer = new DatapackRegistryGathererImpl(this, mod.getModId(), Stream.concat(Stream.of(modId), Arrays.stream(modIds)).collect(Collectors.toSet()));
                     if (dataGeneratorConfig.getMods().contains(mod.getModId())) {
                         registryProviders.add(subGatherer);
@@ -91,14 +92,14 @@ public class DatagenModLoader extends CommonModLoader {
                 }
 
                 @Override
-                public <T> DatapackRegistryGatherer add(MultiRegistryBootstrap bootstrap) throws IllegalArgumentException {
+                public DatapackRegistryGatherer add(MultiRegistryBootstrap bootstrap) throws IllegalArgumentException {
                     return mainGatherer.add(bootstrap);
                 }
             }));
         }
         // Add to data generator
         var datapackRegistryGenerator = dataGeneratorConfig.makeGenerator(Function.identity(), uncached);
-        var registries = mainGatherer.createMain(datapackRegistryGenerator, worldLookupProvider);
+        var registries = mainGatherer.createGlobal(datapackRegistryGenerator, worldLookupProvider);
         for (int i = 0; i < registryProviders.size(); ++i) registryProviders.get(i).createSub(datapackRegistryGenerator, registries, i);
 
         // Only fire the event for mods that have their generators enabled

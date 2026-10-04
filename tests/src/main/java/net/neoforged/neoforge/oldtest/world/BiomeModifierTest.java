@@ -38,7 +38,7 @@ import net.neoforged.neoforge.common.world.BiomeModifiers.AddSpawnsBiomeModifier
 import net.neoforged.neoforge.common.world.BiomeModifiers.RemoveFeaturesBiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers.RemoveSpawnsBiomeModifier;
 import net.neoforged.neoforge.common.world.ModifiableBiomeInfo.BiomeInfo.Builder;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GatherDataRegistryEntriesEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -89,7 +89,7 @@ public class BiomeModifierTest {
         modBus.addListener(this::onGatherRegistries);
     }
 
-    private void onGatherRegistries(GatherDataEvent.Registries event) {
+    private void onGatherRegistries(GatherDataRegistryEntriesEvent event) {
         event.add(Registries.PLACED_FEATURE, context -> context.register(LARGE_BASALT_COLUMNS,
                 new PlacedFeature(
                         context.lookup(Registries.FEATURE).getOrThrow(NetherFeatures.LARGE_BASALT_COLUMNS),

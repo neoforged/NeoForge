@@ -79,12 +79,22 @@ public interface RegistrationHelper {
 
     <T extends DataProvider> void clientProvider(Class<T> type, Consumer<T> consumer);
 
-    // TODO-ASH: Document
+    /// Adds the datapack registry entries to generate.
+    ///
+    /// If the entries have the {@link #modId()} of the test, use {@link #registriesForTest(Consumer)} instead.
+    ///
+    /// @param consumer A consumer for the datapack registry gatherer.
     void registries(Consumer<GlobalDatapackRegistryGatherer> consumer);
 
-    // TODO-ASH: Document
+    /// Adds the datapack registry entries to generate for the current test.
+    ///
+    /// If there are entries with a different mod id from {@link #modId()}, use {@link #registries(Consumer)}
+    /// instead, calling {@link GlobalDatapackRegistryGatherer#gatherFor(String, String...)} with the mod ids
+    /// to generate.
+    ///
+    /// @param consumer A consumer for the datapack registry gatherer.
     default void registriesForTest(Consumer<DatapackRegistryGatherer> consumer) {
-        this.registries(global -> consumer.accept(global.generateFor(this.modId())));
+        this.registries(global -> consumer.accept(global.gatherFor(this.modId())));
     }
 
     Consumer<Consumer<? extends Event>> eventListeners();

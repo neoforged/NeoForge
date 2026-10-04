@@ -43,6 +43,7 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GatherDataRegistryEntriesEvent;
 import net.neoforged.neoforge.data.event.GlobalDatapackRegistryGatherer;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -249,7 +250,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
         return bus == null ? listeners::add : bus::addListener;
     }
 
-    private void gatherRegistries(final GatherDataEvent.Registries event) {
+    private void gatherRegistries(final GatherDataRegistryEntriesEvent event) {
         registryGatherers.forEach(c -> c.accept(event));
     }
 
@@ -261,7 +262,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
         gather(event, clientProviders, directClientProviders);
     }
 
-    private <T extends GatherDataEvent.Providers> void gather(final T event, ListMultimap<Class<?>, Consumer<? extends DataProvider>> providers, List<Function<T, DataProvider>> directProviders) {
+    private <T extends GatherDataEvent> void gather(final T event, ListMultimap<Class<?>, Consumer<? extends DataProvider>> providers, List<Function<T, DataProvider>> directProviders) {
         providers.asMap().forEach((cls, cons) -> event.getGenerator().addProvider(true, PROVIDERS.get(cls).create(
                 event.getGenerator().getPackOutput(), event.getReloadableLookupProvider(), event.getGenerator(), modId, (List) cons)));
 

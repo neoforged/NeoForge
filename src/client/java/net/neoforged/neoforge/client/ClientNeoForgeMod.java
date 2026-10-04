@@ -82,6 +82,7 @@ import net.neoforged.neoforge.common.data.internal.NeoForgeRegistryOrderReportPr
 import net.neoforged.neoforge.common.data.internal.NeoForgeStructureTagsProvider;
 import net.neoforged.neoforge.common.data.internal.VanillaSoundDefinitionsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GatherDataRegistryEntriesEvent;
 import net.neoforged.neoforge.event.DefaultDataComponentsBoundEvent;
 import net.neoforged.neoforge.internal.BrandingControl;
 import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
@@ -156,8 +157,8 @@ public class ClientNeoForgeMod {
     }
 
     @SubscribeEvent
-    static void onGatherRegistries(GatherDataEvent.Registries event) {
-        event.generateFor("minecraft")
+    static void onGatherRegistries(GatherDataRegistryEntriesEvent event) {
+        event.gatherFor("minecraft")
                 .add(Registries.ADVANCEMENT, new NeoForgeAdvancementProvider())
                 .recipe(NeoForgeRecipeProvider::new)
                 .add(Registries.PREDICATE, NeoForgeLootDataProvider::overrideLootPredicates);

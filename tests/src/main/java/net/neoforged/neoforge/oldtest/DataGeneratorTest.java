@@ -96,6 +96,7 @@ import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.common.data.SoundDefinition;
 import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GatherDataRegistryEntriesEvent;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -113,10 +114,10 @@ public class DataGeneratorTest {
     private static final ResourceKey<LevelStem> TEST_LEVEL_STEM = ResourceKey.create(Registries.LEVEL_STEM, Identifier.fromNamespaceAndPath(MODID, "test_level_stem"));
 
     @SubscribeEvent
-    public static void gatherRegistries(GatherDataEvent.Registries event) {
+    public static void gatherRegistries(GatherDataRegistryEntriesEvent event) {
         event.add(Registries.NOISE_SETTINGS, context -> context.register(TEST_SETTINGS, NoiseGeneratorSettings.floatingIslands(context)))
                 .add(Registries.LEVEL_STEM, DataGeneratorTest::levelStem);
-        event.generateFor("minecraft", MODID)
+        event.gatherFor("minecraft", MODID)
                 .recipe(Recipes::new)
                 .advancement(Advancements::new);
     }
