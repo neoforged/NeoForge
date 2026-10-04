@@ -19,7 +19,6 @@ public abstract class PotionBrewEvent extends Event {
     }
 
     public ItemStack getItem(int index) {
-        if (index < 0 || index >= stacks.size()) return ItemStack.EMPTY;
         return stacks.get(index);
     }
 
@@ -48,9 +47,7 @@ public abstract class PotionBrewEvent extends Event {
         }
 
         public void setItem(int index, ItemStack stack) {
-            if (index < stacks.size()) {
-                stacks.set(index, stack);
-            }
+            stacks.set(index, stack);
         }
     }
 
