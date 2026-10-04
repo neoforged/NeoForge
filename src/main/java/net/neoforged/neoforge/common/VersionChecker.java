@@ -157,7 +157,7 @@ public class VersionChecker {
 
     private record VersionCheckRunnable(IModInfo mod, HttpClient client) implements Runnable {
         private String createUserAgent() {
-            return "Java-http-client/" + System.getProperty("java.version") + ' '
+            return "Java-http-client/" + System.getProperty("java.version") + ' ' // The default user agent
                     + "FancyModLoader/" + FMLVersion.getVersion() + ' '
                     + "NeoForge/" + NeoForgeVersion.getVersion() + ' '
                     + mod.getModId() + '/' + mod.getVersion();
