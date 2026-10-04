@@ -199,45 +199,40 @@ public class VersionChecker {
                 JsonObject promos = json.getAsJsonObject("promos");
 
                 var mcVersion = FMLLoader.getCurrent().getVersionInfo().mcVersion();
-                String rec = promos.get(mcVersion + "-recommended").getAsString();
-                String lat = promos.get(mcVersion + "-latest").getAsString();
+                ComparableVersion recommended = promos.has(mcVersion + "-recommended") ? new ComparableVersion(promos.get(mcVersion + "-recommended").getAsString()) : null;
+                ComparableVersion latest = promos.has(mcVersion + "-latest") ? new ComparableVersion(promos.get(mcVersion + "-latest").getAsString()) : null;
                 ComparableVersion current = new ComparableVersion(mod.getVersion().toString());
 
-                if (rec != null) {
-                    ComparableVersion recommended = new ComparableVersion(rec);
-                    int diff = recommended.compareTo(current);
-
-                    if (diff == 0)
+                if (recommended != null) {
+                    if (recommended.compareTo(current) == 0) {
                         status = Status.UP_TO_DATE;
-                    else if (diff < 0) {
+                    } else if (recommended.compareTo(current) < 0) {
                         status = Status.AHEAD;
-                        if (lat != null) {
-                            ComparableVersion latest = new ComparableVersion(lat);
-                            if (current.compareTo(latest) < 0) {
-                                status = Status.OUTDATED;
-                                target = latest;
-                            }
+                        if (latest != null && current.compareTo(latest) < 0) {
+                            status = Status.OUTDATED;
+                            target = latest;
                         }
                     } else {
                         status = Status.OUTDATED;
                         target = recommended;
                     }
-                } else if (lat != null) {
-                    ComparableVersion latest = new ComparableVersion(lat);
-                    if (current.compareTo(latest) < 0)
+                } else if (latest != null) {
+                    if (current.compareTo(latest) < 0) {
                         status = Status.BETA_OUTDATED;
-                    else
+                    } else {
                         status = Status.BETA;
+                    }
                     target = latest;
-                } else
+                } else {
                     status = Status.BETA;
+                }
 
                 LOGGER.info("[{}] Found status: {} Current: {} Target: {}", mod.getModId(), status, current, target);
 
-                JsonObject tmp = json.getAsJsonObject(mcVersion);
-                if (tmp != null) {
+                JsonObject changesData = json.getAsJsonObject(mcVersion);
+                if (changesData != null) {
                     List<ComparableVersion> ordered = new ArrayList<>();
-                    for (String key : tmp.keySet()) {
+                    for (String key : changesData.keySet()) {
                         ComparableVersion ver = new ComparableVersion(key);
                         if (ver.compareTo(current) > 0 && (target == null || ver.compareTo(target) < 1)) {
                             ordered.add(ver);
@@ -246,7 +241,7 @@ public class VersionChecker {
                     Collections.sort(ordered);
 
                     for (ComparableVersion ver : ordered) {
-                        changes.put(ver, tmp.get(ver.toString()).getAsString());
+                        changes.put(ver, changesData.get(ver.toString()).getAsString());
                     }
                 }
             } catch (Exception e) {
