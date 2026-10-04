@@ -121,6 +121,16 @@ public class VersionChecker {
     /// @param url     the `homepage` url taken from the update checker data, which may be `null` if not present
     public record CheckResult(VersionChecker.Status status, @Nullable ComparableVersion target, @Nullable Map<ComparableVersion, String> changes, @Nullable String url) {}
 
+    /// {@return whether the version check system is enabled}. This is controlled by the FML config value [FMLConfig.ConfigValue#VERSION_CHECK].
+    public static boolean isEnabled() {
+        return FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.VERSION_CHECK);
+    }
+
+    /// {@return the version check result for the given mod, or `null` if there is none} This will return `null` both for mods which do not use the version check system, and for mods which do use it but are currently being checked.
+    public static @Nullable CheckResult getResult(IModInfo mod) {
+        return RESULTS.get(mod);
+    }
+
     @ApiStatus.Internal
     public static void startVersionCheck() {
         if (!isEnabled()) {
@@ -143,16 +153,6 @@ public class VersionChecker {
                 executor.submit(new VersionCheckRunnable(mod, client));
             }
         }
-    }
-
-    /// {@return whether the version check system is enabled}. This is controlled by the FML config value [FMLConfig.ConfigValue#VERSION_CHECK].
-    public static boolean isEnabled() {
-        return FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.VERSION_CHECK);
-    }
-
-    /// {@return the version check result for the given mod, or `null` if there is none} This will return `null` both for mods which do not use the version check system, and for mods which do use it but are currently being checked.
-    public static @Nullable CheckResult getResult(IModInfo mod) {
-        return RESULTS.get(mod);
     }
 
     private record VersionCheckRunnable(IModInfo mod, HttpClient client) implements Runnable {
