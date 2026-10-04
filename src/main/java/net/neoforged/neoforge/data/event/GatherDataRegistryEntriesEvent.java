@@ -15,6 +15,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.IModBusEvent;
 import org.jetbrains.annotations.ApiStatus;
 
+// @formatter:off
 /// Gathers the datapack registry entries used for data generation. This is fired for all mods to collect all registry
 /// objects, but only those added via '--mod' in the run arguments will have their contents generated.
 ///
@@ -22,22 +23,23 @@ import org.jetbrains.annotations.ApiStatus;
 /// ```java
 /// @SubscribeEvent
 /// public static void gatherRegistries(GatherDataRegistryEntriesEvent event) {
-/// // Create a bootstrap for the desired registries.
-/// event.add(Registries.PLACED_FEATURE, context -> { /*...*/ })
-/// // All methods are chainable and are added to the appropriate layer.
-/// .add(Registries.PREDICATE, context -> { /*...*/ })
-/// // Extension methods for registries with custom providers.
-/// .advancement(output -> { /*...*/ });
+///     // Create a bootstrap for the desired registries.
+///     event.add(Registries.PLACED_FEATURE, context -> { /*...*/ })
+///         // All methods are chainable and are added to the appropriate layer.
+///         .add(Registries.PREDICATE, context -> { /*...*/ })
+///         // Extension methods for registries with custom providers.
+///         .advancement(output -> { /*...*/ });
 ///
-/// // Generating entries for a different mod id.
-/// event.gatherFor("othermod")
-/// .add(Registries.INSTRUMENT, context -> { /*...*/ });
+///     // Generating entries for a different mod id.
+///     event.gatherFor("othermod")
+///         .add(Registries.INSTRUMENT, context -> { /*...*/ });
 /// }
 /// ```
 ///
 /// This event is not [cancellable][ICancellableEvent].
 ///
 /// This event is fired on the mod-specific event bus, during data generation.
+// @formatter:on
 public final class GatherDataRegistryEntriesEvent extends Event implements IModBusEvent, GlobalDatapackRegistryGatherer {
     private final ModContainer modContainer;
     private final GlobalDatapackRegistryGatherer delegate;
