@@ -655,12 +655,10 @@ public class EventHooks {
         for (int x = 0; x < tmp.size(); x++)
             tmp.set(x, stacks.get(x).copy());
 
-        PotionBrewEvent.Pre event = new PotionBrewEvent.Pre(tmp);
-        if (NeoForge.EVENT_BUS.post(event).isCanceled()) {
+        if (NeoForge.EVENT_BUS.post(new PotionBrewEvent.Pre(stacks)).isCanceled()) {
             boolean changed = false;
             for (int x = 0; x < stacks.size(); x++) {
                 changed |= ItemStack.matches(tmp.get(x), stacks.get(x));
-                stacks.set(x, event.getItem(x));
             }
             if (changed)
                 onPotionBrewed(stacks);
