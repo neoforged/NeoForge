@@ -12,7 +12,7 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 public abstract class PotionBrewEvent extends Event {
-    private NonNullList<ItemStack> stacks;
+    protected final NonNullList<ItemStack> stacks;
 
     protected PotionBrewEvent(NonNullList<ItemStack> stacks) {
         this.stacks = stacks;
@@ -21,12 +21,6 @@ public abstract class PotionBrewEvent extends Event {
     public ItemStack getItem(int index) {
         if (index < 0 || index >= stacks.size()) return ItemStack.EMPTY;
         return stacks.get(index);
-    }
-
-    public void setItem(int index, ItemStack stack) {
-        if (index < stacks.size()) {
-            stacks.set(index, stack);
-        }
     }
 
     public int getLength() {
@@ -51,6 +45,12 @@ public abstract class PotionBrewEvent extends Event {
     public static class Pre extends PotionBrewEvent implements ICancellableEvent {
         public Pre(NonNullList<ItemStack> stacks) {
             super(stacks);
+        }
+
+        public void setItem(int index, ItemStack stack) {
+            if (index < stacks.size()) {
+                stacks.set(index, stack);
+            }
         }
     }
 
