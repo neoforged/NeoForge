@@ -189,7 +189,7 @@ public class VersionChecker {
                 String data;
                 try (var stream = isGzipEncoded ? new GZIPInputStream(response.body()) : response.body();
                         var bufferedReader = new BufferedReader(new InputStreamReader(stream))) {
-                    data = bufferedReader.lines().collect(Collectors.joining("\n"));
+                    data = bufferedReader.lines().collect(Collectors.joining());
                 }
 
                 LOGGER.debug("[{}] Received version check data from {}", mod.getModId(), response.uri());
