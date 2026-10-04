@@ -26,21 +26,20 @@ public abstract class PotionBrewEvent extends Event {
         return stacks.size();
     }
 
-    /**
-     * PotionBrewEvent.Pre is fired before vanilla brewing takes place.
-     * All changes made to the event's array will be made to the TileEntity if the event is canceled.
-     * <br>
-     * The event is fired during the {@code BrewingStandBlockEntity#doBrew(Level, BlockPos, NonNullList)} method invocation.<br>
-     * <br>
-     * {@link #stacks} contains the itemstack array from the TileEntityBrewer holding all items in Brewer.<br>
-     * <br>
-     * This event is {@link net.neoforged.bus.api.ICancellableEvent}.<br>
-     * If the event is not canceled, the vanilla brewing will take place instead of modded brewing.
-     * <br>
-     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
-     * <br>
-     * If this event is canceled, and items have been modified, PotionBrewEvent.Post will automatically be fired.
-     **/
+    /// PotionBrewEvent.Pre is fired before vanilla brewing takes place.
+    /// All changes made to the event's array will be made to the TileEntity if the event is canceled.
+    ///
+    /// The event is fired during the `BrewingStandBlockEntity#doBrew(Level, BlockPos, NonNullList)` method invocation.
+    ///
+    /// [#stacks] contains the itemstack array from the TileEntityBrewer holding all items in Brewer.
+    ///
+    /// This event is [net.neoforged.bus.api.ICancellableEvent].
+    ///
+    /// If the event is not canceled, the vanilla brewing will take place instead of modded brewing.
+    ///
+    /// This event is fired on the [NeoForge#EVENT_BUS].
+    ///
+    /// If this event is canceled, and items have been modified, PotionBrewEvent.Post will automatically be fired.
     public static class Pre extends PotionBrewEvent implements ICancellableEvent {
         public Pre(NonNullList<ItemStack> stacks) {
             super(stacks);
@@ -51,17 +50,15 @@ public abstract class PotionBrewEvent extends Event {
         }
     }
 
-    /**
-     * PotionBrewEvent.Post is fired when a potion is brewed in the brewing stand.
-     * <br>
-     * The event is fired during the {@code BrewingStandBlockEntity#doBrew(Level, BlockPos, NonNullList)} method invocation.<br>
-     * <br>
-     * {@link #stacks} contains the itemstack array from the TileEntityBrewer holding all items in Brewer.<br>
-     * <br>
-     * This event is not {@link net.neoforged.bus.api.ICancellableEvent}.<br>
-     * <br>
-     * This event is fired on the {@link NeoForge#EVENT_BUS}.<br>
-     **/
+    /// PotionBrewEvent.Post is fired when a potion is brewed in the brewing stand.
+    ///
+    /// The event is fired during the `BrewingStandBlockEntity#doBrew(Level, BlockPos, NonNullList)` method invocation.
+    ///
+    /// [#stacks] contains the itemstack array from the TileEntityBrewer holding all items in Brewer.
+    ///
+    /// This event is not [net.neoforged.bus.api.ICancellableEvent].
+    ///
+    /// This event is fired on the [NeoForge#EVENT_BUS].
     public static class Post extends PotionBrewEvent {
         public Post(NonNullList<ItemStack> stacks) {
             super(stacks);
