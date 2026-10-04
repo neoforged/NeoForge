@@ -15,11 +15,11 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.IModBusEvent;
 import org.jetbrains.annotations.ApiStatus;
 
-// @formatter:off
 /// Gathers the datapack registry entries used for data generation. This is fired for all mods to collect all registry
 /// objects, but only those added via '--mod' in the run arguments will have their contents generated.
 ///
 /// Usage:
+/// <!-- @formatter:off -->
 /// ```java
 /// @SubscribeEvent
 /// public static void gatherRegistries(GatherDataRegistryEntriesEvent event) {
@@ -35,11 +35,11 @@ import org.jetbrains.annotations.ApiStatus;
 ///         .add(Registries.INSTRUMENT, context -> { /*...*/ });
 /// }
 /// ```
+/// <!-- @formatter:on -->
 ///
 /// This event is not [cancellable][ICancellableEvent].
 ///
 /// This event is fired on the mod-specific event bus, during data generation.
-// @formatter:on
 public final class GatherDataRegistryEntriesEvent extends Event implements IModBusEvent, GlobalDatapackRegistryGatherer {
     private final ModContainer modContainer;
     private final GlobalDatapackRegistryGatherer delegate;
