@@ -18,12 +18,17 @@ public final class NeoForgeLocalConfig {
     public static final NeoForgeLocalConfig INSTANCE;
 
     public final ModConfigSpec.BooleanValue attributeAdvancedTooltipDebugInfo;
+    public final ModConfigSpec.IntValue splitPacketMaxSizeLimitMb;
 
     private NeoForgeLocalConfig(ModConfigSpec.Builder builder) {
         attributeAdvancedTooltipDebugInfo = builder
                 .comment("Set this to true to enable showing debug information about attributes on an item when advanced tooltips is on.")
                 .translation("neoforge.configgui.attributeAdvancedTooltipDebugInfo")
                 .define("attributeAdvancedTooltipDebugInfo", true);
+        splitPacketMaxSizeLimitMb = builder
+                .comment("The maximum allowed size of a reassembled split packet; expressed in MBs.")
+                .translation("neoforge.configgui.splitPacketMaxSizeLimitMb")
+                .defineInRange("splitPacketMaxSizeLimitMb", 128, 1, 2048);
     }
 
     static {
