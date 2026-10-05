@@ -1,5 +1,12 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug;
 
+import java.util.Locale;
+import java.util.function.BiFunction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Rotation;
@@ -11,9 +18,6 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.GameTest;
-
-import java.util.Locale;
-import java.util.function.BiFunction;
 
 @ForEachTest(groups = GameTestTest.GROUP)
 public final class GameTestTest {
