@@ -25,6 +25,7 @@ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.config.NeoForgeCommonConfig;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.SplitPacketPayload;
@@ -55,6 +56,9 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
     private static final byte STATE_FIRST = 1;
     private static final byte STATE_LAST = 2;
 
+    private static final long ONE_MB = 1048576L;
+    private static final int MAX_PACKETS_SAFETY_LIMIT = 65535;
+
     public static final String CHANNEL_HANDLER_NAME = "neoforge:splitter";
 
     @SubscribeEvent
@@ -66,7 +70,9 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
 
     private static void handle(SplitPacketPayload payload, IPayloadContext context) {
         if (context.channelHandlerContext().pipeline().get(CHANNEL_HANDLER_NAME) instanceof GenericPacketSplitter splitter) {
-            splitter.receivedPacket(payload, context);
+            if (!splitter.receivedPacket(payload, context)) {
+                context.disconnect(Component.translatable("neoforge.network.packet_splitter.too_big"));
+            }
         } else {
             LOGGER.error("Received split packet without a splitter");
             context.disconnect(Component.translatable("neoforge.network.packet_splitter.unknown"));
@@ -130,13 +136,15 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
     }
 
     private final List<byte[]> receivedBuffers = new ArrayList<>();
+    private long sizeCounter = 0L;
 
-    private void receivedPacket(SplitPacketPayload payload, IPayloadContext context) {
+    private boolean receivedPacket(SplitPacketPayload payload, IPayloadContext context) {
         byte state = payload.payload()[0];
         if (state == STATE_FIRST) {
             if (!receivedBuffers.isEmpty()) {
                 LOGGER.warn("neoforge:split received out of order - inbound buffer not empty when receiving first");
                 receivedBuffers.clear();
+                sizeCounter = 0L;
             }
         }
 
@@ -144,6 +152,15 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
         byte[] buffer = new byte[contentSize];
         System.arraycopy(payload.payload(), 1, buffer, 0, contentSize); // We cut of the initial byte here that indicates the state
         receivedBuffers.add(buffer);
+        sizeCounter += buffer.length;
+
+        long maxSize = NeoForgeCommonConfig.INSTANCE.splitPacketMaxSizeLimitMb.getAsInt() * ONE_MB;
+        if (sizeCounter > maxSize || receivedBuffers.size() > MAX_PACKETS_SAFETY_LIMIT) {
+            // Reset data, as we are going to disconnect anyway
+            sizeCounter = 0L;
+            receivedBuffers.clear();
+            return false;
+        }
 
         if (state == STATE_LAST) {
             final byte[][] buffers = receivedBuffers.toArray(new byte[0][]);
@@ -153,10 +170,13 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
                 Packet<?> packet = context.connection().getInboundProtocol().codec().decode(full);
                 context.enqueueWork(() -> context.handle(packet));
             } finally {
+                sizeCounter = 0L;
                 receivedBuffers.clear();
                 full.release();
             }
         }
+
+        return true;
     }
 
     private static Packet<?> createPacket(PacketFlow flow, byte[] payload) {
