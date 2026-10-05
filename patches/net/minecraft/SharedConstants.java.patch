@@ -11,7 +11,7 @@
      public static final int WORLD_RESOLUTION = 16;
      public static final int MAX_CHAT_LENGTH = 256;
      public static final int MAX_USER_INPUT_COMMAND_LENGTH = 32500;
-@@ -219,6 +_,7 @@
+@@ -219,8 +_,49 @@
      }
  
      static {
@@ -19,3 +19,45 @@
          ResourceLeakDetector.setLevel(NETTY_LEAK_DETECTION);
          CommandSyntaxException.ENABLE_COMMAND_STACK_TRACES = COMMAND_STACK_TRACES;
          CommandSyntaxException.BUILT_IN_EXCEPTIONS = new BrigadierExceptions();
++    }
++
++    // Neo: Expose debug flag helpers for modded usage
++    /// {@return prefixed debug flag name following the pattern `MC_DEBUG_${NAMESPACE}_${PATH}` and replacing `/` with `_`}
++    public static String prefixDebugFlagName(net.minecraft.resources.Identifier name) {
++        return prefixDebugFlagName(name.toDebugFileName());
++    }
++
++    /// {@return whether or not the given debug flag is enabled}
++    /// @see #prefixDebugFlagName(net.minecraft.resources.Identifier)
++    public static boolean debugFlag(net.minecraft.resources.Identifier name) {
++        if (!DEBUG_ENABLED) {
++            return false;
++        }
++
++        // copy of vanillas but this is the only change
++        // redirect to our `Identifier` based prefixing
++        String prefixedName = prefixDebugFlagName(name);
++        if (DEBUG_PRINT_PROPERTIES) {
++            System.out.println("Debug property available: " + prefixedName + ": bool");
++        }
++
++        return booleanProperty(prefixedName);
++    }
++
++    /// {@return this debug flags value or `0` if `MC_DEBUG_ENABLED` is disabled}
++    /// @see #prefixDebugFlagName(net.minecraft.resources.Identifier)
++    public static int debugIntValue(net.minecraft.resources.Identifier name) {
++        if (!DEBUG_ENABLED) {
++            return 0;
++        }
++
++        // copy of vanillas but this is the only change
++        // redirect to our `Identifier` based prefixing
++        String prefixedName = prefixDebugFlagName(name);
++        if (DEBUG_PRINT_PROPERTIES) {
++            System.out.println("Debug property available: " + prefixedName + ": int");
++        }
++
++        return Integer.parseInt(System.getProperty(prefixedName, "0"));
+     }
+ }
