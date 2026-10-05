@@ -14,31 +14,17 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import net.minecraft.util.HttpUtil;
-import net.neoforged.neoforge.common.NeoForge;
-import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 public class DualStackUtils {
-    private static final String INITIAL_PREFER_IPv4_STACK = System.getProperty("java.net.preferIPv4Stack") == null ? "false" : System.getProperty("java.net.preferIPv4Stack");
-    private static final String INITIAL_PREFER_IPv6_ADDRESSES = System.getProperty("java.net.preferIPv6Addresses") == null ? "false" : System.getProperty("java.net.preferIPv6Addresses");
-
     private static final Logger LOGGER = LogUtils.getLogger();
 
     /**
-     * Called by {@link NeoForge} to capture the initial networking preferences before checking addresses.
-     * These values are used for diagnostics and when an address's protocol family is unknown.
-     */
-    @ApiStatus.Internal
-    public static void initialise() {}
-
-    /**
-     * Checks whether an address is IPv6 without changing the JVM's networking preferences.
-     * Those preferences are process-wide and may be cached by Java and Netty, so checking one address
-     * must not change how other connections resolve addresses or create sockets.
+     * Checks if an address is an IPv6 one or an IPv4 one.
      *
-     * @param inetAddress the address to check, or {@code null} if no address is known
-     * @return true for IPv6, false for IPv4; the initial preferences are used for an unknown address
+     * @param inetAddress The address you want to check, or {@code null} if unknown
+     * @return true if IPv6, false if IPv4. For an unknown address, true only if Java was explicitly told to prefer IPv6
      */
     public static boolean checkIPv6(@Nullable final InetAddress inetAddress) {
         // only log debug messages if we're not in the server pinger thread, as otherwise it's unclear which IP
@@ -60,7 +46,7 @@ public class DualStackUtils {
                 LOGGER.debug("Unable to determine IP version of address: " + addr);
             }
 
-            if (INITIAL_PREFER_IPv4_STACK.equalsIgnoreCase("false") && INITIAL_PREFER_IPv6_ADDRESSES.equalsIgnoreCase("true")) {
+            if (!Boolean.getBoolean("java.net.preferIPv4Stack") && Boolean.getBoolean("java.net.preferIPv6Addresses")) {
                 if (shouldLogDebug)
                     LOGGER.debug("Assuming IPv6 as Java was explicitly told to prefer it...");
                 return true;
@@ -98,15 +84,6 @@ public class DualStackUtils {
     public static String getMulticastGroup() {
         if (checkIPv6(getLocalAddress())) return "FF75:230::60";
         else return "224.0.2.60";
-    }
-
-    /**
-     * Logs the initial values of the {@code java.net.preferIPv4Stack} and {@code java.net.preferIPv6Addresses} system
-     * properties that Java has read on JVM start. Useful for debugging hostname lookup failures.
-     */
-    public static void logInitialPreferences() {
-        LOGGER.debug("Initial IPv4 stack preference: " + INITIAL_PREFER_IPv4_STACK);
-        LOGGER.debug("Initial IPv6 addresses preference: " + INITIAL_PREFER_IPv6_ADDRESSES);
     }
 
     /**
