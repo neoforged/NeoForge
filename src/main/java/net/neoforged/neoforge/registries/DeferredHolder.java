@@ -88,9 +88,9 @@ public class DeferredHolder<R, T extends R> extends Holder.Reference<R> implemen
     }
 
     @Override
-    public ResourceKey<R> key() {
+    public ResourceKey<R> getKey() {
         //Note: We know this is nonnull as we pass a nonnull value to super
-        return Objects.requireNonNull(super.key());
+        return key();
     }
 
     /**

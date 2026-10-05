@@ -35,19 +35,20 @@ public interface IHolderExtension<T> extends IWithData<T> {
     }
 
     /// Get the resource key held by this Holder, or null if none is present. This method will be overridden
-    /// by Holder implementations to avoid allocation associated with [Holder#unwrapKey()]
-    /// 
-    /// @deprecated Deprecated to lower patch size, and let vanilla's builtin [Holder.Reference#key()] method be the implementation
+    /// by Holder implementations to avoid allocation associated with [Holder#unwrapKey()], and to bypass any key not yet bound checks that would occur in [Holder#unwrapKey()].
     @Nullable
-    @Deprecated(forRemoval = true, since = "26.3")
     default ResourceKey<T> getKey() {
-        return key();
+        return ((Holder<T>) this).unwrapKey().orElse(null);
     }
 
     /// Get the resource key held by this Holder, or null if none is present. This method will be overridden
     /// by Holder implementations to avoid allocation associated with [Holder#unwrapKey()]
+    /// 
+    /// @deprecated Deprecated as vanilla's builtin [Holder.Reference#key()] method throws before the key is bound instead of returning null.
+    ///             So us deprecating that method in favor of this was an oversight. Call via either [#getKey()] or by using [net.minecraft.core.Holder.Reference#key()] directly.
     @Nullable
+    @Deprecated(forRemoval = true, since = "26.3")
     default ResourceKey<T> key() {
-        return ((Holder<T>) this).unwrapKey().orElse(null);
+        return getKey();
     }
 }

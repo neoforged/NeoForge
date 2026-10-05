@@ -83,7 +83,7 @@ public class DataMapLoader extends ContextAwareReloadListener {
 
                 resolve(registry, tKey, true, holder -> {
                     final var newValue = value.get().carrier();
-                    final var key = holder.key();
+                    final var key = holder.getKey();
                     final var oldValue = result.get(key);
                     if (oldValue == null || newValue.replace()) {
                         result.put(key, new WithSource<>(newValue.value(), tKey));
@@ -97,7 +97,7 @@ public class DataMapLoader extends ContextAwareReloadListener {
                 if (removal.remover().isPresent()) {
                     var remover = removal.remover().orElseThrow();
                     resolve(registry, removal.key(), false, holder -> {
-                        final var key = holder.key();
+                        final var key = holder.getKey();
                         final var oldValue = result.get(key);
                         if (oldValue != null) {
                             final var newValue = remover.remove(oldValue.attachment(), registry, oldValue.source(), holder.value());
@@ -109,7 +109,7 @@ public class DataMapLoader extends ContextAwareReloadListener {
                         }
                     });
                 } else {
-                    resolve(registry, removal.key(), false, holder -> result.remove(holder.key()));
+                    resolve(registry, removal.key(), false, holder -> result.remove(holder.getKey()));
                 }
             }
         });

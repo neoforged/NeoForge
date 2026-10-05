@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/Holder.java
 +++ b/net/minecraft/core/Holder.java
-@@ -276,6 +_,34 @@
+@@ -276,6 +_,41 @@
              return "Reference{" + this.key + "=" + this.value + "}";
          }
  
@@ -14,7 +14,7 @@
 +        @Override
 +        public boolean equals(@Nullable Object obj) {
 +            if (this == obj) return true;
-+            return obj instanceof Holder.Reference<?> h && h.key() == this.key();
++            return obj instanceof Holder.Reference<?> h && h.getKey() == this.getKey();
 +        }
 +
 +        // Neo: Helper method to get the registry lookup from a holder
@@ -23,7 +23,14 @@
 +            return this.owner instanceof HolderLookup.RegistryLookup<T> rl ? rl : null;
 +        }
 +
-+        @org.jspecify.annotations.Nullable
++        // Neo: Helper method to bypass the not-null check in key()
++        @Nullable
++        @Override
++        public ResourceKey<T> getKey() {
++            return key;
++        }
++
++        @Nullable
 +        public <A> A getData(net.neoforged.neoforge.registries.datamaps.DataMapType<T, A> type) {
 +            HolderLookup.RegistryLookup<T> lookup = unwrapLookup();
 +            if (lookup != null) {

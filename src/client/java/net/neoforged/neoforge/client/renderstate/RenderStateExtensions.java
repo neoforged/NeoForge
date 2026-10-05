@@ -62,7 +62,7 @@ public final class RenderStateExtensions {
     @ApiStatus.Internal
     public static MapRenderState.MapDecorationRenderState onUpdateMapDecorationRenderState(Holder<MapDecorationType> mapDecorationTypeHolder, MapItemSavedData mapItemSavedData, MapRenderState mapRenderState, MapRenderState.MapDecorationRenderState mapDecorationRenderState) {
         mapDecorationRenderState.resetRenderData();
-        var modifiers = MAP_DECORATION.getOrDefault(mapDecorationTypeHolder.key(), List.of());
+        var modifiers = MAP_DECORATION.getOrDefault(mapDecorationTypeHolder.getKey(), List.of());
         for (var modifier : modifiers) {
             modifier.accept(mapItemSavedData, mapRenderState, mapDecorationRenderState);
         }

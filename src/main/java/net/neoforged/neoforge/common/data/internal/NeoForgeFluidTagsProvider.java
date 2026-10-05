@@ -7,13 +7,8 @@ package net.neoforged.neoforge.common.data.internal;
 
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.FluidTagsProvider;
-import net.minecraft.data.tags.TagAppender;
-import net.minecraft.resources.Identifier;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidIds;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.Tags.Fluids;
@@ -37,11 +32,5 @@ public final class NeoForgeFluidTagsProvider extends FluidTagsProvider {
         tag(Fluids.RABBIT_STEW);
         tag(Fluids.BEETROOT_SOUP);
         tag(Fluids.HIDDEN_FROM_RECIPE_VIEWERS);
-    }
-
-    private TagAppender<Fluid> tagWithOptionalLegacy(TagKey<Fluid> tag) {
-        TagAppender<Fluid> tagAppender = tag(tag);
-        tagAppender.addOptionalTag(TagKey.create(Registries.FLUID, Identifier.fromNamespaceAndPath("forge", tag.location().getPath())));
-        return tagAppender;
     }
 }
