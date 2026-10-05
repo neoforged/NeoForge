@@ -15,7 +15,7 @@
 +        public boolean equals(@Nullable Object obj) {
 +            if (this == obj) return true;
 +            if (obj instanceof Holder.Reference<?> h) {
-+                //Return false like vanilla would do if they aren't reference equal if they are intrusive holders without bound keys
++                //Return false like vanilla would do if they are intrusive holders without bound keys and not reference-equal
 +                if (h.keyOrNull() == null || this.keyOrNull() == null) return false;
 +                return h.key() == this.key();
 +            }
