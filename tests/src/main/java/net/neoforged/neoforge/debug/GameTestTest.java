@@ -27,35 +27,32 @@ public final class GameTestTest {
     @EmptyTemplate
     @TestHolder(description = "Tests that the conversions between absolute and relative positions work correctly with no structure rotation")
     static void positionConversionsNone(final DynamicTest test) {
-        test.onGameTest(helper -> testPositionConversions(helper, Rotation.NONE));
+        test.onGameTest(GameTestTest::testPositionConversions);
     }
 
     @GameTest(rotationSteps = 1)
     @EmptyTemplate
     @TestHolder(description = "Tests that the conversions between absolute and relative positions work correctly with a clockwise 90 degree structure rotation")
     static void positionConversionsClockwise90(final DynamicTest test) {
-        test.onGameTest(helper -> testPositionConversions(helper, Rotation.CLOCKWISE_90));
+        test.onGameTest(GameTestTest::testPositionConversions);
     }
 
     @GameTest(rotationSteps = 2)
     @EmptyTemplate
     @TestHolder(description = "Tests that the conversions between absolute and relative positions work correctly with a clockwise 180 degree structure rotation")
     static void positionConversionsClockwise180(final DynamicTest test) {
-        test.onGameTest(helper -> testPositionConversions(helper, Rotation.CLOCKWISE_180));
+        test.onGameTest(GameTestTest::testPositionConversions);
     }
 
     @GameTest(rotationSteps = 3)
     @EmptyTemplate
     @TestHolder(description = "Tests that the conversions between absolute and relative positions work correctly with a counterclockwise 90 degree structure rotation")
     static void positionConversionsCounterclockwise90(final DynamicTest test) {
-        test.onGameTest(helper -> testPositionConversions(helper, Rotation.COUNTERCLOCKWISE_90));
+        test.onGameTest(GameTestTest::testPositionConversions);
     }
 
-    private static void testPositionConversions(ExtendedGameTestHelper helper, Rotation rotation) {
-        Rotation testRot = helper.testInfo.getRotation();
-        if (!testRot.equals(rotation)) {
-            throw new IllegalArgumentException();
-        }
+    private static void testPositionConversions(ExtendedGameTestHelper helper) {
+        Rotation rotation = helper.testInfo.getRotation();
 
         BlockPos relPos = new BlockPos(-1, 0, -1);
         Vec3 relVec3 = new Vec3(-1, 0, -1);
