@@ -145,6 +145,11 @@ public class VersionChecker {
                 mods.add(info);
         }
 
+        if (mods.isEmpty()) {
+            LOGGER.info("No mods enabled for version check");
+            return;
+        }
+
         LOGGER.info("Starting version check for {} mods", mods.size());
 
         var client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).connectTimeout(Duration.ofSeconds(HTTP_TIMEOUT_SECS)).build();
