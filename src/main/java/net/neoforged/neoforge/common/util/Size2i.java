@@ -7,6 +7,7 @@ package net.neoforged.neoforge.common.util;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
+import org.jspecify.annotations.Nullable;
 
 public final class Size2i {
     public final int width;
@@ -21,7 +22,7 @@ public final class Size2i {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj instanceof Size2i) {
             Size2i other = (Size2i) obj;
             return (width == other.width) && (height == other.height);

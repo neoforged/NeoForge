@@ -108,7 +108,7 @@
              }
  
 -            if (shouldRenderClouds) {
-+            if (shouldRenderClouds && (this.levelRenderState.customCloudsRenderer == null || this.levelRenderState.customCloudsRenderer.renderCloudsOit(this.levelRenderState, cloudStatus, this.levelRenderState.cameraRenderState.viewRotationMatrix, stage, mainDepthTextureView, params))) {
++            if (shouldRenderClouds && (this.levelRenderState.customCloudsRenderer == null || !this.levelRenderState.customCloudsRenderer.renderCloudsOit(this.levelRenderState, cloudStatus, this.levelRenderState.cameraRenderState.viewRotationMatrix, stage, mainDepthTextureView, params))) {
                  this.cloudRenderer.renderOit(cloudStatus, stage, mainDepthTextureView, cloudParams);
              }
  
