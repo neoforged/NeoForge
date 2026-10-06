@@ -141,8 +141,9 @@ public class VersionChecker {
         // Collect mods which are opted-in to the update checker
         var mods = new ArrayList<IModInfo>();
         for (IModInfo info : ModList.get().getMods()) {
-            if (info.getUpdateURL().isPresent())
+            if (info.getUpdateURL().isPresent()) {
                 mods.add(info);
+            }
         }
 
         if (mods.isEmpty()) {
