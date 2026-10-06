@@ -173,7 +173,7 @@ public class VersionChecker {
             Status status;
             ComparableVersion target = null;
             Map<ComparableVersion, String> changes = new LinkedHashMap<>();
-            String display_url = null;
+            String displayUrl = null;
             try {
                 if (mod.getUpdateURL().isEmpty()) return;
                 URL url = mod.getUpdateURL().get();
@@ -200,7 +200,7 @@ public class VersionChecker {
                 LOGGER.debug("[{}] Received version check data from {}", mod.getModId(), response.uri());
 
                 JsonObject json = new Gson().fromJson(data, JsonObject.class);
-                display_url = json.has("homepage") ? json.get("homepage").getAsString() : null;
+                displayUrl = json.has("homepage") ? json.get("homepage").getAsString() : null;
                 JsonObject promos = json.getAsJsonObject("promos");
 
                 var mcVersion = FMLLoader.getCurrent().getVersionInfo().mcVersion();
@@ -253,7 +253,7 @@ public class VersionChecker {
                 LOGGER.warn("[{}] Failed to process update information", mod.getModId(), e);
                 status = Status.FAILED;
             }
-            RESULTS.put(mod, new CheckResult(status, target, changes, display_url));
+            RESULTS.put(mod, new CheckResult(status, target, changes, displayUrl));
         }
     }
 }
