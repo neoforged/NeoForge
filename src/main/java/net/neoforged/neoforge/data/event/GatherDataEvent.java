@@ -28,6 +28,9 @@ import org.jetbrains.annotations.ApiStatus;
 /// These events are not [cancellable][ICancellableEvent].
 ///
 /// These events are fired on the mod-specific event bus, during data generation.
+/// 
+/// @see GatherDataEvent.Client
+/// @see GatherDataEvent.Server
 public abstract sealed class GatherDataEvent extends Event implements IModBusEvent {
     private final DataGenerator dataGenerator;
     private final DataGeneratorConfig config;

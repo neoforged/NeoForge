@@ -19,7 +19,7 @@ import org.jetbrains.annotations.ApiStatus;
 /// objects, but only those added via '--mod' in the run arguments will have their contents generated.
 ///
 /// Usage:
-/// <!-- @formatter:off -->
+/// <!-- @formatter:off because of https://github.com/eclipse-jdt/eclipse.jdt.core/issues/5474 -->
 /// ```java
 /// @SubscribeEvent
 /// public static void gatherRegistries(GatherDataRegistryEntriesEvent event) {

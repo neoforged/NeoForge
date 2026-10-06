@@ -23,13 +23,12 @@ import net.neoforged.neoforge.data.event.DatapackRegistryGatherer;
 import net.neoforged.neoforge.data.event.DatapackRegistrySets;
 import net.neoforged.neoforge.registries.DataPackRegistriesHooks;
 import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.apache.commons.lang3.tuple.Triple;
 import org.jspecify.annotations.Nullable;
 
 /// An internal implementation of [DatapackRegistryGatherer].
 ///
 /// @param global     The gather of the global registry set, `null` if this is the global registry set.
-/// @param id         The id of the gatherer, either 'Global' for the global registry set, or the mod id specifying the set of mods to generate for.
+/// @param id         The id of the gatherer, either 'Global' for the global registry set, or the mod id specifying the set of mod ids to generate for.
 /// @param builder    The [RegistrySetBuilder]s to register the datapack registry objects to, depending on their registry's layer.
 /// @param modIds     The set of mod ids to generate the registry elements of.
 /// @param hasEntries A helper for keeping track of whether any entries were registered to the [RegistrySetBuilder]s.
@@ -85,21 +84,22 @@ record DatapackRegistryGathererImpl(@Nullable DatapackRegistryGatherer global, S
             this.builder.reloadable().add(bootstrap);
         } else {
             // Separate out registries for error message.
-            // (World, Reloadable, Neither)
-            Triple<Set<Identifier>, Set<Identifier>, Set<Identifier>> keysByLayer = bootstrap.requestedRegistries().stream().collect(
-                    () -> Triple.of(new HashSet<>(), new HashSet<>(), new HashSet<>()),
+            record RegistriesByLayer(Set<Identifier> world, Set<Identifier> reloadable, Set<Identifier> invalid) {}
+
+            var keysByLayer = bootstrap.requestedRegistries().stream().collect(
+                    () -> new RegistriesByLayer(new HashSet<>(), new HashSet<>(), new HashSet<>()),
                     (layers, registryKey) -> {
-                        if (isWorldOrDimensionRegistry(registryKey)) layers.getLeft().add(registryKey.identifier());
-                        else if (DataPackRegistriesHooks.isReloadableRegistry(registryKey)) layers.getMiddle().add(registryKey.identifier());
-                        else layers.getRight().add(registryKey.identifier());
+                        if (isWorldOrDimensionRegistry(registryKey)) layers.world().add(registryKey.identifier());
+                        else if (DataPackRegistriesHooks.isReloadableRegistry(registryKey)) layers.reloadable().add(registryKey.identifier());
+                        else layers.invalid().add(registryKey.identifier());
                     },
                     (a, b) -> {
-                        a.getLeft().addAll(b.getLeft());
-                        a.getMiddle().addAll(b.getMiddle());
-                        a.getRight().addAll(b.getRight());
+                        a.world().addAll(b.world());
+                        a.reloadable().addAll(b.reloadable());
+                        a.invalid().addAll(b.invalid());
                     });
             throw new IllegalArgumentException("Requested registries must all be in the same layer. Currently, world: "
-                    + keysByLayer.getLeft() + ", reloadable: " + keysByLayer.getMiddle() + ", invalid: " + keysByLayer.getRight());
+                    + keysByLayer.world() + ", reloadable: " + keysByLayer.reloadable() + ", invalid: " + keysByLayer.invalid());
         }
 
         return this;
