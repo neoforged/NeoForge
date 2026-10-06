@@ -195,6 +195,10 @@ public class NetworkRegistry {
     public static StreamCodec<? super FriendlyByteBuf, ? extends CustomPacketPayload> getCodec(ResourceLocation id, ConnectionProtocol protocol, PacketFlow flow) {
         // Custom modded packets which can be sent before a payload setup is negotiated.
         if (BUILTIN_PAYLOADS.containsKey(id)) {
+            if (flow == PacketFlow.SERVERBOUND
+                    && (id.equals(ModdedNetworkPayload.ID) || id.equals(ModdedNetworkSetupFailedPayload.ID))) {
+                return null;
+            }
             return BUILTIN_PAYLOADS.get(id);
         }
 
