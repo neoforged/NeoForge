@@ -63,7 +63,7 @@ record DatapackRegistryGathererImpl(@Nullable DatapackRegistryGatherer global, S
             this.builder.reloadable().add(registryKey, bootstrap);
         } else {
             throw new IllegalArgumentException(
-                    registryKey.identifier() + " is not a valid datpack registry." + (
+                    registryKey.identifier() + " is not a valid datapack registry." + (
             // Add hint if resource key is not vanilla.
             registryKey.identifier().getNamespace().equals("minecraft") ? ""
                     : " Make sure your registry has been registered via 'NewDatapackRegistryEvent'."));
@@ -99,7 +99,7 @@ record DatapackRegistryGathererImpl(@Nullable DatapackRegistryGatherer global, S
                         a.getRight().addAll(b.getRight());
                     });
             throw new IllegalArgumentException("Requested registries must all be in the same layer. Currently, world: "
-                    + keysByLayer.getLeft() + ", reloadable: " + keysByLayer.getMiddle() + ", illegal: " + keysByLayer.getRight());
+                    + keysByLayer.getLeft() + ", reloadable: " + keysByLayer.getMiddle() + ", invalid: " + keysByLayer.getRight());
         }
 
         return this;

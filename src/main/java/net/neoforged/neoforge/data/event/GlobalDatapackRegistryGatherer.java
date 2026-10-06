@@ -22,7 +22,7 @@ public interface GlobalDatapackRegistryGatherer extends DatapackRegistryGatherer
     /// Entries added using this method will still be available in the global registry set for any mod to use. If trying
     /// to create a built-in datapack added via [AddPackFindersEvent][net.neoforged.neoforge.event.AddPackFindersEvent], then it should
     /// be handled via [PackGenerator#createWorldRegistryObjects(RegistrySetBuilder, Set)] and
-    /// [PackGenerator#createReloadableRegistryObjects(RegistrySetBuilder, Set)], repsecitvely.
+    /// [PackGenerator#createReloadableRegistryObjects(RegistrySetBuilder, Set)], respectively.
     ///
     /// @param modId  The first mod id to gather registry entries for.
     /// @param modIds Any additional mod ids to gather the registry entries for.
