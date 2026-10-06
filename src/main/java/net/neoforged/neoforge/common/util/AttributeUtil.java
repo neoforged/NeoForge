@@ -284,7 +284,7 @@ public class AttributeUtil {
      * Creates a sorted {@link TreeMultimap} used to ensure a stable iteration order of item attribute modifiers.
      */
     public static Multimap<Holder<Attribute>, AttributeModifier> sortedMap() {
-        return TreeMultimap.create(Comparator.comparing(Holder::key), ATTRIBUTE_MODIFIER_COMPARATOR);
+        return TreeMultimap.create(Comparator.comparing(Holder::keyOrNull), ATTRIBUTE_MODIFIER_COMPARATOR);
     }
 
     /**

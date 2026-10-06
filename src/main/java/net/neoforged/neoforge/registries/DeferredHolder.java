@@ -87,12 +87,6 @@ public class DeferredHolder<R, T extends R> extends Holder.Reference<R> implemen
         this.bind(false);
     }
 
-    @Override
-    public ResourceKey<R> key() {
-        //Note: We know this is nonnull as we pass a nonnull value to super
-        return Objects.requireNonNull(super.key());
-    }
-
     /**
      * Gets the object stored by this DeferredHolder, if this holder {@linkplain #isBound() is bound}.
      *

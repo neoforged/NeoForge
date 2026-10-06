@@ -1,20 +1,25 @@
 --- a/net/minecraft/core/Holder.java
 +++ b/net/minecraft/core/Holder.java
-@@ -276,6 +_,34 @@
+@@ -276,6 +_,46 @@
              return "Reference{" + this.key + "=" + this.value + "}";
          }
  
 +        // Neo: Add DeferredHolder-compatible hashCode() overrides
 +        @Override
 +        public int hashCode() {
-+            return key().hashCode();
++            return key == null ? super.hashCode() : key.hashCode();
 +        }
 +
 +        // Neo: Add DeferredHolder-compatible equals() overrides
 +        @Override
 +        public boolean equals(@Nullable Object obj) {
 +            if (this == obj) return true;
-+            return obj instanceof Holder.Reference<?> h && h.key() == this.key();
++            if (obj instanceof Holder.Reference<?> h) {
++                //Return false like vanilla would do if they are intrusive holders without bound keys and not reference-equal
++                if (h.keyOrNull() == null || this.keyOrNull() == null) return false;
++                return h.key() == this.key();
++            }
++            return false;
 +        }
 +
 +        // Neo: Helper method to get the registry lookup from a holder
@@ -23,7 +28,14 @@
 +            return this.owner instanceof HolderLookup.RegistryLookup<T> rl ? rl : null;
 +        }
 +
-+        @org.jspecify.annotations.Nullable
++        // Neo: Helper method to bypass the not-null check in key()
++        @Nullable
++        @Override
++        public ResourceKey<T> keyOrNull() {
++            return key;
++        }
++
++        @Nullable
 +        public <A> A getData(net.neoforged.neoforge.registries.datamaps.DataMapType<T, A> type) {
 +            HolderLookup.RegistryLookup<T> lookup = unwrapLookup();
 +            if (lookup != null) {

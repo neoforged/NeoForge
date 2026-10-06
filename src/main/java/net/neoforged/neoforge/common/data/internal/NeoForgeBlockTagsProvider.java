@@ -288,7 +288,7 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
 
         public Appender add(Block... blocks) {
             for (Block block : blocks) {
-                add(BuiltInRegistries.BLOCK.wrapAsHolder(block).key());
+                add(BuiltInRegistries.BLOCK.getResourceKey(block).orElseThrow(() -> new IllegalStateException("Unregistered block")));
             }
             return this;
         }
