@@ -477,7 +477,8 @@ public abstract class PlayerEvent extends LivingEvent {
             this.result = result;
         }
 
-        /// {@return the container with the input item stacks}
+        /// {@return the container with the input item stacks} The contents of this container will be decremented by one afterwards,
+        /// so avoid modifying this container.
         public Container getInputs() {
             return inputs;
         }
