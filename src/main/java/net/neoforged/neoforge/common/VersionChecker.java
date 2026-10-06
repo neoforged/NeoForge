@@ -210,9 +210,10 @@ public class VersionChecker {
 
                 if (recommended != null) {
                     target = recommended;
-                    if (recommended.compareTo(current) == 0) {
+                    int compare = recommended.compareTo(current);
+                    if (compare == 0) {
                         status = Status.UP_TO_DATE;
-                    } else if (recommended.compareTo(current) < 0) {
+                    } else if (compare < 0) {
                         status = Status.AHEAD;
                         if (latest != null && current.compareTo(latest) < 0) {
                             status = Status.OUTDATED;
