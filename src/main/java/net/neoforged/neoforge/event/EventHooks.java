@@ -949,7 +949,6 @@ public class EventHooks {
     }
 
     public static void firePlayerSmithedEvent(Player player, Container inputs, ItemStack result) {
-        System.out.println(result);
         NeoForge.EVENT_BUS.post(new PlayerEvent.ItemSmithedEvent(player, inputs, result));
     }
 
