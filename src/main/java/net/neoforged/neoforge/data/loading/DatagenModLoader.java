@@ -100,7 +100,9 @@ public class DatagenModLoader extends CommonModLoader {
         // Add to data generator
         var datapackRegistryGenerator = dataGeneratorConfig.makeGenerator(Function.identity(), uncached);
         var registries = mainGatherer.createGlobal(datapackRegistryGenerator, worldLookupProvider);
-        for (int i = 0; i < registryProviders.size(); ++i) registryProviders.get(i).createSub(datapackRegistryGenerator, registries, i);
+        for (int i = 0; i < registryProviders.size(); ++i) {
+            registryProviders.get(i).createSub(datapackRegistryGenerator, registries, i);
+        }
 
         // Only fire the event for mods that have their generators enabled
         for (ModContainer mod : ModList.get().getSortedMods()) {

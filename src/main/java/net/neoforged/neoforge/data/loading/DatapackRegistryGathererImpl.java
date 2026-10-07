@@ -89,9 +89,13 @@ record DatapackRegistryGathererImpl(@Nullable DatapackRegistryGatherer global, S
             var keysByLayer = bootstrap.requestedRegistries().stream().collect(
                     () -> new RegistriesByLayer(new HashSet<>(), new HashSet<>(), new HashSet<>()),
                     (layers, registryKey) -> {
-                        if (isWorldOrDimensionRegistry(registryKey)) layers.world().add(registryKey.identifier());
-                        else if (DataPackRegistriesHooks.isReloadableRegistry(registryKey)) layers.reloadable().add(registryKey.identifier());
-                        else layers.invalid().add(registryKey.identifier());
+                        if (isWorldOrDimensionRegistry(registryKey)) {
+                            layers.world().add(registryKey.identifier());
+                        } else if (DataPackRegistriesHooks.isReloadableRegistry(registryKey)) {
+                            layers.reloadable().add(registryKey.identifier());
+                        } else {
+                            layers.invalid().add(registryKey.identifier());
+                        }
                     },
                     (a, b) -> {
                         a.world().addAll(b.world());
