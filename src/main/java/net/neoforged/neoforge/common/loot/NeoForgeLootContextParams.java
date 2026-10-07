@@ -9,10 +9,15 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.item.ItemInstance;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.event.RegisterLootContextParamsEvent;
 
 public final class NeoForgeLootContextParams {
     /// Holds the itemstack whose data is being queried with the loot context (i.e. the fuel item in a furnace).
     public static final ContextKey<ItemInstance> QUERIED_STACK = new ContextKey<>(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "queried_stack"));
 
     private NeoForgeLootContextParams() {}
+
+    public static void registerParams(RegisterLootContextParamsEvent event) {
+        event.register(QUERIED_STACK);
+    }
 }

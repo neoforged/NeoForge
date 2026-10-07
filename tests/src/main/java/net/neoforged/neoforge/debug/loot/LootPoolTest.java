@@ -16,6 +16,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.ReloadableServerRegistries;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.Unit;
+import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -29,9 +31,11 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
 import net.neoforged.neoforge.event.LootTableLoadEvent;
+import net.neoforged.neoforge.event.RegisterLootContextParamsEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -225,6 +229,25 @@ public class LootPoolTest {
             }
             if (registries.getLootTable(tableTwo) != LootTable.EMPTY) {
                 test.fail("Test loot table two (conditions on ConditionalLootTableSubProvider) was incorrectly loaded");
+                return;
+            }
+
+            test.pass();
+        });
+    }
+
+    @TestHolder(description = "Tests that a loot param can be successfully added to ALL_PARAMS", enabledByDefault = true)
+    static void registerLootParam(final DynamicTest test, final RegistrationHelper reg) {
+        // Create and register
+        ContextKey<Unit> param = new ContextKey<>(Identifier.fromNamespaceAndPath(reg.modId(), "unit"));
+        reg.eventListeners().accept((RegisterLootContextParamsEvent event) -> {
+            event.register(param);
+        });
+
+        // Validate registration
+        reg.eventListeners().accept((FMLLoadCompleteEvent event) -> {
+            if (!LootContextParamSets.ALL_PARAMS.required().contains(param)) {
+                test.fail("Loot context param was not added to ALL_PARAMS");
                 return;
             }
 
