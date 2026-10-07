@@ -15,9 +15,8 @@ import org.jetbrains.annotations.ApiStatus;
 
 /// Extension type for the [MenuProvider] interface.
 public interface IMenuProviderExtension {
-    /// {@return {@code true} if the existing container should be closed on the client side when opening a new one, {@code false} otherwise}
-    ///
-    /// @implNote Returning false prevents the mouse from being (re-)centered when opening a new container.
+    /// {@return whether the existing container should be explicitly closed on the client side when opening a new one}
+    /// Returning `false` prevents the mouse from being (re-)centered when opening a new container.
     default boolean shouldTriggerClientSideContainerClosingOnOpen() {
         return true;
     }
