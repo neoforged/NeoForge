@@ -1,0 +1,47 @@
+--- a/net/minecraft/world/level/block/IronBarsBlock.java
++++ b/net/minecraft/world/level/block/IronBarsBlock.java
+@@ -39,10 +_,10 @@
+         BlockState westState = level.getBlockState(west);
+         BlockState eastState = level.getBlockState(east);
+         return this.defaultBlockState()
+-            .setValue(NORTH, this.attachsTo(northState, northState.isFaceSturdy(level, north, Direction.SOUTH)))
+-            .setValue(SOUTH, this.attachsTo(southState, southState.isFaceSturdy(level, south, Direction.NORTH)))
+-            .setValue(WEST, this.attachsTo(westState, westState.isFaceSturdy(level, west, Direction.EAST)))
+-            .setValue(EAST, this.attachsTo(eastState, eastState.isFaceSturdy(level, east, Direction.WEST)))
++            .setValue(NORTH, this.attachesTo(northState, northState.isFaceSturdy(level, north, Direction.SOUTH), Direction.SOUTH))
++            .setValue(SOUTH, this.attachesTo(southState, southState.isFaceSturdy(level, south, Direction.NORTH), Direction.NORTH))
++            .setValue(WEST, this.attachesTo(westState, westState.isFaceSturdy(level, west, Direction.EAST), Direction.EAST))
++            .setValue(EAST, this.attachesTo(eastState, eastState.isFaceSturdy(level, east, Direction.WEST), Direction.WEST))
+             .setValue(WATERLOGGED, replacedFluidState.is(Fluids.WATER));
+     }
+ 
+@@ -64,7 +_,7 @@
+         return directionToNeighbour.getAxis().isHorizontal()
+             ? state.setValue(
+                 PROPERTY_BY_DIRECTION.get(directionToNeighbour),
+-                this.attachsTo(neighbourState, neighbourState.isFaceSturdy(level, neighbourPos, directionToNeighbour.getOpposite()))
++                this.attachesTo(neighbourState, neighbourState.isFaceSturdy(level, neighbourPos, directionToNeighbour.getOpposite()), directionToNeighbour.getOpposite())
+             )
+             : super.updateShape(state, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourState, random);
+     }
+@@ -90,6 +_,20 @@
+         return super.skipRendering(state, neighborState, direction);
+     }
+ 
++    /// Neo: Add context of which side is trying to connect and allow the adjacent block to
++    /// force or opt out of being connected to.
++    ///
++    /// @param state     The state of the block being connected to
++    /// @param faceSolid Whether the face being connected to is solid
++    /// @param direction The side of the adjacent block on which the connection is being attempted
++    /// @return whether this block can connect to the given neighbor
++    public boolean attachesTo(BlockState state, boolean faceSolid, Direction direction) {
++        var adjResult = state.canBeConnectedTo(direction, this);
++        return adjResult.isTrue() || (!adjResult.isFalse() && attachsTo(state, faceSolid));
++    }
++
++    /// @deprecated Neo: use [#attachesTo(BlockState, boolean, Direction)] instead
++    @Deprecated
+     public final boolean attachsTo(BlockState state, boolean faceSolid) {
+         return !isExceptionForConnection(state) && faceSolid || state.getBlock() instanceof IronBarsBlock || state.is(BlockTags.WALLS);
+     }
