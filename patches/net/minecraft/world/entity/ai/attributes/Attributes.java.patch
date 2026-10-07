@@ -5,7 +5,7 @@
      );
      public static final Holder<Attribute> KNOCKBACK_RESISTANCE = register(
 -        "knockback_resistance", new RangedAttribute("attribute.name.knockback_resistance", 0.0, -2.0, 1.0)
-+        "knockback_resistance", new net.neoforged.neoforge.common.PercentageAttribute("attribute.name.knockback_resistance", 0.0, 0.0, 1.0)
++        "knockback_resistance", new net.neoforged.neoforge.common.PercentageAttribute("attribute.name.knockback_resistance", 0.0, -2.0, 1.0)
      );
      public static final Holder<Attribute> LUCK = register("luck", new RangedAttribute("attribute.name.luck", 0.0, -1024.0, 1024.0).setSyncable(true));
      public static final Holder<Attribute> MAX_ABSORPTION = register(
