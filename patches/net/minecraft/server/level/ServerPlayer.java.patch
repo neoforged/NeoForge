@@ -220,7 +220,7 @@
 +            // Neo: Support sending additional arbitrary data to menu factories on the client-side
 +            var extraData = net.neoforged.neoforge.common.util.FriendlyByteBufUtil.writeCustomData(
 +                    buffer -> {
-+                        provider.writeClientSideData(menu, buffer);
++                        provider.writeClientSideData(this, menu, buffer);
 +                        if (extraDataWriter != null) {
 +                            extraDataWriter.accept(buffer);
 +                        }

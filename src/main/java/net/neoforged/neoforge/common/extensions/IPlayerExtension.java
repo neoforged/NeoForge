@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Abilities;
@@ -52,7 +53,7 @@ public interface IPlayerExtension {
      *
      * @param menuProvider A supplier of container properties including the registry name of the container
      * @param pos          A block pos, which will be encoded into the additional data for this request, after
-     *                     data written by {@link IMenuProviderExtension#writeClientSideData(AbstractContainerMenu, RegistryFriendlyByteBuf)}.
+     *                     data written by {@link IMenuProviderExtension#writeClientSideData(ServerPlayer, AbstractContainerMenu, RegistryFriendlyByteBuf)}.
      *
      */
     default OptionalInt openMenu(@Nullable MenuProvider menuProvider, BlockPos pos) {
@@ -69,7 +70,7 @@ public interface IPlayerExtension {
      *
      * @param menuProvider    A supplier of container properties including the registry name of the container
      * @param extraDataWriter Consumer to write any additional data the GUI needs.
-     *                        This data is written after {@link IMenuProviderExtension#writeClientSideData(AbstractContainerMenu, RegistryFriendlyByteBuf)}.
+     *                        This data is written after {@link IMenuProviderExtension#writeClientSideData(ServerPlayer, AbstractContainerMenu, RegistryFriendlyByteBuf)}.
      * @return The window ID of the opened GUI, or empty if the GUI could not be opened
      */
     default OptionalInt openMenu(@Nullable MenuProvider menuProvider, @Nullable Consumer<RegistryFriendlyByteBuf> extraDataWriter) {
