@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/AbstractCauldronBlock.java
 +++ b/net/minecraft/world/level/block/AbstractCauldronBlock.java
-@@ -99,4 +_,22 @@
+@@ -95,4 +_,22 @@
  
      protected void receiveStalactiteDrip(BlockState state, Level level, BlockPos pos, Fluid fluid) {
      }

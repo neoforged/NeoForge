@@ -14,6 +14,7 @@ import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Holder for capability listeners associated to a level.
@@ -120,7 +121,7 @@ public class CapabilityListenerHolder {
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             if (obj instanceof ListenerReference otherRef) {
                 // Equivalent if the hash codes and the listeners match.
                 // Use identity comparisons.

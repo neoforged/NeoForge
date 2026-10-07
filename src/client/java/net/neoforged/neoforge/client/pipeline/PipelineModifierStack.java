@@ -5,8 +5,8 @@
 
 package net.neoforged.neoforge.client.pipeline;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -51,7 +51,7 @@ public final class PipelineModifierStack {
         }
 
         for (ResourceKey<PipelineModifier> modifier : this.modifiers) {
-            Map<RenderPipeline, RenderPipeline> xformCache = this.modifierTransformCache.computeIfAbsent(modifier, $ -> new Reference2ReferenceOpenHashMap<>());
+            Map<RenderPipeline, RenderPipeline> xformCache = this.modifierTransformCache.computeIfAbsent(modifier, _ -> new Reference2ReferenceOpenHashMap<>());
             RenderPipeline newPipeline = xformCache.get(pipeline);
             if (newPipeline == null) {
                 Identifier name = pipeline.getLocation().withSuffix("/transform/" + modifier.identifier().toString().replace(":", "/"));

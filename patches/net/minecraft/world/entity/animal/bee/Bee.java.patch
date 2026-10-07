@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/bee/Bee.java
 +++ b/net/minecraft/world/entity/animal/bee/Bee.java
-@@ -471,7 +_,7 @@
+@@ -472,7 +_,7 @@
          if (this.hivePos == null) {
              return null;
          } else {
@@ -9,7 +9,7 @@
          }
      }
  
-@@ -637,8 +_,18 @@
+@@ -638,8 +_,18 @@
      }
  
      @Override

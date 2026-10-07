@@ -1,14 +1,17 @@
 {
   "type": "neotests_glm_test:dungeon_loot",
-  "conditions": [
-    {
-      "condition": "neoforge:loot_table_id",
-      "loot_table_id": "minecraft:chests/simple_dungeon"
-    },
-    {
-      "condition": "testframework:test_enabled",
-      "framework": "neotests:tests",
-      "test": "glm_dungeonLootTest"
-    }
-  ]
+  "condition": {
+    "type": "minecraft:all_of",
+    "terms": [
+      {
+        "type": "neoforge:loot_table_id",
+        "loot_table_id": "minecraft:chests/simple_dungeon"
+      },
+      {
+        "type": "testframework:test_enabled",
+        "framework": "neotests:tests",
+        "test": "glm_dungeonLootTest"
+      }
+    ]
+  }
 }

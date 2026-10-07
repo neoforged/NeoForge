@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/renderer/entity/EntityRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/entity/EntityRenderDispatcher.java
-@@ -201,6 +_,14 @@
-         return this.itemInHandRenderer;
+@@ -193,6 +_,14 @@
+         return this.camera.position().distanceToSqr(entity.position());
      }
  
 +    public Map<PlayerModelType, EntityRenderer<? extends Avatar, ?>> getPlayerRenderers() {
@@ -15,7 +15,7 @@
      @Override
      public void onResourceManagerReload(ResourceManager resourceManager) {
          EntityRendererProvider.Context context = new EntityRendererProvider.Context(
-@@ -218,5 +_,8 @@
+@@ -211,5 +_,8 @@
          this.renderers = EntityRenderers.createEntityRenderers(context);
          this.playerRenderers = EntityRenderers.createAvatarRenderers(context);
          this.mannequinRenderers = EntityRenderers.createAvatarRenderers(context);

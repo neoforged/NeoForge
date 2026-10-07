@@ -1,0 +1,12 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "registry": "minecraft:worldgen/biome",
+        "tag": "c:is_plains"
+      }
+    }
+  ]
+}

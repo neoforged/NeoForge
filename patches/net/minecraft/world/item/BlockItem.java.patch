@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/BlockItem.java
 +++ b/net/minecraft/world/item/BlockItem.java
-@@ -83,15 +_,22 @@
+@@ -92,15 +_,22 @@
              }
          }
  

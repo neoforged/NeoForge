@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/PauseScreen.java
 +++ b/net/minecraft/client/gui/screens/PauseScreen.java
-@@ -102,6 +_,7 @@
+@@ -109,6 +_,7 @@
          helper.addChild(this.openScreenButton(ADVANCEMENTS, () -> new AdvancementsScreen(this.minecraft.player.connection.getAdvancements(), this)));
          helper.addChild(this.openScreenButton(STATS, () -> new StatsScreen(this, this.minecraft.player.getStats())));
          LinearLayout iconButtonRow = LinearLayout.horizontal().spacing(4);

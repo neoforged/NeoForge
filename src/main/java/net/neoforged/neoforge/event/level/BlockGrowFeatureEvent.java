@@ -11,7 +11,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.Feature;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.jspecify.annotations.Nullable;
 
@@ -26,9 +26,9 @@ public class BlockGrowFeatureEvent extends LevelEvent implements ICancellableEve
     private final RandomSource rand;
     private final BlockPos pos;
     @Nullable
-    private Holder<ConfiguredFeature<?, ?>> feature;
+    private Holder<Feature> feature;
 
-    public BlockGrowFeatureEvent(LevelAccessor level, RandomSource rand, BlockPos pos, @Nullable Holder<ConfiguredFeature<?, ?>> feature) {
+    public BlockGrowFeatureEvent(LevelAccessor level, RandomSource rand, BlockPos pos, @Nullable Holder<Feature> feature) {
         super(level);
         this.rand = rand;
         this.pos = pos;
@@ -53,7 +53,7 @@ public class BlockGrowFeatureEvent extends LevelEvent implements ICancellableEve
      * {@return the holder of the feature which will be placed, possibly null}
      */
     @Nullable
-    public Holder<ConfiguredFeature<?, ?>> getFeature() {
+    public Holder<Feature> getFeature() {
         return feature;
     }
 
@@ -62,7 +62,7 @@ public class BlockGrowFeatureEvent extends LevelEvent implements ICancellableEve
      * 
      * @param feature a {@linkplain Holder} referencing a new feature to be placed instead of the current feature.
      */
-    public void setFeature(@Nullable Holder<ConfiguredFeature<?, ?>> feature) {
+    public void setFeature(@Nullable Holder<Feature> feature) {
         this.feature = feature;
     }
 
@@ -71,8 +71,8 @@ public class BlockGrowFeatureEvent extends LevelEvent implements ICancellableEve
      * 
      * @param featureKey a {@linkplain ResourceKey} referencing a new feature to be placed instead of the current feature.
      */
-    public void setFeature(ResourceKey<ConfiguredFeature<?, ?>> featureKey) {
-        this.feature = this.getLevel().registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).get(featureKey).orElse(null);
+    public void setFeature(ResourceKey<Feature> featureKey) {
+        this.feature = this.getLevel().registryAccess().lookupOrThrow(Registries.FEATURE).get(featureKey).orElse(null);
     }
 
     /**

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "data_gen_test:compound_ingredient_custom_types"
+        "recipes": "data_gen_test:compound_ingredient_custom_types"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.client.pipeline;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;

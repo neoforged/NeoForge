@@ -97,12 +97,10 @@ public class CreativeModeTabTest {
                         .build());
             }
 
-            final Identifier custom_tabs_image = Identifier.fromNamespaceAndPath(MOD_ID, "textures/gui/container/creative_inventory/custom_tabs.png");
             helper.register(Identifier.fromNamespaceAndPath(MOD_ID, "with_tabs_image"), CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.with_tabs_image"))
                     .icon(() -> new ItemStack(Blocks.BRICKS))
                     .displayItems((_, output) -> output.accept(Blocks.BRICKS))
-                    .withTabsImage(custom_tabs_image)
                     .build());
         });
     }

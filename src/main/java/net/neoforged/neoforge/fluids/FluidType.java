@@ -12,7 +12,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -292,25 +294,6 @@ public class FluidType {
         return this.canExtinguish;
     }
 
-    /**
-     * Performs how an entity moves when within the fluid. If using custom
-     * movement logic, the method should return {@code true}. Otherwise, the
-     * movement logic will default to water if {@link #getIsWaterLike()} returns
-     * {@code true} or no movement if it returns {@code false}.
-     *
-     * @param state          the state of the fluid
-     * @param entity         the entity moving within the fluid
-     * @param movementVector the velocity of how the entity wants to move
-     * @param gravity        the gravity to apply to the entity
-     * @return {@code true} if custom movement logic is performed, {@code false} otherwise
-     *
-     * @deprecated Use {@link #move(LivingEntity, Vec3, double)} instead
-     */
-    @Deprecated(forRemoval = true, since = "26.2")
-    public boolean move(FluidState state, LivingEntity entity, Vec3 movementVector, double gravity) {
-        return move(entity, movementVector, gravity);
-    }
-
     /// Performs how an entity moves when within the fluid. If using custom
     /// movement logic, the method should return `true`. Otherwise, the
     /// movement logic will default to water if [#getIsWaterLike()] returns
@@ -492,12 +475,11 @@ public class FluidType {
      *
      * @param state     the state of the fluid
      * @param getter    the getter which can get the fluid
-     * @param pos       the position of the fluid
      * @param source    the state of the block being hydrated
      * @param sourcePos the position of the block being hydrated
      * @return {@code true} if the block can be hydrated, {@code false} otherwise
      */
-    public boolean canHydrate(FluidState state, BlockGetter getter, BlockPos pos, BlockState source, BlockPos sourcePos) {
+    public boolean canHydrate(FluidState state, BlockGetter getter, BlockState source, BlockPos sourcePos) {
         return this.canHydrate;
     }
 
@@ -859,8 +841,9 @@ public class FluidType {
         SoundEvent sound = this.getSound(entity, level, pos, SoundActions.FLUID_VAPORIZE);
         level.playSound(entity, pos, sound != null ? sound : SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5F, 2.6F + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.8F);
 
-        for (int l = 0; l < 8; ++l)
-            level.addAlwaysVisibleParticle(ParticleTypes.LARGE_SMOKE, (double) pos.getX() + Math.random(), (double) pos.getY() + Math.random(), (double) pos.getZ() + Math.random(), 0.0D, 0.0D, 0.0D);
+        if (level instanceof ServerLevel serverLevel) {
+            serverLevel.sendParticles(ParticleTypes.LARGE_SMOKE, pos.getX(), pos.getY(), pos.getZ(), 8, 1.0, 1.0, 1.0, 0.0, ClientboundLevelParticlesPacket.RandomizationType.ALTERNATIVE);
+        }
     }
 
     @Override

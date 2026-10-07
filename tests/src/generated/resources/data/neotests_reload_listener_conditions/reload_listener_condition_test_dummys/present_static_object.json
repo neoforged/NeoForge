@@ -1,0 +1,8 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:registered",
+      "value": "minecraft:redstone"
+    }
+  ]
+}

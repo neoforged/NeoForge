@@ -1,0 +1,59 @@
+--- a/net/minecraft/world/level/blockscan/OrderedBlockMatcher.java
++++ b/net/minecraft/world/level/blockscan/OrderedBlockMatcher.java
+@@ -30,8 +_,14 @@
+     }
+ 
+     @Override
++    public BlockMatcher filterPosition(java.util.function.BiPredicate<BlockState, BlockPos> predicate) {
++        super.filterPosition(predicate);
++        return this;
++    }
++
++    @Override
+     public boolean atLeastMatched(int n) {
+-        return BlockScanUtils.findBlocksWithCache(this.level, this.positions, this.statePredicate, new BlockStateConsumer() {
++        return BlockScanUtils.findBlocksWithCache(this.level, this.positions, this.statePredicate, this.positionPredicate, new BlockStateConsumer() {
+             private int count = 0;
+ 
+             @Override
+@@ -42,13 +_,13 @@
+     }
+ 
+     @Override
+-    protected boolean anyMatched(Predicate<BlockState> statePredicate) {
+-        return BlockScanUtils.findBlocksWithCache(this.level, this.positions, statePredicate, (var0, var1) -> Continuation.ABORT);
++    protected boolean anyMatched(Predicate<BlockState> statePredicate, java.util.function.BiPredicate<BlockState, BlockPos> positionPredicate) {
++        return BlockScanUtils.findBlocksWithCache(this.level, this.positions, statePredicate, positionPredicate, (var0, var1) -> Continuation.ABORT);
+     }
+ 
+     @Override
+     public void forEach(BiConsumer<BlockPos, BlockState> consumer) {
+-        BlockScanUtils.findBlocksWithCache(this.level, this.positions, this.statePredicate, (pos, state) -> {
++        BlockScanUtils.findBlocksWithCache(this.level, this.positions, this.statePredicate, this.positionPredicate, (pos, state) -> {
+             consumer.accept(pos, state);
+             return Continuation.CONTINUE;
+         });
+@@ -56,12 +_,12 @@
+ 
+     @Override
+     public boolean forEachUntil(BlockStateConsumer consumer) {
+-        return BlockScanUtils.findBlocksWithCache(this.level, this.positions, this.statePredicate, consumer);
++        return BlockScanUtils.findBlocksWithCache(this.level, this.positions, this.statePredicate, this.positionPredicate, consumer);
+     }
+ 
+     public Optional<BlockPos> findFirst() {
+         MutableObject<Optional<BlockPos>> result = new MutableObject<>(Optional.empty());
+-        BlockScanUtils.findBlocksWithCache(this.level, this.positions, this.statePredicate, (pos, var2) -> {
++        BlockScanUtils.findBlocksWithCache(this.level, this.positions, this.statePredicate, this.positionPredicate, (pos, var2) -> {
+             result.setValue(Optional.of(pos.immutable()));
+             return Continuation.ABORT;
+         });
+@@ -70,7 +_,7 @@
+ 
+     public Optional<BlockPos> findFirst(BiPredicate<BlockPos, BlockState> predicate) {
+         MutableObject<Optional<BlockPos>> result = new MutableObject<>(Optional.empty());
+-        BlockScanUtils.findBlocksWithCache(this.level, this.positions, this.statePredicate, (pos, state) -> {
++        BlockScanUtils.findBlocksWithCache(this.level, this.positions, this.statePredicate, this.positionPredicate, (pos, state) -> {
+             if (predicate.test(pos, state)) {
+                 result.setValue(Optional.of(pos.immutable()));
+                 return Continuation.ABORT;

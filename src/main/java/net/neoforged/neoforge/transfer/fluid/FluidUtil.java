@@ -86,37 +86,18 @@ public final class FluidUtil {
         return FluidStack.EMPTY;
     }
 
-    /**
-     * Used to handle the common case of a player holding a fluid item and right-clicking on a fluid handler block.
-     * First it tries to fill the item from the block,
-     * if that action fails then it tries to drain the item into the block.
-     * Automatically updates the item in the player's hand and stashes any extra items created.
-     *
-     * @param player The player doing the interaction between the item and fluid handler block.
-     * @param hand   The player's hand that is holding an item that should interact with the fluid handler block.
-     * @param level  The level that contains the fluid handler block.
-     * @param pos    The position of the fluid handler block in the level.
-     * @param side   The side of the block to interact with. May be null.
-     * @return true if the interaction succeeded, false otherwise.
-     * @deprecated Use {@link #interactWithFluidHandler(Player, InteractionHand, Level, BlockPos, Direction, TransactionContext)} instead.
-     */
-    @Deprecated(since = "26.1.2", forRemoval = true)
-    public static boolean interactWithFluidHandler(Player player, InteractionHand hand, Level level, BlockPos pos, @Nullable Direction side) {
-        return interactWithFluidHandler(player, hand, level, pos, side, null);
-    }
-
     /// Used to handle the common case of a player holding a fluid item and right-clicking on a fluid handler block.
     /// First it tries to fill the item from the block,
     /// if that action fails then it tries to drain the item into the block.
     /// Automatically updates the item in the player's hand and stashes any extra items created.
     ///
-    /// @param player The player doing the interaction between the item and fluid handler block.
-    /// @param hand   The player's hand that is holding an item that should interact with the fluid handler block.
-    /// @param level  The level that contains the fluid handler block.
-    /// @param pos    The position of the fluid handler block in the level.
-    /// @param side   The side of the block to interact with. May be null.
+    /// @param player      The player doing the interaction between the item and fluid handler block.
+    /// @param hand        The player's hand that is holding an item that should interact with the fluid handler block.
+    /// @param level       The level that contains the fluid handler block.
+    /// @param pos         The position of the fluid handler block in the level.
+    /// @param side        The side of the block to interact with. May be null.
     /// @param transaction The transaction context for the operation. Passing in `null` will open a root transaction, whereas passing in a transaction will
-    /// allow you to make the final decision to commit based on the results of this method.
+    ///                    allow you to make the final decision to commit based on the results of this method.
     /// @return true if the interaction succeeded, false otherwise.
     public static boolean interactWithFluidHandler(Player player, InteractionHand hand, Level level, BlockPos pos, @Nullable Direction side, @Nullable TransactionContext transaction) {
         Preconditions.checkNotNull(level);
@@ -126,35 +107,17 @@ public final class FluidUtil {
         return fluidHandler != null && interactWithFluidHandler(player, hand, pos, fluidHandler, transaction);
     }
 
-    /**
-     * Used to handle the common case of a player holding a fluid item and right-clicking on a fluid handler.
-     * First it tries to fill the item from the handler,
-     * if that action fails then it tries to drain the item into the handler.
-     * Automatically updates the item in the player's hand and stashes any extra items created.
-     *
-     * @param player  The player doing the interaction between the item and fluid handler.
-     * @param hand    The player's hand that is holding an item that should interact with the fluid handler.
-     * @param pos     The position at which to send game events and play sounds. If {@code null}, the player's position will be used.
-     * @param handler The fluid handler.
-     * @return true if the interaction succeeded, false otherwise.
-     * @deprecated Use {@link #interactWithFluidHandler(Player, InteractionHand, BlockPos, ResourceHandler, TransactionContext)} instead.
-     */
-    @Deprecated(since = "26.1.2", forRemoval = true)
-    public static boolean interactWithFluidHandler(Player player, InteractionHand hand, @Nullable BlockPos pos, ResourceHandler<FluidResource> handler) {
-        return interactWithFluidHandler(player, hand, pos, handler, null);
-    }
-
     /// Used to handle the common case of a player holding a fluid item and right-clicking on a fluid handler.
     /// First it tries to fill the item from the handler,
     /// if that action fails then it tries to drain the item into the handler.
     /// Automatically updates the item in the player's hand and stashes any extra items created.
     ///
-    /// @param player  The player doing the interaction between the item and fluid handler.
-    /// @param hand    The player's hand that is holding an item that should interact with the fluid handler.
-    /// @param pos     The position at which to send game events and play sounds. If `null`, the player's position will be used.
-    /// @param handler The fluid handler.
+    /// @param player      The player doing the interaction between the item and fluid handler.
+    /// @param hand        The player's hand that is holding an item that should interact with the fluid handler.
+    /// @param pos         The position at which to send game events and play sounds. If `null`, the player's position will be used.
+    /// @param handler     The fluid handler.
     /// @param transaction The transaction context for the operation. Passing in `null` will open a root transaction, whereas passing in a transaction will
-    /// allow you to make the final decision to commit based on the results of this method.
+    ///                    allow you to make the final decision to commit based on the results of this method.
     /// @return true if the interaction succeeded, false otherwise.
     public static boolean interactWithFluidHandler(Player player, InteractionHand hand, @Nullable BlockPos pos, ResourceHandler<FluidResource> handler, @Nullable TransactionContext transaction) {
         var itemAccess = ItemAccess.forPlayerInteraction(player, hand).oneByOne();
@@ -217,24 +180,6 @@ public final class FluidUtil {
         level.gameEvent(player, pickup ? GameEvent.FLUID_PICKUP : GameEvent.FLUID_PLACE, position);
     }
 
-    /**
-     * Attempts to pick up a fluid in the level and put it into a fluid handler,
-     * first from a {@link BucketPickup} block (such as fluid sources and waterlogged blocks),
-     * or second from a {@link Capabilities.Fluid#BLOCK} capability instance.
-     *
-     * @param destination The destination for the picked up fluid. May be null.
-     * @param player      The player filling the container. Optional.
-     * @param level       The level the fluid is in.
-     * @param pos         The position of the fluid in the level.
-     * @param side        The side of the fluid that is being drained.
-     * @return a {@link FluidStack} holding a copy of the fluid stack that was picked up, or {@link FluidStack#EMPTY} if nothing was picked up
-     * @deprecated Use {@link #tryPickupFluid(ResourceHandler, Player, Level, BlockPos, Direction, TransactionContext)} instead.
-     */
-    @Deprecated(since = "26.1.2", forRemoval = true)
-    public static FluidStack tryPickupFluid(@Nullable ResourceHandler<FluidResource> destination, @Nullable Player player, Level level, BlockPos pos, @Nullable Direction side) {
-        return tryPickupFluid(destination, player, level, pos, side, null);
-    }
-
     /// Attempts to pick up a fluid in the level and put it into a fluid handler,
     /// first from a [BucketPickup] block (such as fluid sources and waterlogged blocks),
     /// or second from a [Capabilities.Fluid#BLOCK] capability instance.
@@ -245,7 +190,7 @@ public final class FluidUtil {
     /// @param pos         The position of the fluid in the level.
     /// @param side        The side of the fluid that is being drained.
     /// @param transaction The transaction context for the operation. Passing in `null` will open a root transaction, whereas passing in a transaction will
-    /// allow you to make the final decision to commit based on the results of this method. Note: there may be in world side effects even if the passed transaction is not committed.
+    ///                    allow you to make the final decision to commit based on the results of this method. Note: there may be in world side effects even if the passed transaction is not committed.
     /// @return a [FluidStack] holding a copy of the fluid stack that was picked up, or [FluidStack#EMPTY] if nothing was picked up
     /// @see #tryPickupFluid(ResourceHandler, Player, Level, BlockPos, TransactionContext) For picking up from a BucketPickup without falling back to a fluid handler.
     public static FluidStack tryPickupFluid(@Nullable ResourceHandler<FluidResource> destination, @Nullable Player player, Level level, BlockPos pos, @Nullable Direction side, @Nullable TransactionContext transaction) {
@@ -273,7 +218,7 @@ public final class FluidUtil {
     /// @param level       The level the fluid is in.
     /// @param pos         The position of the fluid in the level.
     /// @param transaction The transaction context for the operation. Passing in `null` will open a root transaction, whereas passing in a transaction will
-    /// allow you to make the final decision to commit based on the results of this method. Note: there may be in world side effects even if the passed transaction is not committed.
+    ///                    allow you to make the final decision to commit based on the results of this method. Note: there may be in world side effects even if the passed transaction is not committed.
     /// @return a [FluidStack] holding a copy of the fluid stack that was picked up, or [FluidStack#EMPTY] if nothing was picked up
     /// @see #tryPickupFluid(ResourceHandler, Player, Level, BlockPos, Direction, TransactionContext) For falling back to picking up from a fluid handler if the block is not a BucketPickup.
     public static FluidStack tryPickupFluid(@Nullable ResourceHandler<FluidResource> destination, @Nullable Player player, Level level, BlockPos pos, @Nullable TransactionContext transaction) {
@@ -328,29 +273,6 @@ public final class FluidUtil {
         }
     }
 
-    /**
-     * Tries to extract {@linkplain FluidType#BUCKET_VOLUME one bucket} of a fluid resource from a resource handler
-     * and place it into the level as a block.
-     * Unlike {@link #tryPlaceFluid(FluidResource, Player, Level, BlockPos, boolean)},
-     * this function will modify the source handler directly and return what was placed.
-     *
-     * <p>Makes a fluid emptying or vaporization sound when successful.
-     * Honors the amount of fluid contained by the used container.
-     * Checks if water-like fluids should vaporize like in the nether.
-     *
-     * @param source The source for the placed fluid. May be null.
-     * @param player Player who places the fluid. May be null for blocks like dispensers.
-     * @param level  Level to place the fluid in
-     * @param hand   Hand of the player to place the fluid with
-     * @param pos    The position in the level to place the fluid block
-     * @return a {@link FluidStack} holding a copy of the fluid stack that was placed, or {@link FluidStack#EMPTY} if nothing was placed
-     * @deprecated Use {@link #tryPlaceFluid(ResourceHandler, Player, Level, BlockPos, boolean, TransactionContext)} instead
-     */
-    @Deprecated(since = "26.1.2", forRemoval = true)
-    public static FluidStack tryPlaceFluid(@Nullable ResourceHandler<FluidResource> source, @Nullable Player player, Level level, InteractionHand hand, BlockPos pos) {
-        return tryPlaceFluid(source, player, level, pos, false, null);
-    }
-
     /// Tries to extract [one bucket][FluidType#BUCKET_VOLUME] of a fluid resource from a resource handler
     /// and place it into the level as a block.
     /// Unlike [#tryPlaceFluid(FluidResource, Player, Level, BlockPos, boolean)],
@@ -360,12 +282,12 @@ public final class FluidUtil {
     /// Honors the amount of fluid contained by the used container.
     /// Checks if water-like fluids should vaporize like in the nether.
     ///
-    /// @param source The source for the placed fluid. May be null.
-    /// @param player Player who places the fluid. May be null for blocks like dispensers.
-    /// @param level  Level to place the fluid in
-    /// @param pos    The position in the level to place the fluid block
+    /// @param source      The source for the placed fluid. May be null.
+    /// @param player      Player who places the fluid. May be null for blocks like dispensers.
+    /// @param level       Level to place the fluid in
+    /// @param pos         The position in the level to place the fluid block
     /// @param transaction The transaction context for the operation. Passing in `null` will open a root transaction, whereas passing in a transaction will
-    /// allow you to make the final decision to commit based on the results of this method. Note: there may be in world side effects even if the passed transaction is not committed.
+    ///                    allow you to make the final decision to commit based on the results of this method. Note: there may be in world side effects even if the passed transaction is not committed.
     /// @return a [FluidStack] holding a copy of the fluid stack that was placed, or [FluidStack#EMPTY] if nothing was placed
     public static FluidStack tryPlaceFluid(@Nullable ResourceHandler<FluidResource> source, @Nullable Player player, Level level, BlockPos pos, boolean validatePlaced, @Nullable TransactionContext transaction) {
         if (source == null) {
@@ -392,30 +314,6 @@ public final class FluidUtil {
         return FluidStack.EMPTY;
     }
 
-    /**
-     * Tries to place {@linkplain FluidType#BUCKET_VOLUME one bucket} of a fluid resource into the level as a block.
-     * Note that e.g. extracting it from a handler on successful placement is the responsibility of the caller.
-     * See also {@link #tryPlaceFluid(ResourceHandler, Player, Level, BlockPos, boolean, TransactionContext)} to modify a source handler directly.
-     *
-     * <p>Makes a fluid emptying or vaporization sound when successful.
-     * Honors the amount of fluid contained by the used container.
-     * Checks if water-like fluids should vaporize like in the nether.
-     *
-     * <p>Modeled after {@link BucketItem#emptyContents(LivingEntity, Level, BlockPos, BlockHitResult, ItemStack)}.
-     *
-     * @param resource The fluid resource to place
-     * @param player   Player who places the fluid. May be null for blocks like dispensers.
-     * @param level    Level to place the fluid in
-     * @param hand     Hand of the player to place the fluid with
-     * @param pos      The position in the level to place the fluid block
-     * @return true if the placement was successful, false otherwise
-     * @deprecated Use {@link #tryPlaceFluid(FluidResource, Player, Level, BlockPos, boolean)} instead
-     */
-    @Deprecated(since = "26.1.2", forRemoval = true)
-    public static boolean tryPlaceFluid(FluidResource resource, @Nullable Player player, Level level, InteractionHand hand, BlockPos pos) {
-        return tryPlaceFluid(resource, player, level, pos, false);
-    }
-
     /// Tries to place [one bucket][FluidType#BUCKET_VOLUME] of a fluid resource into the level as a block.
     /// Note that e.g. extracting it from a handler on successful placement is the responsibility of the caller.
     /// See also [#tryPlaceFluid(ResourceHandler, Player, Level, BlockPos, boolean, TransactionContext)] to modify a source handler directly.
@@ -426,10 +324,10 @@ public final class FluidUtil {
     ///
     /// Modeled after [BucketItem#emptyContents(LivingEntity, Level, BlockPos, BlockHitResult, ItemStack)].
     ///
-    /// @param resource The fluid resource to place
-    /// @param player   Player who places the fluid. May be null for blocks like dispensers.
-    /// @param level    Level to place the fluid in
-    /// @param pos      The position in the level to place the fluid block
+    /// @param resource       The fluid resource to place
+    /// @param player         Player who places the fluid. May be null for blocks like dispensers.
+    /// @param level          Level to place the fluid in
+    /// @param pos            The position in the level to place the fluid block
     /// @param validatePlaced `true` to respect the result returned by [LiquidBlockContainer#placeLiquid]. To directly mirror [BucketItem#emptyContents] pass `false`.
     /// @return true if the placement was successful, false otherwise
     public static boolean tryPlaceFluid(FluidResource resource, @Nullable Player player, Level level, BlockPos pos, boolean validatePlaced) {

@@ -344,7 +344,7 @@ public class LivingEntityEventTests {
             }
         });
 
-        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL))
+        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
                 /* The player is given equipment with enchantments and effects to set the stage for non-zero reductions*/
                 .thenExecute(player -> {
                     player.setCustomName(NAME);

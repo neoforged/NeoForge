@@ -258,7 +258,7 @@ public class PlayerEventTests {
         test.onGameTest(helper -> {
             DamageSource source = new DamageSource(helper.getLevel().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.MOB_ATTACK));
             helper.startSequence(() -> helper.makeMockPlayer(GameType.SURVIVAL))
-                    .thenExecute(player -> player.invulnerableTime = 0)
+                    .thenExecute(player -> player.setInvulnerableTime(0))
                     .thenExecute(player -> player.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.DIAMOND_CHESTPLATE)))
                     .thenExecute(player -> player.hurt(source, 10F))
                     .thenWaitUntil(player -> helper.assertTrue(player.getItemBySlot(EquipmentSlot.CHEST).getItem().equals(Items.DIAMOND_CHESTPLATE)

@@ -10,8 +10,9 @@ import com.mojang.serialization.MapCodec;
 import java.util.function.Function;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.RegistryCodecs;
-import net.minecraft.resources.RegistryFileCodec;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.codec.RegistryCodecs;
+import net.minecraft.core.registries.codec.RegistryFileCodec;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.level.biome.Biome;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -28,9 +29,6 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
  *   // Additional fields can be specified here according to the codec
  * }
  * </pre>
- * 
- * <p>
- * Datapacks can also disable a biome modifier by overriding the json and using {@code "type": "neoforge:none"}.</p>
  */
 public interface BiomeModifier {
     /**
@@ -44,24 +42,23 @@ public interface BiomeModifier {
      * Codec for referring to biome modifiers by id in other datapack registry files.
      * Can only be used with {@link RegistryOps}.
      */
-    Codec<Holder<BiomeModifier>> REFERENCE_CODEC = RegistryFileCodec.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, DIRECT_CODEC);
+    Codec<Holder<BiomeModifier>> REFERENCE_CODEC = RegistryFileCodec.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, DIRECT_CODEC, false);
 
     /**
      * Codec for referring to biome modifiers by id, list of id, or tags.
      * Can only be used with {@link RegistryOps}.
      */
-    Codec<HolderSet<BiomeModifier>> LIST_CODEC = RegistryCodecs.homogeneousList(NeoForgeRegistries.Keys.BIOME_MODIFIERS, DIRECT_CODEC);
+    Codec<HolderSet<BiomeModifier>> LIST_CODEC = RegistryCodecs.holderSet(NeoForgeRegistries.Keys.BIOME_MODIFIERS, DIRECT_CODEC);
 
-    /**
-     * Modifies the information via the provided biome builder.
-     * Allows mob spawns and world-gen features to be added or removed,
-     * and climate and client effects to be modified.
-     *
-     * @param biome   the named biome being modified (with original data readable).
-     * @param phase   biome modification phase. Biome modifiers apply in each phase in order of the enum constants.
-     * @param builder mutable biome info builder. Apply changes to this.
-     */
-    void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder);
+    /// Modifies the information via the provided biome builder.
+    ///
+    /// Allows mob spawns and world-gen features to be added or removed, and climate and client effects to be modified.
+    ///
+    /// @param registries the registries
+    /// @param biome      the named biome being modified (with original data readable)
+    /// @param phase      the biome modification phase; biome modifiers apply in each phase in order of the enum constants
+    /// @param builder    mutable biome info builder
+    void modify(RegistryAccess registries, Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder);
 
     /**
      * @return the codec which serializes and deserializes this biome modifier

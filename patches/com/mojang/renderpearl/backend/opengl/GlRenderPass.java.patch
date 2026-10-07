@@ -1,0 +1,14 @@
+--- a/com/mojang/renderpearl/backend/opengl/GlRenderPass.java
++++ b/com/mojang/renderpearl/backend/opengl/GlRenderPass.java
+@@ -95,6 +_,11 @@
+     }
+ 
+     @Override
++    public void setViewport(int x, int y, int width, int height) {
++        GlStateManager._viewport(x, y, width, height);
++    }
++
++    @Override
+     public void enableScissor(int x, int y, int width, int height) {
+         this.scissorState.enable(x, y, width, height);
+         this.scissorStateDirty = true;

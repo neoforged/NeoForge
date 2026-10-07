@@ -7,7 +7,7 @@
           "name": "minecraft:orange_concrete"
         }
       ],
-      "rolls": 1.0
+      "rolls": 1
     }
   ],
   "random_sequence": "neoforge:test_loot_table_3"

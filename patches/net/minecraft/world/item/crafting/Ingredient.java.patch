@@ -133,6 +133,6 @@
 +        if (this.customIngredient != null) {
 +            return this.customIngredient.display();
 +        }
-         return (SlotDisplay)this.values
-             .unwrap()
-             .map(SlotDisplay.TagSlotDisplay::new, l -> new SlotDisplay.Composite(l.stream().map(Ingredient::displayForSingleItem).toList()));
+         return new SlotDisplay.TagSlotDisplay(this.values);
+     }
+ 

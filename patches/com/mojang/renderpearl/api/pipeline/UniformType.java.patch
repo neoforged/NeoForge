@@ -1,0 +1,10 @@
+--- a/com/mojang/renderpearl/api/pipeline/UniformType.java
++++ b/com/mojang/renderpearl/api/pipeline/UniformType.java
+@@ -4,6 +_,7 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
++@net.neoforged.neoforge.internal.NonExhaustiveEnum(reason = "Further uniform types such as SSBO and StorageTexelBuffer may be added")
+ public enum UniformType {
+     COMBINED_IMAGE_SAMPLER,
+     UNIFORM_BUFFER,

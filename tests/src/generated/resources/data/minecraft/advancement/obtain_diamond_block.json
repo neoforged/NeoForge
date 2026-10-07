@@ -13,7 +13,6 @@
     }
   },
   "display": {
-    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
     "description": "You obtained a DiamondBlock",
     "frame": "challenge",
     "icon": {

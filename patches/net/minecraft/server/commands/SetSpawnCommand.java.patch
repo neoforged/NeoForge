@@ -1,11 +1,20 @@
 --- a/net/minecraft/server/commands/SetSpawnCommand.java
 +++ b/net/minecraft/server/commands/SetSpawnCommand.java
-@@ -88,7 +_,7 @@
-                     pos.getZ(),
-                     yaw,
-                     pitch,
--                    dimensionName,
-+                    source.getLevel().getDescription(), // Neo: Use dimension translation, if one exists
-                     targets.iterator().next().getDisplayName()
-                 ),
-                 true
+@@ -29,7 +_,7 @@
+             respawnData.pos().getZ(),
+             respawnData.yaw(),
+             respawnData.pitch(),
+-            Component.translationArg(respawnData.dimension().identifier()),
++            net.neoforged.neoforge.common.CommonHooks.getDimensionDescription(respawnData.dimension()), // Neo: Use dimension translation, if one exists
+             player.getDisplayName()
+         ),
+         (playerCount, var1, respawnData) -> Component.translatable(
+@@ -39,7 +_,7 @@
+             respawnData.pos().getZ(),
+             respawnData.yaw(),
+             respawnData.pitch(),
+-            Component.translationArg(respawnData.dimension().identifier()),
++            net.neoforged.neoforge.common.CommonHooks.getDimensionDescription(respawnData.dimension()), // Neo: Use dimension translation, if one exists
+             playerCount
+         )
+     );

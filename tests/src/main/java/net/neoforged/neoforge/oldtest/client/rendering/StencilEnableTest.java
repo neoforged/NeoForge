@@ -5,15 +5,15 @@
 
 package net.neoforged.neoforge.oldtest.client.rendering;
 
-import com.mojang.blaze3d.platform.CompareOp;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.renderpearl.api.pipeline.CompareOp;
+import com.mojang.renderpearl.api.pipeline.DepthStencilState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.SubmitNodeStorage;
 import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.TrackingItemStackRenderState;
@@ -73,7 +73,7 @@ public class StencilEnableTest {
         modEventBus.addListener(RegisterPipelineModifiersEvent.class, event -> {
             event.register(STENCIL_FILL_KEY, (pipeline, name) -> pipeline.toBuilder()
                     .withLocation(name)
-                    .withStencilTest(new StencilTest(
+                    .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, 0F, 0F, new StencilTest(
                             new StencilPerFaceTest(
                                     StencilOperation.KEEP,
                                     StencilOperation.KEEP,
@@ -81,11 +81,11 @@ public class StencilEnableTest {
                                     CompareOp.ALWAYS_PASS),
                             0xFF,
                             0xFF,
-                            1))
+                            1)))
                     .build());
             event.register(STENCIL_APPLY_KEY, (pipeline, name) -> pipeline.toBuilder()
                     .withLocation(name)
-                    .withStencilTest(new StencilTest(
+                    .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, 0F, 0F, new StencilTest(
                             new StencilPerFaceTest(
                                     StencilOperation.KEEP,
                                     StencilOperation.KEEP,
@@ -93,7 +93,7 @@ public class StencilEnableTest {
                                     CompareOp.NOT_EQUAL),
                             0xFF,
                             0,
-                            1))
+                            1)))
                     .build());
         });
         modEventBus.addListener(RegisterPictureInPictureRenderersEvent.class, event -> {
@@ -127,6 +127,7 @@ public class StencilEnableTest {
         });
     }
 
+    // FIXME: it is no longer possible to render twice in a PiP
     private static final class StenciledItemPictureInPictureRenderer extends PictureInPictureRenderer<StenciledItemPictureInPictureRenderState> {
         @Override
         protected void renderToTexture(StenciledItemPictureInPictureRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
@@ -143,7 +144,7 @@ public class StencilEnableTest {
                 state.maskRenderState.submit(poseStack, submitNodeCollector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
                 poseStack.popPose();
 
-                dispatcher.renderAllFeatures((SubmitNodeStorage) submitNodeCollector);
+                //dispatcher.renderAllFeatures((SubmitNodeStorage) submitNodeCollector);
             }
             RenderSystem.popPipelineModifier();
 
@@ -159,7 +160,7 @@ public class StencilEnableTest {
                 state.maskedRenderState.submit(poseStack, submitNodeCollector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
                 poseStack.popPose();
 
-                dispatcher.renderAllFeatures((SubmitNodeStorage) submitNodeCollector);
+                //dispatcher.renderAllFeatures((SubmitNodeStorage) submitNodeCollector);
             }
             RenderSystem.popPipelineModifier();
         }

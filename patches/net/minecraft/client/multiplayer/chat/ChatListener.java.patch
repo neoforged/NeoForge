@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/chat/ChatListener.java
 +++ b/net/minecraft/client/multiplayer/chat/ChatListener.java
-@@ -142,7 +_,9 @@
+@@ -138,7 +_,9 @@
              LocalPlayer receiver = this.minecraft.player;
              if (receiver != null && receiver.chatAbilities().canReceivePlayerMessages()) {
                  Component decoratedMessage = boundChatType.decorate(message);
@@ -11,7 +11,7 @@
                  this.narrateChatMessage(boundChatType, message);
                  this.logSystemMessage(decoratedMessage, received);
                  this.previousMessageTime = Util.getMillis();
-@@ -172,12 +_,16 @@
+@@ -168,12 +_,16 @@
                  MessageSignature signature = message.signature();
                  FilterMask filterMask = message.filterMask();
                  if (filterMask.isEmpty()) {
@@ -30,7 +30,7 @@
                          this.narrateChatMessage(boundChatType, filteredContent);
                      }
                  }
-@@ -214,6 +_,8 @@
+@@ -210,6 +_,8 @@
      public void handleSystemMessage(Component message, boolean remote) {
          UUID guessedUUID = this.guessChatUUID(message);
          if (!this.minecraft.options.hideMatchedNames().get() || !this.minecraft.isBlocked(guessedUUID)) {
@@ -39,7 +39,7 @@
              if (guessedUUID == Util.NIL_UUID || !this.minecraft.isFriendOnlyRestricted(guessedUUID)) {
                  LocalPlayer receiver = this.minecraft.player;
                  if (receiver != null && receiver.chatAbilities().canReceiveSystemMessages()) {
-@@ -231,6 +_,8 @@
+@@ -227,6 +_,8 @@
      }
  
      public void handleOverlay(Component message) {

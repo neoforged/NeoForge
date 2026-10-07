@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/player/LocalPlayer.java
 +++ b/net/minecraft/client/player/LocalPlayer.java
-@@ -545,7 +_,14 @@
+@@ -560,7 +_,14 @@
  
      @Override
      public void playSound(SoundEvent sound, float volume, float pitch) {
@@ -16,7 +16,7 @@
      }
  
      @Override
-@@ -787,6 +_,7 @@
+@@ -803,6 +_,7 @@
              && this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.CROUCHING)
              && (this.isShiftKeyDown() || !this.isSleeping() && !this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.STANDING));
          this.input.tick();
@@ -24,7 +24,7 @@
          this.minecraft.getTutorial().onInput(this.input);
          boolean wasAutoJump = false;
          if (this.autoJumpTime > 0) {
-@@ -831,7 +_,7 @@
+@@ -847,7 +_,7 @@
          }
  
          boolean justToggledCreativeFlight = false;
@@ -33,7 +33,7 @@
              if (this.minecraft.gameMode.isSpectator()) {
                  if (!abilities.flying) {
                      abilities.flying = true;
-@@ -928,7 +_,7 @@
+@@ -944,7 +_,7 @@
      }
  
      private boolean shouldStopSwimSprinting() {
@@ -42,23 +42,17 @@
      }
  
      public Portal.Transition getActivePortalLocalTransition() {
-@@ -971,8 +_,19 @@
-     }
+@@ -999,6 +_,13 @@
  
-     @Override
+     public float getSpinningEffectAngle(float partialTick) {
+         return this.spinningEffectTime + partialTick * this.spinningEffectSpeed;
++    }
++
++    @Override
 +    protected boolean canGlide() {
 +        // Neo: Override canGlide for the client to check if it is connected to a neo forge server, and if not then fall back to checking the worn items.
 +        // This way when Player#tryToStartFallFlying is called, on the client, it is able to check for the vanilla components on equipped items
 +        return !getAbilities().flying && canGlide(connection.getConnectionType().isNeoForge());
-+    }
-+
-+    @Override
-     public void rideTick() {
-         super.rideTick();
-+        if (this.wantsToStopRiding() && this.isPassenger()) {
-+            Input input = this.input.keyPresses;
-+            this.input.keyPresses = new Input(input.forward(), input.backward(), input.left(), input.right(), input.jump(), false, input.sprint());
-+        }
-         this.handsBusy = false;
-         if (this.getControlledVehicle() instanceof AbstractBoat boat) {
-             boat.setInput(this.input.keyPresses.left(), this.input.keyPresses.right(), this.input.keyPresses.forward(), this.input.keyPresses.backward());
+     }
+ 
+     @Override

@@ -27,6 +27,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.stats.Stats;
+import net.minecraft.util.Prediction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -122,7 +123,7 @@ public class FullPotsAccessorDemo {
                             if (stack.isEmpty()) {
                                 player.setItemInHand(hand, flowerStack);
                             } else if (!player.addItem(flowerStack)) {
-                                player.drop(flowerStack, false);
+                                player.drop(flowerStack, false, Prediction.SERVER_ONLY);
                             }
 
                             be.setPlant(Blocks.AIR);

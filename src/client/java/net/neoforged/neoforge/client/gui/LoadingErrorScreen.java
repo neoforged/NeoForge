@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.client.gui;
 
+import com.mojang.blaze3d.Blaze3D;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,7 +19,6 @@ import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.ErrorScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.Util;
 import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.fml.loading.FMLPaths;
@@ -67,14 +67,14 @@ public class LoadingErrorScreen extends ErrorScreen {
         this.warningHeader = Component.literal(ChatFormatting.YELLOW + FMLTranslations.parseMessage("fml.loadingerrorscreen.warningheader", this.modLoadWarnings.size()) + ChatFormatting.RESET);
 
         int yOffset = 46;
-        this.addRenderableWidget(new ExtendedButton(50, this.height - yOffset, this.width / 2 - 55, 20, Component.literal(FMLTranslations.parseMessage("fml.button.open.mods.folder")), b -> Util.getPlatform().openFile(modsDir.toFile())));
-        this.addRenderableWidget(new ExtendedButton(this.width / 2 + 5, this.height - yOffset, this.width / 2 - 55, 20, Component.literal(FMLTranslations.parseMessage("fml.button.open.log")), b -> Util.getPlatform().openFile(logFile.toFile())));
+        this.addRenderableWidget(new ExtendedButton(50, this.height - yOffset, this.width / 2 - 55, 20, Component.literal(FMLTranslations.parseMessage("fml.button.open.mods.folder")), b -> Blaze3D.openPath(modsDir)));
+        this.addRenderableWidget(new ExtendedButton(this.width / 2 + 5, this.height - yOffset, this.width / 2 - 55, 20, Component.literal(FMLTranslations.parseMessage("fml.button.open.log")), b -> Blaze3D.openPath(logFile)));
         if (this.modLoadErrors.isEmpty()) {
             this.addRenderableWidget(new ExtendedButton(50, this.height - 24, this.width / 2 - 55, 20, Component.literal(FMLTranslations.parseMessage("fml.button.continue.launch")), b -> {
                 this.nextScreenTask.run();
             }));
         } else {
-            this.addRenderableWidget(new ExtendedButton(50, this.height - 24, this.width / 2 - 55, 20, Component.literal(FMLTranslations.parseMessage("fml.button.open.crashreport")), b -> Util.getPlatform().openFile(dumpedLocation.toFile())));
+            this.addRenderableWidget(new ExtendedButton(50, this.height - 24, this.width / 2 - 55, 20, Component.literal(FMLTranslations.parseMessage("fml.button.open.crashreport")), b -> Blaze3D.openPath(dumpedLocation)));
         }
         this.addRenderableWidget(new ExtendedButton(this.width / 2 + 5, this.height - 24, this.width / 2 - 55, 20, Component.translatable("menu.quit"), b -> this.minecraft.stop()));
 

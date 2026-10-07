@@ -16,6 +16,7 @@ import net.neoforged.neoforge.common.extensions.IBlockStateExtension;
 /// Relocator mechanics may query {@link IBlockStateExtension#getRelocability} for each block in some area being moved.
 public sealed interface BlockRelocability permits BlockRelocability.No, BlockRelocability.Yes, BlockRelocability.Multiblock {
     /// {@return true if the block is relocatable from a given Set of block positions, false otherwise}
+    /// 
     /// @param relocatingPositions Set of positions blocks are being relocated from
     public abstract boolean isRelocatable(Set<BlockPos> relocatingPositions);
 
@@ -48,7 +49,7 @@ public sealed interface BlockRelocability permits BlockRelocability.No, BlockRel
     /// only require themselves and the core, and having the core block require all non-core positions.
     ///
     /// @param requiredPositions Set of block positions which must be moved with this block to allow moving it.
-    /// This Set must include the block's own position.
+    ///                          This Set must include the block's own position.
     public static record Multiblock(Set<BlockPos> requiredPositions) implements BlockRelocability {
         public Multiblock(Set<BlockPos> requiredPositions) {
             if (requiredPositions.isEmpty())

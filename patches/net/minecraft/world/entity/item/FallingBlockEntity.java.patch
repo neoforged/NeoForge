@@ -1,27 +1,27 @@
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -158,7 +_,7 @@
+@@ -160,7 +_,7 @@
              if (this.level() instanceof ServerLevel serverLevel && (this.isAlive() || this.forceTickAfterTeleportToDuplicate)) {
                  BlockPos pos = this.blockPosition();
                  boolean isConcrete = this.blockState.getBlock() instanceof ConcretePowderBlock;
 -                boolean isStuckInWater = isConcrete && this.level().getFluidState(pos).is(FluidTags.WATER);
-+                boolean isStuckInWater = isConcrete && this.blockState.canBeHydrated(this.level(), pos, this.level().getFluidState(pos), pos);
++                boolean isStuckInWater = isConcrete && this.blockState.canBeHydrated(this.level(), pos, this.level().getFluidState(pos));
                  double moveVec = this.getDeltaMovement().lengthSqr();
                  if (isConcrete && moveVec > 1.0) {
                      BlockHitResult clip = this.level()
-@@ -167,7 +_,7 @@
+@@ -169,7 +_,7 @@
                                  new Vec3(this.xo, this.yo, this.zo), this.position(), ClipContext.Block.COLLIDER, ClipContext.Fluid.SOURCE_ONLY, this
                              )
                          );
 -                    if (clip.getType() != HitResult.Type.MISS && this.level().getFluidState(clip.getBlockPos()).is(FluidTags.WATER)) {
-+                    if (clip.getType() != HitResult.Type.MISS && this.blockState.canBeHydrated(this.level(), pos, this.level().getFluidState(clip.getBlockPos()), clip.getBlockPos())) {
++                    if (clip.getType() != HitResult.Type.MISS && this.blockState.canBeHydrated(this.level(), pos, this.level().getFluidState(clip.getBlockPos()))) {
                          pos = clip.getBlockPos();
                          isStuckInWater = true;
                      }
-@@ -245,6 +_,9 @@
-             }
+@@ -251,6 +_,9 @@
  
              this.setDeltaMovement(this.getDeltaMovement().scale(this.getAirDrag()));
+             this.setRequiresPrecisePosition(this.horizontalCollision || this.verticalCollision);
 +            if (isAlive() && block instanceof net.neoforged.neoforge.common.extensions.IFallableExtension feblock) {
 +                feblock.fallingTick(level(), blockPosition(), this);
 +            }

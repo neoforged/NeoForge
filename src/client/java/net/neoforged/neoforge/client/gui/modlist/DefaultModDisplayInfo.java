@@ -9,7 +9,6 @@ import com.mojang.logging.LogUtils;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
-import net.minecraft.locale.Language;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -67,15 +66,10 @@ public class DefaultModDisplayInfo implements ModDisplayInfo {
     }
 
     /// {@inheritDoc} This uses the translation key `neoforge.screen.mods.info.description.[modid]` if available,
-    /// falling back to the deprecated translation key `fml.menu.mods.info.description.[modid]` if available,
     /// where `[modid]` is the [mod ID][#id()], with a fallback to the `description` key of the mod info.
     @Override
     public Component description() {
-        String newKey = "neoforge.screen.mods.info.description." + id();
-        if (Language.getInstance().has(newKey)) return Component.translatable(newKey);
-
-        // TODO 26.3+: Remove the `fml.menu.mods.info` fallback and only use the new translation key.
-        return Component.translatableWithFallback("fml.menu.mods.info.description." + id(), container.getModInfo().getDescription());
+        return Component.translatableWithFallback("neoforge.screen.mods.info.description." + id(), container.getModInfo().getDescription());
     }
 
     /// {@inheritDoc} This uses the `license` key of the mod file info.

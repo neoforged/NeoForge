@@ -35,10 +35,10 @@ import org.jspecify.annotations.Nullable;
 public abstract class ViewportEvent extends Event {
     private final GameRenderer renderer;
     private final Camera camera;
-    private final double partialTick;
+    private final float partialTick;
 
     @ApiStatus.Internal
-    public ViewportEvent(GameRenderer renderer, Camera camera, double partialTick) {
+    public ViewportEvent(GameRenderer renderer, Camera camera, float partialTick) {
         this.renderer = renderer;
         this.camera = camera;
         this.partialTick = partialTick;
@@ -61,7 +61,7 @@ public abstract class ViewportEvent extends Event {
     /**
      * {@return the partial tick}
      */
-    public double getPartialTick() {
+    public float getPartialTick() {
         return partialTick;
     }
 
@@ -243,7 +243,7 @@ public abstract class ViewportEvent extends Event {
         private float roll;
 
         @ApiStatus.Internal
-        public ComputeCameraAngles(Camera camera, double renderPartialTicks, float yaw, float pitch, float roll) {
+        public ComputeCameraAngles(Camera camera, float renderPartialTicks, float yaw, float pitch, float roll) {
             super(Minecraft.getInstance().gameRenderer, camera, renderPartialTicks);
             this.setYaw(yaw);
             this.setPitch(pitch);

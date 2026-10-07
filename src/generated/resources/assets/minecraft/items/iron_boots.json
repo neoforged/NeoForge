@@ -5,6 +5,10 @@
       "type": "minecraft:model",
       "model": "minecraft:item/iron_boots"
     },
-    "base_trim_texture": "minecraft:trims/items/boots_trim"
+    "base_trim_texture": "minecraft:trims/items/boots_trim",
+    "palette_replacement": {
+      "replacement": "minecraft:trim/iron_darker",
+      "target": "minecraft:trim/iron"
+    }
   }
 }

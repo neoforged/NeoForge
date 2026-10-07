@@ -1,0 +1,8 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:tag_empty",
+      "tag": "c:drinks/juice"
+    }
+  ]
+}

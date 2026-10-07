@@ -8,7 +8,7 @@
         }
       ],
       "name": "custom_name",
-      "rolls": 1.0
+      "rolls": 1
     },
     {
       "entries": [
@@ -17,7 +17,7 @@
           "name": "minecraft:gold_nugget"
         }
       ],
-      "rolls": 1.0
+      "rolls": 1
     }
   ],
   "random_sequence": "neoforge:test_loot_table_1"

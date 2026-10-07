@@ -6,15 +6,20 @@
 package net.neoforged.neoforge.server;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.Registry;
@@ -23,22 +28,22 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.random.Weighted;
+import net.minecraft.server.jsonrpc.IncomingRpcMethod;
+import net.minecraft.server.jsonrpc.OutgoingRpcMethod;
+import net.minecraft.server.jsonrpc.api.Schema;
+import net.minecraft.server.jsonrpc.api.SchemaComponent;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.Biomes;
-import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
+import net.neoforged.neoforge.event.server.RegisterRpcSchemaEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -52,19 +57,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 public class ServerLifecycleHooks {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Marker SERVERHOOKS = MarkerManager.getMarker("SERVERHOOKS");
-    private static final LevelResource SERVERCONFIG = new LevelResource("serverconfig");
+    private static final LevelResource SYNCEDCONFIG = new LevelResource("syncedconfig");
     @Nullable
     private static volatile CountDownLatch exitLatch = null;
     @Nullable
     private static MinecraftServer currentServer;
 
-    private static Path getServerConfigPath(final MinecraftServer server) {
-        final Path serverConfig = server.getWorldPath(SERVERCONFIG);
+    private static Path getSyncedConfigPath(final MinecraftServer server) {
+        final Path serverConfig = server.getWorldPath(SYNCEDCONFIG);
         if (!Files.isDirectory(serverConfig)) {
             try {
                 Files.createDirectories(serverConfig);
@@ -76,9 +82,9 @@ public class ServerLifecycleHooks {
         if (!Files.exists(explanation)) {
             try {
                 Files.writeString(explanation, """
-                        Any server configs put in this folder will override the corresponding server config from <instance path>/config/<config path>.
+                        Any synced configs put in this folder will override the corresponding synced config from <instance path>/config/<config path>.
                         If the config being transferred is in a subfolder of the base config folder make sure to include that folder here in the path to the file you are overwriting.
-                        For example if you are overwriting a config with the path <instance path>/config/ExampleMod/config-server.toml, you would need to put it in serverconfig/ExampleMod/config-server.toml
+                        For example if you are overwriting a config with the path <instance path>/config/ExampleMod/config-synced.toml, you would need to put it in serverconfig/ExampleMod/config-shared.toml
                         """, StandardCharsets.UTF_8);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -90,7 +96,7 @@ public class ServerLifecycleHooks {
     public static void handleServerAboutToStart(final MinecraftServer server) {
         currentServer = server;
         // on the dedi server we need to force the stuff to setup properly
-        ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.SERVER, FMLPaths.CONFIGDIR.get(), getServerConfigPath(server));
+        ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.SYNCED, FMLPaths.CONFIGDIR.get(), getSyncedConfigPath(server));
         runModifiers(server);
         NeoForge.EVENT_BUS.post(new ServerAboutToStartEvent(server));
     }
@@ -124,7 +130,7 @@ public class ServerLifecycleHooks {
             latch.countDown();
             exitLatch = null;
         }
-        ConfigTracker.INSTANCE.unloadConfigs(ModConfig.Type.SERVER);
+        ConfigTracker.INSTANCE.unloadConfigs(ModConfig.Type.SYNCED);
     }
 
     @Nullable
@@ -134,6 +140,57 @@ public class ServerLifecycleHooks {
 
     public static void handleExit(int retVal) {
         System.exit(retVal);
+    }
+
+    @ApiStatus.Internal
+    public static void fireSchemaRegistryEvent() {
+        final Map<String, SchemaComponent<?>> schemaRegistry = new HashMap<>();
+        final ArrayList<SchemaComponent<?>> vanillaSchemaRegistry = (ArrayList<SchemaComponent<?>>) Schema.getSchemaRegistry();
+
+        // fill with vanilla values
+        for (SchemaComponent<?> schemaComponent : vanillaSchemaRegistry) {
+            schemaRegistry.put(schemaComponent.name(), schemaComponent);
+        }
+
+        // post the registration event
+        NeoForge.EVENT_BUS.post(new RegisterRpcSchemaEvent(schemaRegistry));
+
+        // mirror final contents back to the list
+        vanillaSchemaRegistry.clear();
+        vanillaSchemaRegistry.ensureCapacity(schemaRegistry.size());
+        vanillaSchemaRegistry.addAll(schemaRegistry.values());
+        // sort the list so that non-identifier names come first, then vanilla and then modded, all sorted by namespace and path
+        vanillaSchemaRegistry.sort((o1, o2) -> {
+            Identifier rl1 = Identifier.tryParse(o1.name());
+            Identifier rl2 = Identifier.tryParse(o2.name());
+            if (rl1 == null && rl2 == null) {
+                return o1.name().compareTo(o2.name());
+            } else if (rl1 == null) {
+                return 1;
+            } else if (rl2 == null) {
+                return -1;
+            } else {
+                return CommonHooks.CMP_BY_NAMESPACE_VANILLA_FIRST.compare(rl1, rl2);
+            }
+        });
+
+        Set<String> missing = Stream.concat(
+                BuiltInRegistries.INCOMING_RPC_METHOD.stream().map(IncomingRpcMethod::info),
+                BuiltInRegistries.OUTGOING_RPC_METHOD.stream().map(OutgoingRpcMethod::info))
+                .<URI>mapMulti((methodInfo, consumer) -> {
+                    methodInfo.result().flatMap(resultInfo -> resultInfo.schema().reference()).ifPresent(consumer);
+                    methodInfo.params().flatMap(paramsInfo -> paramsInfo.schema().reference()).ifPresent(consumer);
+                })
+                .map(URI::toString)
+                // filter out any non-local references. The path #/components/schemas/ comes from ReferenceUtil#createLocalReference
+                .filter(uri -> uri.startsWith("#/components/schemas/"))
+                .map(uri -> uri.substring("#/components/schemas/".length()))
+                .filter(name -> !schemaRegistry.containsKey(name))
+                .collect(Collectors.toSet());
+
+        if (!missing.isEmpty()) {
+            throw new IllegalStateException("Some schemas were not registered: " + String.join(", ", missing));
+        }
     }
 
     private static <T> void ensureProperSync(boolean modified, Holder.Reference<T> holder, Registry<T> registry) {
@@ -173,31 +230,32 @@ public class ServerLifecycleHooks {
                     biomeHolder,
                     biomeRegistry);
 
-            final MobSpawnSettings mobSettings = biome.getMobSettings();
-            mobSettings.getSpawnerTypes().forEach(category -> {
-                mobSettings.getMobs(category).unwrap().forEach(data -> {
-                    if (SpawnPlacements.hasPlacement(data.value().type()))
-                        return;
-                    entitiesWithoutPlacements.add(data.value().type());
-                });
-            });
-
-            for (MobCategory mobCategory : mobSettings.getSpawnerTypes()) {
-                for (Weighted<MobSpawnSettings.SpawnerData> spawnerData : mobSettings.getMobs(mobCategory).unwrap()) {
-                    if (spawnerData.value().type().getCategory() != mobCategory) {
-                        // Ignore vanilla bugged entries to reduce unneeded logging. See https://bugs.mojang.com/browse/MC-1788 for the Ocelot/Jungle vanilla bug.
-                        boolean isVanillaBug = spawnerData.value().type() == EntityTypes.OCELOT && (biomeHolder.is(Biomes.JUNGLE) || biomeHolder.is(Biomes.BAMBOO_JUNGLE));
-                        if (!isVanillaBug) {
-                            LOGGER.warn("Detected {} that was registered with {} mob category but was added under {} mob category for {} biome! " +
-                                    "Mobs should be added to biomes under the same mob category that the mob was registered as to prevent mob cap spawning issues.",
-                                    BuiltInRegistries.ENTITY_TYPE.getKey(spawnerData.value().type()),
-                                    spawnerData.value().type().getCategory(),
-                                    mobCategory,
-                                    biomeHolder.getKey().identifier());
-                        }
-                    }
-                }
-            }
+            // TODO 26.3: can this be ported? if not, make sure to delete entitiesWithoutPlacements as well
+//            final MobSpawnSettings mobSettings = biome.getMobSettings();
+//            mobSettings.definedCategories().forEach(category -> {
+//                mobSettings.getMobs(category).unwrap().forEach(data -> {
+//                    if (SpawnPlacements.hasPlacement(data.value().type()))
+//                        return;
+//                    entitiesWithoutPlacements.add(data.value().type());
+//                });
+//            });
+//
+//            for (MobCategory mobCategory : mobSettings.definedCategories()) {
+//                for (Weighted<MobSpawnSettings.SpawnerData> spawnerData : mobSettings.getMobs(mobCategory).unwrap()) {
+//                    if (spawnerData.value().type().getCategory() != mobCategory) {
+//                        // Ignore vanilla bugged entries to reduce unneeded logging. See https://bugs.mojang.com/browse/MC-1788 for the Ocelot/Jungle vanilla bug.
+//                        boolean isVanillaBug = spawnerData.value().type() == EntityTypes.OCELOT && (biomeHolder.is(Biomes.JUNGLE) || biomeHolder.is(Biomes.BAMBOO_JUNGLE));
+//                        if (!isVanillaBug) {
+//                            LOGGER.warn("Detected {} that was registered with {} mob category but was added under {} mob category for {} biome! " +
+//                                    "Mobs should be added to biomes under the same mob category that the mob was registered as to prevent mob cap spawning issues.",
+//                                    BuiltInRegistries.ENTITY_TYPE.getKey(spawnerData.value().type()),
+//                                    spawnerData.value().type().getCategory(),
+//                                    mobCategory,
+//                                    biomeHolder.getKey().identifier());
+//                        }
+//                    }
+//                }
+//            }
         });
         // Rebuild the indexed feature list
         registries.lookupOrThrow(Registries.LEVEL_STEM).forEach(levelStem -> {
@@ -206,7 +264,7 @@ public class ServerLifecycleHooks {
 
         // Apply sorted structure modifiers to each structure.
         registries.lookupOrThrow(Registries.STRUCTURE).listElements().forEach(structureHolder -> {
-            structureHolder.value().modifiableStructureInfo().applyStructureModifiers(structureHolder, structureModifiers);
+            structureHolder.value().modifiableStructureInfo().applyStructureModifiers(registries, structureHolder, structureModifiers);
         });
 
         if (!entitiesWithoutPlacements.isEmpty() && !FMLEnvironment.isProduction()) {

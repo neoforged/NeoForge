@@ -15,7 +15,7 @@ import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
-/// Fired when a component's [custom click action][ClickEvent.Custom] is triggered by a player. 
+/// Fired when a component's [custom click action][ClickEvent.Custom] is triggered by a player.
 /// This may be due to clicking a sign, or a component in a dialog box or screen.
 /// 
 /// If an event handler receives this and performs its own custom action, that event handler **must cancel** this event.
