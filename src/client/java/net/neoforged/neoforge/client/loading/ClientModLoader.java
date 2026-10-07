@@ -8,6 +8,7 @@ package net.neoforged.neoforge.client.loading;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.client.Minecraft;
@@ -79,10 +80,11 @@ public class ClientModLoader extends CommonModLoader {
         }
     }
 
-    public static VersionChecker.Status checkForUpdates() {
+    public static VersionChecker.@Nullable Status checkForUpdates() {
         boolean anyOutdated = ModList.get().getMods().stream()
                 .map(VersionChecker::getResult)
-                .map(result -> result.status())
+                .filter(Objects::nonNull)
+                .map(VersionChecker.CheckResult::status)
                 .anyMatch(status -> status == VersionChecker.Status.OUTDATED || status == VersionChecker.Status.BETA_OUTDATED);
         return anyOutdated ? VersionChecker.Status.OUTDATED : null;
     }
