@@ -814,18 +814,16 @@ public class DeferredRegister<T> {
             return this.registerEntityType(name, factory, category, UnaryOperator.identity());
         }
 
-        /**
-         * Convenience method that constructs a builder for use in the operator. Use this to avoid inference issues.
-         *
-         * @param name     The name for this entity type. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
-         * @param factory  The factory used to typically construct the entity when using an existing helper from the type.
-         * @param category The category of the entity, typically {@link MobCategory#MISC} for non-living entities, or one of the others for living entities.
-         * @param builder  The bifunction that is passed <code>factory</code> and <code>category</code> and returns an {@link EntityType.Builder} which is built upon registration.
-         * @return A {@link DeferredHolder} which reflects the data that will be registered.
-         * @param <E> the type of the entity
-         * @see #registerEntityType(String, EntityType.EntityFactory, MobCategory)
-         * @see #registerEntityType(String, EntityType.EntityFactory, MobCategory, UnaryOperator)
-         */
+        /// Convenience method that constructs a builder for use in the operator. Use this to avoid inference issues.
+        ///
+        /// @param name     The name for this entity type. It will automatically have the [namespace][#getNamespace()] prefixed.
+        /// @param factory  The factory used to typically construct the entity when using an existing helper from the type.
+        /// @param category The category of the entity, typically [MobCategory#MISC] for non-living entities, or one of the others for living entities.
+        /// @param builder  The bifunction that is passed `factory` and `category` and returns an [EntityType.Builder] which is built upon registration.
+        /// @return A [DeferredHolder] which reflects the data that will be registered.
+        /// @param <E> the type of the entity
+        /// @see #registerEntityType(String, EntityType.EntityFactory, MobCategory)
+        /// @see #registerEntityType(String, EntityType.EntityFactory, MobCategory, UnaryOperator)
         public <E extends Entity> DeferredHolder<EntityType<?>, EntityType<E>> registerEntityType(String name, EntityType.EntityFactory<E> factory, MobCategory category, BiFunction<EntityType.EntityFactory<E>, MobCategory, EntityType.Builder<E>> builder) {
             return this.register(name, key -> builder.apply(factory, category).build(ResourceKey.create(Registries.ENTITY_TYPE, key)));
         }
