@@ -12,6 +12,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Stream;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.MultiRegistryBootstrap;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.core.registries.SingleRegistryBootstrap;
@@ -21,7 +22,9 @@ import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.item.crafting.Recipe;
+import net.neoforged.neoforge.registries.NewDatapackRegistryEvent;
 
 /// Gathers the datapack registry entries during [GatherDataRegistryEntriesEvent]. Only mods added via '--mod'
 /// in the run arguments generate their contents, but all gathered entries can still be used for other parts of
@@ -33,9 +36,9 @@ public interface DatapackRegistryGatherer {
     /// Adds a bootstrap for the provided registry [ResourceKey] to register entries for use during
     /// data generation. The layer each registry belongs to is handled internally.
     ///
-    /// Analogous to [net.minecraft.core.RegistrySetBuilder#add(ResourceKey, SingleRegistryBootstrap)].
+    /// Analogous to [RegistrySetBuilder#add(ResourceKey, SingleRegistryBootstrap)].
     ///
-    /// Custom datapack registries must be registered via [NewDatapackRegistryEvent][net.neoforged.neoforge.registries.NewDatapackRegistryEvent]
+    /// Custom datapack registries must be registered via [NewDatapackRegistryEvent]
     /// first; otherwise, an exception will be thrown.
     ///
     /// @param registryKey The key of the registry.
@@ -48,9 +51,9 @@ public interface DatapackRegistryGatherer {
     /// Adds a bootstrap for the requested registries to register entries for use during data generation.
     /// The layer the registries belong to is handled internally.
     ///
-    /// Analogous to [net.minecraft.core.RegistrySetBuilder#add(MultiRegistryBootstrap)].
+    /// Analogous to [RegistrySetBuilder#add(MultiRegistryBootstrap)].
     ///
-    /// Custom datapack registries must be registered via [NewDatapackRegistryEvent][net.neoforged.neoforge.registries.NewDatapackRegistryEvent]
+    /// Custom datapack registries must be registered via [NewDatapackRegistryEvent]
     /// first. Additionally, all requested registries must be part of the same registry layer. Otherwise, an
     /// exception will be thrown.
     ///
@@ -62,7 +65,7 @@ public interface DatapackRegistryGatherer {
     /// Adds the sub providers used to bootstrap the [Registries#LOOT_TABLE] entries for use during data generation.
     /// Wraps around [LootTableProvider].
     ///
-    /// @param subProvider  The sub provider used to add loot tables for a specific [loot context parameter set][net.minecraft.util.context.ContextKeySet].
+    /// @param subProvider  The sub provider used to add loot tables for a specific [loot context parameter set][ContextKeySet].
     /// @param subProviders Any additional sub providers.
     /// @return This gatherer.
     default DatapackRegistryGatherer lootTable(LootTableProvider.SubProviderEntry subProvider, LootTableProvider.SubProviderEntry... subProviders) {
