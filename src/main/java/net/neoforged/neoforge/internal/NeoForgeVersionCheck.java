@@ -6,8 +6,8 @@
 package net.neoforged.neoforge.internal;
 
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.VersionChecker;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.VersionChecker;
 import org.jspecify.annotations.Nullable;
 
 public class NeoForgeVersionCheck {
