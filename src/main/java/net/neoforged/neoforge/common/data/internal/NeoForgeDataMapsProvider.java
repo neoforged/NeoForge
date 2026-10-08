@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.common.data.internal;
 
 import com.google.common.collect.ImmutableMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +29,9 @@ import net.minecraft.world.entity.npc.villager.VillagerType;
 import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
@@ -35,16 +39,7 @@ import net.minecraft.world.level.levelgen.feature.MonsterRoomFeature;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.data.DataMapProvider;
-import net.neoforged.neoforge.registries.datamaps.builtin.AcceptableVillagerDistance;
-import net.neoforged.neoforge.registries.datamaps.builtin.BiomeVillagerType;
-import net.neoforged.neoforge.registries.datamaps.builtin.MonsterRoomMob;
-import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
-import net.neoforged.neoforge.registries.datamaps.builtin.Oxidizable;
-import net.neoforged.neoforge.registries.datamaps.builtin.ParrotImitation;
-import net.neoforged.neoforge.registries.datamaps.builtin.RaidHeroGift;
-import net.neoforged.neoforge.registries.datamaps.builtin.VibrationFrequency;
-import net.neoforged.neoforge.registries.datamaps.builtin.VillagerCompostable;
-import net.neoforged.neoforge.registries.datamaps.builtin.Waxable;
+import net.neoforged.neoforge.registries.datamaps.builtin.*;
 
 public class NeoForgeDataMapsProvider extends DataMapProvider {
     public NeoForgeDataMapsProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
@@ -90,6 +85,15 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
         final var waxables = builder(NeoForgeDataMaps.WAXABLES);
         HoneycombItem.WAXABLES.get().forEach((now, after) -> {
             waxables.add(now.builtInRegistryHolder(), new Waxable(after, false), false);
+        });
+
+        final var flammables = builder(NeoForgeDataMaps.FLAMMABLE);
+        FireBlock fire = (FireBlock) Blocks.FIRE;
+        final Object2IntMap<Block> igniteOdds = ObfuscationReflectionHelper.getPrivateValue(FireBlock.class, fire, "igniteOdds");
+        final Object2IntMap<Block> burnOdds = ObfuscationReflectionHelper.getPrivateValue(FireBlock.class, fire, "burnOdds");
+        igniteOdds.forEach((block, value) -> {
+            int burnOddsValue = burnOdds.getOrDefault(block, 0);
+            flammables.add(block.builtInRegistryHolder(), new Flammable(burnOddsValue,  value), false);
         });
     }
 }
