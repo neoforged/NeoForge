@@ -7,9 +7,7 @@ package net.neoforged.neoforge.debug.loot;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
-import java.util.Set;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.resources.Identifier;
@@ -55,19 +53,17 @@ public class LootPoolTest {
     @EmptyTemplate
     @TestHolder(description = "Tests if loading loot pools with custom names works")
     public static void testPoolLoading(DynamicTest test, RegistrationHelper reg) {
-        reg.generateReloadableRegistries(new RegistrySetBuilder().add(Registries.LOOT_TABLE, new LootTableProvider(
-                Set.of(),
-                List.of(
-                        new LootTableProvider.SubProviderEntry(context -> () -> {
-                            context.accept(
-                                    TEST_LOOT_TABLE_1,
-                                    LootTable.lootTable()
-                                            .withPool(LootPool.lootPool()
-                                                    .add(LootItem.lootTableItem(Items.DIAMOND))
-                                                    .name("custom_name"))
-                                            .withPool(LootPool.lootPool()
-                                                    .add(LootItem.lootTableItem(Items.GOLD_NUGGET))));
-                        }, LootContextParamSets.ALL_PARAMS)))));
+        reg.registries(registries -> registries.gatherFor("neoforge").lootTable(
+                new LootTableProvider.SubProviderEntry(context -> () -> {
+                    context.accept(
+                            TEST_LOOT_TABLE_1,
+                            LootTable.lootTable()
+                                    .withPool(LootPool.lootPool()
+                                            .add(LootItem.lootTableItem(Items.DIAMOND))
+                                            .name("custom_name"))
+                                    .withPool(LootPool.lootPool()
+                                            .add(LootItem.lootTableItem(Items.GOLD_NUGGET))));
+                }, LootContextParamSets.ALL_PARAMS)));
 
         test.onGameTest(helper -> {
             var testTable = helper.getLevel().getServer().reloadableRegistries().getLootTable(TEST_LOOT_TABLE_1);
@@ -85,16 +81,14 @@ public class LootPoolTest {
     static void pinkConcreteLootTableCanceled(final DynamicTest test, final RegistrationHelper reg) {
         ResourceKey<LootTable> lootTableToUse = TEST_LOOT_TABLE_2;
 
-        reg.generateReloadableRegistries(new RegistrySetBuilder().add(Registries.LOOT_TABLE, new LootTableProvider(
-                Set.of(),
-                List.of(
-                        new LootTableProvider.SubProviderEntry(context -> () -> {
-                            context.accept(
-                                    lootTableToUse,
-                                    LootTable.lootTable()
-                                            .withPool(LootPool.lootPool()
-                                                    .add(LootItem.lootTableItem(Items.CONCRETE.pink()))));
-                        }, LootContextParamSets.ALL_PARAMS)))));
+        reg.registries(registries -> registries.gatherFor("neoforge").lootTable(
+                new LootTableProvider.SubProviderEntry(context -> () -> {
+                    context.accept(
+                            lootTableToUse,
+                            LootTable.lootTable()
+                                    .withPool(LootPool.lootPool()
+                                            .add(LootItem.lootTableItem(Items.CONCRETE.pink()))));
+                }, LootContextParamSets.ALL_PARAMS)));
 
         NeoForge.EVENT_BUS.addListener((final LootTableLoadEvent event) -> {
             if (event.getKey() == lootTableToUse) {
@@ -122,16 +116,14 @@ public class LootPoolTest {
     static void orangeConcreteLootTableReplaced(final DynamicTest test, final RegistrationHelper reg) {
         ResourceKey<LootTable> lootTableToUse = TEST_LOOT_TABLE_3;
 
-        reg.generateReloadableRegistries(new RegistrySetBuilder().add(Registries.LOOT_TABLE, new LootTableProvider(
-                Set.of(),
-                List.of(
-                        new LootTableProvider.SubProviderEntry(context -> () -> {
-                            context.accept(
-                                    lootTableToUse,
-                                    LootTable.lootTable()
-                                            .withPool(LootPool.lootPool()
-                                                    .add(LootItem.lootTableItem(Items.CONCRETE.orange()))));
-                        }, LootContextParamSets.ALL_PARAMS)))));
+        reg.registries(registries -> registries.gatherFor("neoforge").lootTable(
+                new LootTableProvider.SubProviderEntry(context -> () -> {
+                    context.accept(
+                            lootTableToUse,
+                            LootTable.lootTable()
+                                    .withPool(LootPool.lootPool()
+                                            .add(LootItem.lootTableItem(Items.CONCRETE.orange()))));
+                }, LootContextParamSets.ALL_PARAMS)));
 
         NeoForge.EVENT_BUS.addListener((final LootTableLoadEvent event) -> {
             if (event.getKey() == lootTableToUse) {
@@ -161,16 +153,14 @@ public class LootPoolTest {
     static void yellowConcreteLootTableAppended(final DynamicTest test, final RegistrationHelper reg) {
         ResourceKey<LootTable> lootTableToUse = TEST_LOOT_TABLE_4;
 
-        reg.generateReloadableRegistries(new RegistrySetBuilder().add(Registries.LOOT_TABLE, new LootTableProvider(
-                Set.of(),
-                List.of(
-                        new LootTableProvider.SubProviderEntry(context -> () -> {
-                            context.accept(
-                                    lootTableToUse,
-                                    LootTable.lootTable()
-                                            .withPool(LootPool.lootPool()
-                                                    .add(LootItem.lootTableItem(Items.CONCRETE.yellow()))));
-                        }, LootContextParamSets.ALL_PARAMS)))));
+        reg.registries(registries -> registries.gatherFor("neoforge").lootTable(
+                new LootTableProvider.SubProviderEntry(context -> () -> {
+                    context.accept(
+                            lootTableToUse,
+                            LootTable.lootTable()
+                                    .withPool(LootPool.lootPool()
+                                            .add(LootItem.lootTableItem(Items.CONCRETE.yellow()))));
+                }, LootContextParamSets.ALL_PARAMS)));
 
         NeoForge.EVENT_BUS.addListener((final LootTableLoadEvent event) -> {
             if (event.getKey() == lootTableToUse) {
@@ -201,15 +191,13 @@ public class LootPoolTest {
         Identifier tableOneLoc = tableOne.identifier().withPrefix("loot_table/").withSuffix(".json");
         Identifier tableTwoLoc = tableTwo.identifier().withPrefix("loot_table/").withSuffix(".json");
 
-        reg.generateReloadableRegistries(new RegistrySetBuilder().add(Registries.LOOT_TABLE, new LootTableProvider(
-                Set.of(),
-                List.of(
-                        new LootTableProvider.SubProviderEntry(context -> () -> {
-                            context.accept(tableOne, LootTable.lootTable().withCondition(new ModLoadedCondition("doesnt_exist")));
-                        }, LootContextParamSets.ALL_PARAMS),
-                        new LootTableProvider.SubProviderEntry(context -> () -> {
-                            context.withConditions(List.of(new ModLoadedCondition("doesnt_exist"))).accept(tableTwo, LootTable.lootTable());
-                        }, LootContextParamSets.ALL_PARAMS)))));
+        reg.registriesForTest(registries -> registries.lootTable(
+                new LootTableProvider.SubProviderEntry(context -> () -> {
+                    context.accept(tableOne, LootTable.lootTable().withCondition(new ModLoadedCondition("doesnt_exist")));
+                }, LootContextParamSets.ALL_PARAMS),
+                new LootTableProvider.SubProviderEntry(context -> () -> {
+                    context.withConditions(List.of(new ModLoadedCondition("doesnt_exist"))).accept(tableTwo, LootTable.lootTable());
+                }, LootContextParamSets.ALL_PARAMS)));
 
         test.eventListeners().forge().addListener((ServerStartedEvent event) -> {
             ResourceManager resourceManager = event.getServer().getResourceManager();

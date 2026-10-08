@@ -43,6 +43,8 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GatherDataRegistryEntriesEvent;
+import net.neoforged.neoforge.data.event.GlobalDatapackRegistryGatherer;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -97,6 +99,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     private final String modId;
     private final ListMultimap<Class<?>, Consumer<? extends DataProvider>> clientProviders = Multimaps.newListMultimap(new IdentityHashMap<>(), ArrayList::new);
     private final ListMultimap<Class<?>, Consumer<? extends DataProvider>> serverProviders = Multimaps.newListMultimap(new IdentityHashMap<>(), ArrayList::new);
+    private final List<Consumer<GlobalDatapackRegistryGatherer>> registryGatherers = new ArrayList<>();
     private final List<Function<GatherDataEvent.Client, DataProvider>> directClientProviders = new ArrayList<>();
     private final List<Function<GatherDataEvent.Server, DataProvider>> directServerProviders = new ArrayList<>();
     private final Map<ResourceKey<? extends Registry<?>>, DeferredRegister<?>> registrars = new ConcurrentHashMap<>();
@@ -223,19 +226,8 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     }
 
     @Override
-    public void generateWorldRegistries(RegistrySetBuilder registrySetBuilder) {
-        if (worldRegistrySetBuilder != null) {
-            throw new IllegalStateException("Cannot add multiple sets of world registry data");
-        }
-        worldRegistrySetBuilder = registrySetBuilder;
-    }
-
-    @Override
-    public void generateReloadableRegistries(RegistrySetBuilder registrySetBuilder) {
-        if (reloadableRegistrySetBuilder != null) {
-            throw new IllegalStateException("Cannot add multiple sets of reloadable registry data");
-        }
-        reloadableRegistrySetBuilder = registrySetBuilder;
+    public void registries(Consumer<GlobalDatapackRegistryGatherer> consumer) {
+        registryGatherers.add(consumer);
     }
 
     private IEventBus bus;
@@ -244,6 +236,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     public void register(IEventBus bus, ModContainer container) {
         this.bus = bus;
         this.owner = container;
+        bus.addListener(this::gatherRegistries);
         bus.addListener(this::gatherServer);
         bus.addListener(this::gatherClient);
         listeners.forEach(bus::addListener);
@@ -257,6 +250,10 @@ public class RegistrationHelperImpl implements RegistrationHelper {
         return bus == null ? listeners::add : bus::addListener;
     }
 
+    private void gatherRegistries(final GatherDataRegistryEntriesEvent event) {
+        registryGatherers.forEach(c -> c.accept(event));
+    }
+
     private void gatherServer(final GatherDataEvent.Server event) {
         gather(event, serverProviders, directServerProviders);
     }
@@ -266,13 +263,6 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     }
 
     private <T extends GatherDataEvent> void gather(final T event, ListMultimap<Class<?>, Consumer<? extends DataProvider>> providers, List<Function<T, DataProvider>> directProviders) {
-        if (worldRegistrySetBuilder != null) {
-            event.createWorldRegistryObjects(worldRegistrySetBuilder, null, "world (" + modId + ")");
-        }
-        if (reloadableRegistrySetBuilder != null) {
-            event.createReloadableRegistryObjects(reloadableRegistrySetBuilder, null, "reloadable (" + modId + ")");
-        }
-
         providers.asMap().forEach((cls, cons) -> event.getGenerator().addProvider(true, PROVIDERS.get(cls).create(
                 event.getGenerator().getPackOutput(), event.getReloadableLookupProvider(), event.getGenerator(), modId, (List) cons)));
 
