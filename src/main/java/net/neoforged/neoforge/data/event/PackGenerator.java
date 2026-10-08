@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.registries.RegistryPatchGenerator;
@@ -22,6 +23,7 @@ import org.jspecify.annotations.Nullable;
 public final class PackGenerator {
     private final GatherDataEvent owner;
     private final PackOutput output;
+    private final String providerPrefix;
 
     @Nullable
     CompletableFuture<HolderLookup.Provider> worldRegistriesWithModdedEntries = null;
@@ -30,9 +32,10 @@ public final class PackGenerator {
     @Nullable
     CompletableFuture<HolderLookup.Provider> reloadableRegistriesWithModdedEntries = null;
 
-    PackGenerator(GatherDataEvent owner, PackOutput output) {
+    PackGenerator(GatherDataEvent owner, PackOutput output, String providerPrefix) {
         this.owner = owner;
         this.output = output;
+        this.providerPrefix = providerPrefix;
     }
 
     public PackOutput getPackOutput() {
@@ -55,7 +58,20 @@ public final class PackGenerator {
     }
 
     public <T extends DataProvider> T addProvider(T provider) {
-        return this.owner.getGenerator().addProvider(true, provider);
+        // wrap the provider to ensure the `getName` return is unique
+        this.owner.getGenerator().addProvider(true, new DataProvider() {
+            @Override
+            public CompletableFuture<?> run(CachedOutput cache) {
+                return provider.run(cache);
+            }
+
+            @Override
+            public String getName() {
+                return providerPrefix + provider.getName();
+            }
+        });
+
+        return provider;
     }
 
     public <T extends DataProvider> T createProvider(DataProviderFromOutput<T> builder) {
