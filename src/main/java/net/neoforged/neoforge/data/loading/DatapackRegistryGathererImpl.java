@@ -118,22 +118,21 @@ record DatapackRegistryGathererImpl(@Nullable DatapackRegistryGatherer global, S
                 || RegistryDataLoader.DIMENSION_REGISTRIES.stream().anyMatch(data -> data.key().equals(registryKey));
     }
 
-    /// An internal method used to add the data providers for the global registry set, if any entries were added.
+    /// An internal method used to create the global registry set used for generation.
     ///
-    /// @param generator       The data generator.
     /// @param worldRegistries The vanilla world registries.
     /// @return The registry set containing the modded registries for each layer.
-    DatapackRegistrySets<CompletableFuture<HolderLookup.Provider>> createGlobal(DataGenerator generator, CompletableFuture<HolderLookup.Provider> worldRegistries) {
+    DatapackRegistrySets<CompletableFuture<HolderLookup.Provider>> createGlobal(CompletableFuture<HolderLookup.Provider> worldRegistries) {
         CompletableFuture<HolderLookup.Provider> worldAndDimension = worldRegistries;
         if (this.hasEntries.worldAndDimension().booleanValue()) {
-            worldAndDimension = generator.addProvider(true, DatapackBuiltinEntriesProvider.forWorldLayer(
-                    generator.getPackOutput(), "World (" + this.id + "): " + this.modIds, worldAndDimension, this.builder.worldAndDimension(), this.modIds)).getRegistryProvider();
+            worldAndDimension = DatapackBuiltinEntriesProvider.forWorldLayer(
+                    null, "World (" + this.id + "): " + this.modIds, worldAndDimension, this.builder.worldAndDimension(), this.modIds).getRegistryProvider();
         }
         CompletableFuture<HolderLookup.Provider> reloadable = worldAndDimension.thenApply(VanillaRegistries::createReloadableLookup);
         if (this.hasEntries.reloadable().booleanValue()) {
-            reloadable = generator.addProvider(true, DatapackBuiltinEntriesProvider.forReloadableLayer(
-                    generator.getPackOutput(), "Reloadable (" + this.id + "): " + this.modIds, worldAndDimension,
-                    reloadable, this.builder.reloadable(), this.modIds)).getRegistryProvider();
+            reloadable = DatapackBuiltinEntriesProvider.forReloadableLayer(
+                    null, "Reloadable (" + this.id + "): " + this.modIds, worldAndDimension,
+                    reloadable, this.builder.reloadable(), this.modIds).getRegistryProvider();
         }
         return new DatapackRegistrySets<>(worldAndDimension, reloadable);
     }
