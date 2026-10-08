@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/level/block/FireBlock.java
 +++ b/net/minecraft/world/level/block/FireBlock.java
-@@ -25,6 +_,8 @@
- import net.minecraft.world.phys.shapes.CollisionContext;
- import net.minecraft.world.phys.shapes.Shapes;
- import net.minecraft.world.phys.shapes.VoxelShape;
-+import net.neoforged.neoforge.registries.datamaps.builtin.Flammable;
-+import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
- 
- public class FireBlock extends BaseFireBlock {
-     public static final int MAX_AGE = 15;
 @@ -48,7 +_,11 @@
      private static final int BURN_EASY = 60;
      private static final int BURN_MEDIUM = 20;
@@ -103,12 +94,12 @@
 +
 +
 +    private static int getIgniteOdds(Block block) {
-+        Flammable flammable = block.builtInRegistryHolder().getData(NeoForgeDataMaps.FLAMMABLE);
++        var flammable = block.builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.FLAMMABLE);
 +        return flammable != null ? flammable.fireSpreadSpeed() : 0;
 +    }
 +
 +    private static int getBurnOdds(Block block) {
-+        Flammable flammable = block.builtInRegistryHolder().getData(NeoForgeDataMaps.FLAMMABLE);
++        var flammable = block.builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.FLAMMABLE);
 +        return flammable != null ? flammable.flammability() : 0;
 +    }
 +
