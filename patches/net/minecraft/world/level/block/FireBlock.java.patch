@@ -1,5 +1,26 @@
 --- a/net/minecraft/world/level/block/FireBlock.java
 +++ b/net/minecraft/world/level/block/FireBlock.java
+@@ -25,6 +_,8 @@
+ import net.minecraft.world.phys.shapes.CollisionContext;
+ import net.minecraft.world.phys.shapes.Shapes;
+ import net.minecraft.world.phys.shapes.VoxelShape;
++import net.neoforged.neoforge.registries.datamaps.builtin.Flammable;
++import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
+ 
+ public class FireBlock extends BaseFireBlock {
+     public static final int MAX_AGE = 15;
+@@ -48,7 +_,11 @@
+     private static final int BURN_EASY = 60;
+     private static final int BURN_MEDIUM = 20;
+     private static final int BURN_HARD = 5;
++    /** @deprecated Neo: Use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE flammable} data map instead, as this field will be ignored */
++    @Deprecated
+     private final Object2IntMap<Block> igniteOdds = new Object2IntOpenHashMap<>();
++    /** @deprecated Neo: Use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE flammable} data map instead, as this field will be ignored */
++    @Deprecated
+     private final Object2IntMap<Block> burnOdds = new Object2IntOpenHashMap<>();
+ 
+     public FireBlock(BlockBehaviour.Properties properties) {
 @@ -108,13 +_,13 @@
      protected BlockState getStateForPlacement(BlockGetter level, BlockPos pos) {
          BlockPos below = pos.below();
@@ -53,26 +74,44 @@
                  BlockPos.MutableBlockPos testPos = new BlockPos.MutableBlockPos();
  
                  for (int xx = -1; xx <= 1; xx++) {
-@@ -214,33 +_,32 @@
+@@ -214,33 +_,46 @@
              || level.isRainingAt(testPos.south());
      }
  
++
 +    @Deprecated //Forge: Use IForgeBlockState.getFlammability, Public for default implementation only.
      public int getBurnOdds(BlockState state) {
          return state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)
              ? 0
-             : this.burnOdds.getInt(state.getBlock());
+-            : this.burnOdds.getInt(state.getBlock());
++//            : this.burnOdds.getInt(state.getBlock());
++            : getBurnOdds(state.getBlock());
      }
  
 +    @Deprecated //Forge: Use IForgeBlockState.getFireSpreadSpeed
      public int getIgniteOdds(BlockState state) {
          return state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)
              ? 0
-             : this.igniteOdds.getInt(state.getBlock());
-     }
- 
+-            : this.igniteOdds.getInt(state.getBlock());
+-    }
+-
 -    private void checkBurnOut(Level level, BlockPos pos, int chance, RandomSource random, int age) {
 -        int odds = this.getBurnOdds(level.getBlockState(pos));
++//            : this.igniteOdds.getInt(state.getBlock());
++            : getIgniteOdds(state.getBlock());
++    }
++
++
++    private static int getIgniteOdds(Block block) {
++        Flammable flammable = block.builtInRegistryHolder().getData(NeoForgeDataMaps.FLAMMABLE);
++        return flammable != null ? flammable.fireSpreadSpeed() : 0;
++    }
++
++    private static int getBurnOdds(Block block) {
++        Flammable flammable = block.builtInRegistryHolder().getData(NeoForgeDataMaps.FLAMMABLE);
++        return flammable != null ? flammable.flammability() : 0;
++    }
++
 +    private void checkBurnOut(Level level, BlockPos pos, int chance, RandomSource random, int age, Direction face) {
 +        int odds = level.getBlockState(pos).getFlammability(level, pos, face);
          if (random.nextInt(chance) < odds) {
@@ -118,9 +157,12 @@
      protected boolean canBurn(BlockState state) {
          return this.getIgniteOdds(state) > 0;
      }
-@@ -295,8 +_,21 @@
+@@ -294,9 +_,24 @@
+         builder.add(AGE, NORTH, EAST, SOUTH, WEST, UP);
      }
  
++    /** @deprecated Neo: Use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE flammable} data map instead, as this field will be ignored */
++    @Deprecated
      private void setFlammable(Block block, int igniteOdds, int burnOdds) {
 +        if (block == Blocks.AIR) throw new IllegalArgumentException("Tried to set air on fire... This is bad.");
          this.igniteOdds.put(block, igniteOdds);

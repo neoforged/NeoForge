@@ -1,0 +1,1020 @@
+{
+  "values": {
+    "minecraft:acacia_fence": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:acacia_fence_gate": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:acacia_leaves": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:acacia_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:acacia_planks": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:acacia_shelf": {
+      "fireSpreadSpeed": 30,
+      "flammability": 20
+    },
+    "minecraft:acacia_slab": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:acacia_stairs": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:acacia_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:allium": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:azalea": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:azalea_leaves": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:azure_bluet": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:bamboo": {
+      "fireSpreadSpeed": 60,
+      "flammability": 60
+    },
+    "minecraft:bamboo_block": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:bamboo_fence": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:bamboo_fence_gate": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:bamboo_mosaic": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:bamboo_mosaic_slab": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:bamboo_mosaic_stairs": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:bamboo_planks": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:bamboo_shelf": {
+      "fireSpreadSpeed": 30,
+      "flammability": 20
+    },
+    "minecraft:bamboo_slab": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:bamboo_stairs": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:bee_nest": {
+      "fireSpreadSpeed": 30,
+      "flammability": 20
+    },
+    "minecraft:beehive": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:big_dripleaf": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:big_dripleaf_stem": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:birch_fence": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:birch_fence_gate": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:birch_leaves": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:birch_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:birch_planks": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:birch_shelf": {
+      "fireSpreadSpeed": 30,
+      "flammability": 20
+    },
+    "minecraft:birch_slab": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:birch_stairs": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:birch_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:black_carpet": {
+      "fireSpreadSpeed": 60,
+      "flammability": 20
+    },
+    "minecraft:black_wool": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:black_wool_slab": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:black_wool_stairs": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:blue_carpet": {
+      "fireSpreadSpeed": 60,
+      "flammability": 20
+    },
+    "minecraft:blue_orchid": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:blue_wool": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:blue_wool_slab": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:blue_wool_stairs": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:bookshelf": {
+      "fireSpreadSpeed": 30,
+      "flammability": 20
+    },
+    "minecraft:brown_carpet": {
+      "fireSpreadSpeed": 60,
+      "flammability": 20
+    },
+    "minecraft:brown_wool": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:brown_wool_slab": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:brown_wool_stairs": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:bush": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:cactus_flower": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:cave_vines": {
+      "fireSpreadSpeed": 15,
+      "flammability": 60
+    },
+    "minecraft:cave_vines_plant": {
+      "fireSpreadSpeed": 15,
+      "flammability": 60
+    },
+    "minecraft:cherry_fence": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:cherry_fence_gate": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:cherry_leaves": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:cherry_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:cherry_planks": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:cherry_shelf": {
+      "fireSpreadSpeed": 30,
+      "flammability": 20
+    },
+    "minecraft:cherry_slab": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:cherry_stairs": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:cherry_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:closed_eyeblossom": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:coal_block": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:composter": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:cornflower": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:cyan_carpet": {
+      "fireSpreadSpeed": 60,
+      "flammability": 20
+    },
+    "minecraft:cyan_wool": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:cyan_wool_slab": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:cyan_wool_stairs": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:dandelion": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:dark_oak_fence": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:dark_oak_fence_gate": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:dark_oak_leaves": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:dark_oak_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:dark_oak_planks": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:dark_oak_shelf": {
+      "fireSpreadSpeed": 30,
+      "flammability": 20
+    },
+    "minecraft:dark_oak_slab": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:dark_oak_stairs": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:dark_oak_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:dead_bush": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:dried_kelp_block": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:fern": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:firefly_bush": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:flowering_azalea": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:flowering_azalea_leaves": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:glow_lichen": {
+      "fireSpreadSpeed": 15,
+      "flammability": 100
+    },
+    "minecraft:golden_dandelion": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:gray_carpet": {
+      "fireSpreadSpeed": 60,
+      "flammability": 20
+    },
+    "minecraft:gray_wool": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:gray_wool_slab": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:gray_wool_stairs": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:green_carpet": {
+      "fireSpreadSpeed": 60,
+      "flammability": 20
+    },
+    "minecraft:green_wool": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:green_wool_slab": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:green_wool_stairs": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:hanging_roots": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:hay_block": {
+      "fireSpreadSpeed": 60,
+      "flammability": 20
+    },
+    "minecraft:jungle_fence": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:jungle_fence_gate": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:jungle_leaves": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:jungle_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:jungle_planks": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:jungle_shelf": {
+      "fireSpreadSpeed": 30,
+      "flammability": 20
+    },
+    "minecraft:jungle_slab": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:jungle_stairs": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:jungle_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:large_fern": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:leaf_litter": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:lectern": {
+      "fireSpreadSpeed": 30,
+      "flammability": 20
+    },
+    "minecraft:light_blue_carpet": {
+      "fireSpreadSpeed": 60,
+      "flammability": 20
+    },
+    "minecraft:light_blue_wool": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:light_blue_wool_slab": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:light_blue_wool_stairs": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:light_gray_carpet": {
+      "fireSpreadSpeed": 60,
+      "flammability": 20
+    },
+    "minecraft:light_gray_wool": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:light_gray_wool_slab": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:light_gray_wool_stairs": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:lilac": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:lily_of_the_valley": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:lime_carpet": {
+      "fireSpreadSpeed": 60,
+      "flammability": 20
+    },
+    "minecraft:lime_wool": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:lime_wool_slab": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:lime_wool_stairs": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:magenta_carpet": {
+      "fireSpreadSpeed": 60,
+      "flammability": 20
+    },
+    "minecraft:magenta_wool": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:magenta_wool_slab": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:magenta_wool_stairs": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:mangrove_fence": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:mangrove_fence_gate": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:mangrove_leaves": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:mangrove_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:mangrove_planks": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:mangrove_roots": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:mangrove_shelf": {
+      "fireSpreadSpeed": 30,
+      "flammability": 20
+    },
+    "minecraft:mangrove_slab": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:mangrove_stairs": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:mangrove_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:oak_fence": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:oak_fence_gate": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:oak_leaves": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:oak_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:oak_planks": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:oak_shelf": {
+      "fireSpreadSpeed": 30,
+      "flammability": 20
+    },
+    "minecraft:oak_slab": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:oak_stairs": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:oak_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:open_eyeblossom": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:orange_carpet": {
+      "fireSpreadSpeed": 60,
+      "flammability": 20
+    },
+    "minecraft:orange_poplar_leaves": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:orange_tulip": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:orange_wool": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:orange_wool_slab": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:orange_wool_stairs": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:oxeye_daisy": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:pale_hanging_moss": {
+      "fireSpreadSpeed": 5,
+      "flammability": 100
+    },
+    "minecraft:pale_moss_block": {
+      "fireSpreadSpeed": 5,
+      "flammability": 100
+    },
+    "minecraft:pale_moss_carpet": {
+      "fireSpreadSpeed": 5,
+      "flammability": 100
+    },
+    "minecraft:pale_oak_fence": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:pale_oak_fence_gate": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:pale_oak_leaves": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:pale_oak_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:pale_oak_planks": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:pale_oak_shelf": {
+      "fireSpreadSpeed": 30,
+      "flammability": 20
+    },
+    "minecraft:pale_oak_slab": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:pale_oak_stairs": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:pale_oak_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:peony": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:pink_carpet": {
+      "fireSpreadSpeed": 60,
+      "flammability": 20
+    },
+    "minecraft:pink_petals": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:pink_tulip": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:pink_wool": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:pink_wool_slab": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:pink_wool_stairs": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:pitcher_plant": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:poplar_fence": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:poplar_fence_gate": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:poplar_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:poplar_planks": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:poplar_shelf": {
+      "fireSpreadSpeed": 30,
+      "flammability": 20
+    },
+    "minecraft:poplar_slab": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:poplar_stairs": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:poplar_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:poppy": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:purple_carpet": {
+      "fireSpreadSpeed": 60,
+      "flammability": 20
+    },
+    "minecraft:purple_wool": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:purple_wool_slab": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:purple_wool_stairs": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:red_carpet": {
+      "fireSpreadSpeed": 60,
+      "flammability": 20
+    },
+    "minecraft:red_poplar_leaves": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:red_shrub": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:red_tulip": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:red_wool": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:red_wool_slab": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:red_wool_stairs": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:rose_bush": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:scaffolding": {
+      "fireSpreadSpeed": 60,
+      "flammability": 60
+    },
+    "minecraft:short_dry_grass": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:short_grass": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:small_dripleaf": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:spore_blossom": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:spruce_fence": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:spruce_fence_gate": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:spruce_leaves": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:spruce_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:spruce_planks": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:spruce_shelf": {
+      "fireSpreadSpeed": 30,
+      "flammability": 20
+    },
+    "minecraft:spruce_slab": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:spruce_stairs": {
+      "fireSpreadSpeed": 5,
+      "flammability": 20
+    },
+    "minecraft:spruce_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:straw_bed": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:stripped_acacia_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_acacia_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_bamboo_block": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_birch_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_birch_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_cherry_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_cherry_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_dark_oak_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_dark_oak_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_jungle_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_jungle_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_mangrove_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_mangrove_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_oak_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_oak_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_pale_oak_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_pale_oak_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_poplar_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_poplar_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_spruce_log": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:stripped_spruce_wood": {
+      "fireSpreadSpeed": 5,
+      "flammability": 5
+    },
+    "minecraft:sunflower": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:sweet_berry_bush": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:tall_dry_grass": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:tall_grass": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:target": {
+      "fireSpreadSpeed": 15,
+      "flammability": 20
+    },
+    "minecraft:tnt": {
+      "fireSpreadSpeed": 15,
+      "flammability": 100
+    },
+    "minecraft:torchflower": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:vine": {
+      "fireSpreadSpeed": 15,
+      "flammability": 100
+    },
+    "minecraft:white_carpet": {
+      "fireSpreadSpeed": 60,
+      "flammability": 20
+    },
+    "minecraft:white_tulip": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:white_wool": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:white_wool_slab": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:white_wool_stairs": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:wildflowers": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:wither_rose": {
+      "fireSpreadSpeed": 60,
+      "flammability": 100
+    },
+    "minecraft:yellow_carpet": {
+      "fireSpreadSpeed": 60,
+      "flammability": 20
+    },
+    "minecraft:yellow_poplar_leaves": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:yellow_wool": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:yellow_wool_slab": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    },
+    "minecraft:yellow_wool_stairs": {
+      "fireSpreadSpeed": 30,
+      "flammability": 60
+    }
+  }
+}

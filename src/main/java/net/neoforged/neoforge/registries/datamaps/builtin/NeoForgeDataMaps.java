@@ -185,6 +185,9 @@ public class NeoForgeDataMaps {
     public static final DataMapType<Block, Waxable> WAXABLES = DataMapType.builder(
             id("waxables"), Registries.BLOCK, Waxable.CODEC).synced(Waxable.CODEC, false).build();
 
+    public static final DataMapType<Block, Flammable> FLAMMABLE = DataMapType.builder(
+            id("flammable"), Registries.BLOCK, Flammable.CODEC).synced(Flammable.CODEC, false).build();
+
     private static Identifier id(final String name) {
         return Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, name);
     }
@@ -202,5 +205,6 @@ public class NeoForgeDataMaps {
         event.register(VILLAGER_COMPOSTABLES);
         event.register(VILLAGER_TYPES);
         event.register(WAXABLES);
+        event.register(FLAMMABLE);
     }
 }
