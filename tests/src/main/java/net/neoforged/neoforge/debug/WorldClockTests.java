@@ -7,7 +7,6 @@ package net.neoforged.neoforge.debug;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.resources.Identifier;
@@ -35,7 +34,7 @@ public interface WorldClockTests {
         var ignoresAdvanceTime = ResourceKey.create(Registries.WORLD_CLOCK, Identifier.fromNamespaceAndPath(modId, "ignores_advance_time"));
 
         // register datapack entry generator to generate our world clock
-        reg.generateWorldRegistries(new RegistrySetBuilder().add(Registries.WORLD_CLOCK, registry -> {
+        reg.registriesForTest(registries -> registries.add(Registries.WORLD_CLOCK, registry -> {
             registry.register(ignoresPause, new WorldClock());
             registry.register(ignoresAdvanceTime, new WorldClock());
         }));

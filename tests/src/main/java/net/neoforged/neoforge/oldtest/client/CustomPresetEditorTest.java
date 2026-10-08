@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.oldtest.client;
 
 import java.util.Map;
-import java.util.Set;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Button.OnPress;
 import net.minecraft.client.gui.screens.Screen;
@@ -14,7 +13,6 @@ import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext.DimensionsUpdater;
 import net.minecraft.core.Holder;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.network.chat.Component;
@@ -36,7 +34,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterPresetEditorsEvent;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GatherDataRegistryEntriesEvent;
 
 @Mod(CustomPresetEditorTest.MODID)
 public class CustomPresetEditorTest {
@@ -46,11 +44,8 @@ public class CustomPresetEditorTest {
     @EventBusSubscriber(modid = MODID)
     public static class CommonModEvents {
         @SubscribeEvent
-        public static void onGatherData(GatherDataEvent.Client event) {
-            event.createWorldRegistryObjects(
-                    new RegistrySetBuilder().add(Registries.WORLD_PRESET, context -> context.register(WORLD_PRESET_KEY, makeWorldPreset(context))),
-                    Set.of(MODID),
-                    "world - " + MODID);
+        public static void onGatherRegistries(GatherDataRegistryEntriesEvent event) {
+            event.add(Registries.WORLD_PRESET, context -> context.register(WORLD_PRESET_KEY, makeWorldPreset(context)));
         }
 
         private static WorldPreset makeWorldPreset(BootstrapContext<WorldPreset> context) {
