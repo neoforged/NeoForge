@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.internal;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +55,12 @@ public final class AllParamsKeySet extends ContextKeySet {
     @Override
     public Set<ContextKey<?>> allowed() {
         return this.modded != null ? this.modded : super.allowed();
+    }
+
+    @Override
+    public String toString() {
+        // Override to redirect to modded entries once updated.
+        return "[" + Joiner.on(", ").join(this.allowed().stream().map(k -> (this.required().contains(k) ? "!" : "") + k.name()).iterator()) + "]";
     }
 
     /// An internal method for wrapping [LootContextParamSets#ALL_PARAMS].
