@@ -21,12 +21,13 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.event.RegisterLootContextParamsEvent;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.Nullable;
 
 /// An internal set for allowing modded entries in [LootContextParamSets#ALL_PARAMS].
 @ApiStatus.Internal
 public final class AllParamsKeySet extends ContextKeySet {
     // Only need one set since ALL_PARAMS must have all loot params be required
-    private Set<ContextKey<?>> modded;
+    private @Nullable Set<ContextKey<?>> modded;
 
     protected AllParamsKeySet(ContextKeySet original) {
         super(original.required(), original.allowed());
