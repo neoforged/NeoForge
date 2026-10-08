@@ -84,10 +84,8 @@ public class DatagenModLoader extends CommonModLoader {
             mod.acceptEvent(new GatherDataRegistryEntriesEvent(mod, new GlobalDatapackRegistryGatherer() {
                 @Override
                 public DatapackRegistryGatherer gatherFor(String modId, String... modIds) {
-                    var subGatherer = new DatapackRegistryGathererImpl(this, mod.getModId(), Stream.concat(Stream.of(modId), Arrays.stream(modIds)).collect(Collectors.toSet()));
-                    if (dataGeneratorConfig.getMods().contains(mod.getModId())) {
-                        registries.add(subGatherer);
-                    }
+                    var subGatherer = new DatapackRegistryGathererImpl(mainGatherer, mod.getModId(), Stream.concat(Stream.of(modId), Arrays.stream(modIds)).collect(Collectors.toSet()));
+                    registries.add(subGatherer);
                     return subGatherer;
                 }
 
