@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.debug.registry;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -42,7 +41,7 @@ public class CustomEnvironmentalEffectsTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests a biome using the NeoForge environment attributes")
     static void customBiomeAttributeTest(final DynamicTest test) {
-        HELPER.generateWorldRegistries(new RegistrySetBuilder().add(Registries.BIOME, context -> {
+        HELPER.registriesForTest(registries -> registries.add(Registries.BIOME, context -> {
             var placedFeatures = context.lookup(Registries.PLACED_FEATURE);
             var configuredCarvers = context.lookup(Registries.CARVER);
 

@@ -352,7 +352,7 @@ public class ClientHooks {
             // case UP_TO_DATE -> "Forge up to date";
             // case AHEAD -> "Using non-recommended Forge build, issues may arise.";
             case OUTDATED, BETA_OUTDATED -> I18n.get("neoforge.update.newversion", NeoForgeVersionCheck.getTarget());
-            default -> null;
+            case null, default -> null;
         });
     }
 
