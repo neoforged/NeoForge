@@ -22,5 +22,6 @@ public final class NeoForgeLootContextParams {
 
     public static void registerParams(RegisterLootContextParamsEvent event) {
         event.register(QUERIED_STACK);
+        event.register(DIRECTION);
     }
 }
