@@ -26,7 +26,6 @@ import org.jspecify.annotations.Nullable;
  * If you do not need the additional context of this event, prefer {@link GetEnchantmentLevelEvent} for managing enchantment levels.
  */
 public class EnchantedEntityLootEvent extends LivingEvent {
-    @Nullable
     private final DamageSource damageSource;
     private final Holder<Enchantment> enchantment;
     private int enchantmentLevel;
