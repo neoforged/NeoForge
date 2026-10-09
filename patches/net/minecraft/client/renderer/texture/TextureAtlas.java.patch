@@ -9,13 +9,14 @@
      }
  
      private void uploadInitialContents() {
-@@ -324,5 +_,9 @@
+@@ -324,5 +_,10 @@
  
      int getHeight() {
          return this.height;
 +    }
 +
++    /// Neo: {@return an unmodifiable view of the sprites on this atlas by name}
 +    public Map<Identifier, TextureAtlasSprite> getTextures() {
-+        return java.util.Collections.unmodifiableMap(texturesByName);
++        return java.util.Collections.unmodifiableMap(this.texturesByName);
      }
  }

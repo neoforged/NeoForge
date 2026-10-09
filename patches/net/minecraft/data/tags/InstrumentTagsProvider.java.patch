@@ -1,14 +1,15 @@
 --- a/net/minecraft/data/tags/InstrumentTagsProvider.java
 +++ b/net/minecraft/data/tags/InstrumentTagsProvider.java
-@@ -9,8 +_,13 @@
+@@ -9,8 +_,14 @@
  import net.minecraft.world.item.Instruments;
  
  public class InstrumentTagsProvider extends TagsProvider<Instrument> {
-+    /** @deprecated Forge: Use the {@linkplain #InstrumentTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
++    /// @deprecated Neo: Use the [mod id variant][#InstrumentTagsProvider(PackOutput, CompletableFuture, String)]
 +    @Deprecated
      public InstrumentTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
          super(output, Registries.INSTRUMENT, lookupProvider);
 +    }
++
 +    public InstrumentTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
 +        super(output, Registries.INSTRUMENT, lookupProvider, modId);
      }

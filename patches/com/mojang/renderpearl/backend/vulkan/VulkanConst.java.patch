@@ -1,10 +1,13 @@
 --- a/com/mojang/renderpearl/backend/vulkan/VulkanConst.java
 +++ b/com/mojang/renderpearl/backend/vulkan/VulkanConst.java
-@@ -269,4 +_,17 @@
+@@ -269,4 +_,20 @@
              case FRAGMENT -> 16;
          };
      }
 +
++    /// Neo: {@return the Vk ID of the given stencil operation}
++    ///
++    /// @param op The stencil operation to convert
 +    public static int toVk(net.neoforged.neoforge.client.stencil.StencilOperation op) {
 +        return switch (op) {
 +            case KEEP -> org.lwjgl.vulkan.VK12.VK_STENCIL_OP_KEEP;

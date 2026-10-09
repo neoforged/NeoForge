@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/LevelStorageSource.java
 +++ b/net/minecraft/world/level/storage/LevelStorageSource.java
-@@ -525,6 +_,19 @@
+@@ -525,6 +_,20 @@
              }
          }
  
@@ -10,8 +10,9 @@
 +            Path path = fallback ? this.levelDirectory.oldDataFile() : this.levelDirectory.dataFile();
 +            try {
 +                var tag = readLightweightData(path);
-+                if (tag instanceof CompoundTag compoundTag)
++                if (tag instanceof CompoundTag compoundTag) {
 +                    net.neoforged.neoforge.common.CommonHooks.readAdditionalLevelSaveData(compoundTag, this.levelDirectory);
++                }
 +            } catch (Exception e) {
 +                LOGGER.error("Exception reading {}", path, e);
 +            }

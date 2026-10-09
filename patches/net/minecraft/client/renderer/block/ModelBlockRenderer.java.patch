@@ -125,7 +125,7 @@
 +        }
 +    }
 +
-+    /** @deprecated Neo: use {@link #shouldRenderFace(BlockAndTintGetter, BlockPos, BlockState, Direction, BlockPos)} instead */
++    /// @deprecated Neo: use [#shouldRenderFace(BlockAndTintGetter, BlockPos, BlockState, Direction, BlockPos)] instead
 +    @Deprecated
      private boolean shouldRenderFace(BlockAndTintGetter level, BlockState state, Direction direction, BlockPos neighborPos) {
          if (!this.cull) {

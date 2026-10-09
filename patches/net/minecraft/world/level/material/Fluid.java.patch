@@ -1,9 +1,10 @@
 --- a/net/minecraft/world/level/material/Fluid.java
 +++ b/net/minecraft/world/level/material/Fluid.java
-@@ -31,6 +_,7 @@
+@@ -31,6 +_,8 @@
      protected final StateDefinition<Fluid, FluidState> stateDefinition;
      private FluidState defaultFluidState;
      private final Holder.Reference<Fluid> builtInRegistryHolder = BuiltInRegistries.FLUID.createIntrusiveHolder(this);
++    private net.neoforged.neoforge.fluids.@Nullable FluidType neoForgeFluidType;
 +    private net.neoforged.neoforge.transfer.fluid.@Nullable FluidResource defaultResource;
  
      protected Fluid() {
@@ -36,15 +37,15 @@
          return this.builtInRegistryHolder;
 +    }
 +
-+    private net.neoforged.neoforge.fluids.FluidType forgeFluidType;
-+
 +    @Override
 +    public net.neoforged.neoforge.fluids.FluidType getFluidType() {
-+        if (forgeFluidType == null) forgeFluidType = net.neoforged.neoforge.common.CommonHooks.getVanillaFluidType(this);
-+        return forgeFluidType;
++        if (this.neoForgeFluidType == null) {
++            this.neoForgeFluidType = net.neoforged.neoforge.common.CommonHooks.getVanillaFluidType(this);
++        }
++        return this.neoForgeFluidType;
 +    }
 +
-+    /** @deprecated Neo: do not use, use {@link net.neoforged.neoforge.transfer.fluid.FluidResource#of} instead. */
++    /// @deprecated Neo: do not use, use [net.neoforged.neoforge.transfer.fluid.FluidResource#of] instead.
 +    @org.jetbrains.annotations.ApiStatus.Internal @Deprecated
 +    public net.neoforged.neoforge.transfer.fluid.FluidResource computeDefaultResource(java.util.function.Function<Fluid, net.neoforged.neoforge.transfer.fluid.FluidResource> resourceConstructor) {
 +        if (this.defaultResource == null) {

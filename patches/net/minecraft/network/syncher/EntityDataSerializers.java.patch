@@ -6,9 +6,8 @@
  
 +    private static final org.slf4j.Logger LOGGER = com.mojang.logging.LogUtils.getLogger();
 +    private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
-+    /**
-+     * @deprecated NeoForge: Use {@link net.neoforged.neoforge.registries.NeoForgeRegistries#ENTITY_DATA_SERIALIZERS} instead
-+     */
++
++    /// @deprecated Neo: Use [net.neoforged.neoforge.registries.NeoForgeRegistries#ENTITY_DATA_SERIALIZERS] instead
 +    @Deprecated
      public static void registerSerializer(EntityDataSerializer<?> serializer) {
 -        SERIALIZERS.add(serializer);
@@ -16,8 +15,9 @@
 +            LOGGER.error("Modded EntityDataSerializers must be registered to NeoForgeRegistries.ENTITY_DATA_SERIALIZERS instead to prevent ID mismatches between client and server!");
 +            throw new UnsupportedOperationException("Modded EntityDataSerializers must be registered to NeoForgeRegistries.ENTITY_DATA_SERIALIZERS instead to prevent ID mismatches between client and server!");
 +        }
-+        if (SERIALIZERS.add(serializer) >= net.neoforged.neoforge.common.CommonHooks.VANILLA_SERIALIZER_LIMIT)
++        if (SERIALIZERS.add(serializer) >= net.neoforged.neoforge.common.CommonHooks.VANILLA_SERIALIZER_LIMIT) {
 +            throw new RuntimeException("Vanilla EntityDataSerializer ID limit exceeded");
++        }
      }
  
      public static @Nullable EntityDataSerializer<?> getSerializer(int id) {

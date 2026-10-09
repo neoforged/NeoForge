@@ -13,7 +13,7 @@
      }
  
      public Options(Minecraft minecraft, File workingDirectory) {
-+        setForgeKeybindProperties();
++        this.configureDefaultConflictContexts();
          this.minecraft = minecraft;
          this.optionsFile = new File(workingDirectory, "options.txt");
          boolean largeDistances = Runtime.getRuntime().maxMemory() >= 1000000000L;
@@ -50,21 +50,21 @@
          repository.setSelected(selected);
 +    }
 +
-+    private void setForgeKeybindProperties() {
-+        net.neoforged.neoforge.client.settings.KeyConflictContext inGame = net.neoforged.neoforge.client.settings.KeyConflictContext.IN_GAME;
-+        keyUp.setKeyConflictContext(inGame);
-+        keyLeft.setKeyConflictContext(inGame);
-+        keyDown.setKeyConflictContext(inGame);
-+        keyRight.setKeyConflictContext(inGame);
-+        keyJump.setKeyConflictContext(inGame);
-+        keyShift.setKeyConflictContext(inGame);
-+        keySprint.setKeyConflictContext(inGame);
-+        keyAttack.setKeyConflictContext(inGame);
-+        keyChat.setKeyConflictContext(inGame);
-+        keyPlayerList.setKeyConflictContext(inGame);
-+        keyCommand.setKeyConflictContext(inGame);
-+        keyTogglePerspective.setKeyConflictContext(inGame);
-+        keySmoothCamera.setKeyConflictContext(inGame);
++    private void configureDefaultConflictContexts() {
++        var inGame = net.neoforged.neoforge.client.settings.KeyConflictContext.IN_GAME;
++        this.keyUp.setKeyConflictContext(inGame);
++        this.keyLeft.setKeyConflictContext(inGame);
++        this.keyDown.setKeyConflictContext(inGame);
++        this.keyRight.setKeyConflictContext(inGame);
++        this.keyJump.setKeyConflictContext(inGame);
++        this.keyShift.setKeyConflictContext(inGame);
++        this.keySprint.setKeyConflictContext(inGame);
++        this.keyAttack.setKeyConflictContext(inGame);
++        this.keyChat.setKeyConflictContext(inGame);
++        this.keyPlayerList.setKeyConflictContext(inGame);
++        this.keyCommand.setKeyConflictContext(inGame);
++        this.keyTogglePerspective.setKeyConflictContext(inGame);
++        this.keySmoothCamera.setKeyConflictContext(inGame);
      }
  
      public CameraType getCameraType() {

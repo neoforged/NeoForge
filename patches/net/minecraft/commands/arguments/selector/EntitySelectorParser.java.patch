@@ -1,12 +1,13 @@
 --- a/net/minecraft/commands/arguments/selector/EntitySelectorParser.java
 +++ b/net/minecraft/commands/arguments/selector/EntitySelectorParser.java
-@@ -465,6 +_,9 @@
+@@ -465,6 +_,10 @@
              }
  
              this.reader.skip();
-+            EntitySelector forgeSelector = net.neoforged.neoforge.common.command.EntitySelectorManager.parseSelector(this);
-+            if (forgeSelector != null)
-+                return forgeSelector;
++            EntitySelector customSelector = net.neoforged.neoforge.common.command.EntitySelectorManager.parseSelector(this);
++            if (customSelector != null) {
++                return customSelector;
++            }
              this.parseSelector();
          } else {
              this.parseNameOrUUID();

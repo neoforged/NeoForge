@@ -1,18 +1,20 @@
 --- a/net/minecraft/network/protocol/common/custom/CustomPacketPayload.java
 +++ b/net/minecraft/network/protocol/common/custom/CustomPacketPayload.java
-@@ -22,20 +_,25 @@
+@@ -22,20 +_,27 @@
      }
  
      static <B extends FriendlyByteBuf> StreamCodec<B, CustomPacketPayload> codec(
 -        CustomPacketPayload.FallbackProvider<B> fallback, List<CustomPacketPayload.TypeAndCodec<? super B, ?>> types
-+        final CustomPacketPayload.FallbackProvider<B> fallback, List<CustomPacketPayload.TypeAndCodec<? super B, ?>> types, net.minecraft.network.ConnectionProtocol protocol, net.minecraft.network.protocol.PacketFlow packetFlow
++        CustomPacketPayload.FallbackProvider<B> fallback, List<CustomPacketPayload.TypeAndCodec<? super B, ?>> types, net.minecraft.network.ConnectionProtocol protocol, net.minecraft.network.protocol.PacketFlow packetFlow
      ) {
          final Map<Identifier, StreamCodec<? super B, ? extends CustomPacketPayload>> idToType = types.stream()
              .collect(Collectors.toUnmodifiableMap(t -> t.type().id(), CustomPacketPayload.TypeAndCodec::codec));
          return new StreamCodec<B, CustomPacketPayload>() {
              private StreamCodec<? super B, ? extends CustomPacketPayload> findCodec(Identifier typeId) {
                  StreamCodec<? super B, ? extends CustomPacketPayload> codec = idToType.get(typeId);
-+                if (codec == null) codec = net.neoforged.neoforge.network.registration.NetworkRegistry.getCodec(typeId, protocol, packetFlow);
++                if (codec == null) {
++                    codec = net.neoforged.neoforge.network.registration.NetworkRegistry.getCodec(typeId, protocol, packetFlow);
++                }
                  return codec != null ? codec : fallback.create(typeId);
              }
  
@@ -22,35 +24,30 @@
 +                try {
                  codec.encode(output, (T)payload);
 +                } catch (RuntimeException e) {
-+                    throw new RuntimeException("Failed encoding custom payload " + type.id() + ": " + e, e); // Make it easier to debug which mod payload failed to be encoded
++                    throw new RuntimeException("Failed encoding custom payload " + type.id() + ": " + e, e); // Neo: Make it easier to debug which mod payload failed to be encoded
 +                }
              }
  
              public void encode(B output, CustomPacketPayload value) {
-@@ -44,9 +_,27 @@
+@@ -44,9 +_,23 @@
  
              public CustomPacketPayload decode(B input) {
                  Identifier identifier = input.readIdentifier();
--                return (CustomPacketPayload)this.findCodec(identifier).decode(input);
 +                try {
-+                    return (CustomPacketPayload)this.findCodec(identifier).decode(input);
+                 return (CustomPacketPayload)this.findCodec(identifier).decode(input);
 +                } catch (RuntimeException e) {
-+                    throw new RuntimeException("Failed decoding custom payload " + identifier + ": " + e, e); // Make it easier to debug which mod payload failed to be decoded
++                    throw new RuntimeException("Failed decoding custom payload " + identifier + ": " + e, e); // Neo: Make it easier to debug which mod payload failed to be decoded
 +                }
              }
          };
 +    }
 +
-+    /**
-+     * {@return the vanilla clientbound packet representation of this payload}
-+     */
++    /// {@return the vanilla clientbound packet representation of this payload}
 +    default net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket toVanillaClientbound() {
 +        return new net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket(this);
 +    }
 +
-+    /**
-+     * {@return the vanilla serverbound packet representation of this payload}
-+     */
++    /// {@return the vanilla serverbound packet representation of this payload}
 +    default net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket toVanillaServerbound() {
 +        return new net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket(this);
      }

@@ -1,10 +1,13 @@
 --- a/net/minecraft/world/level/block/CactusBlock.java
 +++ b/net/minecraft/world/level/block/CactusBlock.java
-@@ -38,6 +_,7 @@
+@@ -38,6 +_,10 @@
  
      @Override
      protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-+        if (!level.isAreaLoaded(pos, 1)) return; // Forge: prevent growing cactus from loading unloaded chunks with block update
++        // Neo: prevent growing cactus from loading unloaded chunks with block update
++        if (!level.isAreaLoaded(pos, 1)) {
++            return;
++        }
          if (!state.canSurvive(level, pos)) {
              level.destroyBlock(pos, true);
          }
@@ -25,12 +28,14 @@
          }
      }
  
-@@ -112,6 +_,8 @@
+@@ -112,6 +_,10 @@
          }
  
          BlockState belowState = level.getBlockState(pos.below());
 +        var soilDecision = belowState.canSustainPlant(level, pos.below(), Direction.UP, state);
-+        if (!soilDecision.isDefault()) return soilDecision.isTrue();
++        if (!soilDecision.isDefault()) {
++            return soilDecision.isTrue();
++        }
          return (belowState.is(this) || belowState.is(BlockTags.SUPPORTS_CACTUS)) && !level.getBlockState(pos.above()).liquid();
      }
  

@@ -6,7 +6,7 @@
                  int dmg = player.fishing.retrieve(itemStack);
 +                ItemStack original = itemStack.copy();
                  itemStack.hurtAndBreak(dmg, player, hand.asEquipmentSlot());
-+                if(itemStack.isEmpty()) {
++                if (itemStack.isEmpty()) {
 +                    net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(player, original, hand);
 +                }
              }

@@ -86,11 +86,13 @@
              if (this.minecraft.options.keyChat.matches(event)) {
                  this.ignoreTextInput = true;
                  this.selectTab(CreativeModeTabs.searchTab());
-@@ -449,6 +_,7 @@
+@@ -449,6 +_,9 @@
      }
  
      private void refreshSearchResults() {
-+        if (!selectedTab.hasSearchBar()) return;
++        if (!selectedTab.hasSearchBar()) {
++            return;
++        }
          this.menu.items.clear();
          this.visibleTags.clear();
          String searchTerm = this.searchBox.getValue();
@@ -151,7 +153,7 @@
  
              this.refreshSearchResults();
          } else {
-@@ -688,8 +_,14 @@
+@@ -688,8 +_,13 @@
          this.effects.extractRenderState(graphics, mouseX, mouseY);
          super.extractRenderState(graphics, mouseX, mouseY, a);
  
@@ -159,7 +161,6 @@
 -            if (this.checkTabHovering(graphics, tab, mouseX, mouseY)) {
 +        if (this.pages.size() != 1) {
 +            Component page = Component.literal(String.format("%d / %d", this.pages.indexOf(this.currentPage) + 1, this.pages.size()));
-+            // TODO 1.21.6: This previously bumped Z by 300, investigate if this needs nextStratum
 +            graphics.text(font, page.getVisualOrderText(), leftPos + (imageWidth / 2) - (font.width(page) / 2), topPos - 44, -1);
 +        }
 +
@@ -209,7 +210,7 @@
 +            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, identifier, xscr, yscr + (int)((yscr2 - yscr - 17) * this.scrollOffs), 12, 15);
          }
  
-+        if (currentPage.getVisibleTabs().contains(selectedTab)) //Forge: only display tab selection when the selected tab is on the current page
++        if (currentPage.getVisibleTabs().contains(selectedTab)) // Neo: only display tab selection when the selected tab is on the current page
          this.extractTabButton(graphics, mouseX, mouseY, selectedTab);
          if (selectedTab.getType() == CreativeModeTab.Type.INVENTORY) {
              InventoryScreen.extractEntityInInventoryFollowsMouse(
@@ -242,14 +243,6 @@
          int x = this.leftPos + this.getTabX(tab);
          int y = this.topPos - (isTop ? 28 : -(this.imageHeight - 4));
          Identifier[] sprites;
-@@ -845,6 +_,7 @@
-             graphics.requestCursor(CursorTypes.POINTING_HAND);
-         }
- 
-+        // TODO 1.20.2: Deal with custom tab backgrounds, and deal with transparency.
-         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprites[Mth.clamp(pos, 0, sprites.length)], x, y, 26, 32);
-         int iconX = x + 13 - 8;
-         int iconY = y + 16 - 8 + (isTop ? 1 : -1);
 @@ -881,6 +_,14 @@
          }
      }

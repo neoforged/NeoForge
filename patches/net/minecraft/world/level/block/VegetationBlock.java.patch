@@ -1,13 +1,15 @@
 --- a/net/minecraft/world/level/block/VegetationBlock.java
 +++ b/net/minecraft/world/level/block/VegetationBlock.java
-@@ -39,7 +_,10 @@
+@@ -39,7 +_,12 @@
      @Override
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
          BlockPos below = pos.below();
 -        return this.mayPlaceOn(level.getBlockState(below), level, below);
 +        BlockState belowBlockState = level.getBlockState(below);
 +        var soilDecision = belowBlockState.canSustainPlant(level, below, Direction.UP, state);
-+        if (!soilDecision.isDefault()) return soilDecision.isTrue();
++        if (!soilDecision.isDefault()) {
++            return soilDecision.isTrue();
++        }
 +        return this.mayPlaceOn(belowBlockState, level, below);
      }
  

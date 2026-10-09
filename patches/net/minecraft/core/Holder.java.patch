@@ -1,41 +1,43 @@
 --- a/net/minecraft/core/Holder.java
 +++ b/net/minecraft/core/Holder.java
-@@ -276,6 +_,46 @@
+@@ -276,6 +_,48 @@
              return "Reference{" + this.key + "=" + this.value + "}";
          }
  
 +        // Neo: Add DeferredHolder-compatible hashCode() overrides
 +        @Override
 +        public int hashCode() {
-+            return key == null ? super.hashCode() : key.hashCode();
++            return this.key == null ? super.hashCode() : this.key.hashCode();
 +        }
 +
 +        // Neo: Add DeferredHolder-compatible equals() overrides
 +        @Override
 +        public boolean equals(@Nullable Object obj) {
-+            if (this == obj) return true;
++            if (this == obj) {
++                return true;
++            }
 +            if (obj instanceof Holder.Reference<?> h) {
-+                //Return false like vanilla would do if they are intrusive holders without bound keys and not reference-equal
-+                if (h.keyOrNull() == null || this.keyOrNull() == null) return false;
-+                return h.key() == this.key();
++                // Return false like vanilla would do if they are intrusive holders without bound keys and not reference-equal
++                return h.keyOrNull() != null && this.keyOrNull() != null && h.key() == this.key();
 +            }
 +            return false;
 +        }
 +
-+        // Neo: Helper method to get the registry lookup from a holder
++        /// Neo: {@return the registry lookup owning this holder, if available}
 +        @Override
 +        public HolderLookup.@Nullable RegistryLookup<T> unwrapLookup() {
 +            return this.owner instanceof HolderLookup.RegistryLookup<T> rl ? rl : null;
 +        }
 +
-+        // Neo: Helper method to bypass the not-null check in key()
++        /// Neo: {@return the key of this holder if bound, else `null`}
 +        @Nullable
 +        @Override
 +        public ResourceKey<T> keyOrNull() {
-+            return key;
++            return this.key;
 +        }
 +
 +        @Nullable
++        @Override
 +        public <A> A getData(net.neoforged.neoforge.registries.datamaps.DataMapType<T, A> type) {
 +            HolderLookup.RegistryLookup<T> lookup = unwrapLookup();
 +            if (lookup != null) {

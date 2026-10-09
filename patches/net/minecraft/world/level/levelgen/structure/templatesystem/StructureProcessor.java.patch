@@ -1,17 +1,15 @@
 --- a/net/minecraft/world/level/levelgen/structure/templatesystem/StructureProcessor.java
 +++ b/net/minecraft/world/level/levelgen/structure/templatesystem/StructureProcessor.java
-@@ -8,6 +_,10 @@
+@@ -8,6 +_,8 @@
  import org.jspecify.annotations.Nullable;
  
  public interface StructureProcessor {
-+    /**
-+     * @deprecated Neo: Use {@link #process(LevelReader, BlockPos, BlockPos, StructureTemplate.StructureBlockInfo, StructureTemplate.StructureBlockInfo, StructurePlaceSettings, StructureTemplate)} instead.
-+     */
++    /// @deprecated Neo: Use [#process(LevelReader, BlockPos, BlockPos, StructureTemplate.StructureBlockInfo, StructureTemplate.StructureBlockInfo, StructurePlaceSettings, StructureTemplate)] instead.
 +    @Deprecated
      default StructureTemplate.@Nullable StructureBlockInfo processBlock(
          LevelReader level,
          BlockPos targetPosition,
-@@ -17,6 +_,29 @@
+@@ -17,6 +_,20 @@
          StructurePlaceSettings settings
      ) {
          return processedBlockInfo;
@@ -21,22 +19,13 @@
 +        return processBlock(level, targetPosition, referencePos, originalBlockInfo.pos(), processedBlockInfo, settings);
 +    }
 +
-+    /**
-+     * FORGE: Add entity processing.
-+     * <p>
-+     * Use this method to process entities from a structure in much the same way as
-+     * blocks, parameters are analogous.
-+     *
-+     * @param world
-+     * @param seedPos
-+     * @param rawEntityInfo
-+     * @param entityInfo
-+     * @param placementSettings
-+     * @param template
-+     *
-+     * @see #process(LevelReader, BlockPos, BlockPos, StructureTemplate.StructureBlockInfo, StructureTemplate.StructureBlockInfo, StructurePlaceSettings, StructureTemplate)
-+     */
-+    default StructureTemplate.StructureEntityInfo processEntity(LevelReader world, BlockPos seedPos, StructureTemplate.StructureEntityInfo rawEntityInfo, StructureTemplate.StructureEntityInfo entityInfo, StructurePlaceSettings placementSettings, StructureTemplate template) {
++    /// Neo: Add entity processing.
++    ///
++    /// Use this method to process entities from a structure in much the same way as
++    /// blocks, parameters are analogous.
++    ///
++    /// @see #process(LevelReader, BlockPos, BlockPos, StructureTemplate.StructureBlockInfo, StructureTemplate.StructureBlockInfo, StructurePlaceSettings, StructureTemplate)
++    default StructureTemplate.@Nullable StructureEntityInfo processEntity(LevelReader world, BlockPos seedPos, StructureTemplate.StructureEntityInfo rawEntityInfo, StructureTemplate.StructureEntityInfo entityInfo, StructurePlaceSettings placementSettings, StructureTemplate template) {
 +        return entityInfo;
      }
  

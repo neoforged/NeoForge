@@ -96,15 +96,19 @@
          return this.updateInterval != Integer.MAX_VALUE;
      }
  
-@@ -450,9 +_,12 @@
+@@ -450,9 +_,16 @@
      }
  
      public boolean onlyOpCanSetNbt() {
-+        if (onlyOpCanSetNbt) return true;
++        if (onlyOpCanSetNbt) {
++            return true;
++        }
          return EntityTypes.OP_ONLY_CUSTOM_DATA.contains(this);
      }
  
-+    public Stream<net.minecraft.tags.TagKey<EntityType<?>>> getTags() {return this.builtInRegistryHolder().tags();}
++    public Stream<net.minecraft.tags.TagKey<EntityType<?>>> getTags() {
++        return this.builtInRegistryHolder().tags();
++    }
 +
      public static class Builder<T extends Entity> {
          private final EntityType.EntityFactory<T> factory;

@@ -57,7 +57,7 @@
          this.options.applyGraphicsPreset(this.options.graphicsPreset().get());
          this.resourceManager = new ReloadableResourceManager(PackType.CLIENT_RESOURCES);
 +        net.neoforged.neoforge.client.loading.ClientModLoader.setupModResourcePacks(this.resourcePackRepository);
-+        //Move client bootstrap to after mod loading so that events can be fired for it.
++        // Neo: Move client bootstrap to after mod loading so that events can be fired for it.
 +        ClientBootstrap.bootstrap();
          this.resourcePackRepository.reload();
          this.options.loadSelectedResourcePacks(this.resourcePackRepository);
@@ -131,7 +131,7 @@
  
      private void rollbackResourcePacks(Throwable t, @Nullable GameLoadCookie loadCookie) {
 -        if (this.resourcePackRepository.getSelectedIds().size() > 1) {
-+        if (this.resourcePackRepository.getSelectedPacks().stream().anyMatch(e -> !e.isRequired())) { //Forge: This caused infinite loop if any resource packs are forced. Such as mod resources. So check if we can disable any.
++        if (this.resourcePackRepository.getSelectedPacks().stream().anyMatch(e -> !e.isRequired())) { // Neo: This caused infinite loop if any resource packs are forced. Such as mod resources. So check if we can disable any.
              this.clearResourcePacksOnError(t, null, loadCookie);
          } else {
              Util.throwAsRuntime(t);
@@ -229,11 +229,13 @@
      }
  
      @Override
-@@ -1595,6 +_,7 @@
+@@ -1595,6 +_,9 @@
      }
  
      public void stop() {
-+        if (this.isRunning()) net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.GameShuttingDownEvent());
++        if (this.isRunning()) {
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.GameShuttingDownEvent());
++        }
          this.running = false;
      }
  
@@ -362,11 +364,13 @@
      }
  
      private boolean isLevelRunningNormally() {
-@@ -2088,6 +_,7 @@
+@@ -2088,6 +_,9 @@
      }
  
      public void setLevel(ClientLevel level) {
-+        if (this.level != null) net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(this.level));
++        if (this.level != null) {
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(this.level));
++        }
          this.level = level;
          this.updateLevelInEngines(level);
      }
@@ -387,27 +391,34 @@
              }
  
              this.level = null;
-@@ -2180,6 +_,7 @@
+@@ -2180,6 +_,10 @@
          } finally {
              this.gui.setClientLevelTeardownInProgress(false);
          }
-+        if (shouldRevertRegistriesToFrozen) net.neoforged.neoforge.registries.RegistryManager.revertToFrozen(); // Neo: Revert registries to frozen on disconnect
++        if (shouldRevertRegistriesToFrozen) {
++            // Neo: Revert registries to frozen on disconnect
++            net.neoforged.neoforge.registries.RegistryManager.revertToFrozen();
++        }
      }
  
      public void clearDownloadedResourcePacks() {
-@@ -2205,6 +_,7 @@
+@@ -2205,6 +_,9 @@
          try {
              this.setScreenAndShow(screen);
              this.gui.hud.onDisconnected();
-+            if (this.level != null) net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(this.level));
++            if (this.level != null) {
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Unload(this.level));
++            }
              this.level = null;
              this.updateLevelInEngines(null);
              this.player = null;
-@@ -2403,6 +_,7 @@
+@@ -2403,6 +_,9 @@
  
      private void pickBlockOrEntity() {
          if (this.hitResult != null && this.hitResult.getType() != HitResult.Type.MISS) {
-+            if (net.neoforged.neoforge.client.ClientHooks.onClickInput(2, this.options.keyPickItem, InteractionHand.MAIN_HAND).isCanceled()) return;
++            if (net.neoforged.neoforge.client.ClientHooks.onClickInput(InputConstants.MOUSE_BUTTON_MIDDLE, this.options.keyPickItem, InteractionHand.MAIN_HAND).isCanceled()) {
++                return;
++            }
              boolean includeData = this.hasControlDown();
              switch (this.hitResult) {
                  case BlockHitResult blockHitResult:

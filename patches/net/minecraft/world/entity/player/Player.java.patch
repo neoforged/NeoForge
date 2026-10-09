@@ -8,12 +8,14 @@
      public static final int MAX_HEALTH = 20;
      public static final int SLEEP_DURATION = 100;
      public static final int WAKE_UP_DURATION = 10;
-@@ -174,6 +_,10 @@
+@@ -174,6 +_,12 @@
      protected final List<Identifier> postEffects = new ArrayList<>();
      public @Nullable FishingHook fishing;
      protected float hurtDir;
 +    private final java.util.Collection<MutableComponent> prefixes = new java.util.LinkedList<>();
 +    private final java.util.Collection<MutableComponent> suffixes = new java.util.LinkedList<>();
++    @Nullable
++    private Component displayName = null;
 +    @Nullable
 +    private Pose forcedPose = null;
  
@@ -81,11 +83,13 @@
          if (this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.SWIMMING)) {
              Pose desiredPose = this.getDesiredPose();
              Pose actualPose;
-@@ -527,6 +_,7 @@
+@@ -527,6 +_,9 @@
  
      @Override
      public void die(DamageSource source) {
-+        if (net.neoforged.neoforge.common.CommonHooks.onLivingDeath(this, source)) return;
++        if (net.neoforged.neoforge.common.CommonHooks.onLivingDeath(this, source)) {
++            return;
++        }
          super.die(source);
          this.reapplyPosition();
          if (!this.isSpectator() && this.level() instanceof ServerLevel level) {
@@ -93,7 +97,7 @@
      public void handleCreativeModeItemDrop(ItemStack stack) {
      }
  
-+    /// @deprecated Neo: [#getDestroySpeed(BlockState, BlockPos)] instead
++    /// @deprecated Neo: use [#getDestroySpeed(BlockState, BlockPos)] instead
 +    @Deprecated
      public float getDestroySpeed(BlockState state) {
 +        return getDestroySpeed(state, null);
@@ -112,7 +116,7 @@
              speed *= (float)this.getAttribute(Attributes.SUBMERGED_MINING_SPEED).getValue();
          }
  
-@@ -607,13 +_,19 @@
+@@ -607,13 +_,20 @@
              speed /= 5.0F;
          }
  
@@ -120,7 +124,8 @@
          return speed;
      }
  
-+    @Deprecated // Neo: use position sensitive version below
++    /// @deprecated Neo: use [#hasCorrectToolForDrops(BlockState, Level, BlockPos)] instead
++    @Deprecated
      public boolean hasCorrectToolForDrops(BlockState state) {
          return !state.requiresCorrectToolForDrops() || this.inventory.getSelectedItem().isCorrectToolForDrops(state);
      }
@@ -188,12 +193,14 @@
          }
      }
  
-@@ -811,6 +_,8 @@
+@@ -811,6 +_,10 @@
  
              return InteractionResult.PASS;
          } else {
 +            InteractionResult cancelResult = net.neoforged.neoforge.common.CommonHooks.onInteractEntity(this, entity, hand, location);
-+            if (cancelResult != null) return cancelResult;
++            if (cancelResult != null) {
++                return cancelResult;
++            }
              ItemStack itemStack = this.getItemInHand(hand);
              ItemStack itemStackClone = itemStack.copy();
              InteractionResult interact = entity.interact(this, hand, location);
@@ -216,27 +223,13 @@
                              this.setItemInHand(hand, ItemStack.EMPTY);
                          }
  
-@@ -859,6 +_,7 @@
-     }
- 
-     @Override
-+    // Forge: Don't update this method to use IForgeEntity#getStepHeight() - https://github.com/MinecraftForge/MinecraftForge/issues/8922
-     protected Vec3 maybeBackOffFromEdge(Vec3 delta, MoverType moverType) {
-         float maxDownStep = this.maxUpStep();
-         if (!this.abilities.flying
-@@ -910,6 +_,7 @@
-         }
-     }
- 
-+    // Forge: Don't update this method to use IForgeEntity#getStepHeight() - https://github.com/MinecraftForge/MinecraftForge/issues/9376
-     private boolean isAboveGround(float maxDownStep) {
-         return this.onGround() || this.fallDistance < maxDownStep && !this.canFallAtLeast(0.0, 0.0, maxDownStep - this.fallDistance);
-     }
-@@ -931,6 +_,7 @@
+@@ -931,6 +_,9 @@
      }
  
      public void attack(Entity entity) {
-+        if (!net.neoforged.neoforge.common.CommonHooks.onPlayerAttackTarget(this, entity)) return;
++        if (!net.neoforged.neoforge.common.CommonHooks.onPlayerAttackTarget(this, entity)) {
++            return;
++        }
          if (!this.cannotAttack(entity)) {
              float baseDamage = this.isAutoSpinAttack() ? this.autoSpinAttackDmg : (float)this.getAttributeValue(Attributes.ATTACK_DAMAGE);
              ItemStack attackingItemStack = this.getWeaponItem();
@@ -329,7 +322,7 @@
          return 1.0F;
      }
  
-+    // Neo: Use version that allows the sweep hitbox to be specified
++    /// @deprecated Neo: Use [#doSweepAttack(Entity, float, DamageSource, float, AABB)] instead
 +    @Deprecated
      private void doSweepAttack(Entity entity, float baseDamage, DamageSource damageSource, float attackStrengthScale) {
 +        doSweepAttack(entity, baseDamage, damageSource, attackStrengthScale, entity.getBoundingBox().inflate(1.0, 0.25, 1.0));
@@ -386,12 +379,14 @@
                  } else {
                      super.playStepSound(primaryStepSoundPos, primaryStepState);
                  }
-@@ -1485,6 +_,10 @@
+@@ -1485,6 +_,12 @@
      }
  
      public void giveExperiencePoints(int i) {
 +        net.neoforged.neoforge.event.entity.player.PlayerXpEvent.XpChange event = new net.neoforged.neoforge.event.entity.player.PlayerXpEvent.XpChange(this, i);
-+        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) return;
++        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) {
++            return;
++        }
 +        i = event.getAmount();
 +
          this.increaseScore(i);
@@ -406,12 +401,14 @@
          if (this.experienceLevel < 0) {
              this.experienceLevel = 0;
              this.experienceProgress = 0.0F;
-@@ -1523,6 +_,10 @@
+@@ -1523,6 +_,12 @@
      }
  
      public void giveExperienceLevels(int amount) {
 +        net.neoforged.neoforge.event.entity.player.PlayerXpEvent.LevelChange event = new net.neoforged.neoforge.event.entity.player.PlayerXpEvent.LevelChange(this, amount);
-+        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) return;
++        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) {
++            return;
++        }
 +        amount = event.getLevels();
 +
          this.experienceLevel = IntMath.saturatedAdd(this.experienceLevel, amount);
@@ -426,16 +423,18 @@
      }
  
      public FoodData getFoodData() {
-@@ -1657,7 +_,11 @@
+@@ -1657,7 +_,13 @@
  
      @Override
      public Component getDisplayName() {
 -        MutableComponent result = PlayerTeam.formatNameForTeam(this.getTeam(), this.getName());
-+        if (this.displayname == null) this.displayname = net.neoforged.neoforge.event.EventHooks.getPlayerDisplayName(this, this.getName());
++        if (this.displayName == null) {
++            this.displayName = net.neoforged.neoforge.event.EventHooks.getPlayerDisplayName(this, this.getName());
++        }
 +        MutableComponent result = Component.literal("");
-+        result = prefixes.stream().reduce(result, MutableComponent::append);
-+        result = result.append(PlayerTeam.formatNameForTeam(this.getTeam(), this.displayname));
-+        result = suffixes.stream().reduce(result, MutableComponent::append);
++        result = this.prefixes.stream().reduce(result, MutableComponent::append);
++        result = result.append(PlayerTeam.formatNameForTeam(this.getTeam(), this.displayName));
++        result = this.suffixes.stream().reduce(result, MutableComponent::append);
          return this.decorateDisplayNameComponent(result);
      }
  
@@ -476,43 +475,35 @@
      }
  
      @Override
-@@ -2022,5 +_,52 @@
+@@ -2022,5 +_,44 @@
          public static final Player.BedSleepingProblem OBSTRUCTED = new Player.BedSleepingProblem(Component.translatable("block.minecraft.bed.obstructed"));
          public static final Player.BedSleepingProblem OTHER_PROBLEM = new Player.BedSleepingProblem(null);
          public static final Player.BedSleepingProblem NOT_SAFE = new Player.BedSleepingProblem(Component.translatable("block.minecraft.bed.not_safe"));
 +    }
 +
-+    // Neo: Getters for the Player's name prefixes and suffixes
++    /// Neo: {@return the player name prefixes}
 +    public Collection<MutableComponent> getPrefixes() {
 +         return this.prefixes;
 +    }
 +
++    /// Neo: {@return the player name suffixes}
 +    public Collection<MutableComponent> getSuffixes() {
 +         return this.suffixes;
 +    }
 +
-+    private Component displayname = null;
-+
-+    /**
-+     * Neo: Force the displayed name to refresh, by firing {@link net.neoforged.neoforge.event.entity.player.PlayerEvent.NameFormat}, using the real player name as event parameter.
-+     */
++    /// Neo: Force the displayed name to refresh, by firing [net.neoforged.neoforge.event.entity.player.PlayerEvent.NameFormat], using the real player name as event parameter.
 +    public void refreshDisplayName() {
-+        this.displayname = net.neoforged.neoforge.event.EventHooks.getPlayerDisplayName(this, this.getName());
++        this.displayName = net.neoforged.neoforge.event.EventHooks.getPlayerDisplayName(this, this.getName());
 +    }
 +
-+    /**
-+     * Neo: Force a pose for the player. If set, the vanilla pose determination and clearance check is skipped. Make sure the pose is clear yourself (e.g. in PlayerTick).
-+     * This has to be set just once, do not set it every tick.
-+     * Make sure to clear (null) the pose if not required anymore and only use if necessary.
-+     */
++    /// Neo: Force a pose for the player. If set, the vanilla pose determination and clearance check is skipped. Make sure the pose is clear yourself (e.g. in PlayerTick).
++    /// This has to be set just once, do not set it every tick.
++    /// Make sure to clear (null) the pose if not required anymore and only use if necessary.
 +    public void setForcedPose(@Nullable Pose pose) {
 +        this.forcedPose = pose;
 +    }
 +
-+    /**
-+     * Neo:
-+     * @return The forced pose if set, null otherwise
-+     */
++    /// Neo: {@return The forced pose if set, null otherwise}
 +    @Nullable
 +    public Pose getForcedPose() {
 +        return this.forcedPose;

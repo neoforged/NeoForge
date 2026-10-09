@@ -1,14 +1,21 @@
 --- a/net/minecraft/util/datafix/fixes/StructuresBecomeConfiguredFix.java
 +++ b/net/minecraft/util/datafix/fixes/StructuresBecomeConfiguredFix.java
-@@ -177,7 +_,11 @@
-     private @Nullable Dynamic<?> findUpdatedStructureType(Dynamic<?> dynamicKey, Dynamic<?> chunk) {
+@@ -178,7 +_,17 @@
          String key = dynamicKey.asString("UNKNOWN").toLowerCase(Locale.ROOT);
          StructuresBecomeConfiguredFix.Conversion conversion = CONVERSION_MAP.get(key);
-+        if (conversion == null) conversion = net.neoforged.neoforge.common.CommonHooks.getStructureConversion(key); // Neo: hook for mods to register conversions through RegisterStructureConversionsEvent
          if (conversion == null) {
+-            return null;
++            // Neo: hook for mods to register conversions through RegisterStructureConversionsEvent
++            conversion = net.neoforged.neoforge.common.CommonHooks.getStructureConversion(key);
++        }
++        if (conversion == null) {
 +            // TODO: Porting 1.20.5 check if this is correct
-+            if (net.neoforged.neoforge.common.CommonHooks.checkStructureNamespace(key)) return chunk.createString(key); // Neo: pass-through structure IDs which have a non-"minecraft" namespace
-+            if (true) return chunk.createString("unknown." + key); // Neo: Pass-through with "unknown." prefix, so deserializer logs and ignores rather than fixer throwing an exception and dropping chunk data
-             return null;
++            if (net.neoforged.neoforge.common.CommonHooks.checkStructureNamespace(key)) {
++                // Neo: pass-through structure IDs which have a non-"minecraft" namespace
++                return chunk.createString(key);
++            }
++            // Neo: Pass-through with "unknown." prefix, so deserializer logs and ignores rather than fixer throwing an exception and dropping chunk data
++            return chunk.createString("unknown." + key);
          }
  
+         String resultingId = conversion.fallback;

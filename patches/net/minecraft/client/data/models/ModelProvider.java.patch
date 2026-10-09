@@ -1,12 +1,12 @@
 --- a/net/minecraft/client/data/models/ModelProvider.java
 +++ b/net/minecraft/client/data/models/ModelProvider.java
-@@ -36,20 +_,58 @@
+@@ -36,20 +_,57 @@
      private final PackOutput.PathProvider blockStatePathProvider;
      private final PackOutput.PathProvider itemInfoPathProvider;
      private final PackOutput.PathProvider modelPathProvider;
 +    public final String modId;
  
-+    // Neo: Use the constructor which accepts a mod ID.
++    /// @deprecated Neo: Use [#ModelProvider(PackOutput, String)] instead
 +    @Deprecated
      public ModelProvider(PackOutput output) {
 +        this(output, Identifier.DEFAULT_NAMESPACE);
@@ -19,33 +19,32 @@
 +        this.modId = modId;
 +    }
 +
++    /// Neo: register the models to be generated.
 +    protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
 +        blockModels.run();
 +        itemModels.run();
 +    }
 +
-+    /**
-+     * Returns a {@link java.util.stream.Stream stream} containing all {@link Block blocks} which must have their models/block states generated or {@link java.util.stream.Stream#empty() empty} if none are desired.
-+     * <p>
-+     * When using providers for specific {@link Block block} usages, it is best to override this method returning the exact {@link Block blocks} which must be generated,
-+     * or {@link java.util.stream.Stream#empty() empty} if generating only {@link Item item} models.
-+     * <p>
-+     * Default implementation generates models for {@link Block blocks} matching the given {@code modId}.
-+     * @see #getKnownItems()
-+     */
++    /// Neo: Returns a [`Stream`][java.util.stream.Stream] containing all [blocks][Block] which must have their models/block states generated
++    /// or [empty][java.util.stream.Stream#empty()] if none are desired.
++    ///
++    /// When using providers for specific [Block] usages, it is best to override this method returning the exact [blocks][Block] which must be generated,
++    /// or [empty][java.util.stream.Stream#empty()] if generating only [Item] models.
++    ///
++    /// Default implementation generates models for all [blocks][Block] matching the given `modId`.
++    /// @see #getKnownItems()
 +    protected java.util.stream.Stream<? extends net.minecraft.core.Holder<Block>> getKnownBlocks() {
 +        return BuiltInRegistries.BLOCK.listElements().filter(holder -> holder.key().identifier().getNamespace().equals(modId));
 +    }
 +
-+    /**
-+     * Returns a {@link java.util.stream.Stream stream} containing all {@link Item items} which must have their models/client items generated or {@link java.util.stream.Stream#empty() empty} if none are desired.
-+     * <p>
-+     * When using providers for specific {@link Item item} usages, it is best to override this method returning the exact {@link Item items} which must be generated,
-+     * or {@link java.util.stream.Stream#empty() empty} if generating only {@link Block block} models (which have no respective {@link Item item}).
-+     * <p>
-+     * Default implementation generates models for {@link Item items} matching the given {@code modId}.
-+     * @see #getKnownBlocks()
-+     */
++    /// Neo: Returns a [Stream][java.util.stream.Stream] containing all [items][Item] which must have their models/client items generated
++    /// or [empty][java.util.stream.Stream#empty()] if none are desired.
++    ///
++    /// When using providers for specific [Item] usages, it is best to override this method returning the exact [items][Item] which must be generated,
++    /// or [empty][java.util.stream.Stream#empty()] if generating only [Block] models (which have no respective [Item]).
++    ///
++    /// Default implementation generates models for [items][Item] matching the given `modId`.
++    /// @see #getKnownBlocks()
 +    protected java.util.stream.Stream<? extends net.minecraft.core.Holder<Item>> getKnownItems() {
 +        return BuiltInRegistries.ITEM.listElements().filter(holder -> holder.key().identifier().getNamespace().equals(modId));
      }
@@ -63,7 +62,7 @@
          blockStateGenerators.validate();
          itemModels.finalizeAndValidate();
          return CompletableFuture.allOf(
-@@ -61,11 +_,21 @@
+@@ -61,11 +_,22 @@
  
      @Override
      public String getName() {
@@ -79,28 +78,25 @@
 +            this.knownBlocks = knownBlocks;
 +        }
 +
-+        @Deprecated // Neo: Provided for vanilla/multi-loader compatibility. Use constructor with Supplier parameter.
++        /// @deprecated Neo: use [#BlockStateGeneratorCollector(Supplier)] instead
++        @Deprecated
 +        public BlockStateGeneratorCollector() {
 +            this(BuiltInRegistries.BLOCK::listElements);
 +        }
  
          public void accept(BlockModelDefinitionGenerator generator) {
              Block block = generator.block();
-@@ -76,11 +_,8 @@
+@@ -76,8 +_,7 @@
          }
  
          public void validate() {
 -            List<Identifier> missingDefinitions = BuiltInRegistries.BLOCK
 -                .listElements()
--                .filter(e -> !this.generators.containsKey(e.value()))
--                .map(e -> e.key().identifier())
--                .toList();
-+            var holders = knownBlocks.get();
-+            List<Identifier> missingDefinitions = holders.filter(e -> !this.generators.containsKey(e.value())).map(e -> e.unwrapKey().orElseThrow().identifier()).toList();
-             if (!missingDefinitions.isEmpty()) {
-                 throw new IllegalStateException("Missing blockstate definitions for: " + missingDefinitions);
-             }
-@@ -96,6 +_,17 @@
++            List<Identifier> missingDefinitions = knownBlocks.get()
+                 .filter(e -> !this.generators.containsKey(e.value()))
+                 .map(e -> e.key().identifier())
+                 .toList();
+@@ -96,6 +_,18 @@
      private static class ItemInfoCollector implements ItemModelOutput {
          private final Map<Item, ClientItem> itemInfos = new HashMap<>();
          private final Map<Item, Item> copies = new HashMap<>();
@@ -111,7 +107,8 @@
 +            this.knownItems = knownItems;
 +        }
 +
-+        @Deprecated // Neo: Provided for vanilla/multi-loader compatibility. Use constructor with Supplier parameter.
++        /// @deprecated Neo: use [#ItemInfoCollector(Supplier)] instead
++        @Deprecated
 +        public ItemInfoCollector() {
 +            this(BuiltInRegistries.ITEM::listElements);
 +        }
@@ -140,7 +137,7 @@
                  if (!this.copies.containsKey(item)) {
                      if (item instanceof BlockItem blockItem && !this.itemInfos.containsKey(blockItem)) {
                          Identifier targetModel = ModelLocationUtils.getModelLocation(blockItem.getBlock());
-@@ -131,10 +_,9 @@
+@@ -131,8 +_,7 @@
  
                  this.register(acceptor, donorInfo);
              });
@@ -148,11 +145,8 @@
 -                .listElements()
 +            List<Identifier> missingDefinitions = knownItems.get()
                  .filter(e -> !this.itemInfos.containsKey(e.value()))
--                .map(e -> e.key().identifier())
-+                .map(e -> e.unwrapKey().orElseThrow().identifier())
+                 .map(e -> e.key().identifier())
                  .toList();
-             if (!missingDefinitions.isEmpty()) {
-                 throw new IllegalStateException("Missing item model definitions for: " + missingDefinitions);
 @@ -142,7 +_,9 @@
          }
  

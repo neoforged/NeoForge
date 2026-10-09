@@ -1,10 +1,13 @@
 --- a/com/mojang/renderpearl/backend/opengl/GlConst.java
 +++ b/com/mojang/renderpearl/backend/opengl/GlConst.java
-@@ -363,4 +_,17 @@
+@@ -363,4 +_,20 @@
              return 35044;
          }
      }
 +
++    /// Neo: {@return the GL ID of the given stencil operation}
++    ///
++    /// @param op The stencil operation to convert
 +    public static int toGl(net.neoforged.neoforge.client.stencil.StencilOperation op) {
 +        return switch (op) {
 +            case KEEP -> org.lwjgl.opengl.GL33C.GL_KEEP;

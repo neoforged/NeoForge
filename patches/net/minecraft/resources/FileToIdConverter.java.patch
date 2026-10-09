@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/FileToIdConverter.java
 +++ b/net/minecraft/resources/FileToIdConverter.java
-@@ -48,4 +_,21 @@
+@@ -48,4 +_,22 @@
      public Map<Identifier, List<Resource>> listMatchingResourceStacks(ResourceManager manager) {
          return manager.listResourceStacks(this.prefix, this.extensionSelector());
      }
@@ -13,6 +13,7 @@
 +    public Map<Identifier, Resource> listMatchingResourcesFromNamespace(ResourceManager manager, String namespace) {
 +        return manager.listResources(this.prefix, path -> path.getNamespace().equals(namespace) && this.extensionMatches(path));
 +    }
++
 +    /// List all resource stacks under the given namespace which match this converter
 +    ///
 +    /// @param manager   The resource manager to collect the resources from

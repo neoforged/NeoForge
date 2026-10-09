@@ -1,22 +1,22 @@
 --- a/net/minecraft/world/entity/ai/village/VillageSiege.java
 +++ b/net/minecraft/world/entity/ai/village/VillageSiege.java
-@@ -78,7 +_,9 @@
+@@ -78,7 +_,8 @@
                          this.spawnX = center.getX() + Mth.floor(Mth.cos(angle) * 32.0F);
                          this.spawnY = center.getY();
                          this.spawnZ = center.getZ() + Mth.floor(Mth.sin(angle) * 32.0F);
 -                        if (this.findRandomSpawnPos(level, new BlockPos(this.spawnX, this.spawnY, this.spawnZ)) != null) {
 +                        Vec3 siegeLocation = this.findRandomSpawnPos(level, new BlockPos(this.spawnX, this.spawnY, this.spawnZ));
-+                        if (siegeLocation != null) {
-+                            if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.village.VillageSiegeEvent(this, level, player, siegeLocation)).isCanceled()) return false;
++                        if (siegeLocation != null && !net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.village.VillageSiegeEvent(this, level, player, siegeLocation)).isCanceled()) {
                              this.nextSpawnTime = 0;
                              this.zombiesToSpawn = 20;
                              break;
-@@ -98,7 +_,7 @@
+@@ -98,7 +_,8 @@
          if (spawnPos != null) {
              Zombie zombie;
              try {
 -                zombie = new Zombie(level);
-+                zombie = EntityTypes.ZOMBIE.create(level, EntitySpawnReason.EVENT); //Forge: Direct Initialization is deprecated, use EntityType.
++                // Neo: direct instantiation is deprecated, use EntityType.
++                zombie = EntityTypes.ZOMBIE.create(level, EntitySpawnReason.EVENT);
                  zombie.finalizeSpawn(level, level.getCurrentDifficultyAt(zombie.blockPosition()), EntitySpawnReason.EVENT, null);
              } catch (Exception e) {
                  LOGGER.warn("Failed to create zombie for village siege at {}", spawnPos, e);

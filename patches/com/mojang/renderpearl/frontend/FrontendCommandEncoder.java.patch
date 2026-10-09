@@ -1,9 +1,14 @@
 --- a/com/mojang/renderpearl/frontend/FrontendCommandEncoder.java
 +++ b/com/mojang/renderpearl/frontend/FrontendCommandEncoder.java
-@@ -288,6 +_,16 @@
+@@ -287,6 +_,20 @@
+         this.backend.clearDepthTexture(depthTexture, clearDepth);
      }
  
-     @Override
++    /// Neo: clears the stencil bits of the given texture to the given value.
++    ///
++    /// @param texture The texture to clear
++    /// @param value   The value to set the stencil bits to
++    @Override
 +    public void clearStencilTexture(GpuTexture texture, int value) {
 +        if (this.isInRenderPass) {
 +            throw new IllegalStateException("Close the existing render pass before creating a new one!");
@@ -13,16 +18,16 @@
 +        this.backend.clearStencilTexture(texture, value);
 +    }
 +
-+    @Override
+     @Override
      public void writeToBuffer(GpuBufferSlice destination, ByteBuffer data) {
          if (this.isInRenderPass) {
-             throw new IllegalStateException("Close the existing render pass before performing additional commands");
-@@ -743,6 +_,24 @@
+@@ -743,6 +_,26 @@
                  throw new UnsupportedOperationException("Textures with multiple depths or layers are not yet supported for copying");
              }
  
 +            final var sourceFormat = source.getFormat();
 +            final var destFormat = destination.getFormat();
++            // Neo: ensure the source and destination formats match exactly if a depth or stencil buffer is present
 +            if (sourceFormat.hasDepthAspect() || sourceFormat.hasStencilAspect()) {
 +                if (sourceFormat != destFormat) {
 +                    throw new IllegalArgumentException(
@@ -32,6 +37,7 @@
 +                }
 +            }
 +
++            // Neo: validate that the presence of the color aspect matches between the two textures
 +            if (sourceFormat.hasColorAspect() != destFormat.hasColorAspect()) {
 +                throw new IllegalArgumentException(
 +                        "Source and destination texture formats must have consistent color aspects. Source: "
@@ -42,13 +48,14 @@
              this.backend.copyTextureToTexture(source, destination, mipLevel, destX, destY, sourceX, sourceY, width, height);
          } else {
              throw new IllegalArgumentException(
-@@ -810,6 +_,24 @@
+@@ -810,6 +_,25 @@
  
          if (depthTexture.getDepthOrLayers() > 1) {
              throw new UnsupportedOperationException("Clearing a texture with multiple layers or depths is not yet supported");
 +        }
 +    }
 +
++    /// Neo: verify the configuration of the given stencil texture.
 +    private void verifyStencilTexture(GpuTexture stencilTexture) {
 +        if (!stencilTexture.getFormat().hasStencilAspect()) {
 +            throw new IllegalStateException("Trying to clear stencil in a texture that has no stencil component!");

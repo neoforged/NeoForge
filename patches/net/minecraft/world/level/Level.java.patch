@@ -9,24 +9,26 @@
      public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceKey.codec(Registries.DIMENSION);
      public static final ResourceKey<Level> OVERWORLD = ResourceKey.create(Registries.DIMENSION, Identifier.withDefaultNamespace("overworld"));
      public static final ResourceKey<Level> NETHER = ResourceKey.create(Registries.DIMENSION, Identifier.withDefaultNamespace("the_nether"));
-@@ -132,6 +_,11 @@
+@@ -132,6 +_,13 @@
      private final DamageSources damageSources;
      private final PalettedContainerFactory palettedContainerFactory;
      private long subTickCount;
++    private static final Direction[] NEIGHBOR_UPDATE_LIST = java.util.stream.Stream.concat(Direction.Plane.HORIZONTAL.stream(), Direction.Plane.VERTICAL.stream()).toArray(Direction[]::new);
 +    public boolean restoringBlockSnapshots = false;
 +    public boolean captureBlockSnapshots = false;
 +    public java.util.ArrayList<net.neoforged.neoforge.common.util.BlockSnapshot> capturedBlockSnapshots = new java.util.ArrayList<>();
 +    private final java.util.ArrayList<BlockEntity> freshBlockEntities = new java.util.ArrayList<>();
 +    private final java.util.ArrayList<BlockEntity> pendingFreshBlockEntities = new java.util.ArrayList<>();
++    private double maxEntityRadius = 2.0D;
  
      protected Level(
          WritableLevelData levelData,
-@@ -226,11 +_,30 @@
+@@ -226,11 +_,32 @@
  
          LevelChunk chunk = this.getChunkAt(pos);
          Block block = blockState.getBlock();
 +
-+        pos = pos.immutable(); // Forge - prevent mutable BlockPos leaks
++        pos = pos.immutable(); // Neo - prevent mutable BlockPos leaks
 +        net.neoforged.neoforge.common.util.BlockSnapshot blockSnapshot = null;
 +        if (this.captureBlockSnapshots && !this.isClientSide) {
 +            blockSnapshot = net.neoforged.neoforge.common.util.BlockSnapshot.create(this.dimension, this, pos, updateFlags);
@@ -35,7 +37,9 @@
 +
          BlockState oldState = chunk.setBlockState(pos, blockState, updateFlags);
          if (oldState == null) {
-+            if (blockSnapshot != null) this.capturedBlockSnapshots.remove(blockSnapshot);
++            if (blockSnapshot != null) {
++                this.capturedBlockSnapshots.remove(blockSnapshot);
++            }
              return false;
          }
  
@@ -196,12 +200,9 @@
  
      public void blockEntityChanged(BlockPos pos) {
          if (this.hasChunkAt(pos)) {
-@@ -915,17 +_,20 @@
- 
+@@ -916,16 +_,17 @@
      public abstract Scoreboard getScoreboard();
  
-+    private static final Direction[] NEIGHBOR_UPDATE_LIST = java.util.stream.Stream.concat(Direction.Plane.HORIZONTAL.stream(), Direction.Plane.VERTICAL.stream()).toArray(Direction[]::new);
-+
      public void updateNeighbourForOutputSignal(BlockPos pos, Block changedBlock) {
 -        for (Direction direction : Direction.Plane.HORIZONTAL) {
 +        // Neo: send update to vertical directions as well, after horizontal ones
@@ -222,22 +223,23 @@
                          this.neighborChanged(state, relativePos, changedBlock, null, false);
                      }
                  }
-@@ -988,6 +_,18 @@
+@@ -988,6 +_,19 @@
      @Override
      public BiomeManager getBiomeManager() {
          return this.biomeManager;
 +    }
 +
-+    private double maxEntityRadius = 2.0D;
 +    @Override
 +    public double getMaxEntityRadius() {
-+        return maxEntityRadius;
++        return this.maxEntityRadius;
 +    }
++
 +    @Override
 +    public double increaseMaxEntityRadius(double value) {
-+        if (value > maxEntityRadius)
-+            maxEntityRadius = value;
-+        return maxEntityRadius;
++        if (value > this.maxEntityRadius) {
++            this.maxEntityRadius = value;
++        }
++        return this.maxEntityRadius;
      }
  
      public final boolean isDebug() {

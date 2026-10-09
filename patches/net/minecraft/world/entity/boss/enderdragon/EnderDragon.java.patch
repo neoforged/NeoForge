@@ -1,18 +1,24 @@
 --- a/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
 +++ b/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
-@@ -150,8 +_,19 @@
-         entityData.define(DATA_PHASE, EnderDragonPhase.HOVERING.getId());
-     }
- 
+@@ -87,6 +_,7 @@
+     private final Node[] nodes = new Node[24];
+     private final int[] nodeAdjacency = new int[24];
+     private final BinaryHeap openSet = new BinaryHeap();
 +    private net.minecraft.world.entity.@Nullable EntityReference<Player> unlimitedLastHurtByPlayer = null;
-+
+ 
+     public EnderDragon(EntityType<? extends EnderDragon> type, Level level) {
+         super(EntityTypes.ENDER_DRAGON, level);
+@@ -152,6 +_,17 @@
+ 
      @Override
      public void aiStep() {
 +        // lastHurtByPlayer is cleared after 100 ticks, capture it indefinitely in unlimitedLastHurtByPlayer for LivingExperienceDropEvent
-+        if (this.lastHurtByPlayer != null) this.unlimitedLastHurtByPlayer = lastHurtByPlayer;
++        if (this.lastHurtByPlayer != null) {
++            this.unlimitedLastHurtByPlayer = lastHurtByPlayer;
++        }
 +        if (this.unlimitedLastHurtByPlayer != null) {
-+            Player p = this.unlimitedLastHurtByPlayer.getEntity(this.level(), Player.class);
-+            if (p == null || p.isRemoved()) {
++            Player player = this.unlimitedLastHurtByPlayer.getEntity(this.level(), Player.class);
++            if (player == null || player.isRemoved()) {
 +                this.unlimitedLastHurtByPlayer = null;
 +            }
 +        }
@@ -35,7 +41,7 @@
              if (this.dragonDeathTime > 150 && this.dragonDeathTime % 5 == 0 && level.getGameRules().get(GameRules.MOB_DROPS)) {
 -                ExperienceOrb.award(level, this.position(), Mth.floor(xpCount * 0.08F));
 +                int award = net.neoforged.neoforge.event.EventHooks.getExperienceDrop(this, net.minecraft.world.entity.EntityReference.get(this.unlimitedLastHurtByPlayer, level, Player.class), Mth.floor((float) xpCount * 0.08F));
-+                ExperienceOrb.award((ServerLevel) this.level(), this.position(), award);
++                ExperienceOrb.award(level, this.position(), award);
              }
  
              if (this.dragonDeathTime == 1 && !this.isSilent()) {
@@ -45,7 +51,7 @@
              if (level.getGameRules().get(GameRules.MOB_DROPS)) {
 -                ExperienceOrb.award(level, this.position(), Mth.floor(xpCount * 0.2F));
 +                int award = net.neoforged.neoforge.event.EventHooks.getExperienceDrop(this, net.minecraft.world.entity.EntityReference.get(this.unlimitedLastHurtByPlayer, level, Player.class), Mth.floor((float) xpCount * 0.2F));
-+                ExperienceOrb.award((ServerLevel) this.level(), this.position(), award);
++                ExperienceOrb.award(level, this.position(), award);
              }
  
              if (this.dragonFight != null) {
