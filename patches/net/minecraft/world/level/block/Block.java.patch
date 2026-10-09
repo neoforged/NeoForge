@@ -9,6 +9,18 @@
      private static final LoadingCache<VoxelShape, Boolean> SHAPE_FULL_BLOCK_CACHE = CacheBuilder.newBuilder()
          .maximumSize(512L)
          .weakKeys()
+@@ -119,6 +_,11 @@
+         map.defaultReturnValue((byte)127);
+         return map;
+     });
++    /// Neo: Short-lived holder of dropped item entities. Used mainly for Neo hooks and event logic.
++    ///
++    /// When not null, records all item entities from [#popResource(Level, Supplier, ItemStack)] instead of adding them to the world.
++    @Nullable
++    private static List<ItemEntity> capturedDrops = null;
+ 
+     public static int getId(@Nullable BlockState blockState) {
+         if (blockState == null) {
 @@ -230,7 +_,7 @@
          this.createBlockStateDefinition(builder);
          this.stateDefinition = builder.create(Block::defaultBlockState, BlockState::new);
@@ -18,13 +30,11 @@
              String className = this.getClass().getSimpleName();
              if (!className.endsWith("Block")) {
                  LOGGER.error("Block classes should end with Block and {} doesn't.", className);
-@@ -285,7 +_,15 @@
+@@ -285,7 +_,13 @@
          }
      }
  
-+    /**
-+     * @deprecated Neo: use overload with level context instead
-+     */
++    /// @deprecated Neo: use [#shouldRenderFace(BlockGetter, BlockPos, BlockState, BlockState, Direction)] instead
 +    @Deprecated
      public static boolean shouldRenderFace(BlockState state, BlockState neighborState, Direction direction) {
 +        return shouldRenderFace(net.minecraft.world.level.EmptyBlockGetter.INSTANCE, BlockPos.ZERO, state, neighborState, direction);
@@ -89,8 +99,7 @@
 +            // Neo: Add drops to the captured list if capturing is enabled.
 +            if (capturedDrops != null) {
 +                capturedDrops.add(entity);
-+            }
-+            else {
++            } else {
 +                level.addFreshEntity(entity);
 +            }
          }
@@ -103,7 +112,8 @@
          }
      }
  
-+    @Deprecated //Forge: Use more sensitive version
++    /// @deprecated Neo: use [#getExplosionResistance(BlockState, BlockGetter, BlockPos, Explosion)] instead
++    @Deprecated
      public float getExplosionResistance() {
          return this.explosionResistance;
      }
@@ -111,52 +121,40 @@
      public void bounceOn(Level level, BlockState state, BlockPos pos, Entity entity, double fallDistance) {
      }
  
-+    /// @deprecated NeoForge: Use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#getBounceRestitution(Level, BlockPos, Entity)]
++    /// @deprecated Neo: Use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#getBounceRestitution(Level, BlockPos, Entity)]
 +    @Deprecated
      public float getBounceRestitution() {
          return this.bounceRestitution;
      }
-@@ -507,6 +_,7 @@
+@@ -507,6 +_,8 @@
      public void handlePrecipitation(BlockState state, Level level, BlockPos pos, Biome.Precipitation precipitation) {
      }
  
-+    @Deprecated //Forge: Use more sensitive version
++    /// @deprecated Neo: use [#canDropFromExplosion(BlockState, BlockGetter, BlockPos, Explosion)] instead
++    @Deprecated
      public boolean dropFromExplosion(Explosion explosion) {
          return true;
      }
-@@ -583,6 +_,35 @@
-         return state.setValue(property, (T)value);
-     }
+@@ -581,6 +_,22 @@
  
-+    /**
-+     * Neo: Short-lived holder of dropped item entities. Used mainly for Neo hooks and event logic.
-+     * <p>
-+     * When not null, records all item entities from {@link #popResource(Level, Supplier, ItemStack)} instead of adding them to the world.
-+     */
-+    @Nullable
-+    private static List<ItemEntity> capturedDrops = null;
+     private static <S extends StateHolder<?, S>, T extends Comparable<T>> S setValueHelper(S state, Property<T> property, Object value) {
+         return state.setValue(property, (T)value);
++    }
 +
-+    /**
-+     * Initializes {@link #capturedDrops}, starting the drop capture process.
-+     * <p>
-+     * Must only be called on the server thread.
-+     */
++    /// Neo: Initializes [#capturedDrops], starting the drop capture process.
++    ///
++    /// Must only be called on the server thread.
 +    private static void beginCapturingDrops() {
 +        capturedDrops = new java.util.ArrayList<>();
 +    }
 +
-+    /**
-+     * Ends the drop capture process by setting {@link #capturedDrops} to null and returning the old list.
-+     * <p>
-+     * Must only be called on the server thread.
-+     */
++    /// Neo: Ends the drop capture process by setting [#capturedDrops] to null and returning the old list.
++    ///
++    /// Must only be called on the server thread.
 +    private static List<ItemEntity> stopCapturingDrops() {
 +        List<ItemEntity> drops = capturedDrops;
 +        capturedDrops = null;
 +        return drops;
-+    }
-+
-+    /** @deprecated */
+     }
+ 
      @Deprecated
-     public Holder.Reference<Block> builtInRegistryHolder() {
-         return this.builtInRegistryHolder;

@@ -1,19 +1,23 @@
 --- a/net/minecraft/world/item/BundleItem.java
 +++ b/net/minecraft/world/item/BundleItem.java
-@@ -59,7 +_,7 @@
+@@ -59,7 +_,8 @@
      @Override
      public boolean overrideStackedOnOther(ItemStack self, Slot slot, ClickAction clickAction, Player player) {
          BundleContents initialContents = self.get(DataComponents.BUNDLE_CONTENTS);
 -        if (initialContents == null) {
++        // Neo: prevent dupes if the bundle's max stack size was increased
 +        if (initialContents == null || self.getCount() != 1) {
              return false;
          }
  
-@@ -96,6 +_,7 @@
+@@ -96,6 +_,10 @@
  
      @Override
      public boolean overrideOtherStackedOnMe(ItemStack self, ItemStack other, Slot slot, ClickAction clickAction, Player player, SlotAccess carriedItem) {
-+        if (self.getCount() != 1) return false;
++        // Neo: prevent dupes if the bundle's max stack size was increased
++        if (self.getCount() != 1) {
++            return false;
++        }
          if (clickAction == ClickAction.PRIMARY && other.isEmpty()) {
              toggleSelectedItem(self, -1);
              return false;

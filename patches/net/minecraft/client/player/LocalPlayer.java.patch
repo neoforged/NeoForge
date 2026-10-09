@@ -1,13 +1,15 @@
 --- a/net/minecraft/client/player/LocalPlayer.java
 +++ b/net/minecraft/client/player/LocalPlayer.java
-@@ -560,7 +_,14 @@
+@@ -560,7 +_,16 @@
  
      @Override
      public void playSound(SoundEvent sound, float volume, float pitch) {
 -        this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), sound, this.getSoundSource(), volume, pitch, false);
 +        net.minecraft.core.Holder<SoundEvent> holder = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(sound);
 +        net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtEntity(this, holder, this.getSoundSource(), volume, pitch);
-+        if (event.isCanceled() || event.getSound() == null) return;
++        if (event.isCanceled() || event.getSound() == null) {
++            return;
++        }
 +        sound = event.getSound().value();
 +        SoundSource source = event.getSource();
 +        volume = event.getNewVolume();
@@ -50,7 +52,7 @@
 +
 +    @Override
 +    protected boolean canGlide() {
-+        // Neo: Override canGlide for the client to check if it is connected to a neo forge server, and if not then fall back to checking the worn items.
++        // Neo: Override canGlide for the client to check if it is connected to a NeoForge server, and if not then fall back to checking the worn items.
 +        // This way when Player#tryToStartFallFlying is called, on the client, it is able to check for the vanilla components on equipped items
 +        return !getAbilities().flying && canGlide(connection.getConnectionType().isNeoForge());
      }

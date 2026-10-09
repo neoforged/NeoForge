@@ -1,10 +1,11 @@
 --- a/net/minecraft/server/network/PlayerChunkSender.java
 +++ b/net/minecraft/server/network/PlayerChunkSender.java
-@@ -74,13 +_,16 @@
+@@ -74,13 +_,17 @@
      }
  
      private static void sendChunk(ServerGamePacketListenerImpl connection, ServerLevel level, LevelChunk chunk) {
 -        connection.send(new ClientboundLevelChunkWithLightPacket(chunk, level.getLightEngine(), null, null));
++        // Neo: send the auxiliary light data in a bundle packet together with the chunk data
 +        connection.send(chunk.getAuxLightManager(chunk.getPos()).sendLightDataTo(
 +                new ClientboundLevelChunkWithLightPacket(chunk, level.getLightEngine(), null, null)
 +        ));

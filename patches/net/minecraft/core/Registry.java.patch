@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/Registry.java
 +++ b/net/minecraft/core/Registry.java
-@@ -49,10 +_,13 @@
+@@ -49,10 +_,14 @@
      }
  
      private DataResult<Holder.Reference<T>> safeCastToReference(Holder<T> holder) {
@@ -10,7 +10,8 @@
              : DataResult.error(() -> "Unregistered holder in " + this.key() + ": " + holder);
      }
 +
-+    @Override//Neo: Force Implementation of the method from IRegistryExtension rather than defaulting to the empty map implementation from RegistryLookup
++    // Neo: Force Implementation of the method from IRegistryExtension rather than defaulting to the empty map implementation from RegistryLookup
++    @Override
 +    <A> java.util.Map<ResourceKey<T>, A> getDataMap(net.neoforged.neoforge.registries.datamaps.DataMapType<T, A> type);
  
      @Override

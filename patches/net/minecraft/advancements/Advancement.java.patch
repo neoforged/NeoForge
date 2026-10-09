@@ -1,12 +1,13 @@
 --- a/net/minecraft/advancements/Advancement.java
 +++ b/net/minecraft/advancements/Advancement.java
-@@ -225,8 +_,12 @@
+@@ -225,8 +_,13 @@
          }
  
          public AdvancementHolder save(BootstrapContext<Advancement> output, String name) {
 +            return this.save(output, name, new net.neoforged.neoforge.common.conditions.ICondition[0]);
 +        }
 +
++        /// Neo: add support for NeoForge loading conditions
 +        public AdvancementHolder save(BootstrapContext<Advancement> output, String name, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
              AdvancementHolder advancement = this.build(Identifier.parse(name));
 -            advancement.register(output);

@@ -1,41 +1,33 @@
 --- a/net/minecraft/world/item/ProjectileWeaponItem.java
 +++ b/net/minecraft/world/item/ProjectileWeaponItem.java
-@@ -24,12 +_,42 @@
+@@ -24,12 +_,34 @@
          super(properties);
      }
  
-+    /**
-+     * @deprecated Use ItemStack sensitive version {@link ProjectileWeaponItem#getSupportedHeldProjectiles(ItemStack)}
-+     */
++    /// @deprecated Neo: use [#getSupportedHeldProjectiles(ItemStack)] instead
 +    @Deprecated
      public Predicate<ItemStack> getSupportedHeldProjectiles() {
          return this.getAllSupportedProjectiles();
      }
  
-+    /**
-+     * @deprecated Use ItemStack sensitive version {@link ProjectileWeaponItem#getAllSupportedProjectiles(ItemStack)}
-+     */
++    /// @deprecated use [#getAllSupportedProjectiles(ItemStack)] instead
 +    @Deprecated
      public abstract Predicate<ItemStack> getAllSupportedProjectiles();
  
-+    /**
-+     * Override this method if the weapon stack allows special projectile that would only be used if it's in hand.
-+     * The default return value is a union-predicate of {@link ProjectileWeaponItem#getAllSupportedProjectiles(ItemStack)}
-+     * and {@link ProjectileWeaponItem#getSupportedHeldProjectiles()}
-+     *
-+     * @param stack The ProjectileWeapon stack
-+     * @return A predicate that returns true for supported projectile stack in hand
-+     */
++    /// Neo: Override this method if the weapon stack allows special projectile that would only be used if it's in hand.
++    /// The default return value is a union-predicate of [ProjectileWeaponItem#getAllSupportedProjectiles(ItemStack)]
++    /// and [ProjectileWeaponItem#getSupportedHeldProjectiles()]
++    ///
++    /// @param stack The ProjectileWeapon stack
++    /// @return A predicate that returns true for supported projectile stack in hand
 +    public Predicate<ItemStack> getSupportedHeldProjectiles(ItemStack stack) {
 +        return getAllSupportedProjectiles(stack).or(getSupportedHeldProjectiles());
 +    }
 +
-+    /**
-+     * Override this method if the allowed projectile is weapon stack dependent.
-+     *
-+     * @param stack The ProjectileWeapon stack
-+     * @return A predicate that returns true for all supported projectile stack
-+     */
++    /// Neo: Override this method if the allowed projectile is weapon stack dependent.
++    ///
++    /// @param stack The ProjectileWeapon stack
++    /// @return A predicate that returns true for all supported projectile stack
 +    public Predicate<ItemStack> getAllSupportedProjectiles(ItemStack stack) {
 +        return getAllSupportedProjectiles();
 +    }
@@ -62,7 +54,7 @@
              ? EnchantmentHelper.processAmmoUse(serverLevel, weapon, projectile, 1)
              : 0;
          if (ammoToUse > projectile.getCount()) {
-@@ -139,5 +_,20 @@
+@@ -139,5 +_,19 @@
          }
  
          return used;
@@ -72,13 +64,12 @@
 +        return arrow;
 +    }
 +
-+    /**
-+     * Neo: Controls what ammo ItemStack that Creative Mode should return if the player has no valid ammo in inventory.
-+     * Modded weapons should override this to return their own ammo if they do not use vanilla arrows.
-+     * @param player The player (if in context) firing the weapon
-+     * @param projectileWeaponItem The weapon ItemStack the ammo is for
-+     * @return The default ammo ItemStack for this weapon
-+     */
++    /// Neo: Controls what ammo ItemStack that Creative Mode should return if the player has no valid ammo in inventory.
++    /// Modded weapons should override this to return their own ammo if they do not use vanilla arrows.
++    ///
++    /// @param player The player (if in context) firing the weapon
++    /// @param projectileWeaponItem The weapon ItemStack the ammo is for
++    /// @return The default ammo ItemStack for this weapon
 +    public ItemStack getDefaultCreativeAmmo(@Nullable Player player, ItemStack projectileWeaponItem) {
 +        return Items.ARROW.getDefaultInstance();
      }

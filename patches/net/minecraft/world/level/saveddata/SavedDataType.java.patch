@@ -20,13 +20,13 @@
 +        this(id, constructor, codec, null);
 +    }
 +
-+    // Neo: Use the level-sensitive factory
++    /// @deprecated Neo: Use [#factory] instead
 +    @Deprecated
 +    public Supplier<T> constructor() {
 +        return () -> factory.create(null);
 +    }
 +
-+    // Neo: Use the level-sensitive codecFactory
++    /// @deprecated Neo: Use [#codecFactory] instead
 +    @Deprecated
 +    public Codec<T> codec() {
 +        return codecFactory.create(null);

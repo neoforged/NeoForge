@@ -1,12 +1,10 @@
 --- a/net/minecraft/world/entity/player/Abilities.java
 +++ b/net/minecraft/world/entity/player/Abilities.java
-@@ -14,6 +_,10 @@
+@@ -14,6 +_,8 @@
      private static final float DEFAULT_WALKING_SPEED = 0.1F;
      public boolean invulnerable;
      public boolean flying;
-+    /**
-+     * @deprecated Neoforge: use {@link net.neoforged.neoforge.common.extensions.IPlayerExtension#mayFly} to read and {@link net.neoforged.neoforge.common.NeoForgeMod#CREATIVE_FLIGHT} Attribute to modify
-+     */
++    /// @deprecated Neoforge: use [net.neoforged.neoforge.common.extensions.IPlayerExtension#mayFly] to read and [net.neoforged.neoforge.common.NeoForgeMod#CREATIVE_FLIGHT] Attribute to modify
 +    @Deprecated
      public boolean mayfly;
      public boolean instabuild;

@@ -17,7 +17,7 @@
          if (!player.hasInfiniteMaterials()) {
              player.giveExperienceLevels(-this.cost.get());
          }
-@@ -112,10 +_,30 @@
+@@ -112,10 +_,28 @@
                  level.levelEvent(1030, pos, 0);
              }
          });
@@ -38,13 +38,11 @@
 +        net.neoforged.neoforge.common.CommonHooks.onAnvilUpdate(this, leftInput, rightInput, resultSlots, itemName, this.player);
 +    }
 +
-+    /**
-+     * Neo: This is the original createResult() method, which is called by the above method ({@link #createResult()}.
-+     * <p>
-+     * If you would normally override {@link #createResult()}, you should override this method instead.
-+     *
-+     * @implNote This replacement exists so we can fire the AnvilUpdateEvent with the vanilla result, despite the multiple returns in the original method.
-+     */
++    /// Neo: This is the original createResult() method, which is called by the above method ([#createResult()].
++    ///
++    /// If you would normally override [#createResult()], you should override this method instead.
++    ///
++    /// @implNote This replacement exists so we can fire the `AnvilUpdateEvent` with the vanilla result, despite the multiple returns in the original method.
 +    protected void createResultInternal() {
          ItemStack input = this.inputSlots.getItem(0);
          this.onlyRenaming = false;
@@ -62,14 +60,12 @@
                              compatible = true;
                          }
  
-@@ -305,4 +_,11 @@
+@@ -305,4 +_,9 @@
      public int getCost() {
          return this.cost.get();
      }
 +
-+    /**
-+     * Neo: Sets the cost. Negative values are clamped to zero.
-+     */
++    /// Neo: Sets the cost. Negative values are clamped to zero.
 +    public void setCost(int value) {
 +        this.cost.set(Math.max(0, value));
 +     }

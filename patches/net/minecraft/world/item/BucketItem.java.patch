@@ -20,11 +20,13 @@
                              level.gameEvent(player, GameEvent.FLUID_PICKUP, pos);
                              ItemStack result = ItemUtils.createFilledResult(itemStack, player, taken);
                              if (!level.isClientSide()) {
-@@ -107,7 +_,13 @@
+@@ -106,8 +_,15 @@
+     public void checkExtraContent(@Nullable LivingEntity user, Level level, ItemStack itemStack, BlockPos pos) {
      }
  
++    /// @deprecated Neo: use [#emptyContents(LivingEntity, Level, BlockPos, BlockHitResult, ItemStack)] instead
++    @Deprecated
      @Override
-+    @Deprecated // Neo: use the ItemStack sensitive version
      public boolean emptyContents(@Nullable LivingEntity user, Level level, BlockPos pos, @Nullable BlockHitResult hitResult) {
 +        return this.emptyContents(user, level, pos, hitResult, null);
 +    }
@@ -59,7 +61,7 @@
                      container.placeLiquid(level, pos, blockState, flowingFluid.getSource(false));
                      this.playEmptySound(user, level, pos);
                      return true;
-@@ -149,15 +_,20 @@
+@@ -149,15 +_,22 @@
                      return true;
                  }
              } else {
@@ -72,7 +74,9 @@
      protected void playEmptySound(@Nullable LivingEntity user, LevelAccessor level, BlockPos pos) {
 -        SoundEvent soundEvent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
 +        SoundEvent soundEvent = this.content.getFluidType().getSound(user, level, pos, net.neoforged.neoforge.common.SoundActions.BUCKET_EMPTY);
-+        if(soundEvent == null) soundEvent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
++        if (soundEvent == null) {
++            soundEvent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
++        }
          level.playSound(user, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
          level.gameEvent(user, GameEvent.FLUID_PLACE, pos);
 +    }

@@ -1,6 +1,33 @@
 --- a/net/minecraft/world/level/block/entity/ChiseledBookShelfBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/ChiseledBookShelfBlockEntity.java
-@@ -88,12 +_,50 @@
+@@ -27,6 +_,26 @@
+     private static final int DEFAULT_LAST_INTERACTED_SLOT = -1;
+     private final NonNullList<ItemStack> items = NonNullList.withSize(6, ItemStack.EMPTY);
+     private int lastInteractedSlot = -1;
++    // Neo: Make lastInteractedSlot transactional, and defer updateState until end of a transaction
++    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Integer> lastInteractedSlotJournal = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<>() {
++        @Override
++        protected Integer createSnapshot() {
++            return lastInteractedSlot;
++        }
++
++        @Override
++        protected void revertToSnapshot(Integer snapshot) {
++            lastInteractedSlot = snapshot;
++        }
++
++        @Override
++        protected void onRootCommit(Integer originalState) {
++            // If the block entity was removed, skip updateState to avoid the setBlock call that would overwrite the current block
++            if (!isRemoved()) {
++                updateState(lastInteractedSlot);
++            }
++        }
++    };
+ 
+     public ChiseledBookShelfBlockEntity(BlockPos worldPosition, BlockState blockState) {
+         super(BlockEntityTypes.CHISELED_BOOKSHELF, worldPosition, blockState);
+@@ -88,12 +_,31 @@
  
      @Override
      public void setItem(int slot, ItemStack itemStack) {
@@ -26,29 +53,10 @@
          }
 +    }
 +
-+    // Neo: Make lastInteractedSlot transactional, and defer updateState until end of a transaction
-+    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Integer> lastInteractedSlotJournal = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<>() {
-+        @Override
-+        protected Integer createSnapshot() {
-+            return lastInteractedSlot;
-+        }
-+        @Override
-+        protected void revertToSnapshot(Integer snapshot) {
-+            lastInteractedSlot = snapshot;
-+        }
-+        @Override
-+        protected void onRootCommit(Integer originalState) {
-+            // If the block entity was removed, skip updateState to avoid the setBlock call that would overwrite the current block
-+            if (!isRemoved()) {
-+                updateState(lastInteractedSlot);
-+            }
-+        }
-+    };
-+
 +    @Override
 +    public void onTransfer(int slot, int amountChange, net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
 +        this.lastInteractedSlotJournal.updateSnapshots(transaction);
-+        lastInteractedSlot = slot;
++        this.lastInteractedSlot = slot;
      }
  
      @Override

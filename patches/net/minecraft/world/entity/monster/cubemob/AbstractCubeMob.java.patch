@@ -8,7 +8,7 @@
              for (int i = 0; i < size * 16.0F; i++) {
                  float dir = this.random.nextFloat() * (float) (Math.PI * 2);
                  float d = this.random.nextFloat() * 0.5F + 0.5F;
-@@ -192,15 +_,24 @@
+@@ -192,15 +_,26 @@
              int count = this.getSplitCount();
              PlayerTeam team = this.getTeam();
  
@@ -25,7 +25,9 @@
                      EntitySpawnReason.TRIGGERED,
                      cubeMob -> this.setUpSplitCube(cubeMob, halfSize, xd, zd)
                  );
-+                if (child != null) children.add(child);
++                if (child != null) {
++                    children.add(child);
++                }
 +            }
 +            this.preventConversionSpawns = false;
 +
@@ -34,17 +36,16 @@
              }
          }
  
-@@ -268,6 +_,15 @@
+@@ -268,6 +_,14 @@
          Vec3 movement = this.getDeltaMovement();
          this.setDeltaMovement(movement.x, this.getJumpPower(), movement.z);
          this.needsSync = true;
 +        net.neoforged.neoforge.common.CommonHooks.onLivingJump(this);
 +    }
 +
-+    /**
-+     * Called when the slime spawns particles on landing, see onUpdate.
-+     * Return true to prevent the spawning of the default particles.
-+     */
++    /// Neo: Called when the slime spawns particles on landing, see [#tick()].
++    ///
++    /// @return `true` to prevent the spawning of the default particles
 +    protected boolean spawnCustomParticles() {
 +        return false;
      }

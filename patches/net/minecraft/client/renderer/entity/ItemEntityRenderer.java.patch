@@ -18,25 +18,19 @@
              poseStack.translate(0.0F, bob + minOffsetY, 0.0F);
              float spin = ItemEntity.getSpin(state.ageInTicks, state.bobOffset);
              poseStack.rotate(Axis.YP, spin);
-@@ -78,7 +_,9 @@
+@@ -78,6 +_,7 @@
                      float xo = (random.nextFloat() * 2.0F - 1.0F) * 0.15F;
                      float yo = (random.nextFloat() * 2.0F - 1.0F) * 0.15F;
                      float zo = (random.nextFloat() * 2.0F - 1.0F) * 0.15F;
--                    poseStack.translate(xo, yo, zo);
-+                    if (state.shouldSpread) {
-+                        poseStack.translate(xo, yo, zo);
-+                    }
++                    if (state.shouldSpread)
+                     poseStack.translate(xo, yo, zo);
                      item.submit(poseStack, submitNodeCollector, lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
                      poseStack.popPose();
-                 }
-@@ -92,7 +_,9 @@
+@@ -92,6 +_,7 @@
                      poseStack.pushPose();
                      float xo = (random.nextFloat() * 2.0F - 1.0F) * 0.15F * 0.5F;
                      float yo = (random.nextFloat() * 2.0F - 1.0F) * 0.15F * 0.5F;
--                    poseStack.translate(xo, yo, 0.0F);
-+                    if (state.shouldSpread) {
-+                        poseStack.translate(xo, yo, 0.0F);
-+                    }
++                    if (state.shouldSpread)
+                     poseStack.translate(xo, yo, 0.0F);
                      item.submit(poseStack, submitNodeCollector, lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
                      poseStack.popPose();
-                     poseStack.translate(0.0F, 0.0F, offsetZ);

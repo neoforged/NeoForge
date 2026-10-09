@@ -1,12 +1,10 @@
 --- a/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/net/minecraft/world/entity/item/ItemEntity.java
-@@ -53,6 +_,10 @@
+@@ -53,6 +_,8 @@
      private @Nullable EntityReference<Entity> thrower;
      private @Nullable UUID target;
      public final float bobOffs = this.random.nextFloat() * (float) Math.PI * 2.0F;
-+    /**
-+     * The maximum age of this EntityItem. The item is expired once this is reached.
-+     */
++    /// Neo: The maximum age of this EntityItem. The item is expired once this is reached.
 +    public int lifespan = ItemEntity.LIFETIME;
  
      public ItemEntity(EntityType<? extends ItemEntity> type, Level level) {
@@ -27,11 +25,13 @@
      }
  
      @Override
-@@ -108,6 +_,7 @@
+@@ -108,6 +_,9 @@
  
      @Override
      public void tick() {
-+        if (getItem().onEntityItemUpdate(this)) return;
++        if (getItem().onEntityItemUpdate(this)) {
++            return;
++        }
          if (this.getItem().isEmpty()) {
              this.discard();
          } else {
@@ -122,14 +122,12 @@
                  player.take(this, orgCount);
                  if (itemStack.isEmpty()) {
                      this.discard();
-@@ -381,6 +_,15 @@
+@@ -381,6 +_,13 @@
          this.target = target;
      }
  
-+    /**
-+     * Neo: Add getter for ItemEntity's {@link ItemEntity#target target}.
-+     * @return The {@link ItemEntity#target target} that can pick up this item entity (if {@code null}, anyone can pick it up)
-+     */
++    /// Neo: {@return the UUID of the target that can pick up this item entity}
++    /// If `null` anyone can pick up this item entity.
 +    @Nullable
 +    public UUID getTarget() {
 +        return this.target;

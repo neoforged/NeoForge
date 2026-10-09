@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -40,9 +_,13 @@
+@@ -40,9 +_,11 @@
  
  import net.neoforged.neoforge.common.extensions.IBlockEntityExtension;
  
@@ -8,9 +8,7 @@
 +public abstract class BlockEntity extends net.neoforged.neoforge.attachment.AttachmentHolder implements DebugValueSource, TypedInstance<BlockEntityType<?>>, IBlockEntityExtension {
      private static final Codec<BlockEntityType<?>> TYPE_CODEC = BuiltInRegistries.BLOCK_ENTITY_TYPE.byNameCodec();
      private static final Logger LOGGER = LogUtils.getLogger();
-+    /**
-+     * @deprecated Neo: use {@link #getType()}
-+     */
++    /// @deprecated Neo: use [#getType()]
 +    @Deprecated
      private final BlockEntityType<?> type;
      protected @Nullable Level level;
@@ -45,15 +43,18 @@
      }
  
      public final void loadWithComponents(ValueInput input) {
-@@ -107,6 +_,11 @@
+@@ -107,6 +_,14 @@
      }
  
      protected void saveAdditional(ValueOutput output) {
-+        if (this.customPersistentData != null) output.store("NeoForgeData", CompoundTag.CODEC, this.customPersistentData.copy());
-+        HolderLookup.Provider registries = this.level != null ? this.level.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY;
++        if (this.customPersistentData != null) {
++            output.store("NeoForgeData", CompoundTag.CODEC, this.customPersistentData.copy());
++        }
 +        var attachments = output.child(ATTACHMENTS_NBT_KEY);
 +        serializeAttachments(attachments);
-+        if (attachments.isEmpty()) output.discard(ATTACHMENTS_NBT_KEY);
++        if (attachments.isEmpty()) {
++            output.discard(ATTACHMENTS_NBT_KEY);
++        }
      }
  
      public final CompoundTag saveWithFullMetadata(HolderLookup.Provider registries) {
@@ -72,7 +73,7 @@
      }
  
      public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-@@ -259,6 +_,48 @@
+@@ -259,6 +_,49 @@
  
      public BlockEntityType<?> getType() {
          return this.type;
@@ -80,8 +81,9 @@
 +
 +    @Override
 +    public CompoundTag getPersistentData() {
-+        if (this.customPersistentData == null)
++        if (this.customPersistentData == null) {
 +            this.customPersistentData = new CompoundTag();
++        }
 +        return this.customPersistentData;
 +    }
 +
