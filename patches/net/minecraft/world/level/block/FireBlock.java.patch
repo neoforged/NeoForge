@@ -73,11 +73,10 @@
                  BlockPos.MutableBlockPos testPos = new BlockPos.MutableBlockPos();
  
                  for (int xx = -1; xx <= 1; xx++) {
-@@ -214,33 +_,33 @@
+@@ -214,33 +_,32 @@
              || level.isRainingAt(testPos.south());
      }
  
-+
 +    @Deprecated //Forge: Use IForgeBlockState.getFlammability, Public for default implementation only.
      public int getBurnOdds(BlockState state) {
          return state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)
