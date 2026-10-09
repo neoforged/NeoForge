@@ -46,7 +46,7 @@ public record Flammable(Holder<ContextIntProvider> flammability, Holder<ContextI
                             .withParameter(LootContextParams.BLOCK_STATE, state)
                             .withParameter(LootContextParams.ORIGIN, Vec3.atLowerCornerOf(pos))
                             .withParameter(NeoForgeLootContextParams.DIRECTION, face)
-                            .create(NeoForgeLootContextParamSets.DATAMAPS_FLAMMABLE)
+                            .create(NeoForgeLootContextParamSets.DATAMAPS_FLAMMABLE.get())
             ).create(Optional.empty());
         }
         return null;

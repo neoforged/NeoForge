@@ -116,6 +116,7 @@ import net.neoforged.neoforge.common.loot.CanItemPerformAbility;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
 import net.neoforged.neoforge.common.loot.NeoForgeLootContextParams;
+import net.neoforged.neoforge.common.loot.NeoForgeLootContextParamSets;
 import net.neoforged.neoforge.common.util.SelfTest;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers;
@@ -581,6 +582,7 @@ public class NeoForgeMod {
         GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
         ATTRIBUTE_TYPES.register(modEventBus);
         ENVIRONMENT_ATTRIBUTES.register(modEventBus);
+        NeoForgeLootContextParamSets.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
         ConfigSync.registerEventListeners();
         container.registerConfig(ModConfig.Type.SYNCED, NeoForgeSyncedConfig.SPEC);
