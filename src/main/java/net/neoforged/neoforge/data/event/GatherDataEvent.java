@@ -45,7 +45,7 @@ public abstract sealed class GatherDataEvent extends Event implements IModBusEve
         this.dataGenerator = dataGenerator;
         this.config = dataGeneratorConfig;
         this.registries = registries;
-        this.defaultPackGenerator = new PackGenerator(this, dataGenerator.getPackOutput(), mc.getModId() + "-global/");
+        this.defaultPackGenerator = new PackGenerator(this, dataGenerator.getPackOutput(), mc.getModId() + "-global");
     }
 
     public ModContainer getModContainer() {
@@ -72,7 +72,7 @@ public abstract sealed class GatherDataEvent extends Event implements IModBusEve
     }
 
     public PackGenerator getPackGenerator(PackOutput output) {
-        return new PackGenerator(this, output, this.modContainer.getModId() + "-pack[" + (packCounter++) + "]/");
+        return new PackGenerator(this, output, this.modContainer.getModId() + "-pack[" + (packCounter++) + "]");
     }
 
     /// {@return the world registries with all modded entries}
