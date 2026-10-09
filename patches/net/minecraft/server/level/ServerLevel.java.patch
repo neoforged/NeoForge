@@ -1,32 +1,31 @@
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -217,12 +_,18 @@
+@@ -217,12 +_,15 @@
      private boolean handlingTick;
      private final List<CustomSpawner> customSpawners;
      private @Nullable EnderDragonFight dragonFight;
 -    private final Int2ObjectMap<EnderDragonPart> dragonParts = new Int2ObjectOpenHashMap<>();
++    private final Int2ObjectMap<net.neoforged.neoforge.entity.PartEntity<?>> dragonParts = new Int2ObjectOpenHashMap<>();
      private final BiomeResolver uncachedBiomeResolver;
-+    final Int2ObjectMap<net.neoforged.neoforge.entity.PartEntity<?>> dragonParts = new Int2ObjectOpenHashMap<>();
      private final StructureManager structureManager;
      private final StructureCheck structureCheck;
      private final boolean tickTime;
      private final LevelDebugSynchronizers debugSynchronizers = new LevelDebugSynchronizers(this);
-+    // NeoForge: If present, this level uses its own seed instead of the server's global seed
++    /// Neo: If present, this level uses its own seed instead of the server's global seed
 +    private final java.util.OptionalLong seedOverride;
-+    /// {@return the override for the seed, specified in the [LevelStem] this level was constructed from}, if any
-+    public java.util.OptionalLong getSeedOverride() {
-+        return this.seedOverride;
-+    }
++    private final net.neoforged.neoforge.capabilities.CapabilityListenerHolder capListenerHolder = new net.neoforged.neoforge.capabilities.CapabilityListenerHolder();
  
      public ServerLevel(
          MinecraftServer server,
-@@ -236,10 +_,12 @@
+@@ -236,10 +_,14 @@
          List<CustomSpawner> customSpawners,
          boolean tickTime
      ) {
-+        // NeoForge: set seed override asap because things like the chunk cache constructor check level.getSeed()
++        // Neo: set seed override asap because things like the chunk cache constructor check level.getSeed()
 +        this.seedOverride = levelStem.seedOverride();
-+        biomeZoomSeed = net.minecraft.util.ExtraCodecs.fromOptionalLong.apply(levelStem.seedOverride()).map(net.minecraft.world.level.biome.BiomeManager::obfuscateSeed).orElse(biomeZoomSeed);
++        biomeZoomSeed = net.minecraft.util.ExtraCodecs.fromOptionalLong.apply(levelStem.seedOverride())
++                .map(net.minecraft.world.level.biome.BiomeManager::obfuscateSeed)
++                .orElse(biomeZoomSeed);
          super(levelData, dimension, server.registryAccess(), levelStem.type(), false, isDebug, biomeZoomSeed, server.getMaxChainedNeighborUpdates());
          this.tickTime = tickTime;
          this.server = server;
@@ -39,7 +38,7 @@
          WorldGenSettings worldGenSettings = server.getWorldGenSettings();
          WorldOptions options = worldGenSettings.options();
 -        long seed = options.seed();
-+        long seed = seedOverride.orElse(options.seed()); // NeoForge: use the seed override here too
++        long seed = this.seedOverride.orElse(options.seed()); // Neo: use the seed override here too
          this.structureCheck = new StructureCheck(
              this.chunkSource.chunkScanner(),
              this.registryAccess(),
@@ -92,7 +91,7 @@
          BlockPos topPos = this.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos);
          BlockPos belowPos = topPos.below();
          Biome biome = this.getBiome(topPos).value();
-+        if (this.isAreaLoaded(belowPos, 1)) // Forge: check area to avoid loading neighbors in unloaded chunks
++        if (this.isAreaLoaded(belowPos, 1)) // Neo: check area to avoid loading neighbors in unloaded chunks
          if (biome.shouldFreeze(this, belowPos)) {
              this.setBlockAndUpdate(belowPos, Blocks.ICE.defaultBlockState());
          }
@@ -100,7 +99,7 @@
                  .broadcastAll(new ClientboundGameEventPacket(ClientboundGameEventPacket.THUNDER_LEVEL_CHANGE, this.thunderLevel), this.dimension());
          }
  
-+        /* The function in use here has been replaced in order to only send the weather info to players in the correct dimension,
++        /* Neo: the function in use here has been replaced in order to only send the weather info to players in the correct dimension,
 +         * rather than to all players on the server. This is what causes the client-side rain, as the
 +         * client believes that it has started raining locally, rather than in another dimension.
 +         */
@@ -143,11 +142,13 @@
          }
      }
  
-@@ -986,6 +_,7 @@
+@@ -986,6 +_,9 @@
      }
  
      private void addPlayer(ServerPlayer player) {
-+        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityJoinLevelEvent(player, this)).isCanceled()) return;
++        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityJoinLevelEvent(player, this)).isCanceled()) {
++            return;
++        }
          Entity existing = this.getEntity(player.getUUID());
          if (existing != null) {
              LOGGER.warn("Force-added player with duplicate UUID {}", player.getUUID());
@@ -175,12 +176,14 @@
          }
      }
  
-@@ -1042,6 +_,12 @@
+@@ -1042,6 +_,14 @@
      public void playSeededSound(
          @Nullable Entity except, double x, double y, double z, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
-+        net.neoforged.neoforge.event.PlayLevelSoundEvent.AtPosition event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtPosition(this, x, y, z, sound, source, volume, pitch);
-+        if (event.isCanceled() || event.getSound() == null) return;
++        var event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtPosition(this, x, y, z, sound, source, volume, pitch);
++        if (event.isCanceled() || event.getSound() == null) {
++            return;
++        }
 +        sound = event.getSound();
 +        source = event.getSource();
 +        volume = event.getNewVolume();
@@ -188,12 +191,14 @@
          this.server
              .getPlayerList()
              .broadcast(
-@@ -1059,6 +_,12 @@
+@@ -1059,6 +_,14 @@
      public void playSeededSound(
          @Nullable Entity except, Entity sourceEntity, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
-+        net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtEntity(sourceEntity, sound, source, volume, pitch);
-+        if (event.isCanceled() || event.getSound() == null) return;
++        var event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtEntity(sourceEntity, sound, source, volume, pitch);
++        if (event.isCanceled() || event.getSound() == null) {
++            return;
++        }
 +        sound = event.getSound();
 +        source = event.getSource();
 +        volume = event.getNewVolume();
@@ -205,7 +210,7 @@
  
      @Override
      public void gameEvent(Holder<GameEvent> gameEvent, Vec3 position, GameEvent.Context context) {
-+        if (!net.neoforged.neoforge.common.CommonHooks.onVanillaGameEvent(this, gameEvent, position, context)) return;
++        if (net.neoforged.neoforge.common.CommonHooks.onVanillaGameEvent(this, gameEvent, position, context))
          this.gameEventDispatcher.post(gameEvent, position, context);
      }
  
@@ -217,14 +222,13 @@
          this.updateNeighborsAt(pos, sourceBlock, ExperimentalRedstoneUtils.initialOrientation(this, null, null));
      }
  
-@@ -1165,6 +_,10 @@
+@@ -1165,6 +_,9 @@
  
      @Override
      public void updateNeighborsAtExceptFromFacing(BlockPos pos, Block blockObject, Direction skipDirection, @Nullable Orientation orientation) {
 +        java.util.EnumSet<Direction> directions = java.util.EnumSet.allOf(Direction.class);
 +        directions.remove(skipDirection);
-+        if (net.neoforged.neoforge.event.EventHooks.onNeighborNotify(this, pos, this.getBlockState(pos), directions, false).isCanceled())
-+            return;
++        if (!net.neoforged.neoforge.event.EventHooks.onNeighborNotify(this, pos, this.getBlockState(pos), directions, false).isCanceled())
          this.neighborUpdater.updateNeighborsAtExceptFromFacing(pos, blockObject, skipDirection, orientation);
      }
  
@@ -237,11 +241,13 @@
                  ? this.getDestroyType(GameRules.MOB_EXPLOSION_DROP_DECAY)
                  : Explosion.BlockInteraction.KEEP;
              case TNT -> this.getDestroyType(GameRules.TNT_EXPLOSION_DROP_DECAY);
-@@ -1219,6 +_,7 @@
+@@ -1219,6 +_,9 @@
          };
          Vec3 center = new Vec3(x, y, z);
          ServerExplosion explosion = new ServerExplosion(this, source, damageSource, damageCalculator, center, r, fire, blockInteraction);
-+        if (net.neoforged.neoforge.event.EventHooks.onExplosionStart(this, explosion)) return;
++        if (net.neoforged.neoforge.event.EventHooks.onExplosionStart(this, explosion)) {
++            return;
++        }
          int blockCount = explosion.explode();
          ParticleOptions explosionParticle = explosion.isSmall() ? smallExplosionParticles : largeExplosionParticles;
  
@@ -275,15 +281,7 @@
                      ServerLevel.this.dragonParts.put(subEntity.getId(), subEntity);
                  }
              }
-@@ -2032,25 +_,62 @@
-                 if (ServerLevel.this.isUpdatingNavigations) {
-                     String message = "onTrackingStart called during navigation iteration";
-                     Util.logAndPauseIfInIde(
--                        "onTrackingStart called during navigation iteration", new IllegalStateException("onTrackingStart called during navigation iteration")
-+                              "onTrackingStart called during navigation iteration", new IllegalStateException("onTrackingStart called during navigation iteration")
-                     );
-                 }
- 
+@@ -2039,18 +_,54 @@
                  ServerLevel.this.navigatingMobs.remove(mob);
              }
  
@@ -312,32 +310,31 @@
 +        net.neoforged.neoforge.attachment.AttachmentSync.syncLevelUpdate(this, type);
 +    }
 +
-+    private final net.neoforged.neoforge.capabilities.CapabilityListenerHolder capListenerHolder = new net.neoforged.neoforge.capabilities.CapabilityListenerHolder();
-+
 +    @Override
 +    public void invalidateCapabilities(BlockPos pos) {
-+        capListenerHolder.invalidatePos(pos);
++        this.capListenerHolder.invalidatePos(pos);
 +    }
 +
 +    @Override
 +    public void invalidateCapabilities(ChunkPos pos) {
-+        capListenerHolder.invalidateChunk(pos);
++        this.capListenerHolder.invalidateChunk(pos);
 +    }
 +
-+    /**
-+     * Register a listener for capability invalidation.
-+     * @see net.neoforged.neoforge.capabilities.ICapabilityInvalidationListener
-+     */
++    /// Register a listener for capability invalidation.
++    /// @see net.neoforged.neoforge.capabilities.ICapabilityInvalidationListener
 +    public void registerCapabilityListener(BlockPos pos, net.neoforged.neoforge.capabilities.ICapabilityInvalidationListener listener) {
-+        capListenerHolder.addListener(pos, listener);
++        this.capListenerHolder.addListener(pos, listener);
 +    }
 +
-+    /**
-+     * Internal method, used to clean capability listeners that are not referenced.
-+     * Do not call.
-+     */
++    /// Internal method, used to clean capability listeners that are not referenced.
++    /// Do not call.
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public void cleanCapabilityListenerReferences() {
-+        capListenerHolder.clean();
++        this.capListenerHolder.clean();
++    }
++
++    /// Neo: {@return the override for the seed, specified in the [LevelStem] this level was constructed from}, if any
++    public java.util.OptionalLong getSeedOverride() {
++        return this.seedOverride;
      }
  }

@@ -24,24 +24,22 @@
              this.setDirty();
          }
      }
-@@ -109,6 +_,21 @@
+@@ -109,6 +_,19 @@
          this.modifyClock(clock, instance -> instance.paused = paused);
      }
  
-+    /**
-+     * This allows mods to set the rate at which a specific clock advances relative to game time.
-+     * <p>
-+     * This can be sped up for shorter days by giving a higher number, or slowed down for longer days
-+     * with a smaller number. A negative value will reset it back to vanilla logic.
-+     * <p>
-+     * This value can also be changed with the command <code>/neoforge day</code>, where you can set
-+     * either the speed or a day length in minutes.
-+     * <p>
-+     * This has no effect when time progression is stopped.
-+     * <p>
-+     * While this still technically works when vanilla clients are connected, those will desync and
-+     * experience a time jump once per second.
-+     */
++    /// Neo: This allows mods to set the rate at which a specific clock advances relative to game time.
++    ///
++    /// This can be sped up for shorter days by giving a higher number, or slowed down for longer days
++    /// with a smaller number. A negative value will reset it back to vanilla logic.
++    ///
++    /// This value can also be changed with the command `/neoforge day`, where you can set
++    /// either the speed or a day length in minutes.
++    ///
++    /// This has no effect when time progression is stopped.
++    ///
++    /// While this still technically works when vanilla clients are connected, those will desync and
++    /// experience a time jump once per second.
 +    @Override
      public void setRate(Holder<WorldClock> clock, float rate) {
          this.modifyClock(clock, instance -> instance.rate = rate);

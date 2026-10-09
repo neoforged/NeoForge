@@ -1,10 +1,11 @@
 --- a/com/mojang/renderpearl/backend/opengl/GlTextureView.java
 +++ b/com/mojang/renderpearl/backend/opengl/GlTextureView.java
-@@ -59,4 +_,9 @@
+@@ -59,4 +_,10 @@
      public void removeAssociatedFbo(FrameBufferCache.CacheKey fboKey) {
          this.fboKeys.remove(fboKey);
      }
 +
++    /// Neo: {@return whether this attachment has a stencil buffer}
 +    @Override
 +    public boolean hasStencilAspect() {
 +        return this.texture().hasStencilAspect();

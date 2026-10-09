@@ -53,18 +53,20 @@
                  BlockPos.MutableBlockPos testPos = new BlockPos.MutableBlockPos();
  
                  for (int xx = -1; xx <= 1; xx++) {
-@@ -214,33 +_,32 @@
+@@ -214,33 +_,34 @@
              || level.isRainingAt(testPos.south());
      }
  
-+    @Deprecated //Forge: Use IForgeBlockState.getFlammability, Public for default implementation only.
++    /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.IBlockExtension#getFlammability] instead
++    @Deprecated
      public int getBurnOdds(BlockState state) {
          return state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)
              ? 0
              : this.burnOdds.getInt(state.getBlock());
      }
  
-+    @Deprecated //Forge: Use IForgeBlockState.getFireSpreadSpeed
++    /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.IBlockExtension#getFireSpreadSpeed] instead
++    @Deprecated
      public int getIgniteOdds(BlockState state) {
          return state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)
              ? 0
@@ -102,7 +104,7 @@
                  return true;
              }
          }
-@@ -268,13 +_,14 @@
+@@ -268,12 +_,14 @@
  
          for (Direction direction : Direction.values()) {
              BlockState blockState = level.getBlockState(pos.relative(direction));
@@ -113,28 +115,28 @@
          return odds;
      }
  
++    /// @deprecated Neo: use [#canCatchFire(BlockGetter, BlockPos, Direction)] instead
++    @Deprecated
      @Override
-+    @Deprecated //Forge: Use canCatchFire with more context
      protected boolean canBurn(BlockState state) {
          return this.getIgniteOdds(state) > 0;
-     }
 @@ -295,8 +_,21 @@
      }
  
      private void setFlammable(Block block, int igniteOdds, int burnOdds) {
-+        if (block == Blocks.AIR) throw new IllegalArgumentException("Tried to set air on fire... This is bad.");
++        if (block == Blocks.AIR) {
++            throw new IllegalArgumentException("Tried to set air on fire... This is bad.");
++        }
          this.igniteOdds.put(block, igniteOdds);
          this.burnOdds.put(block, burnOdds);
 +    }
 +
-+    /**
-+     * Side sensitive version that calls the block function.
-+     *
-+     * @param world The current world
-+     * @param pos Block position
-+     * @param face The side the fire is coming from
-+     * @return True if the face can catch fire.
-+     */
++    /// Neo: Side sensitive version that calls the block function.
++    ///
++    /// @param world The current world
++    /// @param pos   Block position
++    /// @param face  The side the fire is coming from
++    /// @return True if the face can catch fire.
 +    public boolean canCatchFire(BlockGetter world, BlockPos pos, Direction face) {
 +        return world.getBlockState(pos).isFlammable(world, pos, face);
      }

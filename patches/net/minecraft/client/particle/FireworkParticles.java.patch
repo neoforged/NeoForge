@@ -5,9 +5,9 @@
                  }
  
 +                var factory = net.neoforged.neoforge.client.FireworkShapeFactoryRegistry.get(explosion.shape());
-+                if (factory != null)
++                if (factory != null) {
 +                    factory.build(this, trail, twinkle, colors.toIntArray(), fadeColors.toIntArray());
-+                else
++                } else
                  switch (explosion.shape()) {
                      case SMALL_BALL:
                          this.createParticleBall(0.25, 2, colors, fadeColors, trail, twinkle);

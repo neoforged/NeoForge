@@ -40,11 +40,13 @@
      }
  
      protected void updateEntireScoreboard(ServerScoreboard scoreboard, ServerPlayer player) {
-@@ -293,6 +_,7 @@
+@@ -293,6 +_,9 @@
      }
  
      protected void save(ServerPlayer player) {
-+        if (player.connection == null) return;
++        if (player.connection == null) {
++            return;
++        }
          this.playerIo.save(player);
          ServerStatsCounter stats = this.stats.get(player.getUUID());
          if (stats != null) {
@@ -87,19 +89,23 @@
          ServerPlayer.RespawnConfig respawnConfig = player.getRespawnConfig();
          if (!keepAllPlayerData && respawnConfig != null) {
              LevelData.RespawnData respawnData = respawnConfig.respawnData();
-@@ -549,6 +_,7 @@
+@@ -549,6 +_,9 @@
      }
  
      public void op(NameAndId nameAndId, Optional<LevelBasedPermissionSet> permissions, Optional<Boolean> canBypassPlayerLimit) {
-+        if (net.neoforged.neoforge.event.EventHooks.onPermissionChanged(nameAndId, this.server.operatorUserPermissions(), this)) return;
++        if (net.neoforged.neoforge.event.EventHooks.onPermissionChanged(nameAndId, this.server.operatorUserPermissions(), this)) {
++            return;
++        }
          this.ops
              .add(
                  new ServerOpListEntry(
-@@ -562,6 +_,7 @@
+@@ -562,6 +_,9 @@
      }
  
      public void deop(NameAndId nameAndId) {
-+        if (net.neoforged.neoforge.event.EventHooks.onPermissionChanged(nameAndId, LevelBasedPermissionSet.ALL, this)) return;
++        if (net.neoforged.neoforge.event.EventHooks.onPermissionChanged(nameAndId, LevelBasedPermissionSet.ALL, this)) {
++            return;
++        }
          if (this.ops.remove(nameAndId)) {
              ServerPlayer player = this.getPlayer(nameAndId.id());
              if (player != null) {

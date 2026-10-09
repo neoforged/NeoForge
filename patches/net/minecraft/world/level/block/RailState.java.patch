@@ -37,11 +37,12 @@
              if (BaseRailBlock.isRail(this.level, east.above())) {
                  shape = RailShape.ASCENDING_EAST;
              }
-@@ -201,6 +_,10 @@
+@@ -201,6 +_,11 @@
              shape = RailShape.NORTH_SOUTH;
          }
  
-+        if (!this.block.isValidRailShape(shape)) { // Forge: allow rail block to decide if the new shape is valid
++        // Neo: allow rail block to decide whether the new shape is valid
++        if (!this.block.isValidRailShape(shape)) {
 +            this.connections.remove(rail.pos);
 +            return;
 +        }
@@ -66,12 +67,13 @@
              if (BaseRailBlock.isRail(this.level, east.above())) {
                  shape = RailShape.ASCENDING_EAST;
              }
-@@ -323,7 +_,7 @@
+@@ -323,7 +_,8 @@
              }
          }
  
 -        if (shape == null) {
-+        if (shape == null || !this.block.isValidRailShape(shape)) { // Forge: allow rail block to decide if the new shape is valid
++        // Neo: allow rail block to decide whether the new shape is valid
++        if (shape == null || !this.block.isValidRailShape(shape)) {
              shape = defaultShape;
          }
  

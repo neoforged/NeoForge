@@ -42,18 +42,15 @@
              task.doTask(SectionRenderDispatcher.this.fixedBuffers);
          }
  
-@@ -405,14 +_,31 @@
+@@ -405,14 +_,28 @@
              return success;
          }
  
-+        // Neo: start
-+
++        /// Neo: {@return whether this section has no renderable geometry}
 +        @Override
 +        public boolean isEmpty() {
 +            return !getSectionMesh().hasRenderableLayers();
 +        }
-+
-+        // Neo: end
 +
          private class CompileTask extends SectionRenderDispatcher.RenderSection.SectionTask {
              private final RenderSectionRegion region;

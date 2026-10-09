@@ -37,7 +37,7 @@
      ) {
          this.row = row;
          this.column = column;
-@@ -40,12 +_,27 @@
+@@ -40,12 +_,28 @@
          this.iconGenerator = iconGenerator;
          this.displayItemsGenerator = displayItemsGenerator;
          this.type = type;
@@ -61,7 +61,8 @@
          return Identifier.withDefaultNamespace("textures/gui/container/creative_inventory/tab_" + name + ".png");
      }
  
-+    /** @deprecated Forge: use {@link #builder()} **/ @Deprecated
++    /// @deprecated Neo: use [#builder()] instead
++    @Deprecated
      public static CreativeModeTab.Builder builder(CreativeModeTab.Row row, int column) {
          return new CreativeModeTab.Builder(row, column);
      }
@@ -74,7 +75,7 @@
          this.displayItems = displayList.tabContents;
          this.displayItemsSearchTab = displayList.searchTabContents;
      }
-@@ -117,8 +_,27 @@
+@@ -117,8 +_,28 @@
          return this.displayItemsSearchTab.contains(stack);
      }
  
@@ -91,9 +92,10 @@
 +    }
 +
 +    public net.minecraft.resources.Identifier getScrollerSprite() {
-+        if (scrollerSpriteLocation == null)
++        if (this.scrollerSpriteLocation == null) {
 +            return this.canScroll() ? SCROLLER_SPRITE : SCROLLER_DISABLED_SPRITE;
-+        return scrollerSpriteLocation;
++        }
++        return this.scrollerSpriteLocation;
 +    }
 +
      public static class Builder {
@@ -116,23 +118,24 @@
  
          public Builder(CreativeModeTab.Row row, int column) {
              this.row = row;
-@@ -167,6 +_,8 @@
+@@ -167,6 +_,9 @@
  
          protected CreativeModeTab.Builder type(CreativeModeTab.Type type) {
              this.type = type;
-+            if (type == Type.SEARCH)
++            if (type == Type.SEARCH) {
 +                return this.withSearchBar();
++            }
              return this;
          }
  
-@@ -175,12 +_,94 @@
+@@ -175,12 +_,86 @@
              return this;
          }
  
-+        /**
-+         * Gives this tab a search bar.
-+         * <p>Note that, if using a custom {@link #backgroundTexture(net.minecraft.resources.Identifier) background image}, you will need to make sure that your image contains the input box and the scroll bar.</p>
-+         */
++        /// Neo: Gives this tab a search bar.
++        ///
++        /// Note that, if using a custom [`background image`][#backgroundTexture(net.minecraft.resources.Identifier)], you will need
++        /// to make sure that your image contains the input box and the scroll bar.
 +        public CreativeModeTab.Builder withSearchBar() {
 +            this.hasSearchBar = true;
 +            if (this.backgroundTexture == CreativeModeTab.DEFAULT_BACKGROUND)
@@ -140,26 +143,20 @@
 +            return this;
 +        }
 +
-+        /**
-+         * Gives this tab a search bar, with a specific width.
-+         * @param searchBarWidth the width of the search bar
-+         */
++        /// Neo: Gives this tab a search bar, with a specific width.
++        /// @param searchBarWidth the width of the search bar
 +        public CreativeModeTab.Builder withSearchBar(int searchBarWidth) {
 +            this.searchBarWidth = searchBarWidth;
 +            return withSearchBar();
 +        }
 +
-+        /**
-+         * Sets the location of the scroll bar background.
-+         */
++        /// Sets the location of the scroll bar background.
 +        public CreativeModeTab.Builder withScrollBarSpriteLocation(net.minecraft.resources.Identifier scrollBarSpriteLocation) {
 +            this.spriteScrollerLocation = scrollBarSpriteLocation;
 +            return this;
 +        }
 +
-+        /**
-+         * Sets the color of the tab label.
-+         */
++        /// Sets the color of the tab label.
 +        public CreativeModeTab.Builder withLabelColor(int labelColor) {
 +            this.labelColor = labelColor;
 +            return this;
@@ -170,38 +167,36 @@
 +            return this;
 +        }
 +
-+        /** Define tabs that should come <i>before</i> this tab. This tab will be placed <strong>after</strong> the {@code tabs}. **/
++        /// Define tabs that should come _before_ this tab. This tab will be placed **after** the `tabs`.
 +        public CreativeModeTab.Builder withTabsBefore(net.minecraft.resources.Identifier... tabs) {
 +            this.tabsBefore.addAll(java.util.List.of(tabs));
 +            return this;
 +        }
 +
-+        /** Define tabs that should come <i>after</i> this tab. This tab will be placed <strong>before</strong> the {@code tabs}.**/
++        /// Define tabs that should come _after_ this tab. This tab will be placed **before** the `tabs`.
 +        public CreativeModeTab.Builder withTabsAfter(net.minecraft.resources.Identifier... tabs) {
 +            this.tabsAfter.addAll(java.util.List.of(tabs));
 +            return this;
 +        }
 +
-+        /** Define tabs that should come <i>before</i> this tab. This tab will be placed <strong>after</strong> the {@code tabs}. **/
++        /// Define tabs that should come _before_ this tab. This tab will be placed **after** the `tabs`.
 +        @SafeVarargs
 +        public final CreativeModeTab.Builder withTabsBefore(net.minecraft.resources.ResourceKey<CreativeModeTab>... tabs) {
 +            java.util.stream.Stream.of(tabs).map(net.minecraft.resources.ResourceKey::identifier).forEach(this.tabsBefore::add);
 +            return this;
 +        }
 +
-+        /** Define tabs that should come <i>after</i> this tab. This tab will be placed <strong>before</strong> the {@code tabs}.**/
++        /// Define tabs that should come _after_ this tab. This tab will be placed **before** the `tabs`.
 +        @SafeVarargs
 +        public final CreativeModeTab.Builder withTabsAfter(net.minecraft.resources.ResourceKey<CreativeModeTab>... tabs) {
 +            java.util.stream.Stream.of(tabs).map(net.minecraft.resources.ResourceKey::identifier).forEach(this.tabsAfter::add);
 +            return this;
 +        }
 +
-+        /**
-+         * Helper to set this tabs contents to everything in the supplied Collection of Holders.
-+         * Intended for use with {@link net.neoforged.neoforge.registries.DeferredRegister#getEntries()}, for Item or Block DeferredRegisters.
-+         * Entries added through this method are filtered out if {@link ItemLike#asItem()} returns {@link Items#AIR} or if disabled via {@link Item#isEnabled(FeatureFlagSet)}.
-+         * Note that like the vanilla method this overrides any other calls for this tab to {@link #displayItems}.
-+         */
++        /// Helper to set this tabs contents to everything in the supplied Collection of Holders.
++        /// Intended for use with [net.neoforged.neoforge.registries.DeferredRegister#getEntries()], for Item or Block DeferredRegisters.
++        /// Entries added through this method are filtered out if [ItemLike#asItem()] returns [Items#AIR] or if disabled via [Item#isEnabled(FeatureFlagSet)].
++        /// Note that like the vanilla method this overrides any other calls for this tab to [#displayItems].
 +        public CreativeModeTab.Builder displayItems(Collection<? extends net.minecraft.core.Holder<? extends ItemLike>> collection) {
 +            return this.displayItems((p, o) -> collection.stream()
 +                    .map(net.minecraft.core.Holder::value)

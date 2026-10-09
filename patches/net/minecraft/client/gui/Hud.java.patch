@@ -4,7 +4,7 @@
  import org.jspecify.annotations.Nullable;
  
  import net.neoforged.fml.common.asm.enumextension.IExtensibleEnum;
-+// Neo: Exceptionally add a static wildcard import to make the patch bearable, and comments to avoid the detection by spotless rules.
++// Neo: Exceptionally add a static wildcard import to make the patch bearable, and comments to avoid the detection by Immaculate rules.
 +/* space for import change */ import static net.neoforged.neoforge.client.gui.VanillaGuiLayers.* /* space for wildcard import */;
  
  @OnlyIn(Dist.CLIENT)
@@ -143,20 +143,24 @@
          }
      }
  
-@@ -501,6 +_,8 @@
+@@ -501,6 +_,10 @@
              int harmfulCount = 0;
  
              for (MobEffectInstance instance : Ordering.natural().reverse().sortedCopy(activeEffects)) {
 +                var renderer = net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions.of(instance);
-+                if (!renderer.isVisibleInGui(instance)) continue;
++                if (!renderer.isVisibleInGui(instance)) {
++                    continue;
++                }
                  Holder<MobEffect> effect = instance.getEffect();
                  if (instance.showIcon()) {
                      int x = graphics.guiWidth();
-@@ -532,6 +_,7 @@
+@@ -532,6 +_,9 @@
                          }
                      }
  
-+                    if (renderer.extractHudIcon(instance, this, graphics, x + 3, y + 3, 18, 18, ARGB.white(alpha))) continue;
++                    if (renderer.extractHudIcon(instance, this, graphics, x + 3, y + 3, 18, 18, ARGB.white(alpha))) {
++                        continue;
++                    }
                      graphics.blitSprite(RenderPipelines.GUI_TEXTURED, getMobEffectSprite(effect), x + 3, y + 3, 18, 18, ARGB.white(alpha));
                  }
              }
@@ -252,7 +256,7 @@
 -                graphics.textWithBackdrop(this.getFont(), str, x, y, strWidth, ARGB.white(alpha));
 +                Font font = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(lastToolHighlight).getFont(lastToolHighlight, net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.FontContext.SELECTED_ITEM_NAME);
 +                if (font == null) {
-+                graphics.textWithBackdrop(this.getFont(), highlightTip, x, y, strWidth, ARGB.white(alpha));
++                    graphics.textWithBackdrop(this.getFont(), highlightTip, x, y, strWidth, ARGB.white(alpha));
 +                } else {
 +                    x = (graphics.guiWidth() - font.width(highlightTip)) / 2;
 +                    graphics.textWithBackdrop(font, highlightTip, x, y, strWidth, ARGB.white(alpha));
@@ -260,11 +264,12 @@
              }
          }
      }
-@@ -770,7 +_,15 @@
+@@ -770,7 +_,16 @@
          return (int)Math.ceil(hearts / 10.0);
      }
  
-+    @Deprecated // Neo: Split up into different layers
++    /// @deprecated Neo: split up into different layers
++    @Deprecated
      private void extractPlayerHealth(GuiGraphicsExtractor graphics) {
 +        extractHealthLevel(graphics);
 +        extractArmorLevel(graphics);

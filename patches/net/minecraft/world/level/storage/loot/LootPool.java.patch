@@ -10,7 +10,18 @@
              )
              .apply(i, LootPool::new)
      );
-@@ -48,13 +_,15 @@
+@@ -42,19 +_,26 @@
+     private final Optional<Holder<LootItemFunction>> modifier;
+     private Holder<ContextIntProvider> rolls;
+     private Holder<ContextFloatProvider> bonusRolls;
++    // Neo: Implement LootPool freezing to prevent manipulation outside of Neo APIs
++    private boolean isFrozen = false;
++    // Neo: Apply names for LootPools to allow easier targeting specific pools
++    @org.jspecify.annotations.Nullable
++    private String name;
+ 
+     private LootPool(
+         List<LootPoolEntryContainer> entries,
          Optional<Holder<LootItemCondition>> condition,
          Optional<Holder<LootItemFunction>> modifier,
          Holder<ContextIntProvider> rolls,
@@ -27,13 +38,10 @@
      }
  
      private void addRandomItem(Consumer<ItemStack> result, LootContext context) {
-@@ -110,6 +_,57 @@
+@@ -110,6 +_,51 @@
          Validatable.validateHolder(output, "bonus_rolls", this.bonusRolls);
      }
  
-+    // Neo: Implement LootPool freezing to prevent manipulation outside of Neo APIs
-+    private boolean isFrozen = false;
-+
 +    public void freeze() {
 +        this.isFrozen = true;
 +    }
@@ -43,13 +51,10 @@
 +    }
 +
 +    private void checkFrozen() {
-+        if (this.isFrozen())
++        if (this.isFrozen()) {
 +            throw new RuntimeException("Attempted to modify LootPool after being frozen!");
++        }
 +    }
-+
-+    // Neo: Apply names for LootPools to allow easier targeting specific pools
-+    @org.jspecify.annotations.Nullable
-+    private String name;
 +
 +    @org.jspecify.annotations.Nullable
 +    public String getName() {

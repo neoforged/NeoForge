@@ -1,10 +1,12 @@
 --- a/net/minecraft/client/MouseHandler.java
 +++ b/net/minecraft/client/MouseHandler.java
-@@ -79,6 +_,8 @@
+@@ -79,6 +_,10 @@
                  this.activeButton = null;
              }
  
-+            if (net.neoforged.neoforge.client.ClientHooks.onMouseButtonPre(rawButtonInfo, action)) return;
++            if (net.neoforged.neoforge.client.ClientHooks.onMouseButtonPre(rawButtonInfo, action)) {
++                return;
++            }
 +            boolean screenHandled = false;
              if (this.minecraft.gui.overlay() == null) {
                  if (pressed
@@ -72,11 +74,13 @@
                      this.minecraft.gui.screen().afterMouseAction();
                  } else if (this.minecraft.player != null) {
                      Vector2i wheelXY = this.scrollWheelHandler.onMouseScroll(scaledXOffset, scaledYOffset);
-@@ -191,6 +_,7 @@
+@@ -191,6 +_,9 @@
                      }
  
                      int wheel = wheelXY.y == 0 ? -wheelXY.x : wheelXY.y;
-+                    if (net.neoforged.neoforge.client.ClientHooks.onMouseScroll(this, scaledXOffset, scaledYOffset, wheelXY)) return;
++                    if (net.neoforged.neoforge.client.ClientHooks.onMouseScroll(this, scaledXOffset, scaledYOffset, wheelXY)) {
++                        return;
++                    }
                      if (this.minecraft.player.isSpectator()) {
                          if (this.minecraft.gui.hud.getSpectatorGui().isMenuActive()) {
                              this.minecraft.gui.hud.getSpectatorGui().onMouseScrolled(-wheel);

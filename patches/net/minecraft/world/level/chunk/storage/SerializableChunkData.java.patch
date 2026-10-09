@@ -11,13 +11,11 @@
  ) {
      private static final Codec<List<SavedTick<Block>>> BLOCK_TICKS_CODEC = SavedTick.codec(BuiltInRegistries.BLOCK.byNameCodec()).listOf();
      private static final Codec<List<SavedTick<Fluid>>> FLUID_TICKS_CODEC = SavedTick.codec(BuiltInRegistries.FLUID.byNameCodec()).listOf();
-@@ -106,6 +_,32 @@
+@@ -106,6 +_,30 @@
      public static final String BLOCK_LIGHT_TAG = "BlockLight";
      public static final String SKY_LIGHT_TAG = "SkyLight";
  
-+    /**
-+     * @deprecated Neo: use constructor with additional data instead
-+     */
++    /// @deprecated Neo: use constructor with additional data instead
 +    @Deprecated
 +    SerializableChunkData(
 +            PalettedContainerFactory containerFactory,

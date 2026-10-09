@@ -1,21 +1,5 @@
 --- a/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/net/minecraft/client/multiplayer/ClientPacketListener.java
-@@ -422,6 +_,7 @@
-     private final ChunkBatchSizeCalculator chunkBatchSizeCalculator = new ChunkBatchSizeCalculator();
-     private final PingDebugMonitor pingDebugMonitor;
-     private final ClientDebugSubscriber debugSubscriber;
-+    private net.neoforged.neoforge.network.connection.ConnectionType connectionType;
-     private @Nullable LevelLoadTracker levelLoadTracker;
-     private boolean serverEnforcesSecureChat;
-     private boolean onlineMode;
-@@ -455,6 +_,7 @@
-             minecraft.gui.hud.getChat().restoreState(cookie.chatState());
-         }
- 
-+        this.connectionType = cookie.connectionType();
-         this.levelLoadTracker = cookie.levelLoadTracker();
-         this.clockManager = new ClientClockManager();
-     }
 @@ -532,12 +_,13 @@
          this.debugSubscriber.clear();
          this.minecraft.levelExtractor.debugRenderer.refreshRendererList();
@@ -67,15 +51,17 @@
              } catch (Throwable t$) {
                  try {
                      reporter.close();
-@@ -1635,7 +_,12 @@
+@@ -1635,7 +_,14 @@
              );
      }
  
-+    /** @deprecated Neo: use {@link #startWaitingForNewLevel(LocalPlayer, ClientLevel, LevelLoadingScreen.Reason, ResourceKey, ResourceKey)} instead. */
++    /// @deprecated Neo: use [#startWaitingForNewLevel(LocalPlayer, ClientLevel, LevelLoadingScreen.Reason, ResourceKey, ResourceKey)] instead.
++    @Deprecated
      private void startWaitingForNewLevel(LocalPlayer player, ClientLevel level, LevelLoadingScreen.Reason reason) {
 +        startWaitingForNewLevel(player, level, reason, null, null);
 +    }
 +
++    /// Neo: overload with support for custom transition screens based on the source and/or destination dimension.
 +    private void startWaitingForNewLevel(LocalPlayer player, ClientLevel level, LevelLoadingScreen.Reason reason, @Nullable ResourceKey<Level> toDimension, @Nullable ResourceKey<Level> fromDimension) {
          if (this.levelLoadTracker == null) {
              this.levelLoadTracker = new LevelLoadTracker();
@@ -123,38 +109,45 @@
      }
  
      @Override
-@@ -2661,6 +_,8 @@
+@@ -2661,6 +_,10 @@
      }
  
      public void sendChat(String content) {
 +        content = net.neoforged.neoforge.client.ClientHooks.onClientSendMessage(content);
-+        if (content.isEmpty()) return;
++        if (content.isEmpty()) {
++            return;
++        }
          Instant timeStamp = Instant.now();
          long salt = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastSeenUpdate = this.lastSeenMessages.generateAndApplyUpdate();
-@@ -2669,6 +_,7 @@
+@@ -2669,6 +_,9 @@
      }
  
      public void sendCommand(String command) {
-+        if (net.neoforged.neoforge.client.ClientCommandHandler.runCommand(command)) return;
++        if (net.neoforged.neoforge.client.ClientCommandHandler.runCommand(command)) {
++            return;
++        }
          SignableCommand<ClientSuggestionProvider> signableCommand = SignableCommand.of(this.commands.parse(command, this.suggestionsProvider));
          if (signableCommand.arguments().isEmpty()) {
              this.send(new ServerboundChatCommandPacket(command));
-@@ -2685,6 +_,8 @@
+@@ -2685,6 +_,10 @@
      }
  
      public void sendUnattendedCommand(String command, @Nullable Screen screenAfterCommand) {
 +        // Neo: Dispatch client commands for text component click actions.
-+        if (net.neoforged.neoforge.client.ClientCommandHandler.runCommand(command)) return;
++        if (net.neoforged.neoforge.client.ClientCommandHandler.runCommand(command)) {
++            return;
++        }
          switch (this.verifyCommand(command)) {
              case NO_ISSUES:
                  this.send(new ServerboundChatCommandPacket(command));
-@@ -2849,6 +_,10 @@
+@@ -2849,6 +_,11 @@
  
      public Scoreboard scoreboard() {
          return this.scoreboard;
 +    }
 +
++    @Override
 +    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {
 +        return this.connectionType;
      }

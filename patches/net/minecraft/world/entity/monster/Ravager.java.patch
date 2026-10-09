@@ -9,15 +9,12 @@
                  boolean destroyedBlock = false;
                  AABB bb = this.getBoundingBox().inflate(0.2);
  
-@@ -223,9 +_,9 @@
+@@ -223,7 +_,7 @@
  
      private void roar() {
          if (this.isAlive() && this.level() instanceof ServerLevel level) {
 -            Predicate<Entity> targetSelector = level.getGameRules().get(GameRules.MOB_GRIEFING) ? ROAR_TARGET_WITH_GRIEFING : ROAR_TARGET_WITHOUT_GRIEFING;
-+            Predicate<Entity> predicate = net.neoforged.neoforge.event.EventHooks.canEntityGrief(level, this) ? ROAR_TARGET_WITH_GRIEFING : ROAR_TARGET_WITHOUT_GRIEFING;
++            Predicate<Entity> targetSelector = net.neoforged.neoforge.event.EventHooks.canEntityGrief(level, this) ? ROAR_TARGET_WITH_GRIEFING : ROAR_TARGET_WITHOUT_GRIEFING;
  
--            for (LivingEntity entity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(4.0), targetSelector)) {
-+            for (LivingEntity entity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(4.0), predicate)) {
+             for (LivingEntity entity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(4.0), targetSelector)) {
                  if (!(entity instanceof AbstractIllager)) {
-                     entity.hurtServer(level, this.damageSources().mobAttack(this), 6.0F);
-                 }

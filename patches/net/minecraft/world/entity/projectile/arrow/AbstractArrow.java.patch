@@ -9,20 +9,22 @@
              this.clearFire();
          }
  
-@@ -282,11 +_,15 @@
+@@ -282,11 +_,17 @@
  
              if (entitiesHit.isEmpty()) {
                  if (this.isAlive() && blockHitResult.getType() != HitResult.Type.MISS) {
-+                    if (net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, blockHitResult))
++                    if (net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, blockHitResult)) {
 +                        break;
++                    }
                      this.hitTargetOrDeflectSelf(blockHitResult);
                      this.needsSync = true;
                  }
                  break;
 -            } else if (this.isAlive() && !this.noPhysics) {
 +            } else if (this.isAlive() && !this.noPhysics && firstEntityHit.getType() != HitResult.Type.MISS) {
-+                if (net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, firstEntityHit))
++                if (net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, firstEntityHit)) {
 +                    break;
++                }
                  ProjectileDeflection deflection = this.hitTargetsOrDeflectSelf(entitiesHit);
                  this.needsSync = true;
                  if (this.getPierceLevel() > 0 && deflection == ProjectileDeflection.NONE) {

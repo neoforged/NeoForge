@@ -9,7 +9,7 @@
              Optional<AnimationMetadataSection> animationInfo;
              Optional<TextureMetadataSection> textureInfo;
              List<MetadataSectionType.WithValue<?>> additionalMetadata;
-@@ -68,9 +_,14 @@
+@@ -68,9 +_,13 @@
                  frameSize = new FrameSize(image.getWidth(), image.getHeight());
              }
  
@@ -19,10 +19,9 @@
      }
  
 -    @Nullable SpriteContents loadSprite(Identifier spriteLocation, Resource resource);
-+    default SpriteContents loadSprite(Identifier p_295581_, Resource resource) {
-+        return loadSprite(p_295581_, resource, SpriteContents::new);
++    default @Nullable SpriteContents loadSprite(Identifier spriteLocation, Resource resource) {
++        return loadSprite(spriteLocation, resource, SpriteContents::new);
 +    }
 +
-+    @Nullable
-+    SpriteContents loadSprite(Identifier id, Resource resource, net.neoforged.neoforge.client.textures.SpriteContentsConstructor constructor);
++    @Nullable SpriteContents loadSprite(Identifier spriteLocation, Resource resource, net.neoforged.neoforge.client.textures.SpriteContentsConstructor constructor);
  }

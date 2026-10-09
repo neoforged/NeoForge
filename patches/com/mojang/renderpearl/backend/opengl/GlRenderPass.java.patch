@@ -1,14 +1,20 @@
 --- a/com/mojang/renderpearl/backend/opengl/GlRenderPass.java
 +++ b/com/mojang/renderpearl/backend/opengl/GlRenderPass.java
-@@ -95,6 +_,11 @@
+@@ -94,6 +_,17 @@
+         this.pushConstantsDirty = true;
      }
  
-     @Override
++    /// Neo: set the viewport to render into.
++    ///
++    /// @param x      The X position of the viewport
++    /// @param y      The Y position of the viewport
++    /// @param width  The width of the viewport
++    /// @param height The height of the viewport
++    @Override
 +    public void setViewport(int x, int y, int width, int height) {
 +        GlStateManager._viewport(x, y, width, height);
 +    }
 +
-+    @Override
+     @Override
      public void enableScissor(int x, int y, int width, int height) {
          this.scissorState.enable(x, y, width, height);
-         this.scissorStateDirty = true;
