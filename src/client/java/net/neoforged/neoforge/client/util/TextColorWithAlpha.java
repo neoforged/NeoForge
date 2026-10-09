@@ -68,7 +68,7 @@ public record TextColorWithAlpha(TextColor color, int alpha) {
     }
 
     /// {@return the value of this text color with alpha, in ARGB format}
-    public int getValue() {
+    public int value() {
         return this.alpha << 24 | this.color.getValue();
     }
 

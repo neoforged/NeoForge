@@ -33,7 +33,7 @@
  
 -            int color = this.isEditable ? this.textColor : this.textColorUneditable;
 +            // Neo: Use TextColorWithAlpha fields instead of int color fields
-+            int color = this.isEditable ? getTextColor().getValue() : this.textColorUneditableWithAlpha.getValue();
++            int color = this.isEditable ? getTextColor().value() : this.textColorUneditableWithAlpha.value();
              int relCursorPos = this.cursorPos - this.displayPos;
              String displayed = this.font.plainSubstrByWidth(this.value.substring(this.displayPos), this.getInnerWidth());
              boolean cursorOnScreen = relCursorPos >= 0 && relCursorPos <= displayed.length();
