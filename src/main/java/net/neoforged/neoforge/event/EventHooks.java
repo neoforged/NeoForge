@@ -1199,7 +1199,7 @@ public class EventHooks {
      * @param ctx       The loot context for the current entity loot evaluation.
      */
     public static int getEntityLootEnchantmentLevel(Holder<Enchantment> ench, int enchLevel, LootContext ctx) {
-        Entity entity = ctx.getOptional(LootContextParams.THIS_ENTITY);
+        Entity entity = ctx.getOptional(LootContextParams.ATTACKING_ENTITY);
         DamageSource src = ctx.getOptional(LootContextParams.DAMAGE_SOURCE);
         if (src != null && entity instanceof LivingEntity living) {
             var event = new EnchantedEntityLootEvent(living, src, ench, enchLevel);
