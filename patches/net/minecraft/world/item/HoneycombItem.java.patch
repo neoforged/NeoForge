@@ -4,7 +4,7 @@
  import net.minecraft.world.level.gameevent.GameEvent;
  
  public class HoneycombItem extends Item implements SignApplicator {
-+    /// @deprecated Neo: Use the [`data map`][net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#WAXABLES], this field will be ignored in a future version
++    /// @deprecated Neo: Use the [`data map`][net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#WAXABLES], this field is ignored
 +    @Deprecated
      public static final Supplier<BiMap<Block, Block>> WAXABLES = Suppliers.memoize(
          () -> {
@@ -13,7 +13,7 @@
              return builderx.build();
          }
      );
-+    /// @deprecated Use the [`inverse map`][net.neoforged.neoforge.common.DataMapHooks#INVERSE_WAXABLES_DATAMAP] generated from the data map, this field will be ignored in a future version
++    /// @deprecated Use the [`inverse map`][net.neoforged.neoforge.common.DataMapHooks#INVERSE_WAXABLES_DATAMAP] generated from the data map, this field is ignored
 +    @Deprecated
      public static final Supplier<BiMap<Block, Block>> WAX_OFF_BY_BLOCK = Suppliers.memoize(() -> WAXABLES.get().inverse());
      public static final ImmutableMap<Block, Pair<RecipeCategory, String>> WAXED_RECIPES;

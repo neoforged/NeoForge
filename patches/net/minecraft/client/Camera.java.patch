@@ -12,7 +12,7 @@
              cameraState.entityRenderState.hurtTime = livingEntity.hurtTime - cameraState.cameraEntityPartialTicks;
              cameraState.entityRenderState.deathTime = livingEntity.deathTime + cameraState.cameraEntityPartialTicks;
              cameraState.entityRenderState.hurtDuration = livingEntity.hurtDuration;
-+            // Neo: Prevent screen shake if the damage type is marked as "neoforge:no_flinch"
++            // Neo: Prevent screen shake if the damage type is tagged as "neoforge:no_flinch"
 +            var lastDamage = livingEntity.getLastDamageSource();
 +            cameraState.entityRenderState.preventFlinch = lastDamage != null && lastDamage.is(net.neoforged.neoforge.common.Tags.DamageTypes.NO_FLINCH);
          } else {
