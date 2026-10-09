@@ -367,7 +367,7 @@ public class MutableHashedLinkedMap<K, V> implements Iterable<Map.Entry<K, V>> {
         }
 
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(@Nullable Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
 

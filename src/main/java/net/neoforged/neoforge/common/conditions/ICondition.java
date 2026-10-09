@@ -27,7 +27,6 @@ import net.minecraft.util.Unit;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.resource.ContextAwareReloadListener;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 public interface ICondition {
@@ -121,20 +120,6 @@ public interface ICondition {
         ///
         /// @return the context registries of the active reload
         default HolderGetter.Provider registries() {
-            return RegistryAccess.EMPTY;
-        }
-
-        /// Provides access to the loaded registries if this context is used for a datapack reload.
-        ///
-        /// @apiNote The returned [RegistryAccess] does NOT provide access to the tags loaded during the active reload.
-        /// To resolve tags the [HolderLookup.Provider] provided via [#registries()] or
-        /// [ContextAwareReloadListener#getRegistryLookup()] must be used instead.
-        ///
-        /// @return The [RegistryAccess] context for the currently active reload.
-        ///
-        /// @deprecated Use [#registries()] or [ContextAwareReloadListener#getRegistryLookup()] instead
-        @Deprecated(forRemoval = true, since = "26.1.2")
-        default RegistryAccess registryAccess() {
             return RegistryAccess.EMPTY;
         }
 

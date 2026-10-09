@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.debug;
 
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeProvider;
@@ -26,7 +25,7 @@ public interface ConditionalRecipeTest {
         // name pointing to recipe which should never be enabled
         var recipeName = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(reg.modId(), "always_disabled_recipe"));
 
-        reg.generateReloadableRegistries(new RegistrySetBuilder().add(RecipeProvider.asBootstrap((recipes, advancements) -> new RecipeProvider(recipes, advancements) {
+        reg.registriesForTest(registries -> registries.recipe((recipes, advancements) -> new RecipeProvider(recipes, advancements) {
             @Override
             protected void buildRecipes() {
                 // generic stone -> bedrock recipe
@@ -36,7 +35,7 @@ public interface ConditionalRecipeTest {
                         // false condition to have this recipe always disabled
                         .save(output.withConditions(NeoForgeConditions.never()), recipeName);
             }
-        })));
+        }));
 
         test.eventListeners().forge().addListener((ServerStartedEvent event) -> {
             var recipe = event.getServer().getRecipeManager().recipeMap().byKey(recipeName);

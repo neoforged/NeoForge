@@ -6,18 +6,15 @@
 package net.neoforged.neoforge.client;
 
 import com.mojang.brigadier.Command;
-import java.util.Set;
 import net.minecraft.DetectedVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.commands.Commands;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.metadata.PackMetadataGenerator;
-import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
@@ -34,7 +31,6 @@ import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.neoforge.client.color.item.FluidContentsTint;
-import net.neoforged.neoforge.client.command.ClientConfigCommand;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.data.internal.NeoForgeSpriteSourceProvider;
 import net.neoforged.neoforge.client.data.internal.VanillaModelProvider;
@@ -86,6 +82,7 @@ import net.neoforged.neoforge.common.data.internal.NeoForgeRegistryOrderReportPr
 import net.neoforged.neoforge.common.data.internal.NeoForgeStructureTagsProvider;
 import net.neoforged.neoforge.common.data.internal.VanillaSoundDefinitionsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GatherDataRegistryEntriesEvent;
 import net.neoforged.neoforge.event.DefaultDataComponentsBoundEvent;
 import net.neoforged.neoforge.internal.BrandingControl;
 import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
@@ -119,14 +116,10 @@ public class ClientNeoForgeMod {
                 }
             });
 
-            // Unload SERVER configs only when disconnecting from a remote server
+            // Unload SYNCED configs only when disconnecting from a remote server
             if (event.getConnection() != null && !event.getConnection().isMemoryConnection()) {
-                ConfigTracker.INSTANCE.unloadConfigs(ModConfig.Type.SERVER);
+                ConfigTracker.INSTANCE.unloadConfigs(ModConfig.Type.SYNCED);
             }
-        });
-
-        NeoForge.EVENT_BUS.addListener(RegisterClientCommandsEvent.class, event -> {
-            ClientConfigCommand.register(event.getDispatcher());
         });
 
         NeoForge.EVENT_BUS.addListener(ClientResourceLoadFinishedEvent.class, event -> {
@@ -164,6 +157,14 @@ public class ClientNeoForgeMod {
     }
 
     @SubscribeEvent
+    static void onGatherRegistries(GatherDataRegistryEntriesEvent event) {
+        event.gatherFor("minecraft")
+                .add(Registries.ADVANCEMENT, new NeoForgeAdvancementProvider())
+                .recipe(NeoForgeRecipeProvider::new)
+                .add(Registries.PREDICATE, NeoForgeLootDataProvider::overrideLootPredicates);
+    }
+
+    @SubscribeEvent
     static void onGatherData(GatherDataEvent.Client event) {
         // We perform client and server datagen in a single clientData run to avoid
         // having to juggle two generated resources folders and two runs for no additional benefit.
@@ -172,13 +173,6 @@ public class ClientNeoForgeMod {
                 .add(PackMetadataSection.SERVER_TYPE, new PackMetadataSection(
                         Component.translatable("pack.neoforge.description"),
                         new InclusiveRange<>(DetectedVersion.BUILT_IN.packVersion(PackType.SERVER_DATA)))));
-
-        event.createReloadableRegistryObjects(
-                new RegistrySetBuilder()
-                        .add(Registries.ADVANCEMENT, new NeoForgeAdvancementProvider())
-                        .add(RecipeProvider.asBootstrap(NeoForgeRecipeProvider::new))
-                        .add(Registries.PREDICATE, NeoForgeLootDataProvider::overrideLootPredicates),
-                Set.of("minecraft"));
 
         event.createBlockAndItemTags(NeoForgeBlockTagsProvider::new, NeoForgeItemTagsProvider::new);
         event.createProvider(NeoForgeEntityTypeTagsProvider::new);

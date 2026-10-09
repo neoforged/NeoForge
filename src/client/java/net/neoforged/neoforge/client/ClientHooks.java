@@ -99,7 +99,6 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.state.level.PlayerRenderState;
 import net.minecraft.client.renderer.texture.SpriteLoader;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.client.resources.model.ModelBakery;
@@ -250,8 +249,8 @@ public class ClientHooks {
         NeoForge.EVENT_BUS.post(new ClientPauseChangeEvent.Post(pause));
     }
 
-    public static boolean renderSpecificFirstPersonHand(InteractionHand hand, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight, float partialTick, float interpPitch, float swingProgress, float equipProgress, ItemStack stack) {
-        return NeoForge.EVENT_BUS.post(new RenderHandEvent(hand, poseStack, submitNodeCollector, packedLight, partialTick, interpPitch, swingProgress, equipProgress, stack)).isCanceled();
+    public static boolean renderSpecificFirstPersonHand(InteractionHand hand, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, PlayerRenderState playerState, float partialTick, float interpPitch, float swingProgress, float equipProgress, ItemStack stack) {
+        return NeoForge.EVENT_BUS.post(new RenderHandEvent(hand, poseStack, submitNodeCollector, playerState, partialTick, interpPitch, swingProgress, equipProgress, stack)).isCanceled();
     }
 
     public static boolean renderSpecificFirstPersonArm(
@@ -353,7 +352,7 @@ public class ClientHooks {
             // case UP_TO_DATE -> "Forge up to date";
             // case AHEAD -> "Using non-recommended Forge build, issues may arise.";
             case OUTDATED, BETA_OUTDATED -> I18n.get("neoforge.update.newversion", NeoForgeVersionCheck.getTarget());
-            default -> null;
+            case null, default -> null;
         });
     }
 
@@ -407,16 +406,13 @@ public class ClientHooks {
         NeoForge.EVENT_BUS.post(new ViewportEvent.RenderFog(environment, type, camera, partialTick, fogData));
     }
 
-    public static void onModifyBakingResult(ModelBakery.BakingResult bakingResult, SpriteLoader.Preparations spriteLoaderPreparations, ModelBakery modelBakery) {
-        Function<Identifier, TextureAtlasSprite> textureGetter = location -> {
-            TextureAtlasSprite sprite = spriteLoaderPreparations.getSprite(location);
-            if (sprite != null) {
-                return sprite;
-            }
-            LOGGER.warn("Failed to retrieve texture '{}' from the block atlas", location, new Throwable());
-            return spriteLoaderPreparations.missing();
-        };
-        ModLoader.postEvent(new ModelEvent.ModifyBakingResult(bakingResult, textureGetter, modelBakery));
+    public static void onModifyBakingResult(
+            ModelBakery.BakingResult bakingResult,
+            MaterialBaker materialBaker,
+            SpriteLoader.Preparations blockAtlas,
+            SpriteLoader.Preparations itemAtlas,
+            ModelBakery modelBakery) {
+        ModLoader.postEvent(new ModelEvent.ModifyBakingResult(bakingResult, materialBaker, blockAtlas, itemAtlas, modelBakery));
     }
 
     public static void onModelBake(ModelManager modelManager, ModelBakery.BakingResult bakingResult, ModelBakery modelBakery) {

@@ -84,7 +84,7 @@ public record AnyHolderSet<T>(ResourceKey<? extends Registry<T>> registryKey, Ho
 
     @Override
     public boolean contains(Holder<T> holder) {
-        ResourceKey<T> key = holder.getKey();
+        ResourceKey<T> key = holder.keyOrNull();
         return key != null && this.registryLookup().get(key).isPresent();
     }
 

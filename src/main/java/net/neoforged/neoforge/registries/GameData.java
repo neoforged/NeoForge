@@ -11,7 +11,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Supplier;
 import net.minecraft.core.Holder;
 import net.minecraft.core.IdMapper;
 import net.minecraft.core.MappedRegistry;
@@ -30,6 +29,7 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.CreativeModeTabRegistry;
+import net.neoforged.neoforge.common.crafting.RecipePropertySetManager;
 import net.neoforged.neoforge.common.tooltip.ItemTooltipHandler;
 import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import org.jetbrains.annotations.ApiStatus;
@@ -56,11 +56,6 @@ public class GameData {
 
     public static Table<Block, Block, Block> getFlowerPotBlockTable() {
         return NeoForgeRegistryCallbacks.BlockCallbacks.EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE;
-    }
-
-    // TODO 26.3: Remove this and change necessary methods in FlowerPotBlock
-    public static Table<Block, Identifier, Supplier<? extends Block>> getLegacyFlowerPotBlockTable() {
-        return NeoForgeRegistryCallbacks.BlockCallbacks.LEGACY_EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE.get();
     }
 
     public static void vanillaSnapshot() {
@@ -116,6 +111,7 @@ public class GameData {
             CreativeModeTabRegistry.sortTabs();
             GameRuleCategory.registerModdedCategories();
             ItemTooltipHandler.init();
+            RecipePropertySetManager.init();
         }
     }
 

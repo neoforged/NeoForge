@@ -14,7 +14,9 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.DyedItemColor;
+import net.minecraft.world.item.equipment.trim.TrimMaterials;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.client.model.item.TrimmedArmorModel.PaletteTransform;
 
 public class VanillaModelProvider extends ModelProvider {
     public VanillaModelProvider(PackOutput packOutput) {
@@ -23,31 +25,20 @@ public class VanillaModelProvider extends ModelProvider {
 
     @Override
     protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
-        itemModels.generateDynamicTrimmableItem(Items.TURTLE_HELMET, ItemModelGenerators.TRIM_PREFIX_HELMET);
-        itemModels.generateDynamicTrimmableItem(Items.LEATHER_HELMET, ItemModelGenerators.TRIM_PREFIX_HELMET, DyedItemColor.LEATHER_COLOR);
-        itemModels.generateDynamicTrimmableItem(Items.LEATHER_CHESTPLATE, ItemModelGenerators.TRIM_PREFIX_CHESTPLATE, DyedItemColor.LEATHER_COLOR);
-        itemModels.generateDynamicTrimmableItem(Items.LEATHER_LEGGINGS, ItemModelGenerators.TRIM_PREFIX_LEGGINGS, DyedItemColor.LEATHER_COLOR);
-        itemModels.generateDynamicTrimmableItem(Items.LEATHER_BOOTS, ItemModelGenerators.TRIM_PREFIX_BOOTS, DyedItemColor.LEATHER_COLOR);
-        itemModels.generateDynamicTrimmableItem(Items.CHAINMAIL_HELMET, ItemModelGenerators.TRIM_PREFIX_HELMET);
-        itemModels.generateDynamicTrimmableItem(Items.CHAINMAIL_CHESTPLATE, ItemModelGenerators.TRIM_PREFIX_CHESTPLATE);
-        itemModels.generateDynamicTrimmableItem(Items.CHAINMAIL_LEGGINGS, ItemModelGenerators.TRIM_PREFIX_LEGGINGS);
-        itemModels.generateDynamicTrimmableItem(Items.CHAINMAIL_BOOTS, ItemModelGenerators.TRIM_PREFIX_BOOTS);
-        itemModels.generateDynamicTrimmableItem(Items.IRON_HELMET, ItemModelGenerators.TRIM_PREFIX_HELMET);
-        itemModels.generateDynamicTrimmableItem(Items.IRON_CHESTPLATE, ItemModelGenerators.TRIM_PREFIX_CHESTPLATE);
-        itemModels.generateDynamicTrimmableItem(Items.IRON_LEGGINGS, ItemModelGenerators.TRIM_PREFIX_LEGGINGS);
-        itemModels.generateDynamicTrimmableItem(Items.IRON_BOOTS, ItemModelGenerators.TRIM_PREFIX_BOOTS);
-        itemModels.generateDynamicTrimmableItem(Items.DIAMOND_HELMET, ItemModelGenerators.TRIM_PREFIX_HELMET);
-        itemModels.generateDynamicTrimmableItem(Items.DIAMOND_CHESTPLATE, ItemModelGenerators.TRIM_PREFIX_CHESTPLATE);
-        itemModels.generateDynamicTrimmableItem(Items.DIAMOND_LEGGINGS, ItemModelGenerators.TRIM_PREFIX_LEGGINGS);
-        itemModels.generateDynamicTrimmableItem(Items.DIAMOND_BOOTS, ItemModelGenerators.TRIM_PREFIX_BOOTS);
-        itemModels.generateDynamicTrimmableItem(Items.GOLDEN_HELMET, ItemModelGenerators.TRIM_PREFIX_HELMET);
-        itemModels.generateDynamicTrimmableItem(Items.GOLDEN_CHESTPLATE, ItemModelGenerators.TRIM_PREFIX_CHESTPLATE);
-        itemModels.generateDynamicTrimmableItem(Items.GOLDEN_LEGGINGS, ItemModelGenerators.TRIM_PREFIX_LEGGINGS);
-        itemModels.generateDynamicTrimmableItem(Items.GOLDEN_BOOTS, ItemModelGenerators.TRIM_PREFIX_BOOTS);
-        itemModels.generateDynamicTrimmableItem(Items.NETHERITE_HELMET, ItemModelGenerators.TRIM_PREFIX_HELMET);
-        itemModels.generateDynamicTrimmableItem(Items.NETHERITE_CHESTPLATE, ItemModelGenerators.TRIM_PREFIX_CHESTPLATE);
-        itemModels.generateDynamicTrimmableItem(Items.NETHERITE_LEGGINGS, ItemModelGenerators.TRIM_PREFIX_LEGGINGS);
-        itemModels.generateDynamicTrimmableItem(Items.NETHERITE_BOOTS, ItemModelGenerators.TRIM_PREFIX_BOOTS);
+        itemModels.generateDynamicTrimmableItem(Items.TURTLE_HELMET, ItemModelGenerators.TRIM_PREFIX_HELMET, null);
+        itemModels.generateDynamicTrimmableArmorSet(Items.LEATHER_HELMET, Items.LEATHER_CHESTPLATE, Items.LEATHER_LEGGINGS, Items.LEATHER_BOOTS,
+                DyedItemColor.LEATHER_COLOR, null);
+        itemModels.generateDynamicTrimmableArmorSet(Items.COPPER_HELMET, Items.COPPER_CHESTPLATE, Items.COPPER_LEGGINGS, Items.COPPER_BOOTS,
+                new PaletteTransform(TrimMaterials.Palette.COPPER, TrimMaterials.Palette.COPPER_DARKER));
+        itemModels.generateDynamicTrimmableArmorSet(Items.CHAINMAIL_HELMET, Items.CHAINMAIL_CHESTPLATE, Items.CHAINMAIL_LEGGINGS, Items.CHAINMAIL_BOOTS, null);
+        itemModels.generateDynamicTrimmableArmorSet(Items.IRON_HELMET, Items.IRON_CHESTPLATE, Items.IRON_LEGGINGS, Items.IRON_BOOTS,
+                new PaletteTransform(TrimMaterials.Palette.IRON, TrimMaterials.Palette.IRON_DARKER));
+        itemModels.generateDynamicTrimmableArmorSet(Items.DIAMOND_HELMET, Items.DIAMOND_CHESTPLATE, Items.DIAMOND_LEGGINGS, Items.DIAMOND_BOOTS,
+                new PaletteTransform(TrimMaterials.Palette.DIAMOND, TrimMaterials.Palette.DIAMOND_DARKER));
+        itemModels.generateDynamicTrimmableArmorSet(Items.GOLDEN_HELMET, Items.GOLDEN_CHESTPLATE, Items.GOLDEN_LEGGINGS, Items.GOLDEN_BOOTS,
+                new PaletteTransform(TrimMaterials.Palette.GOLD, TrimMaterials.Palette.GOLD_DARKER));
+        itemModels.generateDynamicTrimmableArmorSet(Items.NETHERITE_HELMET, Items.NETHERITE_CHESTPLATE, Items.NETHERITE_LEGGINGS, Items.NETHERITE_BOOTS,
+                new PaletteTransform(TrimMaterials.Palette.NETHERITE, TrimMaterials.Palette.NETHERITE_DARKER));
     }
 
     @Override

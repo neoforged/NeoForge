@@ -1,18 +1,30 @@
 --- a/net/minecraft/core/component/BlockTransformer.java
 +++ b/net/minecraft/core/component/BlockTransformer.java
-@@ -60,10 +_,14 @@
+@@ -53,6 +_,18 @@
+     public static final StreamCodec<RegistryFriendlyByteBuf, Holder<BlockTransformer>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.BLOCK_TRANSFORMER);
+ 
+     public InteractionResult transformBlock(UseOnContext context) {
++        return transformBlock(context, context.getItemInHand().get(DataComponents.BLOCK_TRANSFORMER));
++    }
++
++    /// Neo: Added overload to allow running the transform block logic, on a different transformer than the one currently on the stack.
++    /// This overload exists for cases like multitools to not require changing the stack's transformer just to append the correct datamap transformers.
++    /// @param context     The use context
++    /// @param transformer The holder for the current transformer that will be used to append any datamap based block transforms
++    /// @throws IllegalArgumentException if `transformer` is present but is for a different holder than `this`
++    public InteractionResult transformBlock(UseOnContext context, @Nullable Holder<BlockTransformer> transformer) {
++        if (transformer != null && this != transformer.value()) {
++            throw new IllegalArgumentException("BlockTransformer#transformBlock should only be called with its own transformer");
++        }
+         if (playerHasBlockingItemUseIntent(context)) {
+             return InteractionResult.PASS;
+         }
+@@ -60,7 +_,7 @@
          BlockPos pos = context.getClickedPos();
          Level level = context.getLevel();
  
-+        // Neo: take the strippables and oxidizables datamap into consideration first if this is an axe
-+        java.util.function.Function<BlockState, @Nullable BlockState> dataMapProvider = net.neoforged.neoforge.common.DataMapHooks.axeBlockTransformer(context.getItemInHand());
-+
-         for (BlockTransformer.BlockTransformData transformData : this.transforms) {
+-        for (BlockTransformer.BlockTransformData transformData : this.transforms) {
++        for (BlockTransformer.BlockTransformData transformData : net.neoforged.neoforge.common.DataMapHooks.appendDatamapTransformers(transformer, this.transforms)) {
              Direction clickedFace = context.getClickedFace();
              if (!transformData.disallowedFaces().contains(clickedFace)) {
--                BlockState newBlockState = transformData.blockStateProvider.value().getOptionalState(level, level.getRandom(), pos);
-+                BlockState newBlockState = dataMapProvider.apply(level.getBlockState(pos));
-+                if (newBlockState == null) newBlockState = transformData.blockStateProvider.value().getOptionalState(level, level.getRandom(), pos);
-                 if (newBlockState != null) {
-                     BlockState updatedShape = transformData.updateFromNeighbors ? Block.updateFromNeighbourShapes(newBlockState, level, pos) : newBlockState;
-                     Player player = context.getPlayer();
+                 BlockState newBlockState = transformData.blockStateProvider.value().getOptionalState(level, level.getRandom(), pos);

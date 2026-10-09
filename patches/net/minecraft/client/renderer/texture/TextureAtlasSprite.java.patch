@@ -5,8 +5,8 @@
          this.contents.close();
      }
 +
-+    // Neo: Exposed a pixel RGBA getter
-+    public int getPixelRGBA(int frameIndex, int x, int y) {
++    /// Neo: {@return the ARGB value of the given pixel}
++    public int getPixelARGB(int frameIndex, int x, int y) {
 +         if (this.contents.animatedTexture != null) {
 +              x += this.contents.animatedTexture.getFrameX(frameIndex) * this.contents.width();
 +              y += this.contents.animatedTexture.getFrameY(frameIndex) * this.contents.height();

@@ -16,6 +16,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Standard implementation for a FluidIngredient with an amount.
@@ -52,6 +53,7 @@ public final class SizedFluidIngredient {
     ///     "amount": 4711
     /// }
     /// ```
+    /// 
     public static final Codec<SizedFluidIngredient> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             FluidIngredient.CODEC.fieldOf("ingredient").forGetter(SizedFluidIngredient::ingredient),
             NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.POSITIVE_INT, "amount", FluidType.BUCKET_VOLUME).forGetter(SizedFluidIngredient::amount))
@@ -97,7 +99,7 @@ public final class SizedFluidIngredient {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) return true;
         if (!(o instanceof SizedFluidIngredient other)) return false;
         return amount == other.amount && ingredient.equals(other.ingredient);

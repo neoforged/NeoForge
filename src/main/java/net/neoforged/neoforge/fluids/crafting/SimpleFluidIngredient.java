@@ -22,6 +22,7 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidInstance;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.display.FluidTagSlotDisplay;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Fluid ingredient that matches the fluids specified by the given {@link HolderSet}.
@@ -88,7 +89,7 @@ public class SimpleFluidIngredient extends FluidIngredient {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) return true;
         return obj instanceof SimpleFluidIngredient other && other.fluidSet().equals(this.fluidSet());
     }

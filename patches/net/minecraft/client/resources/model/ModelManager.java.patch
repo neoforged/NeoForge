@@ -117,7 +117,7 @@
      private static CompletableFuture<ModelManager.ReloadState> loadModels(
          SpriteLoader.Preparations blockAtlas,
          SpriteLoader.Preparations itemAtlas,
-@@ -210,16 +_,32 @@
+@@ -210,15 +_,31 @@
          EntityModelSet entityModelSet,
          Executor taskExecutor
      ) {
@@ -144,13 +144,12 @@
              bakedModelsFuture,
              (bakingResult, bakedModels) -> {
                  Map<Fluid, FluidModel> fluidModels = FluidStateModelSet.bake(materialBaker);
-                 materialBaker.logMissingTextures();
 +                try (Zone ignored = Profiler.get().zone("neoforge_modify_baking_result")) {
-+                    net.neoforged.neoforge.client.ClientHooks.onModifyBakingResult(bakingResult, blockAtlas, bakery);
++                    net.neoforged.neoforge.client.ClientHooks.onModifyBakingResult(bakingResult, materialBaker, blockAtlas, itemAtlas, bakery);
 +                }
+                 materialBaker.logMissingTextures();
                  Map<BlockState, BlockStateModel> modelByStateCache = createBlockStateToModelDispatch(
                      bakingResult.blockStateModels(), bakingResult.missingModels().block()
-                 );
 @@ -262,6 +_,9 @@
          this.blockModelSet = new BlockModelSet(this.blockStateModelSet, preparations.blockModels, this.blockColors);
          this.fluidStateModelSet = new FluidStateModelSet(preparations.fluidModels, this.missingModels.fluid());
@@ -161,7 +160,7 @@
      }
  
      public boolean requiresRender(BlockState oldState, BlockState newState) {
-@@ -284,6 +_,15 @@
+@@ -284,6 +_,20 @@
  
      public Supplier<EntityModelSet> entityModels() {
          return () -> this.entityModelSet;
@@ -174,6 +173,11 @@
 +    @Nullable
 +    public <T> T getStandaloneModel(net.neoforged.neoforge.client.model.standalone.StandaloneModelKey<T> modelKey) {
 +        return this.bakedStandaloneModels.get(modelKey);
++    }
++
++    /// Neo: {@return the baked missing models}
++    public ModelBakery.MissingModels getMissingModels() {
++        return this.missingModels;
      }
  
      private record ReloadState(

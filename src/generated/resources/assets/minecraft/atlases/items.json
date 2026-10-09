@@ -2,8 +2,8 @@
   "sources": [
     {
       "type": "neoforge:directory_paletted_permutations",
-      "palette_key": "minecraft:trims/color_palettes/trim_palette",
-      "palettes": "trims/color_palettes",
+      "palette_key": "minecraft:trim_base",
+      "palettes": "trim",
       "textures": "trims/items"
     }
   ]

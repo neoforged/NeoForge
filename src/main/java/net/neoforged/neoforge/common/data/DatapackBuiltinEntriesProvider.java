@@ -15,6 +15,7 @@ import net.minecraft.data.registries.RegistriesDatapackGenerator;
 import net.minecraft.data.registries.RegistryPatchGenerator;
 import net.minecraft.resources.RegistryDataLoader;
 import net.neoforged.neoforge.registries.DataPackRegistriesHooks;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An extension of the {@link RegistriesDatapackGenerator} which properly handles
@@ -32,17 +33,17 @@ public class DatapackBuiltinEntriesProvider extends RegistriesDatapackGenerator 
      * @param registries a future of a lookup for registries and their objects
      * @param modIds     a set of mod ids to generate the dynamic registry objects of
      */
-    public DatapackBuiltinEntriesProvider(PackOutput output, String name, Collection<RegistryDataLoader.RegistryData<?>> registryData, CompletableFuture<RegistrySetBuilder.PatchedRegistries> registries, Set<String> modIds) {
+    public DatapackBuiltinEntriesProvider(PackOutput output, String name, Collection<RegistryDataLoader.RegistryData<?>> registryData, CompletableFuture<RegistrySetBuilder.PatchedRegistries> registries, @Nullable Set<String> modIds) {
         super(output, name, registryData, registries.thenApply(RegistrySetBuilder.PatchedRegistries::patchesWithConditions), modIds);
         this.fullRegistries = registries.thenApply(RegistrySetBuilder.PatchedRegistries::full);
     }
 
-    public static DatapackBuiltinEntriesProvider forWorldLayer(PackOutput output, String name, CompletableFuture<HolderLookup.Provider> worldRegistries, RegistrySetBuilder entriesBuilder, Set<String> modIds) {
-        return new DatapackBuiltinEntriesProvider(output, name, DataPackRegistriesHooks.getDataPackRegistriesWithDimensions().toList(), RegistryPatchGenerator.createWorldLookup(worldRegistries, entriesBuilder), modIds);
+    public static DatapackBuiltinEntriesProvider forWorldLayer(PackOutput output, String name, CompletableFuture<HolderLookup.Provider> worldRegistries, RegistrySetBuilder entriesBuilder, @Nullable Set<String> modIds) {
+        return new DatapackBuiltinEntriesProvider(output, name, DataPackRegistriesHooks.getWorldRegistriesWithDimensions().toList(), RegistryPatchGenerator.createWorldLookup(worldRegistries, entriesBuilder), modIds);
     }
 
-    public static DatapackBuiltinEntriesProvider forReloadableLayer(PackOutput output, String name, CompletableFuture<HolderLookup.Provider> worldRegistries, CompletableFuture<HolderLookup.Provider> reloadableRegistries, RegistrySetBuilder entriesBuilder, Set<String> modIds) {
-        return new DatapackBuiltinEntriesProvider(output, name, RegistryDataLoader.RELOADABLE_REGISTRIES, RegistryPatchGenerator.createReloadableLookup(worldRegistries, reloadableRegistries, entriesBuilder), modIds);
+    public static DatapackBuiltinEntriesProvider forReloadableLayer(PackOutput output, String name, CompletableFuture<HolderLookup.Provider> worldRegistries, CompletableFuture<HolderLookup.Provider> reloadableRegistries, RegistrySetBuilder entriesBuilder, @Nullable Set<String> modIds) {
+        return new DatapackBuiltinEntriesProvider(output, name, DataPackRegistriesHooks.getReloadableRegistries(), RegistryPatchGenerator.createReloadableLookup(worldRegistries, reloadableRegistries, entriesBuilder), modIds);
     }
 
     /**

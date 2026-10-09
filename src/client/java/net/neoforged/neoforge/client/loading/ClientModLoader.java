@@ -8,6 +8,7 @@ package net.neoforged.neoforge.client.loading;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.client.Minecraft;
@@ -21,14 +22,13 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingException;
 import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.ModWorkManager;
-import net.neoforged.fml.VersionChecker;
-import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.fml.loading.EarlyLoadingScreenController;
 import net.neoforged.fml.startup.FatalErrorReporting;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.gui.LoadingErrorScreen;
 import net.neoforged.neoforge.client.network.registration.ClientNetworkRegistry;
+import net.neoforged.neoforge.common.VersionChecker;
 import net.neoforged.neoforge.internal.CommonModLoader;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforge.server.LanguageHook;
@@ -75,15 +75,16 @@ public class ClientModLoader extends CommonModLoader {
             Minecraft.saveReport(gameDir, report);
             reportFatalError(e, gameDir.toPath(), report);
         }
-        if (earlyLoadingScreen instanceof DisplayWindow displayWindow) {
-            displayWindow.close();
+        if (earlyLoadingScreen != null) {
+            earlyLoadingScreen.close();
         }
     }
 
-    public static VersionChecker.Status checkForUpdates() {
+    public static VersionChecker.@Nullable Status checkForUpdates() {
         boolean anyOutdated = ModList.get().getMods().stream()
                 .map(VersionChecker::getResult)
-                .map(result -> result.status())
+                .filter(Objects::nonNull)
+                .map(VersionChecker.CheckResult::status)
                 .anyMatch(status -> status == VersionChecker.Status.OUTDATED || status == VersionChecker.Status.BETA_OUTDATED);
         return anyOutdated ? VersionChecker.Status.OUTDATED : null;
     }

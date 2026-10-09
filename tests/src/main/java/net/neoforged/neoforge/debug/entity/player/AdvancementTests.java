@@ -7,19 +7,16 @@ package net.neoforged.neoforge.debug.entity.player;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.List;
 import java.util.Objects;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.predicates.DataComponentMatchers;
 import net.minecraft.advancements.predicates.ItemPredicate;
 import net.minecraft.advancements.triggers.InventoryChangeTrigger;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.predicates.DataComponentPredicate;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.advancements.AdvancementProvider;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -97,8 +94,8 @@ public class AdvancementTests {
         reg.registrar(Registries.DATA_COMPONENT_PREDICATE_TYPE)
                 .register("custom_name", () -> type);
 
-        reg.generateReloadableRegistries(new RegistrySetBuilder().add(Registries.ADVANCEMENT, new AdvancementProvider(
-                List.of(context -> new AdvancementSubProvider(context) {
+        reg.registriesForTest(registries -> registries.advancement(
+                context -> new AdvancementSubProvider(context) {
                     @Override
                     public void generate() {
                         Advancement.Builder.advancement()
@@ -107,7 +104,7 @@ public class AdvancementTests {
                                 .addCriterion("has_named_item", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().withComponents(DataComponentMatchers.Builder.components().partial(type, new CustomNamePredicate(1, 2)).build())))
                                 .save(context, Identifier.fromNamespaceAndPath(reg.modId(), "named_item"));
                     }
-                }))));
+                }));
 
         test.onGameTest(helper -> {
             final ServerPlayer player = helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL);

@@ -52,7 +52,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.BlockGetter;
@@ -79,7 +78,6 @@ import net.neoforged.fml.Logging;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingIssue;
-import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfigs;
@@ -103,8 +101,8 @@ import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.common.conditions.OrCondition;
 import net.neoforged.neoforge.common.conditions.RegisteredCondition;
 import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
-import net.neoforged.neoforge.common.config.NeoForgeCommonConfig;
-import net.neoforged.neoforge.common.config.NeoForgeServerConfig;
+import net.neoforged.neoforge.common.config.NeoForgeLocalConfig;
+import net.neoforged.neoforge.common.config.NeoForgeSyncedConfig;
 import net.neoforged.neoforge.common.crafting.BlockTagIngredient;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.CustomDisplayIngredient;
@@ -117,6 +115,7 @@ import net.neoforged.neoforge.common.loot.AddTableLootModifier;
 import net.neoforged.neoforge.common.loot.CanItemPerformAbility;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
+import net.neoforged.neoforge.common.loot.NeoForgeLootContextParams;
 import net.neoforged.neoforge.common.util.SelfTest;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers;
@@ -126,7 +125,6 @@ import net.neoforged.neoforge.common.world.BiomeModifiers.RemoveFeaturesBiomeMod
 import net.neoforged.neoforge.common.world.BiomeModifiers.RemoveSpawnsBiomeModifier;
 import net.neoforged.neoforge.common.world.NeoForgeAttributeTypes;
 import net.neoforged.neoforge.common.world.NeoForgeEnvironmentAttributes;
-import net.neoforged.neoforge.common.world.NoneStructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifiers;
 import net.neoforged.neoforge.data.loading.DatagenModLoader;
@@ -149,11 +147,11 @@ import net.neoforged.neoforge.fluids.crafting.display.FluidStackSlotDisplay;
 import net.neoforged.neoforge.fluids.crafting.display.FluidTagSlotDisplay;
 import net.neoforged.neoforge.network.ConfigSync;
 import net.neoforged.neoforge.network.DualStackUtils;
-import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.NeoForgeRegistriesSetup;
+import net.neoforged.neoforge.registries.NewDatapackRegistryEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import net.neoforged.neoforge.registries.holdersets.AndHolderSet;
@@ -305,11 +303,6 @@ public class NeoForgeMod {
     public static final DeferredHolder<MapCodec<? extends BiomeModifier>, MapCodec<BiomeModifiers.RemoveSpawnCostsBiomeModifier>> REMOVE_SPAWN_COSTS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_spawn_costs", () -> RecordCodecBuilder.mapCodec(builder -> builder.group(
             Biome.LIST_CODEC.fieldOf("biomes").forGetter(BiomeModifiers.RemoveSpawnCostsBiomeModifier::biomes),
             RegistryCodecs.holderSet(Registries.ENTITY_TYPE).fieldOf("entity_types").forGetter(BiomeModifiers.RemoveSpawnCostsBiomeModifier::entityTypes)).apply(builder, BiomeModifiers.RemoveSpawnCostsBiomeModifier::new)));
-
-    /**
-     * Noop structure modifier. Can be used in a structure modifier json with "type": "neoforge:none".
-     */
-    public static final DeferredHolder<MapCodec<? extends StructureModifier>, MapCodec<NoneStructureModifier>> NONE_STRUCTURE_MODIFIER_TYPE = STRUCTURE_MODIFIER_SERIALIZERS.register("none", () -> MapCodec.unit(NoneStructureModifier.INSTANCE));
 
     /**
      * Stock structure modifier for adding mob spawns to structures.
@@ -559,10 +552,10 @@ public class NeoForgeMod {
         ENVIRONMENT_ATTRIBUTES.register("custom_clouds", () -> NeoForgeEnvironmentAttributes.CUSTOM_CLOUDS);
         ENVIRONMENT_ATTRIBUTES.register("custom_skybox", () -> NeoForgeEnvironmentAttributes.CUSTOM_SKYBOX);
 
-        // Forge-provided datapack registries
-        modEventBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
-            event.dataPackRegistry(NeoForgeRegistries.Keys.BIOME_MODIFIERS, BiomeModifier.DIRECT_CODEC);
-            event.dataPackRegistry(NeoForgeRegistries.Keys.STRUCTURE_MODIFIERS, StructureModifier.DIRECT_CODEC);
+        // NeoForge-provided datapack registries
+        modEventBus.addListener((NewDatapackRegistryEvent event) -> {
+            event.worldRegistry(NeoForgeRegistries.Keys.BIOME_MODIFIERS, BiomeModifier.DIRECT_CODEC);
+            event.worldRegistry(NeoForgeRegistries.Keys.STRUCTURE_MODIFIERS, StructureModifier.DIRECT_CODEC);
         });
         modEventBus.addListener(this::preInit);
         modEventBus.addListener(this::loadComplete);
@@ -590,8 +583,8 @@ public class NeoForgeMod {
         ENVIRONMENT_ATTRIBUTES.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
         ConfigSync.registerEventListeners();
-        container.registerConfig(ModConfig.Type.SERVER, NeoForgeServerConfig.SPEC);
-        container.registerConfig(ModConfig.Type.COMMON, NeoForgeCommonConfig.SPEC);
+        container.registerConfig(ModConfig.Type.SYNCED, NeoForgeSyncedConfig.SPEC);
+        container.registerConfig(ModConfig.Type.LOCAL, NeoForgeLocalConfig.SPEC);
         NeoForgeRegistriesSetup.setup(modEventBus);
         StartupNotificationManager.addModMessage("NeoForge version " + NeoForgeVersion.getVersion());
 
@@ -606,6 +599,7 @@ public class NeoForgeMod {
         modEventBus.addListener(CapabilityHooks::registerVanillaProviders);
         modEventBus.addListener(EventPriority.LOW, CapabilityHooks::registerFallbackVanillaProviders);
         modEventBus.addListener(CauldronFluidContent::registerCapabilities);
+        modEventBus.addListener(NeoForgeLootContextParams::registerParams);
         // These 3 listeners use the default priority for now, can be re-evaluated later.
         NeoForge.EVENT_BUS.addListener(CapabilityHooks::invalidateCapsOnChunkLoad);
         NeoForge.EVENT_BUS.addListener(CapabilityHooks::invalidateCapsOnChunkUnload);
@@ -621,8 +615,6 @@ public class NeoForgeMod {
         });
 
         modEventBus.register(NeoForgeDataMaps.class);
-
-        modEventBus.register(SpawnEggItem.class); // Registers dispenser behaviour for eggs
 
         if (NeoForgeVersion.getBuildType() == NeoForgeBuildType.PULL_REQUEST) {
             ModLoader.addLoadingIssue(ModLoadingIssue.warning("loadwarning.neoforge.prbuild").withAffectedMod(container.getModInfo()));

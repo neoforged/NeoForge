@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -37,7 +36,6 @@ import net.minecraft.client.resources.model.cuboid.ItemTransforms;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
@@ -46,7 +44,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.advancements.AdvancementProvider;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.data.recipes.RecipeCategory;
@@ -99,6 +96,7 @@ import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.common.data.SoundDefinition;
 import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GatherDataRegistryEntriesEvent;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -114,9 +112,15 @@ public class DataGeneratorTest {
     // Datapack registry objects
     private static final ResourceKey<NoiseGeneratorSettings> TEST_SETTINGS = ResourceKey.create(Registries.NOISE_SETTINGS, Identifier.fromNamespaceAndPath(MODID, "test_settings"));
     private static final ResourceKey<LevelStem> TEST_LEVEL_STEM = ResourceKey.create(Registries.LEVEL_STEM, Identifier.fromNamespaceAndPath(MODID, "test_level_stem"));
-    private static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
-            .add(Registries.NOISE_SETTINGS, context -> context.register(TEST_SETTINGS, NoiseGeneratorSettings.floatingIslands(context)))
-            .add(Registries.LEVEL_STEM, DataGeneratorTest::levelStem);
+
+    @SubscribeEvent
+    public static void gatherRegistries(GatherDataRegistryEntriesEvent event) {
+        event.add(Registries.NOISE_SETTINGS, context -> context.register(TEST_SETTINGS, NoiseGeneratorSettings.floatingIslands(context)))
+                .add(Registries.LEVEL_STEM, DataGeneratorTest::levelStem);
+        event.gatherFor("minecraft", MODID)
+                .recipe(Recipes::new)
+                .advancement(Advancements::new);
+    }
 
     @SubscribeEvent
     public static void gatherData(GatherDataEvent.Client event) {
@@ -138,18 +142,20 @@ public class DataGeneratorTest {
                 .add(PackMetadataSection.CLIENT_TYPE, new PackMetadataSection(
                         Component.literal("NeoForge tests resource pack"),
                         new InclusiveRange<>(PackFormat.of(15), PackFormat.of(Integer.MAX_VALUE, Integer.MAX_VALUE)))));
-        event.createWorldRegistryObjects(BUILDER, Set.of(MODID), "world - " + MODID);
-        event.createReloadableRegistryObjects(new RegistrySetBuilder()
-                .add(RecipeProvider.asBootstrap(Recipes::new))
-                .add(Registries.ADVANCEMENT, new AdvancementProvider(List.of(Advancements::new))),
-                Set.of("minecraft", MODID),
-                "reloadable - " + MODID);
 
         gen.addProvider(true, new Lang(packOutput));
         gen.addProvider(true, new SoundDefinitions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
         gen.addProvider(true, new ParticleDescriptions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
 
         gen.addProvider(true, new Tags(packOutput, event.getReloadableLookupProvider()));
+
+        // Without giving `PackGenerator` a prefix, doing the following
+        // would crash data gen with `duplicate provider`
+        event.getPackGenerator(gen.getPackOutput("pack-a"))
+                .createProvider(output -> PackMetadataGenerator.forFeaturePack(output, Component.literal("MultiPack Test - Pack A")));
+
+        event.getPackGenerator(gen.getPackOutput("pack-b"))
+                .createProvider(output -> PackMetadataGenerator.forFeaturePack(output, Component.literal("MultiPack Test - Pack B")));
     }
 
     public static void levelStem(BootstrapContext<LevelStem> context) {

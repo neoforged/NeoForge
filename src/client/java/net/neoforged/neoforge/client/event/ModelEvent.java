@@ -8,10 +8,10 @@ package net.neoforged.neoforge.client.event;
 import com.google.common.base.Preconditions;
 import java.util.Collections;
 import java.util.Map;
-import java.util.function.Function;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.SpriteLoader;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
+import net.minecraft.client.resources.model.sprite.MaterialBaker;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -46,13 +46,22 @@ public abstract class ModelEvent extends Event {
      */
     public static class ModifyBakingResult extends ModelEvent implements IModBusEvent {
         private final ModelBakery.BakingResult bakingResult;
-        private final Function<Identifier, TextureAtlasSprite> textureGetter;
+        private final MaterialBaker materialBaker;
+        private final SpriteLoader.Preparations blockAtlas;
+        private final SpriteLoader.Preparations itemAtlas;
         private final ModelBakery modelBakery;
 
         @ApiStatus.Internal
-        public ModifyBakingResult(ModelBakery.BakingResult bakingResult, Function<Identifier, TextureAtlasSprite> textureGetter, ModelBakery modelBakery) {
+        public ModifyBakingResult(
+                ModelBakery.BakingResult bakingResult,
+                MaterialBaker materialBaker,
+                SpriteLoader.Preparations blockAtlas,
+                SpriteLoader.Preparations itemAtlas,
+                ModelBakery modelBakery) {
             this.bakingResult = bakingResult;
-            this.textureGetter = textureGetter;
+            this.materialBaker = materialBaker;
+            this.blockAtlas = blockAtlas;
+            this.itemAtlas = itemAtlas;
             this.modelBakery = modelBakery;
         }
 
@@ -63,13 +72,19 @@ public abstract class ModelEvent extends Event {
             return bakingResult;
         }
 
-        /**
-         * Returns a lookup function to retrieve {@link TextureAtlasSprite}s by name from the block atlas.
-         *
-         * @return a function to lookup sprites from an atlas by name
-         */
-        public Function<Identifier, TextureAtlasSprite> getTextureGetter() {
-            return textureGetter;
+        /// {@return the material baker used for baking the provided models}
+        public MaterialBaker getMaterialBaker() {
+            return materialBaker;
+        }
+
+        /// {@return the block atlas preparations holding the stitched but not yet uploaded sprites}
+        public SpriteLoader.Preparations getBlockAtlasPreparations() {
+            return blockAtlas;
+        }
+
+        /// {@return the item atlas preparations holding the stitched but not yet uploaded sprites}
+        public SpriteLoader.Preparations getItemAtlasPreparations() {
+            return itemAtlas;
         }
 
         /**
