@@ -5,7 +5,7 @@
      }
  
 +    /// Neo: Removes the data for the given chunk position.
-+    /// See PR #937
++    /// See [NeoForge#937](https://github.com/neoforged/NeoForge/pull/937)
 +    public void remove(ChunkPos chunkPos) {
 +        synchronized (this.loadLock) {
 +            for (int y = this.levelHeightAccessor.getMinSectionY(); y <= this.levelHeightAccessor.getMaxSectionY(); y++) {

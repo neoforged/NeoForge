@@ -15,13 +15,13 @@
          public int binding;
 +    }
 +
-+    /// Neo: enable stencil testing.
++    /// Neo: disable stencil testing.
 +    public static void _disableStencilTest() {
 +        RenderSystem.assertOnRenderThread();
 +        STENCIL.mode.disable();
 +    }
 +
-+    /// Neo: disable stencil testing.
++    /// Neo: enable stencil testing.
 +    public static void _enableStencilTest() {
 +        RenderSystem.assertOnRenderThread();
 +        STENCIL.mode.enable();
