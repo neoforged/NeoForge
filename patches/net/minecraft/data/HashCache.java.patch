@@ -25,7 +25,7 @@
                  cache.save(this.rootDir, cachePath, DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(ZonedDateTime.now()) + "\t" + providerId);
              }
  
-@@ -217,10 +_,11 @@
+@@ -217,10 +_,12 @@
                  output.write(extraHeaderInfo);
                  output.newLine();
  
@@ -35,7 +35,8 @@
                      output.write(e.getValue().toString());
                      output.write(32);
 -                    output.write(rootDir.relativize(e.getKey()).toString());
-+                    output.write(rootDir.relativize(e.getKey()).toString().replace("\\", "/")); // Neo: Standardize file paths.
++                    // Neo: Standardize file paths.
++                    output.write(rootDir.relativize(e.getKey()).toString().replace("\\", "/"));
                      output.newLine();
                  }
              } catch (IOException e) {

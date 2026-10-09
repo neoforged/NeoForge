@@ -20,16 +20,16 @@
 +        this(id, constructor, codec, null);
 +    }
 +
-+    /// @deprecated Neo: Use [#factory] instead
++    /// @deprecated Neo: Use [#factory()] instead
 +    @Deprecated
 +    public Supplier<T> constructor() {
-+        return () -> factory.create(null);
++        return () -> this.factory.create(null);
 +    }
 +
-+    /// @deprecated Neo: Use [#codecFactory] instead
++    /// @deprecated Neo: Use [#codecFactory()] instead
 +    @Deprecated
 +    public Codec<T> codec() {
-+        return codecFactory.create(null);
++        return this.codecFactory.create(null);
 +    }
 +
      @Override
