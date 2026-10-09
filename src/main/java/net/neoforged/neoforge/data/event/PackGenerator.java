@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.registries.RegistryPatchGenerator;
@@ -22,6 +23,7 @@ import org.jspecify.annotations.Nullable;
 public final class PackGenerator {
     private final GatherDataEvent owner;
     private final PackOutput output;
+    private final DataGenerator.PackGenerator internalGenerator;
 
     @Nullable
     CompletableFuture<HolderLookup.Provider> worldRegistriesWithModdedEntries = null;
@@ -30,9 +32,10 @@ public final class PackGenerator {
     @Nullable
     CompletableFuture<HolderLookup.Provider> reloadableRegistriesWithModdedEntries = null;
 
-    PackGenerator(GatherDataEvent owner, PackOutput output) {
+    PackGenerator(GatherDataEvent owner, PackOutput output, String providerPrefix) {
         this.owner = owner;
         this.output = output;
+        internalGenerator = owner.getGenerator().getPackGenerator(true, providerPrefix, output);
     }
 
     public PackOutput getPackOutput() {
@@ -55,20 +58,20 @@ public final class PackGenerator {
     }
 
     public <T extends DataProvider> T addProvider(T provider) {
-        return this.owner.getGenerator().addProvider(true, provider);
+        return createProvider(_ -> provider);
     }
 
     public <T extends DataProvider> T createProvider(DataProviderFromOutput<T> builder) {
-        return addProvider(builder.create(this.output));
+        return this.internalGenerator.addProvider(builder::create);
     }
 
     public <T extends DataProvider> T createProvider(DataProviderFromOutputLookup<T> builder) {
-        return addProvider(builder.create(this.output, this.getReloadableLookupProvider()));
+        return createProvider(output -> builder.create(output, this.getReloadableLookupProvider()));
     }
 
     public void createBlockAndItemTags(DataProviderFromOutputLookup<TagsProvider<Block>> blockTagsProvider, ItemTagsProvider itemTagsProvider) {
         var blockTags = createProvider(blockTagsProvider);
-        addProvider(itemTagsProvider.create(this.output, this.getReloadableLookupProvider(), blockTags.contentsGetter()));
+        createProvider(output -> itemTagsProvider.create(output, this.getReloadableLookupProvider(), blockTags.contentsGetter()));
     }
 
     /// Generates the datapack registry entries in the world layer for the owner's mod id.
