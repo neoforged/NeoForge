@@ -204,6 +204,18 @@
      }
  
      @Nullable
+@@ -862,6 +_,11 @@
+         }
+     }
+ 
++    /**
++     * This is hardcoded to return 63 always.
++     * Use {@link net.minecraft.world.level.chunk.ChunkGenerator#getSeaLevel} instead.
++     */
++    @Deprecated
+     @Override
+     public int getSeaLevel() {
+         return 63;
 @@ -979,16 +_,15 @@
      public abstract Scoreboard getScoreboard();
  

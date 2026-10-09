@@ -26,8 +26,19 @@ public abstract class StackCopySlot extends Slot {
     @Nullable
     private ItemStack cachedReturnedStack = null;
 
+    /**
+     * @param slot The slot in the underlying container, whatever it may be; zero if not applicable.
+     */
+    public StackCopySlot(int slot, int x, int y) {
+        super(emptyInventory, slot, x, y);
+    }
+
+    /**
+     * @deprecated Use {@link #StackCopySlot(int, int, int)} instead with the underlying slot index.
+     */
+    @Deprecated
     public StackCopySlot(int x, int y) {
-        super(emptyInventory, 0, x, y);
+        this(0, x, y);
     }
 
     /**

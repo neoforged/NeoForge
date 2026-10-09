@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/LevelReader.java
++++ b/net/minecraft/world/level/LevelReader.java
+@@ -64,6 +_,10 @@
+ 
+     boolean isClientSide();
+ 
++    /**
++     * This is hardcoded to return 63 always.
++     * Use {@link net.minecraft.world.level.chunk.ChunkGenerator#getSeaLevel} instead.
++     */
+     @Deprecated
+     int getSeaLevel();
+ 

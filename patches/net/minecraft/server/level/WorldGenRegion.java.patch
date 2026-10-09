@@ -8,3 +8,15 @@
          int i = SectionPos.blockToSectionCoord(p_9580_.getBlockX());
          int j = SectionPos.blockToSectionCoord(p_9580_.getBlockZ());
          this.getChunk(i, j).addEntity(p_9580_);
+@@ -394,6 +_,11 @@
+         return this.fluidTicks;
+     }
+ 
++    /**
++     * This is hardcoded to return 63 always.
++     * Use {@link net.minecraft.world.level.chunk.ChunkGenerator#getSeaLevel} instead.
++     */
++    @Deprecated
+     @Override
+     public int getSeaLevel() {
+         return this.level.getSeaLevel();

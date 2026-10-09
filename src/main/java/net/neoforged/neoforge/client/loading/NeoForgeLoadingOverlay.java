@@ -72,7 +72,6 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         progressMeter.setAbsolute(Mth.ceil(this.currentProgress * 1000));
         var fade = 1.0F - Mth.clamp(fadeouttimer - 1.0F, 0.0F, 1.0F);
         var colour = this.displayWindow.context().colourScheme().background();
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, fade);
         if (fadeouttimer >= 1.0F) {
             if (this.minecraft.screen != null) {
                 this.minecraft.screen.render(graphics, 0, 0, partialTick);
