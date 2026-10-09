@@ -4,14 +4,22 @@
      private static final int BURN_EASY = 60;
      private static final int BURN_MEDIUM = 20;
      private static final int BURN_HARD = 5;
-+    /** @deprecated Neo: Use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE flammable} data map instead, as this field will be ignored */
++    /// @deprecated Neo: Use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE flammable} data map instead, as this field will be ignored
 +    @Deprecated
      private final Object2IntMap<Block> igniteOdds = new Object2IntOpenHashMap<>();
-+    /** @deprecated Neo: Use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE flammable} data map instead, as this field will be ignored */
++    /// @deprecated Neo: Use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE flammable} data map instead, as this field will be ignored
 +    @Deprecated
      private final Object2IntMap<Block> burnOdds = new Object2IntOpenHashMap<>();
  
      public FireBlock(BlockBehaviour.Properties properties) {
+@@ -65,7 +_,6 @@
+         );
+         this.shapes = this.makeShapes();
+     }
+-
+     private Function<BlockState, VoxelShape> makeShapes() {
+         Map<Direction, VoxelShape> shapes = Shapes.rotateAll(Block.boxZ(16.0, 0.0, 1.0));
+         return this.getShapeForEachState(state -> {
 @@ -108,13 +_,13 @@
      protected BlockState getStateForPlacement(BlockGetter level, BlockPos pos) {
          BlockPos below = pos.below();
@@ -135,7 +143,7 @@
          builder.add(AGE, NORTH, EAST, SOUTH, WEST, UP);
      }
  
-+    /** @deprecated Neo: Use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE flammable} data map instead, as this field will be ignored */
++    /// @deprecated Neo: Use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE flammable} data map instead, as this field will be ignored
 +    @Deprecated
      private void setFlammable(Block block, int igniteOdds, int burnOdds) {
 +        if (block == Blocks.AIR) throw new IllegalArgumentException("Tried to set air on fire... This is bad.");

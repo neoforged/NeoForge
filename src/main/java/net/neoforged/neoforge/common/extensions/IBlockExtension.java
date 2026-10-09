@@ -38,21 +38,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.SignalGetter;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.block.BeaconBeamBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CampfireBlock;
-import net.minecraft.world.level.block.CandleBlock;
-import net.minecraft.world.level.block.CandleCakeBlock;
-import net.minecraft.world.level.block.FarmlandBlock;
-import net.minecraft.world.level.block.FenceGateBlock;
-import net.minecraft.world.level.block.GrowingPlantHeadBlock;
-import net.minecraft.world.level.block.HalfTransparentBlock;
-import net.minecraft.world.level.block.LadderBlock;
-import net.minecraft.world.level.block.LeavesBlock;
-import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -601,8 +587,9 @@ public interface IBlockExtension {
         if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
             return 0;
         }
+        FireBlock fireBlock = (FireBlock)Blocks.FIRE;
         Flammable flammable = state.getBlock().builtInRegistryHolder().getData(NeoForgeDataMaps.FLAMMABLE);
-        return flammable != null ? flammable.getFlammability(state, level, pos, direction) : 0;
+        return flammable != null ? flammable.flammability() : fireBlock.getBurnOdds(state);
     }
 
     /**
@@ -650,8 +637,9 @@ public interface IBlockExtension {
         if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
             return 0;
         }
+        FireBlock fireBlock = (FireBlock)Blocks.FIRE;
         Flammable flammable = state.getBlock().builtInRegistryHolder().getData(NeoForgeDataMaps.FLAMMABLE);
-        return flammable != null ? flammable.getFireSpreadSpeed(state, level, pos, direction) : 0;
+        return flammable != null ? flammable.fireSpreadSpeed() : fireBlock.getIgniteOdds(state);
     }
 
     /**
