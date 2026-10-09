@@ -48,6 +48,8 @@ public class GetEquipmentDropChanceEvent extends LivingEvent {
     }
 
     /// {@return the chance before any enchantments or event consumers ran}
+    ///
+    /// @see #getChance()
     public float getOriginalChance() {
         return originalChance;
     }
@@ -58,13 +60,15 @@ public class GetEquipmentDropChanceEvent extends LivingEvent {
     }
 
     /// {@return the current chance modified by enchantments and event consumers}
+    ///
     /// @see #getOriginalChance()
     public float getChance() {
         return chance.floatValue();
     }
 
     /// Sets the chance for this equipment to drop as a value between 0 and 1. 0 or fewer makes it never drop. 1 or more makes it guaranteed to drop.
-    /// @param chance  New chance
+    ///
+    /// @param chance New chance
     public void setChance(float chance) {
         this.chance.setValue(chance);
     }

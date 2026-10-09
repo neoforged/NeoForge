@@ -81,7 +81,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.BlockGetter;
@@ -144,7 +143,6 @@ import net.neoforged.neoforge.event.entity.living.GetEquipmentDropChanceEvent;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDestroyBlockEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
-import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.entity.living.MobDespawnEvent;
@@ -1215,12 +1213,12 @@ public class EventHooks {
     /**
      * Called from {@link net.minecraft.world.item.enchantment.EnchantmentHelper#processEquipmentDropChance(ServerLevel, LivingEntity, DamageSource, float, EquipmentSlot)} to allow changing the slot chance.
      *
-     * @param level           Level instance
-     * @param entity          Entity dropping equipment
-     * @param killingBlow     Damage source used to kill the entity
-     * @param chance          Mutable chance to modify in the event
-     * @param originalChance  Chance before enchantments ran
-     * @param slot            Slot containing the item to drop
+     * @param level          Level instance
+     * @param entity         Entity dropping equipment
+     * @param killingBlow    Damage source used to kill the entity
+     * @param chance         Mutable chance to modify in the event
+     * @param originalChance Chance before enchantments ran
+     * @param slot           Slot containing the item to drop
      */
     public static void onEquipmentDropChance(ServerLevel level, LivingEntity entity, DamageSource killingBlow, MutableFloat chance, float originalChance, @Nullable EquipmentSlot slot) {
         NeoForge.EVENT_BUS.post(new GetEquipmentDropChanceEvent(level, entity, killingBlow, chance, originalChance, slot));
