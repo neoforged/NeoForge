@@ -189,7 +189,6 @@ public class NeoForgeDataMaps {
     /// The [Block] data map that replaces [FireBlock#igniteOdds] and [FireBlock#burnOdds].
     ///
     /// The location of this data map is `neoforge/data_maps/block/flammable.json`, and the values are objects with 1 field:
-    ///
     public static final DataMapType<Block, Flammable> FLAMMABLE = DataMapType.builder(
             id("flammable"), Registries.BLOCK, Flammable.CODEC).synced(Flammable.CODEC, false).build();
 
