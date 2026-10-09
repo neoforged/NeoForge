@@ -148,6 +148,14 @@ public class DataGeneratorTest {
         gen.addProvider(true, new ParticleDescriptions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
 
         gen.addProvider(true, new Tags(packOutput, event.getReloadableLookupProvider()));
+
+        // withoutu giving `PackGenerator` a prefix doing the following
+        // would crash data gen with `duplicate provider`
+        event.getPackGenerator(gen.getPackOutput("pack-a"))
+                .createProvider(output -> PackMetadataGenerator.forFeaturePack(output, Component.literal("MultiPack Test - Pack A")));
+
+        event.getPackGenerator(gen.getPackOutput("pack-b"))
+                .createProvider(output -> PackMetadataGenerator.forFeaturePack(output, Component.literal("MultiPack Test - Pack B")));
     }
 
     public static void levelStem(BootstrapContext<LevelStem> context) {
