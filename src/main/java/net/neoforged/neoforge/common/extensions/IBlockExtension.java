@@ -46,7 +46,6 @@ import net.minecraft.world.level.block.CandleBlock;
 import net.minecraft.world.level.block.CandleCakeBlock;
 import net.minecraft.world.level.block.FarmlandBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
-import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.GrowingPlantHeadBlock;
 import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.LadderBlock;
@@ -75,6 +74,8 @@ import net.neoforged.neoforge.common.util.BlockRelocability;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.model.data.ModelData;
+import net.neoforged.neoforge.registries.datamaps.builtin.Flammable;
+import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import org.jspecify.annotations.Nullable;
 
 @SuppressWarnings("deprecation")
@@ -597,7 +598,11 @@ public interface IBlockExtension {
      * @return A number ranging from 0 to 300 relating used to determine if the block will be consumed by fire
      */
     default int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-        return ((FireBlock) Blocks.FIRE).getBurnOdds(state);
+        if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
+            return 0;
+        }
+        Flammable flammable = state.getBlock().builtInRegistryHolder().getData(NeoForgeDataMaps.FLAMMABLE);
+        return flammable != null ? flammable.getFlammability(state, level, pos, direction) : 0;
     }
 
     /**
@@ -642,7 +647,11 @@ public interface IBlockExtension {
      * @return A number that is used to determine the speed of fire growth around the block
      */
     default int getFireSpreadSpeed(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-        return ((FireBlock) Blocks.FIRE).getIgniteOdds(state);
+        if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
+            return 0;
+        }
+        Flammable flammable = state.getBlock().builtInRegistryHolder().getData(NeoForgeDataMaps.FLAMMABLE);
+        return flammable != null ? flammable.getFireSpreadSpeed(state, level, pos, direction) : 0;
     }
 
     /**
