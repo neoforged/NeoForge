@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.common.loot;
 
-import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.item.ItemInstance;
