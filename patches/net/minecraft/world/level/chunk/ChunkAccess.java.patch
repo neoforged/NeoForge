@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
+@@ -79,6 +_,8 @@
+     protected final Map<BlockPos, BlockEntity> blockEntities = new Object2ObjectOpenHashMap<>();
+     protected final LevelHeightAccessor levelHeightAccessor;
+     protected final LevelChunkSection[] sections;
++    // Neo: Hook in AttachmentHolder to chunks for data storage and retrieval
++    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
+ 
+     public ChunkAccess(
+         ChunkPos chunkPos,
 @@ -318,10 +_,14 @@
  
      @Override
@@ -25,13 +34,11 @@
              }
          }
      }
-@@ -464,6 +_,83 @@
+@@ -463,6 +_,77 @@
+     @Override
      public ChunkSkyLightSources getSkyLightSources() {
          return this.skyLightSources;
-     }
-+
-+    // Neo: Hook in AttachmentHolder to chunks for data storage and retrieval
-+    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
++    }
 +
 +    @Override
 +    public boolean hasAttachments() {
@@ -68,11 +75,9 @@
 +        return getAttachmentHolder().removeData(type);
 +    }
 +
-+    /**
-+     * <strong>FOR INTERNAL USE ONLY</strong>
-+     * <p>
-+     * Only public for use in {@link net.minecraft.world.level.chunk.storage.SerializableChunkData}.
-+     */
++    /// **FOR INTERNAL USE ONLY**
++    ///
++    /// Only public for use in [net.minecraft.world.level.chunk.storage.SerializableChunkData].
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    @Nullable
 +    public final CompoundTag writeAttachmentsToNBT(HolderLookup.Provider provider) {
@@ -83,12 +88,9 @@
 +        return tag.isEmpty() ? null : tag.buildResult();
 +    }
 +
-+    /**
-+     * <strong>FOR INTERNAL USE ONLY</strong>
-+     * <p>
-+     * Only public for use in {@link net.minecraft.world.level.chunk.storage.SerializableChunkData}.
-+     *
-+     */
++    /// **FOR INTERNAL USE ONLY**
++    ///
++    /// Only public for use in [net.minecraft.world.level.chunk.storage.SerializableChunkData].
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public final void readAttachmentsFromNBT(HolderLookup.Provider provider, CompoundTag tag) {
 +        ProblemReporter.Collector reporter = new ProblemReporter.Collector();
@@ -104,8 +106,9 @@
 +        return attachmentHolder;
 +    }
 +
-+    // Neo: Allow for exposing the Level a chunk is tied to if available
-+    public net.minecraft.world.level.@Nullable Level getLevel() { return null; }
++    /// Neo: {@return the Level a chunk is tied to if available}
++    public net.minecraft.world.level.@Nullable Level getLevel() {
++        return null;
+     }
  
      public static ProblemReporter.PathElement problemPath(ChunkPos pos) {
-         return new ChunkAccess.ChunkPathElement(pos);

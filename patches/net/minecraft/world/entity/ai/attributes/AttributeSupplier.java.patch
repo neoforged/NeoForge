@@ -9,7 +9,7 @@
          private boolean instanceFrozen;
 +        private final java.util.List<AttributeSupplier.Builder> others = new java.util.ArrayList<>();
 +
-+        public Builder() { }
++        public Builder() {}
 +
 +        public Builder(AttributeSupplier attributeMap) {
 +            this.builder.putAll(attributeMap.instances);
@@ -17,7 +17,7 @@
 +
 +        public void combine(Builder other) {
 +            this.builder.putAll(other.builder);
-+            others.add(other);
++            this.others.add(other);
 +        }
 +
 +        public boolean hasAttribute(Holder<Attribute> attribute) {
@@ -31,7 +31,7 @@
          public AttributeSupplier build() {
              this.instanceFrozen = true;
 -            return new AttributeSupplier(this.builder.buildKeepingLast());
-+            others.forEach(b -> b.instanceFrozen = true);
++            this.others.forEach(b -> b.instanceFrozen = true);
 +            return new AttributeSupplier(ImmutableMap.copyOf(this.builder));
          }
      }

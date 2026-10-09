@@ -35,14 +35,12 @@
                  level.updateNeighborsAt(pos.above(), this);
              }
  
-@@ -137,6 +_,11 @@
+@@ -137,6 +_,9 @@
          return state.setValue(this.getShapeProperty(), isEastWest ? RailShape.EAST_WEST : RailShape.NORTH_SOUTH).setValue(WATERLOGGED, isWaterSource);
      }
  
-+    /**
-+     * @deprecated Forge: Use {@link BaseRailBlock#getRailDirection(BlockState, BlockGetter, BlockPos, net.minecraft.world.entity.vehicle.minecart.AbstractMinecart)} for enhanced ability
-+     * If you do change this property be aware that other functions in this/subclasses may break as they can make assumptions about this property
-+     */
++    /// @deprecated Neo: Use [BaseRailBlock#getRailDirection(BlockState, BlockGetter, BlockPos, net.minecraft.world.entity.vehicle.minecart.AbstractMinecart)] for enhanced ability
++    /// If you do change this property be aware that other functions in this/subclasses may break as they can make assumptions about this property
 +    @Deprecated
      public abstract Property<RailShape> getShapeProperty();
  

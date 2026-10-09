@@ -5,7 +5,7 @@
      }
  
 +    public TerrainParticle updateSprite(BlockState state, @Nullable BlockPos pos) {
-+        if (pos != null) { // There are cases where we are not able to obtain the correct source pos, and need to fallback to the non-model data version
++        if (pos != null) { // There are cases where we are not able to obtain the correct source pos, and need to fall back to the non-model data version
 +            this.setSprite(Minecraft.getInstance().getModelManager().getBlockStateModelSet().getParticleMaterial(state, level, pos).sprite());
 +        }
 +        return this;

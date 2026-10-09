@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/level/material/FluidState.java
 +++ b/net/minecraft/world/level/material/FluidState.java
-@@ -122,6 +_,7 @@
+@@ -122,6 +_,8 @@
          return this.getType().builtInRegistryHolder();
      }
  
-+    @Deprecated //Forge: Use more sensitive version
++    /// @deprecated Neo: use [#getExplosionResistance(BlockGetter, BlockPos, net.minecraft.world.level.Explosion)] instead
++    @Deprecated
      public float getExplosionResistance() {
          return this.getType().getExplosionResistance();
      }

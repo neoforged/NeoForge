@@ -9,22 +9,28 @@
          this.ticketStorage = this.savedDataStorage.computeIfAbsent(TicketStorage.TYPE);
          this.chunkMap = new ChunkMap(
              level,
-@@ -160,6 +_,10 @@
+@@ -160,6 +_,12 @@
              }
          }
  
 +        ChunkHolder chunkholder = this.getVisibleChunkIfPresent(pos);
-+        if (chunkholder != null && chunkholder.currentlyLoading != null)
-+            return chunkholder.currentlyLoading; // Neo: If the requested chunk is loading, bypass the future chain to prevent a deadlock.
++        if (chunkholder != null && chunkholder.currentlyLoading != null) {
++            // Neo: If the requested chunk is loading, bypass the future chain to prevent a deadlock.
++            return chunkholder.currentlyLoading;
++        }
 +
          profiler.incrementCounter("getChunkCacheMiss");
          CompletableFuture<ChunkResult<ChunkAccess>> serverFuture = this.getChunkFutureMainThread(x, z, targetStatus, loadOrGenerate);
          this.mainThreadProcessor.managedBlock(serverFuture::isDone);
-@@ -193,6 +_,7 @@
+@@ -191,6 +_,11 @@
+         ChunkHolder chunkHolder = this.getVisibleChunkIfPresent(pos);
+         if (chunkHolder == null) {
              return null;
++        }
++
++        if (chunkHolder.currentlyLoading != null) {
++            // Neo: If the requested chunk is loading, bypass the future chain to prevent a deadlock.
++            return chunkHolder.currentlyLoading;
          }
  
-+        if (chunkHolder.currentlyLoading != null) return chunkHolder.currentlyLoading; // Forge: If the requested chunk is loading, bypass the future chain to prevent a deadlock.
          ChunkAccess chunk = chunkHolder.getChunkIfPresent(ChunkStatus.FULL);
-         if (chunk != null) {
-             this.storeInCache(pos, chunk, ChunkStatus.FULL);

@@ -1,29 +1,33 @@
 --- a/com/mojang/renderpearl/backend/opengl/GlStateManager.java
 +++ b/com/mojang/renderpearl/backend/opengl/GlStateManager.java
-@@ -31,6 +_,7 @@
+@@ -31,6 +_,8 @@
      private static final GlStateManager.CullState CULL = new GlStateManager.CullState();
      private static final GlStateManager.PolygonOffsetState POLY_OFFSET = new GlStateManager.PolygonOffsetState();
      private static final GlStateManager.ColorLogicState COLOR_LOGIC = new GlStateManager.ColorLogicState();
++    /// Neo: store the current configuration of stencil testing
 +    private static final GlStateManager.StencilState STENCIL = new GlStateManager.StencilState();
      private static final GlStateManager.ScissorState SCISSOR = new GlStateManager.ScissorState();
      private static int activeTexture;
      private static final int TEXTURE_COUNT = 12;
-@@ -634,5 +_,114 @@
+@@ -634,5 +_,123 @@
  
      private static class TextureState {
          public int binding;
 +    }
 +
++    /// Neo: enable stencil testing.
 +    public static void _disableStencilTest() {
 +        RenderSystem.assertOnRenderThread();
 +        STENCIL.mode.disable();
 +    }
 +
++    /// Neo: disable stencil testing.
 +    public static void _enableStencilTest() {
 +        RenderSystem.assertOnRenderThread();
 +        STENCIL.mode.enable();
 +    }
 +
++    /// Neo: configure the stencil function.
 +    public static void _stencilFunc(int func, int ref, int readMask) {
 +        RenderSystem.assertOnRenderThread();
 +        if (func != STENCIL.frontFunc || ref != STENCIL.frontRef || readMask != STENCIL.frontReadMask
@@ -38,6 +42,7 @@
 +        }
 +    }
 +
++    /// Neo: same as [#_stencilFunc], but affects only front-faces.
 +    public static void _stencilFuncFront(int func, int ref, int readMask) {
 +        RenderSystem.assertOnRenderThread();
 +        if (func != STENCIL.frontFunc || ref != STENCIL.frontRef || readMask != STENCIL.frontReadMask) {
@@ -48,6 +53,7 @@
 +        }
 +    }
 +
++    /// Neo: same as [#_stencilFunc], but affects only back-faces.
 +    public static void _stencilFuncBack(int func, int ref, int readMask) {
 +        RenderSystem.assertOnRenderThread();
 +        if (func != STENCIL.backFunc || ref != STENCIL.backRef || readMask != STENCIL.backReadMask) {
@@ -58,6 +64,7 @@
 +        }
 +    }
 +
++    /// Neo: configure the stencil mask.
 +    public static void _stencilMask(int mask) {
 +        RenderSystem.assertOnRenderThread();
 +        if (mask != STENCIL.writeMask) {
@@ -66,9 +73,11 @@
 +        }
 +    }
 +
-+    /// @param stencilFail  The action to take if the stencil test fails.
-+    /// @param depthFail The action to take if the depth buffer test fails.
-+    /// @param pass The action to take if both tests pass.
++    /// Neo: configure the stencil operation for front and back faces.
++    ///
++    /// @param stencilFail The action to take if the stencil test fails
++    /// @param depthFail   The action to take if the depth buffer test fails
++    /// @param pass        The action to take if both tests pass
 +    public static void _stencilOp(int stencilFail, int depthFail, int pass) {
 +        RenderSystem.assertOnRenderThread();
 +        if (stencilFail != STENCIL.frontStencilFail || depthFail != STENCIL.frontDepthFail || pass != STENCIL.frontPass
@@ -83,7 +92,7 @@
 +        }
 +    }
 +
-+    /// Same as [#_stencilOp], but affects only front-faces.
++    /// Neo: same as [#_stencilOp], but affects only front-faces.
 +    public static void _stencilOpFront(int stencilFail, int depthFail, int pass) {
 +        RenderSystem.assertOnRenderThread();
 +        if (stencilFail != STENCIL.frontStencilFail || depthFail != STENCIL.frontDepthFail || pass != STENCIL.frontPass) {
@@ -94,7 +103,7 @@
 +        }
 +    }
 +
-+    /// Same as [#_stencilOp], but affects only back-faces.
++    /// Neo: same as [#_stencilOp], but affects only back-faces.
 +    public static void _stencilOpBack(int stencilFail, int depthFail, int pass) {
 +        RenderSystem.assertOnRenderThread();
 +        if (stencilFail != STENCIL.backStencilFail || depthFail != STENCIL.backDepthFail || pass != STENCIL.backPass) {
@@ -105,8 +114,9 @@
 +        }
 +    }
 +
++    /// Neo: stores the current stencil configuration.
 +    @OnlyIn(Dist.CLIENT)
-+    static class StencilState {
++    private static class StencilState {
 +        public final GlStateManager.BooleanState mode = new GlStateManager.BooleanState(GL33C.GL_STENCIL_TEST);
 +        public int frontFunc = GL33C.GL_ALWAYS;
 +        public int frontRef;

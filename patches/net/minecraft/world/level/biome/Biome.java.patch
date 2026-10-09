@@ -7,9 +7,9 @@
 -                Biome.ClimateSettings.CODEC.forGetter(b -> b.climateSettings),
 -                EnvironmentAttributeMap.CODEC_ONLY_POSITIONAL.optionalFieldOf("attributes", EnvironmentAttributeMap.EMPTY).forGetter(b -> b.attributes),
 -                BiomeSpecialEffects.CODEC.fieldOf("effects").forGetter(b -> b.specialEffects),
-+                Biome.ClimateSettings.CODEC.forGetter(b -> b.modifiableBiomeInfo().getOriginalBiomeInfo().climateSettings()), // FORGE: Patch codec to ignore field redirect coremods.
-+                EnvironmentAttributeMap.CODEC_ONLY_POSITIONAL.optionalFieldOf("attributes", EnvironmentAttributeMap.EMPTY).forGetter(b -> b.modifiableBiomeInfo().getOriginalBiomeInfo().attributes()), // FORGE: Patch codec to ignore field redirect coremods.
-+                BiomeSpecialEffects.CODEC.fieldOf("effects").forGetter(b -> b.modifiableBiomeInfo().getOriginalBiomeInfo().effects()), // FORGE: Patch codec to ignore field redirect coremods.
++                Biome.ClimateSettings.CODEC.forGetter(b -> b.modifiableBiomeInfo().getOriginalBiomeInfo().climateSettings()), // Neo: Patch codec to ignore field redirect coremods.
++                EnvironmentAttributeMap.CODEC_ONLY_POSITIONAL.optionalFieldOf("attributes", EnvironmentAttributeMap.EMPTY).forGetter(b -> b.modifiableBiomeInfo().getOriginalBiomeInfo().attributes()), // Neo: Patch codec to ignore field redirect coremods.
++                BiomeSpecialEffects.CODEC.fieldOf("effects").forGetter(b -> b.modifiableBiomeInfo().getOriginalBiomeInfo().effects()), // Neo: Patch codec to ignore field redirect coremods.
                  BiomeGenerationSettings.CODEC.forGetter(b -> b.generationSettings)
              )
              .apply(i, Biome::new)
@@ -52,39 +52,31 @@
      }
  
      public int getGrassColor(double x, double z) {
-@@ -249,6 +_,37 @@
+@@ -249,6 +_,29 @@
  
      public int getWaterColor() {
          return this.specialEffects.waterColor();
 +    }
 +
-+    /**
-+     * {@return Cache of original biome data and biome data modified by biome modifiers}
-+     * Modified biome data is set by server after datapacks and serverconfigs load.
-+     * Climate and effects field reads are coremodded to redirect to this.
-+     **/
-+    public net.neoforged.neoforge.common.world.ModifiableBiomeInfo modifiableBiomeInfo()
-+    {
++    /// Neo: {@return Cache of original biome data and biome data modified by biome modifiers}
++    ///
++    /// Modified biome data is set by server after datapacks and serverconfigs load.
++    /// Climate and effects field reads are coremodded to redirect to this.
++    public net.neoforged.neoforge.common.world.ModifiableBiomeInfo modifiableBiomeInfo() {
 +        return this.modifiableBiomeInfo;
 +    }
 +
-+    /**
-+     * {@return The biome's climate settings, with modifications if called after modifiers are applied in server init.}
-+     */
++    /// Neo: {@return The biome's climate settings, with modifications if called after modifiers are applied in server init.}
 +    public ClimateSettings getModifiedClimateSettings() {
 +        return this.modifiableBiomeInfo().get().climateSettings();
 +    }
 +
-+    /**
-+     * {@return The biome's client effects, with modifications if called after modifiers are applied in server init.}
-+     */
++    /// Neo: {@return The biome's client effects, with modifications if called after modifiers are applied in server init.}
 +    public BiomeSpecialEffects getModifiedSpecialEffects() {
 +        return this.modifiableBiomeInfo().get().effects();
 +    }
 +
-+    /**
-+     * {@return The biome's environment attributes, with modifications if called after modifiers are applied in server init.}
-+     */
++    /// Neo: {@return The biome's environment attributes, with modifications if called after modifiers are applied in server init.}
 +    public EnvironmentAttributeMap getModifiedEnvironmentAttributes() {
 +        return this.modifiableBiomeInfo().get().attributes();
      }

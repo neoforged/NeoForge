@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/item/crafting/ShapedRecipePattern.java
 +++ b/net/minecraft/world/item/crafting/ShapedRecipePattern.java
-@@ -20,8 +_,31 @@
+@@ -20,8 +_,35 @@
  import net.minecraft.world.item.ItemStack;
  
  public final class ShapedRecipePattern {
-+    /** @deprecated Neo: use {@link #getMaxWidth} and {@link #getMaxHeight} */ @Deprecated
++    /// @deprecated Neo: use [#getMaxWidth] and [#getMaxHeight]
++    @Deprecated
      private static final int MAX_SIZE = 3;
      public static final char EMPTY_SLOT = ' ';
 +    static int maxWidth = 3;
@@ -18,15 +19,18 @@
 +        return maxHeight;
 +    }
 +
-+    /**
-+     * Expand the max width and height allowed in the deserializer.
-+     * This should be called by modders who add custom crafting tables that are larger than the vanilla 3x3.
-+     * @param width your max recipe width
-+     * @param height your max recipe height
-+     */
++    /// Neo: Expand the max width and height allowed in the deserializer.
++    /// This should be called by modders who add custom crafting tables that are larger than the vanilla 3x3.
++    ///
++    /// @param width your max recipe width
++    /// @param height your max recipe height
 +    public static void setCraftingSize(int width, int height) {
-+        if (maxWidth < width) maxWidth = width;
-+        if (maxHeight < height) maxHeight = height;
++        if (maxWidth < width) {
++            maxWidth = width;
++        }
++        if (maxHeight < height) {
++            maxHeight = height;
++        }
 +    }
 +
      public static final MapCodec<ShapedRecipePattern> MAP_CODEC = ShapedRecipePattern.Data.MAP_CODEC

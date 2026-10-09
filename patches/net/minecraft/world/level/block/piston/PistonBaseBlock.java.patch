@@ -1,18 +1,22 @@
 --- a/net/minecraft/world/level/block/piston/PistonBaseBlock.java
 +++ b/net/minecraft/world/level/block/piston/PistonBaseBlock.java
-@@ -151,6 +_,7 @@
+@@ -151,6 +_,9 @@
  
          RandomSource random = level.getRandom();
          if (b0 == 0) {
-+            if (net.neoforged.neoforge.event.EventHooks.onPistonMovePre(level, pos, direction, true)) return false;
++            if (net.neoforged.neoforge.event.EventHooks.onPistonMovePre(level, pos, direction, true)) {
++                return false;
++            }
              if (!this.moveBlocks(level, pos, direction, true)) {
                  return false;
              }
-@@ -159,6 +_,7 @@
+@@ -159,6 +_,9 @@
              level.playSound(null, pos, SoundEvents.PISTON_EXTEND, SoundSource.BLOCKS, 0.5F, random.nextFloat() * 0.25F + 0.6F);
              level.gameEvent(GameEvent.BLOCK_ACTIVATE, pos, GameEvent.Context.of(extendedState));
          } else if (b0 == 1 || b0 == 2) {
-+            if (net.neoforged.neoforge.event.EventHooks.onPistonMovePre(level, pos, direction, false)) return false;
++            if (net.neoforged.neoforge.event.EventHooks.onPistonMovePre(level, pos, direction, false)) {
++                return false;
++            }
              if (level.getBlockEntity(pos.relative(direction)) instanceof PistonMovingBlockEntity pistonMovingBlockEntity) {
                  pistonMovingBlockEntity.finalTick();
              }
@@ -45,7 +49,7 @@
      @Override
      protected BlockState mirror(BlockState state, Mirror mirror) {
          return state.rotate(mirror.getRotation(state.getValue(FACING)));
-@@ -372,5 +_,22 @@
+@@ -372,5 +_,24 @@
      @Override
      protected boolean isPathfindable(BlockState state, PathComputationType type) {
          return false;
@@ -57,14 +61,16 @@
 +        if (state.is(net.neoforged.neoforge.common.Tags.Blocks.RELOCATION_NOT_SUPPORTED)) {
 +            return net.neoforged.neoforge.common.util.BlockRelocability.No.INSTANCE;
 +        }
-+        if (!state.getValue(EXTENDED))
++        if (!state.getValue(EXTENDED)) {
 +            return net.neoforged.neoforge.common.util.BlockRelocability.Yes.INSTANCE;
++        }
 +        Direction facing = state.getValue(FACING);
 +        BlockPos neighborPos = pos.relative(facing);
 +        BlockState neighborState = level.getBlockState(neighborPos);
 +        // if this is extended but somebody already cut the block in half, no point in denying the relocation
-+        if (!(neighborState.getBlock() instanceof PistonHeadBlock && neighborState.getValue(PistonHeadBlock.FACING) == facing))
++        if (!(neighborState.getBlock() instanceof PistonHeadBlock && neighborState.getValue(PistonHeadBlock.FACING) == facing)) {
 +            return net.neoforged.neoforge.common.util.BlockRelocability.Yes.INSTANCE;
++        }
 +        return new net.neoforged.neoforge.common.util.BlockRelocability.Multiblock(java.util.Set.of(pos, neighborPos));
      }
  }

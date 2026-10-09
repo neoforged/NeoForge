@@ -1,12 +1,10 @@
 --- a/net/minecraft/data/DataProvider.java
 +++ b/net/minecraft/data/DataProvider.java
-@@ -27,7 +_,16 @@
+@@ -27,7 +_,14 @@
  import org.slf4j.Logger;
  
  public interface DataProvider {
-+    /**
-+     * Neo: Allows changing the indentation width used by {@link #saveStable}.
-+     */
++    /// Neo: Allows changing the indentation width used by [#saveStable].
 +    java.util.concurrent.atomic.AtomicInteger INDENT_WIDTH = new java.util.concurrent.atomic.AtomicInteger(2);
 +
      ToIntFunction<String> FIXED_ORDER_FIELDS = Util.make(new Object2IntOpenHashMap<>(), m -> {

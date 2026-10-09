@@ -1,11 +1,13 @@
 --- a/net/minecraft/world/level/block/BigDripleafBlock.java
 +++ b/net/minecraft/world/level/block/BigDripleafBlock.java
-@@ -132,6 +_,8 @@
+@@ -132,6 +_,10 @@
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
          BlockPos belowPos = pos.below();
          BlockState belowState = level.getBlockState(belowPos);
 +        var soilDecision = belowState.canSustainPlant(level, belowPos, Direction.UP, state);
-+        if (!soilDecision.isDefault()) return soilDecision.isTrue();
++        if (!soilDecision.isDefault()) {
++            return soilDecision.isTrue();
++        }
          return belowState.is(this) || belowState.is(Blocks.BIG_DRIPLEAF_STEM) || belowState.is(BlockTags.SUPPORTS_BIG_DRIPLEAF);
      }
  

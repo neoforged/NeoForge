@@ -6,7 +6,7 @@
  
 +    @Override
 +    public void setItem(int slot, ItemStack itemStack) {
-+        setItem(slot, itemStack, false);
++        this.setItem(slot, itemStack, false);
 +    }
 +
 +    // Neo: Skip side effects if insideTransaction is true so the caller can defer them until the transaction commits

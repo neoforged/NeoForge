@@ -1,13 +1,11 @@
 --- a/net/minecraft/world/level/chunk/storage/SectionStorage.java
 +++ b/net/minecraft/world/level/chunk/storage/SectionStorage.java
-@@ -299,6 +_,19 @@
+@@ -299,6 +_,17 @@
          this.simpleRegionStorage.close();
      }
  
-+    /**
-+     * Neo: Removes the data for the given chunk position.
-+     * See PR #937
-+     */
++    /// Neo: Removes the data for the given chunk position.
++    /// See PR #937
 +    public void remove(ChunkPos chunkPos) {
 +        synchronized (this.loadLock) {
 +            for (int y = this.levelHeightAccessor.getMinSectionY(); y <= this.levelHeightAccessor.getMaxSectionY(); y++) {

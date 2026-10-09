@@ -34,7 +34,7 @@
 -        return isInNetherFortressBounds(pos, level, mobCategory, structureManager)
 -            ? NetherFortressStructure.FORTRESS_ENEMIES
 -            : generator.getMobsAt(level, structureManager, mobCategory, pos);
-+        // Forge: Add in potential spawns, and replace hardcoded nether fortress mob list
++        // Neo: Add in potential spawns, and replace hardcoded nether fortress mob list
 +        if (isInNetherFortressBounds(pos, level, mobCategory, structureManager)) {
 +            var monsterSpawns = structureManager.registryAccess().lookupOrThrow(Registries.STRUCTURE).getValueOrThrow(BuiltinStructures.FORTRESS).spawnOverrides().get(MobCategory.MONSTER);
 +            if (monsterSpawns != null) { // structure modifiers can clear the spawn overrides

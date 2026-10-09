@@ -5,7 +5,7 @@
          }
  
 -        if (this.frameHasAlwaysOnTopGizmos() && consistentDepthRequired) {
-+        // Neo: also check the FeatureFrame to ensure non-gizmo always-on-top submits are rendered
++        // Neo: also check the FeatureRenderDispatcher.PreparedFrame to ensure non-gizmo always-on-top submits are rendered
 +        if ((this.frameHasAlwaysOnTopGizmos() || featureFrame.hasAnyAlwaysOnTop()) && consistentDepthRequired) {
              this.targets.alwaysOnTopDepth = frame.createInternal("always_on_top_depth", extraDepthTargetDescriptorCleared);
          }
@@ -45,7 +45,7 @@
          }
  
 -        boolean hasAlwaysOnTopGizmos = this.frameHasAlwaysOnTopGizmos();
-+        // Neo: also check the FeatureFrame to ensure non-gizmo always-on-top submits are rendered
++        // Neo: also check the FeatureRenderDispatcher.PreparedFrame to ensure non-gizmo always-on-top submits are rendered
 +        boolean hasAlwaysOnTopGizmos = this.frameHasAlwaysOnTopGizmos() || featureFrame.hasAnyAlwaysOnTop();
          if (hasAlwaysOnTopGizmos && consistentDepthRequired) {
              this.targets.alwaysOnTopDepth = pass.readsAndWrites(this.targets.alwaysOnTopDepth);

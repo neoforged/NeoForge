@@ -1,10 +1,10 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntityType.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntityType.java
-@@ -11,18 +_,46 @@
+@@ -11,18 +_,44 @@
  
  public class BlockEntityType<T extends BlockEntity> {
      private final BlockEntityType.BlockEntitySupplier<? extends T> factory;
-+    /// Neo: This field will be modified by BlockEntityTypeAddBlocksEvent event. Please use the event to add to this field for vanilla or other mod's BlockEntityTypes.
++    /// Neo: This field will be modified by `BlockEntityTypeAddBlocksEvent` event. Please use the event to add to this field for vanilla or other mod's [BlockEntityType]s.
      private final Set<Block> validBlocks;
      private final Holder.Reference<BlockEntityType<?>> builtInRegistryHolder = BuiltInRegistries.BLOCK_ENTITY_TYPE.createIntrusiveHolder(this);
 +    /// Neo: Allow modded BE types to declare that they have NBT data only OPs can set
@@ -37,9 +37,7 @@
          return (T)this.factory.create(worldPosition, blockState);
      }
  
-+    /**
-+     * Neo: Add getter for an immutable view of the set of valid blocks.
-+     */
++    /// Neo: Add getter for an immutable view of the set of valid blocks.
 +    public Set<Block> getValidBlocks() {
 +        return java.util.Collections.unmodifiableSet(this.validBlocks);
 +    }
@@ -47,11 +45,13 @@
      public boolean isValid(BlockState state) {
          return this.validBlocks.contains(state.getBlock());
      }
-@@ -38,6 +_,7 @@
+@@ -38,6 +_,9 @@
      }
  
      public boolean onlyOpCanSetNbt() {
-+        if (onlyOpCanSetNbt) return true;
++        if (this.onlyOpCanSetNbt) {
++            return true;
++        }
          return BlockEntityTypes.OP_ONLY_CUSTOM_DATA.contains(this);
      }
  

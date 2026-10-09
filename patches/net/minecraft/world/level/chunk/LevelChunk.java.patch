@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
+@@ -95,6 +_,8 @@
+     private final LevelChunkTicks<Block> blockTicks;
+     private final LevelChunkTicks<Fluid> fluidTicks;
+     private LevelChunk.UnsavedListener unsavedListener = chunkPos -> {};
++    /// Neo: Threadsafe lighting system for [BlockEntity]s that change lighting based on dynamic data changing.
++    private final net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager auxLightManager = new net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager(this);
+ 
+     public LevelChunk(Level level, ChunkPos pos) {
+         this(level, pos, UpgradeData.EMPTY, new LevelChunkTicks<>(), new LevelChunkTicks<>(), 0L, null, null, null);
 @@ -155,6 +_,7 @@
          this.setAllStarts(protoChunk.getAllStarts());
          this.setAllReferences(protoChunk.getAllReferences());
@@ -111,16 +120,13 @@
          this.blockEntities.values().forEach(blockEntity -> {
              if (this.level instanceof ServerLevel serverLevel) {
                  this.addGameEventListener(blockEntity, serverLevel);
-@@ -724,6 +_,19 @@
+@@ -724,6 +_,16 @@
          return new LevelChunk.BoundTickingBlockEntity<>(blockEntity, ticker);
      }
  
-+    // Neo: Threadsafe lighting system for BlockEntities that change lighting based on dynamic data changing.
-+    private final net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager auxLightManager = new net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager(this);
-+
 +    @Override
 +    public net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager getAuxLightManager(ChunkPos pos) {
-+        return auxLightManager;
++        return this.auxLightManager;
 +    }
 +
 +    @Override

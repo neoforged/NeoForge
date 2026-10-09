@@ -28,10 +28,12 @@
          if (input.ingredientCount() != this.ingredients.size()) {
              return false;
 +        } else if (!isSimple) {
-+            var nonEmptyItems = new java.util.ArrayList<ItemStack>(input.ingredientCount());
-+            for (var item : input.items())
-+                if (!item.isEmpty())
++            List<ItemStack> nonEmptyItems = new java.util.ArrayList<>(input.ingredientCount());
++            for (var item : input.items()) {
++                if (!item.isEmpty()) {
 +                    nonEmptyItems.add(item);
++                }
++            }
 +            return net.neoforged.neoforge.common.util.RecipeMatcher.findMatches(nonEmptyItems, this.ingredients) != null;
          } else {
              return input.size() == 1 && this.ingredients.size() == 1
@@ -40,11 +42,9 @@
          }
 +    }
 +
-+    /**
-+     * {@return the result of this shapeless recipe or null if it is not static and needs ot be obtained by assembling it}
-+     */
++    /// {@return the result of this shapeless recipe or null if it is not static and needs to be obtained by assembling it}
 +    public @org.jspecify.annotations.Nullable ItemStackTemplate result() {
-+        return result;
++        return this.result;
      }
  
      public ItemStack assemble(CraftingInput input) {

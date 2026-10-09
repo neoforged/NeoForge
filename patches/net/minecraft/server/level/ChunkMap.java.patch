@@ -50,43 +50,16 @@
          player.connection.chunkSender.dropChunk(player, pos);
      }
  
-@@ -936,7 +_,7 @@
+@@ -936,7 +_,8 @@
              ChunkHolder holder = this.visibleChunkMap.get(spawnCandidateChunks.nextLong());
              if (holder != null) {
                  LevelChunk chunk = holder.getTickingChunk();
 -                if (chunk != null && this.anyPlayerCloseEnoughForSpawningInternal(holder.getPos())) {
-+                if (chunk != null && (this.anyPlayerCloseEnoughForSpawningInternal(holder.getPos()) || ticketStorage.shouldForceNaturalSpawning(holder.getPos()))) {// Neo: Force natural spawning in other chunks
++                // Neo: Force natural spawning in other chunks
++                if (chunk != null && (this.anyPlayerCloseEnoughForSpawningInternal(holder.getPos()) || ticketStorage.shouldForceNaturalSpawning(holder.getPos()))) {
                      output.add(chunk);
                  }
              }
-@@ -960,6 +_,19 @@
-         return triState == TriState.DEFAULT ? this.anyPlayerCloseEnoughForSpawningInternal(pos) : triState.toBoolean(true);
-     }
- 
-+    // TODO 1.21.11 unobfuscated - seems unused and requires an AT for ticketStorage
-+//    void collectForceTickingChunks(List<LevelChunk> list) {
-+//        for (long l : distanceManager.ticketStorage.getForceLoadedChunks()) {
-+//            ChunkHolder holder = this.visibleChunkMap.get(l);
-+//            if (holder != null) {
-+//                var chunk = holder.getTickingChunk();
-+//                if (chunk != null) {
-+//                    list.add(chunk);
-+//                }
-+//            }
-+//        }
-+//    }
-+
-     public boolean anyPlayerCloseEnoughTo(BlockPos pos, int maxDistance) {
-         Vec3 target = new Vec3(pos);
- 
-@@ -1089,6 +_,7 @@
-                 this.playerMap.unIgnorePlayer(player);
-             }
- 
-+            //PATCH 1.20.2: Figure out the firing of the watch and unwatch events when chunk tracking updates.
-             this.updateChunkTracking(player);
-         }
-     }
 @@ -1137,7 +_,7 @@
      }
  
@@ -100,7 +73,7 @@
          }
      }
  
-+    // Neo: Getter for players watching an entity.
++    /// Neo: {@return all players watching the given entity}
 +    public List<ServerPlayer> getPlayersWatching(Entity entity) {
 +        var trackedEntity = entityMap.get(entity.getId());
 +        if (trackedEntity != null) {
@@ -117,23 +90,21 @@
      private class DistanceManager extends net.minecraft.server.level.DistanceManager {
          protected DistanceManager(TicketStorage ticketStorage, Executor executor, Executor mainThreadExecutor) {
              super(ticketStorage, executor, mainThreadExecutor);
-@@ -1422,5 +_,20 @@
+@@ -1422,5 +_,18 @@
                  this.updatePlayer(player);
              }
          }
 +    }
 +
-+    /**
-+     * Neo: PR #937
-+     * This is for mainly pre-generation usage such as Neoforge's generate command.
-+     * Use this to schedule chunk load tasks into ChunkTaskPriorityQueueSorter so a chunk is fully finished all of their tasks before scheduling more chunks to load.
-+     * Reason for this is when scheduling a huge ton of Full Status chunk tasks to the server (to load chunks),
-+     * you could cause the server to only process those loading tasks and never reach the two chunk tasks that are
-+     * automatically scheduled to run after the chunk is loaded to Full. As a result of flooding the system with Full Status chunk tasks,
-+     * the queue for the two kind of successor chunk tasks will grow and become a memory leak of lambdas and chunk references.
-+     * Use this method to schedule tasks for loading chunks in your whenCompleteAsync method call so the tasks gets processed properly over time and not leak.
-+     * See {@link net.neoforged.neoforge.server.command.generation.GenerationTask#enqueueChunks} as an example usage of this method.
-+     */
++    /// Neo: PR #937
++    /// This is for mainly pre-generation usage such as Neoforge's generate command.
++    /// Use this to schedule chunk load tasks into ChunkTaskPriorityQueueSorter so a chunk is fully finished all of their tasks before scheduling more chunks to load.
++    /// Reason for this is when scheduling a huge ton of Full Status chunk tasks to the server (to load chunks),
++    /// you could cause the server to only process those loading tasks and never reach the two chunk tasks that are
++    /// automatically scheduled to run after the chunk is loaded to Full. As a result of flooding the system with Full Status chunk tasks,
++    /// the queue for the two kind of successor chunk tasks will grow and become a memory leak of lambdas and chunk references.
++    /// Use this method to schedule tasks for loading chunks in your whenCompleteAsync method call so the tasks gets processed properly over time and not leak.
++    /// See [net.neoforged.neoforge.server.command.generation.GenerationTask#enqueueChunks] as an example usage of this method.
 +    public void scheduleOnMainThreadMailbox(Runnable runnable) {
 +        mainThreadExecutor.schedule(runnable);
      }

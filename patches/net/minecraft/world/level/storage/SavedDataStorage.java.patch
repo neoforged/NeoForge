@@ -7,7 +7,7 @@
 +    // Neo: Needed to make level context available to modded saved data
 +    private final net.minecraft.server.level.@org.jspecify.annotations.Nullable ServerLevel level;
  
-+    /** @deprecated Neo: Use the version that has a level */
++    /// @deprecated Neo: Use [#SavedDataStorage(net.minecraft.server.level.ServerLevel, Path, DataFixer, HolderLookup.Provider)] instead
 +    @Deprecated
      public SavedDataStorage(Path dataFolder, DataFixer fixerUpper, HolderLookup.Provider registries) {
 +        this(null, dataFolder, fixerUpper, registries);
@@ -45,13 +45,16 @@
          try (
              InputStream in = Files.newInputStream(dataFile);
              PushbackInputStream inputStream = new PushbackInputStream(new FastBufferedInputStream(in), 2);
-@@ -121,7 +_,15 @@
+@@ -120,8 +_,18 @@
+                 }
              }
  
++            if (type == null) {
++                return tag;
++            }
++
              int version = NbtUtils.getDataVersion(tag, 1343);
-+            if (type != null)
              return type.update(this.fixerUpper, tag, version, newVersion);
-+            else return tag;
 +        } finally {
 +            // Neo: delete any temporary files so that we don't inflate disk space unnecessarily.
 +            this.pendingWriteFuture = this.pendingWriteFuture.thenRunAsync(
@@ -70,15 +73,11 @@
          CompoundTag tag = new CompoundTag();
          tag.put("data", codec.encodeStart(ops, (T)data).getOrThrow());
          NbtUtils.addCurrentDataVersion(tag);
-@@ -208,7 +_,11 @@
+@@ -208,7 +_,7 @@
  
          try {
              FileUtil.createDirectoriesSafe(path.getParent());
 -            NbtIo.writeCompressed(tag, path);
-+            // Neo: ensure parent directories exist if the SavedData's path contains slashes
-+            if (!Files.exists(path)) {
-+                Files.createDirectories(path.getParent());
-+            }
 +            net.neoforged.neoforge.common.IOUtilities.writeNbtCompressed(tag, path);
          } catch (IOException e) {
              LOGGER.error("Could not save data to {}", path.getFileName(), e);

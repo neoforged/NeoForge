@@ -1,11 +1,14 @@
 --- a/net/minecraft/server/packs/repository/Pack.java
 +++ b/net/minecraft/server/packs/repository/Pack.java
-@@ -26,6 +_,16 @@
+@@ -26,6 +_,19 @@
      private final Pack.ResourcesSupplier resources;
      private final Pack.Metadata metadata;
      private final PackSelectionConfig selectionConfig;
-+    private final boolean hidden; // Neo: Allow packs to be hidden from the UI entirely
-+    private final List<Pack> children; // Neo: Allows packs to specify packs which will always be placed beneath them; must be hidden
++    /// Neo: Allows packs to be hidden from the UI entirely
++    private final boolean hidden;
++    /// Neo: Allows packs to specify packs which will always be placed beneath them; must be hidden
++    private final List<Pack> children;
++    /// Neo: Pack source for child packs; should not be otherwise used
 +    private static final PackSource CHILD_SOURCE = PackSource.create(
 +            name -> Component.translatable(
 +                    "pack.nameAndSource",
@@ -13,7 +16,7 @@
 +                    Component.translatable("pack.neoforge.source.child")
 +            ).withStyle(net.minecraft.ChatFormatting.GRAY),
 +            false
-+    ); // Neo: Pack source for child packs; should not be otherwise used
++    );
  
      public static @Nullable Pack readMetaAndCreate(
          PackLocationInfo location, Pack.ResourcesSupplier resources, PackType packType, PackSelectionConfig selectionConfig
@@ -69,7 +72,7 @@
              }
          } catch (Exception e) {
              LOGGER.warn("Failed to read pack {} metadata", location.id(), e);
-@@ -127,6 +_,38 @@
+@@ -127,6 +_,34 @@
          return this.location.source();
      }
  
@@ -85,16 +88,12 @@
 +        return java.util.stream.Stream.concat(java.util.stream.Stream.of(this), children.stream());
 +    }
 +
-+    /**
-+     * {@return a copy of the pack with the provided children in place of any children this pack currently has}
-+     */
++    /// Neo: {@return a copy of the pack with the provided children in place of any children this pack currently has}
 +    public Pack withChildren(List<Pack> children) {
 +        return new Pack(this.location, this.resources, this.metadata, this.selectionConfig, children);
 +    }
 +
-+    /**
-+     * {@return a copy of the pack that is hidden}
-+     */
++    /// Neo: {@return a copy of the pack that is hidden}
 +    public Pack hidden() {
 +        return new Pack(
 +                new PackLocationInfo(this.location.id(), this.location.title(), this.location.source(), this.location.knownPackInfo()),
@@ -114,7 +113,7 @@
  
 -    public record Metadata(Component description, PackCompatibility compatibility, FeatureFlagSet requestedFeatures, List<String> overlays) {
 +    public static record Metadata(Component description, PackCompatibility compatibility, FeatureFlagSet requestedFeatures, List<String> overlays, boolean isHidden) {
-+        /** @deprecated Neo: use {@link #Metadata(Component,PackCompatibility,FeatureFlagSet,List,boolean)} instead */
++        /// @deprecated Neo: use [#Metadata(Component, PackCompatibility, FeatureFlagSet, List, boolean)] instead
 +        @Deprecated
 +        public Metadata(Component description, PackCompatibility compatibility, FeatureFlagSet requestedFeatures, List<String> overlays) {
 +            this(description, compatibility, requestedFeatures, overlays, false);

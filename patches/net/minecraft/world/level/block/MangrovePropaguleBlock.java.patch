@@ -1,13 +1,15 @@
 --- a/net/minecraft/world/level/block/MangrovePropaguleBlock.java
 +++ b/net/minecraft/world/level/block/MangrovePropaguleBlock.java
-@@ -61,7 +_,12 @@
+@@ -61,7 +_,14 @@
  
      @Override
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
 -        return isHanging(state) ? level.getBlockState(pos.above()).is(BlockTags.SUPPORTS_HANGING_MANGROVE_PROPAGULE) : super.canSurvive(state, level, pos);
 +        if (isHanging(state)) {
 +            var soilDecision = level.getBlockState(pos.above()).canSustainPlant(level, pos.above(), Direction.DOWN, state);
-+            if (!soilDecision.isDefault()) return soilDecision.isTrue();
++            if (!soilDecision.isDefault()) {
++                return soilDecision.isTrue();
++            }
 +            return level.getBlockState(pos.above()).is(Blocks.MANGROVE_LEAVES);
 +        }
 +        return super.canSurvive(state, level, pos);

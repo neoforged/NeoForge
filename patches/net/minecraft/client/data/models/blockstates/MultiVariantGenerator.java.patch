@@ -1,16 +1,17 @@
 --- a/net/minecraft/client/data/models/blockstates/MultiVariantGenerator.java
 +++ b/net/minecraft/client/data/models/blockstates/MultiVariantGenerator.java
-@@ -55,6 +_,18 @@
+@@ -55,6 +_,19 @@
          return new MultiVariantGenerator(this.block, newEntries, this.seenProperties);
      }
  
-+    // Neo: copy of the apply(...VariantMutator...) methods to support UnbakedMutators. Must be renamed due to type erasure for PropertyDispatch
++    /// Neo: overload of [#with(PropertyDispatch)] to support `UnbakedMutator`s. Must be renamed due to type erasure for [PropertyDispatch].
 +    public MultiVariantGenerator withUnbaked(PropertyDispatch<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator> dispatch) {
 +        Set<Property<?>> set = validateAndExpandProperties(this.seenProperties, this.block, dispatch);
 +        List<MultiVariantGenerator.Entry> list = this.entries.stream().flatMap(e -> e.applyToUnbaked(dispatch)).toList();
 +        return new MultiVariantGenerator(this.block, list, set);
 +    }
 +
++    /// Neo: overload of [#with(VariantMutator)] to support `UnbakedMutator`s.
 +    public MultiVariantGenerator withUnbaked(net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator dispatch) {
 +        List<MultiVariantGenerator.Entry> list = this.entries.stream().flatMap(e -> e.applyToUnbaked(dispatch)).toList();
 +        return new MultiVariantGenerator(this.block, list, this.seenProperties);
@@ -19,19 +20,20 @@
      @Override
      public BlockStateModelDispatcher create() {
          Map<String, BlockStateModel.Unbaked> variants = new HashMap<>();
-@@ -108,6 +_,17 @@
+@@ -108,6 +_,18 @@
  
          public Stream<MultiVariantGenerator.Entry> apply(VariantMutator mutator) {
              return Stream.of(new MultiVariantGenerator.Entry(this.properties, this.variant.with(mutator)));
 +        }
 +
-+        // Neo: Support for unbaked mutators
++        /// Neo: overload of [#apply(PropertyDispatch)] with support for `UnbakedMutator`s. Must be renamed due to type erasure for [PropertyDispatch].
 +        public Stream<MultiVariantGenerator.Entry> applyToUnbaked(PropertyDispatch<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator> dispatch) {
 +            return dispatch.getEntries().entrySet().stream().map(entry -> {
 +                return new MultiVariantGenerator.Entry(properties.extend(entry.getKey()), variant.with(entry.getValue()));
 +            });
 +        }
 +
++        /// Neo: overload of [#apply(VariantMutator)] with support for `UnbakedMutator`s.
 +        public Stream<MultiVariantGenerator.Entry> applyToUnbaked(net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator mutator) {
 +            return Stream.of(new MultiVariantGenerator.Entry(properties, variant.with(mutator)));
          }

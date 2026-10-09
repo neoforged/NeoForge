@@ -8,7 +8,7 @@
 +            return input != null && (Parrot.MOB_SOUND_MAP.containsKey(input.getType()) || input.getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.PARROT_IMITATIONS) != null);
          }
      };
-+    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#PARROT_IMITATIONS data map} instead */
++    /// @deprecated Neo: use the [`data map`][net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#PARROT_IMITATIONS] instead
 +    @Deprecated
      private static final Map<EntityType<?>, SoundEvent> MOB_SOUND_MAP = Util.make(Maps.newHashMap(), map -> {
          map.put(EntityTypes.BLAZE, SoundEvents.PARROT_IMITATE_BLAZE);
@@ -43,14 +43,13 @@
              return getImitatedSound(keys.get(random.nextInt(keys.size())));
          } else {
              return SoundEvents.PARROT_AMBIENT;
-@@ -336,7 +_,9 @@
+@@ -336,7 +_,8 @@
      }
  
      private static SoundEvent getImitatedSound(EntityType<?> id) {
 -        return MOB_SOUND_MAP.getOrDefault(id, SoundEvents.PARROT_AMBIENT);
 +        var imitation = id.builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.PARROT_IMITATIONS);
-+        if (imitation != null) return imitation.sound();
-+        return SoundEvents.PARROT_AMBIENT;
++        return imitation != null ? imitation.sound() : SoundEvents.PARROT_AMBIENT;
      }
  
      @Override

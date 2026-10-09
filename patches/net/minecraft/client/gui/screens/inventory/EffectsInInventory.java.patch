@@ -1,13 +1,15 @@
 --- a/net/minecraft/client/gui/screens/inventory/EffectsInInventory.java
 +++ b/net/minecraft/client/gui/screens/inventory/EffectsInInventory.java
-@@ -47,7 +_,15 @@
+@@ -47,7 +_,17 @@
          int availableWidth = this.screen.width - xo;
          Collection<MobEffectInstance> activeEffects = this.minecraft.player.getActiveEffects();
          if (!activeEffects.isEmpty() && availableWidth >= 32) {
 -            int maxWidth = availableWidth >= 120 ? availableWidth - 7 : 32;
 +            boolean wideDisplay = availableWidth >= 120;
 +            var event = net.neoforged.neoforge.client.ClientHooks.onScreenPotionSize(screen, availableWidth, !wideDisplay, xo);
-+            if (event.isCanceled()) return;
++            if (event.isCanceled()) {
++                return;
++            }
 +            wideDisplay = !event.isCompact();
 +            xo = event.getHorizontalOffset();
 +
@@ -33,16 +35,18 @@
              graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Hud.getMobEffectSprite(effect.getEffect()), x0 + 7, y0 + 7, 18, 18);
              y0 += yStep;
          }
-@@ -85,9 +_,15 @@
+@@ -85,9 +_,17 @@
          return textureWidth;
      }
  
-+    // Neo: Call the method that takes the effect instance for which the text is being rendered
++    /// @deprecated Neo: use [#extractText(GuiGraphicsExtractor, Component, Component, Font, int, int, int, int, int, int, MobEffectInstance)] instead
++    @Deprecated
      private void extractText(
          GuiGraphicsExtractor graphics, Component effectText, Component duration, Font font, int x0, int y0, int textureWidth, int yStep, int mouseX, int mouseY
      ) {
 +        extractText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, mouseX, mouseY, null);
 +    }
++
 +    private void extractText(
 +        GuiGraphicsExtractor graphics, Component effectText, Component duration, Font font, int x0, int y0, int textureWidth, int yStep, int mouseX, int mouseY, @org.jspecify.annotations.Nullable MobEffectInstance effectInstance
 +    ) {
