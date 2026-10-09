@@ -243,5 +243,7 @@ featureFlags="game_test_feature_flags.json"
 modId="recipe_sync_test"
 [[mods]]
 modId="entity_teleport_test"
+[[mods]]
+modId="equipment_drop_chance_test"
 
 # ADD ABOVE THIS LINE

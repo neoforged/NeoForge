@@ -12,6 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.storage.loot.functions.EnchantedCountIncreaseFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWithEnchantedBonusCondition;
+import net.neoforged.neoforge.event.entity.living.GetEquipmentDropChanceEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
@@ -19,9 +20,10 @@ import org.jspecify.annotations.Nullable;
 /**
  * Fired on the server when an entity is dropping loot and the level of a specific enchantment is being queried.
  * <p>
- * Notably, this fires when {@link EnchantedCountIncreaseFunction} or {@link LootItemRandomChanceWithEnchantedBonusCondition} are evaluated,
- * as well as when {@link EnchantmentEffectComponent#EQUIPMENT_DROPS} is being processed.
+ * Notably, this fires when {@link EnchantedCountIncreaseFunction} or {@link LootItemRandomChanceWithEnchantedBonusCondition} are evaluated.
  * Mods that implement similar loot conditions or functions should fire this event as well.
+ * <p>
+ * This event does not affect the drop chances of equipment. If you need to change that, use {@link GetEquipmentDropChanceEvent}
  * <p>
  * If you do not need the additional context of this event, prefer {@link GetEnchantmentLevelEvent} for managing enchantment levels.
  */

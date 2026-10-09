@@ -91,6 +91,16 @@
          if (this.level().getDifficulty() == Difficulty.PEACEFUL && !this.getType().isAllowedInPeaceful()) {
              this.discard();
          } else {
+@@ -895,7 +_,8 @@
+             if (dropChance != 0.0F) {
+                 boolean preserve = this.dropChances.isPreserved(slot);
+                 if (source.getEntity() instanceof LivingEntity livingSource && this.level() instanceof ServerLevel serverLevel) {
+-                    dropChance = EnchantmentHelper.processEquipmentDropChance(serverLevel, livingSource, source, dropChance);
++                    // Neo: pass in slot context for GetEquipmentDropChanceEvent
++                    dropChance = EnchantmentHelper.processEquipmentDropChance(serverLevel, livingSource, source, dropChance, slot);
+                 }
+ 
+                 if (!itemStack.isEmpty()
 @@ -1077,6 +_,11 @@
          }
      }

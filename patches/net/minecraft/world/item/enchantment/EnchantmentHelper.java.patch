@@ -44,34 +44,32 @@
              if (itemEnchantments != null && !itemEnchantments.isEmpty()) {
                  EnchantedItemInUse itemInUse = new EnchantedItemInUse(piece, slot, owner);
  
-@@ -338,7 +_,12 @@
-                             if (filteredEffect.enchanted() == EnchantmentTarget.VICTIM
-                                 && filteredEffect.affected() == EnchantmentTarget.VICTIM
-                                 && filteredEffect.matches(context)) {
--                                modifiedChance.setValue(filteredEffect.effect().process(level, random, modifiedChance.floatValue()));
+@@ -324,7 +_,15 @@
+         return Math.max(0, modifiedDurability.intValue());
+     }
+ 
++    /**
++     * @deprecated Neo: Use {@link #processEquipmentDropChance(ServerLevel, LivingEntity, DamageSource, float, EquipmentSlot)} for slot context.
++     */
++    @Deprecated
+     public static float processEquipmentDropChance(ServerLevel serverLevel, LivingEntity entity, DamageSource killingBlow, float chance) {
++        return processEquipmentDropChance(serverLevel, entity, killingBlow, chance, null);
++    }
 +
-+                                // Neo: Allow mods to modify the enchantment level for loot calculations with relevant context.
-+                                int realLevel = net.neoforged.neoforge.event.EventHooks.getEntityLootEnchantmentLevel(enchantment, level, context);
-+                                if (realLevel == 0) return;
++    public static float processEquipmentDropChance(ServerLevel serverLevel, LivingEntity entity, DamageSource killingBlow, float chance, @Nullable EquipmentSlot slot) {
+         MutableFloat modifiedChance = new MutableFloat(chance);
+         RandomSource random = entity.getRandom();
+         runIterationOnEquipment(
+@@ -364,6 +_,9 @@
+             );
+         }
+ 
++        // Neo: allow mods to modify the drop chance for equipment with the relevant context
++        net.neoforged.neoforge.event.EventHooks.onEquipmentDropChance(serverLevel, entity, killingBlow, modifiedChance, chance, slot);
 +
-+                                modifiedChance.setValue(filteredEffect.effect().process(realLevel, random, modifiedChance.floatValue()));
-                             }
-                         }
-                     );
-@@ -356,7 +_,12 @@
-                                 if (filteredEffect.enchanted() == EnchantmentTarget.ATTACKER
-                                     && filteredEffect.affected() == EnchantmentTarget.VICTIM
-                                     && filteredEffect.matches(context)) {
--                                    modifiedChance.setValue(filteredEffect.effect().process(level, random, modifiedChance.floatValue()));
-+
-+                                    // Neo: Allow mods to modify the enchantment level for loot calculations with relevant context.
-+                                    int realLevel = net.neoforged.neoforge.event.EventHooks.getEntityLootEnchantmentLevel(enchantment, level, context);
-+                                    if (realLevel == 0) return;
-+
-+                                    modifiedChance.setValue(filteredEffect.effect().process(realLevel, random, modifiedChance.floatValue()));
-                                 }
-                             }
-                         );
+         return modifiedChance.floatValue();
+     }
+ 
 @@ -419,6 +_,12 @@
      public static boolean hasTag(ItemStack item, TagKey<Enchantment> tag) {
          ItemEnchantments enchantments = item.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
