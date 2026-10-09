@@ -76,38 +76,6 @@
                  }
  
                  if (processedBlockInfo != null) {
-@@ -464,6 +_,31 @@
-         return processedBlockInfoList;
-     }
- 
-+    public static List<StructureTemplate.StructureEntityInfo> processEntityInfos(
-+        @Nullable StructureTemplate template,
-+        LevelAccessor level,
-+        BlockPos position,
-+        StructurePlaceSettings settings,
-+        List<StructureTemplate.StructureEntityInfo> entityInfoList
-+    ) {
-+        List<StructureTemplate.StructureEntityInfo> list = new ArrayList<>();
-+        for (StructureTemplate.StructureEntityInfo entityInfo : entityInfoList) {
-+            Vec3 pos = transformedVec3d(settings, entityInfo.pos).add(Vec3.atLowerCornerOf(position));
-+            BlockPos blockpos = calculateRelativePosition(settings, entityInfo.blockPos).offset(position);
-+            StructureTemplate.StructureEntityInfo info = new StructureTemplate.StructureEntityInfo(pos, blockpos, entityInfo.nbt);
-+            for (StructureProcessor proc : settings.getProcessors()) {
-+                info = proc.processEntity(level, position, entityInfo, info, settings, template);
-+                if (info == null) {
-+                    break;
-+                }
-+            }
-+            if (info != null) {
-+                list.add(info);
-+            }
-+        }
-+        return list;
-+    }
-+
-     private void placeEntities(
-         ServerLevelAccessor level,
-         BlockPos position,
 @@ -472,14 +_,15 @@
          BlockPos pivot,
          @Nullable BoundingBox boundingBox,
@@ -118,7 +86,7 @@
      ) {
 -        for (StructureTemplate.StructureEntityInfo entityInfo : this.entityInfoList) {
 -            BlockPos blockPos = transform(entityInfo.blockPos, mirror, rotation, pivot).offset(position);
-+        for (StructureTemplate.StructureEntityInfo entityInfo : processEntityInfos(this, level, position, settings, this.entityInfoList)) {
++        for (StructureTemplate.StructureEntityInfo entityInfo : net.neoforged.neoforge.common.CommonHooks.processStructureEntityInfos(this, level, position, settings, this.entityInfoList)) {
 +            // Neo: Position will have already been transformed by processEntityInfos()
 +            BlockPos blockPos = entityInfo.blockPos;
              if (boundingBox == null || boundingBox.isInside(blockPos)) {
