@@ -4,10 +4,10 @@
      private static final int BURN_EASY = 60;
      private static final int BURN_MEDIUM = 20;
      private static final int BURN_HARD = 5;
-+    /// @deprecated Neo: Use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE flammable} data map instead, as this field will be ignored
++    /// @deprecated Neo: Use the [flammable][net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE] data map instead, as this field will be ignored in the future
 +    @Deprecated
      private final Object2IntMap<Block> igniteOdds = new Object2IntOpenHashMap<>();
-+    /// @deprecated Neo: Use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE flammable} data map instead, as this field will be ignored
++    /// @deprecated Neo: Use the [flammable][net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE] data map instead, as this field will be ignored in the future
 +    @Deprecated
      private final Object2IntMap<Block> burnOdds = new Object2IntOpenHashMap<>();
  
@@ -142,7 +142,7 @@
          builder.add(AGE, NORTH, EAST, SOUTH, WEST, UP);
      }
  
-+    /// @deprecated Neo: Use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE flammable} data map instead, as this field will be ignored
++    /// @deprecated Neo: Use the [flammable][net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE] data map instead, as this field will be ignored in the future
 +    @Deprecated
      private void setFlammable(Block block, int igniteOdds, int burnOdds) {
 +        if (block == Blocks.AIR) throw new IllegalArgumentException("Tried to set air on fire... This is bad.");

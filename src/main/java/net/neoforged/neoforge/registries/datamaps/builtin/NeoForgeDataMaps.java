@@ -185,12 +185,10 @@ public class NeoForgeDataMaps {
     public static final DataMapType<Block, Waxable> WAXABLES = DataMapType.builder(
             id("waxables"), Registries.BLOCK, Waxable.CODEC).synced(Waxable.CODEC, false).build();
 
-    ///
-    /// The {@linkplain Block} data map that replaces {@link net.minecraft.world.level.block.FireBlock#igniteOdds} and {@link net.minecraft.world.level.block.FireBlock#burnOdds}.
+    /// The [Block] data map that replaces [FireBlock#igniteOdds][net.minecraft.world.level.block.FireBlock#igniteOdds] and [FireBlock#burnOdds][net.minecraft.world.level.block.FireBlock#burnOdds].
     /// <p>
-    /// The location of this data map is {@code neoforge/data_maps/block/flammable.json}, and the values are objects with 1 field:
+    /// The location of this data map is `neoforge/data_maps/block/flammable.json`, and the values are objects with 1 field:
     /// </ul>
-    ///
     public static final DataMapType<Block, Flammable> FLAMMABLE = DataMapType.builder(
             id("flammable"), Registries.BLOCK, Flammable.CODEC).synced(Flammable.CODEC, false).build();
 
