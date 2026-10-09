@@ -1,10 +1,17 @@
 --- a/net/minecraft/world/level/storage/loot/parameters/LootContextParamSets.java
 +++ b/net/minecraft/world/level/storage/loot/parameters/LootContextParamSets.java
-@@ -34,8 +_,9 @@
-             .required(LootContextParams.TARGET_ENTITY)
+@@ -16,7 +_,7 @@
+ public class LootContextParamSets {
+     public static final Codec<ContextKeySet> CODEC = BuiltInRegistries.CONTEXT_KEY_SET.byNameCodec();
+     public static final ContextKeySet EMPTY = register("empty", var0 -> {});
+-    public static final ContextKeySet ALL_PARAMS = register(
++    public static final ContextKeySet ALL_PARAMS = net.neoforged.neoforge.internal.AllParamsKeySet.wrapAndRegister(
+         "generic",
+         builder -> builder.required(LootContextParams.THIS_ENTITY)
+             .required(LootContextParams.LAST_DAMAGE_PLAYER)
+@@ -35,7 +_,7 @@
              .required(LootContextParams.ENCHANTMENT_ACTIVE)
              .required(LootContextParams.ENCHANTMENT_LEVEL)
-+            .required(net.neoforged.neoforge.common.loot.NeoForgeLootContextParams.QUERIED_STACK)
      );
 -    public static final ContextKeySet CHEST = register("chest", builder -> builder.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY));
 +    public static final ContextKeySet CHEST = register("chest", builder -> builder.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY).optional(LootContextParams.ATTACKING_ENTITY)); //Neo: Chest minecarts can have killer entities
