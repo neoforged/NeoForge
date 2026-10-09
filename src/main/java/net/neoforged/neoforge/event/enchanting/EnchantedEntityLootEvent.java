@@ -26,47 +26,47 @@ import org.jetbrains.annotations.Nullable;
  * If you do not need the additional context of this event, prefer {@link GetEnchantmentLevelEvent} for managing enchantment levels.
  */
 public class EnchantedEntityLootEvent extends LivingEvent {
-  private final DamageSource damageSource;
-  private final Holder<Enchantment> enchantment;
-  private int enchantmentLevel;
+    private final DamageSource damageSource;
+    private final Holder<Enchantment> enchantment;
+    private int enchantmentLevel;
 
-  @ApiStatus.Internal
-  public EnchantedEntityLootEvent(LivingEntity entity, DamageSource damageSource, Holder<Enchantment> enchantment, int enchantmentLevel) {
-    super(entity);
-    this.damageSource = damageSource;
-    this.enchantment = enchantment;
-    this.enchantmentLevel = enchantmentLevel;
-  }
+    @ApiStatus.Internal
+    public EnchantedEntityLootEvent(LivingEntity entity, DamageSource damageSource, Holder<Enchantment> enchantment, int enchantmentLevel) {
+        super(entity);
+        this.damageSource = damageSource;
+        this.enchantment = enchantment;
+        this.enchantmentLevel = enchantmentLevel;
+    }
 
-  /**
-   * Returns the entity that is dropping loot. This is generally the entity that was killed.
-   * <p>
-   * To get the attacking entity, use the {@link #getDamageSource() damage source}.
-   */
-  @Override
-  public LivingEntity getEntity() {
-    return super.getEntity();
-  }
+    /**
+     * Returns the entity that is dropping loot. This is generally the entity that was killed.
+     * <p>
+     * To get the attacking entity, use the {@link #getDamageSource() damage source}.
+     */
+    @Override
+    public LivingEntity getEntity() {
+        return super.getEntity();
+    }
 
-  public DamageSource getDamageSource() {
-    return this.damageSource;
-  }
+    public DamageSource getDamageSource() {
+        return this.damageSource;
+    }
 
-  public Holder<Enchantment> getEnchantment() {
-    return this.enchantment;
-  }
+    public Holder<Enchantment> getEnchantment() {
+        return this.enchantment;
+    }
 
-  public int getEnchantmentLevel() {
-    return this.enchantmentLevel;
-  }
+    public int getEnchantmentLevel() {
+        return this.enchantmentLevel;
+    }
 
-  /**
-   * Sets the new enchantment level.
-   *
-   * @throws IllegalArgumentException if the enchantment level is negative.
-   */
-  public void setEnchantmentLevel(int enchantmentLevel) {
-    Preconditions.checkArgument(enchantmentLevel >= 0, "Enchantment level cannot be negative");
-    this.enchantmentLevel = enchantmentLevel;
-  }
+    /**
+     * Sets the new enchantment level.
+     *
+     * @throws IllegalArgumentException if the enchantment level is negative.
+     */
+    public void setEnchantmentLevel(int enchantmentLevel) {
+        Preconditions.checkArgument(enchantmentLevel >= 0, "Enchantment level cannot be negative");
+        this.enchantmentLevel = enchantmentLevel;
+    }
 }

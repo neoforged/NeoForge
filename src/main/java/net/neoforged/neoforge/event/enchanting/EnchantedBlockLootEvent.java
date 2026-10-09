@@ -27,40 +27,40 @@ import org.jetbrains.annotations.ApiStatus;
  * If you do not need the additional context of this event, prefer {@link GetEnchantmentLevelEvent} for managing enchantment levels.
  */
 public class EnchantedBlockLootEvent extends BlockEvent {
-  private final ItemStack tool;
-  private final Holder<Enchantment> enchantment;
-  private int enchantmentLevel;
+    private final ItemStack tool;
+    private final Holder<Enchantment> enchantment;
+    private int enchantmentLevel;
 
-  @ApiStatus.Internal
-  public EnchantedBlockLootEvent(ServerLevel level, BlockPos pos, BlockState state, ItemStack tool, Holder<Enchantment> enchantment, int enchantmentLevel) {
-    super(level, pos, state);
-    this.tool = tool;
-    this.enchantment = enchantment;
-    this.enchantmentLevel = enchantmentLevel;
-  }
+    @ApiStatus.Internal
+    public EnchantedBlockLootEvent(ServerLevel level, BlockPos pos, BlockState state, ItemStack tool, Holder<Enchantment> enchantment, int enchantmentLevel) {
+        super(level, pos, state);
+        this.tool = tool;
+        this.enchantment = enchantment;
+        this.enchantmentLevel = enchantmentLevel;
+    }
 
-  /**
-   * {@return the tool used to break the block, from {@link LootContextParams#TOOL}}
-   */
-  public ItemStack getTool() {
-    return tool;
-  }
+    /**
+     * {@return the tool used to break the block, from {@link LootContextParams#TOOL}}
+     */
+    public ItemStack getTool() {
+        return tool;
+    }
 
-  public Holder<Enchantment> getEnchantment() {
-    return this.enchantment;
-  }
+    public Holder<Enchantment> getEnchantment() {
+        return this.enchantment;
+    }
 
-  public int getEnchantmentLevel() {
-    return this.enchantmentLevel;
-  }
+    public int getEnchantmentLevel() {
+        return this.enchantmentLevel;
+    }
 
-  /**
-   * Sets the new enchantment level.
-   *
-   * @throws IllegalArgumentException if the enchantment level is negative.
-   */
-  public void setEnchantmentLevel(int enchantmentLevel) {
-    Preconditions.checkArgument(enchantmentLevel >= 0, "Enchantment level cannot be negative");
-    this.enchantmentLevel = enchantmentLevel;
-  }
+    /**
+     * Sets the new enchantment level.
+     *
+     * @throws IllegalArgumentException if the enchantment level is negative.
+     */
+    public void setEnchantmentLevel(int enchantmentLevel) {
+        Preconditions.checkArgument(enchantmentLevel >= 0, "Enchantment level cannot be negative");
+        this.enchantmentLevel = enchantmentLevel;
+    }
 }
