@@ -1,0 +1,10 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:registered",
+      "registry": "minecraft:worldgen/biome",
+      "value": "minecraft:plains"
+    }
+  ],
+  "type": "minecraft:crafting_special_repairitem"
+}

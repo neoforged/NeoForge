@@ -1,0 +1,9 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:tag_empty",
+      "tag": "c:drinks/juice"
+    }
+  ],
+  "type": "minecraft:crafting_special_repairitem"
+}

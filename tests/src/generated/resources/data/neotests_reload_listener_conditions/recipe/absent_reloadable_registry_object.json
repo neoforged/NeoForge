@@ -1,0 +1,13 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:registered",
+        "registry": "minecraft:loot_table",
+        "value": "nope:no_such_loot_table"
+      }
+    }
+  ],
+  "type": "minecraft:crafting_special_repairitem"
+}

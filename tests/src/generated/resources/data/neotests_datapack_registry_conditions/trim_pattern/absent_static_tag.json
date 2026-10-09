@@ -1,0 +1,11 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:tag_empty",
+      "tag": "nope:no_such_item_tag"
+    }
+  ],
+  "asset_id": "neotests_datapack_registry_conditions:absent_static_tag",
+  "decal": false,
+  "description": ""
+}
