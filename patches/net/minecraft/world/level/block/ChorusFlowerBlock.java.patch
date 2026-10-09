@@ -20,9 +20,9 @@
                      for (int i = 0; i < 4; i++) {
                          BlockState testState = level.getBlockState(pos.below(height + 1));
                          if (!testState.is(this.plant)) {
-+                            var soilDecision2 = testState.canSustainPlant(level, pos.below(height + 1), Direction.UP, state);
-+                            if (!soilDecision2.isDefault()) {
-+                                pillarOnSupportBlock = soilDecision2.isTrue();
++                            var lowerSoilDecision = testState.canSustainPlant(level, pos.below(height + 1), Direction.UP, state);
++                            if (!lowerSoilDecision.isDefault()) {
++                                pillarOnSupportBlock = lowerSoilDecision.isTrue();
 +                            } else
                              if (testState.is(BlockTags.SUPPORTS_CHORUS_FLOWER)) {
                                  pillarOnSupportBlock = true;

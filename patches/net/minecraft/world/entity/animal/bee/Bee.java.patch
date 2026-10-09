@@ -14,8 +14,8 @@
      }
  
 +    /// @deprecated Neo: use [#jumpInFluid] instead
-     @Override
 +    @Deprecated
+     @Override
      protected void jumpInLiquid(TagKey<Fluid> type) {
 +        this.jumpInLiquidInternal();
 +    }
