@@ -8,7 +8,7 @@
 +        // Neo: Apply forced foreground color if set
 +        Component message = this.getMessage();
 +        if (this.textColor != null) {
-+            message = message.copy().withStyle(style -> style.withColor(this.getTextColor()));
++            message = message.copy().withStyle(style -> style.withColor(this.getTextColor().color()));
 +        }
 +
 +        this.extractScrollingStringOverContents(output, message, 2);
