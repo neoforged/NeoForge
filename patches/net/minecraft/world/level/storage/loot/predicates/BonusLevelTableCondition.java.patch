@@ -6,7 +6,7 @@
          int level = tool != null ? EnchantmentHelper.getItemEnchantmentLevel(this.enchantment, tool) : 0;
 +
 +        // Neo: Allow mods to modify the enchantment level for loot calculations with relevant context.
-+        level = net.neoforged.neoforge.event.EventHooks.getBlockLootEnchantmentLevel(tool, this.enchantment, level, context);
++        if (tool != null) level = net.neoforged.neoforge.event.EventHooks.getBlockLootEnchantmentLevel(tool, this.enchantment, level, context);
 +
          float chance = this.values.get(Math.min(level, this.values.size() - 1));
          return context.getRandom().nextFloat() < chance;
