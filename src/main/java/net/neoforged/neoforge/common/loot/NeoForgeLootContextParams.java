@@ -17,7 +17,6 @@ public final class NeoForgeLootContextParams {
     public static final ContextKey<ItemInstance> QUERIED_STACK = new ContextKey<>(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "queried_stack"));
     public static final ContextKey<Direction> DIRECTION = new ContextKey<>(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "direction"));
 
-
     private NeoForgeLootContextParams() {}
 
     public static void registerParams(RegisterLootContextParamsEvent event) {
