@@ -7,7 +7,7 @@
 +        return createMobHead((SkullBlock.Type) type);
 +    }
 +
-+    /// Neo: overload with support for custom [SkullBlock.Type]s
++    /// Neo: overload with support for custom [SkullBlock.Types][SkullBlock.Type]
 +    public static BuiltInBlockModels.SpecialModelFactory createMobHead(SkullBlock.Type type) {
          return specialModelWithPropertyDispatch(
              SkullBlock.ROTATION, rotation -> special(new SkullSpecialRenderer.Unbaked(type), SkullBlockRenderer.TRANSFORMATIONS.freeTransformations(rotation))
@@ -18,7 +18,7 @@
 +        return createMobWallHead((SkullBlock.Type) type);
 +    }
 +
-+    /// Neo: overload with support for custom [SkullBlock.Type]s
++    /// Neo: overload with support for custom [SkullBlock.Types][SkullBlock.Type]
 +    public static BuiltInBlockModels.SpecialModelFactory createMobWallHead(SkullBlock.Type type) {
          return specialModelWithPropertyDispatch(
              WallSkullBlock.FACING, facing -> special(new SkullSpecialRenderer.Unbaked(type), SkullBlockRenderer.TRANSFORMATIONS.wallTransformation(facing))
@@ -29,7 +29,7 @@
 +        createMobHeads(builder, (SkullBlock.Type) type, ground, wall);
 +    }
 +
-+    /// Neo: overload with support for custom [SkullBlock.Type]s
++    /// Neo: overload with support for custom [SkullBlock.Types][SkullBlock.Type]
 +    public static void createMobHeads(BuiltInBlockModels.Builder builder, SkullBlock.Type type, Block ground, Block wall) {
          builder.put(createMobHead(type), ground);
          builder.put(createMobWallHead(type), wall);

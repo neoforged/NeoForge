@@ -124,7 +124,7 @@
      }
  
      private void setFlammable(Block block, int igniteOdds, int burnOdds) {
-+        if (block == Blocks.AIR) {
++        if (block instanceof AirBlock) {
 +            throw new IllegalArgumentException("Tried to set air on fire... This is bad.");
 +        }
          this.igniteOdds.put(block, igniteOdds);

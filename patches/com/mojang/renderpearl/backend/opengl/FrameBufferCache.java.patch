@@ -21,11 +21,12 @@
  
              for (int i = 0; i < colorAttachmentCount; i++) {
                  FrameBufferAttachment attachment = colorAttachments.get(i);
-@@ -93,6 +_,7 @@
+@@ -93,6 +_,8 @@
              if (depthAttachment != null) {
                  this.data[colorAttachmentCount * 2] = depthAttachment.glId();
                  this.data[colorAttachmentCount * 2 + 1] = depthAttachment.fboMipLevel() + mipOffset;
-+                this.data[colorAttachmentCount * 2 + 2] = depthAttachment.hasStencilAspect() ? 1 : 0; // Neo: take stencil buffer into account
++                // Neo: take stencil buffer into account
++                this.data[colorAttachmentCount * 2 + 2] = depthAttachment.hasStencilAspect() ? 1 : 0;
                  this.associatedAttachments.add(depthAttachment);
              }
  
