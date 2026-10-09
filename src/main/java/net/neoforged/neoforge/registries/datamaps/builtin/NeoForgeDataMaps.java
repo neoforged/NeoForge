@@ -20,6 +20,7 @@ import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
@@ -185,10 +186,10 @@ public class NeoForgeDataMaps {
     public static final DataMapType<Block, Waxable> WAXABLES = DataMapType.builder(
             id("waxables"), Registries.BLOCK, Waxable.CODEC).synced(Waxable.CODEC, false).build();
 
-    /// The [Block] data map that replaces [FireBlock#igniteOdds][net.minecraft.world.level.block.FireBlock#igniteOdds] and [FireBlock#burnOdds][net.minecraft.world.level.block.FireBlock#burnOdds].
-    /// <p>
+    /// The [Block] data map that replaces [FireBlock#igniteOdds] and [FireBlock#burnOdds].
+    ///
     /// The location of this data map is `neoforge/data_maps/block/flammable.json`, and the values are objects with 1 field:
-    /// </ul>
+    ///
     public static final DataMapType<Block, Flammable> FLAMMABLE = DataMapType.builder(
             id("flammable"), Registries.BLOCK, Flammable.CODEC).synced(Flammable.CODEC, false).build();
 
