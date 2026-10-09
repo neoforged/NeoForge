@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/storage/loot/predicates/LootItemRandomChanceWithEnchantedBonusCondition.java
++++ b/net/minecraft/world/level/storage/loot/predicates/LootItemRandomChanceWithEnchantedBonusCondition.java
+@@ -43,6 +_,10 @@
+     public boolean test(LootContext p_345165_) {
+         Entity entity = p_345165_.getParamOrNull(LootContextParams.ATTACKING_ENTITY);
+         int i = entity instanceof LivingEntity livingentity ? EnchantmentHelper.getEnchantmentLevel(this.enchantment, livingentity) : 0;
++
++        // Neo: Allow mods to modify the enchantment level for loot calculations with relevant context.
++        i = net.neoforged.neoforge.event.EventHooks.getEntityLootEnchantmentLevel(this.enchantment, i, p_345165_);
++
+         float f = i > 0 ? this.enchantedChance.calculate(i) : this.unenchantedChance;
+         return p_345165_.getRandom().nextFloat() < f;
+     }

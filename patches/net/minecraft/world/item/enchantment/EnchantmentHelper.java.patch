@@ -44,6 +44,34 @@
              if (itemenchantments != null && !itemenchantments.isEmpty()) {
                  EnchantedItemInUse enchantediteminuse = new EnchantedItemInUse(p_44852_, p_345566_, p_345792_);
  
+@@ -332,7 +_,12 @@
+             LootContext lootcontext = Enchantment.damageContext(p_346339_, p_347321_, p_345864_, p_345060_);
+             p_347320_.value().getEffects(EnchantmentEffectComponents.EQUIPMENT_DROPS).forEach(p_347345_ -> {
+                 if (p_347345_.enchanted() == EnchantmentTarget.VICTIM && p_347345_.affected() == EnchantmentTarget.VICTIM && p_347345_.matches(lootcontext)) {
+-                    mutablefloat.setValue(p_347345_.effect().process(p_347321_, randomsource, mutablefloat.floatValue()));
++
++                    // Neo: Allow mods to modify the enchantment level for loot calculations with relevant context.
++                    int realLevel = net.neoforged.neoforge.event.EventHooks.getEntityLootEnchantmentLevel(p_347320_, p_347321_, lootcontext);
++                    if (realLevel == 0) return;
++
++                    mutablefloat.setValue(p_347345_.effect().process(realLevel, randomsource, mutablefloat.floatValue()));
+                 }
+             });
+         });
+@@ -348,7 +_,12 @@
+                                 if (p_347327_.enchanted() == EnchantmentTarget.ATTACKER
+                                     && p_347327_.affected() == EnchantmentTarget.VICTIM
+                                     && p_347327_.matches(lootcontext)) {
+-                                    mutablefloat.setValue(p_347327_.effect().process(p_347339_, randomsource, mutablefloat.floatValue()));
++
++                                    // Neo: Allow mods to modify the enchantment level for loot calculations with relevant context.
++                                    int realLevel = net.neoforged.neoforge.event.EventHooks.getEntityLootEnchantmentLevel(p_347338_, p_347339_, lootcontext);
++                                    if (realLevel == 0) return;
++
++                                    mutablefloat.setValue(p_347327_.effect().process(realLevel, randomsource, mutablefloat.floatValue()));
+                                 }
+                             }
+                         );
 @@ -417,6 +_,12 @@
      public static boolean hasTag(ItemStack p_345665_, TagKey<Enchantment> p_345928_) {
          ItemEnchantments itemenchantments = p_345665_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
