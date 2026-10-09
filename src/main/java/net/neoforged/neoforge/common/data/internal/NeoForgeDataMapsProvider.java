@@ -37,6 +37,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.level.levelgen.feature.MonsterRoomFeature;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.data.DataMapProvider;
 import net.neoforged.neoforge.registries.datamaps.builtin.AcceptableVillagerDistance;
@@ -103,7 +104,7 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
         final Object2IntMap<Block> burnOdds = ObfuscationReflectionHelper.getPrivateValue(FireBlock.class, fire, "burnOdds");
         igniteOdds.forEach((block, value) -> {
             int burnOddsValue = burnOdds.getOrDefault(block, 0);
-            flammables.add(block.builtInRegistryHolder(), new Flammable(burnOddsValue, value), false);
+            flammables.add(block.builtInRegistryHolder(), new Flammable(ContextIntProviders.exactly(burnOddsValue), ContextIntProviders.exactly(value)), false);
         });
     }
 }

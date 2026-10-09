@@ -65,7 +65,7 @@
                  BlockPos.MutableBlockPos testPos = new BlockPos.MutableBlockPos();
  
                  for (int xx = -1; xx <= 1; xx++) {
-@@ -214,33 +_,46 @@
+@@ -214,33 +_,33 @@
              || level.isRainingAt(testPos.south());
      }
  
@@ -74,35 +74,18 @@
      public int getBurnOdds(BlockState state) {
          return state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)
              ? 0
--            : this.burnOdds.getInt(state.getBlock());
-+//            : this.burnOdds.getInt(state.getBlock());
-+            : getBurnOdds(state.getBlock());
+             : this.burnOdds.getInt(state.getBlock());
      }
  
 +    @Deprecated //Forge: Use IForgeBlockState.getFireSpreadSpeed
      public int getIgniteOdds(BlockState state) {
          return state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)
              ? 0
--            : this.igniteOdds.getInt(state.getBlock());
--    }
--
+             : this.igniteOdds.getInt(state.getBlock());
+     }
+ 
 -    private void checkBurnOut(Level level, BlockPos pos, int chance, RandomSource random, int age) {
 -        int odds = this.getBurnOdds(level.getBlockState(pos));
-+//            : this.igniteOdds.getInt(state.getBlock());
-+            : getIgniteOdds(state.getBlock());
-+    }
-+
-+
-+    private static int getIgniteOdds(Block block) {
-+        var flammable = block.builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.FLAMMABLE);
-+        return flammable != null ? flammable.fireSpreadSpeed() : 0;
-+    }
-+
-+    private static int getBurnOdds(Block block) {
-+        var flammable = block.builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.FLAMMABLE);
-+        return flammable != null ? flammable.flammability() : 0;
-+    }
-+
 +    private void checkBurnOut(Level level, BlockPos pos, int chance, RandomSource random, int age, Direction face) {
 +        int odds = level.getBlockState(pos).getFlammability(level, pos, face);
          if (random.nextInt(chance) < odds) {
