@@ -1,11 +1,12 @@
 --- a/net/minecraft/world/entity/EntityEquipment.java
 +++ b/net/minecraft/world/entity/EntityEquipment.java
-@@ -64,6 +_,8 @@
+@@ -64,6 +_,9 @@
          for (ItemStack item : this.items.values()) {
              ItemEntity drop = dropper.createItemStackToDrop(item, true, false);
              if (drop != null) {
-+                if (dropper.captureDrops() != null) dropper.captureDrops().add(drop);
-+                else
++                if (dropper.captureDrops() != null) {
++                    dropper.captureDrops().add(drop);
++                } else
                  dropper.level().addFreshEntity(drop);
              }
          }

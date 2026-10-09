@@ -9,7 +9,7 @@
  public enum DeathMessageType implements StringRepresentable, IExtensibleEnum {
      DEFAULT("default"),
      FALL_VARIANTS("fall_variants"),
-@@ -12,13 +_,46 @@
+@@ -12,13 +_,42 @@
  
      public static final Codec<DeathMessageType> CODEC = StringRepresentable.fromEnum(DeathMessageType::values);
      private final String id;
@@ -20,20 +20,17 @@
 +        this(id, net.neoforged.neoforge.common.damagesource.IDeathMessageProvider.DEFAULT);
 +    }
 +
-+    /**
-+     * Creates a new DeathMessageType with the specified ID and death message provider. Store the created enum in a static final field.<p>
-+     * Use an enumextender.json to link to your {@link net.neoforged.fml.common.asm.enumextension.EnumProxy} in order to create new entries for this enum.<p>
-+     * Example usage:
-+     * {@snippet :
-+     * public static final EnumProxy<DeathMessageType> CUSTOM_FUNCTION = new EnumProxy<>(
-+     *             DeathMessageType.class,
-+     *             "mymod:custom",
-+     *             MyDeathMessageTypes.CUSTOM_MESSAGE_PROVIDER::value);
-+     * }
-+     * @param id The {@linkplain StringRepresentable#getSerializedName() serialized name}. Prefix this with your modid and `:`
-+     * @param msgFunction The provider to use for determine when to display the message.
-+     * @apiNote This method must be called as early as possible, as if {@link #CODEC} is resolved before this is called, it will be unusable.
-+     */
++    /// Creates a new DeathMessageType with the specified ID and death message provider. Store the created enum in a static final field.
++    ///
++    /// Use an enumextender.json to link to your [net.neoforged.fml.common.asm.enumextension.EnumProxy] in order to create new entries for this enum.
++    ///
++    /// Example usage:
++    /// ```java
++    /// public static final EnumProxy<DeathMessageType> CUSTOM_FUNCTION = new EnumProxy<>(DeathMessageType.class, "mymod:custom", MyDeathMessageTypes.CUSTOM_MESSAGE_PROVIDER::value);
++    /// ```
++    ///
++    /// @param id The [serialized name][StringRepresentable#getSerializedName()]. Prefix this with your modid and \`:\`
++    /// @param msgFunction The provider to use for determine when to display the message.
 +    private DeathMessageType(String id, net.neoforged.neoforge.common.damagesource.IDeathMessageProvider msgFunction) {
          this.id = id;
 +        this.msgFunction = msgFunction;
@@ -44,10 +41,9 @@
          return this.id;
 +    }
 +
-+    /**
-+     * The death message function is used when an entity dies to a damage type with this death message type.
-+     * @return The {@link net.neoforged.neoforge.common.damagesource.IDeathMessageProvider} associated with this death message type.
-+     */
++    /// Neo: The death message function is used when an entity dies to a damage type with this death message type.
++    ///
++    /// @return The [net.neoforged.neoforge.common.damagesource.IDeathMessageProvider] associated with this death message type.
 +    public net.neoforged.neoforge.common.damagesource.IDeathMessageProvider getMessageFunction() {
 +        return this.msgFunction;
 +    }

@@ -1,49 +1,41 @@
 --- a/net/minecraft/world/item/enchantment/Enchantment.java
 +++ b/net/minecraft/world/item/enchantment/Enchantment.java
-@@ -118,6 +_,10 @@
+@@ -118,6 +_,8 @@
          return itemStacks;
      }
  
-+    /**
-+     * @deprecated Neo: Use {@link ItemStack#supportsEnchantment(Holder)}
-+     */
++    /// @deprecated Neo: Use [ItemStack#supportsEnchantment(Holder)]
 +    @Deprecated
      public HolderSet<Item> getSupportedItems() {
          return this.definition.supportedItems();
      }
-@@ -126,10 +_,20 @@
+@@ -126,10 +_,16 @@
          return this.definition.slots().stream().anyMatch(group -> group.test(slot));
      }
  
-+    /**
-+     * @deprecated Neo: Use {@link ItemStack#isPrimaryItemFor(Holder)}
-+     *
-+     * This method does not respect {@link ItemStack#supportsEnchantment(Holder)} since the {@link Holder} is not available, which makes the result of calling it invalid.
-+     */
++    /// @deprecated Neo: Use [ItemStack#isPrimaryItemFor(Holder)]
++    ///
++    /// This method does not respect [ItemStack#supportsEnchantment(Holder)] since the [Holder] is not available, which makes the result of calling it invalid.
 +    @Deprecated
      public boolean isPrimaryItem(ItemStack item) {
          return this.isSupportedItem(item) && (this.definition.primaryItems.isEmpty() || item.is(this.definition.primaryItems.get()));
      }
  
-+    /**
-+     * @deprecated Neo: Use {@link ItemStack#supportsEnchantment(Holder)}
-+     */
++    /// @deprecated Neo: Use [ItemStack#supportsEnchantment(Holder)]
 +    @Deprecated
      public boolean isSupportedItem(ItemStack item) {
          return item.is(this.definition.supportedItems);
      }
-@@ -182,6 +_,10 @@
+@@ -182,6 +_,8 @@
          return result;
      }
  
-+    /**
-+     * @deprecated Neo: Use {@link ItemStack#supportsEnchantment(Holder)}
-+     */
++    /// @deprecated Neo: Use [ItemStack#supportsEnchantment(Holder)]
 +    @Deprecated
      public boolean canEnchant(ItemStack itemStack) {
          return this.definition.supportedItems().contains(itemStack.typeHolder());
      }
-@@ -521,12 +_,26 @@
+@@ -521,11 +_,22 @@
          return new Enchantment.Builder(definition);
      }
  
@@ -61,24 +53,18 @@
          private HolderSet<Enchantment> exclusiveSet = HolderSet.empty();
          private final Map<DataComponentType<?>, List<?>> effectLists = new HashMap<>();
          private final DataComponentMap.Builder effectMapBuilder = DataComponentMap.builder();
- 
-+        /**
-+         * Neo: Allow customizing or changing the {@link Component} created by the enchantment builder.
-+         */
++        /// Neo: Allow customizing or changing the [Component] created by the enchantment builder.
 +        protected java.util.function.UnaryOperator<MutableComponent> nameFactory = java.util.function.UnaryOperator.identity();
-+
+ 
          public Builder(Enchantment.EnchantmentDefinition definition) {
              this.definition = definition;
-         }
-@@ -579,6 +_,16 @@
+@@ -579,6 +_,14 @@
              return this;
          }
  
-+        /**
-+         * Allows specifying an operator that can customize the default {@link Component} created by {@link #build(Identifier)}.
-+         *
-+         * @return this
-+         */
++        /// Allows specifying an operator that can customize the default [Component] created by [#build(Identifier)].
++        ///
++        /// @return this
 +        public Enchantment.Builder withCustomName(java.util.function.UnaryOperator<MutableComponent> nameFactory) {
 +            this.nameFactory = nameFactory;
 +            return this;

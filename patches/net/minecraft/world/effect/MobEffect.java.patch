@@ -1,13 +1,11 @@
 --- a/net/minecraft/world/effect/MobEffect.java
 +++ b/net/minecraft/world/effect/MobEffect.java
-@@ -68,6 +_,16 @@
+@@ -68,6 +_,14 @@
          this.particleFactory = ignored -> particleOptions;
      }
  
-+    /**
-+     * Neo: Constructor that can take in the particle factory as a function of the {@link MobEffectInstance}.
-+     * This should be used if the desired {@link ParticleOptions} depends on the presence of other registry entries.
-+     */
++    /// Neo: Constructor that can take in the particle factory as a function of the [MobEffectInstance].
++    /// This should be used if the desired [ParticleOptions] depends on the presence of other registry entries.
 +    protected MobEffect(MobEffectCategory category, int color, Function<MobEffectInstance, ParticleOptions> particleFactory) {
 +        this.category = category;
 +        this.color = color;
@@ -17,17 +15,16 @@
      public int getBlendInDurationTicks() {
          return this.blendInDurationTicks;
      }
-@@ -139,6 +_,18 @@
+@@ -139,6 +_,17 @@
          return this;
      }
  
-+    /**
-+     * Neo: attribute template with custom level curve, for mob effects providing non-linear attribute modifiers.
-+     * @param attribute The attribute of the modifier
-+     * @param id ID of the modifier
-+     * @param operation Operation of the modifier
-+     * @param curve A function mapping effect instance amplifier to modifier amount
-+     */
++    /// Neo: attribute template with custom level curve, for mob effects providing non-linear attribute modifiers.
++    ///
++    /// @param attribute The attribute of the modifier
++    /// @param id ID of the modifier
++    /// @param operation Operation of the modifier
++    /// @param curve A function mapping effect instance amplifier to modifier amount
 +    public MobEffect addAttributeModifier(Holder<Attribute> attribute, Identifier id, AttributeModifier.Operation operation, it.unimi.dsi.fastutil.ints.Int2DoubleFunction curve) {
 +        this.attributeModifiers.put(attribute, new MobEffect.AttributeTemplate(id, curve.apply(0), operation, curve));
 +        return this;
@@ -36,19 +33,18 @@
      public MobEffect setBlendDuration(int ticks) {
          return this.setBlendDuration(ticks, ticks, ticks);
      }
-@@ -196,8 +_,16 @@
+@@ -196,8 +_,15 @@
          return this.requiredFeatures;
      }
  
 -    public record AttributeTemplate(Identifier id, double amount, AttributeModifier.Operation operation) {
 +    public record AttributeTemplate(Identifier id, double amount, AttributeModifier.Operation operation, it.unimi.dsi.fastutil.ints.@Nullable Int2DoubleFunction curve) {
-+
 +        public AttributeTemplate(Identifier id, double amount, AttributeModifier.Operation operation) {
 +            this(id, amount, operation, null);
 +        }
 +
          public AttributeModifier create(int amplifier) {
-+            if (curve != null) { // Neo: Use the custom attribute value curve if one is present
++            if (this.curve != null) { // Neo: Use the custom attribute value curve if one is present
 +                return new AttributeModifier(this.id, this.curve.apply(amplifier), this.operation);
 +            }
              return new AttributeModifier(this.id, this.amount * (amplifier + 1), this.operation);

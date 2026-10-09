@@ -9,7 +9,7 @@
      private final ResourceKey<? extends Registry<T>> key;
      private final ObjectList<Holder.Reference<T>> byId = new ObjectArrayList<>(256);
      private final Reference2IntMap<T> toId = Util.make(new Reference2IntOpenHashMap<>(), t -> t.defaultReturnValue(-1));
-@@ -86,9 +_,17 @@
+@@ -86,9 +_,18 @@
  
      @Override
      public Holder.Reference<T> register(ResourceKey<T> key, T value, RegistrationInfo registrationInfo) {
@@ -21,8 +21,9 @@
          Objects.requireNonNull(key);
          Objects.requireNonNull(value);
 +        int newId = id;
-+        if (newId > this.getMaxId())
++        if (newId > this.getMaxId()) {
 +            throw new IllegalStateException(String.format(java.util.Locale.ENGLISH, "Invalid id %d - maximum id range of %d exceeded.", newId, this.getMaxId()));
++        }
 +
          if (this.byLocation.containsKey(key.identifier())) {
              throw (IllegalStateException)Util.pauseInIde(new IllegalStateException("Adding duplicate key '" + key + "' to registry"));
@@ -89,13 +90,14 @@
          return getValueFromNullable(result);
      }
  
-@@ -271,6 +_,17 @@
+@@ -271,6 +_,18 @@
          return Objects.requireNonNull(this.componentLookup, "Registry not frozen yet");
      }
  
-+    /** @deprecated Neo: For internal use only. Use the Register events when registering values. */
++    /// @deprecated Neo: For internal use only. Use the Register events when registering values.
 +    @Deprecated
 +    @Override
++    @org.jetbrains.annotations.ApiStatus.Internal
 +    public void unfreeze(boolean clearTags) {
 +        if (clearTags) {
 +            // unbind tags which were bound by the previous freeze
@@ -145,7 +147,7 @@
              @Override
              public void apply() {
                  pendingTags.forEach((id, tag) -> {
-@@ -458,6 +_,55 @@
+@@ -458,6 +_,56 @@
                  MappedRegistry.this.refreshTagsInHolders();
              }
          };
@@ -174,8 +176,9 @@
 +    @Override
 +    protected void registerIdMapping(ResourceKey<T> key, int id) {
 +        this.validateWrite(key);
-+        if (id > this.getMaxId())
++        if (id > this.getMaxId()) {
 +            throw new IllegalStateException(String.format(java.util.Locale.ENGLISH, "Invalid id %d - maximum id range of %d exceeded.", id, this.getMaxId()));
++        }
 +        if (0 <= id && id < this.byId.size() && this.byId.get(id) != null) { // Don't use byId() method, it will return the default value if the entry is absent
 +            throw new IllegalStateException("Duplicate id " + id + " for " + key + " and " + this.getKey(this.byId.get(id).value()));
 +        }

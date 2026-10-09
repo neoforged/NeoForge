@@ -8,11 +8,13 @@
  
      public DedicatedServer(
          Thread serverThread,
-@@ -167,6 +_,7 @@
+@@ -167,6 +_,9 @@
          Thread consoleThread = new Thread("Server console handler") {
              @Override
              public void run() {
-+                if (net.neoforged.neoforge.server.console.TerminalHandler.handleCommands(DedicatedServer.this)) return;
++                if (net.neoforged.neoforge.server.console.TerminalHandler.handleCommands(DedicatedServer.this)) {
++                    return;
++                }
                  BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
  
                  String line;

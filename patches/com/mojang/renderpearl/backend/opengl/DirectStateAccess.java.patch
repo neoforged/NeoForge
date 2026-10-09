@@ -1,10 +1,11 @@
 --- a/com/mojang/renderpearl/backend/opengl/DirectStateAccess.java
 +++ b/com/mojang/renderpearl/backend/opengl/DirectStateAccess.java
-@@ -40,10 +_,18 @@
+@@ -40,10 +_,20 @@
  
      public abstract int createFrameBufferObject();
  
 -    public abstract void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot);
++    /// Neo: add ability to control whether the stencil buffer of the given depth texture is bound.
 +    public abstract void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot, boolean useStencil);
 +
 +    public void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot) {
@@ -16,6 +17,7 @@
 +        this.bindFrameBufferTextures(fbo, color, depth, mipLevel, bindSlot, false);
 +    }
 +
++    /// Neo: add ability to control whether the stencil buffer of the given depth texture is bound.
 +    public void bindFrameBufferTextures(int fbo, int color, int depth, int mipLevel, int bindSlot, boolean useStencil) {
 +        this.bindFrameBufferTextures(fbo, new int[]{color}, new int[]{mipLevel}, depth, mipLevel, bindSlot, useStencil);
      }

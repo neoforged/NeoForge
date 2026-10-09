@@ -12,7 +12,7 @@
      public <U> RegistryOps<U> withParent(DynamicOps<U> parent) {
          return (RegistryOps<U>)(parent == this.delegate ? this : new RegistryOps<>(parent, this.lookupProvider));
      }
-@@ -71,6 +_,24 @@
+@@ -71,6 +_,25 @@
              .forGetter(var0 -> null);
      }
  
@@ -22,13 +22,14 @@
 +    /// as within a custom holderset like `AnyHolderSet` or `NotHolderSet`.
 +    public static <E> com.mojang.serialization.MapCodec<HolderLookup.RegistryLookup<E>> retrieveRegistryLookup(ResourceKey<? extends Registry<? extends E>> resourceKey) {
 +        return ExtraCodecs.retrieveContext(ops -> {
-+            if (!(ops instanceof RegistryOps<?> registryOps))
++            if (!(ops instanceof RegistryOps<?> registryOps)) {
 +                return DataResult.error(() -> "Not a registry ops");
++            }
 +
 +            return registryOps.lookupProvider.fullLookup(resourceKey).map(registryInfo -> {
-+                if (!(registryInfo instanceof HolderLookup.RegistryLookup<E> registryLookup))
++                if (!(registryInfo instanceof HolderLookup.RegistryLookup<E> registryLookup)) {
 +                    return DataResult.<HolderLookup.RegistryLookup<E>>error(() -> "Found holder getter but was not a registry lookup for " + resourceKey);
-+
++                }
 +                return DataResult.success(registryLookup, registryLookup.registryLifecycle());
 +            }).orElseGet(() -> DataResult.error(() -> "Unknown registry: " + resourceKey));
 +        });

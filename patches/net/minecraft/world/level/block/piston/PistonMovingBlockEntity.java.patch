@@ -5,7 +5,7 @@
              if (!entities.isEmpty()) {
                  List<AABB> shapeAabbs = shape.toAabbs();
 -                boolean causeBounce = self.movedState.is(Blocks.SLIME_BLOCK);
-+                boolean causeBounce = self.movedState.isSlimeBlock(); //TODO: is this patch really needed the logic of the original seems sound revisit later
++                boolean causeBounce = self.movedState.isSlimeBlock();
  
                  for (Entity entity : entities) {
                      if (entity.getPistonPushReaction() != PushReaction.IGNORE_ENTITY) {

@@ -8,11 +8,13 @@
      private final MinecraftServer server;
      public volatile boolean running;
      private volatile @Nullable UUID sessionId;
-@@ -56,6 +_,8 @@
+@@ -56,6 +_,10 @@
      }
  
      public void startTcpServerListener(@Nullable InetAddress address, int port) throws IOException {
-+        if (address == null) address = new java.net.InetSocketAddress(port).getAddress();
++        if (address == null) {
++            address = new java.net.InetSocketAddress(port).getAddress();
++        }
 +        net.neoforged.neoforge.network.DualStackUtils.checkIPv6(address);
          synchronized (this.channels) {
              EventLoopGroupHolder eventLoopGroupHolder = EventLoopGroupHolder.remote(this.server.useNativeTransport());

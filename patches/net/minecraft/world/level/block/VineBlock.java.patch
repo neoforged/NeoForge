@@ -1,11 +1,12 @@
 --- a/net/minecraft/world/level/block/VineBlock.java
 +++ b/net/minecraft/world/level/block/VineBlock.java
-@@ -165,7 +_,7 @@
+@@ -165,7 +_,8 @@
      @Override
      protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
          if (level.getGameRules().get(GameRules.SPREAD_VINES)) {
 -            if (random.nextInt(4) == 0) {
-+            if (level.getRandom().nextInt(4) == 0 && level.isAreaLoaded(pos, 4)) { // Forge: check area to prevent loading unloaded chunks
++            // Neo: check area to prevent loading unloaded chunks
++            if (level.getRandom().nextInt(4) == 0 && level.isAreaLoaded(pos, 4)) {
                  Direction testDirection = Direction.getRandom(random);
                  BlockPos abovePos = pos.above();
                  if (testDirection.getAxis().isHorizontal() && !state.getValue(getPropertyForFace(testDirection))) {

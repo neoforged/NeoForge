@@ -8,7 +8,7 @@
 -                if (!this.moveItemStackTo(stack, 0, 1, false)) {
 -                    return ItemStack.EMPTY;
 -                }
-+            } else if (this.moveItemStackTo(stack, 0, 1, false)) { //Forge Fix Shift Clicking in beacons with stacks larger then 1.
++            } else if (this.moveItemStackTo(stack, 0, 1, false)) { // Neo: Fix Shift Clicking in beacons with stacks larger than 1.
 +                return ItemStack.EMPTY;
              } else if (slotIndex >= 1 && slotIndex < 28) {
                  if (!this.moveItemStackTo(stack, 28, 37, false)) {

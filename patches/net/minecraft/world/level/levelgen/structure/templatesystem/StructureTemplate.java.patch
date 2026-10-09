@@ -37,31 +37,21 @@
                                  }
                              }
  
-@@ -375,16 +_,7 @@
-                 }
- 
-                 if (!settings.isIgnoreEntities()) {
--                    this.placeEntities(
--                        level,
--                        position,
--                        settings.getMirror(),
--                        settings.getRotation(),
--                        settings.getRotationPivot(),
--                        boundingBox,
--                        settings.shouldFinalizeEntities(),
+@@ -383,7 +_,8 @@
+                         settings.getRotationPivot(),
+                         boundingBox,
+                         settings.shouldFinalizeEntities(),
 -                        reporter
--                    );
-+                    this.addEntitiesToWorld(level, position, settings, reporter);
++                        reporter,
++                        settings
+                     );
                  }
              }
- 
-@@ -418,6 +_,10 @@
+@@ -418,6 +_,8 @@
          });
      }
  
-+    /**
-+     * @deprecated Forge: Use {@link #processBlockInfos(ServerLevelAccessor, BlockPos, BlockPos, StructurePlaceSettings, List, StructureTemplate)} instead.
-+     */
++    /// @deprecated Neo: Use [#processBlockInfos(ServerLevelAccessor, BlockPos, BlockPos, StructurePlaceSettings, List, StructureTemplate)] instead.
 +    @Deprecated
      public static List<StructureTemplate.StructureBlockInfo> processBlockInfos(
          ServerLevelAccessor level,
@@ -86,74 +76,67 @@
                  }
  
                  if (processedBlockInfo != null) {
-@@ -464,22 +_,30 @@
+@@ -464,6 +_,32 @@
          return processedBlockInfoList;
      }
  
--    private void placeEntities(
--        ServerLevelAccessor level,
--        BlockPos position,
--        Mirror mirror,
--        Rotation rotation,
--        BlockPos pivot,
--        @Nullable BoundingBox boundingBox,
--        boolean finalizeEntities,
--        ProblemReporter problemReporter
--    ) {
--        for (StructureTemplate.StructureEntityInfo entityInfo : this.entityInfoList) {
--            BlockPos blockPos = transform(entityInfo.blockPos, mirror, rotation, pivot).offset(position);
--            if (boundingBox == null || boundingBox.isInside(blockPos)) {
 +
-+    public static List<StructureTemplate.StructureEntityInfo> processEntityInfos(@Nullable StructureTemplate template, LevelAccessor p_215387_0_, BlockPos p_215387_1_, StructurePlaceSettings p_215387_2_, List<StructureTemplate.StructureEntityInfo> p_215387_3_) {
-+        List<StructureTemplate.StructureEntityInfo> list = Lists.newArrayList();
-+        for(StructureTemplate.StructureEntityInfo entityInfo : p_215387_3_) {
-+            Vec3 pos = transformedVec3d(p_215387_2_, entityInfo.pos).add(Vec3.atLowerCornerOf(p_215387_1_));
-+            BlockPos blockpos = calculateRelativePosition(p_215387_2_, entityInfo.blockPos).offset(p_215387_1_);
++    public static List<StructureTemplate.StructureEntityInfo> processEntityInfos(
++        @Nullable StructureTemplate template,
++        LevelAccessor level,
++        BlockPos position,
++        StructurePlaceSettings settings,
++        List<StructureTemplate.StructureEntityInfo> entityInfoList
++    ) {
++        List<StructureTemplate.StructureEntityInfo> list = new ArrayList<>();
++        for (StructureTemplate.StructureEntityInfo entityInfo : entityInfoList) {
++            Vec3 pos = transformedVec3d(settings, entityInfo.pos).add(Vec3.atLowerCornerOf(position));
++            BlockPos blockpos = calculateRelativePosition(settings, entityInfo.blockPos).offset(position);
 +            StructureTemplate.StructureEntityInfo info = new StructureTemplate.StructureEntityInfo(pos, blockpos, entityInfo.nbt);
-+            for (StructureProcessor proc : p_215387_2_.getProcessors()) {
-+                info = proc.processEntity(p_215387_0_, p_215387_1_, entityInfo, info, p_215387_2_, template);
-+                if (info == null)
++            for (StructureProcessor proc : settings.getProcessors()) {
++                info = proc.processEntity(level, position, entityInfo, info, settings, template);
++                if (info == null) {
 +                    break;
++                }
 +            }
-+            if (info != null)
++            if (info != null) {
 +                list.add(info);
++            }
 +        }
 +        return list;
 +    }
 +
-+    private void addEntitiesToWorld(ServerLevelAccessor level, BlockPos position, StructurePlaceSettings placementIn, ProblemReporter problemReporter) {
-+        for(StructureTemplate.StructureEntityInfo entityInfo : processEntityInfos(this, level, position, placementIn, this.entityInfoList)) {
-+            BlockPos blockPos = entityInfo.blockPos; // FORGE: Position will have already been transformed by processEntityInfos
-+            if (placementIn.getBoundingBox() == null || placementIn.getBoundingBox().isInside(blockPos)) {
+     private void placeEntities(
+         ServerLevelAccessor level,
+         BlockPos position,
+@@ -472,14 +_,15 @@
+         BlockPos pivot,
+         @Nullable BoundingBox boundingBox,
+         boolean finalizeEntities,
+-        ProblemReporter problemReporter
++        ProblemReporter problemReporter,
++        StructurePlaceSettings settings
+     ) {
+-        for (StructureTemplate.StructureEntityInfo entityInfo : this.entityInfoList) {
+-            BlockPos blockPos = transform(entityInfo.blockPos, mirror, rotation, pivot).offset(position);
++        for (StructureTemplate.StructureEntityInfo entityInfo : processEntityInfos(this, level, position, settings, this.entityInfoList)) {
++            // Neo: Position will have already been transformed by processEntityInfos()
++            BlockPos blockPos = entityInfo.blockPos;
+             if (boundingBox == null || boundingBox.isInside(blockPos)) {
                  CompoundTag tag = entityInfo.nbt.copy();
 -                Vec3 relativePos = transform(entityInfo.pos, mirror, rotation, pivot);
 -                Vec3 pos = relativePos.add(position.getX(), position.getY(), position.getZ());
-+                Vec3 pos = entityInfo.pos; // FORGE: Position will have already been transformed by processEntityInfos
++                Vec3 pos = entityInfo.pos; // Neo: Position will have already been transformed by processEntityInfos()
                  ListTag posTag = new ListTag();
                  posTag.add(DoubleTag.valueOf(pos.x));
                  posTag.add(DoubleTag.valueOf(pos.y));
-@@ -491,12 +_,12 @@
-                 }
- 
-                 createEntityIgnoreException(problemReporter, level, tag).ifPresent(entity -> {
--                    float yRot = entity.rotate(rotation);
--                    yRot += entity.mirror(mirror) - entity.getYRot();
-+                    float yRot = entity.rotate(placementIn.getRotation());
-+                    yRot += entity.mirror(placementIn.getMirror()) - entity.getYRot();
-                     entity.snapTo(pos.x, pos.y, pos.z, yRot, entity.getXRot());
-                     entity.setYBodyRot(yRot);
-                     entity.setYHeadRot(yRot);
--                    if (finalizeEntities && entity instanceof Mob mob) {
-+                    if (placementIn.shouldFinalizeEntities() && entity instanceof Mob mob) {
-                         mob.finalizeSpawn(level, level.getCurrentDifficultyAt(BlockPos.containing(pos)), EntitySpawnReason.STRUCTURE, null);
-                     }
- 
-@@ -811,7 +_,7 @@
+@@ -811,7 +_,8 @@
  
      public static final class Palette {
          private final List<StructureTemplate.StructureBlockInfo> blocks;
 -        private final Map<Block, List<StructureTemplate.StructureBlockInfo>> cache = Maps.newHashMap();
-+        private final Map<Block, List<StructureTemplate.StructureBlockInfo>> cache = Maps.newConcurrentMap(); // Neo: Fixes MC-271899 - Make the global StructureTemplate's palette caches now thread safe for worldgen
++        // Neo: Fixes MC-271899 - Make the global StructureTemplate's palette caches now thread safe for worldgen
++        private final Map<Block, List<StructureTemplate.StructureBlockInfo>> cache = Maps.newConcurrentMap();
          private @Nullable List<StructureTemplate.JigsawBlockInfo> cachedJigsaws;
  
          private Palette(List<StructureTemplate.StructureBlockInfo> blocks) {

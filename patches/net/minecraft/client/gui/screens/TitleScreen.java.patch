@@ -1,14 +1,6 @@
 --- a/net/minecraft/client/gui/screens/TitleScreen.java
 +++ b/net/minecraft/client/gui/screens/TitleScreen.java
-@@ -113,15 +_,16 @@
-         int copyrightWidth = this.font.width(COPYRIGHT_TEXT);
-         int copyrightX = this.width - copyrightWidth - 2;
-         int spacing = 24;
--        int topPos = this.height / 4 + 48;
-+        int topPos = this.height / 4 + 32;
-         if (this.minecraft.isDemo()) {
-             topPos = this.createDemoMenuOptions(topPos, 24);
-         } else {
+@@ -120,8 +_,9 @@
              topPos = this.createNormalMenuOptions(topPos, 24);
          }
  
@@ -53,12 +45,12 @@
          }
  
 -        graphics.text(this.font, versionString, 2, this.height - 10, ARGB.white(widgetFade));
-+        int brandingColor = ARGB.color(widgetFade, -1);
-+        net.neoforged.neoforge.internal.BrandingControl.forEachLine(true, true, (brdline, brd) ->
-+                graphics.text(this.font, brd, 2, this.height - (10 + brdline * (this.font.lineHeight + 1)), brandingColor)
++        int brandingColor = ARGB.white(widgetFade);
++        net.neoforged.neoforge.internal.BrandingControl.forEachLine(true, true, (index, text) ->
++                graphics.text(this.font, text, 2, this.height - (10 + index * (this.font.lineHeight + 1)), brandingColor)
 +        );
-+        net.neoforged.neoforge.internal.BrandingControl.forEachAboveCopyrightLine((brdline, brd) ->
-+                graphics.text(this.font, brd, this.width - font.width(brd), this.height - (10 + (brdline + 1) * (this.font.lineHeight + 1)), brandingColor)
++        net.neoforged.neoforge.internal.BrandingControl.forEachAboveCopyrightLine((index, text) ->
++                graphics.text(this.font, text, this.width - font.width(text), this.height - (10 + (index + 1) * (this.font.lineHeight + 1)), brandingColor)
 +        );
          if (this.realmsNotificationsEnabled() && widgetFade >= 1.0F) {
              this.realmsNotificationsScreen.extractRenderState(graphics, mouseX, mouseY, a);

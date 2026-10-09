@@ -23,7 +23,7 @@
              );
          }
  
-@@ -437,6 +_,21 @@
+@@ -437,6 +_,25 @@
      public void clearDepthTexture(GpuTexture depthTexture, double clearDepth) {
          try (MemoryStack stack = MemoryStack.stackPush()) {
              this.clearDepthTextureUnsynced(stack, depthTexture, clearDepth);
@@ -31,6 +31,10 @@
 +        }
 +    }
 +
++    /// Neo: clears the stencil bits of the given texture to the given value.
++    ///
++    /// @param texture The texture to clear
++    /// @param value   The value to set the stencil bits to
 +    @Override
 +    public void clearStencilTexture(GpuTexture texture, int value) {
 +        try (MemoryStack stack = MemoryStack.stackPush()) {

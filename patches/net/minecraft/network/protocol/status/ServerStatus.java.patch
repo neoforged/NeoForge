@@ -10,7 +10,7 @@
  ) {
      public static final Codec<ServerStatus> CODEC = RecordCodecBuilder.create(
          i -> i.group(
-@@ -27,10 +_,19 @@
+@@ -27,10 +_,17 @@
                  ServerStatus.Players.CODEC.lenientOptionalFieldOf("players").forGetter(ServerStatus::players),
                  ServerStatus.Version.CODEC.lenientOptionalFieldOf("version").forGetter(ServerStatus::version),
                  ServerStatus.Favicon.CODEC.lenientOptionalFieldOf("favicon").forGetter(ServerStatus::favicon),
@@ -21,9 +21,7 @@
              .apply(i, ServerStatus::new)
      );
 +
-+    /**
-+     * @deprecated Neo: Use {@link #ServerStatus(Component, Optional, Optional, Optional, boolean, boolean)}
-+     */
++    /// @deprecated Neo: Use [#ServerStatus(Component, Optional, Optional, Optional, boolean, boolean)] instead
 +    @Deprecated
 +    public ServerStatus(Component description, Optional<Players> players, Optional<Version> version, Optional<Favicon> favicon, boolean enforcesSecureChat) {
 +        this(description, players, version, favicon, enforcesSecureChat, false);

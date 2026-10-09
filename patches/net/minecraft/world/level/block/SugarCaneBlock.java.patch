@@ -16,12 +16,14 @@
              }
          }
      }
-@@ -85,13 +_,16 @@
+@@ -85,13 +_,18 @@
              return true;
          }
  
 +        var soilDecision = stateBelow.canSustainPlant(level, pos.below(), Direction.UP, state);
-+        if (!soilDecision.isDefault()) return soilDecision.isTrue();
++        if (!soilDecision.isDefault()) {
++            return soilDecision.isTrue();
++        }
          if (stateBelow.is(BlockTags.SUPPORTS_SUGAR_CANE)) {
              BlockPos below = pos.below();
  

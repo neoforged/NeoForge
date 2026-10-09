@@ -39,35 +39,27 @@
          if (keyMappings != null && !keyMappings.isEmpty()) {
              for (KeyMapping keyMapping : keyMappings) {
                  operation.accept(keyMapping);
-@@ -107,8 +_,83 @@
+@@ -107,8 +_,77 @@
          this.registerMapping(this.key);
      }
  
 +    // Neo: Injected Key Mapping constructors to assist modders
-+    /**
-+     * Convenience constructor for creating KeyMappings with keyConflictContext set.
-+     */
++    /// Convenience constructor for creating KeyMappings with keyConflictContext set.
 +    public KeyMapping(String name, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, InputConstants.Type inputType, int keyCode, KeyMapping.Category category) {
 +        this(name, keyConflictContext, inputType.getOrCreate(keyCode), category);
 +    }
 +
-+    /**
-+     * Convenience constructor for creating KeyMappings with keyConflictContext set.
-+     */
++    /// Convenience constructor for creating KeyMappings with keyConflictContext set.
 +    public KeyMapping(String name, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, InputConstants.Key keyCode, KeyMapping.Category category) {
 +        this(name, keyConflictContext, net.neoforged.neoforge.client.settings.KeyModifier.NONE, keyCode, category);
 +    }
 +
-+    /**
-+     * Convenience constructor for creating KeyMappings with keyConflictContext and keyModifier set.
-+     */
++    /// Convenience constructor for creating KeyMappings with keyConflictContext and keyModifier set.
 +    public KeyMapping(String name, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, net.neoforged.neoforge.client.settings.KeyModifier keyModifier, InputConstants.Type inputType, int keyCode, KeyMapping.Category category) {
 +        this(name, keyConflictContext, keyModifier, inputType.getOrCreate(keyCode), category);
 +    }
 +
-+    /**
-+     * Convenience constructor for creating KeyMappings with keyConflictContext and keyModifier set.
-+     */
++    /// Convenience constructor for creating KeyMappings with keyConflictContext and keyModifier set.
 +    public KeyMapping(String name, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, net.neoforged.neoforge.client.settings.KeyModifier keyModifier, InputConstants.Key keyCode, KeyMapping.Category category) {
 +        this.name = name;
 +        this.key = keyCode;
@@ -77,8 +69,9 @@
 +        this.keyConflictContext = keyConflictContext;
 +        this.keyModifier = keyModifier;
 +        this.keyModifierDefault = keyModifier;
-+        if (this.keyModifier.matches(keyCode))
++        if (this.keyModifier.matches(keyCode)) {
 +            this.keyModifier = net.neoforged.neoforge.client.settings.KeyModifier.NONE;
++        }
 +        ALL.put(name, this);
 +        MAP.put(keyCode, this);
 +    }
@@ -111,8 +104,9 @@
 +    @Override
 +    public void setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier keyModifier, InputConstants.Key keyCode) {
 +        this.key = keyCode;
-+        if (keyModifier.matches(keyCode))
++        if (keyModifier.matches(keyCode)) {
 +            keyModifier = net.neoforged.neoforge.client.settings.KeyModifier.NONE;
++        }
 +        MAP.remove(this);
 +        this.keyModifier = keyModifier;
 +        MAP.put(keyCode, this);
@@ -169,13 +163,11 @@
      }
  
      public static @Nullable KeyMapping get(String name) {
-@@ -217,6 +_,10 @@
+@@ -217,6 +_,8 @@
              return register(Identifier.withDefaultNamespace(name));
          }
  
-+        /**
-+         * @deprecated Neo: use {@link net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent#registerCategory(Category)} instead
-+         */
++        /// @deprecated Neo: use [net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent#registerCategory(Category)] instead
 +        @Deprecated
          public static KeyMapping.Category register(Identifier id) {
              KeyMapping.Category category = new KeyMapping.Category(id);

@@ -12,7 +12,7 @@
          return layer >= layers.size() ? null : layers.get(layer);
      }
  
-+    /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.BlockTintSources} */
++    /// @deprecated Neo: Register via [net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.BlockTintSources]
 +    @Deprecated
      public void register(List<BlockTintSource> layers, Block... blocks) {
          for (Block block : blocks) {

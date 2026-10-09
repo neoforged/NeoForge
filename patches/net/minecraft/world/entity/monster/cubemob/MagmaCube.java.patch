@@ -9,15 +9,16 @@
      ) {
          return level.getDifficulty() != Difficulty.PEACEFUL;
      }
-@@ -96,17 +_,28 @@
+@@ -96,17 +_,29 @@
          float sizeJumpBoostPower = this.getSize() * 0.1F;
          this.setDeltaMovement(movement.x, this.getJumpPower() + sizeJumpBoostPower, movement.z);
          this.needsSync = true;
 +        net.neoforged.neoforge.common.CommonHooks.onLivingJump(this);
      }
  
++    /// @deprecated Neo: use [#jumpInFluid] instead
      @Override
-+    @Deprecated // FORGE: use jumpInFluid instead
++    @Deprecated
      protected void jumpInLiquid(TagKey<Fluid> type) {
 -        if (type == FluidTags.LAVA) {
 +        this.jumpInLiquidInternal(() -> type == FluidTags.LAVA, () -> super.jumpInLiquid(type));

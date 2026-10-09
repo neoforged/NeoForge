@@ -18,21 +18,19 @@
 -                String key = readString(input, accounter);
 +            while ((tagType = readNamedTagType(input, accounter)) != 0) {
 +                String key = accounter.readUTF(input.readUTF());
-+                accounter.accountBytes(4); //Forge: 4 extra bytes for the object allocation.
++                accounter.accountBytes(4); // Neo: 4 extra bytes for the object allocation.
                  Tag tag = CompoundTag.readNamedTagData(TagTypes.getType(tagType), key, input, accounter);
                  if (values.put(key, tag) == null) {
                      accounter.accountBytes(36L);
-@@ -167,6 +_,17 @@
+@@ -167,6 +_,15 @@
          this(new HashMap<>());
      }
  
-+    /**
-+     * Neo: create a compound tag that is generally suitable to hold the given amount of entries
-+     * without needing to resize the internal map.
-+     *
-+     * @param expectedEntries the expected number of entries that the compound tag will have
-+     * @see HashMap#newHashMap(int)
-+     */
++    /// Neo: create a compound tag that is generally suitable to hold the given amount of entries
++    /// without needing to resize the internal map.
++    ///
++    /// @param expectedEntries the expected number of entries that the compound tag will have
++    /// @see HashMap#newHashMap(int)
 +    public CompoundTag(int expectedEntries) {
 +        this(HashMap.newHashMap(expectedEntries));
 +    }
@@ -40,11 +38,13 @@
      @Override
      public void write(DataOutput output) throws IOException {
          for (String key : this.tags.keySet()) {
-@@ -221,6 +_,7 @@
+@@ -221,6 +_,9 @@
      }
  
      public @Nullable Tag put(String name, Tag tag) {
-+        if (tag == null) throw new IllegalArgumentException("Invalid null NBT value with key " + name);
++        if (tag == null) {
++            throw new IllegalArgumentException("Invalid null NBT value with key " + name);
++        }
          return this.tags.put(name, tag);
      }
  

@@ -14,11 +14,14 @@
  
              Path pidFilePath = options.valueOf(pidFile);
              if (pidFilePath != null) {
-@@ -107,26 +_,24 @@
+@@ -107,26 +_,27 @@
              Bootstrap.validate();
              Util.startTimerHackThread();
              Path settingsFile = Paths.get("server.properties");
-+            if (!options.has(initSettings)) net.neoforged.neoforge.server.loading.ServerModLoader.load(false); // Load mods before we load almost anything else anymore. Single spot now. Only loads if they haven't passed the initserver param
++            if (!options.has(initSettings)) {
++                // Neo: Load mods before we load almost anything else. Only loads if they haven't passed the initserver param
++                net.neoforged.neoforge.server.loading.ServerModLoader.load(false);
++            }
              DedicatedServerSettings settings = new DedicatedServerSettings(settingsFile);
              settings.forceSave();
              RegionFileVersion.configure(settings.getProperties().regionFileComression);
@@ -46,11 +49,12 @@
              LevelStorageSource levelStorageSource = LevelStorageSource.createDefault(universePath.toPath());
              LevelStorageSource.LevelStorageAccess access = levelStorageSource.validateAndCreateAccess(levelName);
              Dynamic<?> levelDataTag;
-@@ -233,6 +_,7 @@
+@@ -233,6 +_,8 @@
                  @Override
                  public void run() {
                      dedicatedServer.halt(true);
-+                    org.apache.logging.log4j.LogManager.shutdown(); // we're manually managing the logging shutdown on the server. Make sure we do it here at the end.
++                    // Neo: we're manually managing the logging shutdown on the server. Make sure we do it here at the end.
++                    org.apache.logging.log4j.LogManager.shutdown();
                  }
              };
              shutdownThread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(LOGGER));

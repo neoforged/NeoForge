@@ -1,11 +1,12 @@
 --- a/net/minecraft/world/level/block/ConcretePowderBlock.java
 +++ b/net/minecraft/world/level/block/ConcretePowderBlock.java
-@@ -23,7 +_,7 @@
+@@ -23,7 +_,8 @@
  
      @Override
      public void onLand(Level level, BlockPos pos, BlockState state, BlockState replacedBlock, FallingBlockEntity entity) {
 -        if (shouldSolidify(level, pos, replacedBlock)) {
-+        if (shouldSolidify(level, pos, state, replacedBlock.getFluidState())) { // Forge: Use block of falling entity instead of block at replaced position, and check if shouldSolidify with the FluidState of the replaced block
++        // Neo: Use block of falling entity instead of block at replaced position, and check if shouldSolidify with the FluidState of the replaced block
++        if (shouldSolidify(level, pos, state, replacedBlock.getFluidState())) {
              level.setBlockAndUpdate(pos, this.concrete.defaultBlockState());
          }
      }

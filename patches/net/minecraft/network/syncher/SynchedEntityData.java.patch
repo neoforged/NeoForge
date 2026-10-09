@@ -1,10 +1,11 @@
 --- a/net/minecraft/network/syncher/SynchedEntityData.java
 +++ b/net/minecraft/network/syncher/SynchedEntityData.java
-@@ -26,8 +_,10 @@
+@@ -26,8 +_,11 @@
          this.itemsById = itemsById;
      }
  
 +    private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
++
      public static <T> EntityDataAccessor<T> defineId(Class<? extends SyncedDataHolder> clazz, EntityDataSerializer<T> type) {
 -        if (LOGGER.isDebugEnabled()) {
 +        net.neoforged.neoforge.common.CommonHooks.verifyEntityDataAccessorRegistration(STACK_WALKER.getCallerClass(), clazz);

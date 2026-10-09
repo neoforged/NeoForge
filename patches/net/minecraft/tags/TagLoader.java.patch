@@ -4,7 +4,7 @@
  
                      String sourceId = resource.sourcePackId();
                      parsedContents.entries().forEach(ex -> tagContents.add(new TagLoader.EntryWithSource(ex, sourceId)));
-+                    // Make all removal entries optional at runtime to avoid them creating intrusive holders - see NeoForge#2319
++                    // Neo: Make all removal entries optional at runtime to avoid them creating intrusive holders - see NeoForge#2319
 +                    parsedContents.remove().forEach(e -> tagContents.add(new TagLoader.EntryWithSource(e.withRequired(false), sourceId, true)));
                  } catch (Exception e) {
                      LOGGER.error("Couldn't read tag list {} from {} in data pack {}", id, location, resource.sourcePackId(), e);
@@ -32,7 +32,7 @@
      }
  
 -    public record EntryWithSource(TagEntry entry, String source) {
-+    public static record EntryWithSource(TagEntry entry, String source, boolean remove) {
++    public record EntryWithSource(TagEntry entry, String source, boolean remove) {
 +        public EntryWithSource(TagEntry entry, String source) {
 +            this(entry, source, false);
 +        }

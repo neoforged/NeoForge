@@ -30,17 +30,18 @@
      }
  
      protected void spawnAfterBreak(BlockState state, ServerLevel level, BlockPos pos, ItemStack tool, boolean dropExperience) {
-@@ -385,10 +_,13 @@
+@@ -385,10 +_,14 @@
          return this.isRandomlyTicking;
      }
  
-+    @Deprecated //Neo: Use more sensitive version {@link net.neoforged.neoforge.common.extensions.IBlockStateExtension#getSoundType(LevelReader, BlockPos, Entity) }
++    /// @deprecated Neo: Use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#getSoundType(LevelReader, BlockPos, Entity)] instead
++    @Deprecated
      protected SoundType getSoundType(BlockState state) {
          return this.soundType;
      }
  
++    /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.IBlockExtension#getCloneItemStack(LevelReader, BlockPos, BlockState, boolean, Player)] instead
 +    @Deprecated
-+    /** @deprecated Neo: use {@link net.neoforged.neoforge.common.extensions.IBlockExtension#getCloneItemStack(LevelReader, BlockPos, BlockState, boolean, Player) player-sensitive version} */
      protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
          return new ItemStack(this.asItem());
      }
@@ -73,7 +74,7 @@
              return this.useShapeForLightOcclusion;
          }
  
-+        /** @deprecated Neo: Use {@link net.neoforged.neoforge.common.extensions.IBlockStateExtension#getLightEmission(BlockGetter, BlockPos)} instead */
++        /// @deprecated Neo: Use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#getLightEmission(BlockGetter, BlockPos)] instead
 +        @Deprecated
          public int getLightEmission() {
              return this.lightEmission;
@@ -84,7 +85,7 @@
 +            return this.getBlock().isAir((BlockState)this);
          }
  
-+        /** @deprecated Neo: Use {@link net.neoforged.neoforge.common.extensions.IBlockStateExtension#ignitedByLava(BlockGetter, BlockPos, Direction)} instead */
++        /// @deprecated Neo: Use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#ignitedByLava(BlockGetter, BlockPos, Direction)] instead
 +        @Deprecated
          public boolean ignitedByLava() {
              return this.ignitedByLava;
@@ -97,35 +98,40 @@
 +            return getBlock().getMapColor(this.asState(), level, pos, this.mapColor);
          }
  
-+        /** @deprecated use {@link BlockState#rotate(LevelAccessor, BlockPos, Rotation)} */
++        /// @deprecated use [BlockState#rotate(LevelAccessor, BlockPos, Rotation)] instead
 +        @Deprecated
          public BlockState rotate(Rotation rotation) {
              return this.getBlock().rotate(this.asState(), rotation);
          }
-@@ -638,6 +_,8 @@
+@@ -638,6 +_,10 @@
          }
  
          public PushReaction getPistonPushReaction() {
 +            PushReaction reaction = getBlock().getPistonPushReaction(asState());
-+            if (reaction != null) return reaction;
++            if (reaction != null) {
++                return reaction;
++            }
              return this.pushReaction;
          }
  
-@@ -764,6 +_,9 @@
+@@ -764,6 +_,11 @@
          }
  
          public InteractionResult useItemOn(ItemStack itemStack, Level level, Player player, InteractionHand hand, BlockHitResult hitResult) {
 +            var useOnContext = new net.minecraft.world.item.context.UseOnContext(level, player, hand, player.getItemInHand(hand).copy(), hitResult);
-+            var e = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(useOnContext, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.BLOCK));
-+            if (e.isCanceled()) return e.getCancellationResult();
++            var event = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(useOnContext, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.BLOCK));
++            if (event.isCanceled()) {
++                return event.getCancellationResult();
++            }
              return this.getBlock().useItemOn(itemStack, this.asState(), level, hitResult.getBlockPos(), player, hand, hitResult);
          }
  
-@@ -859,6 +_,7 @@
+@@ -859,6 +_,8 @@
              return this.getBlock().getSeed(this.asState(), pos);
          }
  
-+        @Deprecated //Neo: Use more sensitive version {@link net.neoforged.neoforge.common.extensions.IBlockStateExtension#getSoundType(LevelReader, BlockPos, Entity) }
++        /// @deprecated Neo: Use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#getSoundType(LevelReader, BlockPos, Entity)] instead
++        @Deprecated
          public SoundType getSoundType() {
              return this.getBlock().getSoundType(this.asState());
          }

@@ -1,14 +1,15 @@
 --- a/net/minecraft/data/tags/PoiTypeTagsProvider.java
 +++ b/net/minecraft/data/tags/PoiTypeTagsProvider.java
-@@ -9,8 +_,13 @@
+@@ -9,8 +_,14 @@
  import net.minecraft.world.entity.ai.village.poi.PoiTypes;
  
  public class PoiTypeTagsProvider extends TagsProvider<PoiType> {
-+    /** @deprecated Forge: Use the {@linkplain #PoiTypeTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
++    /// @deprecated Neo: Use the [mod id variant][#PoiTypeTagsProvider(PackOutput, CompletableFuture, String)]
 +    @Deprecated
      public PoiTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
          super(output, Registries.POINT_OF_INTEREST_TYPE, lookupProvider);
 +    }
++
 +    public PoiTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
 +        super(output, Registries.POINT_OF_INTEREST_TYPE, lookupProvider, modId);
      }

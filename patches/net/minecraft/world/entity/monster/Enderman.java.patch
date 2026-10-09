@@ -8,11 +8,12 @@
          AttributeInstance movementSpeed = this.getAttribute(Attributes.MOVEMENT_SPEED);
          if (target == null) {
              this.targetChangeTime = 0;
-@@ -138,6 +_,7 @@
+@@ -138,6 +_,8 @@
                  movementSpeed.addTransientModifier(SPEED_MODIFIER_ATTACKING);
              }
          }
-+        super.setTarget(target); //Forge: Moved down to allow event handlers to write data manager values.
++        // Neo: Moved down to allow event handlers to write data manager values.
++        super.setTarget(target);
      }
  
      @Override

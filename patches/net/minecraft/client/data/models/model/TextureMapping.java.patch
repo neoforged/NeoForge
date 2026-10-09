@@ -5,7 +5,7 @@
          return new Material(id.withPath(path -> "item/" + path + suffix));
      }
 +
-+    // Neo: Added to allow easier texture map copying
++    /// Neo: {@return a copy of this texture mapping}
 +    public TextureMapping copy() {
 +        TextureMapping texturemapping = new TextureMapping();
 +        texturemapping.slots.putAll(this.slots);

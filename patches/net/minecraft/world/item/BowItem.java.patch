@@ -1,21 +1,25 @@
 --- a/net/minecraft/world/item/BowItem.java
 +++ b/net/minecraft/world/item/BowItem.java
-@@ -31,6 +_,8 @@
+@@ -31,6 +_,10 @@
              }
  
              int timeHeld = this.getUseDuration(itemStack, entity) - remainingTime;
 +            timeHeld = net.neoforged.neoforge.event.EventHooks.onArrowLoose(itemStack, level, player, timeHeld, !projectile.isEmpty());
-+            if (timeHeld < 0) return false;
++            if (timeHeld < 0) {
++                return false;
++            }
              float pow = getPowerForTime(timeHeld);
              if (pow < 0.1) {
                  return false;
-@@ -89,6 +_,10 @@
+@@ -89,6 +_,12 @@
      public InteractionResult use(Level level, Player player, InteractionHand hand) {
          ItemStack itemStack = player.getItemInHand(hand);
          boolean foundProjectile = !player.getProjectile(itemStack).isEmpty();
 +
 +        InteractionResult ret = net.neoforged.neoforge.event.EventHooks.onArrowNock(itemStack, level, player, hand, foundProjectile);
-+        if (ret != null) return ret;
++        if (ret != null) {
++            return ret;
++        }
 +
          if (!player.hasInfiniteMaterials() && !foundProjectile) {
              return InteractionResult.FAIL;

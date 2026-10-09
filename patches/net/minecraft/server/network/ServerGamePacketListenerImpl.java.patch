@@ -64,7 +64,7 @@
                          && !this.player.hasEffect(MobEffects.LEVITATION)
                          && !isFallFlying
                          && !isAutoSpinAttack
-@@ -1355,9 +_,10 @@
+@@ -1355,9 +_,12 @@
                      }
                  case SWAP_ITEM_WITH_OFFHAND:
                      if (!this.player.isSpectator()) {
@@ -72,19 +72,23 @@
 -                        this.player.setItemInHand(InteractionHand.OFF_HAND, this.player.getItemInHand(InteractionHand.MAIN_HAND));
 -                        this.player.setItemInHand(InteractionHand.MAIN_HAND, swap);
 +                        var event = net.neoforged.neoforge.common.CommonHooks.onLivingSwapHandItems(this.player);
-+                        if (event.isCanceled()) return;
++                        if (event.isCanceled()) {
++                            return;
++                        }
 +                        this.player.setItemInHand(InteractionHand.OFF_HAND, event.getItemSwappedToOffHand());
 +                        this.player.setItemInHand(InteractionHand.MAIN_HAND, event.getItemSwappedToMainHand());
                          this.player.stopUsingItem();
                      }
  
-@@ -1549,13 +_,24 @@
+@@ -1549,13 +_,26 @@
      @Override
      public void handleSetCarriedItem(ServerboundSetCarriedItemPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
 +
 +        if (this.player.getInventory().getSelectedSlot() != packet.getSlot()) {
-+            if (net.neoforged.neoforge.event.EventHooks.onSwitchHotbarSlotPre(this.player, this.player.getInventory().getSelectedSlot(), packet.getSlot())) return;
++            if (net.neoforged.neoforge.event.EventHooks.onSwitchHotbarSlotPre(this.player, this.player.getInventory().getSelectedSlot(), packet.getSlot())) {
++                return;
++            }
 +        }
 +
          if (packet.getSlot() >= 0 && packet.getSlot() < Inventory.getSelectionSize()) {
@@ -103,14 +107,17 @@
          } else {
              LOGGER.warn("{} tried to set an invalid carried item", this.player.getPlainTextName());
          }
-@@ -1575,8 +_,9 @@
+@@ -1575,8 +_,12 @@
                  }
  
                  CompletableFuture<FilteredText> filteredFuture = this.filterTextPacket(signedMessage.signedContent());
 -                Component decorated = this.server.getChatDecorator().decorate(this.player, signedMessage.decoratedContent());
 +                Component decorated = net.neoforged.neoforge.common.CommonHooks.getServerChatSubmittedDecorator().decorate(this.player, signedMessage.decoratedContent());
                  this.chatMessageChain.append(filteredFuture, filtered -> {
-+                    if (decorated == null) return; // Forge: ServerChatEvent was canceled if this is null.
++                    if (decorated == null) {
++                        // Neo: ServerChatEvent was canceled if this is null.
++                        return;
++                    }
                      PlayerChatMessage filteredMessage = signedMessage.withUnsignedContent(decorated).filter(filtered.mask());
                      this.broadcastChatMessage(filteredMessage);
                  });

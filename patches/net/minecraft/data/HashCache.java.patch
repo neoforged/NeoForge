@@ -20,7 +20,7 @@
          this.caches.forEach((providerId, cache) -> {
              if (this.cachesToWrite.contains(providerId)) {
                  Path cachePath = this.getProviderCachePath(providerId);
-+                // Forge: Only rewrite the cache file if it changed or is missing
++                // Neo: Only rewrite the cache file if it changed or is missing
 +                if (!cache.equals(this.originalCaches.get(providerId)) || !Files.exists(cachePath))
                  cache.save(this.rootDir, cachePath, DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(ZonedDateTime.now()) + "\t" + providerId);
              }
@@ -30,12 +30,12 @@
                  output.newLine();
  
 -                for (Entry<Path, HashCode> e : this.data.entrySet()) {
-+                // Forge: Standardize order of entries
++                // Neo: Standardize order of entries
 +                for (Entry<Path, HashCode> e : this.data.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList()) {
                      output.write(e.getValue().toString());
                      output.write(32);
 -                    output.write(rootDir.relativize(e.getKey()).toString());
-+                    output.write(rootDir.relativize(e.getKey()).toString().replace("\\", "/")); // Forge: Standardize file paths.
++                    output.write(rootDir.relativize(e.getKey()).toString().replace("\\", "/")); // Neo: Standardize file paths.
                      output.newLine();
                  }
              } catch (IOException e) {

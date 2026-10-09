@@ -14,11 +14,13 @@
          return true;
      }
  
-@@ -397,6 +_,7 @@
+@@ -397,6 +_,9 @@
  
      @Override
      public void halt(boolean wait) {
-+        if (isRunning())
++        if (!isRunning()) {
++            return;
++        }
          this.executeBlocking(() -> {
              for (ServerPlayer player : Lists.newArrayList(this.getPlayerList().getPlayers())) {
                  if (!player.getUUID().equals(this.uuid)) {

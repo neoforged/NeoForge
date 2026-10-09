@@ -19,13 +19,11 @@
      public DataComponentPatch asPatch() {
          if (this.patch.isEmpty()) {
              return DataComponentPatch.EMPTY;
-@@ -217,6 +_,13 @@
+@@ -217,6 +_,11 @@
          return this.patch.isEmpty() ? this.prototype : this.copy();
      }
  
-+    /**
-+     * {@return true if the contained patch equals the given patch.}
-+     */
++    /// Neo: {@return true if the contained patch equals the given patch}
 +    public boolean patchEquals(DataComponentPatch patch) {
 +        return this.patch.equals(patch.map);
 +    }

@@ -4,7 +4,7 @@
      private static final int MIN_TIME_BETWEEN_GIFTS = 600;
      private static final int MAX_TIME_BETWEEN_GIFTS = 6600;
      private static final int TIME_TO_DELAY_FOR_HEAD_TO_FINISH_TURNING = 20;
-+    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#RAID_HERO_GIFTS data map} instead */
++    /// @deprecated Neo: use the [`data map`][net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#RAID_HERO_GIFTS] instead
 +    @Deprecated
      private static final Map<ResourceKey<VillagerProfession>, ResourceKey<LootTable>> GIFTS = ImmutableMap.<ResourceKey<VillagerProfession>, ResourceKey<LootTable>>builder()
          .put(VillagerProfession.ARMORER, BuiltInLootTables.ARMORER_GIFT)

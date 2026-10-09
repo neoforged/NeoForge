@@ -27,25 +27,20 @@
              public BundlerInfo.@Nullable Bundler startPacketBundling(Packet<?> packet) {
                  return packet == delimiterPacket ? new BundlerInfo.Bundler() {
                      private final List<Packet<? super T>> bundlePackets = new ArrayList<>();
-@@ -50,7 +_,24 @@
+@@ -50,7 +_,19 @@
          };
      }
  
-+    /**
-+     * @deprecated Use {@link #unbundlePacket(Packet, Consumer, io.netty.channel.ChannelHandlerContext)} instead, as it supports packet filtering and is more efficient.
-+     */
++    /// @deprecated Use [#unbundlePacket(Packet, Consumer, io.netty.channel.ChannelHandlerContext)] instead, as it supports packet filtering and is more efficient.
 +    @Deprecated
      void unbundlePacket(Packet<?> packet, Consumer<Packet<?>> output);
 +
-+    /**
-+     * Unwrap and flattens a bundle packet.
-+     * Then sends the packets contained in the bundle, bracketing them in delimiter packets if need be.
-+     *
-+     * @param bundlePacket The bundle packet to write.
-+     * @param packetSender The packet sender.
-+     * @param context The network context.
-+     * @implNote This implementation should filter out packets which are not sendable on the current context, however to preserve compatibility the default implementation does not do this.
-+     */
++    /// Unwraps and flattens a bundle packet, then sends the packets contained in the bundle, bracketing them in delimiter packets if need be.
++    ///
++    /// @param bundlePacket The bundle packet to write.
++    /// @param packetSender The packet sender.
++    /// @param context The network context.
++    /// @implNote This implementation should filter out packets which are not sendable on the current context, however to preserve compatibility the default implementation does not do this.
 +    default void unbundlePacket(Packet<?> bundlePacket, Consumer<Packet<?>> packetSender, io.netty.channel.ChannelHandlerContext context) {
 +        unbundlePacket(bundlePacket, packetSender);
 +    }

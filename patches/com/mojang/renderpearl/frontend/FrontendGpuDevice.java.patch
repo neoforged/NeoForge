@@ -1,10 +1,11 @@
 --- a/com/mojang/renderpearl/frontend/FrontendGpuDevice.java
 +++ b/com/mojang/renderpearl/frontend/FrontendGpuDevice.java
-@@ -36,7 +_,7 @@
+@@ -36,7 +_,8 @@
  @OnlyIn(Dist.CLIENT)
  public class FrontendGpuDevice implements GpuDevice {
      private static final Logger LOGGER = LogUtils.getLogger();
 -    public static final boolean STRICT_VALIDATION = SharedConstants.IS_RUNNING_IN_IDE;
++    // Neo: add ability to disable strict validation without disabling other features bound to SharedConstants.IS_RUNNING_IN_IDE.
 +    public static final boolean STRICT_VALIDATION = SharedConstants.IS_RUNNING_IN_IDE && !Boolean.getBoolean("neoforge.disableBlaze3DValidation");
      private final GpuDeviceBackend backend;
      private final @Nullable TracyGpuProfiler profiler;

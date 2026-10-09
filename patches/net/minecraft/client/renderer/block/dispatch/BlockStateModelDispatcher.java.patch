@@ -22,7 +22,7 @@
 +        this(simpleModels, multiPart, Optional.empty());
 +    }
 +
-+    // Neo: convenience constructor for datagen of custom definitions
++    /// Neo: convenience constructor for datagen of custom definitions
 +    public BlockStateModelDispatcher(net.neoforged.neoforge.client.model.block.CustomBlockModelDefinition customDefinition) {
 +        this(Optional.empty(), Optional.empty(), Optional.of(customDefinition));
 +    }
@@ -34,7 +34,7 @@
 +        return this.instantiateVanilla(stateDefinition, source);
 +    }
 +
-+    // Neo: split off original implementation as a separate method to allow custom definitions to instantiate the original definition and post-process the result
++    /// Neo: split off original implementation as a separate method to allow custom definitions to instantiate the original definition and post-process the result
 +    public Map<BlockState, BlockStateModel.UnbakedRoot> instantiateVanilla(StateDefinition<Block, BlockState> stateDefinition, Supplier<String> source) {
          Map<BlockState, BlockStateModel.UnbakedRoot> matchedStates = new IdentityHashMap<>();
          this.simpleModels.ifPresent(s -> s.instantiate(stateDefinition, source, (state, model) -> {
