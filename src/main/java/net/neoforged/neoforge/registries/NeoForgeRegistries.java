@@ -22,6 +22,8 @@ import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredientType;
 import net.neoforged.neoforge.registries.holdersets.HolderSetType;
+import net.neoforged.neoforge.slot.ExtendedEquipmentSlot;
+import net.neoforged.neoforge.slot.ExtendedSlotGroup;
 
 /**
  * A class that exposes static references to NeoForge registries.
@@ -41,6 +43,7 @@ public class NeoForgeRegistries {
     public static final Registry<FluidIngredientType<?>> FLUID_INGREDIENT_TYPES = new RegistryBuilder<>(Keys.FLUID_INGREDIENT_TYPES).sync(true).create();
     public static final Registry<MapCodec<? extends ICondition>> CONDITION_SERIALIZERS = new RegistryBuilder<>(Keys.CONDITION_CODECS).create();
     public static final Registry<AttachmentType<?>> ATTACHMENT_TYPES = new RegistryBuilder<>(Keys.ATTACHMENT_TYPES).create();
+    public static final Registry<MapCodec<? extends ExtendedEquipmentSlot>> EXTENDED_EQUIPMENT_SLOT_SERIALIZERS = new RegistryBuilder<>(Keys.EXTENDED_EQUIPMENT_SLOT_SERIALIZERS).sync(true).create();
 
     // Reminder: If you add a registry to NeoForge itself, remember to add it to NeoForgeRegistriesSetup#registerRegistries.
 
@@ -56,10 +59,13 @@ public class NeoForgeRegistries {
         public static final ResourceKey<Registry<FluidIngredientType<?>>> FLUID_INGREDIENT_TYPES = key("fluid_ingredient_type");
         public static final ResourceKey<Registry<MapCodec<? extends ICondition>>> CONDITION_CODECS = key("condition_codecs");
         public static final ResourceKey<Registry<AttachmentType<?>>> ATTACHMENT_TYPES = key("attachment_types");
+        public static final ResourceKey<Registry<MapCodec<? extends ExtendedEquipmentSlot>>> EXTENDED_EQUIPMENT_SLOT_SERIALIZERS = key("extended_equipment_slot_type");
 
         // NeoForge Dynamic
         public static final ResourceKey<Registry<BiomeModifier>> BIOME_MODIFIERS = key("biome_modifier");
         public static final ResourceKey<Registry<StructureModifier>> STRUCTURE_MODIFIERS = key("structure_modifier");
+        public static final ResourceKey<Registry<ExtendedEquipmentSlot>> EXTENDED_EQUIPMENT_SLOTS = key("extended_equipment_slot");
+        public static final ResourceKey<Registry<ExtendedSlotGroup>> EXTENDED_SLOT_GROUPS = key("extended_slot_group");
 
         private static <T> ResourceKey<Registry<T>> key(String name) {
             return ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, name));
