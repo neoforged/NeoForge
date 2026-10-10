@@ -11,20 +11,21 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
-/// Fired on the server when an entity is dying to determine the chance of dropping worn equipment after enchantments process {@link EnchantmentEffectComponents#EQUIPMENT_DROPS}.
+/// Fired on the server when an entity is dying to determine the chance of dropping worn equipment after enchantments process [EnchantmentEffectComponents#EQUIPMENT_DROPS].
 ///
-/// The entity that was killed and is dropping equipment is accessible in {@link #getEntity()}. Use {@link #getKillingBlow()} for the killing entity.
+/// The entity that was killed and is dropping equipment is accessible in [#getEntity()]. Use [#getKillingBlow()] for the killing entity.
 ///
 /// Only fired if the initial drop chance was greater than 0, meaning it will not fire for cosmetic equipment such as pumpkins during Halloween.
 ///
-/// Will be fired for equipment that was picked up by the entity with a guaranteed drop, use {@link #isPreserved()} to check for that.
+/// Will be fired for equipment that was picked up by the entity with a guaranteed drop, use [#isPreserved()] to check for that.
 ///
-/// If your goal is to implement looting like behavior from an item stack used in the main hand, and you do not need the additional context, prefer {@link GetEnchantmentLevelEvent} for managing enchantment levels.
+/// If your goal is to implement looting like behavior from an item stack used in the main hand, and you do not need the additional context, prefer [GetEnchantmentLevelEvent] for managing enchantment levels.
 public class GetEquipmentDropChanceEvent extends LivingEvent {
     private final ServerLevel level;
     private final DamageSource killingBlow;
@@ -78,12 +79,12 @@ public class GetEquipmentDropChanceEvent extends LivingEvent {
         this.chance.setValue(chance);
     }
 
-    /// {@return the slot containing the item to drop} May be null if {@link net.minecraft.world.item.enchantment.EnchantmentHelper#processEquipmentDropChance(ServerLevel, LivingEntity, DamageSource, float, EquipmentSlot)} is called without the slot.
+    /// {@return the slot containing the item to drop} May be null if [EnchantmentHelper#processEquipmentDropChance(ServerLevel, LivingEntity, DamageSource, float, EquipmentSlot)] is called without the slot.
     public @Nullable EquipmentSlot getSlot() {
         return slot;
     }
 
-    /// {@return the stack being considered for dropping} May be empty if {@link net.minecraft.world.item.enchantment.EnchantmentHelper#processEquipmentDropChance(ServerLevel, LivingEntity, DamageSource, float, EquipmentSlot)} is called without the slot.
+    /// {@return the stack being considered for dropping} May be empty if [EnchantmentHelper#processEquipmentDropChance(ServerLevel, LivingEntity, DamageSource, float, EquipmentSlot)] is called without the slot.
     public ItemStack getStack() {
         return slot == null ? ItemStack.EMPTY : getEntity().getItemBySlot(slot);
     }

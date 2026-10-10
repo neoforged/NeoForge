@@ -17,16 +17,14 @@ import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
-/**
- * Fired on the server when an entity is dropping loot and the level of a specific enchantment is being queried.
- * <p>
- * Notably, this fires when {@link EnchantedCountIncreaseFunction} or {@link LootItemRandomChanceWithEnchantedBonusCondition} are evaluated.
- * Mods that implement similar loot conditions or functions should fire this event as well.
- * <p>
- * This event does not affect the drop chances of equipment. If you need to change that, use {@link GetEquipmentDropChanceEvent}
- * <p>
- * If you do not need the additional context of this event, prefer {@link GetEnchantmentLevelEvent} for managing enchantment levels.
- */
+/// Fired on the server when an entity is dropping loot and the level of a specific enchantment is being queried.
+///
+/// Notably, this fires when [EnchantedCountIncreaseFunction] or [LootItemRandomChanceWithEnchantedBonusCondition] are evaluated.
+/// Mods that implement similar loot conditions or functions should fire this event as well.
+///
+/// This event does not affect the drop chances of equipment. If you need to change that, use [GetEquipmentDropChanceEvent]
+///
+/// If you do not need the additional context of this event, prefer [GetEnchantmentLevelEvent] for managing enchantment levels.
 public class EnchantedEntityLootEvent extends LivingEvent {
     @Nullable
     private final DamageSource damageSource;

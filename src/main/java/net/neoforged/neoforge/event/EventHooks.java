@@ -1190,15 +1190,13 @@ public class EventHooks {
         return enchLevel;
     }
 
-    /**
-     * Called from {@link EnchantedCountIncreaseFunction} and {@link LootItemRandomChanceWithEnchantedBonusCondition} when entity loot evaluation relies on enchantments for evaluating loot bonuses.
-     * <p>
-     * If the necessary context is present, this method will fire the {@link EnchantedEntityLootEvent} and return the event-modified level. Otherwise, it returns the original level.
-     * 
-     * @param ench      The enchantment being queried.
-     * @param enchLevel The original enchantment level. How it gets determined depends on the particular call site. Generally it's the attacker's effective enchantment level.
-     * @param ctx       The loot context for the current entity loot evaluation.
-     */
+    /// Called from [EnchantedCountIncreaseFunction] and [LootItemRandomChanceWithEnchantedBonusCondition] when entity loot evaluation relies on enchantments for evaluating loot bonuses.
+    ///
+    /// If the necessary context is present, this method will fire the [EnchantedEntityLootEvent] and return the event-modified level. Otherwise, it returns the original level.
+    ///
+    /// @param ench      The enchantment being queried.
+    /// @param enchLevel The original enchantment level. How it gets determined depends on the particular call site. Generally it's the attacker's effective enchantment level.
+    /// @param ctx       The loot context for the current entity loot evaluation.
     public static int getEntityLootEnchantmentLevel(Holder<Enchantment> ench, int enchLevel, LootContext ctx) {
         Entity entity = ctx.getOptional(LootContextParams.THIS_ENTITY);
         DamageSource src = ctx.getOptional(LootContextParams.DAMAGE_SOURCE);
@@ -1210,16 +1208,14 @@ public class EventHooks {
         return enchLevel;
     }
 
-    /**
-     * Called from {@link net.minecraft.world.item.enchantment.EnchantmentHelper#processEquipmentDropChance(ServerLevel, LivingEntity, DamageSource, float, EquipmentSlot)} to allow changing the slot chance.
-     *
-     * @param level          Level instance
-     * @param entity         Entity dropping equipment
-     * @param killingBlow    Damage source used to kill the entity
-     * @param chance         Mutable chance to modify in the event
-     * @param originalChance Chance before enchantments ran
-     * @param slot           Slot containing the item to drop
-     */
+    /// Called from [#processEquipmentDropChance(ServerLevel,LivingEntity,DamageSource,float,EquipmentSlot)] to allow changing the slot chance.
+    ///
+    /// @param level          Level instance
+    /// @param entity         Entity dropping equipment
+    /// @param killingBlow    Damage source used to kill the entity
+    /// @param chance         Mutable chance to modify in the event
+    /// @param originalChance Chance before enchantments ran
+    /// @param slot           Slot containing the item to drop
     public static void onEquipmentDropChance(ServerLevel level, LivingEntity entity, DamageSource killingBlow, MutableFloat chance, float originalChance, @Nullable EquipmentSlot slot) {
         NeoForge.EVENT_BUS.post(new GetEquipmentDropChanceEvent(level, entity, killingBlow, chance, originalChance, slot));
     }
