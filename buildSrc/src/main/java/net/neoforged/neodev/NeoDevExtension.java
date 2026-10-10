@@ -13,8 +13,8 @@ public class NeoDevExtension {
     private final NamedDomainObjectContainer<RunModel> runs;
 
     public NeoDevExtension(Project project) {
-        mods = project.container(ModModel.class);
-        runs = project.container(RunModel.class, name -> project.getObjects().newInstance(RunModel.class, name, project, mods));
+        mods = project.getObjects().domainObjectContainer(ModModel.class);
+        runs = project.getObjects().domainObjectContainer(RunModel.class, name -> project.getObjects().newInstance(RunModel.class, name, project, mods));
     }
 
     public NamedDomainObjectContainer<ModModel> getMods() {

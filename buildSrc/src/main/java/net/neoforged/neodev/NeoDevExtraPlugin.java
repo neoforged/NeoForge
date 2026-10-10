@@ -78,7 +78,7 @@ public class NeoDevExtraPlugin implements Plugin<Project> {
     }
 
     private static ProjectDependency projectDep(DependencyFactory dependencyFactory, Project project, String capabilityNotation) {
-        var dep = dependencyFactory.create(project);
+        var dep = dependencyFactory.createProjectDependency(project.getPath());
         dep.capabilities(caps -> {
             caps.requireCapability(capabilityNotation);
         });
