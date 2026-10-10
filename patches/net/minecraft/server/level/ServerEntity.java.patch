@@ -45,7 +45,7 @@
              broadcast.accept(new ClientboundSetEntityLinkPacket(this.entity, leashable.getLeashHolder()));
          }
 +
-+        net.neoforged.neoforge.attachment.AttachmentSync.syncInitialEntityAttachments(this.entity, player, broadcast);
++        net.neoforged.neoforge.attachment.sync.AttachmentSync.syncInitialEntityAttachments(this.entity, player, broadcast);
      }
  
      public Vec3 getPositionBase() {

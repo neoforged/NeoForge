@@ -35,7 +35,7 @@
          this.server.notificationManager().playerJoined(player);
          playerConnection.resumeFlushing();
 +
-+        net.neoforged.neoforge.attachment.AttachmentSync.syncInitialPlayerAttachments(player);
++        net.neoforged.neoforge.attachment.sync.AttachmentSync.syncInitialPlayerAttachments(player);
 +        net.neoforged.neoforge.event.EventHooks.firePlayerLoggedIn(player);
      }
  
@@ -82,7 +82,7 @@
          this.playersByUUID.put(player.getUUID(), player);
          player.initInventoryMenu();
          player.setHealth(player.getHealth());
-+        net.neoforged.neoforge.attachment.AttachmentSync.syncInitialPlayerAttachments(player);
++        net.neoforged.neoforge.attachment.sync.AttachmentSync.syncInitialPlayerAttachments(player);
 +        net.neoforged.neoforge.event.EventHooks.firePlayerRespawnEvent(player, keepAllPlayerData);
          ServerPlayer.RespawnConfig respawnConfig = player.getRespawnConfig();
          if (!keepAllPlayerData && respawnConfig != null) {
@@ -107,7 +107,7 @@
  
          player.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.LEVEL_CHUNKS_LOAD_START, 0.0F));
          this.server.tickRateManager().updateJoiningPlayer(player);
-+        net.neoforged.neoforge.attachment.AttachmentSync.syncInitialLevelAttachments(level, player);
++        net.neoforged.neoforge.attachment.sync.AttachmentSync.syncInitialLevelAttachments(level, player);
      }
  
      public void sendAllPlayerInfo(ServerPlayer player) {
