@@ -1,12 +1,14 @@
 --- a/net/minecraft/world/level/storage/loot/predicates/BonusLevelTableCondition.java
 +++ b/net/minecraft/world/level/storage/loot/predicates/BonusLevelTableCondition.java
-@@ -39,6 +_,10 @@
+@@ -39,6 +_,12 @@
      public boolean test(LootContext p_81521_) {
          ItemStack itemstack = p_81521_.getParamOrNull(LootContextParams.TOOL);
          int i = itemstack != null ? EnchantmentHelper.getItemEnchantmentLevel(this.enchantment, itemstack) : 0;
 +
 +        // Neo: Allow mods to modify the enchantment level for loot calculations with relevant context.
-+        if (itemstack != null) i = net.neoforged.neoforge.event.EventHooks.getBlockLootEnchantmentLevel(itemstack, this.enchantment, i, p_81521_);
++        if (itemstack != null) {
++            i = net.neoforged.neoforge.event.EventHooks.getBlockLootEnchantmentLevel(itemstack, this.enchantment, i, p_81521_);
++        }
 +
          float f = this.values.get(Math.min(i, this.values.size() - 1));
          return p_81521_.getRandom().nextFloat() < f;
