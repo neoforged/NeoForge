@@ -9,10 +9,11 @@ import static net.minecraft.network.chat.Component.translatable;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
+import com.mojang.blaze3d.Blaze3D;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.logging.LogUtils;
+import com.mojang.renderpearl.api.textures.FilterMode;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,17 +68,15 @@ import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.CommonLinks;
 import net.minecraft.util.SpecialDates;
-import net.minecraft.util.Util;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.VersionChecker;
-import net.neoforged.fml.loading.FMLConfig;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.gui.widget.BackgroundWithPipingWidget;
 import net.neoforged.neoforge.client.gui.widget.ResizableTextureImageWidget;
 import net.neoforged.neoforge.client.gui.widget.SolidColorWidget;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.VersionChecker;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -191,7 +190,7 @@ public class ModListScreen extends Screen {
         footer.spacing(4).defaultCellSetting().paddingTop(5);
 
         footer.addChild(Button.builder(Component.translatable("neoforge.screen.mods.button.open_folder"),
-                _ -> Util.getPlatform().openPath(modsFolder)).build());
+                _ -> Blaze3D.openPath(modsFolder)).build());
         footer.addChild(Button.builder(CommonComponents.GUI_BACK, _ -> ModListScreen.this.onClose()).build());
 
         // Content
@@ -358,7 +357,7 @@ public class ModListScreen extends Screen {
         }
 
         class Entry extends ObjectSelectionList.Entry<ModsList.Entry> {
-            private static final Identifier VERSION_CHECK_ICONS = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "textures/gui/version_check_icons.png");
+            private static final Identifier UPDATE_INDICATOR_ICON = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "update_indicator");
             final VersionChecker.@Nullable CheckResult checkResult;
             final ModDisplayInfo displayInfo;
             @Nullable
@@ -391,18 +390,13 @@ public class ModListScreen extends Screen {
                 }
                 int maxTextWidth = getRowWidth() - textLeft + left - 4;
 
-                if (checkResult != null && checkResult.status().shouldDraw() && FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.VERSION_CHECK)) {
-                    graphics.blit(
-                            RenderPipelines.GUI_TEXTURED,
-                            VERSION_CHECK_ICONS,
+                if (checkResult != null && checkResult.status().shouldDraw() && VersionChecker.isEnabled()) {
+                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED,
+                            UPDATE_INDICATOR_ICON,
                             this.getContentRight() - 10,
                             this.getContentYMiddle() - (8 / 2),
-                            checkResult.status().getSheetOffset() * 8,
-                            (checkResult.status().isAnimated() && ((System.currentTimeMillis() / 800 & 1) == 1)) ? 8 : 0,
                             8,
-                            8,
-                            64,
-                            16);
+                            8);
                     maxTextWidth -= 14;
                 }
 
@@ -559,7 +553,7 @@ public class ModListScreen extends Screen {
             if (event == null) return;
             switch (event) {
                 case ClickEvent.OpenUrl(URI uri) -> ConfirmLinkScreen.confirmLinkNow(ModListScreen.this, uri);
-                case ClickEvent.OpenFile openFile -> Util.getPlatform().openFile(openFile.file());
+                case ClickEvent.OpenFile openFile -> Blaze3D.openPath(openFile.file().toPath());
                 case ClickEvent.CopyToClipboard(String value) -> minecraft.keyboardHandler.setClipboard(value);
                 default -> LOGGER.error("Unable to handle click event ‘{}’", event);
             }
@@ -670,7 +664,7 @@ public class ModListScreen extends Screen {
             if (checkResult != null) {
                 this.newerVersionWidget.setMessage(Component.translatable(
                         "neoforge.screen.mods.info.update",
-                        Component.literal(checkResult.target().toString())
+                        Component.literal(Objects.toString(checkResult.target()))
                                 .withStyle(style -> style.withItalic(false)))
                         .withStyle(style -> style.withItalic(true)));
                 this.newerVersionWidget.visible = true;

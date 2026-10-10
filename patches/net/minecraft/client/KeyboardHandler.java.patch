@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/KeyboardHandler.java
 +++ b/net/minecraft/client/KeyboardHandler.java
-@@ -478,7 +_,11 @@
+@@ -496,7 +_,11 @@
                  if (screen != null) {
                      try {
-                         if (action != 1 && action != 2) {
+                         if (action != 1 && action != -1) {
 -                            if (action == 0 && screen.keyReleased(event)) {
 +                            if (action == 0 && (
 +                                net.neoforged.neoforge.client.ClientHooks.onScreenKeyReleasedPre(screen, event) ||
@@ -13,7 +13,7 @@
                                  if (options.keyDebugModifier.matches(event)) {
                                      this.usedDebugKeyAsModifier = false;
                                  }
-@@ -487,7 +_,11 @@
+@@ -505,7 +_,11 @@
                              }
                          } else {
                              screen.afterKeyboardAction();
@@ -26,7 +26,7 @@
                                  if (this.minecraft.gui.screen() == null) {
                                      InputConstants.Key key = InputConstants.getKey(event);
                                      KeyMapping.set(key, false);
-@@ -562,6 +_,7 @@
+@@ -578,6 +_,7 @@
                      }
                  }
              }
@@ -34,7 +34,7 @@
          }
      }
  
-@@ -570,7 +_,9 @@
+@@ -586,7 +_,9 @@
              Screen screen = this.minecraft.gui.screen();
              if (screen != null && this.minecraft.gui.overlay() == null) {
                  try {
@@ -44,8 +44,8 @@
 +                    net.neoforged.neoforge.client.ClientHooks.onScreenCharTypedPost(screen, event);
                  } catch (Throwable t) {
                      CrashReport report = CrashReport.forThrowable(t, "charTyped event handler");
-                     screen.fillCrashDetails(report);
-@@ -598,7 +_,9 @@
+                     CrashReportCategory keyDetails = report.addCategory("Key");
+@@ -618,7 +_,9 @@
  
      public static void submitPreeditEvent(GuiEventListener element, @Nullable PreeditEvent event) {
          try {
@@ -55,4 +55,4 @@
 +            if (element instanceof Screen screen) net.neoforged.neoforge.client.ClientHooks.onScreenPreeditPost(screen, event);
          } catch (Throwable t) {
              CrashReport report = CrashReport.forThrowable(t, "IME pre-edit event handler");
-             if (element instanceof Screen screen) {
+             CrashReportCategory keyDetails = report.addCategory("Event");

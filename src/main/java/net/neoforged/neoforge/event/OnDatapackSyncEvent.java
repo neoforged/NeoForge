@@ -61,20 +61,18 @@ public class OnDatapackSyncEvent extends Event {
         return this.player;
     }
 
-    /**
-     * Requests that all recipes of the given types should be sent to the players.
-     * 
-     * @see net.neoforged.neoforge.client.event.RecipesReceivedEvent
-     */
+    /// Requests that all recipes of the given types should be sent to the players.
+    /// If the client only needs the recipe's ingredients (i.e. for slot validity checks), use [RegisterRecipePropertiesEvent] instead.
+    ///
+    /// @see net.neoforged.neoforge.client.event.RecipesReceivedEvent
     public void sendRecipes(RecipeType<?>... recipeTypes) {
         Collections.addAll(this.recipeTypesToSend, recipeTypes);
     }
 
-    /**
-     * Requests that all recipes of the given types should be sent to the players.
-     * 
-     * @see net.neoforged.neoforge.client.event.RecipesReceivedEvent
-     */
+    /// Requests that all recipes of the given types should be sent to the players.
+    /// If the client only needs the recipe's ingredients (i.e. for slot validity checks), use [RegisterRecipePropertiesEvent] instead.
+    ///
+    /// @see net.neoforged.neoforge.client.event.RecipesReceivedEvent
     public void sendRecipes(Iterable<RecipeType<?>> recipeTypes) {
         for (var recipeType : recipeTypes) {
             this.recipeTypesToSend.add(recipeType);

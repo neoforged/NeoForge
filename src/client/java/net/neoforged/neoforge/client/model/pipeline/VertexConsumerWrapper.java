@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.model.pipeline;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormatElement;
+import com.mojang.renderpearl.api.vertex.VertexFormatElement;
 
 /**
  * Wrapper for {@link VertexConsumer} which delegates all operations to its parent.
@@ -53,6 +53,12 @@ public abstract class VertexConsumerWrapper implements VertexConsumer {
     @Override
     public VertexConsumer setUv2(int u, int v) {
         parent.setUv2(u, v);
+        return this;
+    }
+
+    @Override
+    public VertexConsumer setUv3(float u, float v) {
+        parent.setUv3(u, v);
         return this;
     }
 

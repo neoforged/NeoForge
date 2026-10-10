@@ -43,7 +43,7 @@ public interface IHolderSetExtension<T> {
                 : SerializationType.UNKNOWN; // unsupported holderset impl, could be anything
     }
 
-    ///Determines whether this holderset can be immediately resolved to the contents it contains or if it must wait for tags to be loaded.
+    /// Determines whether this holderset can be immediately resolved to the contents it contains or if it must wait for tags to be loaded.
     default boolean isImmediatelyResolvable() {
         return true;
     }

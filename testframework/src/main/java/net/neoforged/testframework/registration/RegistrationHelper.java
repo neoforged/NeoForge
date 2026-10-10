@@ -15,7 +15,9 @@ import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.neoforge.data.event.DatapackRegistryGatherer;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GlobalDatapackRegistryGatherer;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
@@ -76,6 +78,24 @@ public interface RegistrationHelper {
     <T extends DataProvider> void serverProvider(Class<T> type, Consumer<T> consumer);
 
     <T extends DataProvider> void clientProvider(Class<T> type, Consumer<T> consumer);
+
+    /// Adds the datapack registry entries to generate.
+    ///
+    /// If the entries have the {@link #modId()} of the test, use {@link #registriesForTest(Consumer)} instead.
+    ///
+    /// @param consumer A consumer for the datapack registry gatherer.
+    void registries(Consumer<GlobalDatapackRegistryGatherer> consumer);
+
+    /// Adds the datapack registry entries to generate for the current test.
+    ///
+    /// If there are entries with a different mod id from {@link #modId()}, use {@link #registries(Consumer)}
+    /// instead, calling {@link GlobalDatapackRegistryGatherer#gatherFor(String, String...)} with the mod ids
+    /// to generate.
+    ///
+    /// @param consumer A consumer for the datapack registry gatherer.
+    default void registriesForTest(Consumer<DatapackRegistryGatherer> consumer) {
+        this.registries(global -> consumer.accept(global.gatherFor(this.modId())));
+    }
 
     Consumer<Consumer<? extends Event>> eventListeners();
 

@@ -1,0 +1,29 @@
+--- a/net/minecraft/core/registries/PatchedRegistry.java
++++ b/net/minecraft/core/registries/PatchedRegistry.java
+@@ -73,8 +_,13 @@
+         }
+ 
+         HolderLookup.RegistryLookup<T> patchContents = patchProvider.lookupOrThrow(registryKey);
+-        HolderLookup.RegistryLookup<T> baseContents = baseProvider.lookupOrThrow(registryKey);
+-        Lifecycle lifecycle = patchContents.registryLifecycle().add(baseContents.registryLifecycle());
++        Optional<? extends HolderLookup.RegistryLookup<T>> maybeBaseContents = baseProvider.lookup(registryKey);
++        Lifecycle lifecycle;
++        if (maybeBaseContents.isPresent()) {
++            lifecycle = patchContents.registryLifecycle().add(maybeBaseContents.get().registryLifecycle());
++        } else {
++            lifecycle = patchContents.registryLifecycle();
++        }
+         PatchedRegistry<T> result = new PatchedRegistry<>(registryKey, lifecycle);
+         patchContents.listElements().forEach(elementHolder -> {
+             ResourceKey<T> elementKey = elementHolder.key();
+@@ -82,6 +_,10 @@
+             holder.supplier = () -> cloner.clone((T)elementHolder.value(), patchProvider, clonedRegistriesProvider.get());
+             result.entries.put(elementKey, holder);
+         });
++        if (maybeBaseContents.isEmpty()) {
++            return result;
++        }
++        HolderLookup.RegistryLookup<T> baseContents = maybeBaseContents.get();
+         baseContents.listElements().forEach(elementHolder -> {
+             ResourceKey<T> elementKey = elementHolder.key();
+             result.entries.computeIfAbsent(elementKey, key -> {

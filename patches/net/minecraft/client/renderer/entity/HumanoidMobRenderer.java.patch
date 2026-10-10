@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/HumanoidMobRenderer.java
 +++ b/net/minecraft/client/renderer/entity/HumanoidMobRenderer.java
-@@ -61,7 +_,7 @@
+@@ -59,7 +_,7 @@
          state.isCrouching = entity.isCrouching();
          state.isFallFlying = entity.isFallFlying();
          state.isVisuallySwimming = entity.isVisuallySwimming();

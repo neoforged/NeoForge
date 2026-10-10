@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.registries;
 
+import com.google.common.collect.Table;
 import com.mojang.logging.LogUtils;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -28,6 +29,7 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.CreativeModeTabRegistry;
+import net.neoforged.neoforge.common.crafting.RecipePropertySetManager;
 import net.neoforged.neoforge.common.tooltip.ItemTooltipHandler;
 import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import org.jetbrains.annotations.ApiStatus;
@@ -50,6 +52,10 @@ public class GameData {
 
     public static Map<BlockState, Holder<PoiType>> getBlockStatePointOfInterestTypeMap() {
         return NeoForgeRegistryCallbacks.PoiTypeCallbacks.BLOCKSTATE_TO_POI_TYPE_MAP;
+    }
+
+    public static Table<Block, Block, Block> getFlowerPotBlockTable() {
+        return NeoForgeRegistryCallbacks.BlockCallbacks.EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE;
     }
 
     public static void vanillaSnapshot() {
@@ -105,6 +111,7 @@ public class GameData {
             CreativeModeTabRegistry.sortTabs();
             GameRuleCategory.registerModdedCategories();
             ItemTooltipHandler.init();
+            RecipePropertySetManager.init();
         }
     }
 

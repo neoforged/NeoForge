@@ -2,7 +2,7 @@
 +++ b/net/minecraft/world/entity/npc/villager/VillagerType.java
 @@ -26,6 +_,8 @@
      public static final ResourceKey<VillagerType> TAIGA = createKey("taiga");
-     public static final Codec<Holder<VillagerType>> CODEC = RegistryFixedCodec.create(Registries.VILLAGER_TYPE);
+     public static final Codec<Holder<VillagerType>> CODEC = RegistryCodecs.holder(Registries.VILLAGER_TYPE);
      public static final StreamCodec<RegistryFriendlyByteBuf, Holder<VillagerType>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.VILLAGER_TYPE);
 +    /** Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#VILLAGER_TYPES data map} instead as this field will be ignored in future versions */
 +    @Deprecated

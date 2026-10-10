@@ -1,0 +1,28 @@
+{
+  "values": {
+    "minecraft:andesite": {
+      "transform_data": {
+        "block_state_provider": {
+          "type": "minecraft:rule_based",
+          "rules": [
+            {
+              "if_true": {
+                "type": "minecraft:matching_blocks",
+                "blocks": "minecraft:andesite"
+              },
+              "then": {
+                "type": "minecraft:copy_properties",
+                "source": {
+                  "id": "minecraft:polished_andesite"
+                }
+              }
+            }
+          ]
+        },
+        "item_damage_per_use": 1,
+        "sound": "minecraft:item.axe.strip"
+      },
+      "transformer": "minecraft:axe"
+    }
+  }
+}

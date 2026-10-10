@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/material/LavaFluid.java
 +++ b/net/minecraft/world/level/material/LavaFluid.java
-@@ -93,7 +_,7 @@
+@@ -94,7 +_,7 @@
                      BlockState blockState = level.getBlockState(testPos);
                      if (blockState.isAir()) {
                          if (this.hasFlammableNeighbours(level, testPos)) {
@@ -8,8 +8,8 @@
 +                            level.setBlockAndUpdate(testPos, net.neoforged.neoforge.event.EventHooks.fireFluidPlaceBlockEvent(level, testPos, pos, BaseFireBlock.getState(level, testPos)));
                              return;
                          }
-                     } else if (blockState.blocksMotion()) {
-@@ -107,8 +_,8 @@
+                     } else if (blockState.is(BlockTags.BLOCKS_LAVA_FIRE_SPREAD)) {
+@@ -108,8 +_,8 @@
                          return;
                      }
  
@@ -20,7 +20,7 @@
                      }
                  }
              }
-@@ -124,7 +_,7 @@
+@@ -125,7 +_,7 @@
  
      private boolean hasFlammableNeighbours(LevelReader level, BlockPos pos) {
          for (Direction direction : Direction.values()) {
@@ -29,7 +29,7 @@
                  return true;
              }
          }
-@@ -132,10 +_,20 @@
+@@ -133,10 +_,20 @@
          return false;
      }
  
@@ -50,11 +50,11 @@
      @Override
      public @Nullable ParticleOptions getDripParticle() {
          return ParticleTypes.DRIPPING_LAVA;
-@@ -206,7 +_,7 @@
+@@ -207,7 +_,7 @@
              FluidState fluidState = level.getFluidState(pos);
              if (this.is(FluidTags.LAVA) && fluidState.is(FluidTags.WATER)) {
                  if (state.getBlock() instanceof LiquidBlock) {
--                    level.setBlock(pos, Blocks.STONE.defaultBlockState(), 3);
+-                    level.setBlockAndUpdate(pos, Blocks.STONE.defaultBlockState());
 +                    level.setBlock(pos, net.neoforged.neoforge.event.EventHooks.fireFluidPlaceBlockEvent(level, pos, pos, Blocks.STONE.defaultBlockState()), 3);
                  }
  

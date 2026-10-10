@@ -1,0 +1,13 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:eggs"
+      }
+    }
+  ],
+  "type": "minecraft:empty",
+  "random_sequence": "neotests_reloadable_registry_conditions:present_non_empty_static_tag"
+}

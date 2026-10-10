@@ -5,15 +5,12 @@
 
 package net.neoforged.neoforge.debug.data.registries;
 
-import java.util.Set;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageEffects;
 import net.minecraft.world.damagesource.DamageType;
 import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
-import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -33,22 +30,11 @@ public class DatapackEntryTests {
         ResourceKey<DamageType> CONDITIONAL_TRUE_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(reg.modId(), "conditional_true"));
         ResourceKey<DamageType> REGULAR_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(reg.modId(), "unconditional"));
 
-        var builder = new RegistrySetBuilder()
-                .add(Registries.DAMAGE_TYPE, bootstrap -> {
-                    bootstrap.register(CONDITIONAL_FALSE_DAMAGE_TYPE, new DamageType("inFire", 0.1f, DamageEffects.BURNING));
-                    bootstrap.register(CONDITIONAL_TRUE_DAMAGE_TYPE, new DamageType("inFire", 0.1f, DamageEffects.BURNING));
-                    bootstrap.register(REGULAR_DAMAGE_TYPE, new DamageType("inFire", 0.1f, DamageEffects.BURNING));
-                });
-
-        reg.addClientProvider(event -> new DatapackBuiltinEntriesProvider(
-                event.getGenerator().getPackOutput(),
-                event.getLookupProvider(),
-                builder,
-                conditions -> {
-                    conditions.accept(CONDITIONAL_FALSE_DAMAGE_TYPE, NeoForgeConditions.never());
-                    conditions.accept(CONDITIONAL_TRUE_DAMAGE_TYPE, NeoForgeConditions.always());
-                },
-                Set.of(reg.modId())));
+        reg.registriesForTest(registries -> registries.add(Registries.DAMAGE_TYPE, bootstrap -> {
+            bootstrap.register(CONDITIONAL_FALSE_DAMAGE_TYPE, new DamageType("inFire", 0.1f, DamageEffects.BURNING), NeoForgeConditions.never());
+            bootstrap.register(CONDITIONAL_TRUE_DAMAGE_TYPE, new DamageType("inFire", 0.1f, DamageEffects.BURNING), NeoForgeConditions.always());
+            bootstrap.register(REGULAR_DAMAGE_TYPE, new DamageType("inFire", 0.1f, DamageEffects.BURNING));
+        }));
 
         test.onGameTest(helper -> {
             var damageTypes = helper.getLevel().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE);

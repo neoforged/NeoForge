@@ -8,9 +8,9 @@
      private final Quaternionf rotation = new Quaternionf();
      private boolean detached;
      private float eyeHeight;
-@@ -142,6 +_,9 @@
-             cameraState.entityRenderState.hurtTime = livingEntity.hurtTime - cameraEntityPartialTicks;
-             cameraState.entityRenderState.deathTime = livingEntity.deathTime + cameraEntityPartialTicks;
+@@ -144,6 +_,9 @@
+             cameraState.entityRenderState.hurtTime = livingEntity.hurtTime - cameraState.cameraEntityPartialTicks;
+             cameraState.entityRenderState.deathTime = livingEntity.deathTime + cameraState.cameraEntityPartialTicks;
              cameraState.entityRenderState.hurtDuration = livingEntity.hurtDuration;
 +            // Neo: Prevent screen shake if the damage type is marked as "forge:no_flinch"
 +            var lastDamage = livingEntity.getLastDamageSource();
@@ -18,7 +18,7 @@
          } else {
              cameraState.entityRenderState.isLiving = false;
              cameraState.entityRenderState.isSleeping = false;
-@@ -243,6 +_,7 @@
+@@ -247,6 +_,7 @@
              fov *= Mth.lerp(effectScale, 1.0F, 0.85714287F);
          }
  
@@ -26,7 +26,7 @@
          return fov;
      }
  
-@@ -258,7 +_,10 @@
+@@ -262,7 +_,10 @@
              this.setRotation(this.entity.getViewYRot(partialTicks), this.entity.getViewXRot(partialTicks));
              this.setPosition(behavior.getCartLerpPosition(partialTicks).add(positionOffset));
          } else {
@@ -38,7 +38,7 @@
              this.setPosition(
                  Mth.lerp(partialTicks, this.entity.xo, this.entity.getX()),
                  Mth.lerp(partialTicks, this.entity.yo, this.entity.getY()) + Mth.lerp(partialTicks, this.eyeHeightOld, this.eyeHeight),
-@@ -269,7 +_,7 @@
+@@ -273,7 +_,7 @@
          this.detached = !this.minecraft.options.getCameraType().isFirstPerson();
          if (this.detached) {
              if (this.minecraft.options.getCameraType().isMirrored()) {
@@ -47,7 +47,7 @@
              }
  
              float cameraDistance = 4.0F;
-@@ -286,7 +_,7 @@
+@@ -290,7 +_,7 @@
                  mountDistance = (float)mount.getAttributeValue(Attributes.CAMERA_DISTANCE);
              }
  
@@ -56,7 +56,7 @@
          } else if (this.entity instanceof LivingEntity && ((LivingEntity)this.entity).isSleeping()) {
              Direction bedOrientation = ((LivingEntity)this.entity).getBedOrientation();
              this.setRotation(bedOrientation != null ? bedOrientation.toYRot() - 180.0F : 0.0F, 0.0F);
-@@ -336,10 +_,17 @@
+@@ -340,10 +_,17 @@
          this.setPosition(new Vec3(this.position.x + offset.x, this.position.y + offset.y, this.position.z + offset.z));
      }
  
@@ -75,7 +75,7 @@
          FORWARDS.rotate(this.rotation, this.forwards);
          UP.rotate(this.rotation, this.up);
          LEFT.rotate(this.rotation, this.left);
-@@ -499,6 +_,17 @@
+@@ -503,6 +_,17 @@
  
      public void disablePanoramicMode() {
          this.isPanoramicMode = false;

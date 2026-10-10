@@ -13,7 +13,6 @@ import net.minecraft.advancements.predicates.ItemPredicate;
 import net.minecraft.advancements.triggers.CriteriaTriggers;
 import net.minecraft.advancements.triggers.InventoryChangeTrigger;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.advancements.AdvancementProvider;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.resources.Identifier;
@@ -33,17 +32,20 @@ public class ModDatapackTest {
     static void modDatapack(final DynamicTest test) {
         final Identifier testAdvancement = Identifier.fromNamespaceAndPath(test.createModId(), "recipes/misc/test_advancement");
 
-        test.registrationHelper().addClientProvider(event -> {
-            List<AdvancementSubProvider> generators = List.of((registries, saver) -> Advancement.Builder.recipeAdvancement()
-                    .parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT)
-                    .addCriterion("has_scute", CriteriaTriggers.INVENTORY_CHANGED.createCriterion(
-                            new InventoryChangeTrigger.TriggerInstance(
-                                    Optional.empty(), InventoryChangeTrigger.TriggerInstance.Slots.ANY, List.of(
-                                            ItemPredicate.Builder.item().of(registries.lookupOrThrow(Registries.ITEM), Items.TURTLE_SCUTE).build()))))
-                    .rewards(AdvancementRewards.Builder.recipe(ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath("minecraft", "turtle_helmet"))))
-                    .save(saver, testAdvancement));
-            return new AdvancementProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), generators);
-        });
+        test.registrationHelper().registriesForTest(registries -> registries.advancement(
+                context -> new AdvancementSubProvider(context) {
+                    @Override
+                    public void generate() {
+                        Advancement.Builder.recipeAdvancement()
+                                .parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT)
+                                .addCriterion("has_scute", CriteriaTriggers.INVENTORY_CHANGED.createCriterion(
+                                        new InventoryChangeTrigger.TriggerInstance(
+                                                Optional.empty(), InventoryChangeTrigger.TriggerInstance.Slots.ANY, List.of(
+                                                        ItemPredicate.Builder.item().of(output.lookup(Registries.ITEM), Items.TURTLE_SCUTE).build()))))
+                                .rewards(AdvancementRewards.Builder.recipe(ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath("minecraft", "turtle_helmet"))))
+                                .save(output, testAdvancement);
+                    }
+                }));
 
         test.eventListeners().forge().addListener((OnDatapackSyncEvent event) -> {
             if (event.getPlayerList().getServer().getAdvancements().get(testAdvancement) != null) {

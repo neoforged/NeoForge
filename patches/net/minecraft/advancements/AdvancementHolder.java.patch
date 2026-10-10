@@ -1,0 +1,15 @@
+--- a/net/minecraft/advancements/AdvancementHolder.java
++++ b/net/minecraft/advancements/AdvancementHolder.java
+@@ -13,7 +_,11 @@
+     );
+ 
+     public void register(BootstrapContext<Advancement> output) {
+-        output.register(ResourceKey.create(Registries.ADVANCEMENT, this.id), this.value);
++        this.register(output, new net.neoforged.neoforge.common.conditions.ICondition[0]);
++    }
++
++    public void register(BootstrapContext<Advancement> output, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
++        output.register(ResourceKey.create(Registries.ADVANCEMENT, this.id), this.value, conditions);
+     }
+ 
+     @Override

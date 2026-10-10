@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.oldtest.block;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
@@ -46,7 +45,6 @@ public class ValidRailShapeTest {
     }
 
     private static class RailSlopeBlock extends BaseRailBlock {
-        public static final MapCodec<RailSlopeBlock> CODEC = simpleCodec(RailSlopeBlock::new);
         private static final EnumProperty<RailShape> ASCENDING_RAIL_SHAPE = EnumProperty.create("shape", RailShape.class, RailShape::isSlope);
 
         protected RailSlopeBlock(Properties properties) {
@@ -73,11 +71,6 @@ public class ValidRailShapeTest {
             return defaultBlockState()
                     .setValue(ASCENDING_RAIL_SHAPE, shape)
                     .setValue(BaseRailBlock.WATERLOGGED, fluid.getType() == Fluids.WATER);
-        }
-
-        @Override
-        protected MapCodec<RailSlopeBlock> codec() {
-            return CODEC;
         }
 
         @Override

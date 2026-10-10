@@ -19,7 +19,7 @@ import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.HolderSetCodec;
+import net.minecraft.core.registries.codec.HolderSetCodec;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -28,6 +28,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidStackTemplate;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.display.FluidStackSlotDisplay;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Fluid ingredient that matches the given set of fluids, additionally performing either a
@@ -101,7 +102,7 @@ public class DataComponentFluidIngredient extends FluidIngredient {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof DataComponentFluidIngredient other)) return false;
         return other.fluids.equals(this.fluids)

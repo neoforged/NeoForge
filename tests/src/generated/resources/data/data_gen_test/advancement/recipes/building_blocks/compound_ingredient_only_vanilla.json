@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "data_gen_test:compound_ingredient_only_vanilla"
+        "recipes": "data_gen_test:compound_ingredient_only_vanilla"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

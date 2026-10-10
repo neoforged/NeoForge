@@ -36,8 +36,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.NewDatapackRegistryEvent;
 import org.slf4j.Logger;
 
 /**
@@ -68,9 +68,9 @@ public class DataPackRegistriesTest {
 
         final IEventBus forgeBus = NeoForge.EVENT_BUS;
 
-        modBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
-            event.dataPackRegistry(ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(MODID, "unsyncable")), Unsyncable.DIRECT_CODEC);
-            event.dataPackRegistry(ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(MODID, "syncable")), Syncable.DIRECT_CODEC, Syncable.DIRECT_CODEC);
+        modBus.addListener((NewDatapackRegistryEvent event) -> {
+            event.worldRegistry(ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(MODID, "unsyncable")), Unsyncable.DIRECT_CODEC);
+            event.worldRegistry(ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(MODID, "syncable")), Syncable.DIRECT_CODEC, Syncable.DIRECT_CODEC);
         });
 
         modBus.addListener(this::onGatherData);
@@ -87,7 +87,7 @@ public class DataPackRegistriesTest {
         // This outputs to data/data_pack_registries_test/data_pack_registries_test/unsyncable/datagen_test.json
         final DataGenerator generator = event.getGenerator();
         final Path outputFolder = generator.getPackOutput().getOutputFolder();
-        final CompletableFuture<HolderLookup.Provider> providerCompletableFuture = event.getLookupProvider();
+        final CompletableFuture<HolderLookup.Provider> providerCompletableFuture = event.getReloadableLookupProvider();
         final Gson gson = new GsonBuilder().setPrettyPrinting().create();
         final Identifier registryId = Unsyncable.REGISTRY_KEY.identifier();
         final Identifier id = this.datagenTestObject.getId();

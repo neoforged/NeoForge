@@ -30,7 +30,7 @@ public final class PoiTypeExtender {
 
     private static void register(ResourceKey<PoiType> typeKey, Set<BlockState> states) {
         Map<BlockState, Holder<PoiType>> statePoiMap = GameData.getBlockStatePointOfInterestTypeMap();
-        Holder<PoiType> type = BuiltInRegistries.POINT_OF_INTEREST_TYPE.getOrThrow(typeKey);
+        Holder.Reference<PoiType> type = BuiltInRegistries.POINT_OF_INTEREST_TYPE.getOrThrow(typeKey);
         for (BlockState state : states) {
             Holder<PoiType> prevType = statePoiMap.putIfAbsent(state, type);
             if (prevType != null) {
@@ -63,7 +63,7 @@ public final class PoiTypeExtender {
                 message = String.format(
                         Locale.ROOT,
                         "The matchingStates set of PoiType %s was replaced after construction",
-                        Objects.requireNonNull(type.getKey()).identifier());
+                        type.key().identifier());
             } else {
                 StringBuilder accessorList = new StringBuilder();
                 for (String accessor : accessors) {
@@ -72,7 +72,7 @@ public final class PoiTypeExtender {
                 message = String.format(
                         Locale.ROOT,
                         "The matchingStates set of PoiType %s was replaced after construction. Accessor mixins for mutating the set were found:%s",
-                        Objects.requireNonNull(type.getKey()).identifier(),
+                        type.key().identifier(),
                         accessorList);
             }
             throw new IllegalStateException(message);

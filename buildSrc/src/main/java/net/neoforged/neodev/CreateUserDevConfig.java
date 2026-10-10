@@ -96,16 +96,21 @@ abstract class CreateUserDevConfig extends DefaultTask {
                 systemProperties.put("neoforge.enableGameTest", "true");
             }
 
+            List<String> jvmArgs = new ArrayList<>(List.of(
+                    "--sun-misc-unsafe-memory-access=allow",
+                    "--enable-native-access=ALL-UNNAMED",
+                    "--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED",
+                    "--add-exports", "jdk.naming.dns/com.sun.jndi.dns=java.naming"));
+            if (runType == RunType.CLIENT) {
+                jvmArgs.add("-XX:StackShadowPages=32");
+            }
+
             config.runs().put(runType.jsonName, new UserDevRunType(
                     runType != RunType.JUNIT,
                     // Archloom crashes when reading a userconfig without a main class
                     Objects.requireNonNullElse(runType.mainClass, "NONE"),
                     args,
-                    List.of(
-                            "--sun-misc-unsafe-memory-access=allow",
-                            "--enable-native-access=ALL-UNNAMED",
-                            "--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED",
-                            "--add-exports", "jdk.naming.dns/com.sun.jndi.dns=java.naming"),
+                    jvmArgs,
                     runType == RunType.CLIENT || runType == RunType.JUNIT || runType == RunType.CLIENT_DATA,
                     runType == RunType.GAME_TEST_SERVER || runType == RunType.SERVER || runType == RunType.SERVER_DATA,
                     runType == RunType.CLIENT_DATA || runType == RunType.SERVER_DATA,

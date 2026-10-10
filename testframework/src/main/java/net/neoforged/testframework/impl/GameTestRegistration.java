@@ -26,6 +26,7 @@ import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.TestFramework;
@@ -141,6 +142,7 @@ public final class GameTestRegistration {
                             framework.id().withSuffix("/" + test.id().toLowerCase(Locale.ROOT)),
                             new Instance(new TestData<>(
                                     batch,
+                                    Level.OVERWORLD,
                                     Identifier.parse(game.structureName()),
                                     game.maxTicks(), game.setupTicks(),
                                     game.required(), game.rotation(),

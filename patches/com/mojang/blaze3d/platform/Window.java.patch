@@ -1,47 +1,21 @@
 --- a/com/mojang/blaze3d/platform/Window.java
 +++ b/com/mojang/blaze3d/platform/Window.java
-@@ -102,6 +_,16 @@
-         this.windowedWidth = this.width = allowedWindowMinSize(displayData.width());
-         this.windowedHeight = this.height = allowedWindowMinSize(displayData.height());
-         this.handle = this.createWindow(backend, this.width, this.height, title, this.fullscreen && initialMonitor != null ? initialMonitor.monitor() : 0L);
-+        // Neo: If the window was taken over from EarlyLoadingScreen, inherit a potentially resized window size
-+        var earlyLoadingScreen = net.neoforged.fml.loading.EarlyLoadingScreenController.current();
-+        if (earlyLoadingScreen != null) {
-+            var width = new int[1];
-+            var height = new int[1];
-+            GLFW.glfwGetWindowSize(this.handle, width, height);
-+            // The window height and width can be 0 if minimized
-+            this.width = this.windowedWidth = Math.max(width[0], 1);
-+            this.height = this.windowedHeight = Math.max(height[0], 1);
-+        }
-         this.backend = backend;
-         if (initialMonitor != null) {
-             VideoMode mode = initialMonitor.getPreferredVidMode(this.fullscreen ? this.preferredFullscreenVideoMode : Optional.empty());
-@@ -132,6 +_,11 @@
-         try (GLFWErrorScope var9 = new GLFWErrorScope(glfwErrors)) {
-             backend.setWindowHints();
-             GLFW.glfwWindowHint(131076, 0);
-+            var earlyLoadingScreen = net.neoforged.fml.loading.EarlyLoadingScreenController.current();
-+            if (earlyLoadingScreen != null) {
-+                windowHandle = earlyLoadingScreen.takeOverGlfwWindow();
-+                GLFW.glfwSetWindowTitle(windowHandle, title);
-+            } else
-             windowHandle = GLFW.glfwCreateWindow(width, height, title, monitor, 0L);
-             if (windowHandle == 0L) {
-                 backend.handleWindowCreationErrors(glfwErrors.firstError());
-@@ -237,11 +_,11 @@
-     }
+@@ -149,7 +_,7 @@
  
-     public void defaultErrorCallback(int errorCode, long description) {
--        if (!RenderSystem.isOnRenderThread()) {
--            LOGGER.error("Error callback from invalid thread ({})", Thread.currentThread().getName());
--        }
--
-         String errorString = MemoryUtil.memUTF8(description);
-+        if (!RenderSystem.isOnRenderThread()) {
-+            LOGGER.error("Error callback from invalid thread ({}): {}: {}", Thread.currentThread().getName(), errorCode, errorString);
-+        }
-+
-         LOGGER.error("########## GL ERROR ##########");
-         LOGGER.error("@ {}", this.errorSection);
-         LOGGER.error("{}: {}", errorCode, errorString);
+     private long createWindow(GpuBackend backend, int width, int height, String title) {
+         long flags = 8224L;
+-        long windowHandle = backend.createWindow(title, width, height, 8224L);
++        long windowHandle = backend.createWindow(title, width, height, 8224L | SDLVideo.SDL_WINDOW_HIDDEN); // Neo: keep window hidden until after ELS handover
+         if (windowHandle == 0L) {
+             throw new IllegalStateException("Failed to create window: " + Objects.requireNonNullElse(SDLError.SDL_GetError(), "<no error>"));
+         }
+@@ -347,7 +_,8 @@
+         }
+ 
+         this.updateWindowMouseGrab();
+-        if (Minecraft.getInstance().mouseHandler.isMouseGrabbed()) {
++        // Neo: prevent crash during ELS handover
++        if (Minecraft.getInstance().mouseHandler != null && Minecraft.getInstance().mouseHandler.isMouseGrabbed()) {
+             double xpos = this.getScreenWidth() / 2.0;
+             double ypos = this.getScreenHeight() / 2.0;
+             InputConstants.grabMouse(this, xpos, ypos);

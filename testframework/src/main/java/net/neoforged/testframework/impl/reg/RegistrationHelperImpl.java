@@ -20,6 +20,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
@@ -42,6 +43,8 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GatherDataRegistryEntriesEvent;
+import net.neoforged.neoforge.data.event.GlobalDatapackRegistryGatherer;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -54,6 +57,7 @@ import net.neoforged.testframework.registration.DeferredBlocks;
 import net.neoforged.testframework.registration.DeferredEntityTypes;
 import net.neoforged.testframework.registration.DeferredItems;
 import net.neoforged.testframework.registration.RegistrationHelper;
+import org.jspecify.annotations.Nullable;
 
 public class RegistrationHelperImpl implements RegistrationHelper {
     private ModContainer owner;
@@ -95,9 +99,14 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     private final String modId;
     private final ListMultimap<Class<?>, Consumer<? extends DataProvider>> clientProviders = Multimaps.newListMultimap(new IdentityHashMap<>(), ArrayList::new);
     private final ListMultimap<Class<?>, Consumer<? extends DataProvider>> serverProviders = Multimaps.newListMultimap(new IdentityHashMap<>(), ArrayList::new);
+    private final List<Consumer<GlobalDatapackRegistryGatherer>> registryGatherers = new ArrayList<>();
     private final List<Function<GatherDataEvent.Client, DataProvider>> directClientProviders = new ArrayList<>();
     private final List<Function<GatherDataEvent.Server, DataProvider>> directServerProviders = new ArrayList<>();
     private final Map<ResourceKey<? extends Registry<?>>, DeferredRegister<?>> registrars = new ConcurrentHashMap<>();
+    @Nullable
+    private RegistrySetBuilder worldRegistrySetBuilder;
+    @Nullable
+    private RegistrySetBuilder reloadableRegistrySetBuilder;
 
     @Override
     public <T> DeferredRegister<T> registrar(ResourceKey<Registry<T>> registry) {
@@ -216,12 +225,18 @@ public class RegistrationHelperImpl implements RegistrationHelper {
         directServerProviders.add(provider);
     }
 
+    @Override
+    public void registries(Consumer<GlobalDatapackRegistryGatherer> consumer) {
+        registryGatherers.add(consumer);
+    }
+
     private IEventBus bus;
 
     @Override
     public void register(IEventBus bus, ModContainer container) {
         this.bus = bus;
         this.owner = container;
+        bus.addListener(this::gatherRegistries);
         bus.addListener(this::gatherServer);
         bus.addListener(this::gatherClient);
         listeners.forEach(bus::addListener);
@@ -235,6 +250,10 @@ public class RegistrationHelperImpl implements RegistrationHelper {
         return bus == null ? listeners::add : bus::addListener;
     }
 
+    private void gatherRegistries(final GatherDataRegistryEntriesEvent event) {
+        registryGatherers.forEach(c -> c.accept(event));
+    }
+
     private void gatherServer(final GatherDataEvent.Server event) {
         gather(event, serverProviders, directServerProviders);
     }
@@ -245,7 +264,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
 
     private <T extends GatherDataEvent> void gather(final T event, ListMultimap<Class<?>, Consumer<? extends DataProvider>> providers, List<Function<T, DataProvider>> directProviders) {
         providers.asMap().forEach((cls, cons) -> event.getGenerator().addProvider(true, PROVIDERS.get(cls).create(
-                event.getGenerator().getPackOutput(), event.getLookupProvider(), event.getGenerator(), modId, (List) cons)));
+                event.getGenerator().getPackOutput(), event.getReloadableLookupProvider(), event.getGenerator(), modId, (List) cons)));
 
         directProviders.forEach(func -> event.getGenerator().addProvider(true, new DataProvider() {
             final DataProvider p = func.apply(event);

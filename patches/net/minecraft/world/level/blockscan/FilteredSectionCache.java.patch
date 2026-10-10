@@ -1,0 +1,37 @@
+--- a/net/minecraft/world/level/blockscan/FilteredSectionCache.java
++++ b/net/minecraft/world/level/blockscan/FilteredSectionCache.java
+@@ -14,13 +_,20 @@
+     private final LevelReader level;
+     private final FilteredSectionCache.@Nullable CacheEntry[] sectionCache;
+     private final Predicate<BlockState> statePredicate;
++    private final java.util.function.BiPredicate<BlockState, BlockPos> positionPredicate;
+ 
+-    public FilteredSectionCache(LevelReader level, Predicate<BlockState> statePredicate) {
++    /// Neo: Add overload which accepts a position-based predicate (evaluated only if the state predicate accepts)
++    public FilteredSectionCache(LevelReader level, Predicate<BlockState> statePredicate, java.util.function.BiPredicate<BlockState, BlockPos> positionPredicate) {
+         this.level = level;
+         this.statePredicate = statePredicate;
++        this.positionPredicate = positionPredicate;
+         this.sectionCache = new FilteredSectionCache.CacheEntry[8];
+     }
+ 
++    public FilteredSectionCache(LevelReader level, Predicate<BlockState> statePredicate) {
++        this(level, statePredicate, BlockMatcher.NO_POSITION_PREDICATE);
++    }
++
+     public @Nullable BlockState getBlockState(BlockPos pos) {
+         int sectionX = SectionPos.blockToSectionCoord(pos.getX());
+         int sectionY = SectionPos.blockToSectionCoord(pos.getY());
+@@ -35,10 +_,10 @@
+             int relativeY = SectionPos.sectionRelative(pos.getY());
+             int relativeZ = SectionPos.sectionRelative(pos.getZ());
+             BlockState blockState = section.getBlockState(relativeX, relativeY, relativeZ);
+-            return this.statePredicate.test(blockState) ? blockState : null;
++            return this.statePredicate.test(blockState) && this.positionPredicate.test(blockState, pos) ? blockState : null;
+         } else {
+             BlockState air = Blocks.AIR.defaultBlockState();
+-            return this.statePredicate.test(air) ? air : null;
++            return this.statePredicate.test(air) && this.positionPredicate.test(air, pos) ? air : null;
+         }
+     }
+ 

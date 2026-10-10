@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/level/storage/loot/entries/NestedLootTable.java
 +++ b/net/minecraft/world/level/storage/loot/entries/NestedLootTable.java
-@@ -47,7 +_,7 @@
-     public void createItemStack(Consumer<ItemStack> output, LootContext context) {
-         this.contents
-             .map(name -> context.getResolver().get((ResourceKey<LootTable>)name).map(Holder::value).orElse(LootTable.EMPTY), table -> (LootTable)table)
--            .getRandomItemsRaw(context, output);
-+            .getRandomItems(context, output);
+@@ -77,4 +_,8 @@
+     public static UniformContainerBase.Builder<?> inlineLootTable(LootTable table) {
+         return lootTableReference(Holder.direct(table));
      }
- 
-     @Override
++
++    public static UniformContainerBase.Builder<?> tableSet(HolderSet<LootTable> tables) {
++        return simpleBuilder((wheight, quality, conditions, functions) -> new NestedLootTable(tables, false, wheight, quality, conditions, functions));
++    }
+ }

@@ -23,15 +23,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.triggers.InventoryChangeTrigger;
 import net.minecraft.client.resources.model.cuboid.ItemTransform;
@@ -39,7 +36,6 @@ import net.minecraft.client.resources.model.cuboid.ItemTransforms;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
@@ -48,11 +44,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.advancements.AdvancementProvider;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.network.chat.Component;
@@ -97,12 +91,12 @@ import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
-import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.data.GeneratingOverlayMetadataSection;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.common.data.SoundDefinition;
 import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GatherDataRegistryEntriesEvent;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -118,9 +112,15 @@ public class DataGeneratorTest {
     // Datapack registry objects
     private static final ResourceKey<NoiseGeneratorSettings> TEST_SETTINGS = ResourceKey.create(Registries.NOISE_SETTINGS, Identifier.fromNamespaceAndPath(MODID, "test_settings"));
     private static final ResourceKey<LevelStem> TEST_LEVEL_STEM = ResourceKey.create(Registries.LEVEL_STEM, Identifier.fromNamespaceAndPath(MODID, "test_level_stem"));
-    private static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
-            .add(Registries.NOISE_SETTINGS, context -> context.register(TEST_SETTINGS, NoiseGeneratorSettings.floatingIslands(context)))
-            .add(Registries.LEVEL_STEM, DataGeneratorTest::levelStem);
+
+    @SubscribeEvent
+    public static void gatherRegistries(GatherDataRegistryEntriesEvent event) {
+        event.add(Registries.NOISE_SETTINGS, context -> context.register(TEST_SETTINGS, NoiseGeneratorSettings.floatingIslands(context)))
+                .add(Registries.LEVEL_STEM, DataGeneratorTest::levelStem);
+        event.gatherFor("minecraft", MODID)
+                .recipe(Recipes::new)
+                .advancement(Advancements::new);
+    }
 
     @SubscribeEvent
     public static void gatherData(GatherDataEvent.Client event) {
@@ -131,7 +131,6 @@ public class DataGeneratorTest {
 
         DataGenerator gen = event.getGenerator();
         PackOutput packOutput = gen.getPackOutput();
-        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
         gen.addProvider(true, new PackMetadataGenerator(packOutput)
                 .add(GeneratingOverlayMetadataSection.neoforgeType(PackType.SERVER_DATA), new GeneratingOverlayMetadataSection(List.of(
@@ -143,14 +142,20 @@ public class DataGeneratorTest {
                 .add(PackMetadataSection.CLIENT_TYPE, new PackMetadataSection(
                         Component.literal("NeoForge tests resource pack"),
                         new InclusiveRange<>(PackFormat.of(15), PackFormat.of(Integer.MAX_VALUE, Integer.MAX_VALUE)))));
+
         gen.addProvider(true, new Lang(packOutput));
         gen.addProvider(true, new SoundDefinitions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
         gen.addProvider(true, new ParticleDescriptions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
 
-        gen.addProvider(true, new Recipes.Runner(packOutput, lookupProvider));
-        gen.addProvider(true, new Tags(packOutput, lookupProvider));
-        gen.addProvider(true, new AdvancementProvider(packOutput, lookupProvider, List.of(new Advancements())));
-        gen.addProvider(true, new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, BUILDER, Set.of(MODID)));
+        gen.addProvider(true, new Tags(packOutput, event.getReloadableLookupProvider()));
+
+        // Without giving `PackGenerator` a prefix, doing the following
+        // would crash data gen with `duplicate provider`
+        event.getPackGenerator(gen.getPackOutput("pack-a"))
+                .createProvider(output -> PackMetadataGenerator.forFeaturePack(output, Component.literal("MultiPack Test - Pack A")));
+
+        event.getPackGenerator(gen.getPackOutput("pack-b"))
+                .createProvider(output -> PackMetadataGenerator.forFeaturePack(output, Component.literal("MultiPack Test - Pack B")));
     }
 
     public static void levelStem(BootstrapContext<LevelStem> context) {
@@ -164,8 +169,8 @@ public class DataGeneratorTest {
     }
 
     public static class Recipes extends RecipeProvider {
-        public Recipes(HolderLookup.Provider registries, RecipeOutput output) {
-            super(registries, output);
+        public Recipes(BootstrapContext<Recipe<?>> recipeOutput, BootstrapContext<Advancement> advancementOutput) {
+            super(recipeOutput, advancementOutput);
         }
 
         private static ResourceKey<Recipe<?>> recipeKey(String path) {
@@ -263,22 +268,6 @@ public class DataGeneratorTest {
                     }))))
                     .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
                     .save(output, recipeKey("compound_ingredient_custom_types"));
-        }
-
-        private static class Runner extends RecipeProvider.Runner {
-            protected Runner(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> registries) {
-                super(packOutput, registries);
-            }
-
-            @Override
-            protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
-                return new Recipes(registries, output);
-            }
-
-            @Override
-            public String getName() {
-                return "DataGeneratorTest Recipes";
-            }
         }
     }
 
@@ -526,46 +515,52 @@ public class DataGeneratorTest {
         }
     }
 
-    private static class Advancements implements AdvancementSubProvider {
+    private static class Advancements extends AdvancementSubProvider {
+        Advancements(BootstrapContext<Advancement> output) {
+            super(output);
+        }
+
         @Override
         @SuppressWarnings("removal")
-        public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver) {
+        public void generate() {
             var obtainDirt = Advancement.Builder.advancement()
-                    .display(Items.DIRT,
+                    .rootDisplay(
+                            Items.DIRT,
                             Component.translatable(Items.DIRT.getDescriptionId()),
                             Component.translatable("dirt_description"),
-                            Identifier.withDefaultNamespace("textures/gui/advancements/backgrounds/stone.png"),
+                            Identifier.withDefaultNamespace("gui/advancements/backgrounds/stone"),
                             AdvancementType.TASK,
                             true,
                             true,
                             false)
                     .addCriterion("has_dirt", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIRT))
-                    .save(saver, Identifier.fromNamespaceAndPath(MODID, "obtain_dirt"));
+                    .save(output, Identifier.fromNamespaceAndPath(MODID, "obtain_dirt"));
 
             Advancement.Builder.advancement()
                     .parent(obtainDirt)
-                    .display(Items.DIAMOND_BLOCK,
+                    .display(
+                            Items.DIAMOND_BLOCK,
                             Component.translatable(Items.DIAMOND_BLOCK.getDescriptionId()),
                             Component.literal("You obtained a DiamondBlock"),
-                            Identifier.withDefaultNamespace("textures/gui/advancements/backgrounds/stone.png"),
                             AdvancementType.CHALLENGE,
                             true,
                             true,
                             false)
                     .addCriterion("obtained_diamond_block", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND_BLOCK))
-                    .save(saver, Identifier.withDefaultNamespace("obtain_diamond_block"));
+                    .save(output, Identifier.withDefaultNamespace("obtain_diamond_block"));
 
             Advancement.Builder.advancement()
-                    .display(Blocks.GRASS_BLOCK,
+                    .rootDisplay(
+                            Blocks.GRASS_BLOCK.asItem(),
                             Component.translatable("advancements.story.root.title"),
                             Component.literal("Changed Description"),
-                            Identifier.withDefaultNamespace("textures/gui/advancements/backgrounds/stone.png"),
+                            Identifier.withDefaultNamespace("gui/advancements/backgrounds/stone"),
                             AdvancementType.TASK,
                             false,
                             false,
                             false)
                     .addCriterion("crafting_table", InventoryChangeTrigger.TriggerInstance.hasItems(Blocks.CRAFTING_TABLE))
-                    .save(saver, Identifier.withDefaultNamespace("story/root"));
+                    .save(output, Identifier.withDefaultNamespace("story/root"));
 
             // This should cause an error because of the parent not existing
 /*            Advancement.Builder.advancement().display(Blocks.COBBLESTONE,
@@ -580,17 +575,17 @@ public class DataGeneratorTest {
         .parent(Identifier.withDefaultNamespace("not_there/not_here"))
         .save(consumer, Identifier.withDefaultNamespace("illegal_parent"), fileHelper);*/
 
-            Advancement.Builder.advancement().display(Blocks.COBBLESTONE,
+            Advancement.Builder.advancement().display(
+                    Blocks.COBBLESTONE.asItem(),
                     Component.translatable(Items.COBBLESTONE.getDescriptionId()),
                     Component.literal("You got cobblestone"),
-                    Identifier.withDefaultNamespace("textures/gui/advancements/backgrounds/stone.png"),
                     AdvancementType.TASK,
                     false,
                     false,
                     false)
                     .addCriterion("get_cobbleStone", InventoryChangeTrigger.TriggerInstance.hasItems(Items.COBBLESTONE))
                     .parent(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "dummy_parent"))
-                    .save(saver, Identifier.withDefaultNamespace("good_parent"));
+                    .save(output, Identifier.withDefaultNamespace("good_parent"));
         }
     }
 

@@ -33,7 +33,7 @@ import net.minecraft.server.packs.FeatureFlagsMetadataSection;
 import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.OverlayMetadataSection;
 import net.minecraft.server.packs.PackLocationInfo;
-import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackMetadataResources;
 import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
@@ -196,7 +196,7 @@ public class ResourcePackLoader {
 
     private static Pack.Metadata readMeta(PackType type, PackLocationInfo location, Pack.ResourcesSupplier resources) throws IOException {
         final PackFormat currentVersion = SharedConstants.getCurrentVersion().packVersion(type);
-        try (final PackResources primaryResources = resources.openPrimary(location)) {
+        try (final PackMetadataResources primaryResources = resources.openMetadata(location)) {
             PackMetadataSection metadata;
             try {
                 metadata = primaryResources.getMetadataSection(metadataTypeForPackType(type));
@@ -210,14 +210,24 @@ public class ResourcePackLoader {
                     .orElse(FeatureFlagSet.of());
 
             MetadataSectionType<OverlayMetadataSection> vanillaOverlayType = OverlayMetadataSection.forPackType(type);
-            final List<String> vanillaOverlays = Optional.ofNullable(primaryResources.getMetadataSection(vanillaOverlayType))
-                    .map(section -> section.overlaysForVersion(currentVersion))
-                    .orElse(List.of());
+            List<String> vanillaOverlays = List.of();
+            try {
+                vanillaOverlays = Optional.ofNullable(primaryResources.getMetadataSection(vanillaOverlayType))
+                        .map(section -> section.overlaysForVersion(currentVersion))
+                        .orElse(List.of());
+            } catch (JsonParseException exception) {
+                LOGGER.warn("Error reading vanilla overlays for {}, falling back to empty overlays", location.id(), exception);
+            }
 
             MetadataSectionType<OverlayMetadataSection> neoOverlayType = OverlayMetadataSection.forPackTypeNeoForge(type);
-            final List<String> neoOverlays = Optional.ofNullable(primaryResources.getMetadataSection(neoOverlayType))
-                    .map(section -> section.overlaysForVersion(currentVersion))
-                    .orElse(List.of());
+            List<String> neoOverlays = List.of();
+            try {
+                neoOverlays = Optional.ofNullable(primaryResources.getMetadataSection(neoOverlayType))
+                        .map(section -> section.overlaysForVersion(currentVersion))
+                        .orElse(List.of());
+            } catch (JsonParseException exception) {
+                LOGGER.warn("Error reading NeoForge-added overlays for {}, falling back to empty overlays", location.id(), exception);
+            }
 
             List<String> overlays = new ArrayList<>(vanillaOverlays);
             overlays.addAll(neoOverlays);

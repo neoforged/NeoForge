@@ -1,0 +1,17 @@
+--- a/net/minecraft/data/tags/FeatureTagsProvider.java
++++ b/net/minecraft/data/tags/FeatureTagsProvider.java
+@@ -9,8 +_,14 @@
+ import net.minecraft.world.level.levelgen.feature.Feature;
+ 
+ public class FeatureTagsProvider extends TagsProvider<Feature> {
++    /// @deprecated Neo: Use the [FeatureTagsProvider(PackOutput, CompletableFuture, String)] mod id variant
++    @Deprecated
+     public FeatureTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+         super(output, Registries.FEATURE, lookupProvider);
++    }
++
++    public FeatureTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
++        super(output, Registries.FEATURE, lookupProvider, modId);
+     }
+ 
+     @Override

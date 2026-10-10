@@ -9,7 +9,6 @@ import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.item.Item;
@@ -21,7 +20,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jspecify.annotations.Nullable;
@@ -54,25 +52,6 @@ public interface IFluidExtension {
      * @return the type of this fluid
      */
     FluidType getFluidType();
-
-    /**
-     * Performs how an entity moves when within the fluid. If using custom
-     * movement logic, the method should return {@code true}. Otherwise, the
-     * movement logic will default to water if {@link FluidType#getIsWaterLike()} returns
-     * {@code true} or no movement if it returns {@code false}.
-     *
-     * @param state          the state of the fluid
-     * @param entity         the entity moving within the fluid
-     * @param movementVector the velocity of how the entity wants to move
-     * @param gravity        the gravity to apply to the entity
-     * @return {@code true} if custom movement logic is performed, {@code false} otherwise
-     *
-     * @deprecated Use {@link FluidType#move(LivingEntity, Vec3, double)} instead
-     */
-    @Deprecated(forRemoval = true, since = "26.2")
-    default boolean move(FluidState state, LivingEntity entity, Vec3 movementVector, double gravity) {
-        return getFluidType().move(state, entity, movementVector, gravity);
-    }
 
     /**
      * Returns whether the fluid can create a source.
@@ -144,13 +123,12 @@ public interface IFluidExtension {
      *
      * @param state     the state of the fluid
      * @param getter    the getter which can get the fluid
-     * @param pos       the position of the fluid
      * @param source    the state of the block being hydrated
      * @param sourcePos the position of the block being hydrated
      * @return {@code true} if the block can be hydrated, {@code false} otherwise
      */
-    default boolean canHydrate(FluidState state, BlockGetter getter, BlockPos pos, BlockState source, BlockPos sourcePos) {
-        return getFluidType().canHydrate(state, getter, pos, source, sourcePos);
+    default boolean canHydrate(FluidState state, BlockGetter getter, BlockState source, BlockPos sourcePos) {
+        return getFluidType().canHydrate(state, getter, source, sourcePos);
     }
 
     /**

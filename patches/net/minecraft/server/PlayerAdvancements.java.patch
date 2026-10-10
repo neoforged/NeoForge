@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/PlayerAdvancements.java
 +++ b/net/minecraft/server/PlayerAdvancements.java
-@@ -169,12 +_,14 @@
+@@ -170,12 +_,14 @@
              this.unregisterListeners(holder);
              this.progressChanged.add(holder);
              result = true;
@@ -8,14 +8,14 @@
              if (!wasDone && progress.isDone()) {
                  holder.value().rewards().grant(this.player);
                  holder.value().display().ifPresent(display -> {
-                     if (display.shouldAnnounceChat() && this.player.level().getGameRules().get(GameRules.SHOW_ADVANCEMENT_MESSAGES)) {
-                         this.playerList.broadcastSystemMessage(display.getType().createAnnouncement(holder, this.player), false);
+                     if (display.announceToChat() && this.player.level().getGameRules().get(GameRules.SHOW_ADVANCEMENT_MESSAGES)) {
+                         this.playerList.broadcastSystemMessage(display.type().createAnnouncement(holder, this.player), false);
                      }
 +                    net.neoforged.neoforge.event.EventHooks.onAdvancementEarnedEvent(this.player, holder);
                  });
              }
          }
-@@ -194,6 +_,7 @@
+@@ -195,6 +_,7 @@
              this.registerListeners(advancement);
              this.progressChanged.add(advancement);
              result = true;

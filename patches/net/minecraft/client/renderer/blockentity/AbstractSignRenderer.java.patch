@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/AbstractSignRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/AbstractSignRenderer.java
-@@ -113,4 +_,13 @@
+@@ -114,4 +_,13 @@
          state.isTextFilteringEnabled = Minecraft.getInstance().isTextFilteringEnabled();
          state.drawOutline = isOutlineVisible(blockEntity.getBlockPos());
      }

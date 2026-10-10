@@ -5,6 +5,10 @@
       "type": "minecraft:model",
       "model": "minecraft:item/diamond_chestplate"
     },
-    "base_trim_texture": "minecraft:trims/items/chestplate_trim"
+    "base_trim_texture": "minecraft:trims/items/chestplate_trim",
+    "palette_replacement": {
+      "replacement": "minecraft:trim/diamond_darker",
+      "target": "minecraft:trim/diamond"
+    }
   }
 }

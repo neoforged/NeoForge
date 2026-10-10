@@ -1,0 +1,20 @@
+--- a/com/mojang/renderpearl/backend/opengl/GlConst.java
++++ b/com/mojang/renderpearl/backend/opengl/GlConst.java
+@@ -363,4 +_,17 @@
+             return 35044;
+         }
+     }
++
++    public static int toGl(net.neoforged.neoforge.client.stencil.StencilOperation op) {
++        return switch (op) {
++            case KEEP -> org.lwjgl.opengl.GL33C.GL_KEEP;
++            case ZERO -> org.lwjgl.opengl.GL33C.GL_ZERO;
++            case REPLACE -> org.lwjgl.opengl.GL33C.GL_REPLACE;
++            case INCR -> org.lwjgl.opengl.GL33C.GL_INCR;
++            case DECR -> org.lwjgl.opengl.GL33C.GL_DECR;
++            case INVERT -> org.lwjgl.opengl.GL33C.GL_INVERT;
++            case INCR_WRAP -> org.lwjgl.opengl.GL33C.GL_INCR_WRAP;
++            case DECR_WRAP -> org.lwjgl.opengl.GL33C.GL_DECR_WRAP;
++        };
++    }
+ }

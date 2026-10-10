@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.oldtest;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -161,11 +160,6 @@ public class AttachmentSyncTest {
     private static class TestBlock extends BaseEntityBlock {
         public TestBlock(Properties properties) {
             super(properties);
-        }
-
-        @Override
-        protected MapCodec<? extends BaseEntityBlock> codec() {
-            return simpleCodec(TestBlock::new);
         }
 
         @Override

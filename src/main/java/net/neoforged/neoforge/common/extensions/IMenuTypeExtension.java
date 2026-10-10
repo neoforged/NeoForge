@@ -7,6 +7,7 @@ package net.neoforged.neoforge.common.extensions;
 
 import java.util.function.Consumer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.flag.FeatureFlags;
@@ -19,7 +20,7 @@ public interface IMenuTypeExtension<T> {
      * Use this method to create a menu type that uses additional data sent by the server when it creates
      * the client-side instances of its menus.
      *
-     * @see IMenuProviderExtension#writeClientSideData(AbstractContainerMenu, RegistryFriendlyByteBuf)
+     * @see IMenuProviderExtension#writeClientSideData(ServerPlayer, AbstractContainerMenu, RegistryFriendlyByteBuf)
      * @see IPlayerExtension#openMenu(MenuProvider, Consumer)
      */
     static <T extends AbstractContainerMenu> MenuType<T> create(IContainerFactory<T> factory) {

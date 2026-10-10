@@ -1,9 +1,10 @@
 --- a/net/minecraft/client/data/Main.java
 +++ b/net/minecraft/client/data/Main.java
-@@ -28,17 +_,37 @@
+@@ -28,17 +_,40 @@
          OptionSpec<Void> clientOption = parser.accepts("client", "Include client generators");
          OptionSpec<Void> allOption = parser.accepts("all", "Include all generators");
          OptionSpec<String> outputOption = parser.accepts("output", "Output folder").withRequiredArg().defaultsTo("generated");
++        OptionSpec<String> inputOption = parser.accepts("input", "Input folder").withRequiredArg();
 +        OptionSpec<String> existing = parser.accepts("existing", "Existing resource packs that generated resources can reference").withRequiredArg();
 +        OptionSpec<String> mod = parser.accepts("mod", "A modid to dump").withRequiredArg().withValuesSeparatedBy(",");
 +        OptionSpec<Void> flat = parser.accepts("flat", "Do not append modid prefix to output directory when generating for multiple mods");
@@ -19,6 +20,7 @@
 -            Bootstrap.bootStrap();
 -            ClientBootstrap.bootstrap();
 -            DataGenerator generator = new DataGenerator.Cached(output, SharedConstants.getCurrentVersion(), true);
++            var input = optionSet.valuesOf(inputOption).stream().map(Paths::get).toList();
 +            java.util.Collection<Path> existingPacks = optionSet.valuesOf(existing).stream().map(Paths::get).toList();
 +            java.util.Set<String> mods = new java.util.HashSet<>(optionSet.valuesOf(mod));
 +            boolean isFlat = mods.isEmpty() || optionSet.has(flat);
@@ -32,12 +34,13 @@
 +            }
 +            java.io.File assetsDirValue = optionSet.valueOf(assetsDir);
 +            String assetIndexValue = optionSet.valueOf(assetIndex);
-+            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, output, java.util.List.of(), existingPacks, false, false, validate, isFlat, uncached, () -> {
++            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, output, input, existingPacks, false, false, validate, isFlat, uncached, () -> {
 +                ClientBootstrap.bootstrap();
 +                net.neoforged.neoforge.client.ClientHooks.initClientRegistries();
 +            }, net.neoforged.neoforge.data.event.GatherDataEvent.Client::new, generator, packConsumer -> {
-+                if (assetsDirValue != null && assetIndexValue != null)
-+                    packConsumer.accept(net.minecraft.client.resources.ClientPackSource.createVanillaPackSource(net.minecraft.client.resources.IndexedAssetSource.createIndexFs(assetsDirValue.toPath(), assetIndexValue)));
++                if (assetsDirValue != null && assetIndexValue != null) {
++                    packConsumer.accept(net.minecraft.client.resources.ClientPackSource.createVanillaPackSource(net.minecraft.client.resources.IndexedAssetSource.createIndexFs(assetsDirValue.toPath(), assetIndexValue)).fullResources());
++                }
 +            });
          } else {
              parser.printHelpOn(System.out);

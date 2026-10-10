@@ -1,0 +1,54 @@
+--- a/net/minecraft/core/registries/codec/HolderSetCodec.java
++++ b/net/minecraft/core/registries/codec/HolderSetCodec.java
+@@ -20,6 +_,8 @@
+ public class HolderSetCodec<E> implements Codec<HolderSet<E>> {
+     private final ResourceKey<? extends Registry<E>> registryKey;
+     private final Codec<Either<TagKey<E>, List<Holder<E>>>> tagKeyOrValuesCodec;
++    private final Codec<net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<E>> customDispatchCodec;
++    private final Codec<Either<net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<E>, Either<TagKey<E>, List<Holder<E>>>>> combinedCodec;
+ 
+     private static <E> Codec<List<Holder<E>>> directCodec(Codec<Holder<E>> elementCodec, boolean alwaysUseList) {
+         Codec<List<Holder<E>>> listCodec = elementCodec.listOf();
+@@ -33,16 +_,23 @@
+     private HolderSetCodec(ResourceKey<? extends Registry<E>> registryKey, Codec<Holder<E>> elementCodec, boolean alwaysUseList) {
+         this.registryKey = registryKey;
+         this.tagKeyOrValuesCodec = Codec.either(TagKey.hashedCodec(registryKey), directCodec(elementCodec, alwaysUseList));
++        // Neo: make registry-specific dispatch codec and make custom-or-vanilla either codec
++        this.customDispatchCodec = net.neoforged.neoforge.registries.NeoForgeRegistries.HOLDER_SET_TYPES.byNameCodec()
++                .dispatch(net.neoforged.neoforge.registries.holdersets.ICustomHolderSet::type, type -> type.makeCodec(registryKey, elementCodec, alwaysUseList));
++        this.combinedCodec = Codec.either(this.customDispatchCodec, this.tagKeyOrValuesCodec);
+     }
+ 
+     @Override
+     public <T> DataResult<Pair<HolderSet<E>, T>> decode(DynamicOps<T> ops, T input) {
+-        return this.tagKeyOrValuesCodec
++        // Neo: use the wrapped codec to decode custom/tag/list instead of just tag/list
++        return this.combinedCodec
+             .decode(ops, input)
+             .flatMap(
+                 tagKeyOrValues -> {
+                     DataResult<HolderSet<E>> result = tagKeyOrValues.getFirst()
+                         .map(
++                            DataResult::success,
++                            tagOrList -> tagOrList.map(
+                             tagKey -> {
+                                 if (ops instanceof RegistryOps<T> registryOps) {
+                                     Optional<HolderGetter<E>> maybeRegistry = registryOps.getter(this.registryKey);
+@@ -54,6 +_,7 @@
+                                 }
+                             },
+                             values -> DataResult.success(HolderSet.direct((List<? extends Holder<E>>)values))
++                            )
+                         );
+                     return result.map(holders -> Pair.of((HolderSet<E>)holders, (T)tagKeyOrValues.getSecond()));
+                 }
+@@ -76,6 +_,9 @@
+                     ? DataResult.error(() -> "HolderSet " + named + " is not valid in current registry set")
+                     : this.tagKeyOrValuesCodec.encode(Either.left(named.key()), ops, prefix);
+             }
++        } else if (input instanceof net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<E> customHolderSet) {
++            // FORGE: use the dispatch codec to encode custom holdersets, otherwise fall back to vanilla tag/list
++            return this.customDispatchCodec.encode(customHolderSet, ops, prefix);
+         } else {
+             return this.tagKeyOrValuesCodec.encode(Either.right(input.stream().toList()), ops, prefix);
+         }

@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client.settings;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.platform.Window;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -14,7 +13,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
 import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 public enum KeyModifier {
     /**
@@ -28,14 +26,14 @@ public enum KeyModifier {
      */
     CONTROL {
         private static final InputConstants.Key[] KEYS = new InputConstants.Key[] {
-                InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_CONTROL),
-                InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_RIGHT_CONTROL)
+                InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_LCONTROL),
+                InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_RCONTROL)
         };
 
         @Override
         public boolean matches(InputConstants.Key key) {
             int keyCode = key.getValue();
-            return keyCode == GLFW.GLFW_KEY_LEFT_CONTROL || keyCode == GLFW.GLFW_KEY_RIGHT_CONTROL;
+            return keyCode == InputConstants.KEY_LCONTROL || keyCode == InputConstants.KEY_RCONTROL;
         }
 
         @Override
@@ -70,15 +68,15 @@ public enum KeyModifier {
      */
     CONTROL_OR_COMMAND {
         private static final InputConstants.Key[] COMMAND_KEYS = new InputConstants.Key[] {
-                InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_SUPER),
-                InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_RIGHT_SUPER),
+                InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_LGUI),
+                InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_RGUI),
         };
 
         @Override
         public boolean matches(InputConstants.Key key) {
             if (InputQuirks.REPLACE_CTRL_KEY_WITH_CMD_KEY) {
                 int keyCode = key.getValue();
-                return keyCode == GLFW.GLFW_KEY_LEFT_SUPER || keyCode == GLFW.GLFW_KEY_RIGHT_SUPER;
+                return keyCode == InputConstants.KEY_LGUI || keyCode == InputConstants.KEY_RGUI;
             }
             return CONTROL.matches(key);
         }
@@ -86,9 +84,7 @@ public enum KeyModifier {
         @Override
         public boolean isActive(@Nullable IKeyConflictContext conflictContext) {
             if (InputQuirks.REPLACE_CTRL_KEY_WITH_CMD_KEY) {
-                Minecraft minecraft = Minecraft.getInstance();
-                Window window = minecraft.getWindow();
-                return InputConstants.isKeyDown(window, GLFW.GLFW_KEY_LEFT_SUPER) || InputConstants.isKeyDown(window, GLFW.GLFW_KEY_RIGHT_SUPER);
+                return InputConstants.isKeyDown(InputConstants.KEY_LGUI) || InputConstants.isKeyDown(InputConstants.KEY_RGUI);
             }
             return CONTROL.isActive(conflictContext);
         }
@@ -111,13 +107,13 @@ public enum KeyModifier {
     },
     SHIFT {
         private static final InputConstants.Key[] KEYS = new InputConstants.Key[] {
-                InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_SHIFT),
-                InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_RIGHT_SHIFT)
+                InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_LSHIFT),
+                InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_RSHIFT)
         };
 
         @Override
         public boolean matches(InputConstants.Key key) {
-            return key.getValue() == GLFW.GLFW_KEY_LEFT_SHIFT || key.getValue() == GLFW.GLFW_KEY_RIGHT_SHIFT;
+            return key.getValue() == InputConstants.KEY_LSHIFT || key.getValue() == InputConstants.KEY_RSHIFT;
         }
 
         @Override
@@ -137,13 +133,13 @@ public enum KeyModifier {
     },
     ALT {
         private static final InputConstants.Key[] KEYS = new InputConstants.Key[] {
-                InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_ALT),
-                InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_RIGHT_ALT)
+                InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_LALT),
+                InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_RALT)
         };
 
         @Override
         public boolean matches(InputConstants.Key key) {
-            return key.getValue() == GLFW.GLFW_KEY_LEFT_ALT || key.getValue() == GLFW.GLFW_KEY_RIGHT_ALT;
+            return key.getValue() == InputConstants.KEY_LALT || key.getValue() == InputConstants.KEY_RALT;
         }
 
         @Override

@@ -12,6 +12,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.TagsProvider;
+import net.minecraft.tags.BlockItemTagId;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -34,6 +35,10 @@ public abstract class BlockTagCopyingItemTagProvider extends TagsProvider<Item> 
             String modId) {
         super(output, Registries.ITEM, lookupProvider, modId);
         this.blockTags = blockTags;
+    }
+
+    protected void copy(BlockItemTagId tag) {
+        copy(tag.block(), tag.item());
     }
 
     protected void copy(TagKey<Block> blockTag, TagKey<Item> itemTag) {

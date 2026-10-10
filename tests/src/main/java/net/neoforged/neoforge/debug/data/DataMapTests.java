@@ -21,10 +21,13 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.BlockTransformer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.references.BlockItemIds;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
@@ -38,11 +41,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.BlockTransformers;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.WeatheringCopperFullBlock;
+import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.neoforge.common.DataMapHooks;
 import net.neoforged.neoforge.common.NeoForge;
@@ -58,9 +62,10 @@ import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover.Default;
 import net.neoforged.neoforge.registries.datamaps.DataMapsUpdatedEvent;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
-import net.neoforged.neoforge.registries.datamaps.builtin.Compostable;
+import net.neoforged.neoforge.registries.datamaps.builtin.BlockTransformAppender;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import net.neoforged.neoforge.registries.datamaps.builtin.Oxidizable;
+import net.neoforged.neoforge.registries.datamaps.builtin.Transformable;
 import net.neoforged.neoforge.registries.datamaps.builtin.Waxable;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -85,7 +90,7 @@ public class DataMapTests {
 
         final String subpackName = reg.registerSubpack("second_layer");
 
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -103,7 +108,7 @@ public class DataMapTests {
             }
         });
 
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getReloadableLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -165,7 +170,7 @@ public class DataMapTests {
 
         final String subpackName = reg.registerSubpack("second_layer");
 
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -185,7 +190,7 @@ public class DataMapTests {
             }
         });
 
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getReloadableLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -229,7 +234,7 @@ public class DataMapTests {
 
         test.framework().modEventBus().addListener((final RegisterDataMapTypesEvent event) -> event.register(someData));
 
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -281,7 +286,7 @@ public class DataMapTests {
                 Registries.DAMAGE_TYPE, ExperienceGrant.CODEC)
                 .build());
 
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(xpGrant)
@@ -313,7 +318,7 @@ public class DataMapTests {
                 Registries.LOOT_TABLE, MobEffectInstance.CODEC)
                 .build());
 
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(effectGrant)
@@ -340,32 +345,13 @@ public class DataMapTests {
 
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = "Tests if custom compostables work")
-    static void compostablesMapTest(final DynamicTest test, final RegistrationHelper reg) {
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
-            @Override
-            protected void gather(HolderLookup.Provider provider) {
-                builder(NeoForgeDataMaps.COMPOSTABLES)
-                        .add(ItemTags.COMPASSES, new Compostable(1f), false);
-            }
-        });
-        test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
-                .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.COMPOSTER))
-                .thenExecute(player -> helper.useBlock(
-                        new BlockPos(1, 1, 1), player, Items.COMPASS.getDefaultInstance()))
-                .thenExecute(() -> helper.assertBlockProperty(new BlockPos(1, 1, 1), ComposterBlock.LEVEL, 1))
-                .thenSucceed());
-    }
-
-    @GameTest
-    @EmptyTemplate
     @TestHolder(description = "Tests if the data map update event works", groups = EventTests.GROUP)
     static void dataMapUpdateEventTest(final DynamicTest test, final RegistrationHelper reg) {
         final DataMapType<Item, Integer> dataMap = reg.registerDataMap(DataMapType.builder(
                 Identifier.fromNamespaceAndPath(reg.modId(), "weight"),
                 Registries.ITEM, Codec.INT)
                 .build());
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(dataMap)
@@ -411,7 +397,7 @@ public class DataMapTests {
 
         Holder<Block> lightlyOxidizedWaxedIron = reg.blocks().registerBlock("lightly_oxidized_waxed_iron", Block::new);
 
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(NeoForgeDataMaps.OXIDIZABLES)
@@ -422,10 +408,6 @@ public class DataMapTests {
             }
         });
         test.onGameTest(helper -> {
-            helper.assertFalse(
-                    DataMapHooks.didHaveToFallbackToVanillaMaps,
-                    "The Oxidizable and Waxable Data Map's should not have to fallback to vanilla maps in this gametest, something is very wrong!");
-
             // -------------- Test added blocks -------------- \\
             // Test Lightly Oxidized Iron -> More Oxidized Iron
             helper.setBlock(blockPos, lightlyOxidizedIron.value());
@@ -482,6 +464,53 @@ public class DataMapTests {
                 helper.assertValueEqual(DataMapHooks.getBlockUnwaxed(after), before, "unwaxed version of " + before.getName());
             });
 
+            helper.succeed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if block transforms appended via the transformables datamap work")
+    static void transformablesMapTest(final DynamicTest test, final RegistrationHelper reg) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
+            @Override
+            protected void gather(HolderLookup.Provider provider) {
+                builder(NeoForgeDataMaps.TRANSFORMABLES)
+                        .add(BlockItemIds.ANDESITE.block(), Transformable.stripping(Blocks.ANDESITE, Blocks.POLISHED_ANDESITE), false);
+            }
+        });
+
+        BlockPos blockPos = new BlockPos(1, 1, 1);
+        test.onGameTest(helper -> {
+            helper.setBlock(blockPos, Blocks.ANDESITE);
+            helper.useOn(blockPos, Items.IRON_AXE.getDefaultInstance(), helper.makeMockPlayer(), Direction.NORTH);
+            helper.assertBlock(blockPos, Blocks.POLISHED_ANDESITE::equals, "Wanted: Polished Andesite but found something else!");
+            helper.succeed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if block transforms appended via the block transform appenders datamap work")
+    static void transformAppendersMapTest(final DynamicTest test, final RegistrationHelper reg) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
+            @Override
+            protected void gather(HolderLookup.Provider provider) {
+                BlockTransformer.BlockTransformData transformer = BlockTransformer.BlockTransformData.builder(
+                        BlockPredicate.matchesBlocks(Blocks.QUARTZ_BLOCK),
+                        Blocks.CHISELED_QUARTZ_BLOCK)
+                        .sound(SoundEvents.ARMOR_EQUIP_GOLD)
+                        .build();
+                builder(NeoForgeDataMaps.BLOCK_TRANSFORM_APPENDERS)
+                        .add(BlockTransformers.SHOVEL, new BlockTransformAppender(List.of(transformer)), false);
+            }
+        });
+
+        BlockPos blockPos = new BlockPos(1, 1, 1);
+        test.onGameTest(helper -> {
+            helper.setBlock(blockPos, Blocks.QUARTZ_BLOCK);
+            helper.useOn(blockPos, Items.IRON_SHOVEL.getDefaultInstance(), helper.makeMockPlayer(), Direction.NORTH);
+            helper.assertBlock(blockPos, Blocks.CHISELED_QUARTZ_BLOCK::equals, "Wanted: Polished Andesite but found something else!");
             helper.succeed();
         });
     }

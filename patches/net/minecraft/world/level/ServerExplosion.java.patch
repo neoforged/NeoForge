@@ -29,7 +29,7 @@
                          double knockbackPower = (1.0 - dist) * exposure * knockbackMultiplier * (1.0 - knockbackResistance);
                          Vec3 knockback = direction.scale(knockbackPower);
 +                        knockback = net.neoforged.neoforge.event.EventHooks.getExplosionKnockback(this.level, this, entity, knockback, blocks);
-                         entity.push(knockback);
+                         entity.pushFromExplosion(knockback);
                          if (entity.is(EntityTypeTags.REDIRECTABLE_PROJECTILE) && entity instanceof Projectile projectile) {
                              projectile.setOwner(this.damageSource.getEntity());
 @@ -235,7 +_,7 @@
