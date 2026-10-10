@@ -7,7 +7,10 @@ package net.neoforged.neoforge.debug.entity.living;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
@@ -15,10 +18,12 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -27,9 +32,11 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.animal.allay.Allay;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.cubemob.Slime;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.monster.zombie.ZombieVillager;
@@ -49,9 +56,11 @@ import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.GetEquipmentDropChanceEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingGetProjectileEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -390,5 +399,65 @@ public class LivingEntityEventTests {
                     helper.assertTrue(valueAbsorption.equals("6"), "absorption expected 6, actually " + valueAbsorption);
                 })
                 .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Test equipment drop chance event can change the drop rate of mob equipment")
+    static void equipmentDropChanceEvent(final DynamicTest test) {
+        // collected drops between event calls
+        List<ItemStack> drops = new ArrayList<>();
+        // event listener: make the equipment drop chance 0% when holding an anvil in the offhand
+        test.eventListeners().forge().addListener((GetEquipmentDropChanceEvent event) -> {
+            if (event.getKillingBlow().getEntity() instanceof LivingEntity living && living.getOffhandItem().is(Items.ANVIL)) {
+                event.setChance(0);
+            }
+        });
+        test.eventListeners().forge().addListener((LivingDropsEvent event) -> {
+            // store drops to validate in the test helper
+            for (Iterator<ItemEntity> iterator = event.getDrops().iterator(); iterator.hasNext(); ) {
+                ItemEntity entity = iterator.next();
+                ItemStack stack = entity.getItem();
+                if (stack.is(Items.TURTLE_HELMET)) {
+                    drops.add(stack);
+                    iterator.remove();
+                }
+            }
+        });
+        test.onGameTest(helper -> {
+            ServerLevel level = helper.getLevel();
+            Player player = helper.makeMockPlayer();
+            DamageSource damageSource = level.damageSources().playerAttack(player);
+
+            Zombie zombie = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, 1, 1, 1);
+            // non-standard helmet so we know we added it
+            zombie.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.TURTLE_HELMET));
+            // always drops, but not preserved
+            zombie.setDropChance(EquipmentSlot.HEAD, 1.0f);
+
+            // kill the zombie without anything in hand - expect item to drop per normal behavior
+            player.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
+            // mark the monster as having been attacked by a player so equipment drops
+            zombie.setLastHurtByPlayer(player, 100);
+            zombie.die(damageSource);
+            zombie.remove(RemovalReason.KILLED);
+            helper.assertFalse(drops.isEmpty(), "Failed to find guaranteed drop when event condition did not match.");
+            helper.assertTrue(drops.get(0).is(Items.TURTLE_HELMET), "Expected drop to be " + Items.TURTLE_HELMET + ", was " + drops.get(0));
+            drops.clear();
+
+            // zombie - same setup as before
+            zombie = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, 2, 1, 1);
+            zombie.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.TURTLE_HELMET));
+            zombie.setDropChance(EquipmentSlot.HEAD, 1.0f);
+
+            // holding an anvil in the offhand makes the event listener reduce drop chance to 0
+            player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.ANVIL));
+            zombie.setLastHurtByPlayer(player, 100);
+            zombie.die(damageSource);
+            zombie.remove(RemovalReason.KILLED);
+            helper.assertTrue(drops.isEmpty(), "Received unexpected drop, event should have prevented it: " + drops);
+
+            helper.succeed();
+        });
     }
 }
