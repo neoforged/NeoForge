@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/inventory/AbstractMountInventoryMenu.java
++++ b/net/minecraft/world/inventory/AbstractMountInventoryMenu.java
+@@ -28,7 +_,7 @@
+         return !this.hasInventoryChanged(this.mountContainer)
+             && this.mountContainer.stillValid(player)
+             && this.mount.isAlive()
+-            && player.isWithinEntityInteractionRange(this.mount, 4.0);
++            && net.neoforged.neoforge.common.CommonHooks.menuRangeValidity(player, this.mount, 4.0);
+     }
+ 
+     @Override
