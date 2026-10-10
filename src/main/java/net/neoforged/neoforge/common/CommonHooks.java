@@ -837,7 +837,7 @@ public class CommonHooks {
     public static boolean onPlayerAttackTarget(Player player, Entity target) {
         if (NeoForge.EVENT_BUS.post(new AttackEntityEvent(player, target)).isCanceled())
             return false;
-        ItemStack stack = player.getMainHandItem();
+        ItemStack stack = player.getWeaponItem();
         return stack.isEmpty() || !stack.getItem().onLeftClickEntity(stack, player, target);
     }
 
