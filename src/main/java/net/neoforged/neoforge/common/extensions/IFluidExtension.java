@@ -32,6 +32,25 @@ public interface IFluidExtension {
     }
 
     /**
+     * Returns the still/source variant of this fluid if it is a flowing variant, or itself otherwise.
+     *
+     * @return the still/source variant of this fluid
+     */
+    default Fluid getSource() {
+        return self();
+    }
+
+    /**
+     * Returns the flowing variant of this fluid if available, or {@code null} if this fluid has no flowing variant.
+     *
+     * @return the flowing variant of this fluid, or {@code null}
+     */
+    @Nullable
+    default Fluid getFlowing() {
+        return null;
+    }
+
+    /**
      * Returns the explosion resistance of the fluid.
      *
      * @param state     the state of the fluid
