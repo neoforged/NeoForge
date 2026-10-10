@@ -1,22 +1,36 @@
 --- a/net/minecraft/client/gui/components/AbstractWidget.java
 +++ b/net/minecraft/client/gui/components/AbstractWidget.java
-@@ -225,6 +_,19 @@
-         this.focused = focused;
-     }
+@@ -41,6 +_,8 @@
+     private int tabOrderGroup;
+     private boolean focused;
+     private final WidgetTooltipHolder tooltip = new WidgetTooltipHolder();
++    /// Neo: Stores the label text color override. See [#getLabelTextColor()] and [#setLabelTextColor].
++    protected @Nullable Integer labelTextColor = null;
  
-+    public static final int UNSET_FG_COLOR = -1;
-+    protected int packedFGColor = UNSET_FG_COLOR;
-+    public int getFGColor() {
-+        if (packedFGColor != UNSET_FG_COLOR) return packedFGColor;
-+        return this.active ? -1 : -6250336; // White : Light Grey
-+    }
-+    public void setFGColor(int color) {
-+        this.packedFGColor = color;
-+    }
-+    public void clearFGColor() {
-+        this.packedFGColor = UNSET_FG_COLOR;
+     public AbstractWidget(int x, int y, int width, int height, Component message) {
+         this.x = x;
+@@ -223,6 +_,24 @@
+     @Override
+     public void setFocused(boolean focused) {
+         this.focused = focused;
 +    }
 +
++    /// Neo: {@return the widget's label text color} If a custom text color has been set, that color will be used.
++    /// If a custom text color has not been set, [net.minecraft.util.CommonColors#WHITE] will be used when active,
++    /// and [net.minecraft.util.CommonColors#LIGHT_GRAY] otherwise.
++    ///
++    /// Subclasses may override this to provide more advanced text color handling.
++    public int getLabelTextColor() {
++        return this.labelTextColor != null
++                ? this.labelTextColor
++                : this.active ? net.minecraft.util.CommonColors.WHITE : net.minecraft.util.CommonColors.LIGHT_GRAY;
++    }
++
++    /// Neo: Sets the label text color for this widget based on the given ARGB value
++    ///
++    /// @param color the new label text color as an ARGB value
++    public void setLabelTextColor(int color) {
++        this.labelTextColor = color;
+     }
+ 
      @Override
-     public NarratableEntry.NarrationPriority narrationPriority() {
-         if (this.isFocused()) {
