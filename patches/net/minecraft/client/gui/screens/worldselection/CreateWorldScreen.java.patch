@@ -19,12 +19,13 @@
              this.minecraft
                  .createWorldOpenFlows()
                  .createLevelFromExistingSettings(newWorldAccess.get(), context.dataPackResources(), finalLayers, worldDataAndGenSettings, gameRules);
-@@ -504,7 +_,7 @@
+@@ -504,7 +_,8 @@
                                          if (retry) {
                                              onAbort.accept(this.uiState.getSettings().dataConfiguration());
                                          } else {
 -                                            onAbort.accept(WorldDataConfiguration.DEFAULT);
-+                                            onAbort.accept(new WorldDataConfiguration(new DataPackConfig(ImmutableList.of("vanilla"), ImmutableList.of()), FeatureFlags.VANILLA_SET)); // FORGE: Revert to *actual* vanilla data
++                                            // Neo: Revert to *actual* vanilla data
++                                            onAbort.accept(new WorldDataConfiguration(new DataPackConfig(List.of("vanilla"), List.of()), FeatureFlags.VANILLA_SET));
                                          }
                                      },
                                      Component.translatable("dataPack.validation.failed"),

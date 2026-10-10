@@ -18,7 +18,7 @@
                      ItemCombinerMenu.this.onTake(player, carried);
 +                }
 +
-+                /// Neo: Call the containing class' onQuickCraft hook for the result slot.
++                /// Neo: Call the containing class' [ItemCombinerMenu#onQuickCraft(ItemStack, int)] hook for the result slot.
 +                @Override
 +                protected void onQuickCraft(ItemStack picked, int count) {
 +                    ItemCombinerMenu.this.onQuickCraft(picked, count);

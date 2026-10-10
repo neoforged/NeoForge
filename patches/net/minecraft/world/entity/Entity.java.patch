@@ -12,17 +12,33 @@
      private static final double MAX_MOVEMENT_RESETTING_TRACE_DISTANCE = 8.0;
      private static final Set<TagKey<Fluid>> FLUIDS_WITH_CURRENT = Set.of(FluidTags.WATER, FluidTags.LAVA);
      private static double viewScale = 1.0;
-+    /** @deprecated Neo: Use the getter to allow overriding in mods */
++    /// @deprecated Neo: Use the getter to allow overriding in mods
 +    @Deprecated
      private final EntityType<?> type;
      private boolean requiresPrecisePosition;
      private int id = 0;
-@@ -329,7 +_,10 @@
+@@ -307,6 +_,16 @@
+     protected final InsideBlockEffectApplier.StepBasedCollector insideEffectCollector = new InsideBlockEffectApplier.StepBasedCollector();
+     protected final InterpolationHandler interpolationHandler;
+     private CustomData customData = CustomData.EMPTY;
++    /// Neo: Short-lived holder of dropped item entities. Used mainly for Neo hooks and event logic.
++    ///
++    /// When not null, records all item entities from [#spawnAtLocation] and [net.minecraft.server.level.ServerPlayer#drop(ItemStack, boolean, net.minecraft.util.Prediction)] instead of adding them to the world.
++    private java.util.@Nullable Collection<ItemEntity> captureDrops = null;
++    /// Neo: Injected ability to store arbitrary NBT onto entities in ways that allow inter-mod compat without compile-time dependencies
++    private net.minecraft.nbt.@Nullable CompoundTag persistentData;
++    /// Neo: Internal use for keeping track of entities that are tracked by a world, to
++    /// allow guarantees that entity position changes will force a chunk load, avoiding
++    /// potential issues with entity desyncing and bad chunk data.
++    private boolean isAddedToLevel;
+ 
+     public Entity(EntityType<?> type, Level level) {
+         this.type = type;
+@@ -329,7 +_,9 @@
          this.entityData = entityDataBuilder.build();
          this.interpolationHandler = this.createInterpolationHandler();
          this.setPos(0.0, 0.0, 0.0);
-+        net.neoforged.neoforge.event.entity.EntityEvent.Size sizeEvent = net.neoforged.neoforge.event.EventHooks.getEntitySizeForge(this, Pose.STANDING, this.dimensions);
-+        this.dimensions = sizeEvent.getNewSize();
++        this.dimensions = net.neoforged.neoforge.event.EventHooks.getEntitySizeForge(this, Pose.STANDING, this.dimensions).getNewSize();
          this.eyeHeight = this.dimensions.eyeHeight();
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityEvent.EntityConstructing(this));
      }
@@ -61,10 +77,10 @@
          }
      }
  
-+    /// @deprecated NeoForge: Use [#restituteMovementAfterCollisions(BlockPos, BlockState, boolean, boolean, Vec3)]
++    /// @deprecated Neo: Use [#restituteMovementAfterCollisions(BlockPos, BlockState, boolean, boolean, Vec3)]
 +    @Deprecated
      private void restituteMovementAfterCollisions(BlockState effectState, boolean xCollision, boolean zCollision, Vec3 movement) {
-+        restituteMovementAfterCollisions(getOnPosLegacy(), effectState, xCollision, zCollision, movement);
++        this.restituteMovementAfterCollisions(getOnPosLegacy(), effectState, xCollision, zCollision, movement);
 +    }
 +
 +    private void restituteMovementAfterCollisions(BlockPos effectPos, BlockState effectState, boolean xCollision, boolean zCollision, Vec3 movement) {
@@ -76,7 +92,7 @@
                          && !this.isSuppressingBounce()
                          && !effectState.is(BlockTags.SUPPRESSES_BOUNCE)
 -                    ? Math.max(restitution, this.getBlockBounciness(effectState.getBlock()))
-+                    ? Math.max(restitution, this.getBlockBounciness(effectPos, effectState)) // NeoForge: Allow bounciness to be state and position specific
++                    ? Math.max(restitution, this.getBlockBounciness(effectPos, effectState)) // Neo: Allow bounciness to be state and position specific
                      : 0.0;
              }
  
@@ -84,7 +100,7 @@
          this.setDeltaMovement(movementAfterBounce);
      }
  
-+    /// @deprecated NeoForge: Use [IEntityExtension#getBlockBounciness(BlockPos, BlockState) ]
++    /// @deprecated Neo: Use [IEntityExtension#getBlockBounciness(BlockPos, BlockState)] instead
 +    @Deprecated
      private double getBlockBounciness(Block onBlock) {
          float blockBounciness = onBlock.getBounceRestitution();
@@ -220,13 +236,15 @@
      }
  
      public void moveRelative(float speed, Vec3 input) {
-@@ -2161,6 +_,11 @@
+@@ -2161,6 +_,13 @@
                  output.store("data", CustomData.CODEC, this.customData);
              }
  
 +            var attachments = output.child(ATTACHMENTS_NBT_KEY);
 +            serializeAttachments(attachments);
-+            if (attachments.isEmpty()) output.discard(ATTACHMENTS_NBT_KEY);
++            if (attachments.isEmpty()) {
++                output.discard(ATTACHMENTS_NBT_KEY);
++            }
 +            output.storeNullable("NeoForgeData", net.minecraft.nbt.CompoundTag.CODEC, persistentData);
 +
              this.addAdditionalSaveData(output);
@@ -241,12 +259,13 @@
                  this.tags.clear();
                  input.read("Tags", TAG_LIST_CODEC).ifPresent(this.tags::addAll);
                  input.getString("Team").ifPresent(teamName -> {
-@@ -2286,6 +_,8 @@
+@@ -2286,6 +_,9 @@
  
          ItemEntity entity = new ItemEntity(level, this.getX() + offset.x, this.getY() + offset.y, this.getZ() + offset.z, itemStack);
          entity.setDefaultPickUpDelay();
-+        if (captureDrops() != null) captureDrops().add(entity);
-+        else
++        if (captureDrops() != null) {
++            captureDrops().add(entity);
++        } else
          level.addFreshEntity(entity);
          return entity;
      }
@@ -277,19 +296,23 @@
          if (this.isPassenger()) {
              this.getVehicle().positionRider(this);
          }
-@@ -2496,6 +_,7 @@
+@@ -2496,6 +_,9 @@
              }
          }
  
-+        if (!net.neoforged.neoforge.event.EventHooks.canMountEntity(this, entityToRide, true)) return false;
++        if (!net.neoforged.neoforge.event.EventHooks.canMountEntity(this, entityToRide, true)) {
++            return false;
++        }
          if (force || this.canRide(entityToRide) && entityToRide.canAddPassenger(this)) {
              if (this.isPassenger()) {
                  this.stopRiding();
-@@ -2540,6 +_,7 @@
+@@ -2540,6 +_,9 @@
      public void removeVehicle() {
          if (this.vehicle != null) {
              Entity oldVehicle = this.vehicle;
-+            if (!net.neoforged.neoforge.event.EventHooks.canMountEntity(this, oldVehicle, false)) return;
++            if (!net.neoforged.neoforge.event.EventHooks.canMountEntity(this, oldVehicle, false)) {
++                return;
++            }
              this.vehicle = null;
              oldVehicle.removePassenger(this);
              Entity.RemovalReason removalReason = this.getRemovalReason();
@@ -320,12 +343,13 @@
      }
  
      public void onAboveBubbleColumn(boolean dragDown, BlockPos pos) {
-@@ -3049,7 +_,7 @@
+@@ -3049,7 +_,8 @@
      }
  
      protected Component getTypeName() {
 -        return this.type.getDescription();
-+        return this.getType().getDescription(); // Forge: Use getter to allow overriding by mods
++        // Neo: Use getter to allow overriding by mods
++        return this.getType().getDescription();
      }
  
      public boolean is(Entity other) {
@@ -342,28 +366,30 @@
      }
  
      public boolean isInvulnerable() {
-@@ -3146,6 +_,7 @@
+@@ -3146,6 +_,9 @@
      }
  
      public @Nullable Entity teleport(TeleportTransition transition) {
-+        if (!net.neoforged.neoforge.common.CommonHooks.onTravelToDimension(this, transition.newLevel().dimension())) return null;
++        if (!net.neoforged.neoforge.common.CommonHooks.onTravelToDimension(this, transition.newLevel().dimension())) {
++            return null;
++        }
          if (this.level() instanceof ServerLevel serverLevel && !this.isRemoved()) {
              ServerLevel newLevel = transition.newLevel();
              boolean otherDimension = newLevel.dimension() != serverLevel.dimension();
-@@ -3378,6 +_,7 @@
+@@ -3378,6 +_,8 @@
          return this.stringUUID;
      }
  
-+    @Deprecated // Forge: Use FluidType sensitive version
++    /// @deprecated Neo: use [#isPushedByFluid(net.neoforged.neoforge.fluids.FluidType)] instead
++    @Deprecated
      public boolean isPushedByFluid() {
          return true;
      }
-@@ -3489,6 +_,8 @@
+@@ -3489,6 +_,7 @@
          EntityDimensions oldDim = this.dimensions;
          Pose pose = this.getPose();
          EntityDimensions newDim = this.getDimensions(pose);
-+        net.neoforged.neoforge.event.entity.EntityEvent.Size sizeEvent = net.neoforged.neoforge.event.EventHooks.getEntitySizeForge(this, pose, oldDim, newDim);
-+        newDim = sizeEvent.getNewSize();
++        newDim = net.neoforged.neoforge.event.EventHooks.getEntitySizeForge(this, pose, oldDim, newDim).getNewSize();
          this.dimensions = newDim;
          this.eyeHeight = newDim.eyeHeight();
          this.reapplyPosition();
@@ -395,37 +421,28 @@
      }
  
      public void checkDespawn() {
-@@ -4096,6 +_,93 @@
+@@ -4096,6 +_,83 @@
          return true;
      }
  
-+    /**
-+     * Neo: Short-lived holder of dropped item entities. Used mainly for Neo hooks and event logic.
-+     * <p>
-+     * When not null, records all item entities from {@link #spawnAtLocation(ItemStack, float)} and {@link net.minecraft.server.level.ServerPlayer#drop(ItemStack, boolean, boolean)} instead of adding them to the world.
-+     */
-+    private java.util.@Nullable Collection<ItemEntity> captureDrops = null;
-+
 +    @Override
 +    public java.util.@Nullable Collection<ItemEntity> captureDrops() {
-+        return captureDrops;
++        return this.captureDrops;
 +    }
 +
 +    @Override
 +    public java.util.@Nullable Collection<ItemEntity> captureDrops(java.util.@Nullable Collection<ItemEntity> value) {
-+        java.util.Collection<ItemEntity> ret = captureDrops;
++        java.util.Collection<ItemEntity> ret = this.captureDrops;
 +        this.captureDrops = value;
 +        return ret;
 +    }
 +
-+    // Neo: Injected ability to store arbitrary nbt onto entities in ways that allow inter-mod compat without compile-time dependencies
-+    private net.minecraft.nbt.@Nullable CompoundTag persistentData;
-+
 +    @Override
 +    public net.minecraft.nbt.CompoundTag getPersistentData() {
-+        if (persistentData == null)
-+            persistentData = new net.minecraft.nbt.CompoundTag();
-+        return persistentData;
++        if (this.persistentData == null) {
++            this.persistentData = new net.minecraft.nbt.CompoundTag();
++        }
++        return this.persistentData;
 +    }
 +
 +    // Neo: Set the default behavior for trampling on Farmland
@@ -440,21 +457,20 @@
 +        return false;
 +    }
 +
-+    /**
-+     * Neo: Internal use for keeping track of entities that are tracked by a world, to
-+     * allow guarantees that entity position changes will force a chunk load, avoiding
-+     * potential issues with entity desyncing and bad chunk data.
-+     */
-+    private boolean isAddedToLevel;
++    @Override
++    public final boolean isAddedToLevel() {
++        return this.isAddedToLevel;
++    }
 +
 +    @Override
-+    public final boolean isAddedToLevel() { return this.isAddedToLevel; }
++    public void onAddedToLevel() {
++        this.isAddedToLevel = true;
++    }
 +
 +    @Override
-+    public void onAddedToLevel() { this.isAddedToLevel = true; }
-+
-+    @Override
-+    public void onRemovedFromLevel() { this.isAddedToLevel = false; }
++    public void onRemovedFromLevel() {
++        this.isAddedToLevel = false;
++    }
 +
 +    // Neo: Helper method to stop an entity from being removed if already marked for removal
 +    @Override

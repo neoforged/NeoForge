@@ -1,10 +1,13 @@
 --- a/net/minecraft/world/level/block/SaplingBlock.java
 +++ b/net/minecraft/world/level/block/SaplingBlock.java
-@@ -35,6 +_,7 @@
+@@ -35,6 +_,10 @@
  
      @Override
      protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-+        if (!level.isAreaLoaded(pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
++        // Neo: prevent loading unloaded chunks when checking neighbor's light
++        if (!level.isAreaLoaded(pos, 1)) {
++            return;
++        }
          if (level.getMaxLocalRawBrightness(pos.above()) >= 9 && random.nextInt(7) == 0) {
              this.advanceTree(level, pos, state, random);
          }

@@ -5,19 +5,21 @@
          if (megaFeatureKey != null) {
              Holder<Feature> featureHolder = level.registryAccess().lookupOrThrow(Registries.FEATURE).get(megaFeatureKey).orElse(null);
 +            var event = net.neoforged.neoforge.event.EventHooks.fireBlockGrowFeature(level, random, pos, featureHolder);
-+            featureHolder = event.getFeature();
 +            if (event.isCanceled()) {
 +                return false;
 +            }
++            featureHolder = event.getFeature();
              if (featureHolder != null) {
                  Optional<TreeGrower.TwoByTwoSaplingPos> twoByTwoSaplingPos = findTwoByTwoSaplingPos(level, state, pos);
                  if (twoByTwoSaplingPos.isPresent()) {
-@@ -138,6 +_,9 @@
+@@ -138,6 +_,11 @@
          }
  
          Holder<Feature> featureHolder = level.registryAccess().lookupOrThrow(Registries.FEATURE).get(featureKey).orElse(null);
 +        var event = net.neoforged.neoforge.event.EventHooks.fireBlockGrowFeature(level, random, pos, featureHolder);
-+        if (event.isCanceled()) return false;
++        if (event.isCanceled()) {
++            return false;
++        }
 +        featureHolder = event.getFeature();
          if (featureHolder == null) {
              return false;

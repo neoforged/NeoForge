@@ -14,7 +14,7 @@
          void bind(List<Holder<T>> contents) {
              this.contents = List.copyOf(contents);
 +            for (Runnable runnable : this.invalidationCallbacks) {
-+                runnable.run(); // FORGE: invalidate listeners when tags rebind
++                runnable.run(); // Neo: invoke invalidation listeners when tags rebind
 +            }
          }
  

@@ -11,10 +11,15 @@
              GL33C.glDrawBuffer(0);
              GlStateManager._clear(256);
          }
-@@ -274,6 +_,17 @@
+@@ -273,6 +_,21 @@
+         GlStateManager._glBindFramebuffer(36160, 0);
      }
  
-     @Override
++    /// Neo: clears the stencil bits of the given texture to the given value.
++    ///
++    /// @param texture The texture to clear
++    /// @param value   The value to set the stencil bits to
++    @Override
 +    public void clearStencilTexture(GpuTexture texture, int value) {
 +        this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, 0, ((GlTexture)texture).id, 0, GlConst.GL_FRAMEBUFFER, true);
 +        GL33C.glDrawBuffer(GlConst.GL_NONE);
@@ -25,16 +30,16 @@
 +        GlStateManager._glBindFramebuffer(GlConst.GL_FRAMEBUFFER, 0);
 +    }
 +
-+    @Override
+     @Override
      public void writeToBuffer(GpuBufferSlice slice, ByteBuffer data) {
          GlBuffer buffer = (GlBuffer)slice.buffer();
-         buffer.checkCanBeUsed();
-@@ -396,11 +_,22 @@
+@@ -396,11 +_,23 @@
          boolean isDepth = source.getFormat().hasDepthAspect();
          int sourceId = ((GlTexture)source).glId();
          int destId = ((GlTexture)destination).glId();
 -        this.device.directStateAccess().bindFrameBufferTextures(this.readFbo, isDepth ? 0 : sourceId, isDepth ? sourceId : 0, mipLevel, 0);
 -        this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, isDepth ? 0 : destId, isDepth ? destId : 0, mipLevel, 0);
++        // Neo: bind stencil buffer if present
 +        boolean hasStencil = source.getFormat().hasStencilAspect();
 +        this.device.directStateAccess().bindFrameBufferTextures(this.readFbo, isDepth ? 0 : sourceId, isDepth ? sourceId : 0, 0, 0, hasStencil);
 +        this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, isDepth ? 0 : destId, isDepth ? destId : 0, 0, 0, hasStencil);
@@ -51,7 +56,7 @@
          this.device
              .directStateAccess()
 -            .blitFrameBuffers(this.readFbo, this.drawFbo, sourceX, sourceY, width, height, destX, destY, width, height, isDepth ? 256 : 16384, 9728);
-+                .blitFrameBuffers(this.readFbo, this.drawFbo, sourceX, sourceY, width, height, destX, destY, width, height, bufferMask, 9728);
++            .blitFrameBuffers(this.readFbo, this.drawFbo, sourceX, sourceY, width, height, destX, destY, width, height, bufferMask, 9728);
          int error = GlStateManager._getError();
          if (error != 0) {
              throw new IllegalStateException(

@@ -1,11 +1,12 @@
 --- a/com/mojang/blaze3d/platform/Window.java
 +++ b/com/mojang/blaze3d/platform/Window.java
-@@ -149,7 +_,7 @@
+@@ -149,7 +_,8 @@
  
      private long createWindow(GpuBackend backend, int width, int height, String title) {
          long flags = 8224L;
 -        long windowHandle = backend.createWindow(title, width, height, 8224L);
-+        long windowHandle = backend.createWindow(title, width, height, 8224L | SDLVideo.SDL_WINDOW_HIDDEN); // Neo: keep window hidden until after ELS handover
++        // Neo: keep window hidden until after ELS handover
++        long windowHandle = backend.createWindow(title, width, height, 8224L | SDLVideo.SDL_WINDOW_HIDDEN);
          if (windowHandle == 0L) {
              throw new IllegalStateException("Failed to create window: " + Objects.requireNonNullElse(SDLError.SDL_GetError(), "<no error>"));
          }

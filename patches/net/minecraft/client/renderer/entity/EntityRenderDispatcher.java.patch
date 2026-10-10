@@ -1,13 +1,15 @@
 --- a/net/minecraft/client/renderer/entity/EntityRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/entity/EntityRenderDispatcher.java
-@@ -193,6 +_,14 @@
+@@ -193,6 +_,16 @@
          return this.camera.position().distanceToSqr(entity.position());
      }
  
++    /// Neo: {@return an unmodifiable view of the player renderers by model type}
 +    public Map<PlayerModelType, EntityRenderer<? extends Avatar, ?>> getPlayerRenderers() {
 +        return java.util.Collections.unmodifiableMap(playerRenderers);
 +    }
 +
++    /// Neo: {@return an unmodifiable view of the mannequin renderers by model type}
 +    public Map<PlayerModelType, EntityRenderer<? extends Avatar, ?>> getMannequinRenderers() {
 +        return java.util.Collections.unmodifiableMap(mannequinRenderers);
 +    }

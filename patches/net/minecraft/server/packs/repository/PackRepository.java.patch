@@ -1,11 +1,12 @@
 --- a/net/minecraft/server/packs/repository/PackRepository.java
 +++ b/net/minecraft/server/packs/repository/PackRepository.java
-@@ -23,7 +_,7 @@
+@@ -23,7 +_,8 @@
      private List<Pack> selected = ImmutableList.of();
  
      public PackRepository(RepositorySource... sources) {
 -        this.sources = ImmutableSet.copyOf(sources);
-+        this.sources = new java.util.LinkedHashSet<>(List.of(sources)); //Neo: This needs to be a mutable set, so that we can add to it later on.
++        // Neo: This needs to be a mutable set, so that we can add to it later on.
++        this.sources = new java.util.LinkedHashSet<>(List.of(sources));
      }
  
      public static String displayPackList(Collection<Pack> packs) {

@@ -1,42 +1,52 @@
 --- a/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
 +++ b/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
-@@ -477,6 +_,12 @@
+@@ -477,6 +_,16 @@
                  for (int dz = -1; dz <= 1; dz++) {
                      if (dx != 0 || dz != 0) {
                          PathType pathType = context.getPathTypeFromState(x + dx, y + dy, z + dz);
 +                        BlockState blockState = context.level().getBlockState(context.currentEvalPos());
 +                        PathType adjBlockPathType = blockState.getAdjacentBlockPathType(context.level(), context.currentEvalPos(), null, pathType);
-+                        if (adjBlockPathType != null) return adjBlockPathType;
++                        if (adjBlockPathType != null) {
++                            return adjBlockPathType;
++                        }
 +                        net.minecraft.world.level.material.FluidState fluidState = blockState.getFluidState();
 +                        PathType adjFluidPathType = fluidState.getAdjacentBlockPathType(context.level(), context.currentEvalPos(), null, pathType);
-+                        if (adjFluidPathType != null) return adjFluidPathType;
++                        if (adjFluidPathType != null) {
++                            return adjFluidPathType;
++                        }
                          if (pathType == PathType.DAMAGING) {
                              return PathType.DAMAGING_IN_NEIGHBOR;
                          }
-@@ -502,6 +_,8 @@
+@@ -502,6 +_,10 @@
  
      protected static PathType getPathTypeFromState(BlockGetter level, BlockPos pos) {
          BlockState blockState = level.getBlockState(pos);
 +        PathType type = blockState.getBlockPathType(level, pos, null);
-+        if (type != null) return type;
++        if (type != null) {
++            return type;
++        }
          Block block = blockState.getBlock();
          if (blockState.isAir()) {
              return PathType.OPEN;
-@@ -529,6 +_,8 @@
+@@ -529,6 +_,10 @@
  
          if (!blockState.is(Blocks.WITHER_ROSE) && !blockState.is(BlockTags.SPELEOTHEMS)) {
              FluidState fluidState = blockState.getFluidState();
 +            PathType nonLoggableFluidPathType = fluidState.getBlockPathType(level, pos, null, false);
-+            if (nonLoggableFluidPathType != null) return nonLoggableFluidPathType;
++            if (nonLoggableFluidPathType != null) {
++                return nonLoggableFluidPathType;
++            }
              if (fluidState.is(FluidTags.LAVA)) {
                  return PathType.LAVA;
              }
-@@ -558,6 +_,8 @@
+@@ -558,6 +_,10 @@
                      if (!blockState.isPathfindable(PathComputationType.LAND)) {
                          return PathType.BLOCKED;
                      } else {
 +                        PathType loggableFluidPathType = fluidState.getBlockPathType(level, pos, null, true);
-+                        if (loggableFluidPathType != null) return loggableFluidPathType;
++                        if (loggableFluidPathType != null) {
++                            return loggableFluidPathType;
++                        }
                          return fluidState.is(FluidTags.WATER) ? PathType.WATER : PathType.OPEN;
                      }
                  } else {

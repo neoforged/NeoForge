@@ -5,7 +5,7 @@
                  if (owner instanceof ServerPlayer player) {
                      if (player.connection.isAcceptingMessages()) {
 +                        net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderPearl event = net.neoforged.neoforge.event.EventHooks.onEnderPearlLand(player, this.getX(), this.getY(), this.getZ(), this, 5.0F, hitResult);
-+                        if (!event.isCanceled()) { // Don't indent to lower patch size
++                        if (!event.isCanceled()) {
                          if (this.random.nextFloat() < 0.05F && level.isSpawningMonsters() && level.getLevelData().getDifficulty() != Difficulty.PEACEFUL) {
                              Endermite endermite = EntityTypes.ENDERMITE.create(level, EntitySpawnReason.TRIGGERED);
                              if (endermite != null) {
@@ -24,7 +24,7 @@
                          }
  
                          this.playSound(level, teleportPos);
-+                        } //Forge: End
++                        }
                      }
                  } else {
                      Entity newOwner = owner.teleport(

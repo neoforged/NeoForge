@@ -1,27 +1,31 @@
 --- a/com/mojang/renderpearl/backend/opengl/FrameBufferCache.java
 +++ b/com/mojang/renderpearl/backend/opengl/FrameBufferCache.java
-@@ -51,7 +_,7 @@
+@@ -50,8 +_,9 @@
+             depthAttachment.addAssociatedFbo(key);
          }
  
++        // Neo: take stencil buffer into account
          dsa.bindFrameBufferTextures(
 -            fbo, colorIds, mipLevels, depthAttachment == null ? 0 : depthAttachment.glId(), depthAttachment == null ? 0 : depthAttachment.fboMipLevel(), 0
 +            fbo, colorIds, mipLevels, depthAttachment == null ? 0 : depthAttachment.glId(), depthAttachment == null ? 0 : depthAttachment.fboMipLevel(), 0, depthAttachment != null && depthAttachment.hasStencilAspect()
          );
          return fbo;
      }
-@@ -76,7 +_,7 @@
+@@ -76,7 +_,8 @@
  
          public CacheKey(List<@Nullable FrameBufferAttachment> colorAttachments, @Nullable FrameBufferAttachment depthAttachment, int mipOffset) {
              int colorAttachmentCount = colorAttachments.size();
 -            this.data = new int[(colorAttachmentCount + (depthAttachment != null ? 1 : 0)) * 2];
++            // Neo: add space for stencil buffer flag
 +            this.data = new int[(colorAttachmentCount * 2) + (depthAttachment != null ? 3 : 0)];
  
              for (int i = 0; i < colorAttachmentCount; i++) {
                  FrameBufferAttachment attachment = colorAttachments.get(i);
-@@ -93,6 +_,7 @@
+@@ -93,6 +_,8 @@
              if (depthAttachment != null) {
                  this.data[colorAttachmentCount * 2] = depthAttachment.glId();
                  this.data[colorAttachmentCount * 2 + 1] = depthAttachment.fboMipLevel() + mipOffset;
++                // Neo: take stencil buffer into account
 +                this.data[colorAttachmentCount * 2 + 2] = depthAttachment.hasStencilAspect() ? 1 : 0;
                  this.associatedAttachments.add(depthAttachment);
              }

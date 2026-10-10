@@ -8,12 +8,13 @@
      }
  
      public FeatureRenderDispatcher.PreparedFrame prepareFrame(SubmitNodeStorage submitNodeStorage) {
-@@ -322,6 +_,16 @@
+@@ -322,6 +_,17 @@
          public boolean hasAnySeeThrough() {
              SubmitNodeStorage submitNodeStorage = Objects.requireNonNull(this.submitNodeStorage);
              return !this.groupsByPhase.getOrDefault(submitNodeStorage.seeThrough(), List.of()).isEmpty();
 +        }
 +
++        /// Neo: {@return whether this prepared feature frame contains any always-on-top submits}
 +        public boolean hasAnyAlwaysOnTop() {
 +            SubmitNodeStorage submitNodeStorage = Objects.requireNonNull(this.submitNodeStorage);
 +            for (SubmitNodeCollection collection : submitNodeStorage.getSubmitsPerOrder().values()) {

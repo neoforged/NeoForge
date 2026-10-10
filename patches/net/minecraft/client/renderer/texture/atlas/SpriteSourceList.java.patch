@@ -1,12 +1,10 @@
 --- a/net/minecraft/client/renderer/texture/atlas/SpriteSourceList.java
 +++ b/net/minecraft/client/renderer/texture/atlas/SpriteSourceList.java
-@@ -34,7 +_,15 @@
+@@ -34,7 +_,13 @@
          this.sources = sources;
      }
  
-+    /**
-+     * @deprecated Neo: use {@link #list(ResourceManager, java.util.Set)} instead
-+     */
++    /// @deprecated Neo: use [#list(ResourceManager, java.util.Set)] instead
 +    @Deprecated
      public List<SpriteSource.Loader> list(ResourceManager resourceManager) {
 +        return this.list(resourceManager, java.util.Set.of());

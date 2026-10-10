@@ -4,7 +4,7 @@
      private final Minecraft minecraft;
      private Map<String, LanguageInfo> languages = ImmutableMap.of("en_us", DEFAULT_LANGUAGE);
      private String currentCode;
-+    private java.util.Locale javaLocale; // Forge: add locale information for modders
++    private java.util.Locale javaLocale; // Neo: add locale information for modders
      private final Consumer<ClientLanguage> reloadCallback;
  
      public LanguageManager(Minecraft minecraft, String languageCode, Consumer<ClientLanguage> reloadCallback) {

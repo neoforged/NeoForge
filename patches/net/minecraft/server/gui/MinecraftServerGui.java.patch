@@ -1,23 +1,30 @@
 --- a/net/minecraft/server/gui/MinecraftServerGui.java
 +++ b/net/minecraft/server/gui/MinecraftServerGui.java
-@@ -136,8 +_,10 @@
-         return panel;
-     }
+@@ -39,6 +_,7 @@
+     private Thread logAppenderThread;
+     private final Collection<Runnable> finalizers = Lists.newArrayList();
+     private final AtomicBoolean isClosing = new AtomicBoolean();
++    private final java.util.concurrent.CountDownLatch startupLatch = new java.util.concurrent.CountDownLatch(1);
  
-+    private java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
+     public static MinecraftServerGui showFrameFor(DedicatedServer server) {
+         try {
+@@ -138,6 +_,7 @@
+ 
      public void start() {
          this.logAppenderThread.start();
-+        latch.countDown();
++        this.startupLatch.countDown();
      }
  
      public void close() {
-@@ -151,6 +_,9 @@
+@@ -151,6 +_,11 @@
      }
  
      public void print(JTextArea console, JScrollPane scrollPane, String line) {
 +        try {
-+            latch.await();
-+        } catch (InterruptedException e){} //Prevent logging until after constructor has ended.
++            // Neo: Prevent logging until after constructor has ended.
++            this.startupLatch.await();
++        } catch (InterruptedException ignored) {}
++
          if (!SwingUtilities.isEventDispatchThread()) {
              SwingUtilities.invokeLater(() -> this.print(console, scrollPane, line));
          } else {

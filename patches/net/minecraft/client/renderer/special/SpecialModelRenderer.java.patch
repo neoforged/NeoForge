@@ -1,13 +1,11 @@
 --- a/net/minecraft/client/renderer/special/SpecialModelRenderer.java
 +++ b/net/minecraft/client/renderer/special/SpecialModelRenderer.java
-@@ -35,6 +_,13 @@
+@@ -35,6 +_,11 @@
          SpriteGetter sprites();
  
          PlayerSkinRenderCache playerSkinRenderCache();
 +
-+        /**
-+         * Provides access to the data-driven keyframe animations being loaded by the {@code AnimationLoader}.
-+         */
++        /// Neo: Provides access to the data-driven keyframe animations being loaded by the `AnimationLoader`.
 +        default net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations() {
 +            return net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY;
 +        }

@@ -9,15 +9,16 @@
          return level.getBlockState(pos.below()).is(BlockTags.FOXES_SPAWNABLE_ON) && isBrightEnoughToSpawn(level, pos);
      }
  
-@@ -706,13 +_,18 @@
+@@ -706,13 +_,19 @@
  
      @Override
      protected void dropAllDeathLoot(ServerLevel level, DamageSource source) {
 +        super.dropAllDeathLoot(level, source);
 +    }
 +
++    /// Neo: move extra drops to dropEquipment to allow them to be captured by LivingDropsEvent
 +    @Override
-+    protected void dropEquipment(ServerLevel level) { // Forge: move extra drops to dropEquipment to allow them to be captured by LivingDropsEvent
++    protected void dropEquipment(ServerLevel level) {
 +        super.dropEquipment(level);
          ItemStack itemStack = this.getItemBySlot(EquipmentSlot.MAINHAND);
          if (!itemStack.isEmpty()) {
@@ -29,21 +30,20 @@
      }
  
      public static boolean isPathClear(Fox fox, LivingEntity target) {
-@@ -868,6 +_,17 @@
+@@ -868,6 +_,16 @@
          @Override
          protected void breed() {
              Fox offspring = (Fox)this.animal.getBreedOffspring(this.level, this.partner);
-+            final net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent event = new net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent(animal, partner, offspring);
-+            final boolean cancelled = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled();
-+            offspring = (Fox) event.getChild();
-+            if (cancelled) {
-+                //Reset the "inLove" state for the animals
++            var event = new net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent(this.animal, this.partner, offspring);
++            if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) {
++                // Neo: Reset the "inLove" state for the animals
 +                this.animal.setAge(6000);
 +                this.partner.setAge(6000);
 +                this.animal.resetLove();
 +                this.partner.resetLove();
 +                return;
 +            }
++            offspring = (Fox) event.getChild();
              if (offspring != null) {
                  ServerPlayer animalLoveCause = this.animal.getLoveCause();
                  ServerPlayer partnerLoveCause = this.partner.getLoveCause();

@@ -27,7 +27,7 @@
      }
  
      protected void extractLabels(GuiGraphicsExtractor graphics, int xm, int ym) {
-@@ -237,6 +_,13 @@
+@@ -237,6 +_,15 @@
                  graphics.fill(x, y, x + 16, y + 16, -2130706433);
              }
  
@@ -35,9 +35,11 @@
 +        }
 +    }
 +
++    /// Neo: extract slot content rendering from [#extractSlot] to allow modifying content rendering without re-implementing the entire slot rendering.
 +    protected void renderSlotContents(GuiGraphicsExtractor graphics, ItemStack itemStack, Slot slot, @Nullable String itemCount) {
 +        {
-+            int x = slot.x; int y = slot.y;
++            int x = slot.x;
++            int y = slot.y;
              int seed = slot.x + slot.y * this.imageWidth;
              if (slot.isFake()) {
                  graphics.fakeItem(itemStack, x, y, seed);
@@ -69,16 +71,19 @@
              int slotId = -1;
              if (slot != null) {
                  slotId = slot.index;
-@@ -386,10 +_,13 @@
+@@ -386,10 +_,16 @@
  
      @Override
      public boolean mouseReleased(MouseButtonEvent event) {
-+        super.mouseReleased(event); //Forge: call parent to release buttons
++        super.mouseReleased(event); // Neo: call parent to release buttons
          Slot slot = this.getHoveredSlot(event.x(), event.y());
          int xo = this.leftPos;
          int yo = this.topPos;
          boolean clickedOutside = this.hasClickedOutside(event.x(), event.y(), xo, yo);
-+        if (slot != null) clickedOutside = false; // Forge, prevent dropping of items through slots outside of GUI boundaries
++        if (slot != null) {
++            // Neo: prevent dropping of items through slots outside of GUI boundaries
++            clickedOutside = false;
++        }
 +        var mouseKey = com.mojang.blaze3d.platform.InputConstants.Type.MOUSE.getOrCreate(event.button());
          int slotId = -1;
          if (slot != null) {
@@ -113,7 +118,7 @@
          }
  
 -        this.checkHotbarKeyPressed(event);
-+        boolean handled = this.checkHotbarKeyPressed(event); // Forge MC-146650: Needs to return true when the key is handled
++        boolean handled = this.checkHotbarKeyPressed(event); // Neo: Needs to return true when the key is handled (MC-146650)
          if (this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
 -            if (this.minecraft.options.keyPickItem.matches(event)) {
 +            if (this.minecraft.options.keyPickItem.isActiveAndMatches(key)) {
@@ -124,7 +129,7 @@
 +                handled = true;
              }
 +        } else if (this.minecraft.options.keyDrop.isActiveAndMatches(key)) {
-+            handled = true; // Forge MC-146650: Emulate MC bug, so we don't drop from hotbar when pressing drop without hovering over a item.
++            handled = true; // Neo: Emulate MC bug, so we don't drop from hotbar when pressing drop without hovering over an item (MC-146650)
          }
  
 -        return false;

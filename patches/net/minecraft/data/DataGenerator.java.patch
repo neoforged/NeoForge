@@ -8,12 +8,12 @@
  
      public DataGenerator(Path output) {
          this.vanillaPackOutput = new PackOutput(output);
-@@ -34,6 +_,59 @@
+@@ -34,6 +_,58 @@
          return new DataGenerator.PackGenerator(toRun, packId, new PackOutput(packOutputDir));
      }
  
 +    public PackGenerator getBuiltinDatapack(boolean run, String namespace, String path) {
-+        var packPath = vanillaPackOutput.getOutputFolder(PackOutput.Target.DATA_PACK).resolve(namespace).resolve("datapacks").resolve(path);
++        var packPath = this.vanillaPackOutput.getOutputFolder(PackOutput.Target.DATA_PACK).resolve(namespace).resolve("datapacks").resolve(path);
 +        return new PackGenerator(run, namespace + '_' + path, new PackOutput(packPath));
 +    }
 +
@@ -26,11 +26,11 @@
 +    }
 +
 +    public PackOutput getPackOutput(String path) {
-+        return new PackOutput(vanillaPackOutput.getOutputFolder().resolve(path));
++        return new PackOutput(this.vanillaPackOutput.getOutputFolder().resolve(path));
 +    }
 +
 +    public PackGenerator getPackGenerator(boolean run, String providerPrefix, String path) {
-+        return getPackGenerator(run, providerPrefix, getPackOutput(path));
++        return this.getPackGenerator(run, providerPrefix, this.getPackOutput(path));
 +    }
 +
 +    public PackGenerator getPackGenerator(boolean run, String providerPrefix, PackOutput output) {
@@ -43,22 +43,21 @@
 +
 +    public <T extends DataProvider> T addProvider(boolean run, T provider) {
 +        String id = provider.getName();
-+
-+        if (!DataGenerator.this.allProviderIds.add(id))
++        if (!DataGenerator.this.allProviderIds.add(id)) {
 +            throw new IllegalStateException("Duplicate provider: " + id);
-+
-+        if (run)
++        }
++        if (run) {
 +            DataGenerator.this.providersToRun.put(id, provider);
-+
++        }
 +        return provider;
 +    }
 +
 +    public void merge(DataGenerator other) {
 +        other.providersToRun.forEach((id, provider) -> {
-+            if(!allProviderIds.add(id))
++            if (!this.allProviderIds.add(id)) {
 +                throw new IllegalStateException("Duplicate provider: " + id);
-+
-+            providersToRun.put(id, provider);
++            }
++            this.providersToRun.put(id, provider);
 +        });
 +
 +        other.providersToRun.clear();

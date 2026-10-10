@@ -18,7 +18,7 @@
              BlockState belowState = level.getBlockState(mutablePos.setWithOffset(pos, Direction.DOWN));
              FluidState belowFluid = belowState.getFluidState();
              if (belowState.isSolid() || this.isSourceBlockOfThisType(belowFluid)) {
-@@ -257,6 +_,15 @@
+@@ -257,6 +_,13 @@
          return this.getSource().defaultFluidState().setValue(FALLING, falling);
      }
  
@@ -27,9 +27,7 @@
 +        return this.canConvertToSource(level);
 +    }
 +
-+    /**
-+     * @deprecated Forge: Use {@link #canConvertToSource(FluidState, ServerLevel, BlockPos)} instead.
-+     */
++    /// @deprecated Neo: Use [#canConvertToSource(FluidState, ServerLevel, BlockPos)] instead.
 +    @Deprecated
      protected abstract boolean canConvertToSource(ServerLevel level);
  

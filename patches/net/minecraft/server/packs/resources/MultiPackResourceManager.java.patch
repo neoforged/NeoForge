@@ -10,11 +10,12 @@
  
              for (String namespace : namespaces) {
                  boolean packContainsNamespace = providedNamespaces.contains(namespace);
-@@ -58,6 +_,7 @@
+@@ -58,6 +_,8 @@
          try {
              return pack.getMetadataSection(ResourceFilterSection.TYPE);
          } catch (Exception e) {
-+            if (!net.neoforged.neoforge.data.loading.DatagenModLoader.isRunningDataGen())// Neo: Only warn about malformed pack filters outside of datagen in case modders are replacing variables with gradle
++            // Neo: Only warn about malformed pack filters outside of datagen in case modders are replacing variables with gradle
++            if (!net.neoforged.neoforge.data.loading.DatagenModLoader.isRunningDataGen())
              LOGGER.error("Failed to get filter section from pack {}", pack.packId());
              return null;
          }

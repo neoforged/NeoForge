@@ -32,7 +32,7 @@
 +        this.styleModifier = styleModifier;
 +    }
 +
-+    /** @deprecated NeoForge: Use {@link #getStyleModifier()} */
++    /// @deprecated Neo: Use [#getStyleModifier()] instead
 +    @Deprecated
      public ChatFormatting color() {
          return this.color;

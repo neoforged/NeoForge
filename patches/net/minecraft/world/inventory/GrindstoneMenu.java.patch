@@ -32,11 +32,13 @@
                  access.execute((level, pos) -> {
                      if (level instanceof ServerLevel serverLevel) {
                          ExperienceOrb.award(serverLevel, Vec3.atCenterOf(pos), this.getExperienceAmount(level));
-@@ -77,6 +_,7 @@
+@@ -77,6 +_,9 @@
              }
  
              private int getExperienceAmount(Level level) {
-+                if (xp > -1) return xp;
++                if (GrindstoneMenu.this.xp > -1) {
++                    return GrindstoneMenu.this.xp;
++                }
                  int amount = 0;
                  amount += this.getExperienceFromItem(GrindstoneMenu.this.repairSlots.getItem(0));
                  amount += this.getExperienceFromItem(GrindstoneMenu.this.repairSlots.getItem(1));
@@ -58,11 +60,13 @@
              if (input.getMaxStackSize() < 2 || !ItemStack.matches(input, additional)) {
                  return ItemStack.EMPTY;
              }
-@@ -160,6 +_,7 @@
+@@ -160,6 +_,9 @@
          if (newItem.isDamageableItem()) {
              newItem.set(DataComponents.MAX_DAMAGE, durability);
              newItem.setDamageValue(Math.max(durability - remaining, 0));
-+            if (!additional.isCombineRepairable()) newItem.setDamageValue(input.getDamageValue());
++            if (!additional.isCombineRepairable()) {
++                newItem.setDamageValue(input.getDamageValue());
++            }
          }
  
          this.mergeEnchantsFrom(newItem, additional);

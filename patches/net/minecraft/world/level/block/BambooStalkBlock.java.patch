@@ -24,12 +24,14 @@
                  }
              }
          }
-@@ -123,6 +_,8 @@
+@@ -123,6 +_,10 @@
  
      @Override
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
 +        var soilDecision = level.getBlockState(pos.below()).canSustainPlant(level, pos.below(), Direction.UP, state);
-+        if (!soilDecision.isDefault()) return soilDecision.isTrue();
++        if (!soilDecision.isDefault()) {
++            return soilDecision.isTrue();
++        }
          return level.getBlockState(pos.below()).is(BlockTags.SUPPORTS_BAMBOO);
      }
  

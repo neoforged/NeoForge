@@ -42,7 +42,7 @@
              return false;
          }
  
-@@ -299,30 +_,46 @@
+@@ -299,30 +_,45 @@
          }
  
          BlockState adjustedState = block.playerWillDestroy(this.level, pos, state, this.player);
@@ -79,52 +79,57 @@
          return true;
      }
  
-+    /**
-+     * Neo: Patched-in method that handles actual removal of blocks for {@link #destroyBlock(BlockPos)}.
-+     *
-+     * @param pos The block pos of the destroyed block
-+     * @param state The state of the destroyed block
-+     * @param canHarvest If the player breaking the block can harvest the drops of the block
-+     * @param toolStack The players main-hand prior to destroying the block and applying damage to the tool.
-+     * @return If the block was removed, as reported by {@link BlockState#onDestroyedByPlayer}.
-+     */
++    /// Neo: Patched-in method that handles actual removal of blocks for [#destroyBlock(BlockPos)].
++    ///
++    /// @param pos The block pos of the destroyed block
++    /// @param state The state of the destroyed block
++    /// @param canHarvest If the player breaking the block can harvest the drops of the block
++    /// @param toolStack The players main-hand prior to destroying the block and applying damage to the tool.
++    /// @return If the block was removed, as reported by [BlockState#onDestroyedByPlayer].
 +    private boolean removeBlock(BlockPos pos, BlockState state, boolean canHarvest, ItemStack toolStack) {
 +        boolean removed = state.onDestroyedByPlayer(this.level, pos, this.player, toolStack, canHarvest, this.level.getFluidState(pos));
-+        if (removed)
++        if (removed) {
 +            state.getBlock().destroy(this.level, pos, state);
++        }
 +        return removed;
 +    }
 +
      public InteractionResult useItem(ServerPlayer player, Level level, ItemStack itemStack, InteractionHand hand) {
          if (this.gameModeForPlayer == GameType.SPECTATOR) {
              return InteractionResult.PASS;
-@@ -332,6 +_,9 @@
+@@ -332,6 +_,11 @@
              return InteractionResult.PASS;
          }
  
 +        InteractionResult cancelResult = net.neoforged.neoforge.common.CommonHooks.onItemRightClick(player, hand);
-+        if (cancelResult != null) return cancelResult;
++        if (cancelResult != null) {
++            return cancelResult;
++        }
 +
          int oldCount = itemStack.getCount();
          int oldDamage = itemStack.getDamageValue();
          InteractionResult result = itemStack.use(level, player, hand);
-@@ -375,6 +_,8 @@
+@@ -375,6 +_,10 @@
              return InteractionResult.FAIL;
          }
  
 +        net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock event = net.neoforged.neoforge.common.CommonHooks.onRightClickBlock(player, hand, pos, hitResult);
-+        if (event.isCanceled()) return event.getCancellationResult();
++        if (event.isCanceled()) {
++            return event.getCancellationResult();
++        }
          if (this.gameModeForPlayer == GameType.SPECTATOR) {
              MenuProvider menuProvider = state.getMenuProvider(level, pos);
              if (menuProvider != null) {
-@@ -400,10 +_,15 @@
+@@ -400,10 +_,17 @@
                  return InteractionResult.PASS;
              }
          } else {
 +            UseOnContext context = new UseOnContext(player, hand, hitResult);
 +            if (event.getUseItem() != net.minecraft.util.TriState.FALSE) {
 +                InteractionResult result = itemStack.onItemUseFirst(context);
-+                if (result != InteractionResult.PASS) return result;
++                if (result != InteractionResult.PASS) {
++                    return result;
++                }
 +            }
              boolean haveSomethingInOurHands = !player.getMainHandItem().isEmpty() || !player.getOffhandItem().isEmpty();
 -            boolean suppressUsingBlock = player.isSecondaryUseActive() && haveSomethingInOurHands;
@@ -135,14 +140,16 @@
                  InteractionResult itemUse = state.useItemOn(player.getItemInHand(hand), level, player, hand, hitResult);
                  if (itemUse.consumesAction()) {
                      CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger(player, pos, usedItemStack);
-@@ -419,8 +_,8 @@
+@@ -419,8 +_,10 @@
                  }
              }
  
 -            if (!itemStack.isEmpty() && !player.getCooldowns().isOnCooldown(itemStack)) {
 -                UseOnContext context = new UseOnContext(player, hand, hitResult);
 +            if (event.getUseItem().isTrue() || (!itemStack.isEmpty() && !player.getCooldowns().isOnCooldown(itemStack))) {
-+                if (event.getUseItem().isFalse()) return InteractionResult.PASS;
++                if (event.getUseItem().isFalse()) {
++                    return InteractionResult.PASS;
++                }
                  InteractionResult result;
                  if (player.hasInfiniteMaterials()) {
                      int count = itemStack.getCount();

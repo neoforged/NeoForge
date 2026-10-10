@@ -33,7 +33,7 @@
          boolean opens = state.getValue(OPEN);
          level.playSound(
 -            player, pos, opens ? this.type.fenceGateOpen() : this.type.fenceGateClose(), SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.1F + 0.9F
-+            player, pos, opens ? openSound : closeSound, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.1F + 0.9F
++            player, pos, opens ? this.openSound : this.closeSound, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.1F + 0.9F
          );
          level.gameEvent(player, opens ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
          return InteractionResult.SUCCESS;
@@ -42,7 +42,7 @@
              level.setBlockAndUpdate(pos, state.setValue(OPEN, !open));
              level.playSound(
 -                null, pos, open ? this.type.fenceGateClose() : this.type.fenceGateOpen(), SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.1F + 0.9F
-+                null, pos, open ? closeSound : openSound, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.1F + 0.9F
++                null, pos, open ? this.closeSound : this.openSound, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.1F + 0.9F
              );
              level.gameEvent(open ? GameEvent.BLOCK_CLOSE : GameEvent.BLOCK_OPEN, pos, GameEvent.Context.of(state));
          }
@@ -51,7 +51,7 @@
                          null,
                          pos,
 -                        hasPower ? this.type.fenceGateOpen() : this.type.fenceGateClose(),
-+                        hasPower ? openSound : closeSound,
++                        hasPower ? this.openSound : this.closeSound,
                          SoundSource.BLOCKS,
                          1.0F,
                          level.getRandom().nextFloat() * 0.1F + 0.9F

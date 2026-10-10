@@ -54,7 +54,7 @@
  
              BlockState state = this.minecraft.level.getBlockState(pos);
              this.minecraft.getTutorial().onDestroyBlock(this.minecraft.level, pos, state, 0.0F);
-@@ -193,9 +_,12 @@
+@@ -193,9 +_,14 @@
              this.startPrediction(this.minecraft.level, sequence -> {
                  boolean notAir = !state.isAir();
                  if (notAir && this.destroyProgress == 0.0F) {
@@ -63,7 +63,9 @@
                  }
  
 +                ServerboundPlayerActionPacket packet = new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
-+                if (event.getUseItem().isFalse()) return packet;
++                if (event.getUseItem().isFalse()) {
++                    return packet;
++                }
                  if (notAir && state.getDestroyProgress(this.minecraft.player, this.minecraft.player.level(), pos) >= 1.0F) {
                      this.destroyBlock(pos);
                  } else {
@@ -84,11 +86,13 @@
                  this.destroyBlock(pos);
                  return new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
              });
-@@ -263,6 +_,7 @@
+@@ -263,6 +_,9 @@
              this.destroyProgress = this.destroyProgress + state.getDestroyProgress(this.minecraft.player, this.minecraft.player.level(), pos);
              this.destroyTicks++;
              this.minecraft.getTutorial().onDestroyBlock(this.minecraft.level, pos, state, Mth.clamp(this.destroyProgress, 0.0F, 1.0F));
-+            if (net.neoforged.neoforge.common.CommonHooks.onClientMineHold(this.minecraft.player, pos, direction).getUseItem().isFalse()) return true;
++            if (net.neoforged.neoforge.common.CommonHooks.onClientMineHold(this.minecraft.player, pos, direction).getUseItem().isFalse()) {
++                return true;
++            }
              if (this.destroyProgress >= 1.0F) {
                  this.isDestroying = false;
                  if (SharedConstants.DEBUG_BLOCK_BREAK) {
@@ -153,12 +157,13 @@
              InteractionResult resultHolder = itemStack.use(this.minecraft.level, player, hand);
              ItemStack result;
              if (resultHolder instanceof InteractionResult.Success success) {
-@@ -409,6 +_,8 @@
+@@ -409,6 +_,9 @@
  
              if (result != itemStack) {
                  player.setItemInHand(hand, result);
-+                if (result.isEmpty())
++                if (result.isEmpty()) {
 +                    net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(player, itemStack, hand);
++                }
              }
  
              interactionResult.setValue(resultHolder);

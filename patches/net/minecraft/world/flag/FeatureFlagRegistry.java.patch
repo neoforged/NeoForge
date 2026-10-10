@@ -19,31 +19,24 @@
      public static class Builder {
          private final FeatureFlagUniverse universe;
          private int id;
-@@ -88,14 +_,23 @@
+@@ -88,11 +_,18 @@
              return this.create(Identifier.withDefaultNamespace(name));
          }
  
-+        /**
-+         * @deprecated Neo: use {@link #create(Identifier, boolean)} instead
-+         */
++        /// @deprecated Neo: use [#create(Identifier, boolean)] instead
 +        @Deprecated
          public FeatureFlag create(Identifier name) {
 -            if (this.id >= 64) {
-+            return create(name, false);
++            return this.create(name, false);
 +        }
 +
-+        public FeatureFlag create(Identifier p_250098_, boolean modded) {
++        public FeatureFlag create(Identifier name, boolean modded) {
 +            if (this.id >= 64 && false) {
                  throw new IllegalStateException("Too many feature flags");
              } else {
 -                FeatureFlag result = new FeatureFlag(this.universe, this.id++);
--                FeatureFlag previous = this.flags.put(name, result);
 +                FeatureFlag result = new FeatureFlag(this.universe, this.id % FeatureFlagSet.MAX_CONTAINER_SIZE, this.id / FeatureFlagSet.MAX_CONTAINER_SIZE, modded);
 +                this.id++;
-+                FeatureFlag previous = this.flags.put(p_250098_, result);
+                 FeatureFlag previous = this.flags.put(name, result);
                  if (previous != null) {
--                    throw new IllegalStateException("Duplicate feature flag " + name);
-+                    throw new IllegalStateException("Duplicate feature flag " + p_250098_);
-                 } else {
-                     return result;
-                 }
+                     throw new IllegalStateException("Duplicate feature flag " + name);

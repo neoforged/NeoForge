@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/ConnectionProtocol.java
 +++ b/net/minecraft/network/ConnectionProtocol.java
-@@ -16,4 +_,11 @@
+@@ -16,4 +_,12 @@
      public String id() {
          return this.id;
      }
@@ -8,6 +8,7 @@
 +    public boolean isPlay() {
 +        return this == PLAY;
 +    }
++
 +    public boolean isConfiguration() {
 +        return this == CONFIGURATION;
 +    }

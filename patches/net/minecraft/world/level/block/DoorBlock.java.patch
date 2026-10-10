@@ -9,7 +9,7 @@
              DoublePlantBlock.preventDropFromBottomPart(level, pos, state, player);
          }
  
-@@ -260,5 +_,21 @@
+@@ -260,5 +_,22 @@
  
      public static boolean isWoodenDoor(BlockState state) {
          return state.getBlock() instanceof DoorBlock door && door.type().canOpenByHand();
@@ -26,8 +26,9 @@
 +        BlockPos neighborPos = pos.relative(thisHalf.getDirectionToOther());
 +        BlockState neighborState = level.getBlockState(neighborPos);
 +        BlockState expectedState = state.setValue(HALF, thisHalf.getOtherHalf());
-+        if (neighborState != expectedState)
++        if (neighborState != expectedState) {
 +            return net.neoforged.neoforge.common.util.BlockRelocability.Yes.INSTANCE;
++        }
 +        return new net.neoforged.neoforge.common.util.BlockRelocability.Multiblock(java.util.Set.of(pos, neighborPos));
      }
  }

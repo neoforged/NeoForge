@@ -23,7 +23,7 @@
  
          Vec3 movement = this.getDeltaMovement();
 -        RailShape shape = state.getValue(((BaseRailBlock)state.getBlock()).getShapeProperty());
-+        RailShape shape = ((BaseRailBlock)state.getBlock()).getRailDirection(state, this.level(), pos, this.minecart);;
++        RailShape shape = ((BaseRailBlock)state.getBlock()).getRailDirection(state, this.level(), pos, this.minecart);
          switch (shape) {
              case ASCENDING_EAST:
                  this.setDeltaMovement(movement.add(-slideSpeed, 0.0, 0.0));

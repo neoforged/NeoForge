@@ -1,21 +1,17 @@
 --- a/net/minecraft/world/item/enchantment/EnchantmentHelper.java
 +++ b/net/minecraft/world/item/enchantment/EnchantmentHelper.java
-@@ -46,7 +_,19 @@
+@@ -46,7 +_,15 @@
  import org.jspecify.annotations.Nullable;
  
  public class EnchantmentHelper {
-+    /**
-+     * @deprecated Neo: Use {@link #getTagEnchantmentLevel(Holder, ItemInstance)} for NBT enchantments, or {@link ItemStack#getEnchantmentLevel(Holder)} for gameplay.
-+     */
++    /// @deprecated Neo: Use [#getTagEnchantmentLevel(Holder, ItemInstance)] for NBT enchantments, or [ItemStack#getEnchantmentLevel(Holder)] for gameplay.
 +    @Deprecated
      public static int getItemEnchantmentLevel(Holder<Enchantment> enchantment, ItemInstance piece) {
 +        // Neo: To reduce patch size, update this method to always check gameplay enchantments, and add getTagEnchantmentLevel as a helper for mods.
 +        return piece.getEnchantmentLevel(enchantment);
 +    }
 +
-+    /**
-+     * Gets the level of an enchantment from NBT. Use {@link ItemStack#getEnchantmentLevel(Holder)} for gameplay logic.
-+     */
++    /// Gets the level of an enchantment from NBT. Use [ItemStack#getEnchantmentLevel(Holder)] for gameplay logic.
 +    public static int getTagEnchantmentLevel(Holder<Enchantment> enchantment, ItemInstance piece) {
          ItemEnchantments enchantments = piece.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
          return enchantments.getLevel(enchantment);
@@ -44,7 +40,7 @@
              if (itemEnchantments != null && !itemEnchantments.isEmpty()) {
                  EnchantedItemInUse itemInUse = new EnchantedItemInUse(piece, slot, owner);
  
-@@ -338,7 +_,12 @@
+@@ -338,7 +_,14 @@
                              if (filteredEffect.enchanted() == EnchantmentTarget.VICTIM
                                  && filteredEffect.affected() == EnchantmentTarget.VICTIM
                                  && filteredEffect.matches(context)) {
@@ -52,13 +48,15 @@
 +
 +                                // Neo: Allow mods to modify the enchantment level for loot calculations with relevant context.
 +                                int realLevel = net.neoforged.neoforge.event.EventHooks.getEntityLootEnchantmentLevel(enchantment, level, context);
-+                                if (realLevel == 0) return;
++                                if (realLevel == 0) {
++                                    return;
++                                }
 +
 +                                modifiedChance.setValue(filteredEffect.effect().process(realLevel, random, modifiedChance.floatValue()));
                              }
                          }
                      );
-@@ -356,7 +_,12 @@
+@@ -356,7 +_,14 @@
                                  if (filteredEffect.enchanted() == EnchantmentTarget.ATTACKER
                                      && filteredEffect.affected() == EnchantmentTarget.VICTIM
                                      && filteredEffect.matches(context)) {
@@ -66,7 +64,9 @@
 +
 +                                    // Neo: Allow mods to modify the enchantment level for loot calculations with relevant context.
 +                                    int realLevel = net.neoforged.neoforge.event.EventHooks.getEntityLootEnchantmentLevel(enchantment, level, context);
-+                                    if (realLevel == 0) return;
++                                    if (realLevel == 0) {
++                                        return;
++                                    }
 +
 +                                    modifiedChance.setValue(filteredEffect.effect().process(realLevel, random, modifiedChance.floatValue()));
                                  }

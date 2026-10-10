@@ -11,21 +11,27 @@
      public ItemStack(ItemLike item, int count) {
          this(item.asItem().builtInRegistryHolder(), count);
      }
-@@ -359,6 +_,20 @@
+@@ -359,6 +_,26 @@
      }
  
      public InteractionResult useOn(UseOnContext context) {
 +        var e = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(context, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.ITEM_AFTER_BLOCK));
-+        if (e.isCanceled()) return e.getCancellationResult();
-+        if (!context.getLevel().isClientSide()) return net.neoforged.neoforge.common.CommonHooks.onPlaceItemIntoWorld(context);
-+        return onItemUse(context, (c) -> getItem().useOn(context));
++        if (e.isCanceled()) {
++            return e.getCancellationResult();
++        }
++        if (!context.getLevel().isClientSide()) {
++            return net.neoforged.neoforge.common.CommonHooks.onPlaceItemIntoWorld(context);
++        }
++        return onItemUse(context, getItem()::useOn);
 +    }
 +
 +    @Override
 +    public InteractionResult onItemUseFirst(UseOnContext context) {
 +        var e = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(context, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.ITEM_BEFORE_BLOCK));
-+        if (e.isCanceled()) return e.getCancellationResult();
-+        return onItemUse(context, (c) -> getItem().onItemUseFirst(this, context));
++        if (e.isCanceled()) {
++            return e.getCancellationResult();
++        }
++        return onItemUse(context, (c) -> getItem().onItemUseFirst(this, c));
 +    }
 +
 +    private InteractionResult onItemUse(UseOnContext context, java.util.function.Function<UseOnContext, InteractionResult> callback) {
@@ -125,13 +131,11 @@
              );
          }
      }
-@@ -622,6 +_,16 @@
+@@ -622,6 +_,14 @@
          }
      }
  
-+    /**
-+     * Compares an itemstack with an {@link ItemStackTemplate} as per {@link #matches(ItemStack, ItemStack)}.
-+     */
++    /// Neo: Compares an itemstack with an [ItemStackTemplate] as per [#matches(ItemStack, ItemStack)].
 +    public static boolean matches(ItemStack a, @Nullable ItemStackTemplate b) {
 +        if (b == null) {
 +            return a.isEmpty();
@@ -142,23 +146,19 @@
      @Deprecated
      public static boolean listMatches(List<ItemStack> left, List<ItemStack> right) {
          if (left.size() != right.size()) {
-@@ -649,6 +_,27 @@
+@@ -649,6 +_,23 @@
          }
      }
  
 +
-+    /**
-+     * {@return true if a and b refer to the same item, or if a is empty and b is null}
-+     */
++    /// Neo: {@return true if a and b refer to the same item, or if a is empty and b is null}
 +    public static boolean isSameItem(ItemStack a, @Nullable ItemStackTemplate b) {
 +        return b == null ? a.isEmpty() : a.is(b.item());
 +    }
 +
-+    /**
-+     * Compares the item and components of this stack against an {@link ItemStackTemplate}.
-+     *
-+     * @return True if either this stack is empty and the template is null, or they reference the same item and have equivalent component patches.
-+     */
++    /// Neo: Compares the item and components of this stack against an [ItemStackTemplate].
++    ///
++    /// @return True if either this stack is empty and the template is null, or they reference the same item and have equivalent component patches.
 +    public static boolean isSameItemSameComponents(ItemStack a, @Nullable ItemStackTemplate b) {
 +        if (a.isEmpty() || b == null) {
 +            return a.isEmpty() == (b == null);
@@ -224,33 +224,26 @@
              builder.accept(Component.literal(BuiltInRegistries.ITEM.getKey(this.getItem()).toString()).withStyle(ChatFormatting.DARK_GRAY));
              int count = this.components.size();
              if (count > 0) {
-@@ -954,7 +_,10 @@
-             builder.accept(component);
+@@ -955,6 +_,8 @@
          }
      }
--
-+    /**
-+     * @deprecated Neo: Use {@link net.neoforged.neoforge.common.util.AttributeUtil#addAttributeTooltips}
-+     */
+ 
++    /// @deprecated Neo: Use [net.neoforged.neoforge.common.util.AttributeUtil#addAttributeTooltips]
 +    @Deprecated
      private void addAttributeTooltips(Consumer<Component> consumer, TooltipDisplay display, @Nullable Player player) {
          if (display.shows(DataComponents.ATTRIBUTE_MODIFIERS)) {
              for (EquipmentSlotGroup slot : EquipmentSlotGroup.values()) {
-@@ -1009,19 +_,43 @@
+@@ -1009,19 +_,39 @@
          return !this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).isEmpty();
      }
  
-+    /**
-+     * Gets all enchantments from NBT. Use {@link ItemStack#getAllEnchantments} for gameplay logic.
-+     */
++    /// Neo: Gets all enchantments from NBT. Use [ItemStack#getAllEnchantments] for gameplay logic.
 +    @Override
 +    public ItemEnchantments getTagEnchantments() {
 +        return getEnchantments();
 +    }
 +
-+    /**
-+     * @deprecated Neo: Use {@link #getTagEnchantments()} for NBT enchantments, or {@link #getAllEnchantments} for gameplay.
-+     */
++    /// @deprecated Neo: Use [#getTagEnchantments()] for NBT enchantments, or [#getAllEnchantments] for gameplay.
 +    @Deprecated
      public ItemEnchantments getEnchantments() {
          return this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
@@ -289,18 +282,20 @@
          }
  
          return result;
-@@ -1118,11 +_,14 @@
+@@ -1118,11 +_,16 @@
          }
      }
  
-+    /** @deprecated Forge: Use {@linkplain net.neoforged.neoforge.common.extensions.IItemStackExtension#onDestroyed(ItemEntity, net.minecraft.world.damagesource.DamageSource) damage source sensitive version} */
++    /// @deprecated Neo: Use [#onDestroyed(ItemEntity, DamageSource)] instead
 +    @Deprecated
      public void onDestroyed(ItemEntity itemEntity) {
          this.getItem().onDestroyed(itemEntity);
      }
  
      public boolean canBeHurtBy(DamageSource source) {
-+        if (!getItem().canBeHurtBy(this, source)) return false;
++        if (!getItem().canBeHurtBy(this, source)) {
++            return false;
++        }
          DamageResistant damageResistant = this.get(DataComponents.DAMAGE_RESISTANT);
          return damageResistant == null || !damageResistant.isResistantTo(source);
      }

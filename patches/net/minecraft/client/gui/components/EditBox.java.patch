@@ -1,9 +1,10 @@
 --- a/net/minecraft/client/gui/components/EditBox.java
 +++ b/net/minecraft/client/gui/components/EditBox.java
-@@ -632,6 +_,10 @@
+@@ -632,6 +_,11 @@
          this.hint = hasNoStyle ? hint.copy().withStyle(DEFAULT_HINT_STYLE) : hint;
      }
  
++    /// Neo: {@return whether the text is rendered with a shadow}
 +    public boolean getTextShadow() {
 +        return this.textShadow;
 +    }

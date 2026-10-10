@@ -1,10 +1,12 @@
 --- a/net/minecraft/world/level/block/CauldronBlock.java
 +++ b/net/minecraft/world/level/block/CauldronBlock.java
-@@ -51,6 +_,7 @@
+@@ -51,6 +_,9 @@
  
      @Override
      protected void receiveStalactiteDrip(BlockState state, Level level, BlockPos pos, Fluid fluid) {
-+        if (fluid.getFluidType().handleCauldronDrip(fluid, level, pos)) return;
++        if (fluid.getFluidType().handleCauldronDrip(fluid, level, pos)) {
++            return;
++        }
          if (fluid == Fluids.WATER) {
              BlockState newState = Blocks.WATER_CAULDRON.defaultBlockState();
              level.setBlockAndUpdate(pos, newState);

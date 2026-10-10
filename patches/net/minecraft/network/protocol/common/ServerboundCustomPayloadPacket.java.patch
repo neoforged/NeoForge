@@ -11,7 +11,7 @@
 +        )
 +        .map(ServerboundCustomPayloadPacket::new, ServerboundCustomPayloadPacket::payload);
 +    public static final StreamCodec<FriendlyByteBuf, ServerboundCustomPayloadPacket> CONFIG_STREAM_CODEC = CustomPacketPayload.<FriendlyByteBuf>codec(
-+            p_319841_ -> DiscardedPayload.codec(p_319841_, 32767),
++            id -> DiscardedPayload.codec(id, 32767),
 +            Util.make(Lists.newArrayList(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)), types -> {}),
 +            net.minecraft.network.ConnectionProtocol.CONFIGURATION,
 +            net.minecraft.network.protocol.PacketFlow.SERVERBOUND

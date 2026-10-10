@@ -1,9 +1,10 @@
 --- a/net/minecraft/world/level/ServerExplosion.java
 +++ b/net/minecraft/world/level/ServerExplosion.java
-@@ -169,7 +_,12 @@
+@@ -169,7 +_,13 @@
          return new ObjectArrayList<>(toBlowSet);
      }
  
++    /// @deprecated Neo: use [#hurtEntities(List)] instead
 +    @Deprecated
      private void hurtEntities() {
 +        this.hurtEntities(List.of());

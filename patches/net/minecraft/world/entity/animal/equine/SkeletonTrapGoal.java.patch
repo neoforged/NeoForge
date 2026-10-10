@@ -1,13 +1,14 @@
 --- a/net/minecraft/world/entity/animal/equine/SkeletonTrapGoal.java
 +++ b/net/minecraft/world/entity/animal/equine/SkeletonTrapGoal.java
-@@ -32,6 +_,10 @@
+@@ -32,6 +_,11 @@
      @Override
      public void tick() {
          ServerLevel level = (ServerLevel)this.horse.level();
-+        // Forge: Trigger the trap in a tick task to avoid crashes when mods add goals to skeleton horses
-+        // (MC-206338/Forge PR #7509)
++        // Neo: Trigger the trap in a tick task to avoid crashes when mods add goals to skeleton horses (MC-206338 / MinecraftForge#7509)
 +        level.getServer().schedule(new net.minecraft.server.TickTask(level.getServer().getTickCount(), () -> {
-+        if (!this.horse.isAlive()) return;
++        if (!this.horse.isAlive()) {
++            return;
++        }
          DifficultyInstance difficulty = level.getCurrentDifficultyAt(this.horse.blockPosition());
          this.horse.setTrap(false);
          this.horse.setTamed(true);

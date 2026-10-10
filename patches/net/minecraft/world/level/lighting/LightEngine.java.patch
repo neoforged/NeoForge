@@ -1,12 +1,10 @@
 --- a/net/minecraft/world/level/lighting/LightEngine.java
 +++ b/net/minecraft/world/level/lighting/LightEngine.java
-@@ -38,11 +_,19 @@
+@@ -38,11 +_,17 @@
          this.clearChunkCache();
      }
  
-+    /**
-+     * @deprecated Neo: use overload with level context instead
-+     */
++    /// @deprecated Neo: use [#hasDifferentLightProperties(net.minecraft.world.level.BlockGetter, BlockPos, BlockState, BlockState)] instead
 +    @Deprecated
      public static boolean hasDifferentLightProperties(BlockState oldState, BlockState newState) {
 +        return hasDifferentLightProperties(net.minecraft.world.level.EmptyBlockGetter.INSTANCE, BlockPos.ZERO, oldState, newState);
