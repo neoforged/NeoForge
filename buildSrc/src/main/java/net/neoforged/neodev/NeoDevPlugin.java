@@ -396,7 +396,7 @@ public class NeoDevPlugin implements Plugin<Project> {
                 spec.rename(s -> "install_profile.json");
             });
             task.from(project.getRootProject().file("src/main/resources/url.png"));
-            task.from(project.getRootProject().file("src/main/resources/neoforged_logo.png"), spec -> {
+            task.from(project.getRootProject().file("src/main/resources/neoforge_logo.png"), spec -> {
                 spec.rename(s -> "big_logo.png");
             });
             task.from(createUnixServerArgsFile.flatMap(CreateArgsFile::getArgsFile), spec -> {
