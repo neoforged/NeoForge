@@ -103,8 +103,13 @@ dependencies {
             requireCapability 'net.neoforged:neoform-dependencies'
         }
         endorseStrictVersions()
+        // FML depends on this (which may be more updated), so pull from that instead
+        exclude group: 'org.jspecify', module: 'jspecify'
     }
-    minecraftDependencies("net.neoforged:minecraft-dependencies:${project.minecraft_version}")
+    minecraftDependencies("net.neoforged:minecraft-dependencies:${project.minecraft_version}") {
+        // FML depends on this (which may be more updated), so pull from that instead
+        exclude group: 'org.jspecify', module: 'jspecify'
+    }
 
     for (var asmModule : ["org.ow2.asm:asm", "org.ow2.asm:asm-commons", "org.ow2.asm:asm-tree", "org.ow2.asm:asm-util", "org.ow2.asm:asm-analysis"]) {
         libraries(asmModule) {
