@@ -1,43 +1,31 @@
 --- a/net/minecraft/client/gui/components/AbstractWidget.java
 +++ b/net/minecraft/client/gui/components/AbstractWidget.java
-@@ -225,6 +_,44 @@
+@@ -225,6 +_,32 @@
          this.focused = focused;
      }
  
 +    // Neo Begin
 +    // Support for custom forced text colors. If the color is not set, it will use the vanilla defaults (white when active, light grey when inactive).
 +
-+    private static final net.neoforged.neoforge.client.util.TextColorWithAlpha WHITE = net.neoforged.neoforge.client.util.TextColorWithAlpha.fromRgb(net.minecraft.util.CommonColors.WHITE);
-+    private static final net.neoforged.neoforge.client.util.TextColorWithAlpha LIGHT_GRAY = net.neoforged.neoforge.client.util.TextColorWithAlpha.fromRgb(net.minecraft.util.CommonColors.LIGHT_GRAY);
++    /// Neo: Stores the label text color override. See [#getLabelTextColor()] and [#setLabelTextColor].
++    protected @Nullable Integer labelTextColor = null;
 +
-+    /// Neo: Stores the text color override. See [#getTextColor()] and [#setTextColor].
-+    protected net.neoforged.neoforge.client.util.@Nullable TextColorWithAlpha textColor = null;
-+
-+    /// Neo: {@return the widget's text color} If a custom text color has been set, that color will be used.
++    /// Neo: {@return the widget's label text color} If a custom text color has been set, that color will be used.
 +    /// If a custom text color has not been set, [net.minecraft.util.CommonColors#WHITE] will be used when active,
 +    /// and [net.minecraft.util.CommonColors#LIGHT_GRAY] otherwise.
 +    ///
 +    /// Subclasses may override this to provide more advanced text color handling.
-+    public net.neoforged.neoforge.client.util.TextColorWithAlpha getTextColor() {
-+        if (this.textColor != null) {
-+            return this.textColor;
-+        }
-+        return this.active ? WHITE : LIGHT_GRAY;
++    public int getLabelTextColor() {
++        return this.labelTextColor != null
++                ? this.labelTextColor
++                : this.active ? net.minecraft.util.CommonColors.WHITE : net.minecraft.util.CommonColors.LIGHT_GRAY;
 +    }
 +
-+    /// Neo: Sets the text color for this widget. If `null`, the widget will use the vanilla default.
++    /// Neo: Sets the label text color for this widget based on the given ARGB value
 +    ///
-+    /// @param color the new text color, or `null` to use the defaults
-+    public void setTextColor(net.neoforged.neoforge.client.util.@Nullable TextColorWithAlpha color) {
-+        this.textColor = color;
-+    }
-+
-+    /// Neo: Sets the text color for this widget based on the given RGB value with a full alpha value.
-+    /// To set a text color with a different alpha value, use [#setTextColor(net.neoforged.neoforge.client.util.TextColorWithAlpha)].
-+    ///
-+    /// @param color the new text color as an RGB value
-+    public void setTextColor(int color) {
-+        this.textColor = net.neoforged.neoforge.client.util.TextColorWithAlpha.fromRgb(color);
++    /// @param color the new label text color as an ARGB value
++    public void setLabelTextColor(int color) {
++        this.labelTextColor = color;
 +    }
 +
 +    // Neo End

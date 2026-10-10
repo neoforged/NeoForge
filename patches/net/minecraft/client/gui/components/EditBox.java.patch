@@ -1,97 +1,13 @@
 --- a/net/minecraft/client/gui/components/EditBox.java
 +++ b/net/minecraft/client/gui/components/EditBox.java
-@@ -50,8 +_,14 @@
-     private int displayPos;
-     private int cursorPos;
-     private int highlightPos;
-+    /// @deprecated Neo: Use [AbstractWidget#textColor] instead.
-+    @Deprecated
-     private int textColor = -2039584;
-+    /// @deprecated Neo: Use [#textColorUneditableWithAlpha] instead.
-+    @Deprecated
-     private int textColorUneditable = -9408400;
-+    /// Neo: Add variant of [#textColorUneditable] with alpha value.
-+    private net.neoforged.neoforge.client.util.TextColorWithAlpha textColorUneditableWithAlpha = net.neoforged.neoforge.client.util.TextColorWithAlpha.fromRgb(textColorUneditable);
-     private @Nullable String suggestion;
-     private @Nullable Consumer<String> responder;
-     private final List<EditBox.TextFormatter> formatters = new ArrayList<>();
-@@ -61,6 +_,11 @@
-     private int textX;
-     private int textY;
- 
-+    {
-+        // Neo: Set the text color (from AbstractWidget) to match the default value of the EditBox text color.
-+        super.textColor = net.neoforged.neoforge.client.util.TextColorWithAlpha.fromRgb(textColor);
-+    }
-+
-     public EditBox(Font font, Component narration) {
-         this(font, 150, 20, narration);
-     }
-@@ -409,7 +_,8 @@
-                 graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, this.getX(), this.getY(), this.getWidth(), this.getHeight());
-             }
- 
--            int color = this.isEditable ? this.textColor : this.textColorUneditable;
-+            // Neo: Use TextColorWithAlpha fields instead of int color fields
-+            int color = this.isEditable ? getTextColor().value() : this.textColorUneditableWithAlpha.value();
-             int relCursorPos = this.cursorPos - this.displayPos;
-             String displayed = this.font.plainSubstrByWidth(this.value.substring(this.displayPos), this.getInnerWidth());
-             boolean cursorOnScreen = relCursorPos >= 0 && relCursorPos <= displayed.length();
-@@ -522,12 +_,42 @@
-         this.updateTextPosition();
-     }
- 
-+    /// Neo: {@return the editable text color}
-+    public net.neoforged.neoforge.client.util.TextColorWithAlpha getTextColor() {
-+        assert super.textColor != null; // Known to be never-null
-+        return super.textColor;
-+    }
-+
-+    /// Neo: Sets the editable text color for this edit box.
-+    ///
-+    /// @param textColor the new editable text color
-+    /// @throws NullPointerException if the given color is `null`
-+    public void setTextColor(net.neoforged.neoforge.client.util.@Nullable TextColorWithAlpha textColor) {
-+        super.setTextColor(java.util.Objects.requireNonNull(textColor));
-+    }
-+
-+    /// Neo: Sets the editable text color for this edit box based on the given RGB value with a full alpha value.
-+    /// To set an editable text color with a different alpha value, use [#setTextColor(net.neoforged.neoforge.client.util.TextColorWithAlpha)].
-+    ///
-+    /// @param textColor the new editable text color
-     public void setTextColor(int textColor) {
--        this.textColor = textColor;
--    }
--
-+        super.setTextColor(textColor);
-+    }
-+
-+    /// Neo: Sets the uneditable text color for this edit box.
-+    ///
-+    /// @param textColorUneditable the new uneditable text color
-+    /// @throws NullPointerException if the given color is `null`
-+    public void setTextColorUneditable(net.neoforged.neoforge.client.util.TextColorWithAlpha textColorUneditable) {
-+        this.textColorUneditableWithAlpha = java.util.Objects.requireNonNull(textColorUneditable);
-+    }
-+
-+    /// Neo: Sets the uneditable text color for this edit box based on the given RGB value with a full alpha value.
-+    /// To set an uneditable text color with a different alpha value, use [#setTextColorUneditable(net.neoforged.neoforge.client.util.TextColorWithAlpha)].
-+    ///
-+    /// @param textColorUneditable the new uneditable text color as an RGB value
-     public void setTextColorUneditable(int textColorUneditable) {
--        this.textColorUneditable = textColorUneditable;
-+        this.textColorUneditableWithAlpha = net.neoforged.neoforge.client.util.TextColorWithAlpha.fromRgb(textColorUneditable);
-     }
- 
-     @Override
-@@ -630,6 +_,10 @@
-     public void setHint(Component hint) {
-         boolean hasNoStyle = hint.getStyle().equals(Style.EMPTY);
+@@ -632,6 +_,10 @@
          this.hint = hasNoStyle ? hint.copy().withStyle(DEFAULT_HINT_STYLE) : hint;
-+    }
-+
+     }
+ 
 +    public boolean getTextShadow() {
 +        return this.textShadow;
-     }
- 
++    }
++
      @FunctionalInterface
+     public interface TextFormatter {
+         @Nullable FormattedCharSequence format(final String text, final int offset);
