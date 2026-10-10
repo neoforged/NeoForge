@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.renderpearl.api.pipeline.ColorTargetState;
 import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
 import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import net.minecraft.ChatFormatting;
@@ -40,11 +41,16 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.event.RegisterScreenAreaProviderEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.gui.GuiLayer;
+import net.neoforged.neoforge.client.gui.ScreenArea;
+import net.neoforged.neoforge.client.gui.ScreenAreaManager;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.client.gui.VanillaScreenAreas;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 import net.neoforged.neoforge.client.gui.widget.ExtendedSlider;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.Test;
@@ -332,6 +338,59 @@ public class GuiTests {
                 graphics.submitGuiElementRenderState(CircleGuiElementRenderState.create(centerX, 20, 15, 8, 0xFFAA0000, triStripPipeline));
                 graphics.submitGuiElementRenderState(CircleGuiElementRenderState.create(centerX, 60, 15, 8, 0xFFAA0000, triStripPipeline));
             });
+        });
+    }
+
+    @TestHolder(description = "Checks that screen areas can be declared, queried with their ids and replaced")
+    static void testScreenAreas(DynamicTest test) {
+        Identifier bandId = Identifier.fromNamespaceAndPath(test.createModId(), "occupied_band");
+        NeoForge.EVENT_BUS.addListener((RegisterScreenAreaProviderEvent event) -> {
+            event.registerGlobal(bandId, context -> {
+                if (!test.framework().tests().isEnabled(test.id())) return List.of();
+                // Occupy a band on the left edge of the screen
+                return List.of(new ScreenRectangle(0, 0, 20, context.guiHeight()));
+            });
+            // Disable the vanilla container panel area while the test is enabled, to demonstrate
+            // replacing an area declared by NeoForge
+            event.wrap(VanillaScreenAreas.CONTAINER, provider -> context -> {
+                if (test.framework().tests().isEnabled(test.id())) return List.of();
+                return provider.getAreas(context);
+            });
+        });
+
+        test.framework().modEventBus().addListener((RegisterGuiLayersEvent event) -> {
+            event.registerAboveAll(Identifier.fromNamespaceAndPath(test.createModId(), "screen_area_test"), (graphics, _) -> {
+                if (!test.framework().tests().isEnabled(test.id())) return;
+                // Draw the areas of all other UIs, as an example of excluding the areas of one id
+                for (ScreenArea area : ScreenAreaManager.getOccupiedAreasExcluding(bandId)) {
+                    graphics.fill(area.bounds().left(), area.bounds().top(), area.bounds().right(), area.bounds().bottom(), 0x30FF0000);
+                }
+                // Draw the area declared under the vanilla hotbar id, as an example of filtering areas by their ids
+                for (ScreenArea area : ScreenAreaManager.getOccupiedAreas(VanillaScreenAreas.HOTBAR::equals)) {
+                    graphics.fill(area.bounds().left(), area.bounds().top(), area.bounds().right(), area.bounds().bottom(), 0x4000FFFF);
+                }
+                // Highlight the areas blocking the centre of the screen, as an example of finding the blockers of an area
+                ScreenRectangle centre = new ScreenRectangle(graphics.guiWidth() / 2 - 40, graphics.guiHeight() / 2 - 20, 80, 40);
+                for (ScreenArea area : ScreenAreaManager.getOccupiedAreas()) {
+                    if (area.bounds().intersects(centre)) {
+                        graphics.fill(area.bounds().left(), area.bounds().top(), area.bounds().right(), area.bounds().bottom(), 0x80FFFF00);
+                    }
+                }
+                // Draw the declared occupied band, which is not part of the areas of the other UIs
+                graphics.fill(0, 0, 20, graphics.guiHeight(), 0x8000FF00);
+            });
+        });
+
+        test.eventListeners().forge().addListener((ClientChatEvent chatEvent) -> {
+            if (chatEvent.getMessage().equalsIgnoreCase("screen area test")) {
+                test.requestConfirmation(Minecraft.getInstance().player, Component.literal(
+                        """
+                                Do you see a green band on the left edge (this test's own area), a blue overlay over the hotbar,
+                                and a red overlay covering the areas of other UIs but not the band?
+                                Is anything blocking the centre of the screen highlighted in yellow?
+                                With a container screen open, is its panel not covered? (this test disables the vanilla container area)
+                                """));
+            }
         });
     }
 }
