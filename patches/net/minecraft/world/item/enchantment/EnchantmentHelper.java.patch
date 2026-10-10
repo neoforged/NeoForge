@@ -44,13 +44,11 @@
              if (itemEnchantments != null && !itemEnchantments.isEmpty()) {
                  EnchantedItemInUse itemInUse = new EnchantedItemInUse(piece, slot, owner);
  
-@@ -324,7 +_,15 @@
+@@ -324,7 +_,13 @@
          return Math.max(0, modifiedDurability.intValue());
      }
  
-+    /**
-+     * @deprecated Neo: Use {@link #processEquipmentDropChance(ServerLevel, LivingEntity, DamageSource, float, EquipmentSlot)} for slot context.
-+     */
++    /// @deprecated Neo: Use [#processEquipmentDropChance(ServerLevel,LivingEntity,DamageSource,float,EquipmentSlot)] for slot context.
 +    @Deprecated
      public static float processEquipmentDropChance(ServerLevel serverLevel, LivingEntity entity, DamageSource killingBlow, float chance) {
 +        return processEquipmentDropChance(serverLevel, entity, killingBlow, chance, null);
