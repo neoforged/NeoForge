@@ -1,0 +1,12 @@
+--- a/com/mojang/renderpearl/backend/vulkan/VulkanGpuTextureView.java
++++ b/com/mojang/renderpearl/backend/vulkan/VulkanGpuTextureView.java
+@@ -26,7 +_,8 @@
+             imageViewCreateInfo.viewType(isCubemap ? 3 : 1);
+             imageViewCreateInfo.format(VulkanConst.toVk(texture.getFormat()));
+             VkImageSubresourceRange subresourceRange = imageViewCreateInfo.subresourceRange();
+-            subresourceRange.aspectMask(texture.getFormat().hasColorAspect() ? 1 : 2);
++            // Neo: respect stencil aspect in aspect mask
++            subresourceRange.aspectMask(VulkanConst.formatAspectMask(texture.getFormat()));
+             subresourceRange.baseMipLevel(baseMipLevel);
+             subresourceRange.levelCount(mipLevels);
+             subresourceRange.baseArrayLayer(0);

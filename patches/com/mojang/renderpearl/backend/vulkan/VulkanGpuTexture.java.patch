@@ -1,0 +1,12 @@
+--- a/com/mojang/renderpearl/backend/vulkan/VulkanGpuTexture.java
++++ b/com/mojang/renderpearl/backend/vulkan/VulkanGpuTexture.java
+@@ -63,7 +_,8 @@
+             barrier.dstQueueFamilyIndex(-1);
+             barrier.image(this.vkImage);
+             VkImageSubresourceRange subresourceRange = barrier.subresourceRange();
+-            subresourceRange.aspectMask(this.getFormat().hasColorAspect() ? 1 : 2);
++            // Neo: respect stencil aspect in aspect mask
++            subresourceRange.aspectMask(VulkanConst.formatAspectMask(this.getFormat()));
+             subresourceRange.baseMipLevel(0);
+             subresourceRange.levelCount(this.getMipLevels());
+             subresourceRange.baseArrayLayer(0);
