@@ -1,11 +1,12 @@
 --- a/com/mojang/renderpearl/backend/opengl/GlCommandEncoder.java
 +++ b/com/mojang/renderpearl/backend/opengl/GlCommandEncoder.java
-@@ -274,6 +_,23 @@
+@@ -274,6 +_,24 @@
      }
  
      @Override
 +    public void clearStencilTexture(GpuTexture texture, int value) {
 +        GL33C.glClearStencil(value);
++        GlStateManager._stencilMask(-1);
 +        GlStateManager._depthMask(true);
 +        GlStateManager._disableScissorTest();
 +
