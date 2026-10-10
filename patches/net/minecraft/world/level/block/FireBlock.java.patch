@@ -12,14 +12,6 @@
      private final Object2IntMap<Block> burnOdds = new Object2IntOpenHashMap<>();
  
      public FireBlock(BlockBehaviour.Properties properties) {
-@@ -65,7 +_,6 @@
-         );
-         this.shapes = this.makeShapes();
-     }
--
-     private Function<BlockState, VoxelShape> makeShapes() {
-         Map<Direction, VoxelShape> shapes = Shapes.rotateAll(Block.boxZ(16.0, 0.0, 1.0));
-         return this.getShapeForEachState(state -> {
 @@ -108,13 +_,13 @@
      protected BlockState getStateForPlacement(BlockGetter level, BlockPos pos) {
          BlockPos below = pos.below();

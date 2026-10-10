@@ -602,9 +602,8 @@ public interface IBlockExtension {
         if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
             return 0;
         }
-        FireBlock fireBlock = (FireBlock) Blocks.FIRE;
         Flammable flammable = state.getBlock().builtInRegistryHolder().getData(NeoForgeDataMaps.FLAMMABLE);
-        return flammable != null ? flammable.flammability() : fireBlock.getBurnOdds(state);
+        return flammable != null ? flammable.burnOdds() : ((FireBlock) Blocks.FIRE).getBurnOdds(state);
     }
 
     /**
@@ -652,9 +651,8 @@ public interface IBlockExtension {
         if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
             return 0;
         }
-        FireBlock fireBlock = (FireBlock) Blocks.FIRE;
         Flammable flammable = state.getBlock().builtInRegistryHolder().getData(NeoForgeDataMaps.FLAMMABLE);
-        return flammable != null ? flammable.fireSpreadSpeed() : fireBlock.getIgniteOdds(state);
+        return flammable != null ? flammable.igniteOdds() : ((FireBlock) Blocks.FIRE).getIgniteOdds(state);
     }
 
     /**
