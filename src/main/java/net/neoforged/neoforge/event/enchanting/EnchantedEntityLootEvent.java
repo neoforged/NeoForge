@@ -14,7 +14,6 @@ import net.minecraft.world.level.storage.loot.functions.EnchantedCountIncreaseFu
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWithEnchantedBonusCondition;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import org.jetbrains.annotations.ApiStatus;
-import org.jspecify.annotations.Nullable;
 
 /**
  * Fired on the server when an entity is dropping loot and the level of a specific enchantment is being queried.
@@ -26,7 +25,6 @@ import org.jspecify.annotations.Nullable;
  * If you do not need the additional context of this event, prefer {@link GetEnchantmentLevelEvent} for managing enchantment levels.
  */
 public class EnchantedEntityLootEvent extends LivingEvent {
-    @Nullable
     private final DamageSource damageSource;
     private final Holder<Enchantment> enchantment;
     private int enchantmentLevel;
