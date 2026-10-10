@@ -31,6 +31,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.SignalGetter;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -751,5 +752,19 @@ public interface IBlockStateExtension {
     /// @see IBlockExtension#getRelocability
     default BlockRelocability getRelocability(LevelReader level, BlockPos pos) {
         return self().getBlock().getRelocability(level, pos, self());
+    }
+
+    /// Determines whether the given adjacent block can connect to the given side of this block.
+    /// This is used by iron bars, glass panes, fences and walls to determine whether they can connect.
+    ///
+    /// - Returning [TriState#TRUE] forces the adjacent block to connect.
+    /// - Returning [TriState#DEFAULT] leaves the decision to the connecting block's further checks.
+    /// - Returning [TriState#FALSE] prevents the adjacent block from connecting.
+    ///
+    /// @param side          The side of this block being connected to
+    /// @param adjacentBlock The adjacent block attempting to connect to this block
+    /// @return whether the adjacent block can connect to this block.
+    default TriState canBeConnectedTo(Direction side, Block adjacentBlock) {
+        return self().getBlock().canBeConnectedTo(self(), side, adjacentBlock);
     }
 }

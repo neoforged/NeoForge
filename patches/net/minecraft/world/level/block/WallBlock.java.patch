@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/level/block/WallBlock.java
++++ b/net/minecraft/world/level/block/WallBlock.java
+@@ -96,6 +_,11 @@
+     }
+ 
+     private boolean connectsTo(BlockState state, boolean faceSolid, Direction direction) {
++        // Neo: allow the adjacent block to force or opt out of being connected to (incoming direction is the neighbor's face)
++        var adjResult = state.canBeConnectedTo(direction, this);
++        if (!adjResult.isDefault()) {
++            return adjResult.isTrue();
++        }
+         Block block = state.getBlock();
+         boolean connectedFenceGate = block instanceof FenceGateBlock && FenceGateBlock.connectsToDirection(state, direction);
+         return state.is(BlockTags.WALLS) || !isExceptionForConnection(state) && faceSolid || block instanceof IronBarsBlock || connectedFenceGate;
