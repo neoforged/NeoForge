@@ -18,7 +18,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.nbt.CompoundTag;
@@ -415,7 +414,7 @@ public class LivingEntityEventTests {
         });
         test.eventListeners().forge().addListener((LivingDropsEvent event) -> {
             // store drops to validate in the test helper
-            for (Iterator<ItemEntity> iterator = event.getDrops().iterator(); iterator.hasNext(); ) {
+            for (Iterator<ItemEntity> iterator = event.getDrops().iterator(); iterator.hasNext();) {
                 ItemEntity entity = iterator.next();
                 ItemStack stack = entity.getItem();
                 if (stack.is(Items.TURTLE_HELMET)) {
