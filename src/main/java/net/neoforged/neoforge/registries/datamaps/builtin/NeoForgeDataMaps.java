@@ -188,7 +188,7 @@ public class NeoForgeDataMaps {
 
     /// The [Block] data map that replaces [FireBlock#igniteOdds] and [FireBlock#burnOdds].
     ///
-    /// The location of this data map is `neoforge/data_maps/block/flammable.json`, and the values are objects with 2 field:
+    /// The location of this data map is `neoforge/data_maps/block/flammable.json`, and the values are objects with 2 fields:
     /// - `ignite_odds`, int value for likelihood of a block to catch fire, typical values used by vanilla are [FireBlock#IGNITE_INSTANT],[FireBlock#IGNITE_EASY],[FireBlock#IGNITE_MEDIUM],[FireBlock#IGNITE_HARD]
     /// - `burn_odds`, int value for likelihood of a block to be destroyed by fire, typical values used by vanilla are [FireBlock#BURN_INSTANT],[FireBlock#BURN_EASY],[FireBlock#BURN_MEDIUM],[FireBlock#BURN_HARD]
     public static final DataMapType<Block, Flammable> FLAMMABLE = DataMapType.builder(
