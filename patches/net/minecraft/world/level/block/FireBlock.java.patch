@@ -1,5 +1,17 @@
 --- a/net/minecraft/world/level/block/FireBlock.java
 +++ b/net/minecraft/world/level/block/FireBlock.java
+@@ -48,7 +_,11 @@
+     private static final int BURN_EASY = 60;
+     private static final int BURN_MEDIUM = 20;
+     private static final int BURN_HARD = 5;
++    /// @deprecated Neo: Use the [flammable][net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE] data map instead, as this field will be ignored in the future
++    @Deprecated
+     private final Object2IntMap<Block> igniteOdds = new Object2IntOpenHashMap<>();
++    /// @deprecated Neo: Use the [flammable][net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE] data map instead, as this field will be ignored in the future
++    @Deprecated
+     private final Object2IntMap<Block> burnOdds = new Object2IntOpenHashMap<>();
+ 
+     public FireBlock(BlockBehaviour.Properties properties) {
 @@ -108,13 +_,13 @@
      protected BlockState getStateForPlacement(BlockGetter level, BlockPos pos) {
          BlockPos below = pos.below();
@@ -118,9 +130,12 @@
      protected boolean canBurn(BlockState state) {
          return this.getIgniteOdds(state) > 0;
      }
-@@ -295,8 +_,21 @@
+@@ -294,9 +_,24 @@
+         builder.add(AGE, NORTH, EAST, SOUTH, WEST, UP);
      }
  
++    /// @deprecated Neo: Use the [flammable][net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE] data map instead, as this field will be ignored in the future
++    @Deprecated
      private void setFlammable(Block block, int igniteOdds, int burnOdds) {
 +        if (block == Blocks.AIR) throw new IllegalArgumentException("Tried to set air on fire... This is bad.");
          this.igniteOdds.put(block, igniteOdds);
