@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/protocol/common/custom/CustomPacketPayload.java
 +++ b/net/minecraft/network/protocol/common/custom/CustomPacketPayload.java
-@@ -22,20 +_,27 @@
+@@ -22,20 +_,28 @@
      }
  
      static <B extends FriendlyByteBuf> StreamCodec<B, CustomPacketPayload> codec(
@@ -24,19 +24,21 @@
 +                try {
                  codec.encode(output, (T)payload);
 +                } catch (RuntimeException e) {
-+                    throw new RuntimeException("Failed encoding custom payload " + type.id() + ": " + e, e); // Neo: Make it easier to debug which mod payload failed to be encoded
++                    // Neo: Make it easier to debug which mod payload failed to be encoded
++                    throw new RuntimeException("Failed encoding custom payload " + type.id() + ": " + e, e);
 +                }
              }
  
              public void encode(B output, CustomPacketPayload value) {
-@@ -44,9 +_,23 @@
+@@ -44,9 +_,24 @@
  
              public CustomPacketPayload decode(B input) {
                  Identifier identifier = input.readIdentifier();
 +                try {
                  return (CustomPacketPayload)this.findCodec(identifier).decode(input);
 +                } catch (RuntimeException e) {
-+                    throw new RuntimeException("Failed decoding custom payload " + identifier + ": " + e, e); // Neo: Make it easier to debug which mod payload failed to be decoded
++                    // Neo: Make it easier to debug which mod payload failed to be decoded
++                    throw new RuntimeException("Failed decoding custom payload " + identifier + ": " + e, e);
 +                }
              }
          };

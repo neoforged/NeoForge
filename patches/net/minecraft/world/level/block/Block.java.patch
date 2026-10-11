@@ -121,7 +121,7 @@
      public void bounceOn(Level level, BlockState state, BlockPos pos, Entity entity, double fallDistance) {
      }
  
-+    /// @deprecated Neo: Use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#getBounceRestitution(Level, BlockPos, Entity)]
++    /// @deprecated Neo: Use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#getBounceRestitution(Level, BlockPos, Entity)] instead
 +    @Deprecated
      public float getBounceRestitution() {
          return this.bounceRestitution;
@@ -143,14 +143,14 @@
 +
 +    /// Neo: Initializes [#capturedDrops], starting the drop capture process.
 +    ///
-+    /// Must only be called on the server thread.
++    /// @apiNote Must only be called on the server thread.
 +    private static void beginCapturingDrops() {
 +        capturedDrops = new java.util.ArrayList<>();
 +    }
 +
 +    /// Neo: Ends the drop capture process by setting [#capturedDrops] to null and returning the old list.
 +    ///
-+    /// Must only be called on the server thread.
++    /// @apiNote Must only be called on the server thread.
 +    private static List<ItemEntity> stopCapturingDrops() {
 +        List<ItemEntity> drops = capturedDrops;
 +        capturedDrops = null;

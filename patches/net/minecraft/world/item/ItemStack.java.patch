@@ -11,15 +11,14 @@
      public ItemStack(ItemLike item, int count) {
          this(item.asItem().builtInRegistryHolder(), count);
      }
-@@ -359,6 +_,26 @@
+@@ -359,6 +_,25 @@
      }
  
      public InteractionResult useOn(UseOnContext context) {
 +        var e = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent(context, net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase.ITEM_AFTER_BLOCK));
 +        if (e.isCanceled()) {
 +            return e.getCancellationResult();
-+        }
-+        if (!context.getLevel().isClientSide()) {
++        } else if (!context.getLevel().isClientSide()) {
 +            return net.neoforged.neoforge.common.CommonHooks.onPlaceItemIntoWorld(context);
 +        }
 +        return onItemUse(context, getItem()::useOn);

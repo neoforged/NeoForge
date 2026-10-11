@@ -6,7 +6,7 @@
  
 -public record CommonListenerCookie(GameProfile gameProfile, int latency, ClientInformation clientInformation, boolean transferred) {
 +public record CommonListenerCookie(GameProfile gameProfile, int latency, ClientInformation clientInformation, boolean transferred, net.neoforged.neoforge.network.connection.ConnectionType connectionType) {
-+    /// @deprecated Use [#CommonListenerCookie(GameProfile, int, ClientInformation, boolean, net.neoforged.neoforge.network.connection.ConnectionType)] instead,
++    /// @deprecated Neo: Use [#CommonListenerCookie(GameProfile, int, ClientInformation, boolean, net.neoforged.neoforge.network.connection.ConnectionType)] instead,
 +    /// to indicate whether the connection is modded.
 +    @Deprecated
 +    public CommonListenerCookie(GameProfile gameProfile, int latency, ClientInformation clientInformation, boolean transferred) {

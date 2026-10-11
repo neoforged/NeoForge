@@ -8,7 +8,7 @@
 +    boolean seenInsecureChatWarning,
 +    net.neoforged.neoforge.network.connection.ConnectionType connectionType
  ) {
-+    /// @deprecated Use [#CommonListenerCookie(LevelLoadTracker, GameProfile, WorldSessionTelemetryManager, RegistryAccess.Frozen, FeatureFlagSet, String, ServerData, Screen, Map, ChatComponent.State, Map, ServerLinks, Map, boolean, net.neoforged.neoforge.network.connection.ConnectionType)]
++    /// @deprecated Neo: Use [#CommonListenerCookie(LevelLoadTracker, GameProfile, WorldSessionTelemetryManager, RegistryAccess.Frozen, FeatureFlagSet, String, ServerData, Screen, Map, ChatComponent.State, Map, ServerLinks, Map, boolean, net.neoforged.neoforge.network.connection.ConnectionType)]
 +    /// instead, to indicate whether the connection is modded.
 +    @Deprecated
 +    public CommonListenerCookie(
