@@ -103,7 +103,7 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
         final Object2IntMap<Block> burnOdds = ObfuscationReflectionHelper.getPrivateValue(FireBlock.class, fire, "burnOdds");
         igniteOdds.forEach((block, value) -> {
             int burnOddsValue = burnOdds.getOrDefault(block, 0);
-            flammables.add(block.builtInRegistryHolder(), new Flammable(burnOddsValue, value), false);
+            flammables.add(block.builtInRegistryHolder(), new Flammable(value, burnOddsValue), false);
         });
     }
 }

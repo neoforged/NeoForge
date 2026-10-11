@@ -1,56 +1,56 @@
 {
   "values": {
     "minecraft:acacia_fence": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:acacia_fence_gate": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:acacia_leaves": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:acacia_log": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:acacia_planks": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:acacia_shelf": {
-      "burn_odds": 30,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 30
     },
     "minecraft:acacia_slab": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:acacia_stairs": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:acacia_wood": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:allium": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:azalea": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:azalea_leaves": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:azure_bluet": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:bamboo": {
       "burn_odds": 60,
@@ -61,796 +61,796 @@
       "ignite_odds": 5
     },
     "minecraft:bamboo_fence": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:bamboo_fence_gate": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:bamboo_mosaic": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:bamboo_mosaic_slab": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:bamboo_mosaic_stairs": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:bamboo_planks": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:bamboo_shelf": {
-      "burn_odds": 30,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 30
     },
     "minecraft:bamboo_slab": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:bamboo_stairs": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:bee_nest": {
-      "burn_odds": 30,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 30
     },
     "minecraft:beehive": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:big_dripleaf": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:big_dripleaf_stem": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:birch_fence": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:birch_fence_gate": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:birch_leaves": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:birch_log": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:birch_planks": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:birch_shelf": {
-      "burn_odds": 30,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 30
     },
     "minecraft:birch_slab": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:birch_stairs": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:birch_wood": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:black_carpet": {
-      "burn_odds": 60,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 60
     },
     "minecraft:black_wool": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:black_wool_slab": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:black_wool_stairs": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:blue_carpet": {
-      "burn_odds": 60,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 60
     },
     "minecraft:blue_orchid": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:blue_wool": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:blue_wool_slab": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:blue_wool_stairs": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:bookshelf": {
-      "burn_odds": 30,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 30
     },
     "minecraft:brown_carpet": {
-      "burn_odds": 60,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 60
     },
     "minecraft:brown_wool": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:brown_wool_slab": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:brown_wool_stairs": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:bush": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:cactus_flower": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:cave_vines": {
-      "burn_odds": 15,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 15
     },
     "minecraft:cave_vines_plant": {
-      "burn_odds": 15,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 15
     },
     "minecraft:cherry_fence": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:cherry_fence_gate": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:cherry_leaves": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:cherry_log": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:cherry_planks": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:cherry_shelf": {
-      "burn_odds": 30,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 30
     },
     "minecraft:cherry_slab": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:cherry_stairs": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:cherry_wood": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:closed_eyeblossom": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:coal_block": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:composter": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:cornflower": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:cyan_carpet": {
-      "burn_odds": 60,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 60
     },
     "minecraft:cyan_wool": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:cyan_wool_slab": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:cyan_wool_stairs": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:dandelion": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:dark_oak_fence": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:dark_oak_fence_gate": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:dark_oak_leaves": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:dark_oak_log": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:dark_oak_planks": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:dark_oak_shelf": {
-      "burn_odds": 30,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 30
     },
     "minecraft:dark_oak_slab": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:dark_oak_stairs": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:dark_oak_wood": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:dead_bush": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:dried_kelp_block": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:fern": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:firefly_bush": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:flowering_azalea": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:flowering_azalea_leaves": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:glow_lichen": {
-      "burn_odds": 15,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 15
     },
     "minecraft:golden_dandelion": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:gray_carpet": {
-      "burn_odds": 60,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 60
     },
     "minecraft:gray_wool": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:gray_wool_slab": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:gray_wool_stairs": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:green_carpet": {
-      "burn_odds": 60,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 60
     },
     "minecraft:green_wool": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:green_wool_slab": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:green_wool_stairs": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:hanging_roots": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:hay_block": {
-      "burn_odds": 60,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 60
     },
     "minecraft:jungle_fence": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:jungle_fence_gate": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:jungle_leaves": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:jungle_log": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:jungle_planks": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:jungle_shelf": {
-      "burn_odds": 30,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 30
     },
     "minecraft:jungle_slab": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:jungle_stairs": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:jungle_wood": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:large_fern": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:leaf_litter": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:lectern": {
-      "burn_odds": 30,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 30
     },
     "minecraft:light_blue_carpet": {
-      "burn_odds": 60,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 60
     },
     "minecraft:light_blue_wool": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:light_blue_wool_slab": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:light_blue_wool_stairs": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:light_gray_carpet": {
-      "burn_odds": 60,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 60
     },
     "minecraft:light_gray_wool": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:light_gray_wool_slab": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:light_gray_wool_stairs": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:lilac": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:lily_of_the_valley": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:lime_carpet": {
-      "burn_odds": 60,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 60
     },
     "minecraft:lime_wool": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:lime_wool_slab": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:lime_wool_stairs": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:magenta_carpet": {
-      "burn_odds": 60,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 60
     },
     "minecraft:magenta_wool": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:magenta_wool_slab": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:magenta_wool_stairs": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:mangrove_fence": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:mangrove_fence_gate": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:mangrove_leaves": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:mangrove_log": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:mangrove_planks": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:mangrove_roots": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:mangrove_shelf": {
-      "burn_odds": 30,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 30
     },
     "minecraft:mangrove_slab": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:mangrove_stairs": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:mangrove_wood": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:oak_fence": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:oak_fence_gate": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:oak_leaves": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:oak_log": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:oak_planks": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:oak_shelf": {
-      "burn_odds": 30,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 30
     },
     "minecraft:oak_slab": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:oak_stairs": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:oak_wood": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:open_eyeblossom": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:orange_carpet": {
-      "burn_odds": 60,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 60
     },
     "minecraft:orange_poplar_leaves": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:orange_tulip": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:orange_wool": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:orange_wool_slab": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:orange_wool_stairs": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:oxeye_daisy": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:pale_hanging_moss": {
-      "burn_odds": 5,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 5
     },
     "minecraft:pale_moss_block": {
-      "burn_odds": 5,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 5
     },
     "minecraft:pale_moss_carpet": {
-      "burn_odds": 5,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 5
     },
     "minecraft:pale_oak_fence": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:pale_oak_fence_gate": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:pale_oak_leaves": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:pale_oak_log": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:pale_oak_planks": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:pale_oak_shelf": {
-      "burn_odds": 30,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 30
     },
     "minecraft:pale_oak_slab": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:pale_oak_stairs": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:pale_oak_wood": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:peony": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:pink_carpet": {
-      "burn_odds": 60,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 60
     },
     "minecraft:pink_petals": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:pink_tulip": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:pink_wool": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:pink_wool_slab": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:pink_wool_stairs": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:pitcher_plant": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:poplar_fence": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:poplar_fence_gate": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:poplar_log": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:poplar_planks": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:poplar_shelf": {
-      "burn_odds": 30,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 30
     },
     "minecraft:poplar_slab": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:poplar_stairs": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:poplar_wood": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:poppy": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:purple_carpet": {
-      "burn_odds": 60,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 60
     },
     "minecraft:purple_wool": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:purple_wool_slab": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:purple_wool_stairs": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:red_carpet": {
-      "burn_odds": 60,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 60
     },
     "minecraft:red_poplar_leaves": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:red_shrub": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:red_tulip": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:red_wool": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:red_wool_slab": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:red_wool_stairs": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:rose_bush": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:scaffolding": {
       "burn_odds": 60,
       "ignite_odds": 60
     },
     "minecraft:short_dry_grass": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:short_grass": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:small_dripleaf": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:spore_blossom": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:spruce_fence": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:spruce_fence_gate": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:spruce_leaves": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:spruce_log": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:spruce_planks": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:spruce_shelf": {
-      "burn_odds": 30,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 30
     },
     "minecraft:spruce_slab": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:spruce_stairs": {
-      "burn_odds": 5,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 5
     },
     "minecraft:spruce_wood": {
       "burn_odds": 5,
       "ignite_odds": 5
     },
     "minecraft:straw_bed": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:stripped_acacia_log": {
       "burn_odds": 5,
@@ -937,84 +937,84 @@
       "ignite_odds": 5
     },
     "minecraft:sunflower": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:sweet_berry_bush": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:tall_dry_grass": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:tall_grass": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:target": {
-      "burn_odds": 15,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 15
     },
     "minecraft:tnt": {
-      "burn_odds": 15,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 15
     },
     "minecraft:torchflower": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:vine": {
-      "burn_odds": 15,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 15
     },
     "minecraft:white_carpet": {
-      "burn_odds": 60,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 60
     },
     "minecraft:white_tulip": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:white_wool": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:white_wool_slab": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:white_wool_stairs": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:wildflowers": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:wither_rose": {
-      "burn_odds": 60,
-      "ignite_odds": 100
+      "burn_odds": 100,
+      "ignite_odds": 60
     },
     "minecraft:yellow_carpet": {
-      "burn_odds": 60,
-      "ignite_odds": 20
+      "burn_odds": 20,
+      "ignite_odds": 60
     },
     "minecraft:yellow_poplar_leaves": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:yellow_wool": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:yellow_wool_slab": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     },
     "minecraft:yellow_wool_stairs": {
-      "burn_odds": 30,
-      "ignite_odds": 60
+      "burn_odds": 60,
+      "ignite_odds": 30
     }
   }
 }
