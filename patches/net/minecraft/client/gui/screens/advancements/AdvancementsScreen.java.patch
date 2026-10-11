@@ -26,11 +26,13 @@
          this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).width(200).build());
          this.layout.visitWidgets(x$0 -> this.addRenderableWidget(x$0));
          this.repositionElements();
-@@ -119,6 +_,7 @@
+@@ -119,6 +_,9 @@
              int yo = (this.height - 140) / 2;
  
              for (AdvancementTab tab : this.tabs.values()) {
-+                if (tab.getPage() == tabPage)
++                if (tab.getPage() != tabPage) {
++                    continue;
++                }
                  if (tab.isMouseOver(xo, yo, event.x(), event.y())) {
                      this.advancements.setSelectedTab(tab.getRootAdvancement(), true);
                      break;
@@ -46,24 +48,30 @@
          graphics.nextStratum();
          this.extractInside(graphics);
          graphics.nextStratum();
-@@ -212,10 +_,12 @@
+@@ -212,10 +_,16 @@
          graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_LOCATION, this.leftPos, this.topPos, 0.0F, 0.0F, 252, 140, 256, 256);
          if (this.tabs.size() > 1) {
              for (AdvancementTab tab : this.tabs.values()) {
-+                if (tab.getPage() == tabPage)
++                if (tab.getPage() != tabPage) {
++                    continue;
++                }
                  tab.extractTab(graphics, this.leftPos, this.topPos, mouseX, mouseY, tab == this.selectedTab);
              }
  
              for (AdvancementTab tab : this.tabs.values()) {
-+                if (tab.getPage() == tabPage)
++                if (tab.getPage() != tabPage) {
++                    continue;
++                }
                  tab.extractIcon(graphics, this.leftPos, this.topPos);
              }
          }
-@@ -234,6 +_,7 @@
+@@ -234,6 +_,9 @@
  
          if (this.tabs.size() > 1) {
              for (AdvancementTab tab : this.tabs.values()) {
-+                if (tab.getPage() == tabPage)
++                if (tab.getPage() != tabPage) {
++                    continue;
++                }
                  if (tab.isMouseOver(this.leftPos, this.topPos, mouseX, mouseY)) {
                      graphics.setTooltipForNextFrame(this.font, tab.getTitle(), mouseX, mouseY);
                  }
