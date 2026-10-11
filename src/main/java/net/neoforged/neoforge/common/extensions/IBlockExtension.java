@@ -596,7 +596,7 @@ public interface IBlockExtension {
     /// @param direction The direction that the fire is coming from
     /// @return True if the face can be on fire, false otherwise.
     default boolean isFlammable(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-        return state.getFlammability(level, pos, direction) > 0;
+        return state.getFireSpreadSpeed(level, pos, direction) > 0;
     }
 
     /// Called when fire is updating on a neighbor block.
