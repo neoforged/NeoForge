@@ -26,10 +26,10 @@
 +                : this.active ? net.minecraft.util.CommonColors.WHITE : net.minecraft.util.CommonColors.LIGHT_GRAY;
 +    }
 +
-+    /// Neo: Sets the label text color for this widget based on the given ARGB value
++    /// Neo: Sets the label text color for this widget based on the given ARGB value, or `null` to reset it to the default colors.
 +    ///
-+    /// @param color the new label text color as an ARGB value
-+    public void setLabelTextColor(int color) {
++    /// @param color the new label text color as an ARGB value, or `null` to reset to default
++    public void setLabelTextColor(@Nullable Integer color) {
 +        this.labelTextColor = color;
      }
  
