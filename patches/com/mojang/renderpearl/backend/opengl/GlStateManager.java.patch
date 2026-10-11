@@ -7,7 +7,7 @@
 +    private static final GlStateManager.StencilState STENCIL = new GlStateManager.StencilState();
      private static final GlStateManager.ScissorState SCISSOR = new GlStateManager.ScissorState();
      private static int activeTexture;
-     private static final int TEXTURE_COUNT = 12;
+     public static final int TEXTURE_COUNT = 12;
 @@ -634,5 +_,114 @@
  
      private static class TextureState {

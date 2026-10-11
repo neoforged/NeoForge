@@ -4,6 +4,7 @@ import net.neoforged.moddevgradle.dsl.ModModel
 import net.neoforged.neodev.GenerateFinalizeSpawnTargets
 import net.neoforged.neodev.ProvideCompatibilityCheckJar
 import net.neoforged.neodev.DownloadFile
+import org.objectweb.asm.Opcodes
 
 plugins {
     id 'java-library'
@@ -271,7 +272,7 @@ generateAccessTransformers {
     methodGroup(
             'BuiltInBlockModels factory methods', PUBLIC,
             named('net/minecraft/client/renderer/block/BuiltInBlockModels'),
-            or(or(nameStartsWith('create'), nameStartsWith('special')), named('combineSpecialAndBlockModels'))
+            or(nameStartsWith('create'), nameStartsWith('special'), named('combineSpecialAndBlockModels'))
     )
 
     // Make the CauldronInteraction dispatcher put methods public so mods can add new interactions
@@ -285,6 +286,40 @@ generateAccessTransformers {
             'CauldronInteractions helpers', PUBLIC,
             named('net/minecraft/core/cauldron/CauldronInteractions'),
             and(methodsReturning('net/minecraft/world/InteractionResult'), not(nameStartsWith('lambda')))
+    )
+
+    // make all '<non-public> static final' fields public
+    fieldGroup(
+            "Constants", PUBLIC,
+            // only in classes which can be accessed
+            classWithAccess(Opcodes.ACC_PUBLIC),
+            and(
+                    // limit to the following types only
+                    or(
+                            // primitives
+                            fieldsOfType(named("I")), // int
+                            fieldsOfType(named("Z")), // boolean
+                            fieldsOfType(named("F")), // float
+                            fieldsOfType(named("D")), // double
+                            fieldsOfType(named("B")), // byte
+                            fieldsOfType(named("C")), // char
+                            fieldsOfType(named("S")), // short
+                            fieldsOfType(named("J")), // long
+                            // fieldsOfType(named("V")), // void
+                            fieldsOfType(named("java/lang/String"))
+                    ),
+                    not(
+                            or(
+                                    // only things not already public
+                                    fieldsWithAccess(Opcodes.ACC_PUBLIC),
+                                    // we dont want things like enum $VALUES
+                                    fieldsWithAccess(Opcodes.ACC_SYNTHETIC)
+                            )
+                    ),
+                    // only 'static final' fields
+                    fieldsWithAccess(Opcodes.ACC_STATIC),
+                    fieldsWithAccess(Opcodes.ACC_FINAL)
+            )
     )
 }
 

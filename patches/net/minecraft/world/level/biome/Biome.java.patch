@@ -16,7 +16,7 @@
 @@ -71,9 +_,12 @@
      @Deprecated(forRemoval = true)
      public static final Noise BIOME_INFO_NOISE = new SimplexNoise(new WorldgenRandom(new LegacyRandomSource(2345L)), true);
-     private static final int TEMPERATURE_CACHE_SIZE = 1024;
+     public static final int TEMPERATURE_CACHE_SIZE = 1024;
 +    /// Neo: Field accesses are redirected to [#getModifiedClimateSettings()] with a coremod.
      private final Biome.ClimateSettings climateSettings;
      private final BiomeGenerationSettings generationSettings;

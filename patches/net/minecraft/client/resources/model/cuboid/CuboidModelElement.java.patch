@@ -8,9 +8,9 @@
 +    int lightEmission,
 +    net.neoforged.neoforge.client.model.ExtraFaceData faceData
  ) {
-     private static final boolean DEFAULT_RESCALE = false;
-     private static final float MIN_EXTENT = -16.0F;
-     private static final float MAX_EXTENT = 32.0F;
+     public static final boolean DEFAULT_RESCALE = false;
+     public static final float MIN_EXTENT = -16.0F;
+     public static final float MAX_EXTENT = 32.0F;
  
 +    public CuboidModelElement {
 +        faces.values().forEach(face -> face.parent().setValue(this));

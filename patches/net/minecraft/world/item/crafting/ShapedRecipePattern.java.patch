@@ -5,7 +5,7 @@
  
  public final class ShapedRecipePattern {
 +    /** @deprecated Neo: use {@link #getMaxWidth} and {@link #getMaxHeight} */ @Deprecated
-     private static final int MAX_SIZE = 3;
+     public static final int MAX_SIZE = 3;
      public static final char EMPTY_SLOT = ' ';
 +    static int maxWidth = 3;
 +    static int maxHeight = 3;

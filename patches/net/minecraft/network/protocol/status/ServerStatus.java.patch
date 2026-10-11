@@ -30,4 +30,4 @@
 +    }
  
      public record Favicon(byte[] iconBytes) {
-         private static final String PREFIX = "data:image/png;base64,";
+         public static final String PREFIX = "data:image/png;base64,";

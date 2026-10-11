@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 import net.neoforged.neodev.utils.FileUtils;
 import net.neoforged.neodev.utils.SerializablePredicate;
@@ -168,12 +169,42 @@ public abstract class GenerateAccessTransformers extends DefaultTask {
         return target -> !pred.test(target);
     }
 
-    public <T extends Named> SerializablePredicate<T> or(SerializablePredicate<T> predOne, SerializablePredicate<T> predTwo) {
-        return target -> predOne.test(target) || predTwo.test(target);
+    @SafeVarargs
+    public final <T extends Named> SerializablePredicate<T> or(SerializablePredicate<T>... preds) {
+        return target -> {
+            for (var pred : preds) {
+                if (pred.test(target)) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
     }
 
-    public <T extends Named> SerializablePredicate<T> and(SerializablePredicate<T> predOne, SerializablePredicate<T> predTwo) {
-        return target -> predOne.test(target) && predTwo.test(target);
+    @SafeVarargs
+    public final <T extends Named> SerializablePredicate<T> and(SerializablePredicate<T>... preds) {
+        return target -> {
+            for (var pred : preds) {
+                if (!pred.test(target)) {
+                    return false;
+                }
+            }
+
+            return true;
+        };
+    }
+
+    public SerializablePredicate<ClassInfo> classWithAccess(int access) {
+        return withAccess(target -> target.access().intValue(), access);
+    }
+
+    public SerializablePredicate<FieldInfo> fieldsWithAccess(int access) {
+        return withAccess(FieldInfo::access, access);
+    }
+
+    private <T> SerializablePredicate<T> withAccess(ToIntFunction<T> accessGetter, int access) {
+        return target -> (accessGetter.applyAsInt(target) & access) == access;
     }
 
     public record AtGroup(String name, Modifier modifier, SerializablePredicate<ClassInfo> classMatch,

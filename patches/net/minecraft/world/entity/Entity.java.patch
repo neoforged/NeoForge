@@ -9,7 +9,7 @@
      EntityAccess,
      ScoreHolder,
 @@ -211,6 +_,8 @@
-     private static final double MAX_MOVEMENT_RESETTING_TRACE_DISTANCE = 8.0;
+     public static final double MAX_MOVEMENT_RESETTING_TRACE_DISTANCE = 8.0;
      private static final Set<TagKey<Fluid>> FLUIDS_WITH_CURRENT = Set.of(FluidTags.WATER, FluidTags.LAVA);
      private static double viewScale = 1.0;
 +    /** @deprecated Neo: Use the getter to allow overriding in mods */

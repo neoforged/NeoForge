@@ -1,7 +1,7 @@
 --- a/net/minecraft/network/protocol/common/ClientboundCustomPayloadPacket.java
 +++ b/net/minecraft/network/protocol/common/ClientboundCustomPayloadPacket.java
 @@ -16,11 +_,15 @@
-     private static final int MAX_PAYLOAD_SIZE = 1048576;
+     public static final int MAX_PAYLOAD_SIZE = 1048576;
      public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundCustomPayloadPacket> GAMEPLAY_STREAM_CODEC = CustomPacketPayload.<RegistryFriendlyByteBuf>codec(
              id -> DiscardedPayload.codec(id, 1048576),
 -            Util.make(Lists.newArrayList(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)), types -> {})
