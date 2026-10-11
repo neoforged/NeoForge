@@ -18,7 +18,7 @@
      }
  
      private void close() {
-@@ -93,12 +_,34 @@
+@@ -93,12 +_,38 @@
  
      @Override
      public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {
@@ -26,15 +26,19 @@
 +            // Neo: Unconditionally handle register/unregister payloads.
 +            case net.neoforged.neoforge.network.payload.MinecraftRegisterPayload(var newChannels) -> {
 +                net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftRegister(this.getConnection(), newChannels);
++                return;
 +            }
 +            case net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload(var forgottenChannels) -> {
 +                net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftUnregister(this.getConnection(), forgottenChannels);
++                return;
 +            }
 +            case net.neoforged.neoforge.network.payload.CommonVersionPayload commonVersionPayload -> {
 +                net.neoforged.neoforge.network.registration.NetworkRegistry.checkCommonVersion(this, commonVersionPayload);
++                return;
 +            }
 +            case net.neoforged.neoforge.network.payload.CommonRegisterPayload commonRegisterPayload -> {
 +                net.neoforged.neoforge.network.registration.NetworkRegistry.onCommonRegister(this, commonRegisterPayload);
++                return;
 +            }
 +            // Neo: Handle modded payloads. Vanilla payloads do not get sent to the modded handling pass. Additional payloads cannot be registered in the minecraft domain.
 +            default -> {

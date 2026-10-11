@@ -56,7 +56,7 @@
 +                        // Neo: Respect IItemExtension#supportsEnchantment - we also delegate the logic for Enchanted Books to this method.
 +                        // Though we still allow creative players to combine any item with any enchantment in the anvil here.
 +                        boolean compatible = input.supportsEnchantment(enchantmentHolder);
-+                        if (this.player.getAbilities().instabuild) {
++                        if (this.player.hasInfiniteMaterials()) {
                              compatible = true;
                          }
  

@@ -1,6 +1,6 @@
 --- a/net/minecraft/locale/Language.java
 +++ b/net/minecraft/locale/Language.java
-@@ -36,9 +_,11 @@
+@@ -36,9 +_,12 @@
          DeprecatedTranslationsInfo deprecatedInfo = DeprecatedTranslationsInfo.loadFromDefaultResource();
          Map<String, String> loadedData = new HashMap<>();
          BiConsumer<String, String> output = loadedData::put;
@@ -9,7 +9,8 @@
 +        parseTranslations(output, componentMap::put, "/assets/minecraft/lang/en_us.json");
          deprecatedInfo.applyToMap(loadedData);
 -        final Map<String, String> storage = Map.copyOf(loadedData);
-+        final Map<String, String> storage = loadedData; // Neo: keep the map mutable to make LanguageHook work
++        // Neo: keep the map mutable to make LanguageHook work
++        final Map<String, String> storage = loadedData;
 +        net.neoforged.neoforge.server.LanguageHook.captureLanguageMap(loadedData, componentMap);
          return new Language() {
              @Override
