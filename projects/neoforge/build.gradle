@@ -291,8 +291,12 @@ generateAccessTransformers {
     // make all '<non-public> static final' fields public
     fieldGroup(
             "Constants", PUBLIC,
-            // only in classes which can be accessed
-            classWithAccess(Opcodes.ACC_PUBLIC),
+            and(
+                    // black list realmsclient classes
+                    not(nameStartsWith("com/mojang/realmsclient")),
+                    // only in classes which can be accessed
+                    classWithAccess(Opcodes.ACC_PUBLIC)
+            ),
             and(
                     // limit to the following types only
                     or(
