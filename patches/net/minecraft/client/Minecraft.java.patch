@@ -126,12 +126,13 @@
          }
  
          builder.append(" ");
-@@ -853,7 +_,7 @@
+@@ -853,7 +_,8 @@
      }
  
      private void rollbackResourcePacks(Throwable t, @Nullable GameLoadCookie loadCookie) {
 -        if (this.resourcePackRepository.getSelectedIds().size() > 1) {
-+        if (this.resourcePackRepository.getSelectedPacks().stream().anyMatch(e -> !e.isRequired())) { // Neo: This caused infinite loop if any resource packs are forced. Such as mod resources. So check if we can disable any.
++        // Neo: This caused infinite loop if any resource packs are forced. Such as mod resources. So check if we can disable any.
++        if (this.resourcePackRepository.getSelectedPacks().stream().anyMatch(e -> !e.isRequired())) {
              this.clearResourcePacksOnError(t, null, loadCookie);
          } else {
              Util.throwAsRuntime(t);

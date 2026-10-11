@@ -37,8 +37,8 @@
 +            var event = new net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent(this.animal, this.partner, offspring);
 +            if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) {
 +                // Neo: Reset the "inLove" state for the animals
-+                this.animal.setAge(6000);
-+                this.partner.setAge(6000);
++                this.animal.setAge(PARENT_AGE_AFTER_BREEDING);
++                this.partner.setAge(PARENT_AGE_AFTER_BREEDING);
 +                this.animal.resetLove();
 +                this.partner.resetLove();
 +                return;

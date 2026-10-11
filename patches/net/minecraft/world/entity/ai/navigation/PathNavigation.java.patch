@@ -13,7 +13,7 @@
 -            && zDistance < this.maxDistanceToWaypoint
 +        // Neo: Fix MC-94054. The casting to int must match what is done in Path#getEntityPosAtNode
 +        double zDistance = Math.abs(this.mob.getZ() - (currentNodePos.getZ() + ((int)(this.mob.getBbWidth() + 1)) / 2D));
-+        // Neo: Fix MC-94054
++        // Neo: Fix MC-94054. Needs to be less than or equals instead of just strictly less than
 +        boolean isCloseEnoughToCurrentNode = xDistance <= this.maxDistanceToWaypoint
 +            && zDistance <= this.maxDistanceToWaypoint
              && yDistance < this.getMaxVerticalDistanceToWaypoint();

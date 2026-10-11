@@ -1,20 +1,25 @@
 --- a/net/minecraft/world/level/storage/loot/LootContext.java
 +++ b/net/minecraft/world/level/storage/loot/LootContext.java
-@@ -26,6 +_,14 @@
+@@ -26,11 +_,19 @@
      private final RandomSource random;
      private final HolderGetter.Provider lootDataResolver;
      private final Set<LootContext.VisitedEntry<?>> visitedElements = Sets.newLinkedHashSet();
 +    // Neo: Keep track of the original loot table ID through modifications
 +    @Nullable
 +    private Identifier queriedLootTableId;
-+
-+    private LootContext(LootParams params, RandomSource random, HolderGetter.Provider lootDataResolver, @Nullable Identifier queriedLootTableId) {
-+        this(params, random, lootDataResolver);
-+        this.queriedLootTableId = queriedLootTableId;
-+    }
  
      private LootContext(LootParams params, RandomSource random, HolderGetter.Provider lootDataResolver) {
++        this(params, random, lootDataResolver, null);
++    }
++
++    private LootContext(LootParams params, RandomSource random, HolderGetter.Provider lootDataResolver, @Nullable Identifier queriedLootTableId) {
          this.params = params;
+         this.random = random;
+         this.lootDataResolver = lootDataResolver;
++        this.queriedLootTableId = queriedLootTableId;
+     }
+ 
+     public boolean hasParameter(ContextKey<?> key) {
 @@ -73,6 +_,16 @@
          return this.params.getLevel();
      }
@@ -32,12 +37,13 @@
      public static LootContext.VisitedEntry<LootTable> createVisitedEntry(LootTable table) {
          return new LootContext.VisitedEntry<>(LootDataType.TABLE, table);
      }
-@@ -114,6 +_,14 @@
+@@ -114,6 +_,15 @@
      public static class Builder {
          private final LootParams params;
          private @Nullable RandomSource random;
++        // Neo: correctly pass around loot table ID with copy constructor
 +        @Nullable
-+        private Identifier queriedLootTableId; // Neo: correctly pass around loot table ID with copy constructor
++        private Identifier queriedLootTableId;
 +
 +        public Builder(LootContext context) {
 +            this.params = context.params;
