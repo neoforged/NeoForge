@@ -103,11 +103,13 @@ dependencies {
             requireCapability 'net.neoforged:neoform-dependencies'
         }
         endorseStrictVersions()
-        // FML depends on this (which may be more updated), so pull from that instead
+        // Minecraft strictly pins JSpecify to 1.0.0 but FML may use a newer version.
+        // Use the version from FML to avoid conflicting version requirements.
         exclude group: 'org.jspecify', module: 'jspecify'
     }
     minecraftDependencies("net.neoforged:minecraft-dependencies:${project.minecraft_version}") {
-        // FML depends on this (which may be more updated), so pull from that instead
+        // Minecraft strictly pins JSpecify to 1.0.0 but FML may use a newer version.
+        // Use the version from FML to avoid conflicting version requirements.
         exclude group: 'org.jspecify', module: 'jspecify'
     }
 
