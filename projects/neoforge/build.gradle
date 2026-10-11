@@ -300,7 +300,9 @@ generateAccessTransformers {
             and(
                     // limit to the following types only
                     or(
-                            // primitives
+                            // primitives and strings
+                            // these get inlined into the decompiled sources
+                            // and the primary reason to be ATing the constants public
                             fieldsOfType(named("I")), // int
                             fieldsOfType(named("Z")), // boolean
                             fieldsOfType(named("F")), // float
