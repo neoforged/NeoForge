@@ -21,7 +21,7 @@ evaluationDependsOn(":neoforge-coremods")
 gradleutils.setupSigning(project: project, signAllPublications: true)
 
 changelog {
-    from '26.1.0'
+    from '26.3.0'
     disableAutomaticPublicationRegistration()
 }
 
