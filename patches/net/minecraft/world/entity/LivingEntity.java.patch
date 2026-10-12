@@ -717,7 +717,7 @@
                  this.updateUsingItem(this.useItem);
              } else {
                  this.stopUsingItem();
-@@ -3450,8 +_,12 @@
+@@ -3450,8 +_,13 @@
      }
  
      protected void updateUsingItem(ItemStack useItem) {
@@ -727,6 +727,7 @@
 +        if (this.getUseItemRemainingTicks() > 0)
          useItem.onUseTick(this.level(), this, this.getUseItemRemainingTicks());
 -        if (--this.useItemRemaining == 0 && !this.level().isClientSide() && !useItem.useOnRelease()) {
++        // Neo: fix Eye of Ender slowing player down when holding use keybind (MC-107185)
 +        if (--this.useItemRemaining <= 0 && !this.level().isClientSide() && !useItem.useOnRelease()) {
              this.completeUsingItem();
          }
