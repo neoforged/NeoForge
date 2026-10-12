@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.commands.TimeCommand;
+import net.minecraft.tags.BlockItemTagId;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
@@ -384,6 +385,305 @@ public class Tags {
 
         private static TagKey<Block> neoforgeTag(String name) {
             return BlockTags.create(Identifier.fromNamespaceAndPath("neoforge", name));
+        }
+    }
+
+    /// Tags which exist for both [Block]s and [Item]s.
+    public static class BlockItems {
+        public static final BlockItemTagId BARRELS = tag("barrels");
+        public static final BlockItemTagId BARRELS_WOODEN = tag("barrels/wooden");
+        /**
+         * Equivalent to the "minecraft:bars" block tag.
+         */
+        public static final BlockItemTagId BARS = tag("bars");
+        public static final BlockItemTagId BARS_COPPER = tag("bars/copper");
+        public static final BlockItemTagId BARS_IRON = tag("bars/iron");
+        public static final BlockItemTagId BOOKSHELVES = tag("bookshelves");
+        /**
+         * For blocks that are similar to amethyst where their budding block produces buds and cluster blocks
+         */
+        public static final BlockItemTagId BUDDING_BLOCKS = tag("budding_blocks");
+        /**
+         * For blocks that are similar to amethyst where they have buddings forming from budding blocks
+         */
+        public static final BlockItemTagId BUDS = tag("buds");
+        public static final BlockItemTagId CHAINS = tag("chains");
+        public static final BlockItemTagId CHESTS = tag("chests");
+        public static final BlockItemTagId CHESTS_ENDER = tag("chests/ender");
+        public static final BlockItemTagId CHESTS_TRAPPED = tag("chests/trapped");
+        public static final BlockItemTagId CHESTS_WOODEN = tag("chests/wooden");
+        /**
+         * For blocks that are similar to amethyst where they have clusters forming from budding blocks
+         */
+        public static final BlockItemTagId CLUSTERS = tag("clusters");
+        public static final BlockItemTagId COBBLESTONES = tag("cobblestones");
+        public static final BlockItemTagId COBBLESTONES_NORMAL = tag("cobblestones/normal");
+        public static final BlockItemTagId COBBLESTONES_INFESTED = tag("cobblestones/infested");
+        public static final BlockItemTagId COBBLESTONES_MOSSY = tag("cobblestones/mossy");
+        public static final BlockItemTagId COBBLESTONES_DEEPSLATE = tag("cobblestones/deepslate");
+        public static final BlockItemTagId CONCRETES = tag("concretes");
+
+        /**
+         * Tag that holds all blocks which can be dyed a specific color.
+         * (Does not include color blending blocks which would behave similarly to leather armor items)
+         */
+        public static final BlockItemTagId DYED = tag("dyed");
+        public static final BlockItemTagId DYED_BLACK = tag("dyed/black");
+        public static final BlockItemTagId DYED_BLUE = tag("dyed/blue");
+        public static final BlockItemTagId DYED_BROWN = tag("dyed/brown");
+        public static final BlockItemTagId DYED_CYAN = tag("dyed/cyan");
+        public static final BlockItemTagId DYED_GRAY = tag("dyed/gray");
+        public static final BlockItemTagId DYED_GREEN = tag("dyed/green");
+        public static final BlockItemTagId DYED_LIGHT_BLUE = tag("dyed/light_blue");
+        public static final BlockItemTagId DYED_LIGHT_GRAY = tag("dyed/light_gray");
+        public static final BlockItemTagId DYED_LIME = tag("dyed/lime");
+        public static final BlockItemTagId DYED_MAGENTA = tag("dyed/magenta");
+        public static final BlockItemTagId DYED_ORANGE = tag("dyed/orange");
+        public static final BlockItemTagId DYED_PINK = tag("dyed/pink");
+        public static final BlockItemTagId DYED_PURPLE = tag("dyed/purple");
+        public static final BlockItemTagId DYED_RED = tag("dyed/red");
+        public static final BlockItemTagId DYED_WHITE = tag("dyed/white");
+        public static final BlockItemTagId DYED_YELLOW = tag("dyed/yellow");
+
+        /**
+         * Dyed color tags as a color collection, for convenience.
+         */
+        public static final ColorCollection<BlockItemTagId> DYED_COLORS = new ColorCollection<>(
+                DYED_WHITE,
+                DYED_ORANGE,
+                DYED_MAGENTA,
+                DYED_LIGHT_BLUE,
+                DYED_YELLOW,
+                DYED_LIME,
+                DYED_PINK,
+                DYED_GRAY,
+                DYED_LIGHT_GRAY,
+                DYED_CYAN,
+                DYED_PURPLE,
+                DYED_BLUE,
+                DYED_BROWN,
+                DYED_GREEN,
+                DYED_RED,
+                DYED_BLACK);
+
+        /**
+         * Tag that holds blocks which can be dyed but do not have their own color already, like glass.
+         * (Does not include color blending blocks which would behave similarly to leather armor items)
+         */
+        public static final BlockItemTagId DYEABLE_UNDYED_SIMPLE = tag("dyeable/simple/undyed");
+
+        /**
+         * Tag that holds blocks which can be dyed despite already having a color, like wool.
+         * (Does not include color blending blocks which would behave similarly to leather armor items)
+         */
+        public static final BlockItemTagId DYEABLE_REDYEABLE_SIMPLE = tag("dyeable/simple/redyeable");
+
+        /**
+         * Tag that holds blocks which can be dyed in a simple fashion without color blending, typically
+         * in the standard 16 colors, whether they have a color already or not.
+         */
+        public static final BlockItemTagId DYEABLE_SIMPLE = tag("dyeable/simple");
+
+        /**
+         * Tag that holds blocks which can be dyed in a dynamic color blending fashion, similarly to leather armor items.
+         */
+        public static final BlockItemTagId DYEABLE_DYNAMIC = tag("dyeable/dynamic");
+
+        /**
+         * Tag that holds blocks which can have dye applied to them, whether they have a color already or not.
+         */
+        public static final BlockItemTagId DYEABLE = tag("dyeable");
+
+        public static final BlockItemTagId END_STONES = tag("end_stones");
+        public static final BlockItemTagId FENCE_GATES = tag("fence_gates");
+        public static final BlockItemTagId FENCE_GATES_WOODEN = tag("fence_gates/wooden");
+        public static final BlockItemTagId FENCES = tag("fences");
+        public static final BlockItemTagId FENCES_NETHER_BRICK = tag("fences/nether_brick");
+        public static final BlockItemTagId FENCES_WOODEN = tag("fences/wooden");
+        /**
+         * Contains living ground-based flowers that are 1 block tall such as Dandelions or Poppy.
+         * Equivalent to the "minecraft:small_flowers" block tag.
+         */
+        public static final BlockItemTagId FLOWERS_SMALL = tag("flowers/small");
+        /**
+         * Contains living ground-based flowers that are 2 block tall such as Rose Bush or Peony.
+         * Equivalent to the "minecraft:tall_flowers" block tag in past Minecraft version.
+         */
+        public static final BlockItemTagId FLOWERS_TALL = tag("flowers/tall");
+        /**
+         * Contains any living plant block that contains flowers or is a flower itself.
+         * Equivalent to the "minecraft:flowers" block tag.
+         */
+        public static final BlockItemTagId FLOWERS = tag("flowers");
+        /// Light-emitting blocks created when a Frog eats a Magma Cube.
+        public static final BlockItemTagId FROGLIGHTS = tag("froglights");
+
+        public static final BlockItemTagId GLASS_BLOCKS = tag("glass_blocks");
+        public static final BlockItemTagId GLASS_BLOCKS_COLORLESS = tag("glass_blocks/colorless");
+        /**
+         * Glass which is made from cheap resources like sand and only minor additional ingredients like dyes
+         */
+        public static final BlockItemTagId GLASS_BLOCKS_CHEAP = tag("glass_blocks/cheap");
+        public static final BlockItemTagId GLASS_BLOCKS_TINTED = tag("glass_blocks/tinted");
+
+        public static final BlockItemTagId GLASS_PANES = tag("glass_panes");
+        public static final BlockItemTagId GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
+        public static final BlockItemTagId GLAZED_TERRACOTTAS = tag("glazed_terracottas");
+
+        public static final BlockItemTagId GRAVELS = tag("gravels");
+        public static final BlockItemTagId NETHERRACKS = tag("netherracks");
+        public static final BlockItemTagId OBSIDIANS = tag("obsidians");
+        /**
+         * For common obsidian that has no special quirks or behaviors. Ideal for recipe use.
+         * Crying Obsidian, for example, is a light block and harder to obtain. So it gets its own tag instead of being under normal tag.
+         */
+        public static final BlockItemTagId OBSIDIANS_NORMAL = tag("obsidians/normal");
+        public static final BlockItemTagId OBSIDIANS_CRYING = tag("obsidians/crying");
+        /**
+         * Blocks which are often replaced by deepslate ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_DEEPSLATE}, during world generation.
+         * (The block's registry name is used as the tag name)
+         */
+        public static final BlockItemTagId ORE_BEARING_GROUND_DEEPSLATE = tag("ore_bearing_ground/deepslate");
+        /**
+         * Blocks which are often replaced by netherrack ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_NETHERRACK}, during world generation.
+         * (The block's registry name is used as the tag name)
+         */
+        public static final BlockItemTagId ORE_BEARING_GROUND_NETHERRACK = tag("ore_bearing_ground/netherrack");
+        /**
+         * Blocks which are often replaced by stone ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_STONE}, during world generation.
+         * (The block's registry name is used as the tag name)
+         */
+        public static final BlockItemTagId ORE_BEARING_GROUND_STONE = tag("ore_bearing_ground/stone");
+        /**
+         * Ores which on average result in more than one resource worth of materials ignoring fortune and other modifiers.
+         * (example, Copper Ore)
+         */
+        public static final BlockItemTagId ORE_RATES_DENSE = tag("ore_rates/dense");
+        /**
+         * Ores which on average result in one resource worth of materials ignoring fortune and other modifiers.
+         * (Example, Iron Ore)
+         */
+        public static final BlockItemTagId ORE_RATES_SINGULAR = tag("ore_rates/singular");
+        /**
+         * Ores which on average result in less than one resource worth of materials ignoring fortune and other modifiers.
+         * (Example, Nether Gold Ore as it drops 2 to 6 Gold Nuggets which is less than normal Gold Ore's Raw Gold drop)
+         */
+        public static final BlockItemTagId ORE_RATES_SPARSE = tag("ore_rates/sparse");
+        public static final BlockItemTagId ORES = tag("ores");
+        public static final BlockItemTagId ORES_COAL = tag("ores/coal");
+        public static final BlockItemTagId ORES_COPPER = tag("ores/copper");
+        public static final BlockItemTagId ORES_DIAMOND = tag("ores/diamond");
+        public static final BlockItemTagId ORES_EMERALD = tag("ores/emerald");
+        public static final BlockItemTagId ORES_GOLD = tag("ores/gold");
+        public static final BlockItemTagId ORES_IRON = tag("ores/iron");
+        public static final BlockItemTagId ORES_LAPIS = tag("ores/lapis");
+        public static final BlockItemTagId ORES_NETHERITE_SCRAP = tag("ores/netherite_scrap");
+        public static final BlockItemTagId ORES_QUARTZ = tag("ores/quartz");
+        public static final BlockItemTagId ORES_REDSTONE = tag("ores/redstone");
+        /**
+         * Ores in deepslate (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_DEEPSLATE}) which could logically use deepslate as recipe input or output.
+         * (The block's registry name is used as the tag name)
+         */
+        public static final BlockItemTagId ORES_IN_GROUND_DEEPSLATE = tag("ores_in_ground/deepslate");
+        /**
+         * Ores in netherrack (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_NETHERRACK}) which could logically use netherrack as recipe input or output.
+         * (The block's registry name is used as the tag name)
+         */
+        public static final BlockItemTagId ORES_IN_GROUND_NETHERRACK = tag("ores_in_ground/netherrack");
+        /**
+         * Ores in stone (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_STONE}) which could logically use stone as recipe input or output.
+         * (The block's registry name is used as the tag name)
+         */
+        public static final BlockItemTagId ORES_IN_GROUND_STONE = tag("ores_in_ground/stone");
+        public static final BlockItemTagId PUMPKINS = tag("pumpkins");
+        /**
+         * For pumpkins that are not carved.
+         */
+        public static final BlockItemTagId PUMPKINS_NORMAL = tag("pumpkins/normal");
+        /**
+         * For pumpkins that are already carved but not a light source.
+         */
+        public static final BlockItemTagId PUMPKINS_CARVED = tag("pumpkins/carved");
+
+        /**
+         * For pumpkins that are already carved and a light source.
+         */
+        public static final BlockItemTagId PUMPKINS_JACK_O_LANTERNS = tag("pumpkins/jack_o_lanterns");
+        public static final BlockItemTagId PLAYER_WORKSTATIONS_CRAFTING_TABLES = tag("player_workstations/crafting_tables");
+        public static final BlockItemTagId PLAYER_WORKSTATIONS_FURNACES = tag("player_workstations/furnaces");
+        public static final BlockItemTagId ROPES = tag("ropes");
+
+        public static final BlockItemTagId SANDS = tag("sands");
+        public static final BlockItemTagId SANDS_COLORLESS = tag("sands/colorless");
+        public static final BlockItemTagId SANDS_RED = tag("sands/red");
+
+        public static final BlockItemTagId SANDSTONE_BLOCKS = tag("sandstone/blocks");
+        public static final BlockItemTagId SANDSTONE_SLABS = tag("sandstone/slabs");
+        public static final BlockItemTagId SANDSTONE_STAIRS = tag("sandstone/stairs");
+        public static final BlockItemTagId SANDSTONE_RED_BLOCKS = tag("sandstone/red_blocks");
+        public static final BlockItemTagId SANDSTONE_RED_SLABS = tag("sandstone/red_slabs");
+        public static final BlockItemTagId SANDSTONE_RED_STAIRS = tag("sandstone/red_stairs");
+        public static final BlockItemTagId SANDSTONE_UNCOLORED_BLOCKS = tag("sandstone/uncolored_blocks");
+        public static final BlockItemTagId SANDSTONE_UNCOLORED_SLABS = tag("sandstone/uncolored_slabs");
+        public static final BlockItemTagId SANDSTONE_UNCOLORED_STAIRS = tag("sandstone/uncolored_stairs");
+        /**
+         * Natural stone-like blocks that can be used as a base ingredient in recipes that takes stone.
+         */
+        public static final BlockItemTagId STONES = tag("stones");
+        /**
+         * A storage block is generally a block that has a recipe to craft a bulk of 1 kind of resource to a block
+         * and has a mirror recipe to reverse the crafting with no loss in resources.
+         * <p>
+         * Honey Block is special in that the reversing recipe is not a perfect mirror of the crafting recipe
+         * and so, it is considered a special case and not given a storage block tag.
+         */
+        public static final BlockItemTagId STORAGE_BLOCKS = tag("storage_blocks");
+        public static final BlockItemTagId STORAGE_BLOCKS_BONE_MEAL = tag("storage_blocks/bone_meal");
+        public static final BlockItemTagId STORAGE_BLOCKS_COAL = tag("storage_blocks/coal");
+        public static final BlockItemTagId STORAGE_BLOCKS_COPPER = tag("storage_blocks/copper");
+        public static final BlockItemTagId STORAGE_BLOCKS_DIAMOND = tag("storage_blocks/diamond");
+        public static final BlockItemTagId STORAGE_BLOCKS_DRIED_KELP = tag("storage_blocks/dried_kelp");
+        public static final BlockItemTagId STORAGE_BLOCKS_EMERALD = tag("storage_blocks/emerald");
+        public static final BlockItemTagId STORAGE_BLOCKS_GOLD = tag("storage_blocks/gold");
+        public static final BlockItemTagId STORAGE_BLOCKS_IRON = tag("storage_blocks/iron");
+        public static final BlockItemTagId STORAGE_BLOCKS_LAPIS = tag("storage_blocks/lapis");
+        public static final BlockItemTagId STORAGE_BLOCKS_NETHERITE = tag("storage_blocks/netherite");
+        public static final BlockItemTagId STORAGE_BLOCKS_RAW_COPPER = tag("storage_blocks/raw_copper");
+        public static final BlockItemTagId STORAGE_BLOCKS_RAW_GOLD = tag("storage_blocks/raw_gold");
+        public static final BlockItemTagId STORAGE_BLOCKS_RAW_IRON = tag("storage_blocks/raw_iron");
+        public static final BlockItemTagId STORAGE_BLOCKS_REDSTONE = tag("storage_blocks/redstone");
+        public static final BlockItemTagId STORAGE_BLOCKS_RESIN = tag("storage_blocks/resin");
+        public static final BlockItemTagId STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
+        public static final BlockItemTagId STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
+        /**
+         * For logs found naturally in the Overworld, does not include Stripped Logs.
+         * Contains {@link BlockTags#OVERWORLD_NATURAL_LOGS} for consistency.
+         */
+        public static final BlockItemTagId OVERWORLD_NATURAL_LOGS = tag("natural_logs/overworld");
+        /**
+         * For logs, including Stems, found naturally in the Nether, does not include Stripped Logs.
+         */
+        public static final BlockItemTagId NETHER_NATURAL_LOGS = tag("natural_logs/nether");
+        /**
+         * For logs, including Stems, found naturally that have not been stripped.
+         */
+        public static final BlockItemTagId NATURAL_LOGS = tag("natural_logs");
+        /**
+         * For six-sided wood blocks, including Hyphae, found naturally that have not been stripped.
+         */
+        public static final BlockItemTagId NATURAL_WOODS = tag("natural_woods");
+        /**
+         * For logs, including Stems, found naturally that have been stripped.
+         */
+        public static final BlockItemTagId STRIPPED_LOGS = tag("stripped_logs");
+        /**
+         * For six-sided wood blocks, including Hyphae, found naturally that have been stripped.
+         */
+        public static final BlockItemTagId STRIPPED_WOODS = tag("stripped_woods");
+
+        /// Creates a shared block-item tag that has identical names.
+        private static BlockItemTagId tag(String name) {
+            return BlockItemTagId.create(Identifier.fromNamespaceAndPath("c", name), Identifier.fromNamespaceAndPath("c", name));
         }
     }
 
