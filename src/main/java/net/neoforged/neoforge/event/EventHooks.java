@@ -81,7 +81,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.BaseSpawner;
@@ -1212,6 +1211,7 @@ public class EventHooks {
 
     /**
      * Called from {@link EnchantmentHelper#processEquipmentDropChance(ServerLevel,LivingEntity,DamageSource,float,EquipmentSlot)} to allow changing the slot chance.
+     *
      * @param level          Level instance
      * @param entity         Entity dropping equipment
      * @param killingBlow    Damage source used to kill the entity

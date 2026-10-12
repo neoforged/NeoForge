@@ -21,7 +21,7 @@ import org.jetbrains.annotations.ApiStatus;
  * Notably, this fires when {@link EnchantedCountIncreaseFunction} or {@link LootItemRandomChanceWithEnchantedBonusCondition} are evaluated.
  * Mods that implement similar loot conditions or functions should fire this event as well.
  * <p>
- * This event does not affect the drop chances of equipment. If you need to change that, use  {@link GetEnchantmentLevelEvent}
+ * This event does not affect the drop chances of equipment. If you need to change that, use {@link GetEnchantmentLevelEvent}.
  * <p>
  * If you do not need the additional context of this event, prefer {@link GetEnchantmentLevelEvent} for managing enchantment levels.
  */

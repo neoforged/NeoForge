@@ -81,6 +81,7 @@ public class GetEquipmentDropChanceEvent extends LivingEvent {
 
     /**
      * Sets the chance for this equipment to drop as a value between 0 and 1. 0 or fewer makes it never drop. 1 or more makes it guaranteed to drop.
+     *
      * @param chance New chance
      */
     public void setChance(float chance) {
