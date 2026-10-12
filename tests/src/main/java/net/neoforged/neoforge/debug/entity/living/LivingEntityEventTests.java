@@ -428,7 +428,7 @@ public class LivingEntityEventTests {
             Player player = helper.makeMockPlayer();
             DamageSource damageSource = level.damageSources().playerAttack(player);
 
-            Zombie zombie = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, 1, 1, 1);
+            Zombie zombie = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, 1, 1, 1);
             // non-standard helmet so we know we added it
             zombie.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.TURTLE_HELMET));
             // always drops, but not preserved
@@ -445,7 +445,7 @@ public class LivingEntityEventTests {
             drops.clear();
 
             // zombie - same setup as before
-            zombie = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, 2, 1, 1);
+            zombie = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, 2, 1, 1);
             zombie.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.TURTLE_HELMET));
             zombie.setDropChance(EquipmentSlot.HEAD, 1.0f);
 
