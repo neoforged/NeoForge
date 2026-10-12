@@ -1,9 +1,9 @@
 --- a/net/minecraft/world/level/block/FireBlock.java
 +++ b/net/minecraft/world/level/block/FireBlock.java
 @@ -48,7 +_,11 @@
-     private static final int BURN_EASY = 60;
-     private static final int BURN_MEDIUM = 20;
-     private static final int BURN_HARD = 5;
+     public static final int BURN_EASY = 60;
+     public static final int BURN_MEDIUM = 20;
+     public static final int BURN_HARD = 5;
 +    /// @deprecated Neo: Use the [flammable][net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE] data map instead, as this field will be ignored in the future
 +    @Deprecated
      private final Object2IntMap<Block> igniteOdds = new Object2IntOpenHashMap<>();
