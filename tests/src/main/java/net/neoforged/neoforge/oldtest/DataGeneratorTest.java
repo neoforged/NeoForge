@@ -268,6 +268,12 @@ public class DataGeneratorTest {
                     }))))
                     .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
                     .save(output, recipeKey("compound_ingredient_custom_types"));
+
+            // Scoped #save(RecipeOutput, String) should generate in namespace
+            try (var modOutput = this.output.forMod(MODID)) {
+                this.oneToOneConversionRecipe(Items.APPLE, Items.DIAMOND, null);
+                this.twoByTwoPacker(RecipeCategory.MISC, Items.DIAMOND, Items.APPLE);
+            }
         }
     }
 
