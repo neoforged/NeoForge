@@ -294,8 +294,8 @@ generateAccessTransformers {
             and(
                     // black list realmsclient classes
                     not(nameStartsWith("com/mojang/realmsclient")),
-                    // only in classes which can be accessed
-                    classWithAccess(Opcodes.ACC_PUBLIC)
+                    // only in classes which are accessible by modders
+                    or(classWithAccess(Opcodes.ACC_PUBLIC), classWithAccess(Opcodes.ACC_PROTECTED))
             ),
             and(
                     // limit to the following types only
@@ -314,14 +314,12 @@ generateAccessTransformers {
                             // fieldsOfType(named("V")), // void
                             fieldsOfType(named("java/lang/String"))
                     ),
-                    not(
-                            or(
-                                    // only things not already public
-                                    fieldsWithAccess(Opcodes.ACC_PUBLIC),
-                                    // we dont want things like enum $VALUES
-                                    fieldsWithAccess(Opcodes.ACC_SYNTHETIC)
-                            )
-                    ),
+                    not(or(
+                            // only things not already public
+                            fieldsWithAccess(Opcodes.ACC_PUBLIC),
+                            // we dont want things like enum $VALUES
+                            fieldsWithAccess(Opcodes.ACC_SYNTHETIC)
+                    )),
                     // only 'static final' fields
                     fieldsWithAccess(Opcodes.ACC_STATIC),
                     fieldsWithAccess(Opcodes.ACC_FINAL)
