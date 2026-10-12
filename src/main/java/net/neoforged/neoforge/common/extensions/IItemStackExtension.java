@@ -113,7 +113,8 @@ public interface IItemStackExtension extends ItemInstanceExtension {
      * @return the armor slot of the ItemStack, or {@code null} to let the default
      *         vanilla logic as per {@code LivingEntity.getSlotForItemStack(stack)}
      *         decide
-     * @deprecated To be removed in 26.4. Apply the {@link net.minecraft.world.item.equipment.Equippable} component to your item stack instead.
+     * @deprecated To be removed in 26.4. Apply the {@link net.minecraft.world.item.equipment.Equippable} component to your item instead, through the
+     *             {@link Item.Properties#equippable(EquipmentSlot)} or dynamically adding the component.
      */
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true, since = "26.3")
