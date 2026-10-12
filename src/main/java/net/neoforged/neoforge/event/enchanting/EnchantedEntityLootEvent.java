@@ -18,9 +18,10 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * Fired on the server when an entity is dropping loot and the level of a specific enchantment is being queried.
  * <p>
- * Notably, this fires when {@link EnchantedCountIncreaseFunction} or {@link LootItemRandomChanceWithEnchantedBonusCondition} are evaluated,
- * as well as when {@link net.minecraft.world.item.enchantment.EnchantmentEffectComponents#EQUIPMENT_DROPS} is being processed.
+ * Notably, this fires when {@link EnchantedCountIncreaseFunction} or {@link LootItemRandomChanceWithEnchantedBonusCondition} are evaluated.
  * Mods that implement similar loot conditions or functions should fire this event as well.
+ * <p>
+ * This event does not affect the drop chances of equipment. If you need to change that, use  {@link GetEnchantmentLevelEvent}
  * <p>
  * If you do not need the additional context of this event, prefer {@link GetEnchantmentLevelEvent} for managing enchantment levels.
  */
