@@ -11,7 +11,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
@@ -274,8 +273,8 @@ public interface IItemExtension {
      *         vanilla logic as per {@code LivingEntity.getSlotForItemStack(stack)}
      *         decide
      * @deprecated To be removed in 26.4. Apply the {@link net.minecraft.world.item.equipment.Equippable} component to your item instead, such as through the
-     *             {@link Item.Properties#equippable(EquipmentSlot)} helper, using {@link Item.Properties#component(Supplier, Object)}, or dynamically adding
-     *             the component.
+     *             {@link Item.Properties#equippable(EquipmentSlot)} helper, using {@link Item.Properties#component(DataComponentType, Object)}, or dynamically
+     *             adding the component.
      */
     @Deprecated(forRemoval = true, since = "26.3")
     @Nullable
