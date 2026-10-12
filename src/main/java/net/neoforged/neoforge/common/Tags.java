@@ -124,23 +124,7 @@ public class Tags {
         /**
          * Dyed color tags as a color collection, for convenience.
          */
-        public static final ColorCollection<TagKey<Block>> DYED_COLORS = new ColorCollection<>(
-                DYED_WHITE,
-                DYED_ORANGE,
-                DYED_MAGENTA,
-                DYED_LIGHT_BLUE,
-                DYED_YELLOW,
-                DYED_LIME,
-                DYED_PINK,
-                DYED_GRAY,
-                DYED_LIGHT_GRAY,
-                DYED_CYAN,
-                DYED_PURPLE,
-                DYED_BLUE,
-                DYED_BROWN,
-                DYED_GREEN,
-                DYED_RED,
-                DYED_BLACK);
+        public static final ColorCollection<TagKey<Block>> DYED_COLORS = BlockItems.DYED_COLORS.map(BlockItemTagId::block);
 
         /**
          * Tag that holds blocks which can be dyed but do not have their own color already, like glass.
@@ -895,24 +879,7 @@ public class Tags {
         /**
          * Dyed color tags as a color collection, for convenience.
          */
-        public static final ColorCollection<TagKey<Item>> DYED_COLORS = new ColorCollection<>(
-                DYED_WHITE,
-                DYED_ORANGE,
-                DYED_MAGENTA,
-                DYED_LIGHT_BLUE,
-                DYED_YELLOW,
-                DYED_LIME,
-                DYED_PINK,
-                DYED_GRAY,
-                DYED_LIGHT_GRAY,
-                DYED_CYAN,
-                DYED_PURPLE,
-                DYED_BLUE,
-                DYED_BROWN,
-                DYED_GREEN,
-                DYED_RED,
-                DYED_BLACK);
-
+        public static final ColorCollection<TagKey<Item>> DYED_COLORS = BlockItems.DYED_COLORS.map(BlockItemTagId::item);
         /**
          * Tag that holds items which can be dyed but do not have their own color already, like glass.
          * (Does not include color blending items like leather armor)
