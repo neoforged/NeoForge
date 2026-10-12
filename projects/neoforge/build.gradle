@@ -292,12 +292,21 @@ generateAccessTransformers {
     fieldGroup(
             "Constants", PUBLIC,
             and(
-                    // black list realmsclient classes
-                    not(nameStartsWith("com/mojang/realmsclient")),
                     // only in classes which are accessible by modders
-                    or(classWithAccess(Opcodes.ACC_PUBLIC), classWithAccess(Opcodes.ACC_PROTECTED))
+                    or(classWithAccess(Opcodes.ACC_PUBLIC), classWithAccess(Opcodes.ACC_PROTECTED)),
+                    // black list realmsclient classes
+                    not(nameStartsWith("com/mojang/realmsclient"))
             ),
             and(
+                    // only 'static final' fields
+                    fieldsWithAccess(Opcodes.ACC_STATIC),
+                    fieldsWithAccess(Opcodes.ACC_FINAL),
+                    not(or(
+                            // only things not already public
+                            fieldsWithAccess(Opcodes.ACC_PUBLIC),
+                            // we dont want things like enum $VALUES
+                            fieldsWithAccess(Opcodes.ACC_SYNTHETIC)
+                    )),
                     // limit to the following types only
                     or(
                             // primitives and strings
@@ -313,16 +322,7 @@ generateAccessTransformers {
                             fieldsOfType(named("J")), // long
                             // fieldsOfType(named("V")), // void
                             fieldsOfType(named("java/lang/String"))
-                    ),
-                    not(or(
-                            // only things not already public
-                            fieldsWithAccess(Opcodes.ACC_PUBLIC),
-                            // we dont want things like enum $VALUES
-                            fieldsWithAccess(Opcodes.ACC_SYNTHETIC)
-                    )),
-                    // only 'static final' fields
-                    fieldsWithAccess(Opcodes.ACC_STATIC),
-                    fieldsWithAccess(Opcodes.ACC_FINAL)
+                    )
             )
     )
 }
