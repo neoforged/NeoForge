@@ -37,14 +37,14 @@
          return this.builtInRegistryHolder.components();
      }
  
-+    /// @deprecated Neo: do not use, use [net.neoforged.neoforge.transfer.item.ItemResource#of] instead.
-+    @org.jetbrains.annotations.ApiStatus.Internal @Deprecated
++    /// Neo: do not use, use [net.neoforged.neoforge.transfer.item.ItemResource#of] instead.
++    @org.jetbrains.annotations.ApiStatus.Internal
 +    public void resetDefaultResource() {
 +        this.defaultResource = null;
 +    }
 +
-+    /// @deprecated Neo: do not use, use [net.neoforged.neoforge.transfer.item.ItemResource#of] instead.
-+    @org.jetbrains.annotations.ApiStatus.Internal @Deprecated
++    /// Neo: do not use, use [net.neoforged.neoforge.transfer.item.ItemResource#of] instead.
++    @org.jetbrains.annotations.ApiStatus.Internal
 +    public net.neoforged.neoforge.transfer.item.ItemResource computeDefaultResource(java.util.function.Function<Item, net.neoforged.neoforge.transfer.item.ItemResource> resourceConstructor) {
 +        if (this.defaultResource == null) {
 +            this.defaultResource = resourceConstructor.apply(this);

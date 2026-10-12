@@ -90,12 +90,11 @@
          return getValueFromNullable(result);
      }
  
-@@ -271,6 +_,18 @@
+@@ -271,6 +_,17 @@
          return Objects.requireNonNull(this.componentLookup, "Registry not frozen yet");
      }
  
-+    /// @deprecated Neo: For internal use only. Use the Register events when registering values.
-+    @Deprecated
++    /// Neo: For internal use only. Use [net.neoforged.neoforge.registries.DeferredRegister] or [net.neoforged.neoforge.registries.RegisterEvent] for registering values.
 +    @Override
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public void unfreeze(boolean clearTags) {

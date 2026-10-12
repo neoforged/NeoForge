@@ -244,7 +244,7 @@
 +            handleCustomClickAction(id, payload);
 +    }
 +
-+    /// @deprecated Neo: Use the overload that has the player context and triggers the appropriate event.
++    /// @deprecated Neo: Use [#handleCustomClickAction(Identifier, Optional, ServerPlayer, GameProfile)] instead
 +    @Deprecated
      public void handleCustomClickAction(Identifier id, Optional<Tag> payload) {
          LOGGER.debug("Received custom click action {} with payload {}", id, payload.orElse(null));
