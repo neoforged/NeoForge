@@ -10,13 +10,3 @@
                              this.nextSpawnTime = 0;
                              this.zombiesToSpawn = 20;
                              break;
-@@ -98,7 +_,8 @@
-         if (spawnPos != null) {
-             Zombie zombie;
-             try {
--                zombie = new Zombie(level);
-+                // Neo: direct instantiation is deprecated, use EntityType.
-+                zombie = EntityTypes.ZOMBIE.create(level, EntitySpawnReason.EVENT);
-                 zombie.finalizeSpawn(level, level.getCurrentDifficultyAt(zombie.blockPosition()), EntitySpawnReason.EVENT, null);
-             } catch (Exception e) {
-                 LOGGER.warn("Failed to create zombie for village siege at {}", spawnPos, e);
