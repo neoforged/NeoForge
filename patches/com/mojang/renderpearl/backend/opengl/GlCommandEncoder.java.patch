@@ -1,9 +1,14 @@
 --- a/com/mojang/renderpearl/backend/opengl/GlCommandEncoder.java
 +++ b/com/mojang/renderpearl/backend/opengl/GlCommandEncoder.java
-@@ -274,6 +_,24 @@
+@@ -273,6 +_,28 @@
+         GlStateManager._glBindFramebuffer(36160, 0);
      }
  
-     @Override
++    /// Neo: clears the stencil bits of the given texture to the given value.
++    ///
++    /// @param texture The texture to clear
++    /// @param value   The value to set the stencil bits to
++    @Override
 +    public void clearStencilTexture(GpuTexture texture, int value) {
 +        GL33C.glClearStencil(value);
 +        GlStateManager._stencilMask(-1);
@@ -21,17 +26,17 @@
 +        GlStateManager._glBindFramebuffer(GlConst.GL_FRAMEBUFFER, 0);
 +    }
 +
-+    @Override
+     @Override
      public void writeToBuffer(GpuBufferSlice slice, ByteBuffer data) {
          GlBuffer buffer = (GlBuffer)slice.buffer();
-         buffer.checkCanBeUsed();
-@@ -396,11 +_,22 @@
+@@ -396,11 +_,23 @@
          boolean isDepth = source.getFormat().hasDepthAspect();
          int sourceId = ((GlTexture)source).glId();
          int destId = ((GlTexture)destination).glId();
 -        this.device.directStateAccess().bindFrameBufferTextures(this.readFbo, isDepth ? 0 : sourceId, isDepth ? sourceId : 0, mipLevel, 0);
 -        this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, isDepth ? 0 : destId, isDepth ? destId : 0, mipLevel, 0);
 +        boolean hasStencil = source.getFormat().hasStencilAspect();
++        // Neo: bind stencil buffer if present
 +        this.device.directStateAccess().bindFrameBufferTextures(this.readFbo, (isDepth || hasStencil) ? 0 : sourceId, isDepth ? sourceId : 0, 0, 0, hasStencil ? sourceId : 0, 0);
 +        this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, (isDepth || hasStencil) ? 0 : destId, isDepth ? destId : 0, 0, 0, hasStencil ? destId : 0, 0);
 +        int bufferMask = 0;
