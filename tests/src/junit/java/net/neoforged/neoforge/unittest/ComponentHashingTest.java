@@ -26,8 +26,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public class ComponentHashingTest {
     @Test
     void testHashCodeCollisions(MinecraftServer server) {
-        int MAX_ATTEMPTS = 5;
-        int NUM_OF_SUCESSES = 4;
+        int MAX_ATTEMPTS = 10;
+        int NUM_OF_SUCESSES = 8;
         List<String> failedCollisionRates = new ArrayList<>();
 
         // Run inside unit test as `RepeatedTest` still fails regardless of threshold
