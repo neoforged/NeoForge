@@ -4,7 +4,7 @@
          return itemStacks;
      }
  
-+    /// @deprecated Neo: Use [ItemStack#supportsEnchantment(Holder)]
++    /// @deprecated Neo: Use [ItemStack#supportsEnchantment(Holder)] instead
 +    @Deprecated
      public HolderSet<Item> getSupportedItems() {
          return this.definition.supportedItems();
@@ -13,7 +13,7 @@
          return this.definition.slots().stream().anyMatch(group -> group.test(slot));
      }
  
-+    /// @deprecated Neo: Use [ItemStack#isPrimaryItemFor(Holder)]
++    /// @deprecated Neo: Use [ItemStack#isPrimaryItemFor(Holder)] instead
 +    ///
 +    /// This method does not respect [ItemStack#supportsEnchantment(Holder)] since the [Holder] is not available, which makes the result of calling it invalid.
 +    @Deprecated
@@ -21,7 +21,7 @@
          return this.isSupportedItem(item) && (this.definition.primaryItems.isEmpty() || item.is(this.definition.primaryItems.get()));
      }
  
-+    /// @deprecated Neo: Use [ItemStack#supportsEnchantment(Holder)]
++    /// @deprecated Neo: Use [ItemStack#supportsEnchantment(Holder)] instead
 +    @Deprecated
      public boolean isSupportedItem(ItemStack item) {
          return item.is(this.definition.supportedItems);
@@ -30,7 +30,7 @@
          return result;
      }
  
-+    /// @deprecated Neo: Use [ItemStack#supportsEnchantment(Holder)]
++    /// @deprecated Neo: Use [ItemStack#supportsEnchantment(Holder)] instead
 +    @Deprecated
      public boolean canEnchant(ItemStack itemStack) {
          return this.definition.supportedItems().contains(itemStack.typeHolder());
