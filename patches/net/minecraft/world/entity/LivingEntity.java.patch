@@ -147,7 +147,7 @@
          if (effect == null) {
              this.activeEffects.put(newEffect.getEffect(), newEffect);
              this.onEffectAdded(newEffect, source);
-@@ -1032,6 +_,12 @@
+@@ -1032,6 +_,11 @@
          return changed;
      }
  
@@ -155,7 +155,6 @@
 +    ///
 +    /// @param newEffect A mob effect instance
 +    /// @return If the mob effect instance can be applied to this entity
-+    @Deprecated
 +    @org.jetbrains.annotations.ApiStatus.OverrideOnly
      public boolean canBeAffected(MobEffectInstance newEffect) {
          if (this.is(EntityTypeTags.IMMUNE_TO_INFESTED)) {

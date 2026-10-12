@@ -6,7 +6,7 @@
      private final RegistryAccess registryAccess;
 +    private final net.neoforged.neoforge.network.connection.ConnectionType connectionType;
  
-+    /// @deprecated Neo: use overload with ConnectionType context
++    /// @deprecated Neo: use [#RegistryFriendlyByteBuf(ByteBuf, RegistryAccess, net.neoforged.neoforge.network.connection.ConnectionType)] instead
 +    @Deprecated
      public RegistryFriendlyByteBuf(ByteBuf source, RegistryAccess registryAccess) {
          super(source);
@@ -32,7 +32,7 @@
 +        return buf -> new RegistryFriendlyByteBuf(buf, registryAccess, connectionType);
 +    }
 +
-+    /// @deprecated Neo: use overload with ConnectionType context
++    /// @deprecated Neo: use [#decorator(RegistryAccess, net.neoforged.neoforge.network.connection.ConnectionType)] instead
 +    @Deprecated
      public static Function<ByteBuf, RegistryFriendlyByteBuf> decorator(RegistryAccess registryAccess) {
          return buf -> new RegistryFriendlyByteBuf(buf, registryAccess);

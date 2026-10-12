@@ -69,25 +69,21 @@
          if (packet.isTerminal()) {
              this.close();
          }
-@@ -199,7 +_,37 @@
+@@ -199,7 +_,33 @@
          return this.latency;
      }
  
-+    /// Creates a new cookie for this connection.
-+    ///
-+    /// @param clientInformation The client information.
-+    /// @return The cookie.
-+    /// @deprecated Use [#createCookie(ClientInformation, net.neoforged.neoforge.network.connection.ConnectionType)] instead, keeping the connection type information available.
++    /// @deprecated Neo: Use [#createCookie(ClientInformation, net.neoforged.neoforge.network.connection.ConnectionType)] instead, keeping the connection type information available.
 +    @Deprecated
      protected CommonListenerCookie createCookie(ClientInformation clientInformation) {
          return new CommonListenerCookie(this.playerProfile(), this.latency, clientInformation, this.transferred);
 +    }
 +
-+    /// Creates a new cookie for this connection.
++    /// Neo: Creates a new cookie with connection type info for this connection.
 +    ///
 +    /// @param clientInformation The client information.
 +    /// @param connectionType Whether the connection is modded.
-+    /// @return The cookie.
++    /// @return the cookie.
 +    protected CommonListenerCookie createCookie(ClientInformation clientInformation, net.neoforged.neoforge.network.connection.ConnectionType connectionType) {
 +        return new CommonListenerCookie(this.playerProfile(), this.latency, clientInformation, this.transferred, connectionType);
 +    }
