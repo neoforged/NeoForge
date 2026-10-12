@@ -17,7 +17,7 @@
 +        if (fromDataMap != null) {
 +            return fromDataMap.type();
 +        }
-+        // TODO - 1.22: remove fallback
++        // TODO - 26.4: remove fallback
          return biome.unwrapKey().map(BY_BIOME::get).orElse(VillagerData.DEFAULT_TYPE);
      }
  }
