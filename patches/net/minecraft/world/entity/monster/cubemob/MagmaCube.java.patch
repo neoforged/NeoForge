@@ -17,8 +17,8 @@
      }
  
 +    /// @deprecated Neo: use [#jumpInFluid] instead
-     @Override
 +    @Deprecated
+     @Override
      protected void jumpInLiquid(TagKey<Fluid> type) {
 -        if (type == FluidTags.LAVA) {
 +        this.jumpInLiquidInternal(() -> type == FluidTags.LAVA, () -> super.jumpInLiquid(type));
