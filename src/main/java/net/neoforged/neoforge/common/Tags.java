@@ -66,60 +66,60 @@ public class Tags {
         public static final TagKey<Block> NEEDS_NETHERITE_TOOL = neoforgeTag("needs_netherite_tool");
 
         // `c` tags for common conventions
-        public static final TagKey<Block> BARRELS = tag("barrels");
-        public static final TagKey<Block> BARRELS_WOODEN = tag("barrels/wooden");
+        public static final TagKey<Block> BARRELS = BlockItems.BARRELS.block();
+        public static final TagKey<Block> BARRELS_WOODEN = BlockItems.BARRELS_WOODEN.block();
         /**
          * Equivalent to the "minecraft:bars" block tag.
          */
-        public static final TagKey<Block> BARS = tag("bars");
-        public static final TagKey<Block> BARS_COPPER = tag("bars/copper");
-        public static final TagKey<Block> BARS_IRON = tag("bars/iron");
-        public static final TagKey<Block> BOOKSHELVES = tag("bookshelves");
+        public static final TagKey<Block> BARS = BlockItems.BARS.block();
+        public static final TagKey<Block> BARS_COPPER = BlockItems.BARS_COPPER.block();
+        public static final TagKey<Block> BARS_IRON = BlockItems.BARS_IRON.block();
+        public static final TagKey<Block> BOOKSHELVES = BlockItems.BOOKSHELVES.block();
         /**
          * For blocks that are similar to amethyst where their budding block produces buds and cluster blocks
          */
-        public static final TagKey<Block> BUDDING_BLOCKS = tag("budding_blocks");
+        public static final TagKey<Block> BUDDING_BLOCKS = BlockItems.BUDDING_BLOCKS.block();
         /**
          * For blocks that are similar to amethyst where they have buddings forming from budding blocks
          */
-        public static final TagKey<Block> BUDS = tag("buds");
-        public static final TagKey<Block> CHAINS = tag("chains");
-        public static final TagKey<Block> CHESTS = tag("chests");
-        public static final TagKey<Block> CHESTS_ENDER = tag("chests/ender");
-        public static final TagKey<Block> CHESTS_TRAPPED = tag("chests/trapped");
-        public static final TagKey<Block> CHESTS_WOODEN = tag("chests/wooden");
+        public static final TagKey<Block> BUDS = BlockItems.BUDS.block();
+        public static final TagKey<Block> CHAINS = BlockItems.CHAINS.block();
+        public static final TagKey<Block> CHESTS = BlockItems.CHESTS.block();
+        public static final TagKey<Block> CHESTS_ENDER = BlockItems.CHESTS_ENDER.block();
+        public static final TagKey<Block> CHESTS_TRAPPED = BlockItems.CHESTS_TRAPPED.block();
+        public static final TagKey<Block> CHESTS_WOODEN = BlockItems.CHESTS_WOODEN.block();
         /**
          * For blocks that are similar to amethyst where they have clusters forming from budding blocks
          */
-        public static final TagKey<Block> CLUSTERS = tag("clusters");
-        public static final TagKey<Block> COBBLESTONES = tag("cobblestones");
-        public static final TagKey<Block> COBBLESTONES_NORMAL = tag("cobblestones/normal");
-        public static final TagKey<Block> COBBLESTONES_INFESTED = tag("cobblestones/infested");
-        public static final TagKey<Block> COBBLESTONES_MOSSY = tag("cobblestones/mossy");
-        public static final TagKey<Block> COBBLESTONES_DEEPSLATE = tag("cobblestones/deepslate");
-        public static final TagKey<Block> CONCRETES = tag("concretes");
+        public static final TagKey<Block> CLUSTERS = BlockItems.CLUSTERS.block();
+        public static final TagKey<Block> COBBLESTONES = BlockItems.COBBLESTONES.block();
+        public static final TagKey<Block> COBBLESTONES_NORMAL = BlockItems.COBBLESTONES_NORMAL.block();
+        public static final TagKey<Block> COBBLESTONES_INFESTED = BlockItems.COBBLESTONES_INFESTED.block();
+        public static final TagKey<Block> COBBLESTONES_MOSSY = BlockItems.COBBLESTONES_MOSSY.block();
+        public static final TagKey<Block> COBBLESTONES_DEEPSLATE = BlockItems.COBBLESTONES_DEEPSLATE.block();
+        public static final TagKey<Block> CONCRETES = BlockItems.CONCRETES.block();
 
         /**
          * Tag that holds all blocks which can be dyed a specific color.
          * (Does not include color blending blocks which would behave similarly to leather armor items)
          */
-        public static final TagKey<Block> DYED = tag("dyed");
-        public static final TagKey<Block> DYED_BLACK = tag("dyed/black");
-        public static final TagKey<Block> DYED_BLUE = tag("dyed/blue");
-        public static final TagKey<Block> DYED_BROWN = tag("dyed/brown");
-        public static final TagKey<Block> DYED_CYAN = tag("dyed/cyan");
-        public static final TagKey<Block> DYED_GRAY = tag("dyed/gray");
-        public static final TagKey<Block> DYED_GREEN = tag("dyed/green");
-        public static final TagKey<Block> DYED_LIGHT_BLUE = tag("dyed/light_blue");
-        public static final TagKey<Block> DYED_LIGHT_GRAY = tag("dyed/light_gray");
-        public static final TagKey<Block> DYED_LIME = tag("dyed/lime");
-        public static final TagKey<Block> DYED_MAGENTA = tag("dyed/magenta");
-        public static final TagKey<Block> DYED_ORANGE = tag("dyed/orange");
-        public static final TagKey<Block> DYED_PINK = tag("dyed/pink");
-        public static final TagKey<Block> DYED_PURPLE = tag("dyed/purple");
-        public static final TagKey<Block> DYED_RED = tag("dyed/red");
-        public static final TagKey<Block> DYED_WHITE = tag("dyed/white");
-        public static final TagKey<Block> DYED_YELLOW = tag("dyed/yellow");
+        public static final TagKey<Block> DYED = BlockItems.DYED.block();
+        public static final TagKey<Block> DYED_BLACK = BlockItems.DYED_BLACK.block();
+        public static final TagKey<Block> DYED_BLUE = BlockItems.DYED_BLUE.block();
+        public static final TagKey<Block> DYED_BROWN = BlockItems.DYED_BROWN.block();
+        public static final TagKey<Block> DYED_CYAN = BlockItems.DYED_CYAN.block();
+        public static final TagKey<Block> DYED_GRAY = BlockItems.DYED_GRAY.block();
+        public static final TagKey<Block> DYED_GREEN = BlockItems.DYED_GREEN.block();
+        public static final TagKey<Block> DYED_LIGHT_BLUE = BlockItems.DYED_LIGHT_BLUE.block();
+        public static final TagKey<Block> DYED_LIGHT_GRAY = BlockItems.DYED_LIGHT_GRAY.block();
+        public static final TagKey<Block> DYED_LIME = BlockItems.DYED_LIME.block();
+        public static final TagKey<Block> DYED_MAGENTA = BlockItems.DYED_MAGENTA.block();
+        public static final TagKey<Block> DYED_ORANGE = BlockItems.DYED_ORANGE.block();
+        public static final TagKey<Block> DYED_PINK = BlockItems.DYED_PINK.block();
+        public static final TagKey<Block> DYED_PURPLE = BlockItems.DYED_PURPLE.block();
+        public static final TagKey<Block> DYED_RED = BlockItems.DYED_RED.block();
+        public static final TagKey<Block> DYED_WHITE = BlockItems.DYED_WHITE.block();
+        public static final TagKey<Block> DYED_YELLOW = BlockItems.DYED_YELLOW.block();
 
         /**
          * Dyed color tags as a color collection, for convenience.
@@ -146,152 +146,152 @@ public class Tags {
          * Tag that holds blocks which can be dyed but do not have their own color already, like glass.
          * (Does not include color blending blocks which would behave similarly to leather armor items)
          */
-        public static final TagKey<Block> DYEABLE_UNDYED_SIMPLE = tag("dyeable/simple/undyed");
+        public static final TagKey<Block> DYEABLE_UNDYED_SIMPLE = BlockItems.DYEABLE_UNDYED_SIMPLE.block();
 
         /**
          * Tag that holds blocks which can be dyed despite already having a color, like wool.
          * (Does not include color blending blocks which would behave similarly to leather armor items)
          */
-        public static final TagKey<Block> DYEABLE_REDYEABLE_SIMPLE = tag("dyeable/simple/redyeable");
+        public static final TagKey<Block> DYEABLE_REDYEABLE_SIMPLE = BlockItems.DYEABLE_REDYEABLE_SIMPLE.block();
 
         /**
          * Tag that holds blocks which can be dyed in a simple fashion without color blending, typically
          * in the standard 16 colors, whether they have a color already or not.
          */
-        public static final TagKey<Block> DYEABLE_SIMPLE = tag("dyeable/simple");
+        public static final TagKey<Block> DYEABLE_SIMPLE = BlockItems.DYEABLE_SIMPLE.block();
 
         /**
          * Tag that holds blocks which can be dyed in a dynamic color blending fashion, similarly to leather armor items.
          */
-        public static final TagKey<Block> DYEABLE_DYNAMIC = tag("dyeable/dynamic");
+        public static final TagKey<Block> DYEABLE_DYNAMIC = BlockItems.DYEABLE_DYNAMIC.block();
 
         /**
          * Tag that holds blocks which can have dye applied to them, whether they have a color already or not.
          */
-        public static final TagKey<Block> DYEABLE = tag("dyeable");
+        public static final TagKey<Block> DYEABLE = BlockItems.DYEABLE.block();
 
-        public static final TagKey<Block> END_STONES = tag("end_stones");
-        public static final TagKey<Block> FENCE_GATES = tag("fence_gates");
-        public static final TagKey<Block> FENCE_GATES_WOODEN = tag("fence_gates/wooden");
-        public static final TagKey<Block> FENCES = tag("fences");
-        public static final TagKey<Block> FENCES_NETHER_BRICK = tag("fences/nether_brick");
-        public static final TagKey<Block> FENCES_WOODEN = tag("fences/wooden");
+        public static final TagKey<Block> END_STONES = BlockItems.END_STONES.block();
+        public static final TagKey<Block> FENCE_GATES = BlockItems.FENCE_GATES.block();
+        public static final TagKey<Block> FENCE_GATES_WOODEN = BlockItems.FENCE_GATES_WOODEN.block();
+        public static final TagKey<Block> FENCES = BlockItems.FENCES.block();
+        public static final TagKey<Block> FENCES_NETHER_BRICK = BlockItems.FENCES_NETHER_BRICK.block();
+        public static final TagKey<Block> FENCES_WOODEN = BlockItems.FENCES_WOODEN.block();
         /**
          * Contains living ground-based flowers that are 1 block tall such as Dandelions or Poppy.
          * Equivalent to the "minecraft:small_flowers" block tag.
          */
-        public static final TagKey<Block> FLOWERS_SMALL = tag("flowers/small");
+        public static final TagKey<Block> FLOWERS_SMALL = BlockItems.FLOWERS_SMALL.block();
         /**
          * Contains living ground-based flowers that are 2 block tall such as Rose Bush or Peony.
          * Equivalent to the "minecraft:tall_flowers" block tag in past Minecraft version.
          */
-        public static final TagKey<Block> FLOWERS_TALL = tag("flowers/tall");
+        public static final TagKey<Block> FLOWERS_TALL = BlockItems.FLOWERS_TALL.block();
         /**
          * Contains any living plant block that contains flowers or is a flower itself.
          * Equivalent to the "minecraft:flowers" block tag.
          */
-        public static final TagKey<Block> FLOWERS = tag("flowers");
+        public static final TagKey<Block> FLOWERS = BlockItems.FLOWERS.block();
         /// Light-emitting blocks created when a Frog eats a Magma Cube.
-        public static final TagKey<Block> FROGLIGHTS = tag("froglights");
+        public static final TagKey<Block> FROGLIGHTS = BlockItems.FROGLIGHTS.block();
 
-        public static final TagKey<Block> GLASS_BLOCKS = tag("glass_blocks");
-        public static final TagKey<Block> GLASS_BLOCKS_COLORLESS = tag("glass_blocks/colorless");
+        public static final TagKey<Block> GLASS_BLOCKS = BlockItems.GLASS_BLOCKS.block();
+        public static final TagKey<Block> GLASS_BLOCKS_COLORLESS = BlockItems.GLASS_BLOCKS_COLORLESS.block();
         /**
          * Glass which is made from cheap resources like sand and only minor additional ingredients like dyes
          */
-        public static final TagKey<Block> GLASS_BLOCKS_CHEAP = tag("glass_blocks/cheap");
-        public static final TagKey<Block> GLASS_BLOCKS_TINTED = tag("glass_blocks/tinted");
+        public static final TagKey<Block> GLASS_BLOCKS_CHEAP = BlockItems.GLASS_BLOCKS_CHEAP.block();
+        public static final TagKey<Block> GLASS_BLOCKS_TINTED = BlockItems.GLASS_BLOCKS_TINTED.block();
 
-        public static final TagKey<Block> GLASS_PANES = tag("glass_panes");
-        public static final TagKey<Block> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
-        public static final TagKey<Block> GLAZED_TERRACOTTAS = tag("glazed_terracottas");
+        public static final TagKey<Block> GLASS_PANES = BlockItems.GLASS_PANES.block();
+        public static final TagKey<Block> GLASS_PANES_COLORLESS = BlockItems.GLASS_PANES_COLORLESS.block();
+        public static final TagKey<Block> GLAZED_TERRACOTTAS = BlockItems.GLAZED_TERRACOTTAS.block();
 
-        public static final TagKey<Block> GRAVELS = tag("gravels");
+        public static final TagKey<Block> GRAVELS = BlockItems.GRAVELS.block();
         /**
          * Tag that holds all blocks that recipe viewers should not show to users.
          * Recipe viewers may use this to automatically find the corresponding BlockItem to hide.
          */
         public static final TagKey<Block> HIDDEN_FROM_RECIPE_VIEWERS = tag("hidden_from_recipe_viewers");
-        public static final TagKey<Block> NETHERRACKS = tag("netherracks");
-        public static final TagKey<Block> OBSIDIANS = tag("obsidians");
+        public static final TagKey<Block> NETHERRACKS = BlockItems.NETHERRACKS.block();
+        public static final TagKey<Block> OBSIDIANS = BlockItems.OBSIDIANS.block();
         /**
          * For common obsidian that has no special quirks or behaviors. Ideal for recipe use.
          * Crying Obsidian, for example, is a light block and harder to obtain. So it gets its own tag instead of being under normal tag.
          */
-        public static final TagKey<Block> OBSIDIANS_NORMAL = tag("obsidians/normal");
-        public static final TagKey<Block> OBSIDIANS_CRYING = tag("obsidians/crying");
+        public static final TagKey<Block> OBSIDIANS_NORMAL = BlockItems.OBSIDIANS_NORMAL.block();
+        public static final TagKey<Block> OBSIDIANS_CRYING = BlockItems.OBSIDIANS_CRYING.block();
         /**
          * Blocks which are often replaced by deepslate ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_DEEPSLATE}, during world generation.
          * (The block's registry name is used as the tag name)
          */
-        public static final TagKey<Block> ORE_BEARING_GROUND_DEEPSLATE = tag("ore_bearing_ground/deepslate");
+        public static final TagKey<Block> ORE_BEARING_GROUND_DEEPSLATE = BlockItems.ORE_BEARING_GROUND_DEEPSLATE.block();
         /**
          * Blocks which are often replaced by netherrack ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_NETHERRACK}, during world generation.
          * (The block's registry name is used as the tag name)
          */
-        public static final TagKey<Block> ORE_BEARING_GROUND_NETHERRACK = tag("ore_bearing_ground/netherrack");
+        public static final TagKey<Block> ORE_BEARING_GROUND_NETHERRACK = BlockItems.ORE_BEARING_GROUND_NETHERRACK.block();
         /**
          * Blocks which are often replaced by stone ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_STONE}, during world generation.
          * (The block's registry name is used as the tag name)
          */
-        public static final TagKey<Block> ORE_BEARING_GROUND_STONE = tag("ore_bearing_ground/stone");
+        public static final TagKey<Block> ORE_BEARING_GROUND_STONE = BlockItems.ORE_BEARING_GROUND_STONE.block();
         /**
          * Ores which on average result in more than one resource worth of materials ignoring fortune and other modifiers.
          * (example, Copper Ore)
          */
-        public static final TagKey<Block> ORE_RATES_DENSE = tag("ore_rates/dense");
+        public static final TagKey<Block> ORE_RATES_DENSE = BlockItems.ORE_RATES_DENSE.block();
         /**
          * Ores which on average result in one resource worth of materials ignoring fortune and other modifiers.
          * (Example, Iron Ore)
          */
-        public static final TagKey<Block> ORE_RATES_SINGULAR = tag("ore_rates/singular");
+        public static final TagKey<Block> ORE_RATES_SINGULAR = BlockItems.ORE_RATES_SINGULAR.block();
         /**
          * Ores which on average result in less than one resource worth of materials ignoring fortune and other modifiers.
          * (Example, Nether Gold Ore as it drops 2 to 6 Gold Nuggets which is less than normal Gold Ore's Raw Gold drop)
          */
-        public static final TagKey<Block> ORE_RATES_SPARSE = tag("ore_rates/sparse");
-        public static final TagKey<Block> ORES = tag("ores");
-        public static final TagKey<Block> ORES_COAL = tag("ores/coal");
-        public static final TagKey<Block> ORES_COPPER = tag("ores/copper");
-        public static final TagKey<Block> ORES_DIAMOND = tag("ores/diamond");
-        public static final TagKey<Block> ORES_EMERALD = tag("ores/emerald");
-        public static final TagKey<Block> ORES_GOLD = tag("ores/gold");
-        public static final TagKey<Block> ORES_IRON = tag("ores/iron");
-        public static final TagKey<Block> ORES_LAPIS = tag("ores/lapis");
-        public static final TagKey<Block> ORES_NETHERITE_SCRAP = tag("ores/netherite_scrap");
-        public static final TagKey<Block> ORES_QUARTZ = tag("ores/quartz");
-        public static final TagKey<Block> ORES_REDSTONE = tag("ores/redstone");
+        public static final TagKey<Block> ORE_RATES_SPARSE = BlockItems.ORE_RATES_SPARSE.block();
+        public static final TagKey<Block> ORES = BlockItems.ORES.block();
+        public static final TagKey<Block> ORES_COAL = BlockItems.ORES_COAL.block();
+        public static final TagKey<Block> ORES_COPPER = BlockItems.ORES_COPPER.block();
+        public static final TagKey<Block> ORES_DIAMOND = BlockItems.ORES_DIAMOND.block();
+        public static final TagKey<Block> ORES_EMERALD = BlockItems.ORES_EMERALD.block();
+        public static final TagKey<Block> ORES_GOLD = BlockItems.ORES_GOLD.block();
+        public static final TagKey<Block> ORES_IRON = BlockItems.ORES_IRON.block();
+        public static final TagKey<Block> ORES_LAPIS = BlockItems.ORES_LAPIS.block();
+        public static final TagKey<Block> ORES_NETHERITE_SCRAP = BlockItems.ORES_NETHERITE_SCRAP.block();
+        public static final TagKey<Block> ORES_QUARTZ = BlockItems.ORES_QUARTZ.block();
+        public static final TagKey<Block> ORES_REDSTONE = BlockItems.ORES_REDSTONE.block();
         /**
          * Ores in deepslate (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_DEEPSLATE}) which could logically use deepslate as recipe input or output.
          * (The block's registry name is used as the tag name)
          */
-        public static final TagKey<Block> ORES_IN_GROUND_DEEPSLATE = tag("ores_in_ground/deepslate");
+        public static final TagKey<Block> ORES_IN_GROUND_DEEPSLATE = BlockItems.ORES_IN_GROUND_DEEPSLATE.block();
         /**
          * Ores in netherrack (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_NETHERRACK}) which could logically use netherrack as recipe input or output.
          * (The block's registry name is used as the tag name)
          */
-        public static final TagKey<Block> ORES_IN_GROUND_NETHERRACK = tag("ores_in_ground/netherrack");
+        public static final TagKey<Block> ORES_IN_GROUND_NETHERRACK = BlockItems.ORES_IN_GROUND_NETHERRACK.block();
         /**
          * Ores in stone (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_STONE}) which could logically use stone as recipe input or output.
          * (The block's registry name is used as the tag name)
          */
-        public static final TagKey<Block> ORES_IN_GROUND_STONE = tag("ores_in_ground/stone");
-        public static final TagKey<Block> PUMPKINS = tag("pumpkins");
+        public static final TagKey<Block> ORES_IN_GROUND_STONE = BlockItems.ORES_IN_GROUND_STONE.block();
+        public static final TagKey<Block> PUMPKINS = BlockItems.PUMPKINS.block();
         /**
          * For pumpkins that are not carved.
          */
-        public static final TagKey<Block> PUMPKINS_NORMAL = tag("pumpkins/normal");
+        public static final TagKey<Block> PUMPKINS_NORMAL = BlockItems.PUMPKINS_NORMAL.block();
         /**
          * For pumpkins that are already carved but not a light source.
          */
-        public static final TagKey<Block> PUMPKINS_CARVED = tag("pumpkins/carved");
+        public static final TagKey<Block> PUMPKINS_CARVED = BlockItems.PUMPKINS_CARVED.block();
 
         /**
          * For pumpkins that are already carved and a light source.
          */
-        public static final TagKey<Block> PUMPKINS_JACK_O_LANTERNS = tag("pumpkins/jack_o_lanterns");
-        public static final TagKey<Block> PLAYER_WORKSTATIONS_CRAFTING_TABLES = tag("player_workstations/crafting_tables");
-        public static final TagKey<Block> PLAYER_WORKSTATIONS_FURNACES = tag("player_workstations/furnaces");
+        public static final TagKey<Block> PUMPKINS_JACK_O_LANTERNS = BlockItems.PUMPKINS_JACK_O_LANTERNS.block();
+        public static final TagKey<Block> PLAYER_WORKSTATIONS_CRAFTING_TABLES = BlockItems.PLAYER_WORKSTATIONS_CRAFTING_TABLES.block();
+        public static final TagKey<Block> PLAYER_WORKSTATIONS_FURNACES = BlockItems.PLAYER_WORKSTATIONS_FURNACES.block();
         /**
          * Blocks should be included in this tag if their movement/relocation can cause serious issues such
          * as world corruption upon being moved or for balance reason where the block should not be able to be relocated.
@@ -299,21 +299,21 @@ public class Tags {
          * {@link BlockBehaviour.BlockStateBase#getPistonPushReaction}.
          */
         public static final TagKey<Block> RELOCATION_NOT_SUPPORTED = tag("relocation_not_supported");
-        public static final TagKey<Block> ROPES = tag("ropes");
+        public static final TagKey<Block> ROPES = BlockItems.ROPES.block();
 
-        public static final TagKey<Block> SANDS = tag("sands");
-        public static final TagKey<Block> SANDS_COLORLESS = tag("sands/colorless");
-        public static final TagKey<Block> SANDS_RED = tag("sands/red");
+        public static final TagKey<Block> SANDS = BlockItems.SANDS.block();
+        public static final TagKey<Block> SANDS_COLORLESS = BlockItems.SANDS_COLORLESS.block();
+        public static final TagKey<Block> SANDS_RED = BlockItems.SANDS_RED.block();
 
-        public static final TagKey<Block> SANDSTONE_BLOCKS = tag("sandstone/blocks");
-        public static final TagKey<Block> SANDSTONE_SLABS = tag("sandstone/slabs");
-        public static final TagKey<Block> SANDSTONE_STAIRS = tag("sandstone/stairs");
-        public static final TagKey<Block> SANDSTONE_RED_BLOCKS = tag("sandstone/red_blocks");
-        public static final TagKey<Block> SANDSTONE_RED_SLABS = tag("sandstone/red_slabs");
-        public static final TagKey<Block> SANDSTONE_RED_STAIRS = tag("sandstone/red_stairs");
-        public static final TagKey<Block> SANDSTONE_UNCOLORED_BLOCKS = tag("sandstone/uncolored_blocks");
-        public static final TagKey<Block> SANDSTONE_UNCOLORED_SLABS = tag("sandstone/uncolored_slabs");
-        public static final TagKey<Block> SANDSTONE_UNCOLORED_STAIRS = tag("sandstone/uncolored_stairs");
+        public static final TagKey<Block> SANDSTONE_BLOCKS = BlockItems.SANDSTONE_BLOCKS.block();
+        public static final TagKey<Block> SANDSTONE_SLABS = BlockItems.SANDSTONE_SLABS.block();
+        public static final TagKey<Block> SANDSTONE_STAIRS = BlockItems.SANDSTONE_STAIRS.block();
+        public static final TagKey<Block> SANDSTONE_RED_BLOCKS = BlockItems.SANDSTONE_RED_BLOCKS.block();
+        public static final TagKey<Block> SANDSTONE_RED_SLABS = BlockItems.SANDSTONE_RED_SLABS.block();
+        public static final TagKey<Block> SANDSTONE_RED_STAIRS = BlockItems.SANDSTONE_RED_STAIRS.block();
+        public static final TagKey<Block> SANDSTONE_UNCOLORED_BLOCKS = BlockItems.SANDSTONE_UNCOLORED_BLOCKS.block();
+        public static final TagKey<Block> SANDSTONE_UNCOLORED_SLABS = BlockItems.SANDSTONE_UNCOLORED_SLABS.block();
+        public static final TagKey<Block> SANDSTONE_UNCOLORED_STAIRS = BlockItems.SANDSTONE_UNCOLORED_STAIRS.block();
         /**
          * Tag that holds all head based blocks such as Skeleton Skull or Player Head. (Named skulls to match minecraft:skulls item tag)
          */
@@ -321,7 +321,7 @@ public class Tags {
         /**
          * Natural stone-like blocks that can be used as a base ingredient in recipes that takes stone.
          */
-        public static final TagKey<Block> STONES = tag("stones");
+        public static final TagKey<Block> STONES = BlockItems.STONES.block();
         /**
          * A storage block is generally a block that has a recipe to craft a bulk of 1 kind of resource to a block
          * and has a mirror recipe to reverse the crafting with no loss in resources.
@@ -329,49 +329,49 @@ public class Tags {
          * Honey Block is special in that the reversing recipe is not a perfect mirror of the crafting recipe
          * and so, it is considered a special case and not given a storage block tag.
          */
-        public static final TagKey<Block> STORAGE_BLOCKS = tag("storage_blocks");
-        public static final TagKey<Block> STORAGE_BLOCKS_BONE_MEAL = tag("storage_blocks/bone_meal");
-        public static final TagKey<Block> STORAGE_BLOCKS_COAL = tag("storage_blocks/coal");
-        public static final TagKey<Block> STORAGE_BLOCKS_COPPER = tag("storage_blocks/copper");
-        public static final TagKey<Block> STORAGE_BLOCKS_DIAMOND = tag("storage_blocks/diamond");
-        public static final TagKey<Block> STORAGE_BLOCKS_DRIED_KELP = tag("storage_blocks/dried_kelp");
-        public static final TagKey<Block> STORAGE_BLOCKS_EMERALD = tag("storage_blocks/emerald");
-        public static final TagKey<Block> STORAGE_BLOCKS_GOLD = tag("storage_blocks/gold");
-        public static final TagKey<Block> STORAGE_BLOCKS_IRON = tag("storage_blocks/iron");
-        public static final TagKey<Block> STORAGE_BLOCKS_LAPIS = tag("storage_blocks/lapis");
-        public static final TagKey<Block> STORAGE_BLOCKS_NETHERITE = tag("storage_blocks/netherite");
-        public static final TagKey<Block> STORAGE_BLOCKS_RAW_COPPER = tag("storage_blocks/raw_copper");
-        public static final TagKey<Block> STORAGE_BLOCKS_RAW_GOLD = tag("storage_blocks/raw_gold");
-        public static final TagKey<Block> STORAGE_BLOCKS_RAW_IRON = tag("storage_blocks/raw_iron");
-        public static final TagKey<Block> STORAGE_BLOCKS_REDSTONE = tag("storage_blocks/redstone");
-        public static final TagKey<Block> STORAGE_BLOCKS_RESIN = tag("storage_blocks/resin");
-        public static final TagKey<Block> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
-        public static final TagKey<Block> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
+        public static final TagKey<Block> STORAGE_BLOCKS = BlockItems.STORAGE_BLOCKS.block();
+        public static final TagKey<Block> STORAGE_BLOCKS_BONE_MEAL = BlockItems.STORAGE_BLOCKS_BONE_MEAL.block();
+        public static final TagKey<Block> STORAGE_BLOCKS_COAL = BlockItems.STORAGE_BLOCKS_COAL.block();
+        public static final TagKey<Block> STORAGE_BLOCKS_COPPER = BlockItems.STORAGE_BLOCKS_COPPER.block();
+        public static final TagKey<Block> STORAGE_BLOCKS_DIAMOND = BlockItems.STORAGE_BLOCKS_DIAMOND.block();
+        public static final TagKey<Block> STORAGE_BLOCKS_DRIED_KELP = BlockItems.STORAGE_BLOCKS_DRIED_KELP.block();
+        public static final TagKey<Block> STORAGE_BLOCKS_EMERALD = BlockItems.STORAGE_BLOCKS_EMERALD.block();
+        public static final TagKey<Block> STORAGE_BLOCKS_GOLD = BlockItems.STORAGE_BLOCKS_GOLD.block();
+        public static final TagKey<Block> STORAGE_BLOCKS_IRON = BlockItems.STORAGE_BLOCKS_IRON.block();
+        public static final TagKey<Block> STORAGE_BLOCKS_LAPIS = BlockItems.STORAGE_BLOCKS_LAPIS.block();
+        public static final TagKey<Block> STORAGE_BLOCKS_NETHERITE = BlockItems.STORAGE_BLOCKS_NETHERITE.block();
+        public static final TagKey<Block> STORAGE_BLOCKS_RAW_COPPER = BlockItems.STORAGE_BLOCKS_RAW_COPPER.block();
+        public static final TagKey<Block> STORAGE_BLOCKS_RAW_GOLD = BlockItems.STORAGE_BLOCKS_RAW_GOLD.block();
+        public static final TagKey<Block> STORAGE_BLOCKS_RAW_IRON = BlockItems.STORAGE_BLOCKS_RAW_IRON.block();
+        public static final TagKey<Block> STORAGE_BLOCKS_REDSTONE = BlockItems.STORAGE_BLOCKS_REDSTONE.block();
+        public static final TagKey<Block> STORAGE_BLOCKS_RESIN = BlockItems.STORAGE_BLOCKS_RESIN.block();
+        public static final TagKey<Block> STORAGE_BLOCKS_SLIME = BlockItems.STORAGE_BLOCKS_SLIME.block();
+        public static final TagKey<Block> STORAGE_BLOCKS_WHEAT = BlockItems.STORAGE_BLOCKS_WHEAT.block();
         /**
          * For logs found naturally in the Overworld, does not include Stripped Logs.
          * Contains {@link BlockTags#OVERWORLD_NATURAL_LOGS} for consistency.
          */
-        public static final TagKey<Block> OVERWORLD_NATURAL_LOGS = tag("natural_logs/overworld");
+        public static final TagKey<Block> OVERWORLD_NATURAL_LOGS = BlockItems.OVERWORLD_NATURAL_LOGS.block();
         /**
          * For logs, including Stems, found naturally in the Nether, does not include Stripped Logs.
          */
-        public static final TagKey<Block> NETHER_NATURAL_LOGS = tag("natural_logs/nether");
+        public static final TagKey<Block> NETHER_NATURAL_LOGS = BlockItems.NETHER_NATURAL_LOGS.block();
         /**
          * For logs, including Stems, found naturally that have not been stripped.
          */
-        public static final TagKey<Block> NATURAL_LOGS = tag("natural_logs");
+        public static final TagKey<Block> NATURAL_LOGS = BlockItems.NATURAL_LOGS.block();
         /**
          * For six-sided wood blocks, including Hyphae, found naturally that have not been stripped.
          */
-        public static final TagKey<Block> NATURAL_WOODS = tag("natural_woods");
+        public static final TagKey<Block> NATURAL_WOODS = BlockItems.NATURAL_WOODS.block();
         /**
          * For logs, including Stems, found naturally that have been stripped.
          */
-        public static final TagKey<Block> STRIPPED_LOGS = tag("stripped_logs");
+        public static final TagKey<Block> STRIPPED_LOGS = BlockItems.STRIPPED_LOGS.block();
         /**
          * For six-sided wood blocks, including Hyphae, found naturally that have been stripped.
          */
-        public static final TagKey<Block> STRIPPED_WOODS = tag("stripped_woods");
+        public static final TagKey<Block> STRIPPED_WOODS = BlockItems.STRIPPED_WOODS.block();
         public static final TagKey<Block> VILLAGER_JOB_SITES = tag("villager_job_sites");
 
         /**
