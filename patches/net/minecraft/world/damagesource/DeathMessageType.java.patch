@@ -29,9 +29,9 @@
 +    /// public static final EnumProxy<DeathMessageType> CUSTOM_FUNCTION = new EnumProxy<>(DeathMessageType.class, "mymod:custom", MyDeathMessageTypes.CUSTOM_MESSAGE_PROVIDER::value);
 +    /// ```
 +    ///
-+    /// @param id The [serialized name][StringRepresentable#getSerializedName()]. Prefix this with your modid and \`:\`
++    /// @param id The [serialized name][StringRepresentable#getSerializedName()]. Prefix this with your modid and `:`
 +    /// @param msgFunction The provider to use for determine when to display the message.
-+    private DeathMessageType(String id, net.neoforged.neoforge.common.damagesource.IDeathMessageProvider msgFunction) {
++    DeathMessageType(String id, net.neoforged.neoforge.common.damagesource.IDeathMessageProvider msgFunction) {
          this.id = id;
 +        this.msgFunction = msgFunction;
      }
