@@ -45,8 +45,8 @@
 +        return this.neoForgeFluidType;
 +    }
 +
-+    /// @deprecated Neo: do not use, use [net.neoforged.neoforge.transfer.fluid.FluidResource#of] instead.
-+    @org.jetbrains.annotations.ApiStatus.Internal @Deprecated
++    /// Neo: do not use, use [net.neoforged.neoforge.transfer.fluid.FluidResource#of] instead.
++    @org.jetbrains.annotations.ApiStatus.Internal
 +    public net.neoforged.neoforge.transfer.fluid.FluidResource computeDefaultResource(java.util.function.Function<Fluid, net.neoforged.neoforge.transfer.fluid.FluidResource> resourceConstructor) {
 +        if (this.defaultResource == null) {
 +            this.defaultResource = resourceConstructor.apply(this);

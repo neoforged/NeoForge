@@ -227,7 +227,7 @@
          }
      }
  
-+    /// @deprecated Neo: Use [net.neoforged.neoforge.common.util.AttributeUtil#addAttributeTooltips]
++    /// @deprecated Neo: Use [net.neoforged.neoforge.common.util.AttributeUtil#addAttributeTooltips] instead
 +    @Deprecated
      private void addAttributeTooltips(Consumer<Component> consumer, TooltipDisplay display, @Nullable Player player) {
          if (display.shows(DataComponents.ATTRIBUTE_MODIFIERS)) {
