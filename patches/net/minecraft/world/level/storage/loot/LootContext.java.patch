@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/LootContext.java
 +++ b/net/minecraft/world/level/storage/loot/LootContext.java
-@@ -26,11 +_,19 @@
+@@ -26,8 +_,16 @@
      private final RandomSource random;
      private final HolderGetter.Provider lootDataResolver;
      private final Set<LootContext.VisitedEntry<?>> visitedElements = Sets.newLinkedHashSet();
@@ -13,13 +13,10 @@
 +    }
 +
 +    private LootContext(LootParams params, RandomSource random, HolderGetter.Provider lootDataResolver, @Nullable Identifier queriedLootTableId) {
++        this.queriedLootTableId = queriedLootTableId;
          this.params = params;
          this.random = random;
          this.lootDataResolver = lootDataResolver;
-+        this.queriedLootTableId = queriedLootTableId;
-     }
- 
-     public boolean hasParameter(ContextKey<?> key) {
 @@ -73,6 +_,16 @@
          return this.params.getLevel();
      }
