@@ -316,14 +316,14 @@
              this.vehicle = null;
              oldVehicle.removePassenger(this);
              Entity.RemovalReason removalReason = this.getRemovalReason();
-@@ -2590,6 +_,8 @@
-         return this.passengers.isEmpty();
+@@ -2751,6 +_,8 @@
+         return !this.passengers.isEmpty();
      }
  
-+    /** @deprecated Forge: Use {@link #canBeRiddenUnderFluidType(net.neoforged.neoforge.fluids.FluidType, Entity) rider sensitive version} */
++    /// @deprecated Neo: use [#canBeRiddenUnderFluidType(net.neoforged.neoforge.fluids.FluidType, Entity)] instead
 +    @Deprecated
-     protected boolean couldAcceptPassenger() {
-         return true;
+     public boolean dismountsUnderwater() {
+         return this.is(EntityTypeTags.DISMOUNTS_UNDERWATER);
      }
 @@ -2804,7 +_,7 @@
      }

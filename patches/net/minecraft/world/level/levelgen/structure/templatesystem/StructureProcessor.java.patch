@@ -9,13 +9,21 @@
      default StructureTemplate.@Nullable StructureBlockInfo processBlock(
          LevelReader level,
          BlockPos targetPosition,
-@@ -17,6 +_,20 @@
+@@ -17,6 +_,35 @@
          StructurePlaceSettings settings
      ) {
          return processedBlockInfo;
 +    }
 +
-+    default StructureTemplate.@Nullable StructureBlockInfo process(LevelReader level, BlockPos targetPosition, BlockPos referencePos, StructureTemplate.StructureBlockInfo originalBlockInfo, StructureTemplate.StructureBlockInfo processedBlockInfo, StructurePlaceSettings settings, @Nullable StructureTemplate template) {
++    default StructureTemplate.@Nullable StructureBlockInfo process(
++        LevelReader level,
++        BlockPos targetPosition,
++        BlockPos referencePos,
++        StructureTemplate.StructureBlockInfo originalBlockInfo,
++        StructureTemplate.StructureBlockInfo processedBlockInfo,
++        StructurePlaceSettings settings,
++        @Nullable StructureTemplate template
++    ) {
 +        return processBlock(level, targetPosition, referencePos, originalBlockInfo.pos(), processedBlockInfo, settings);
 +    }
 +
@@ -25,8 +33,15 @@
 +    /// blocks, parameters are analogous.
 +    ///
 +    /// @see #process(LevelReader, BlockPos, BlockPos, StructureTemplate.StructureBlockInfo, StructureTemplate.StructureBlockInfo, StructurePlaceSettings, StructureTemplate)
-+    default StructureTemplate.@Nullable StructureEntityInfo processEntity(LevelReader world, BlockPos seedPos, StructureTemplate.StructureEntityInfo rawEntityInfo, StructureTemplate.StructureEntityInfo entityInfo, StructurePlaceSettings placementSettings, StructureTemplate template) {
-+        return entityInfo;
++    default StructureTemplate.@Nullable StructureEntityInfo processEntity(
++        LevelReader level,
++        BlockPos seedPos,
++        StructureTemplate.StructureEntityInfo originalEntityInfo,
++        StructureTemplate.StructureEntityInfo processedEntityInfo,
++        StructurePlaceSettings settings,
++        StructureTemplate template
++    ) {
++        return processedEntityInfo;
      }
  
      MapCodec<? extends StructureProcessor> codec();
