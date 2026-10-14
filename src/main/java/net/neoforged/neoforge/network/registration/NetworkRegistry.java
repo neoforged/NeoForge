@@ -45,6 +45,8 @@ import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.util.thread.ReentrantBlockableEventLoop;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.config.ConfigTracker;
+import net.neoforged.neoforge.common.NeoForgeConfig;
+import net.neoforged.neoforge.common.extensions.IServerCommonPacketListenerExtension;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.connection.ConnectionPhase;
 import net.neoforged.neoforge.network.connection.ConnectionType;
@@ -978,7 +980,15 @@ public class NetworkRegistry {
      * @param connection        The connection to add the channels to.
      */
     private void onMinecraftRegister(Set<ResourceLocation> resourceLocations, Connection connection) {
-        getKnownAdHocChannelsOfOtherEnd(connection).addAll(resourceLocations);
+        var channels = getKnownAdHocChannelsOfOtherEnd(connection);
+        if ((channels.size() + resourceLocations.size()) > NeoForgeConfig.COMMON.maxAdhocChannelLimit.getAsInt()) {
+            if (connection.getPacketListener() instanceof IServerCommonPacketListenerExtension listener) {
+                listener.disconnect(Component.translatable("neoforge.network.adhoc_channels.too_many"));
+                return;
+            }
+            throw new RuntimeException("Too many ad-hoc channels.");
+        }
+        channels.addAll(resourceLocations);
     }
 
     /**
