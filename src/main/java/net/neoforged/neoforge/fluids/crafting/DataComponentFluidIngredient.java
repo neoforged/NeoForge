@@ -24,6 +24,7 @@ import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
+import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.display.FluidStackSlotDisplay;
@@ -49,21 +50,21 @@ public class DataComponentFluidIngredient extends FluidIngredient {
     private final HolderSet<Fluid> fluids;
     private final DataComponentExactPredicate components;
     private final boolean strict;
-    private final FluidStack[] stacks;
+    private final Lazy<FluidStack[]> stacks;
 
     public DataComponentFluidIngredient(HolderSet<Fluid> fluids, DataComponentExactPredicate components, boolean strict) {
         this.fluids = fluids;
         this.components = components;
         this.strict = strict;
-        this.stacks = fluids.stream()
+        this.stacks = Lazy.of(() -> fluids.stream()
                 .map(i -> new FluidStack(i, FluidType.BUCKET_VOLUME, components.asPatch()))
-                .toArray(FluidStack[]::new);
+                .toArray(FluidStack[]::new));
     }
 
     @Override
     public boolean test(FluidStack stack) {
         if (strict) {
-            for (FluidStack stack2 : this.stacks) {
+            for (FluidStack stack2 : this.stacks.get()) {
                 if (FluidStack.isSameFluidSameComponents(stack, stack2)) return true;
             }
             return false;
@@ -78,7 +79,7 @@ public class DataComponentFluidIngredient extends FluidIngredient {
 
     @Override
     public SlotDisplay display() {
-        return new SlotDisplay.Composite(Stream.of(stacks)
+        return new SlotDisplay.Composite(Stream.of(stacks.get())
                 .map(stack -> (SlotDisplay) new FluidStackSlotDisplay(stack))
                 .toList());
     }
