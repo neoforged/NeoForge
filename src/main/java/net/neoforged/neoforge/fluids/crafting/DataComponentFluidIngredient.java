@@ -51,21 +51,21 @@ public class DataComponentFluidIngredient extends FluidIngredient {
     private final HolderSet<Fluid> fluids;
     private final DataComponentExactPredicate components;
     private final boolean strict;
-    private final Lazy<FluidStackTemplate[]> templates;
+    private final FluidStackTemplate[] templates;
 
     public DataComponentFluidIngredient(HolderSet<Fluid> fluids, DataComponentExactPredicate components, boolean strict) {
         this.fluids = fluids;
         this.components = components;
         this.strict = strict;
-        this.templates = Lazy.of(() -> fluids.stream()
+        this.templates = fluids.stream()
                 .map(i -> new FluidStackTemplate(i, FluidType.BUCKET_VOLUME, components.asPatch()))
-                .toArray(FluidStackTemplate[]::new));
+                .toArray(FluidStackTemplate[]::new);
     }
 
     @Override
     public boolean test(FluidStack stack) {
         if (strict) {
-            for (FluidStackTemplate template : this.templates.get()) {
+            for (FluidStackTemplate template : this.templates) {
                 if (FluidStack.isSameFluidSameComponents(stack, template)) return true;
             }
             return false;
@@ -80,7 +80,7 @@ public class DataComponentFluidIngredient extends FluidIngredient {
 
     @Override
     public SlotDisplay display() {
-        return new SlotDisplay.Composite(Stream.of(templates.get())
+        return new SlotDisplay.Composite(Stream.of(templates)
                 .map(template -> (SlotDisplay) new FluidStackSlotDisplay(template.create()))
                 .toList());
     }
