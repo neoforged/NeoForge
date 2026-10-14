@@ -71,6 +71,8 @@ public class NeoForgeConfig {
         public final ModConfigSpec.EnumValue<TagConventionLogWarning.LogWarningMode> logUntranslatedItemTagWarnings;
         public final ModConfigSpec.EnumValue<TagConventionLogWarning.LogWarningMode> logLegacyTagWarnings;
 
+        public final ModConfigSpec.IntValue splitPacketMaxSizeLimitMb;
+
         Common(ModConfigSpec.Builder builder) {
             builder.comment("General configuration settings")
                     .push("general");
@@ -85,7 +87,10 @@ public class NeoForgeConfig {
                     .translation("forge.configgui.logLegacyTagWarnings")
                     .defineEnum("logLegacyTagWarnings", TagConventionLogWarning.LogWarningMode.DEV_SHORT);
 
-            builder.pop();
+            splitPacketMaxSizeLimitMb = builder
+                    .comment("The maximum allowed size of a reassembled split packet; expressed in MBs.")
+                    .translation("neoforge.configgui.splitPacketMaxSizeLimitMb")
+                    .defineInRange("splitPacketMaxSizeLimitMb", 128, 1, 2048);
         }
     }
 
