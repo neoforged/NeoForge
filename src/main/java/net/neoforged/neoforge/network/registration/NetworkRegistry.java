@@ -42,6 +42,7 @@ import net.minecraft.network.protocol.configuration.ServerConfigurationPacketLis
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.neoforge.common.config.NeoForgeCommonConfig;
 import net.neoforged.neoforge.common.extensions.ICommonPacketListener;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.configuration.CommonRegisterTask;
@@ -588,7 +589,15 @@ public class NetworkRegistry {
      * @param resourceLocations The resource locations to add.
      */
     public static void onMinecraftRegister(Connection connection, Set<ResourceLocation> resourceLocations) {
-        ChannelAttributes.getOrCreateAdHocChannels(connection).addAll(resourceLocations);
+        var channels = ChannelAttributes.getOrCreateAdHocChannels(connection);
+        if ((channels.size() + resourceLocations.size()) > NeoForgeCommonConfig.INSTANCE.maxAdhocChannelLimit.getAsInt()) {
+            if (connection.getPacketListener() instanceof ICommonPacketListener listener) {
+                listener.disconnect(Component.translatable("neoforge.network.adhoc_channels.too_many"));
+                return;
+            }
+            throw new RuntimeException("Too many ad-hoc channels.");
+        }
+        channels.addAll(resourceLocations);
     }
 
     /**
