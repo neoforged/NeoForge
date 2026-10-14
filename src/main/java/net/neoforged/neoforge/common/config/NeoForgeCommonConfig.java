@@ -19,6 +19,7 @@ public final class NeoForgeCommonConfig {
 
     public final ModConfigSpec.BooleanValue attributeAdvancedTooltipDebugInfo;
     public final ModConfigSpec.IntValue splitPacketMaxSizeLimitMb;
+    public final ModConfigSpec.IntValue maxAdhocChannelLimit;
 
     private NeoForgeCommonConfig(ModConfigSpec.Builder builder) {
         attributeAdvancedTooltipDebugInfo = builder
@@ -29,6 +30,10 @@ public final class NeoForgeCommonConfig {
                 .comment("The maximum allowed size of a reassembled split packet; expressed in MBs.")
                 .translation("neoforge.configgui.splitPacketMaxSizeLimitMb")
                 .defineInRange("splitPacketMaxSizeLimitMb", 128, 1, 2048);
+        maxAdhocChannelLimit = builder
+                .comment("The maximum number of adhoc channels allowed to be registered.")
+                .translation("neoforge.configgui.maxAdhocChannelLimit")
+                .defineInRange("maxAdhocChannelLimit", 2048, 1024, 16384);
     }
 
     static {
