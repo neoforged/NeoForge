@@ -106,18 +106,15 @@ public interface IItemStackExtension extends ItemInstanceExtension {
         return EventHooks.getAllEnchantmentLevels(enchantments, self(), lookup);
     }
 
-    /**
-     * Override this to set a non-default armor slot for an ItemStack, but <em>do
-     * not use this to get the armor slot of said stack; for that, use
-     * {@link LivingEntity#getEquipmentSlotForItem(ItemStack)}.</em>
-     *
-     * @return the armor slot of the ItemStack, or {@code null} to let the default
-     *         vanilla logic as per {@code LivingEntity.getSlotForItemStack(stack)}
-     *         decide
-     * @deprecated To be removed in 26.4. Apply the {@link net.minecraft.world.item.equipment.Equippable} component to your item instead, such as through the
-     *             {@link Item.Properties#equippable(EquipmentSlot)} helper, using {@link Item.Properties#component(DataComponentType, Object)}, or dynamically
-     *             adding the component.
-     */
+    /// {@return the equipment slot for the stack, or `null` to use the vanilla logic in [LivingEntity#getEquipmentSlotForItem(ItemStack)]}
+    ///
+    /// Override this to set a non-default armor slot for an ItemStack, but _do
+    /// not_ call this to get the equipment slot of said stack; for that, use
+    /// [LivingEntity#getEquipmentSlotForItem(ItemStack)].
+    ///
+    /// @deprecated To be removed in 26.4. Apply the [net.minecraft.world.item.equipment.Equippable] component to your item instead, such as through the
+    ///             [Item.Properties#equippable(EquipmentSlot)] helper, using [Item.Properties#component(DataComponentType, Object)], or dynamically
+    ///             adding the component.
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true, since = "26.3")
     @Nullable
