@@ -68,11 +68,16 @@ public class NeoForgeConfig {
      * General configuration that doesn't need to be synchronized but needs to be available before server startup
      */
     public static class Common {
+        public final ModConfigSpec.IntValue splitPacketMaxSizeLimitMb;
+
         Common(ModConfigSpec.Builder builder) {
-            builder.comment("[DEPRECATED / NO EFFECT]: General configuration settings")
+            builder.comment("General configuration settings")
                     .push("general");
 
-            builder.pop();
+            splitPacketMaxSizeLimitMb = builder
+                    .comment("The maximum allowed size of a reassembled split packet; expressed in MBs.")
+                    .translation("neoforge.configgui.splitPacketMaxSizeLimitMb")
+                    .defineInRange("splitPacketMaxSizeLimitMb", 128, 1, 2048);
         }
     }
 
