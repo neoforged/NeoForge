@@ -63,16 +63,27 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
         return internalOf(container);
     }
 
-    static VanillaContainerWrapper internalOf(Container container) {
-        VanillaContainerWrapper wrapper = wrappers.computeIfAbsent(container, cont -> {
-            if (cont instanceof Inventory inventory) {
-                return new PlayerInventoryWrapper(inventory);
-            } else {
-                return new VanillaContainerWrapper(cont);
-            }
-        });
+    /// Wraps a vanilla container into a [ResourceHandler] of [ItemResource]s without caching the resource handler instance.
+    ///
+    /// In general [#of(Container)] should be used instead of this method. This method exists mostly for cases where a container is being created on the fly
+    /// and there is no reason to cache the wrapper for it; for example [net.neoforged.neoforge.transfer.access.StackItemAccess].
+    public static ResourceHandler<ItemResource> ofUncached(Container container) {
+        VanillaContainerWrapper wrapper = createWrapper(container);
         wrapper.resize();
         return wrapper;
+    }
+
+    static VanillaContainerWrapper internalOf(Container container) {
+        VanillaContainerWrapper wrapper = wrappers.computeIfAbsent(container, VanillaContainerWrapper::createWrapper);
+        wrapper.resize();
+        return wrapper;
+    }
+
+    private static VanillaContainerWrapper createWrapper(Container container) {
+        if (container instanceof Inventory inventory) {
+            return new PlayerInventoryWrapper(inventory);
+        }
+        return new VanillaContainerWrapper(container);
     }
 
     private final Container container;

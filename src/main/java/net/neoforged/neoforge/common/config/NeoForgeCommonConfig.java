@@ -18,12 +18,22 @@ public final class NeoForgeCommonConfig {
     public static final NeoForgeCommonConfig INSTANCE;
 
     public final ModConfigSpec.BooleanValue attributeAdvancedTooltipDebugInfo;
+    public final ModConfigSpec.IntValue splitPacketMaxSizeLimitMb;
+    public final ModConfigSpec.IntValue maxAdhocChannelLimit;
 
     private NeoForgeCommonConfig(ModConfigSpec.Builder builder) {
         attributeAdvancedTooltipDebugInfo = builder
                 .comment("Set this to true to enable showing debug information about attributes on an item when advanced tooltips is on.")
                 .translation("neoforge.configgui.attributeAdvancedTooltipDebugInfo")
                 .define("attributeAdvancedTooltipDebugInfo", true);
+        splitPacketMaxSizeLimitMb = builder
+                .comment("The maximum allowed size of a reassembled split packet; expressed in MBs.")
+                .translation("neoforge.configgui.splitPacketMaxSizeLimitMb")
+                .defineInRange("splitPacketMaxSizeLimitMb", 128, 1, 2048);
+        maxAdhocChannelLimit = builder
+                .comment("The maximum number of adhoc channels allowed to be registered.")
+                .translation("neoforge.configgui.maxAdhocChannelLimit")
+                .defineInRange("maxAdhocChannelLimit", 2048, 1024, 16384);
     }
 
     static {
