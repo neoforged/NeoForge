@@ -1,0 +1,26 @@
+--- a/net/minecraft/util/datafix/fixes/ItemStackComponentizationFix.java
++++ b/net/minecraft/util/datafix/fixes/ItemStackComponentizationFix.java
+@@ -541,7 +_,7 @@
+         dynamic1 = p_330209_.moveTagInto("resolved", dynamic1, "resolved");
+         dynamic1 = p_330209_.moveTagInto("generation", dynamic1, "generation");
+         if (dynamic != null) {
+-            dynamic1 = dynamic1.set("pages", dynamic);
++            dynamic1 = dynamic1.set("pages", wrapBookPagesAsComponents(dynamic)); // Neo: pages are stringified text components, not raw strings
+         }
+ 
+         p_330209_.setComponent("minecraft:written_book_content", dynamic1);
+@@ -564,6 +_,14 @@
+ 
+             return p_330407_.createList(list1.stream());
+         }
++    }
++
++    // Neo: written_book_content stores pages as stringified text components, but this fixer copies the legacy `pages` strings in
++    // verbatim, so a page that is not valid JSON fails to decode and silently drops every page of the book. Wrap them leniently,
++    // as ItemWrittenBookPagesStrictJsonFix already does at data version 165. Written books only: writable_book pages stay raw.
++    private static Dynamic<?> wrapBookPagesAsComponents(Dynamic<?> pages) {
++        return pages.createList(
++                pages.asStream().map(page -> page.update("raw", ComponentDataFixUtils::rewriteFromLenient).update("filtered", ComponentDataFixUtils::rewriteFromLenient)));
+     }
+ 
+     private static Dynamic<?> createFilteredText(Dynamic<?> p_331589_, String p_330423_, Optional<String> p_330385_) {
