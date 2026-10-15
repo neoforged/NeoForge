@@ -189,9 +189,17 @@ public class ModListScreen extends Screen {
         final LinearLayout footer = layout.addToFooter(new LinearLayout(0, 0, Orientation.HORIZONTAL));
         footer.spacing(4).defaultCellSetting().paddingTop(5);
 
+        footer.addChild(Button.builder(Component.translatable("neoforge.screen.mods.button.open_old_screen"),
+                _ -> this.minecraft.setScreen(new net.neoforged.neoforge.client.gui.ModListScreen(this)))
+                .width(Button.SMALL_WIDTH)
+                .build());
         footer.addChild(Button.builder(Component.translatable("neoforge.screen.mods.button.open_folder"),
-                _ -> Util.getPlatform().openPath(modsFolder)).build());
-        footer.addChild(Button.builder(CommonComponents.GUI_BACK, _ -> ModListScreen.this.onClose()).build());
+                _ -> Util.getPlatform().openPath(modsFolder))
+                .width(Button.SMALL_WIDTH)
+                .build());
+        footer.addChild(Button.builder(CommonComponents.GUI_BACK, _ -> ModListScreen.this.onClose())
+                .width(Button.SMALL_WIDTH)
+                .build());
 
         // Content
         final GridLayout contentBase = layout.addToContents(new GridLayout()).columnSpacing(-3);

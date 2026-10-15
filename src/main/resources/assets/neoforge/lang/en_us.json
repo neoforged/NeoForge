@@ -31,6 +31,7 @@
   "neoforge.screen.mods.button.issues": "Issues",
   "neoforge.screen.mods.button.config": "Config",
   "neoforge.screen.mods.button.changelog": "See update changelog",
+  "neoforge.screen.mods.button.open_old_screen": "Open Legacy Screen",
   "neoforge.screen.mods.sort.a_to_z": "A-Z",
   "neoforge.screen.mods.sort.a_to_z.hover": "In alphabetical order by display name.",
   "neoforge.screen.mods.sort.z_to_a": "Z-A",
