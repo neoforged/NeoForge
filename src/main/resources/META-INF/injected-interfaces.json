@@ -329,5 +329,8 @@
   ],
   "net/minecraft/world/level/gamerules/GameRuleType": [
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
+  ],
+  "net/minecraft/server/jsonrpc/internalapi/MinecraftApi": [
+    "net/neoforged/neoforge/server/jsonrpc/IMinecraftApiExtension"
   ]
 }

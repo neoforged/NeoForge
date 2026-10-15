@@ -1,0 +1,75 @@
+--- a/net/minecraft/server/jsonrpc/internalapi/MinecraftApi.java
++++ b/net/minecraft/server/jsonrpc/internalapi/MinecraftApi.java
+@@ -6,7 +_,9 @@
+ import net.minecraft.server.jsonrpc.JsonRpcLogger;
+ import net.minecraft.server.notifications.NotificationManager;
+ 
+-public class MinecraftApi implements net.neoforged.neoforge.server.jsonrpc.IMinecraftApiExtension {
++import net.neoforged.neoforge.server.jsonrpc.IMinecraftApiExtension;
++
++public class MinecraftApi implements IMinecraftApiExtension {
+     private final NotificationManager notificationManager;
+     private final MinecraftAllowListService allowListService;
+     private final MinecraftBanListService banListService;
+@@ -16,7 +_,10 @@
+     private final MinecraftServerSettingsService minecraftServerSettingsService;
+     private final MinecraftServerStateService minecraftServerStateService;
+     private final MinecraftExecutorService executorService;
++    private final @org.jspecify.annotations.Nullable JsonRpcLogger logger;
+ 
++    /// @deprecated Neo: Use the constructor with the server and logger instead
++    @Deprecated
+     public MinecraftApi(
+         NotificationManager notificationManager,
+         MinecraftAllowListService allowListService,
+@@ -28,6 +_,21 @@
+         MinecraftServerStateService minecraftServerStateService,
+         MinecraftExecutorService executorService
+     ) {
++        this(notificationManager, allowListService, banListService, minecraftPlayerListService, gameRuleService, minecraftOperatorListService, minecraftServerSettingsService, minecraftServerStateService, executorService, null);
++    }
++
++    public MinecraftApi(
++            NotificationManager notificationManager,
++            MinecraftAllowListService allowListService,
++            MinecraftBanListService banListService,
++            MinecraftPlayerListService minecraftPlayerListService,
++            MinecraftGameRuleService gameRuleService,
++            MinecraftOperatorListService minecraftOperatorListService,
++            MinecraftServerSettingsService minecraftServerSettingsService,
++            MinecraftServerStateService minecraftServerStateService,
++            MinecraftExecutorService executorService,
++            @org.jspecify.annotations.Nullable JsonRpcLogger logger
++    ) {
+         this.notificationManager = notificationManager;
+         this.allowListService = allowListService;
+         this.banListService = banListService;
+@@ -37,6 +_,7 @@
+         this.minecraftServerSettingsService = minecraftServerSettingsService;
+         this.minecraftServerStateService = minecraftServerStateService;
+         this.executorService = executorService;
++        this.logger = logger;
+     }
+ 
+     public <V> CompletableFuture<V> submit(Supplier<V> supplier) {
+@@ -72,6 +_,10 @@
+     }
+ 
+     public MinecraftServerStateService serverStateService() {
++    public JsonRpcLogger logger() {
++        return java.util.Objects.requireNonNull(this.logger);
++    }
++
+         return this.minecraftServerStateService;
+     }
+ 
+@@ -98,7 +_,8 @@
+             operatorListService,
+             serverSettingsService,
+             serverStateService,
+-            executorService
++            executorService,
++            jsonrpcLogger
+         );
+     }
+ }
