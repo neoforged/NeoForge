@@ -18,6 +18,8 @@ public final class NeoForgeLocalConfig {
     public static final NeoForgeLocalConfig INSTANCE;
 
     public final ModConfigSpec.BooleanValue attributeAdvancedTooltipDebugInfo;
+    public final ModConfigSpec.IntValue splitPacketMaxSizeLimitMb;
+    public final ModConfigSpec.IntValue maxAdhocChannelLimit;
     public final ModConfigSpec.BooleanValue enableGlobalDatapacksAutomatically;
 
     private NeoForgeLocalConfig(ModConfigSpec.Builder builder) {
@@ -25,6 +27,14 @@ public final class NeoForgeLocalConfig {
                 .comment("Set this to true to enable showing debug information about attributes on an item when advanced tooltips is on.")
                 .translation("neoforge.configgui.attributeAdvancedTooltipDebugInfo")
                 .define("attributeAdvancedTooltipDebugInfo", true);
+        splitPacketMaxSizeLimitMb = builder
+                .comment("The maximum allowed size of a reassembled split packet; expressed in MBs.")
+                .translation("neoforge.configgui.splitPacketMaxSizeLimitMb")
+                .defineInRange("splitPacketMaxSizeLimitMb", 128, 1, 2048);
+        maxAdhocChannelLimit = builder
+                .comment("The maximum number of adhoc channels allowed to be registered.")
+                .translation("neoforge.configgui.maxAdhocChannelLimit")
+                .defineInRange("maxAdhocChannelLimit", 2048, 1024, 16384);
         enableGlobalDatapacksAutomatically = builder
                 .comment("Controls whether datapacks loaded from the global 'datapacks' folder (in the game directory) are automatically enabled for new worlds.")
                 .translation("neoforge.configgui.enableGlobalDatapacksAutomatically")

@@ -12,9 +12,7 @@ import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.predicates.ItemPredicate;
 import net.minecraft.advancements.triggers.CriteriaTriggers;
 import net.minecraft.advancements.triggers.InventoryChangeTrigger;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.advancements.AdvancementProvider;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.resources.Identifier;
@@ -34,8 +32,8 @@ public class ModDatapackTest {
     static void modDatapack(final DynamicTest test) {
         final Identifier testAdvancement = Identifier.fromNamespaceAndPath(test.createModId(), "recipes/misc/test_advancement");
 
-        test.registrationHelper().generateReloadableRegistries(new RegistrySetBuilder().add(Registries.ADVANCEMENT,
-                new AdvancementProvider(List.of(context -> new AdvancementSubProvider(context) {
+        test.registrationHelper().registriesForTest(registries -> registries.advancement(
+                context -> new AdvancementSubProvider(context) {
                     @Override
                     public void generate() {
                         Advancement.Builder.recipeAdvancement()
@@ -47,7 +45,7 @@ public class ModDatapackTest {
                                 .rewards(AdvancementRewards.Builder.recipe(ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath("minecraft", "turtle_helmet"))))
                                 .save(output, testAdvancement);
                     }
-                }))));
+                }));
 
         test.eventListeners().forge().addListener((OnDatapackSyncEvent event) -> {
             if (event.getPlayerList().getServer().getAdvancements().get(testAdvancement) != null) {

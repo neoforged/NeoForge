@@ -82,7 +82,7 @@ public class DataMapHooks {
                 transformerDatamapTransformers = transformAppender.entries();
             }
 
-            ResourceKey<BlockTransformer> key = component.key();
+            ResourceKey<BlockTransformer> key = component.keyOrNull();
             if (key != null) {
                 blockDatamapTransformers = DATAMAP_BLOCK_TRANSFORMERS.getOrDefault(key, blockDatamapTransformers);
             }

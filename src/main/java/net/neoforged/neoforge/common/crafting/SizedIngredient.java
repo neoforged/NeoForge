@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Standard implementation for an ingredient and a count.
@@ -83,7 +84,7 @@ public final class SizedIngredient {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) return true;
         if (!(o instanceof SizedIngredient other)) return false;
         return count == other.count && ingredient.equals(other.ingredient);

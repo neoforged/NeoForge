@@ -7,7 +7,6 @@ package net.neoforged.neoforge.debug.crafting;
 
 import net.minecraft.advancements.Advancement;
 import net.minecraft.core.FrontAndTop;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeProvider;
@@ -34,7 +33,7 @@ public class RecipePrioritiesTest {
     @EmptyTemplate()
     @TestHolder(description = "Tests creating a recipe with a higher priority than vanilla recipes")
     static void testOverridingRecipe(final DynamicTest test, final RegistrationHelper reg) {
-        reg.generateReloadableRegistries(new RegistrySetBuilder().add(RecipeProvider.asBootstrap(Recipes::new)));
+        reg.registries(registries -> registries.gatherFor("neotests_recipe_priorities").recipe(Recipes::new));
         reg.addClientProvider(event -> new RecipePrioritiesProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider(), "neotests_recipe_priorities") {
             @Override
             protected void start() {

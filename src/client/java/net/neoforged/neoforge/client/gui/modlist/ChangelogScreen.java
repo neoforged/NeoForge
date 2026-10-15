@@ -20,7 +20,7 @@ import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.neoforged.fml.VersionChecker;
+import net.neoforged.neoforge.common.VersionChecker;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;

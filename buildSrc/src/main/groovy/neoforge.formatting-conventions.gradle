@@ -73,6 +73,10 @@ immaculate {
             fileContents.replace('javax.annotation.Nullable', 'org.jspecify.annotations.Nullable')
                     .replace('org.jetbrains.annotations.Nullable', 'org.jspecify.annotations.Nullable')
         }
+
+        custom 'equalsTakesNull', { String fileContents ->
+            fileContents.replaceAll(/(?<=boolean equals\()\s*(?!@Nullable)(?= ?(?:final )?Object [^,]+\))/, "@Nullable ")
+        }
     }
 }
 

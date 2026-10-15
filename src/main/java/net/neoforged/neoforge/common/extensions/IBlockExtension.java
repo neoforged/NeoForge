@@ -961,4 +961,19 @@ public interface IBlockExtension {
                 ? BlockRelocability.No.INSTANCE
                 : BlockRelocability.Yes.INSTANCE;
     }
+
+    /// Determines whether the given adjacent block can connect to the given side of this block.
+    /// This is used by iron bars, glass panes, fences and walls to determine whether they can connect.
+    ///
+    /// - Returning [TriState#TRUE] forces the adjacent block to connect.
+    /// - Returning [TriState#DEFAULT] leaves the decision to the connecting block's further checks.
+    /// - Returning [TriState#FALSE] prevents the adjacent block from connecting.
+    ///
+    /// @param state         The state of this block
+    /// @param side          The side of this block being connected to
+    /// @param adjacentBlock The adjacent block attempting to connect to this block
+    /// @return whether the adjacent block can connect to this block.
+    default TriState canBeConnectedTo(BlockState state, Direction side, Block adjacentBlock) {
+        return TriState.DEFAULT;
+    }
 }

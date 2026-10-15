@@ -11,7 +11,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -71,8 +70,8 @@ public class BiomeModifierSyncTest {
     @WithListener(Listener.class)
     static void biomeModifierSync(final DynamicTest test) {
         ResourceKey<BiomeModifier> modifyTaigaModifier = ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, Identifier.fromNamespaceAndPath(HELPER.modId(), "modify_taiga"));
-        HELPER.generateWorldRegistries(
-                new RegistrySetBuilder().add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, context -> {
+        HELPER.registriesForTest(
+                registries -> registries.add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, context -> {
                     var taigaTag = context.lookup(Registries.BIOME).getOrThrow(BiomeTags.IS_TAIGA);
                     context.register(modifyTaigaModifier, new TestModifier(
                             taigaTag,

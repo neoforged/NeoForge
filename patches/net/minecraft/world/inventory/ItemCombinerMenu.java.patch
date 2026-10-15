@@ -1,0 +1,27 @@
+--- a/net/minecraft/world/inventory/ItemCombinerMenu.java
++++ b/net/minecraft/world/inventory/ItemCombinerMenu.java
+@@ -29,6 +_,11 @@
+ 
+     protected abstract void onTake(Player player, ItemStack carried);
+ 
++    /// Neo: Called when the result slot is quick-crafted (e.g, the player shift-clicks on the slot).
++    /// In those same situations, [#onTake] receives an [empty item stack][ItemStack#EMPTY].
++    protected void onQuickCraft(ItemStack picked, int amount) {
++    }
++
+     protected abstract boolean isValidBlock(BlockState state);
+ 
+     public ItemCombinerMenu(
+@@ -71,6 +_,12 @@
+                 @Override
+                 public void onTake(Player player, ItemStack carried) {
+                     ItemCombinerMenu.this.onTake(player, carried);
++                }
++
++                /// Neo: Call the containing class' onQuickCraft hook for the result slot.
++                @Override
++                protected void onQuickCraft(ItemStack picked, int count) {
++                    ItemCombinerMenu.this.onQuickCraft(picked, count);
+                 }
+             }
+         );

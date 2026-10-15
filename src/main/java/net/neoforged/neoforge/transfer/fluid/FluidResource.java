@@ -299,7 +299,7 @@ public final class FluidResource implements DataComponentHolderResource<Fluid> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) return true;
         if (obj == null || this.getClass() != obj.getClass()) return false;
         FluidResource other = (FluidResource) obj;

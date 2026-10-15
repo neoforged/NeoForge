@@ -14,6 +14,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Fluid ingredient that matches the difference of two provided fluid ingredients, i.e.
@@ -81,7 +82,7 @@ public final class DifferenceFluidIngredient extends FluidIngredient {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) return true;
         return obj instanceof DifferenceFluidIngredient other &&
                 other.base.equals(this.base) && other.subtracted.equals(this.subtracted);

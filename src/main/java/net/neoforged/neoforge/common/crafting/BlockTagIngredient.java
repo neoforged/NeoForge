@@ -93,7 +93,7 @@ public class BlockTagIngredient implements ICustomIngredient {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) return true;
         if (!(o instanceof BlockTagIngredient that)) return false;
         return tag.equals(that.tag);

@@ -7,7 +7,7 @@ package net.neoforged.neoforge.client.gui.modlist;
 
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.VersionChecker;
+import net.neoforged.neoforge.common.VersionChecker;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 

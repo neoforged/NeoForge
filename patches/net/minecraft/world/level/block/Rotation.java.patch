@@ -1,0 +1,19 @@
+--- a/net/minecraft/world/level/block/Rotation.java
++++ b/net/minecraft/world/level/block/Rotation.java
+@@ -83,6 +_,16 @@
+         };
+     }
+ 
++    /// Neo: {@return the inverse of this rotation}
++    public Rotation getInverse() {
++        return switch (this) {
++            case NONE -> NONE;
++            case CLOCKWISE_90 -> COUNTERCLOCKWISE_90;
++            case CLOCKWISE_180 -> CLOCKWISE_180;
++            case COUNTERCLOCKWISE_90 -> CLOCKWISE_90;
++        };
++    }
++
+     public OctahedralGroup rotation() {
+         return this.rotation;
+     }

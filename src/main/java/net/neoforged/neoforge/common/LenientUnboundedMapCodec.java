@@ -16,6 +16,7 @@ import com.mojang.serialization.MapLike;
 import com.mojang.serialization.codecs.BaseMapCodec;
 import java.util.Map;
 import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 /**
@@ -70,7 +71,7 @@ public class LenientUnboundedMapCodec<K, V> implements BaseMapCodec<K, V>, Codec
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(@Nullable final Object o) {
         if (this == o) {
             return true;
         }

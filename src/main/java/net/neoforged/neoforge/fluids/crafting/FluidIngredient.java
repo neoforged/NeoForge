@@ -135,7 +135,7 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
     public abstract int hashCode();
 
     @Override
-    public abstract boolean equals(Object obj);
+    public abstract boolean equals(@Nullable Object obj);
 
     public static SlotDisplay displayForSingleFluid(Holder<Fluid> holder) {
         return new FluidSlotDisplay(holder);

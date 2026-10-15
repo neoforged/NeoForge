@@ -5,38 +5,21 @@
 
 package net.neoforged.neoforge.oldtest.client.rendering;
 
-import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.renderpearl.api.pipeline.CompareOp;
 import com.mojang.renderpearl.api.pipeline.DepthStencilState;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
-import net.minecraft.client.renderer.item.ItemModelResolver;
-import net.minecraft.client.renderer.item.TrackingItemStackRenderState;
-import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
-import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.util.LightCoordsUtil;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Blocks;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ConfigureMainRenderTargetEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
-import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
-import net.neoforged.neoforge.client.pipeline.PipelineModifier;
-import net.neoforged.neoforge.client.pipeline.RegisterPipelineModifiersEvent;
 import net.neoforged.neoforge.client.stencil.StencilOperation;
 import net.neoforged.neoforge.client.stencil.StencilPerFaceTest;
 import net.neoforged.neoforge.client.stencil.StencilTest;
-import org.jspecify.annotations.Nullable;
 
 /**
  * Basic test that uses the stencil buffer.
@@ -60,8 +43,31 @@ public class StencilEnableTest {
 
     private static final State ENABLED = State.ENABLE_REGISTRATION;
 
-    private static final ResourceKey<PipelineModifier> STENCIL_FILL_KEY = ResourceKey.create(PipelineModifier.MODIFIERS_KEY, Identifier.fromNamespaceAndPath(MOD_ID, "stencil_fill"));
-    private static final ResourceKey<PipelineModifier> STENCIL_APPLY_KEY = ResourceKey.create(PipelineModifier.MODIFIERS_KEY, Identifier.fromNamespaceAndPath(MOD_ID, "stencil_apply"));
+    private static final RenderPipeline GUI_TEXTURED_STENCIL_FILL = RenderPipelines.GUI_TEXTURED.toBuilder()
+            .withLocation(Identifier.fromNamespaceAndPath(MOD_ID, "pipeline/gui_textured_stencil_fill"))
+            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, 0F, 0F, new StencilTest(
+                    new StencilPerFaceTest(
+                            StencilOperation.KEEP,
+                            StencilOperation.KEEP,
+                            StencilOperation.REPLACE,
+                            CompareOp.ALWAYS_PASS),
+                    0xFF,
+                    0xFF,
+                    1)))
+            .build();
+    private static final RenderPipeline GUI_STENCIL_APPLY = RenderPipelines.GUI.toBuilder()
+            .withLocation(Identifier.fromNamespaceAndPath(MOD_ID, "pipeline/gui_textured_stencil_apply"))
+            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, 0F, 0F, new StencilTest(
+                    new StencilPerFaceTest(
+                            StencilOperation.KEEP,
+                            StencilOperation.KEEP,
+                            StencilOperation.KEEP,
+                            CompareOp.NOT_EQUAL),
+                    0xFF,
+                    0,
+                    1)))
+            .build();
+    private static final Identifier MASK_TEXTURE = Identifier.withDefaultNamespace("textures/gui/sprites/icon/new_realm.png");
 
     public StencilEnableTest(IEventBus modEventBus) {
         if (ENABLED == State.DISABLE) {
@@ -70,137 +76,20 @@ public class StencilEnableTest {
         modEventBus.addListener(ConfigureMainRenderTargetEvent.class, event -> {
             event.enableStencil();
         });
-        modEventBus.addListener(RegisterPipelineModifiersEvent.class, event -> {
-            event.register(STENCIL_FILL_KEY, (pipeline, name) -> pipeline.toBuilder()
-                    .withLocation(name)
-                    .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, 0F, 0F, new StencilTest(
-                            new StencilPerFaceTest(
-                                    StencilOperation.KEEP,
-                                    StencilOperation.KEEP,
-                                    StencilOperation.REPLACE,
-                                    CompareOp.ALWAYS_PASS),
-                            0xFF,
-                            0xFF,
-                            1)))
-                    .build());
-            event.register(STENCIL_APPLY_KEY, (pipeline, name) -> pipeline.toBuilder()
-                    .withLocation(name)
-                    .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, 0F, 0F, new StencilTest(
-                            new StencilPerFaceTest(
-                                    StencilOperation.KEEP,
-                                    StencilOperation.KEEP,
-                                    StencilOperation.KEEP,
-                                    CompareOp.NOT_EQUAL),
-                            0xFF,
-                            0,
-                            1)))
-                    .build());
-        });
-        modEventBus.addListener(RegisterPictureInPictureRenderersEvent.class, event -> {
-            if (ENABLED != State.ENABLE_UI_LAYER) {
-                return;
-            }
-            event.register(StenciledItemPictureInPictureRenderState.class, StenciledItemPictureInPictureRenderer::new);
-        });
         modEventBus.addListener(RegisterGuiLayersEvent.class, event -> {
             if (ENABLED != State.ENABLE_UI_LAYER) {
                 return;
             }
             event.registerAboveAll(
-                    Identifier.fromNamespaceAndPath(MOD_ID, "block_outline"),
+                    Identifier.fromNamespaceAndPath(MOD_ID, "stenciled_ui_element"),
                     (guiGraphics, _) -> {
-                        ItemModelResolver itemModelResolver = Minecraft.getInstance().getItemModelResolver();
-
-                        TrackingItemStackRenderState maskState = new TrackingItemStackRenderState();
-                        itemModelResolver.updateForTopItem(maskState, new ItemStack(Blocks.GRASS_BLOCK), ItemDisplayContext.GUI, null, null, 0);
-                        TrackingItemStackRenderState maskedState = new TrackingItemStackRenderState();
-                        itemModelResolver.updateForTopItem(maskedState, new ItemStack(Blocks.DIAMOND_BLOCK), ItemDisplayContext.GUI, null, null, 0);
+                        RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(Minecraft.getInstance().gameRenderer.mainRenderTarget().getDepthTexture(), 0);
 
                         int maxX = guiGraphics.guiWidth();
-                        guiGraphics.submitPictureInPictureRenderState(new StenciledItemPictureInPictureRenderState(
-                                maskState,
-                                maskedState,
-                                maxX - 50, 10, maxX - 10, 50,
-                                16F,
-                                guiGraphics.peekScissorStack()));
+                        guiGraphics.blit(GUI_TEXTURED_STENCIL_FILL, MASK_TEXTURE, maxX - 100, 10, 0, 0, 40, 20, 40, 20, 0x01FFFFFF);
+                        guiGraphics.nextStratum();
+                        guiGraphics.fill(GUI_STENCIL_APPLY, maxX - 100, 10, maxX - 60, 30, 0xFF0000AA);
                     });
         });
-    }
-
-    // FIXME: it is no longer possible to render twice in a PiP
-    private static final class StenciledItemPictureInPictureRenderer extends PictureInPictureRenderer<StenciledItemPictureInPictureRenderState> {
-        @Override
-        protected void renderToTexture(StenciledItemPictureInPictureRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
-            Minecraft.getInstance().gameRenderer.lighting().setupFor(Lighting.Entry.ITEMS_3D);
-            poseStack.scale(1, -1, -1);
-            float scale = state.scale;
-            FeatureRenderDispatcher dispatcher = Minecraft.getInstance().gameRenderer.featureRenderDispatcher();
-            RenderSystem.pushPipelineModifier(STENCIL_FILL_KEY);
-            {
-                state.maskRenderState.submit(poseStack, submitNodeCollector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
-
-                poseStack.pushPose();
-                poseStack.translate(10F / scale, -10F / scale, 0);
-                state.maskRenderState.submit(poseStack, submitNodeCollector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
-                poseStack.popPose();
-
-                //dispatcher.renderAllFeatures((SubmitNodeStorage) submitNodeCollector);
-            }
-            RenderSystem.popPipelineModifier();
-
-            RenderSystem.pushPipelineModifier(STENCIL_APPLY_KEY);
-            {
-                poseStack.scale(1.1F, 1.1F, 1.1F);
-                poseStack.translate(-.5F / scale, .5F / scale, 0);
-
-                state.maskedRenderState.submit(poseStack, submitNodeCollector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
-
-                poseStack.pushPose();
-                poseStack.translate(10F / scale, -10F / scale, 0);
-                state.maskedRenderState.submit(poseStack, submitNodeCollector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
-                poseStack.popPose();
-
-                //dispatcher.renderAllFeatures((SubmitNodeStorage) submitNodeCollector);
-            }
-            RenderSystem.popPipelineModifier();
-        }
-
-        @Override
-        protected float getTranslateY(int height, int guiScale) {
-            return height / 2F;
-        }
-
-        @Override
-        public Class<StenciledItemPictureInPictureRenderState> getRenderStateClass() {
-            return StenciledItemPictureInPictureRenderState.class;
-        }
-
-        @Override
-        protected String getTextureLabel() {
-            return "stencil enable test";
-        }
-    }
-
-    private record StenciledItemPictureInPictureRenderState(
-            TrackingItemStackRenderState maskRenderState,
-            TrackingItemStackRenderState maskedRenderState,
-            int x0,
-            int y0,
-            int x1,
-            int y1,
-            float scale,
-            @Nullable ScreenRectangle bounds,
-            @Nullable ScreenRectangle scissorArea) implements PictureInPictureRenderState {
-        public StenciledItemPictureInPictureRenderState(
-                TrackingItemStackRenderState maskRenderState,
-                TrackingItemStackRenderState maskedRenderState,
-                int x0,
-                int y0,
-                int x1,
-                int y1,
-                float scale,
-                @Nullable ScreenRectangle scissorArea) {
-            this(maskRenderState, maskedRenderState, x0, y0, x1, y1, scale, PictureInPictureRenderState.getBounds(x0, y0, x1, y1, scissorArea), scissorArea);
-        }
     }
 }

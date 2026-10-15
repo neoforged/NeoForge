@@ -70,14 +70,13 @@ import net.minecraft.util.CommonLinks;
 import net.minecraft.util.SpecialDates;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.VersionChecker;
-import net.neoforged.fml.loading.FMLConfig;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.gui.widget.BackgroundWithPipingWidget;
 import net.neoforged.neoforge.client.gui.widget.ResizableTextureImageWidget;
 import net.neoforged.neoforge.client.gui.widget.SolidColorWidget;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.VersionChecker;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -358,7 +357,7 @@ public class ModListScreen extends Screen {
         }
 
         class Entry extends ObjectSelectionList.Entry<ModsList.Entry> {
-            private static final Identifier VERSION_CHECK_ICONS = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "textures/gui/version_check_icons.png");
+            private static final Identifier UPDATE_INDICATOR_ICON = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "update_indicator");
             final VersionChecker.@Nullable CheckResult checkResult;
             final ModDisplayInfo displayInfo;
             @Nullable
@@ -391,18 +390,13 @@ public class ModListScreen extends Screen {
                 }
                 int maxTextWidth = getRowWidth() - textLeft + left - 4;
 
-                if (checkResult != null && checkResult.status().shouldDraw() && FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.VERSION_CHECK)) {
-                    graphics.blit(
-                            RenderPipelines.GUI_TEXTURED,
-                            VERSION_CHECK_ICONS,
+                if (checkResult != null && checkResult.status().shouldDraw() && VersionChecker.isEnabled()) {
+                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED,
+                            UPDATE_INDICATOR_ICON,
                             this.getContentRight() - 10,
                             this.getContentYMiddle() - (8 / 2),
-                            checkResult.status().getSheetOffset() * 8,
-                            (checkResult.status().isAnimated() && ((System.currentTimeMillis() / 800 & 1) == 1)) ? 8 : 0,
                             8,
-                            8,
-                            64,
-                            16);
+                            8);
                     maxTextWidth -= 14;
                 }
 
@@ -670,7 +664,7 @@ public class ModListScreen extends Screen {
             if (checkResult != null) {
                 this.newerVersionWidget.setMessage(Component.translatable(
                         "neoforge.screen.mods.info.update",
-                        Component.literal(checkResult.target().toString())
+                        Component.literal(Objects.toString(checkResult.target()))
                                 .withStyle(style -> style.withItalic(false)))
                         .withStyle(style -> style.withItalic(true)));
                 this.newerVersionWidget.visible = true;

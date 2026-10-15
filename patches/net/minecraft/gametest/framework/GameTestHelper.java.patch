@@ -1,0 +1,22 @@
+--- a/net/minecraft/gametest/framework/GameTestHelper.java
++++ b/net/minecraft/gametest/framework/GameTestHelper.java
+@@ -1043,7 +_,8 @@
+ 
+     public BlockPos relativePos(BlockPos absolutePos) {
+         BlockPos testPos = this.testInfo.getTestOrigin();
+-        Rotation inverseRotation = this.testInfo.getRotation().getRotated(Rotation.CLOCKWISE_180);
++        // Neo: fix incorrect inversion of rotation
++        Rotation inverseRotation = this.testInfo.getRotation().getInverse();
+         BlockPos absolutePosBeforeTransform = StructureTemplate.transform(absolutePos, Mirror.NONE, inverseRotation, testPos);
+         return absolutePosBeforeTransform.subtract(testPos);
+     }
+@@ -1067,7 +_,8 @@
+ 
+     public Vec3 relativeVec(Vec3 absoluteVec) {
+         Vec3 testPosVec = Vec3.atLowerCornerOf(this.testInfo.getTestOrigin());
+-        return StructureTemplate.transform(absoluteVec.subtract(testPosVec), Mirror.NONE, this.testInfo.getRotation(), this.testInfo.getTestOrigin());
++        // Neo: fix incorrect conversion to relative
++        return StructureTemplate.transform(absoluteVec, Mirror.NONE, this.testInfo.getRotation().getInverse(), this.testInfo.getTestOrigin()).subtract(testPosVec);
+     }
+ 
+     public Rotation getTestRotation() {

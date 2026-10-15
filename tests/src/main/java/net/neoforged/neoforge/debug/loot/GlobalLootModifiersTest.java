@@ -24,7 +24,6 @@ import net.minecraft.advancements.predicates.MinMaxBounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.component.predicates.DataComponentPredicates;
 import net.minecraft.core.component.predicates.EnchantmentsPredicate;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -249,11 +248,9 @@ public class GlobalLootModifiersTest {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if a GLM smelting the loot table rolls works")
     static void smeltingModifierTest(final DynamicTest test) {
-        var registrySetBuilder = new RegistrySetBuilder()
-                .add(Registries.ENCHANTMENT, boot -> boot
-                        .register(SMELT, new Enchantment.Builder(Enchantment.definition(boot.lookup(Registries.ITEM).getOrThrow(ItemTags.MINING_ENCHANTABLE), 10, 1, Enchantment.dynamicCost(1, 10), Enchantment.dynamicCost(5, 10), 1, EquipmentSlotGroup.HAND))
-                                .build(SMELT.identifier())));
-        HELPER.generateWorldRegistries(registrySetBuilder);
+        HELPER.registriesForTest(registries -> registries.add(Registries.ENCHANTMENT, boot -> boot
+                .register(SMELT, new Enchantment.Builder(Enchantment.definition(boot.lookup(Registries.ITEM).getOrThrow(ItemTags.MINING_ENCHANTABLE), 10, 1, Enchantment.dynamicCost(1, 10), Enchantment.dynamicCost(5, 10), 1, EquipmentSlotGroup.HAND))
+                        .build(SMELT.identifier()))));
 
         var subpack = HELPER.registerSubpack("smelt_glms");
         HELPER.addClientProvider(event -> new GlobalLootModifierProvider(event.getGenerator().getPackOutput(subpack), event.getReloadableLookupProvider(), HELPER.modId()) {

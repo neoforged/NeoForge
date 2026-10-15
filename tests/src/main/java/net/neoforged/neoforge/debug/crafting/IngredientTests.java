@@ -19,7 +19,6 @@ import net.minecraft.advancements.triggers.Criterion;
 import net.minecraft.advancements.triggers.RecipeUnlockedTrigger;
 import net.minecraft.core.FrontAndTop;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -68,7 +67,7 @@ public class IngredientTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if BlockTagIngredient works")
     static void blockTagIngredient(final DynamicTest test, final RegistrationHelper reg) {
-        reg.generateReloadableRegistries(new RegistrySetBuilder().add(RecipeProvider.asBootstrap((recipes, advancements) -> new RecipeProvider(recipes, advancements) {
+        reg.registriesForTest(registries -> registries.recipe((recipes, advancements) -> new RecipeProvider(recipes, advancements) {
             @Override
             protected void buildRecipes() {
                 this.shapeless(RecipeCategory.MISC, Items.MUD)
@@ -77,7 +76,7 @@ public class IngredientTests {
                         .unlockedBy("has_item", has(Items.WATER_BUCKET))
                         .save(output, ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(reg.modId(), "block_tag")));
             }
-        })));
+        }));
 
         test.onGameTest(helper -> helper
                 .startSequence()
@@ -99,7 +98,7 @@ public class IngredientTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if partial NBT ingredients match the correct stacks")
     static void partialNBTIngredient(final DynamicTest test, final RegistrationHelper reg) {
-        reg.generateReloadableRegistries(new RegistrySetBuilder().add(RecipeProvider.asBootstrap((recipes, advancements) -> new RecipeProvider(recipes, advancements) {
+        reg.registriesForTest(registries -> registries.recipe((recipes, advancements) -> new RecipeProvider(recipes, advancements) {
             @Override
             protected void buildRecipes() {
                 this.shaped(RecipeCategory.MISC, Items.ALLIUM)
@@ -112,7 +111,7 @@ public class IngredientTests {
                         .unlockedBy("has_axe", has(Items.IRON_AXE))
                         .save(output, ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(reg.modId(), "partial_nbt")));
             }
-        })));
+        }));
 
         test.onGameTest(helper -> helper
                 .startSequence()
@@ -145,7 +144,7 @@ public class IngredientTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if strict NBT ingredients match the correct stacks")
     static void strictNBTIngredient(final DynamicTest test, final RegistrationHelper reg) {
-        reg.generateReloadableRegistries(new RegistrySetBuilder().add(RecipeProvider.asBootstrap((recipes, advancements) -> new RecipeProvider(recipes, advancements) {
+        reg.registriesForTest(registries -> registries.recipe((recipes, advancements) -> new RecipeProvider(recipes, advancements) {
             @Override
             protected void buildRecipes() {
                 this.shapeless(RecipeCategory.MISC, Items.ACACIA_BOAT)
@@ -159,7 +158,7 @@ public class IngredientTests {
                         .unlockedBy("has_pick", has(Items.DIAMOND_PICKAXE))
                         .save(output, ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(reg.modId(), "strict_nbt")));
             }
-        })));
+        }));
 
         test.onGameTest(helper -> helper
                 .startSequence()
@@ -336,7 +335,7 @@ public class IngredientTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if sized ingredients serialize and deserialize correctly")
     static void testSizedIngredient(final DynamicTest test, final RegistrationHelper reg) {
-        reg.generateReloadableRegistries(new RegistrySetBuilder().add(RecipeProvider.asBootstrap((recipes, advancements) -> new RecipeProvider(recipes, advancements) {
+        reg.registriesForTest(registries -> registries.recipe((recipes, advancements) -> new RecipeProvider(recipes, advancements) {
             @Override
             protected void buildRecipes() {
                 CompressedShapelessRecipeBuilder.compressedShapeless(RecipeCategory.MISC, Items.CHERRY_FENCE)
@@ -347,7 +346,7 @@ public class IngredientTests {
                         .unlockedBy("has_pick", has(Items.DIAMOND_PICKAXE))
                         .save(output, ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(reg.modId(), "sized_ingredient_1")));
             }
-        })));
+        }));
 
         test.onGameTest(helper -> helper
                 .startSequence()

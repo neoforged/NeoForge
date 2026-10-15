@@ -147,6 +147,7 @@ import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
@@ -163,6 +164,8 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.LevelStorageSource;
@@ -834,7 +837,7 @@ public class CommonHooks {
     public static boolean onPlayerAttackTarget(Player player, Entity target) {
         if (NeoForge.EVENT_BUS.post(new AttackEntityEvent(player, target)).isCanceled())
             return false;
-        ItemStack stack = player.getMainHandItem();
+        ItemStack stack = player.getWeaponItem();
         return stack.isEmpty() || !stack.getItem().onLeftClickEntity(stack, player, target);
     }
 
@@ -1877,7 +1880,7 @@ public class CommonHooks {
                 if (output.getConnectionType().isOther()) {
                     List<ItemAttributeModifiers.Entry> filteredModifiers = new ArrayList<>(modifiers.size());
                     for (ItemAttributeModifiers.Entry entry : modifiers) {
-                        if (entry.attribute().key().identifier().getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
+                        if (entry.attribute().is(key -> key.identifier().getNamespace().equals(Identifier.DEFAULT_NAMESPACE))) {
                             filteredModifiers.add(entry);
                         }
                     }
@@ -1903,5 +1906,29 @@ public class CommonHooks {
     /// @see Level#getDescription()
     public static Component getDimensionDescription(ResourceKey<Level> dimensionKey) {
         return Component.translatableWithFallback(getDimensionDescriptionKey(dimensionKey), dimensionKey.identifier().toString());
+    }
+
+    public static List<StructureTemplate.StructureEntityInfo> processStructureEntityInfos(
+            @Nullable StructureTemplate template,
+            LevelAccessor level,
+            BlockPos position,
+            StructurePlaceSettings settings,
+            List<StructureTemplate.StructureEntityInfo> entityInfoList) {
+        List<StructureTemplate.StructureEntityInfo> list = new ArrayList<>();
+        for (StructureTemplate.StructureEntityInfo entityInfo : entityInfoList) {
+            Vec3 pos = StructureTemplate.transformedVec3d(settings, entityInfo.pos).add(Vec3.atLowerCornerOf(position));
+            BlockPos blockpos = StructureTemplate.calculateRelativePosition(settings, entityInfo.blockPos).offset(position);
+            StructureTemplate.StructureEntityInfo info = new StructureTemplate.StructureEntityInfo(pos, blockpos, entityInfo.nbt);
+            for (StructureProcessor proc : settings.getProcessors()) {
+                info = proc.processEntity(level, position, entityInfo, info, settings, template);
+                if (info == null) {
+                    break;
+                }
+            }
+            if (info != null) {
+                list.add(info);
+            }
+        }
+        return list;
     }
 }

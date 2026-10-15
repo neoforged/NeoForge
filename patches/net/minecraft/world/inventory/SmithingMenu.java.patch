@@ -1,0 +1,23 @@
+--- a/net/minecraft/world/inventory/SmithingMenu.java
++++ b/net/minecraft/world/inventory/SmithingMenu.java
+@@ -69,12 +_,20 @@
+ 
+     @Override
+     protected void onTake(Player player, ItemStack carried) {
++        // Neo: Fire the event before any other methods are called. This does not cover quick-crafting, because in that case, this receives an empty stack.
++        if (!carried.isEmpty()) net.neoforged.neoforge.event.EventHooks.firePlayerSmithedEvent(player, this.inputSlots, carried);
+         carried.onCraftedBy(player, carried.getCount());
+         this.resultSlots.awardUsedRecipes(player, this.getRelevantItems());
+         this.shrinkStackInSlot(0);
+         this.shrinkStackInSlot(1);
+         this.shrinkStackInSlot(2);
+         this.access.execute((level, pos) -> level.levelEvent(1044, pos, 0));
++    }
++
++    @Override
++    protected void onQuickCraft(ItemStack picked, int amount) {
++        // Neo: Fire the event for quick-crafting
++        net.neoforged.neoforge.event.EventHooks.firePlayerSmithedEvent(player, this.inputSlots, picked);
+     }
+ 
+     private List<ItemStack> getRelevantItems() {

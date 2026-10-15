@@ -29,7 +29,7 @@
              this.uniforms.clear();
              this.uniforms.size(vulkanRenderPipeline.uniforms().size());
 +            if (this.hasStencil) {
-+                VK12.vkCmdBindPipeline(this.commandBuffer(), VK12.VK_PIPELINE_BIND_POINT_GRAPHICS, this.pipeline.withDepthStencilPipeline());
++                VK12.vkCmdBindPipeline(this.commandBuffer(), VK12.VK_PIPELINE_BIND_POINT_GRAPHICS, this.hasDepth ? this.pipeline.withDepthStencilPipeline() : this.pipeline.withStencilPipeline());
 +                return;
 +            }
              VK12.vkCmdBindPipeline(this.commandBuffer(), 0, this.hasDepth ? this.pipeline.withDepthPipeline() : this.pipeline.withoutDepthPipeline());

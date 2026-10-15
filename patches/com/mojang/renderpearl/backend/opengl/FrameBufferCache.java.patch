@@ -1,11 +1,10 @@
 --- a/com/mojang/renderpearl/backend/opengl/FrameBufferCache.java
 +++ b/com/mojang/renderpearl/backend/opengl/FrameBufferCache.java
-@@ -51,7 +_,7 @@
-         }
+@@ -52,6 +_,7 @@
  
          dsa.bindFrameBufferTextures(
--            fbo, colorIds, mipLevels, depthAttachment == null ? 0 : depthAttachment.glId(), depthAttachment == null ? 0 : depthAttachment.fboMipLevel(), 0
-+            fbo, colorIds, mipLevels, depthAttachment == null ? 0 : depthAttachment.glId(), depthAttachment == null ? 0 : depthAttachment.fboMipLevel(), 0, depthAttachment != null && depthAttachment.hasStencilAspect()
+             fbo, colorIds, mipLevels, depthAttachment == null ? 0 : depthAttachment.glId(), depthAttachment == null ? 0 : depthAttachment.fboMipLevel(), 0
++            , depthAttachment != null && depthAttachment.hasStencilAspect() ? depthAttachment.glId() : 0, depthAttachment != null && depthAttachment.hasStencilAspect() ? depthAttachment.fboMipLevel() : 0
          );
          return fbo;
      }

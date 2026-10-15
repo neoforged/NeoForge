@@ -1144,8 +1144,7 @@ public class EntityFluidInteractionTests {
         }
 
         void assertEntityPosition(Entity entity, BlockPos comparePos, BiPredicate<BlockPos, BlockPos> predicate, String message) {
-            // Converting absolute to relative positions is broken, so we do it the stupid way
-            this.assertEntityProperty(entity, e -> predicate.test(this.absolutePos(comparePos), e.blockPosition()), message);
+            this.assertEntityProperty(entity, e -> this.relativePos(e.blockPosition()), message, comparePos, predicate);
         }
 
         boolean checkCanSwim(LivingEntity entity) {

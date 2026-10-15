@@ -1,8 +1,10 @@
 --- a/com/mojang/renderpearl/backend/vulkan/VulkanCommandEncoder.java
 +++ b/com/mojang/renderpearl/backend/vulkan/VulkanCommandEncoder.java
-@@ -320,11 +_,21 @@
+@@ -319,12 +_,24 @@
+                     depthAttachmentInfo.loadOp(0);
                  }
  
++                if (depthAttachment.textureView().texture().getFormat().hasDepthAspect())
                  renderingInfo.pDepthAttachment(depthAttachmentInfo);
 +
 +                if (vulkanDepthAttachment.texture().getFormat().hasStencilAspect()) {
@@ -16,10 +18,11 @@
              }
  
              KHRDynamicRendering.vkCmdBeginRenderingKHR(this.commandBuffer(), renderingInfo);
++            boolean hasDepth = depthAttachment != null && depthAttachment.textureView().texture().getFormat().hasDepthAspect();
 +            boolean hasStencil = depthAttachment != null && depthAttachment.textureView().texture().getFormat().hasStencilAspect();
              this.currentRenderPass = new VulkanRenderPass(
 -                this.device, this, this.commandBuffer(), this.checkpointStorage, renderArea, width, height, depthAttachment != null, descriptor.label()
-+                this.device, this, this.commandBuffer(), this.checkpointStorage, renderArea, width, height, depthAttachment != null, hasStencil, descriptor.label()
++                this.device, this, this.commandBuffer(), this.checkpointStorage, renderArea, width, height, hasDepth, hasStencil, descriptor.label()
              );
          }
  

@@ -7,42 +7,45 @@ package net.neoforged.neoforge.data.event;
 
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.IModBusEvent;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.ApiStatus;
 
+/// Gathers the providers used to generate data and resources. This is only fired for mods that are added via
+/// '--mod' in the run arguments.
+///
+/// These events are not [cancellable][ICancellableEvent].
+///
+/// These events are fired on the mod-specific event bus, during data generation.
+/// 
+/// @see GatherDataEvent.Client
+/// @see GatherDataEvent.Server
 public abstract sealed class GatherDataEvent extends Event implements IModBusEvent {
     private final DataGenerator dataGenerator;
     private final DataGeneratorConfig config;
     private final ModContainer modContainer;
     private final PackGenerator defaultPackGenerator;
+    private final DatapackRegistrySets<CompletableFuture<HolderLookup.Provider>> registries;
+    private int packCounter = 0;
 
-    @Nullable
-    CompletableFuture<HolderLookup.Provider> worldRegistriesWithModdedEntries = null;
-    @Nullable
-    CompletableFuture<HolderLookup.Provider> reloadableRegistries = null;
-    @Nullable
-    CompletableFuture<HolderLookup.Provider> reloadableRegistriesWithModdedEntries = null;
-
-    public GatherDataEvent(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig) {
+    @ApiStatus.Internal
+    public GatherDataEvent(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig, final DatapackRegistrySets<CompletableFuture<HolderLookup.Provider>> registries) {
         this.modContainer = mc;
         this.dataGenerator = dataGenerator;
         this.config = dataGeneratorConfig;
-        this.defaultPackGenerator = new PackGenerator(this, dataGenerator.getPackOutput());
+        this.registries = registries;
+        this.defaultPackGenerator = new PackGenerator(this, dataGenerator.getPackOutput(), mc.getModId() + "-global");
     }
 
     public ModContainer getModContainer() {
@@ -69,21 +72,17 @@ public abstract sealed class GatherDataEvent extends Event implements IModBusEve
     }
 
     public PackGenerator getPackGenerator(PackOutput output) {
-        return new PackGenerator(this, output);
+        return new PackGenerator(this, output, this.modContainer.getModId() + "-pack[" + (packCounter++) + "]");
     }
 
+    /// {@return the world registries with all modded entries}
     public CompletableFuture<HolderLookup.Provider> getWorldLookupProvider() {
-        return Objects.requireNonNullElse(this.worldRegistriesWithModdedEntries, this.config.worldLookupProvider);
+        return this.registries.worldAndDimension();
     }
 
+    /// {@return the reloadable registries with all modded entries}
     public CompletableFuture<HolderLookup.Provider> getReloadableLookupProvider() {
-        if (this.reloadableRegistriesWithModdedEntries != null) {
-            return this.reloadableRegistriesWithModdedEntries;
-        }
-        if (this.reloadableRegistries == null) {
-            this.reloadableRegistries = getWorldLookupProvider().thenApply(VanillaRegistries::createReloadableLookup);
-        }
-        return this.reloadableRegistries;
+        return this.registries.reloadable();
     }
 
     public boolean includeDev() {
@@ -99,14 +98,16 @@ public abstract sealed class GatherDataEvent extends Event implements IModBusEve
     }
 
     public static final class Server extends GatherDataEvent {
-        public Server(ModContainer mc, DataGenerator dataGenerator, DataGeneratorConfig dataGeneratorConfig) {
-            super(mc, dataGenerator, dataGeneratorConfig);
+        @ApiStatus.Internal
+        public Server(ModContainer mc, DataGenerator dataGenerator, DataGeneratorConfig dataGeneratorConfig, DatapackRegistrySets<CompletableFuture<HolderLookup.Provider>> registries) {
+            super(mc, dataGenerator, dataGeneratorConfig, registries);
         }
     }
 
     public static final class Client extends GatherDataEvent {
-        public Client(ModContainer mc, DataGenerator dataGenerator, DataGeneratorConfig dataGeneratorConfig) {
-            super(mc, dataGenerator, dataGeneratorConfig);
+        @ApiStatus.Internal
+        public Client(ModContainer mc, DataGenerator dataGenerator, DataGeneratorConfig dataGeneratorConfig, DatapackRegistrySets<CompletableFuture<HolderLookup.Provider>> registries) {
+            super(mc, dataGenerator, dataGeneratorConfig, registries);
         }
     }
 
@@ -126,32 +127,9 @@ public abstract sealed class GatherDataEvent extends Event implements IModBusEve
         this.defaultPackGenerator.createBlockAndItemTags(blockTagsProvider, itemTagsProvider);
     }
 
-    public void createWorldRegistryObjects(RegistrySetBuilder entriesBuilder) {
-        this.defaultPackGenerator.createWorldRegistryObjects(entriesBuilder);
-    }
-
-    public void createWorldRegistryObjects(RegistrySetBuilder entriesBuilder, Set<String> modIds) {
-        this.defaultPackGenerator.createWorldRegistryObjects(entriesBuilder, modIds);
-    }
-
-    public void createWorldRegistryObjects(RegistrySetBuilder entriesBuilder, Set<String> modIds, String name) {
-        this.defaultPackGenerator.createWorldRegistryObjects(entriesBuilder, modIds, name);
-    }
-
-    public void createReloadableRegistryObjects(RegistrySetBuilder entriesBuilder) {
-        this.defaultPackGenerator.createReloadableRegistryObjects(entriesBuilder);
-    }
-
-    public void createReloadableRegistryObjects(RegistrySetBuilder entriesBuilder, Set<String> modIds) {
-        this.defaultPackGenerator.createReloadableRegistryObjects(entriesBuilder, modIds);
-    }
-
-    public void createReloadableRegistryObjects(RegistrySetBuilder entriesBuilder, Set<String> modIds, String name) {
-        this.defaultPackGenerator.createReloadableRegistryObjects(entriesBuilder, modIds, name);
-    }
-
+    @ApiStatus.Internal
     @FunctionalInterface
     public interface GatherDataEventGenerator {
-        GatherDataEvent create(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig);
+        GatherDataEvent create(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig, final DatapackRegistrySets<CompletableFuture<HolderLookup.Provider>> registries);
     }
 }

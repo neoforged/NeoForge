@@ -8,6 +8,7 @@ package net.neoforged.neoforge.client.entity.animation;
 import net.minecraft.client.animation.AnimationChannel;
 import net.minecraft.client.animation.KeyframeAnimations;
 import org.joml.Vector3f;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Wrapper for a {@link AnimationChannel.Target} and a way to transform a simple keyframe vector into a vector that
@@ -48,7 +49,7 @@ public record AnimationTarget(
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         return this == obj;
     }
 

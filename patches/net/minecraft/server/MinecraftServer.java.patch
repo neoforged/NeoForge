@@ -1,6 +1,14 @@
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -291,7 +_,7 @@
+@@ -288,10 +_,15 @@
+     private final PacketProcessor packetProcessor;
+     private final TimerQueue<MinecraftServer> scheduledEvents;
+     private final ServerClockManager clockManager;
++    private static final com.google.gson.Gson STATUS_GSON = new com.google.gson.Gson();
++    /// Neo: cache the server status JSON in case a client spams requests
++    @Nullable
++    private String cachedServerStatus;
++    private final Map<ResourceKey<Level>, long[]> perWorldTickTimes = Maps.newIdentityHashMap();
  
      public static <S extends MinecraftServer> S spin(Function<Thread, S> factory) {
          AtomicReference<S> serverReference = new AtomicReference<>();
@@ -25,11 +33,13 @@
              } else {
                  level = overworld;
              }
-@@ -481,6 +_,7 @@
+@@ -481,6 +_,9 @@
              levelData.setSpawn(LevelData.RespawnData.of(level.dimension(), BlockPos.ZERO.above(80), 0.0F, 0.0F));
          } else {
              ServerChunkCache chunkSource = level.getChunkSource();
-+            if (net.neoforged.neoforge.event.EventHooks.onCreateWorldSpawn(level, levelData)) return;
++            if (net.neoforged.neoforge.event.EventHooks.onCreateWorldSpawn(level, levelData)) {
++                return;
++            }
              ChunkPos spawnChunk = chunkSource.getGenerator().getOrigin(chunkSource.randomState());
              levelLoadListener.start(LevelLoadListener.Stage.PREPARE_GLOBAL_SPAWN, 0);
              levelLoadListener.updateFocus(level.dimension(), spawnChunk);
@@ -57,24 +67,26 @@
              this.nextTickTimeNanos = Util.getNanos();
              this.statusIcon = this.loadStatusIcon().orElse(null);
              this.status = this.buildServerStatus();
-+            resetStatusCache(status);
++            this.resetStatusCache(status);
  
              while (this.running) {
                  long thisTickNanos;
-@@ -761,6 +_,8 @@
+@@ -761,6 +_,9 @@
                  this.isReady = true;
                  JvmProfiler.INSTANCE.onServerTick(this.smoothedTickTimeMillis);
              }
 +            net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStopping(this);
-+            net.neoforged.neoforge.server.ServerLifecycleHooks.expectServerStopped(); // Forge: Has to come before MinecraftServer#onServerCrash to avoid race conditions
++            // Neo: Has to come before MinecraftServer#onServerCrash to avoid race conditions
++            net.neoforged.neoforge.server.ServerLifecycleHooks.expectServerStopped();
          } catch (Throwable t) {
              LOGGER.error("Encountered an unexpected exception", t);
              CrashReport report = constructOrExtractCrashReport(t);
-@@ -772,6 +_,7 @@
+@@ -772,6 +_,8 @@
                  LOGGER.error("We were unable to save this crash report to disk.");
              }
  
-+            net.neoforged.neoforge.server.ServerLifecycleHooks.expectServerStopped(); // Forge: Has to come before MinecraftServer#onServerCrash to avoid race conditions
++            // Neo: Has to come before MinecraftServer#onServerCrash to avoid race conditions
++            net.neoforged.neoforge.server.ServerLifecycleHooks.expectServerStopped();
              this.onServerCrash(report);
          } finally {
              try {
@@ -96,7 +108,7 @@
          if (nano - this.lastServerStatus >= STATUS_EXPIRE_TIME_NANOS) {
              this.lastServerStatus = nano;
              this.status = this.buildServerStatus();
-+            resetStatusCache(status);
++            this.resetStatusCache(status);
          }
  
          this.ticksUntilAutosave--;
@@ -108,23 +120,6 @@
      }
  
      protected void processPacketsAndTick(boolean sprinting) {
-@@ -1013,6 +_,16 @@
-         }
-     }
- 
-+    private static final com.google.gson.Gson GSON = new com.google.gson.Gson();
-+    private String cachedServerStatus; // Neo: cache the server status json in case a client spams requests
-+    private void resetStatusCache(ServerStatus status) {
-+        this.cachedServerStatus = GSON.toJson(ServerStatus.CODEC.encodeStart(com.mojang.serialization.JsonOps.INSTANCE, status)
-+                .result().orElseThrow());
-+    }
-+    public String getStatusJson() {
-+        return cachedServerStatus;
-+    }
-+
-     private int computeNextAutosaveInterval() {
-         float ticksPerSecond;
-         if (this.tickRateManager.isSprinting()) {
 @@ -1044,7 +_,8 @@
              Optional.of(players),
              Optional.of(ServerStatus.Version.current()),
@@ -135,12 +130,10 @@
          );
      }
  
-@@ -1089,9 +_,11 @@
-         profiler.push("levels");
+@@ -1090,8 +_,10 @@
          this.updateEffectiveRespawnData();
  
--        for (ServerLevel level : this.getAllLevels()) {
-+        for (ServerLevel level : this.getWorldArray()) {
+         for (ServerLevel level : this.getAllLevels()) {
 +            long tickStart = Util.getNanos();
              profiler.push(() -> level + " " + level.dimension().identifier());
              profiler.push("tick");
@@ -156,20 +149,19 @@
  
              profiler.pop();
              profiler.pop();
-+            perWorldTickTimes.computeIfAbsent(level.dimension(), k -> new long[100])[this.tickCount % 100] = Util.getNanos() - tickStart;
++            this.perWorldTickTimes.computeIfAbsent(level.dimension(), _ -> new long[100])[this.tickCount % 100] = Util.getNanos() - tickStart;
          }
  
          profiler.popPush("connection");
-@@ -1111,8 +_,8 @@
+@@ -1111,7 +_,7 @@
          this.playerList.tick();
          profiler.popPush("debugSubscribers");
          this.debugSubscribers.tick();
 -        if (this.tickRateManager.runsNormally()) {
-             profiler.popPush("gameTests");
 +        if (net.neoforged.neoforge.gametest.GameTestHooks.isGametestEnabled() && this.tickRateManager.runsNormally()) {
+             profiler.popPush("gameTests");
              GameTestTicker.SINGLETON.tick();
          }
- 
 @@ -1144,6 +_,9 @@
      }
  
@@ -202,11 +194,12 @@
                      .flatMap(Pack::open)
                      .collect(ImmutableList.toImmutableList()),
                  this
-@@ -1540,6 +_,7 @@
+@@ -1540,6 +_,8 @@
                  this.getPlayerList().reloadResources();
                  this.functionManager.replaceLibrary(this.resources.managers.getFunctionLibrary());
                  this.structureTemplateManager.onResourceManagerReload(this.resources.resourceManager);
-+                this.getPlayerList().getPlayers().forEach(this.getPlayerList()::sendPlayerPermissionLevel); //Forge: Fix newly added/modified commands not being sent to the client when commands reload.
++                // Neo: Fix newly added/modified commands not being sent to the client when commands reload.
++                this.getPlayerList().getPlayers().forEach(this.getPlayerList()::sendPlayerPermissionLevel);
              }, this);
          if (this.isSameThread()) {
              this.managedBlock(result::isDone);
@@ -229,38 +222,6 @@
 +        net.neoforged.neoforge.resource.ResourcePackLoader.reorderNewlyDiscoveredPacks(selected, dataPackConfig.getEnabled(), packRepository);
 +
          return configureRepositoryWithSelection(packRepository, selected, forcedFeatures, true);
-     }
- 
-@@ -1810,6 +_,31 @@
- 
-     public abstract boolean isSingleplayerOwner(NameAndId nameAndId);
- 
-+    private Map<ResourceKey<Level>, long[]> perWorldTickTimes = Maps.newIdentityHashMap();
-+    @Nullable
-+    public long[] getTickTime(ResourceKey<Level> dim) {
-+        return perWorldTickTimes.get(dim);
-+    }
-+
-+    @Deprecated //Forge Internal use Only, You can screw up a lot of things if you mess with this map.
-+    public synchronized Map<ResourceKey<Level>, ServerLevel> forgeGetWorldMap() {
-+        return this.levels;
-+    }
-+    private int worldArrayMarker = 0;
-+    private int worldArrayLast = -1;
-+    private ServerLevel[] worldArray;
-+    @Deprecated //Forge Internal use Only, use to protect against concurrent modifications in the world tick loop.
-+    public synchronized void markWorldsDirty() {
-+        worldArrayMarker++;
-+    }
-+    private ServerLevel[] getWorldArray() {
-+        if (worldArrayMarker == worldArrayLast && worldArray != null)
-+            return worldArray;
-+        worldArray = this.levels.values().stream().toArray(x -> new ServerLevel[x]);
-+        worldArrayLast = worldArrayMarker;
-+        return worldArray;
-+    }
-+
-     public void dumpServerProperties(Path path) throws IOException {
      }
  
 @@ -1969,6 +_,10 @@
@@ -298,3 +259,23 @@
      }
  
      @Deprecated
+@@ -2200,6 +_,19 @@
+ 
+     public ServerDebugSubscribers debugSubscribers() {
+         return this.debugSubscribers;
++    }
++
++    public long @Nullable[] getTickTime(ResourceKey<Level> dim) {
++        return this.perWorldTickTimes.get(dim);
++    }
++
++    private void resetStatusCache(ServerStatus status) {
++        this.cachedServerStatus = STATUS_GSON.toJson(ServerStatus.CODEC.encodeStart(com.mojang.serialization.JsonOps.INSTANCE, status)
++                .result().orElseThrow());
++    }
++
++    public @Nullable String getStatusJson() {
++        return this.cachedServerStatus;
+     }
+ 
+     public enum MultiplayerScope {

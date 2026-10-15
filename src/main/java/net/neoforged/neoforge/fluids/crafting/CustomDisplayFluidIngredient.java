@@ -16,6 +16,7 @@ import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.jspecify.annotations.Nullable;
 
 /**
  * FluidIngredient that wraps another fluid ingredient to override its {@link SlotDisplay}.
@@ -77,7 +78,7 @@ public final class CustomDisplayFluidIngredient extends FluidIngredient {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         return obj instanceof CustomDisplayFluidIngredient other &&
                 Objects.equals(this.base, other.base) &&
                 Objects.equals(this.display, other.display);

@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.server.permission.nodes;
 
 import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 
 /**
  * <p>Type of a Permission, use the existing Types in {@link PermissionTypes}</p>
@@ -30,7 +31,7 @@ public final class PermissionType<T> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this) return true;
         if (!(obj instanceof PermissionType otherType)) return false;
         return Objects.equals(this.typeToken, otherType.typeToken) &&
