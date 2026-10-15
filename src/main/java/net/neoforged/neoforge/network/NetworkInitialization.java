@@ -7,6 +7,7 @@ package net.neoforged.neoforge.network;
 
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.attachment.sync.SyncAttachmentsPayload;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.network.configuration.CheckExtensibleEnums;
 import net.neoforged.neoforge.network.configuration.CheckFeatureFlags;
@@ -28,7 +29,6 @@ import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsReplyPayload;
 import net.neoforged.neoforge.network.payload.RecipeContentPayload;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
-import net.neoforged.neoforge.network.payload.SyncAttachmentsPayload;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.RegistryManager;
 import org.jetbrains.annotations.ApiStatus;
