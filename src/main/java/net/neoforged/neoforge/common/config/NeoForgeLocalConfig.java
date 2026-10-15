@@ -38,7 +38,7 @@ public final class NeoForgeLocalConfig {
         enableGlobalDatapacksAutomatically = builder
                 .comment("Controls whether datapacks loaded from the global 'datapacks' folder (in the game directory) are automatically enabled for new worlds.")
                 .translation("neoforge.configgui.enableGlobalDatapacksAutomatically")
-                .define("enableGlobalDatapacksAutomatically", false);
+                .define("enableGlobalDatapacksAutomatically", true);
     }
 
     static {
