@@ -44,6 +44,30 @@
              if (itemenchantments != null && !itemenchantments.isEmpty()) {
                  EnchantedItemInUse enchantediteminuse = new EnchantedItemInUse(p_44852_, p_345566_, p_345792_);
  
+@@ -325,7 +_,13 @@
+         return Math.max(0, mutablefloat.intValue());
+     }
+ 
++    /** @deprecated Neo: use {@link #processEquipmentDropChance(ServerLevel, LivingEntity, DamageSource, float, EquipmentSlot)} */
++    @Deprecated
+     public static float processEquipmentDropChance(ServerLevel p_346339_, LivingEntity p_345864_, DamageSource p_345060_, float p_346089_) {
++        return processEquipmentDropChance(p_346339_, p_345864_, p_345060_, p_346089_, null);
++    }
++
++    public static float processEquipmentDropChance(ServerLevel p_346339_, LivingEntity p_345864_, DamageSource p_345060_, float p_346089_, @Nullable EquipmentSlot slot) {
+         MutableFloat mutablefloat = new MutableFloat(p_346089_);
+         RandomSource randomsource = p_345864_.getRandom();
+         runIterationOnEquipment(p_345864_, (p_347320_, p_347321_, p_347322_) -> {
+@@ -356,6 +_,9 @@
+             );
+         }
+ 
++        // Neo: allow mods to modify the drop chance for equipment with the relevant context
++        net.neoforged.neoforge.event.EventHooks.onEquipmentDropChance(p_346339_, p_345864_, p_345060_, mutablefloat, p_346089_, slot);
++
+         return mutablefloat.floatValue();
+     }
+ 
 @@ -417,6 +_,12 @@
      public static boolean hasTag(ItemStack p_345665_, TagKey<Enchantment> p_345928_) {
          ItemEnchantments itemenchantments = p_345665_.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);

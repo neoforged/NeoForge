@@ -88,6 +88,16 @@
          if (this.level().getDifficulty() == Difficulty.PEACEFUL && this.shouldDespawnInPeaceful()) {
              this.discard();
          } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {
+@@ -939,7 +_,8 @@
+                 if (entity instanceof LivingEntity) {
+                     LivingEntity livingentity = (LivingEntity)entity;
+                     if (this.level() instanceof ServerLevel serverlevel) {
+-                        f = EnchantmentHelper.processEquipmentDropChance(serverlevel, livingentity, p_21385_, f);
++                        // Neo: pass in slot context for GetEquipmentDropChanceEvent
++                        f = EnchantmentHelper.processEquipmentDropChance(serverlevel, livingentity, p_21385_, f, equipmentslot);
+                     }
+                 }
+ 
 @@ -1133,6 +_,11 @@
          }
      }

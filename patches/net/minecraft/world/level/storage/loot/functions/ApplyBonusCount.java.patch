@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/storage/loot/functions/ApplyBonusCount.java
++++ b/net/minecraft/world/level/storage/loot/functions/ApplyBonusCount.java
+@@ -76,6 +_,10 @@
+         ItemStack itemstack = p_79914_.getParamOrNull(LootContextParams.TOOL);
+         if (itemstack != null) {
+             int i = EnchantmentHelper.getItemEnchantmentLevel(this.enchantment, itemstack);
++
++            // Neo: Allow mods to modify the enchantment level for loot calculations with relevant context.
++            i = net.neoforged.neoforge.event.EventHooks.getBlockLootEnchantmentLevel(itemstack, this.enchantment, i, p_79914_);
++
+             int j = this.formula.calculateNewCount(p_79914_.getRandom(), p_79913_.getCount(), i);
+             p_79913_.setCount(j);
+         }
