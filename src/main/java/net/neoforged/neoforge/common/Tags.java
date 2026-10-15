@@ -211,6 +211,12 @@ public class Tags {
          * Recipe viewers may use this to automatically find the corresponding BlockItem to hide.
          */
         public static final TagKey<Block> HIDDEN_FROM_RECIPE_VIEWERS = tag("hidden_from_recipe_viewers");
+
+        /**
+         * Solid/full blocks of Ice.
+         */
+        public static final TagKey<Block> ICE = tag("ice");
+
         public static final TagKey<Block> NETHERRACKS = tag("netherracks");
         public static final TagKey<Block> OBSIDIANS = tag("obsidians");
         /**
@@ -806,6 +812,10 @@ public class Tags {
          * Tag that holds all items that recipe viewers should not show to users.
          */
         public static final TagKey<Item> HIDDEN_FROM_RECIPE_VIEWERS = tag("hidden_from_recipe_viewers");
+        /**
+         * Solid/full blocks of Ice.
+         */
+        public static final TagKey<Item> ICE = tag("ice");
         public static final TagKey<Item> INGOTS = tag("ingots");
         public static final TagKey<Item> INGOTS_COPPER = tag("ingots/copper");
         public static final TagKey<Item> INGOTS_GOLD = tag("ingots/gold");

@@ -115,6 +115,7 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
                 Blocks.DRAGON_HEAD, Blocks.DRAGON_WALL_HEAD)
                 .addTag(BlockTags.SKULLS);
         tag(Tags.Blocks.HIDDEN_FROM_RECIPE_VIEWERS);
+        tag(Tags.Blocks.ICE).add(Blocks.ICE, Blocks.PACKED_ICE, Blocks.BLUE_ICE, Blocks.FROSTED_ICE);
         tag(Tags.Blocks.NETHERRACKS).add(Blocks.NETHERRACK);
         tag(Tags.Blocks.OBSIDIANS_NORMAL).add(Blocks.OBSIDIAN);
         tag(Tags.Blocks.OBSIDIANS_CRYING).add(Blocks.CRYING_OBSIDIAN);
