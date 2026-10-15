@@ -7,7 +7,7 @@
 +    @Nullable
 +    private EntitySpawnReason spawnType;
 +    private boolean spawnCancelled = false;
-+    /** Neo: Prevent immediate spawning from conversions to capture conversion results for events */
++    /// Neo: Prevent immediate spawning from conversions to capture conversion results for events
 +    protected boolean preventConversionSpawns = false;
  
      protected Mob(EntityType<? extends Mob> type, Level level) {
@@ -18,22 +18,24 @@
      public void setTarget(@Nullable LivingEntity target) {
 -        this.target = this.asValidTarget(target);
 +        target = this.asValidTarget(target);
-+        net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent changeTargetEvent = net.neoforged.neoforge.common.CommonHooks.onLivingChangeTarget(this, target, net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET);
-+        if(!changeTargetEvent.isCanceled()) {
-+             this.target = changeTargetEvent.getNewAboutToBeSetTarget();
++        var event = net.neoforged.neoforge.common.CommonHooks.onLivingChangeTarget(this, target, net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET);
++        if (!event.isCanceled()) {
++             this.target = event.getNewAboutToBeSetTarget();
 +        }
      }
  
      @Override
-@@ -346,6 +_,12 @@
+@@ -346,6 +_,14 @@
          if (!this.level().isClientSide() && this.tickCount % 5 == 0) {
              this.updateControlFlags();
          }
 +
-+        // Neo: Animal armor tick patch
++        // Neo: tick armor on animals
 +        if (this.canUseSlot(EquipmentSlot.BODY)) {
 +            ItemStack stack = this.getBodyArmorItem();
-+            if (stack.has(DataComponents.EQUIPPABLE)) stack.onAnimalArmorTick(level(), this);
++            if (stack.has(DataComponents.EQUIPPABLE)) {
++                stack.onAnimalArmorTick(level(), this);
++            }
 +        }
      }
  
@@ -101,14 +103,11 @@
                  }
  
                  if (!itemStack.isEmpty()
-@@ -1077,6 +_,11 @@
+@@ -1077,6 +_,8 @@
          }
      }
  
-+    /**
-+     * @deprecated Override-Only. External callers should call via {@link net.neoforged.neoforge.event.EventHooks#finalizeMobSpawn}.
-+     */
-+    @Deprecated
++    /// Neo: Override-Only. External callers should call via [net.neoforged.neoforge.event.EventHooks#finalizeMobSpawn].
 +    @org.jetbrains.annotations.ApiStatus.OverrideOnly
      public @Nullable SpawnGroupData finalizeSpawn(
          ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnReason, @Nullable SpawnGroupData groupData
@@ -129,11 +128,13 @@
          if (this.level() instanceof ServerLevel serverLevel) {
              serverLevel.addFreshEntity(newMob);
          }
-@@ -1398,14 +_,24 @@
+@@ -1397,15 +_,26 @@
+         return wasHurt;
      }
  
++    /// @deprecated Neo: use [#jumpInFluid] instead
++    @Deprecated
      @Override
-+    @Deprecated // FORGE: use jumpInFluid instead
      protected void jumpInLiquid(TagKey<Fluid> type) {
 +        this.jumpInLiquidInternal(() -> super.jumpInLiquid(type));
 +    }

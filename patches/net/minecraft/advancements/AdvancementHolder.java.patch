@@ -1,6 +1,6 @@
 --- a/net/minecraft/advancements/AdvancementHolder.java
 +++ b/net/minecraft/advancements/AdvancementHolder.java
-@@ -13,7 +_,11 @@
+@@ -13,7 +_,12 @@
      );
  
      public void register(BootstrapContext<Advancement> output) {
@@ -8,6 +8,7 @@
 +        this.register(output, new net.neoforged.neoforge.common.conditions.ICondition[0]);
 +    }
 +
++    /// Neo: add support for NeoForge loading conditions
 +    public void register(BootstrapContext<Advancement> output, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
 +        output.register(ResourceKey.create(Registries.ADVANCEMENT, this.id), this.value, conditions);
      }

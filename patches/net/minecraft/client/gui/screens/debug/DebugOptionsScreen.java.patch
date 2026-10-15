@@ -1,25 +1,23 @@
 --- a/net/minecraft/client/gui/screens/debug/DebugOptionsScreen.java
 +++ b/net/minecraft/client/gui/screens/debug/DebugOptionsScreen.java
-@@ -174,6 +_,10 @@
+@@ -173,7 +_,8 @@
+             this.location = location;
              DebugScreenEntry entry = DebugScreenEntries.getEntry(location);
              this.isAllowed = entry != null && entry.isAllowed(DebugOptionsScreen.this.minecraft.showOnlyReducedInfo());
-             String name = location.getPath();
+-            String name = location.getPath();
 +            // Neo: Display the full RL for modded entries
-+            if (!location.getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
-+                name = location.toString();
-+            }
++            String name = location.toShortString();
              if (this.isAllowed) {
                  this.name = name;
              } else {
-@@ -234,8 +_,11 @@
+@@ -234,8 +_,10 @@
          public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
              int x = this.getContentX();
              int y = this.getContentY();
 -            graphics.text(DebugOptionsScreen.this.minecraft.font, this.name, x, y + 5, this.isAllowed ? -1 : -8355712);
-+            // Neo: Moved 'k' up for 'maxX' calculation for scrolling string render
++            // Neo: Moved 'buttonsStartX' up for 'maxX' calculation for scrolling string render
              int buttonsStartX = x + this.getContentWidth() - this.never.getWidth() - this.overlay.getWidth() - this.always.getWidth();
 +            // Neo: Scroll entry names that go out of bounds
-+
 +            graphics.drawScrollingString(graphics.textRenderer(), DebugOptionsScreen.this.minecraft.font, Component.literal(this.name).withColor(this.isAllowed ? -1 : -8355712), x, buttonsStartX, y + 5);
              if (!this.isAllowed && hovered && mouseX < buttonsStartX) {
                  graphics.setTooltipForNextFrame(DebugOptionsScreen.NOT_ALLOWED_TOOLTIP, mouseX, mouseY);
@@ -30,7 +28,7 @@
              this.clearEntries();
 +            // Neo: Custom entry appending logic to better handle searching, categories and sorting
 +            net.neoforged.neoforge.client.ClientHooks.updateDebugScreenEntriesForSearch(value, category -> addEntry(new CategoryEntry(category.label())), id -> addEntry(new OptionEntry(id)));
-+            if(false){
++            if (false) {
              List<Map.Entry<Identifier, DebugScreenEntry>> all = new ArrayList<>(DebugScreenEntries.allEntries().entrySet());
              all.sort(COMPARATOR);
              DebugEntryCategory currentCategory = null;

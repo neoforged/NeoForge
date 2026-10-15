@@ -13,7 +13,7 @@
  
      @Override
      public void die(DamageSource source) {
-+        // FORGE: Super moved to top so that death message would be cancelled properly
++        // Neo: Super moved to top so that death message would be canceled properly
 +        net.minecraft.network.chat.Component deathMessage = this.getCombatTracker().getDeathMessage();
 +        super.die(source);
 +

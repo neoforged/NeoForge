@@ -1,10 +1,10 @@
 --- a/net/minecraft/core/particles/BlockParticleOption.java
 +++ b/net/minecraft/core/particles/BlockParticleOption.java
-@@ -15,18 +_,38 @@
+@@ -15,18 +_,36 @@
      );
      private final ParticleType<BlockParticleOption> type;
      private final BlockState state;
-+    /** Neo: Position of the block this particle was spawned for, if available, to provide model data for the particle texture selection */
++    /// Neo: Position of the block this particle was spawned for, if available, to provide model data for the particle texture selection
 +    private final net.minecraft.core.@org.jspecify.annotations.Nullable BlockPos pos;
  
      public static MapCodec<BlockParticleOption> codec(ParticleType<BlockParticleOption> type) {
@@ -29,10 +29,8 @@
 +        this(type, state, null);
 +    }
 +
-+    /**
-+     * Neo: construct a {@link BlockParticleOption} for the given type and {@link BlockState} and optionally the position
-+     * of the block this particle is being spawned for
-+     */
++    /// Neo: construct a [BlockParticleOption] for the given type and [BlockState] and optionally the position
++    /// of the block this particle is being spawned for
 +    public BlockParticleOption(ParticleType<BlockParticleOption> type, BlockState state, net.minecraft.core.@org.jspecify.annotations.Nullable BlockPos pos) {
          this.type = type;
          this.state = state;
@@ -40,15 +38,13 @@
      }
  
      @Override
-@@ -36,5 +_,12 @@
+@@ -36,5 +_,10 @@
  
      public BlockState getState() {
          return this.state;
 +    }
 +
-+    /**
-+     * Neo: returns the position of the block this particle was spawned for, if available
-+     */
++    /// Neo: {@return the position of the block this particle was spawned for, if available}
 +    public net.minecraft.core.@org.jspecify.annotations.Nullable BlockPos getPos() {
 +        return pos;
      }

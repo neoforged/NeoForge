@@ -1,10 +1,11 @@
 --- a/net/minecraft/client/multiplayer/ClientLevel.java
 +++ b/net/minecraft/client/multiplayer/ClientLevel.java
-@@ -159,7 +_,7 @@
+@@ -159,7 +_,8 @@
      private final @Nullable EndFlashState endFlashState;
      private final Minecraft minecraft = Minecraft.getInstance();
      private final List<AbstractClientPlayer> players = Lists.newArrayList();
 -    private final List<EnderDragonPart> dragonParts = Lists.newArrayList();
++    // Neo: widen generic to support non-dragon part entities
 +    private final List<net.neoforged.neoforge.entity.PartEntity<?>> dragonParts = Lists.newArrayList();
      private final Map<MapId, MapItemSavedData> mapData = Maps.newHashMap();
      private int skyFlashTime;
@@ -49,14 +50,15 @@
      }
  
      private EnvironmentAttributeSystem.Builder addEnvironmentAttributeLayers(EnvironmentAttributeSystem.Builder environmentAttributes) {
-@@ -342,6 +_,11 @@
+@@ -342,6 +_,12 @@
      }
  
      public void tickWeatherEffects() {
 +        var camera = this.minecraft.gameRenderer.mainCamera();
 +        var customWeatherEffectRenderer = net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager.getCustomWeatherEffectRenderer(this, camera.position());
-+        if (customWeatherEffectRenderer != null && customWeatherEffectRenderer.tickRain(this, this.getGameTime(), camera))
++        if (customWeatherEffectRenderer != null && customWeatherEffectRenderer.tickRain(this, this.getGameTime(), camera)) {
 +            return;
++        }
 +
          ParticleStatus particleStatus = this.minecraft.options.particles().get();
          int weatherRadius = this.minecraft.options.weatherRadius().get();
@@ -76,23 +78,27 @@
          Profiler.get().pop();
  
          for (Entity passenger : entity.getPassengers()) {
-@@ -528,8 +_,10 @@
+@@ -528,8 +_,12 @@
      }
  
      public void addEntity(Entity entity) {
-+        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityJoinLevelEvent(entity, this)).isCanceled()) return;
++        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityJoinLevelEvent(entity, this)).isCanceled()) {
++            return;
++        }
          this.removeEntity(entity.getId(), Entity.RemovalReason.DISCARDED);
          this.entityStorage.addEntity(entity);
 +        entity.onAddedToLevel();
      }
  
      public void removeEntity(int id, Entity.RemovalReason reason) {
-@@ -677,6 +_,13 @@
+@@ -677,6 +_,15 @@
      public void playSeededSound(
          @Nullable Entity except, double x, double y, double z, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
 +        net.neoforged.neoforge.event.PlayLevelSoundEvent.AtPosition event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtPosition(this, x, y, z, sound, source, volume, pitch);
-+        if (event.isCanceled() || event.getSound() == null) return;
++        if (event.isCanceled() || event.getSound() == null) {
++            return;
++        }
 +        sound = event.getSound();
 +        source = event.getSource();
 +        volume = event.getNewVolume();
@@ -101,12 +107,14 @@
          if (except == this.minecraft.player) {
              this.playSound(x, y, z, sound.value(), source, volume, pitch, false, seed);
          }
-@@ -686,6 +_,12 @@
+@@ -686,6 +_,14 @@
      public void playSeededSound(
          @Nullable Entity except, Entity sourceEntity, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
 +        net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtEntity(sourceEntity, sound, source, volume, pitch);
-+        if (event.isCanceled() || event.getSound() == null) return;
++        if (event.isCanceled() || event.getSound() == null) {
++            return;
++        }
 +        sound = event.getSound();
 +        source = event.getSource();
 +        volume = event.getNewVolume();
@@ -114,11 +122,12 @@
          if (except == this.minecraft.player) {
              this.minecraft.getSoundManager().play(new EntityBoundSoundInstance(sound.value(), source, volume, pitch, sourceEntity, seed));
          }
-@@ -920,7 +_,7 @@
+@@ -920,7 +_,8 @@
          return this.players;
      }
  
 -    public List<EnderDragonPart> dragonParts() {
++    // Neo: widen generic to support non-dragon part entities
 +    public List<net.neoforged.neoforge.entity.PartEntity<?>> dragonParts() {
          return this.dragonParts;
      }

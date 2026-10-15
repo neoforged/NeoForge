@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/dispatch/multipart/MultiPartModel.java
 +++ b/net/minecraft/client/renderer/block/dispatch/multipart/MultiPartModel.java
-@@ -44,18 +_,64 @@
+@@ -44,18 +_,65 @@
          return this.shared.materialFlags;
      }
  
@@ -44,6 +44,8 @@
 +            random.setSeed(seed);
 +            return this.models.getFirst().createGeometryKey(level, pos, state, random);
 +        } else {
++            record GeometryKey(List<Object> subKeys, MultiPartModel multiPart) {}
++
 +            List<Object> subKeys = new java.util.ArrayList<>(models.size());
 +            for (var model : this.models) {
 +                random.setSeed(seed);
@@ -56,7 +58,6 @@
 +            return new GeometryKey(subKeys, this);
 +        }
 +    }
-+    private record GeometryKey(List<Object> subKeys, MultiPartModel multiPart) {}
 +
 +    @Override
 +    public Material.Baked particleMaterial(net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {

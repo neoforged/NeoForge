@@ -1,10 +1,12 @@
 --- a/net/minecraft/world/entity/ConversionTracker.java
 +++ b/net/minecraft/world/entity/ConversionTracker.java
-@@ -53,6 +_,7 @@
+@@ -53,6 +_,9 @@
      public void tick() {
          if (this.mob.level() instanceof ServerLevel serverLevel && this.mob.isAlive() && !this.mob.isNoAi()) {
              if (this.isAfflicted.getAsBoolean()) {
-+                if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this.mob, this.convertsTo.get(), (timer) -> this.conversionTime = timer)) return;
++                if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this.mob, this.convertsTo.get(), (timer) -> this.conversionTime = timer)) {
++                    return;
++                }
                  if (this.isConverting()) {
                      this.conversionTime--;
                      if (this.conversionTime < 0) {

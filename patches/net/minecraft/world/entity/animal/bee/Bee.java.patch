@@ -9,11 +9,13 @@
          }
      }
  
-@@ -638,8 +_,18 @@
+@@ -637,9 +_,20 @@
+         return super.hurtServer(level, source, damage);
      }
  
++    /// @deprecated Neo: use [#jumpInFluid] instead
++    @Deprecated
      @Override
-+    @Deprecated // FORGE: use jumpInFluid instead
      protected void jumpInLiquid(TagKey<Fluid> type) {
 +        this.jumpInLiquidInternal();
 +    }

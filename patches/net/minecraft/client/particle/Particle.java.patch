@@ -1,9 +1,10 @@
 --- a/net/minecraft/client/particle/Particle.java
 +++ b/net/minecraft/client/particle/Particle.java
-@@ -208,6 +_,10 @@
+@@ -208,6 +_,11 @@
          return Optional.empty();
      }
  
++    /// Neo: {@return the position of this particle}
 +    public Vec3 getPos() {
 +        return new Vec3(this.x, this.y, this.z);
 +    }

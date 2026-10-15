@@ -9,11 +9,12 @@
              level.scheduleTick(pos, state.getFluidState().getType(), this.fluid.getTickDelay(level));
          }
  
-@@ -191,6 +_,7 @@
+@@ -191,6 +_,8 @@
          }
      }
  
-+    @Deprecated // Neo: Use FluidInteractionRegistry#canInteract instead
++    /// @deprecated Neo: Use [net.neoforged.neoforge.fluids.FluidInteractionRegistry#canInteract] instead
++    @Deprecated
      private boolean shouldSpreadLiquid(Level level, BlockPos pos, BlockState state) {
          if (this.fluid.is(FluidTags.LAVA)) {
              boolean isOverSoulSoil = level.getBlockState(pos.below()).is(Blocks.SOUL_SOIL);

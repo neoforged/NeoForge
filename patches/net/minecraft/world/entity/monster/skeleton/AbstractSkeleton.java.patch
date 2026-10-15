@@ -11,7 +11,7 @@
                  int minAttackInterval = this.getHardAttackInterval();
                  if (this.level().getDifficulty() != Difficulty.HARD) {
                      minAttackInterval = this.getAttackInterval();
-@@ -158,9 +_,11 @@
+@@ -158,9 +_,12 @@
  
      @Override
      public void performRangedAttack(LivingEntity target, float power) {
@@ -19,8 +19,9 @@
 +        ItemStack bowItem = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof net.minecraft.world.item.BowItem));
          ItemStack projectile = this.getProjectile(bowItem);
          AbstractArrow arrow = this.getArrow(projectile, power, bowItem);
-+        if (bowItem.getItem() instanceof net.minecraft.world.item.ProjectileWeaponItem weaponItem)
++        if (bowItem.getItem() instanceof net.minecraft.world.item.ProjectileWeaponItem weaponItem) {
 +            arrow = weaponItem.customArrow(arrow, projectile, bowItem);
++        }
          double xd = target.getX() - this.getX();
          double yd = target.getY(0.3333333333333333) - arrow.getY();
          double zd = target.getZ() - this.getZ();
