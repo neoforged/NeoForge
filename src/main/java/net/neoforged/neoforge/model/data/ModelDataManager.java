@@ -10,8 +10,8 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import java.util.HashSet;
-import java.util.Set;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.ChunkPos;
@@ -32,7 +32,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 public class ModelDataManager {
     private final Thread owningThread = Thread.currentThread();
     private final Level level;
-    private final Long2ObjectMap<Set<BlockPos>> needModelDataRefresh = new Long2ObjectOpenHashMap<>();
+    private final Long2ObjectMap<LongSet> needModelDataRefresh = new Long2ObjectOpenHashMap<>();
     private final Long2ObjectMap<Long2ObjectMap<ModelData>> modelDataCache = new Long2ObjectOpenHashMap<>();
     public static final Long2ObjectFunction<ModelData> EMPTY_SNAPSHOT = pos -> ModelData.EMPTY;
 
@@ -51,7 +51,7 @@ public class ModelDataManager {
         }
 
         Preconditions.checkNotNull(pos, "Pos must not be null");
-        needModelDataRefresh.computeIfAbsent(SectionPos.asLong(pos), $ -> new HashSet<>()).add(pos);
+        needModelDataRefresh.computeIfAbsent(SectionPos.asLong(pos), $ -> new LongOpenHashSet()).add(pos.asLong());
     }
 
     /// Request a refresh of the stored data for the given [BlockEntity].
@@ -125,11 +125,12 @@ public class ModelDataManager {
             return;
         }
 
-        Set<BlockPos> needUpdate = needModelDataRefresh.remove(section);
+        LongSet needUpdate = needModelDataRefresh.remove(section);
 
         if (needUpdate != null) {
             Long2ObjectMap<ModelData> data = modelDataCache.computeIfAbsent(section, $ -> new Long2ObjectOpenHashMap<>());
-            for (BlockPos pos : needUpdate) {
+            for (long posKey : needUpdate) {
+                BlockPos pos = BlockPos.of(posKey);
                 BlockState toUpdate = level.getBlockState(pos);
                 ModelData newData = toUpdate.getModelData(level, pos);
 
