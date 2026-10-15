@@ -10,6 +10,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.BlockPos;
@@ -129,8 +130,10 @@ public class ModelDataManager {
 
         if (needUpdate != null) {
             Long2ObjectMap<ModelData> data = modelDataCache.computeIfAbsent(section, $ -> new Long2ObjectOpenHashMap<>());
-            for (long posKey : needUpdate) {
-                BlockPos pos = BlockPos.of(posKey);
+            LongIterator itr = needUpdate.longIterator();
+
+            while (itr.hasNext()) {
+                BlockPos pos = BlockPos.of(itr.nextLong());
                 BlockState toUpdate = level.getBlockState(pos);
                 ModelData newData = toUpdate.getModelData(level, pos);
 
@@ -147,6 +150,7 @@ public class ModelDataManager {
                     data.remove(pos.asLong());
                 }
             }
+
             // Remove the map completely if it's now empty
             if (data.isEmpty()) {
                 modelDataCache.remove(section);
