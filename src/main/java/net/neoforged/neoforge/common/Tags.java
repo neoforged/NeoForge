@@ -613,7 +613,7 @@ public class Tags {
         public static final BlockItemTagId GLAZED_TERRACOTTAS = tag("glazed_terracottas");
 
         public static final BlockItemTagId GRAVELS = tag("gravels");
-           /**
+        /**
          * Solid/full blocks of Ice.
          */
         public static final BlockItemTagId ICE = tag("ice");
