@@ -133,7 +133,8 @@ public class ModelDataManager {
             LongIterator itr = needUpdate.longIterator();
 
             while (itr.hasNext()) {
-                BlockPos pos = BlockPos.of(itr.nextLong());
+                long key = itr.nextLong();
+                BlockPos pos = BlockPos.of(key);
                 BlockState toUpdate = level.getBlockState(pos);
                 ModelData newData = toUpdate.getModelData(level, pos);
 
@@ -145,9 +146,9 @@ public class ModelDataManager {
 
                 // Make sure we don't bother storing empty data in the map
                 if (newData != ModelData.EMPTY) {
-                    data.put(pos.asLong(), newData);
+                    data.put(key, newData);
                 } else {
-                    data.remove(pos.asLong());
+                    data.remove(key);
                 }
             }
 
