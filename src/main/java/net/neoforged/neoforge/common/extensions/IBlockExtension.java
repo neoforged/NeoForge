@@ -984,7 +984,7 @@ public interface IBlockExtension {
     /// Allows you to return additional model data.
     ///
     /// This data can be used to provide additional functionality in your `BlockStateModel`.
-    /// You need to schedule a refresh of you model data via [ModelDataManager#requestRefresh(BlockPos)] if the result of this function changes.
+    /// You need to schedule a refresh of your model data via [ModelDataManager#requestRefresh(BlockPos)] if the result of this function changes.
     ///
     /// This method is always called on the main client thread.
     ///
