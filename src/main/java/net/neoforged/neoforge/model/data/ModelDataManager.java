@@ -131,10 +131,11 @@ public class ModelDataManager {
         if (needUpdate != null) {
             Long2ObjectMap<ModelData> data = modelDataCache.computeIfAbsent(section, _ -> new Long2ObjectOpenHashMap<>());
             LongIterator itr = needUpdate.longIterator();
+            BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 
             while (itr.hasNext()) {
                 long key = itr.nextLong();
-                BlockPos pos = BlockPos.of(key);
+                pos.set(key);
                 BlockState toUpdate = level.getBlockState(pos);
                 ModelData newData = toUpdate.getModelData(level, pos);
 
