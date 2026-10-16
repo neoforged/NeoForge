@@ -476,7 +476,7 @@ public class DataGeneratorTest {
             tag(BlockTags.create(Identifier.fromNamespaceAndPath(MODID, "test")))
                     .add(BlockItemIds.DIAMOND_BLOCK.block())
                     .addTag(BlockTags.STONE_BRICKS)
-                    .addTag(net.neoforged.neoforge.common.Tags.Blocks.COBBLESTONES)
+                    .addTag(net.neoforged.neoforge.common.Tags.BlockItems.COBBLESTONES.block())
                     .add(TagEntry.optionalElement(Identifier.fromNamespaceAndPath("chisel", "marble/raw")))
                     .add(TagEntry.optionalTag(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "storage_blocks/ruby")));
 

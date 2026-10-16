@@ -9,6 +9,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.commands.TimeCommand;
+import net.minecraft.tags.BlockItemTagId;
+import net.minecraft.tags.BlockItemTags;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
@@ -30,6 +32,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.common.crafting.CompoundIngredient;
+import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 
 public class Tags {
     public static class Blocks {
@@ -65,65 +69,487 @@ public class Tags {
         public static final TagKey<Block> NEEDS_NETHERITE_TOOL = neoforgeTag("needs_netherite_tool");
 
         // `c` tags for common conventions
-        public static final TagKey<Block> BARRELS = tag("barrels");
-        public static final TagKey<Block> BARRELS_WOODEN = tag("barrels/wooden");
         /**
-         * Equivalent to the "minecraft:bars" block tag.
+         * Tag that holds all blocks that recipe viewers should not show to users.
+         * Recipe viewers may use this to automatically find the corresponding BlockItem to hide.
          */
-        public static final TagKey<Block> BARS = tag("bars");
-        public static final TagKey<Block> BARS_COPPER = tag("bars/copper");
-        public static final TagKey<Block> BARS_IRON = tag("bars/iron");
-        public static final TagKey<Block> BOOKSHELVES = tag("bookshelves");
+        public static final TagKey<Block> HIDDEN_FROM_RECIPE_VIEWERS = tag("hidden_from_recipe_viewers");
         /**
-         * For blocks that are similar to amethyst where their budding block produces buds and cluster blocks
+         * Blocks should be included in this tag if their movement/relocation can cause serious issues such
+         * as world corruption upon being moved or for balance reason where the block should not be able to be relocated.
+         * Example: Chunk loaders or pipes where other mods that move blocks do not respect
+         * {@link BlockBehaviour.BlockStateBase#getPistonPushReaction}.
          */
-        public static final TagKey<Block> BUDDING_BLOCKS = tag("budding_blocks");
+        public static final TagKey<Block> RELOCATION_NOT_SUPPORTED = tag("relocation_not_supported");
         /**
-         * For blocks that are similar to amethyst where they have buddings forming from budding blocks
+         * Tag that holds all head based blocks such as Skeleton Skull or Player Head. (Named skulls to match minecraft:skulls item tag)
          */
-        public static final TagKey<Block> BUDS = tag("buds");
-        public static final TagKey<Block> CHAINS = tag("chains");
-        public static final TagKey<Block> CHESTS = tag("chests");
-        public static final TagKey<Block> CHESTS_ENDER = tag("chests/ender");
-        public static final TagKey<Block> CHESTS_TRAPPED = tag("chests/trapped");
-        public static final TagKey<Block> CHESTS_WOODEN = tag("chests/wooden");
-        /**
-         * For blocks that are similar to amethyst where they have clusters forming from budding blocks
-         */
-        public static final TagKey<Block> CLUSTERS = tag("clusters");
-        public static final TagKey<Block> COBBLESTONES = tag("cobblestones");
-        public static final TagKey<Block> COBBLESTONES_NORMAL = tag("cobblestones/normal");
-        public static final TagKey<Block> COBBLESTONES_INFESTED = tag("cobblestones/infested");
-        public static final TagKey<Block> COBBLESTONES_MOSSY = tag("cobblestones/mossy");
-        public static final TagKey<Block> COBBLESTONES_DEEPSLATE = tag("cobblestones/deepslate");
-        public static final TagKey<Block> CONCRETES = tag("concretes");
+        public static final TagKey<Block> SKULLS = tag("skulls");
+        public static final TagKey<Block> VILLAGER_JOB_SITES = tag("villager_job_sites");
 
         /**
-         * Tag that holds all blocks which can be dyed a specific color.
-         * (Does not include color blending blocks which would behave similarly to leather armor items)
+         * Blocks tagged here will be tracked by Farmer Villagers who will attempt to plant crops on top.
          */
-        public static final TagKey<Block> DYED = tag("dyed");
-        public static final TagKey<Block> DYED_BLACK = tag("dyed/black");
-        public static final TagKey<Block> DYED_BLUE = tag("dyed/blue");
-        public static final TagKey<Block> DYED_BROWN = tag("dyed/brown");
-        public static final TagKey<Block> DYED_CYAN = tag("dyed/cyan");
-        public static final TagKey<Block> DYED_GRAY = tag("dyed/gray");
-        public static final TagKey<Block> DYED_GREEN = tag("dyed/green");
-        public static final TagKey<Block> DYED_LIGHT_BLUE = tag("dyed/light_blue");
-        public static final TagKey<Block> DYED_LIGHT_GRAY = tag("dyed/light_gray");
-        public static final TagKey<Block> DYED_LIME = tag("dyed/lime");
-        public static final TagKey<Block> DYED_MAGENTA = tag("dyed/magenta");
-        public static final TagKey<Block> DYED_ORANGE = tag("dyed/orange");
-        public static final TagKey<Block> DYED_PINK = tag("dyed/pink");
-        public static final TagKey<Block> DYED_PURPLE = tag("dyed/purple");
-        public static final TagKey<Block> DYED_RED = tag("dyed/red");
-        public static final TagKey<Block> DYED_WHITE = tag("dyed/white");
-        public static final TagKey<Block> DYED_YELLOW = tag("dyed/yellow");
+        public static final TagKey<Block> VILLAGER_FARMLANDS = neoforgeTag("villager_farmlands");
 
-        /**
-         * Dyed color tags as a color collection, for convenience.
-         */
-        public static final ColorCollection<TagKey<Block>> DYED_COLORS = new ColorCollection<>(
+        // These fields are deprecated for removal in 26.4.
+        /// @deprecated To be removed in 26.4. Use [BlockItems#BARRELS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> BARRELS = BlockItems.BARRELS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#BARRELS_WOODEN] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> BARRELS_WOODEN = BlockItems.BARRELS_WOODEN.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#BARS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> BARS = BlockItems.BARS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#BARS_COPPER] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> BARS_COPPER = BlockItems.BARS_COPPER.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#BARS_IRON] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> BARS_IRON = BlockItems.BARS_IRON.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#BOOKSHELVES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> BOOKSHELVES = BlockItems.BOOKSHELVES.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#BUDDING_BLOCKS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> BUDDING_BLOCKS = BlockItems.BUDDING_BLOCKS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#BUDS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> BUDS = BlockItems.BUDS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#CHAINS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> CHAINS = BlockItems.CHAINS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#CHESTS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> CHESTS = BlockItems.CHESTS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#CHESTS_ENDER] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> CHESTS_ENDER = BlockItems.CHESTS_ENDER.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#CHESTS_TRAPPED] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> CHESTS_TRAPPED = BlockItems.CHESTS_TRAPPED.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#CHESTS_WOODEN] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> CHESTS_WOODEN = BlockItems.CHESTS_WOODEN.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#CLUSTERS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> CLUSTERS = BlockItems.CLUSTERS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> COBBLESTONES = BlockItems.COBBLESTONES.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES_NORMAL] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> COBBLESTONES_NORMAL = BlockItems.COBBLESTONES_NORMAL.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES_INFESTED] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> COBBLESTONES_INFESTED = BlockItems.COBBLESTONES_INFESTED.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES_MOSSY] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> COBBLESTONES_MOSSY = BlockItems.COBBLESTONES_MOSSY.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES_DEEPSLATE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> COBBLESTONES_DEEPSLATE = BlockItems.COBBLESTONES_DEEPSLATE.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#CONCRETES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> CONCRETES = BlockItems.CONCRETES.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYED = BlockItems.DYED.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_BLACK] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYED_BLACK = BlockItems.DYED_BLACK.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_BLUE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYED_BLUE = BlockItems.DYED_BLUE.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_BROWN] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYED_BROWN = BlockItems.DYED_BROWN.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_CYAN] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYED_CYAN = BlockItems.DYED_CYAN.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_GRAY] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYED_GRAY = BlockItems.DYED_GRAY.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_GREEN] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYED_GREEN = BlockItems.DYED_GREEN.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_LIGHT_BLUE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYED_LIGHT_BLUE = BlockItems.DYED_LIGHT_BLUE.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_LIGHT_GRAY] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYED_LIGHT_GRAY = BlockItems.DYED_LIGHT_GRAY.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_LIME] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYED_LIME = BlockItems.DYED_LIME.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_MAGENTA] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYED_MAGENTA = BlockItems.DYED_MAGENTA.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_ORANGE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYED_ORANGE = BlockItems.DYED_ORANGE.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_PINK] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYED_PINK = BlockItems.DYED_PINK.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_PURPLE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYED_PURPLE = BlockItems.DYED_PURPLE.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_RED] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYED_RED = BlockItems.DYED_RED.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_WHITE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYED_WHITE = BlockItems.DYED_WHITE.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_YELLOW] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYED_YELLOW = BlockItems.DYED_YELLOW.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_COLORS] mapped to the block using [BlockItemTagId#block()] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final ColorCollection<TagKey<Block>> DYED_COLORS = BlockItems.DYED_COLORS.map(BlockItemTagId::block);
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE_UNDYED_SIMPLE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYEABLE_UNDYED_SIMPLE = BlockItems.DYEABLE_UNDYED_SIMPLE.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE_REDYEABLE_SIMPLE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYEABLE_REDYEABLE_SIMPLE = BlockItems.DYEABLE_REDYEABLE_SIMPLE.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE_SIMPLE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYEABLE_SIMPLE = BlockItems.DYEABLE_SIMPLE.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE_DYNAMIC] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYEABLE_DYNAMIC = BlockItems.DYEABLE_DYNAMIC.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> DYEABLE = BlockItems.DYEABLE.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#END_STONES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> END_STONES = BlockItems.END_STONES.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCE_GATES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> FENCE_GATES = BlockItems.FENCE_GATES.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCE_GATES_WOODEN] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> FENCE_GATES_WOODEN = BlockItems.FENCE_GATES_WOODEN.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> FENCES = BlockItems.FENCES.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCES_NETHER_BRICK] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> FENCES_NETHER_BRICK = BlockItems.FENCES_NETHER_BRICK.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCES_WOODEN] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> FENCES_WOODEN = BlockItems.FENCES_WOODEN.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#FLOWERS_SMALL] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> FLOWERS_SMALL = BlockItems.FLOWERS_SMALL.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#FLOWERS_TALL] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> FLOWERS_TALL = BlockItems.FLOWERS_TALL.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#FLOWERS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> FLOWERS = BlockItems.FLOWERS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#FROGLIGHTS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> FROGLIGHTS = BlockItems.FROGLIGHTS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_BLOCKS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> GLASS_BLOCKS = BlockItems.GLASS_BLOCKS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_BLOCKS_COLORLESS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> GLASS_BLOCKS_COLORLESS = BlockItems.GLASS_BLOCKS_COLORLESS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_BLOCKS_CHEAP] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> GLASS_BLOCKS_CHEAP = BlockItems.GLASS_BLOCKS_CHEAP.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_BLOCKS_TINTED] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> GLASS_BLOCKS_TINTED = BlockItems.GLASS_BLOCKS_TINTED.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_PANES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> GLASS_PANES = BlockItems.GLASS_PANES.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_PANES_COLORLESS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> GLASS_PANES_COLORLESS = BlockItems.GLASS_PANES_COLORLESS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#GLAZED_TERRACOTTAS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> GLAZED_TERRACOTTAS = BlockItems.GLAZED_TERRACOTTAS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#GRAVELS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> GRAVELS = BlockItems.GRAVELS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#NETHERRACKS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> NETHERRACKS = BlockItems.NETHERRACKS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#OBSIDIANS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> OBSIDIANS = BlockItems.OBSIDIANS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#OBSIDIANS_NORMAL] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> OBSIDIANS_NORMAL = BlockItems.OBSIDIANS_NORMAL.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#OBSIDIANS_CRYING] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> OBSIDIANS_CRYING = BlockItems.OBSIDIANS_CRYING.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_BEARING_GROUND_DEEPSLATE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORE_BEARING_GROUND_DEEPSLATE = BlockItems.ORE_BEARING_GROUND_DEEPSLATE.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_BEARING_GROUND_NETHERRACK] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORE_BEARING_GROUND_NETHERRACK = BlockItems.ORE_BEARING_GROUND_NETHERRACK.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_BEARING_GROUND_STONE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORE_BEARING_GROUND_STONE = BlockItems.ORE_BEARING_GROUND_STONE.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_RATES_DENSE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORE_RATES_DENSE = BlockItems.ORE_RATES_DENSE.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_RATES_SINGULAR] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORE_RATES_SINGULAR = BlockItems.ORE_RATES_SINGULAR.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_RATES_SPARSE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORE_RATES_SPARSE = BlockItems.ORE_RATES_SPARSE.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORES = BlockItems.ORES.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_COAL] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORES_COAL = BlockItems.ORES_COAL.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_COPPER] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORES_COPPER = BlockItems.ORES_COPPER.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_DIAMOND] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORES_DIAMOND = BlockItems.ORES_DIAMOND.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_EMERALD] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORES_EMERALD = BlockItems.ORES_EMERALD.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_GOLD] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORES_GOLD = BlockItems.ORES_GOLD.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_IRON] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORES_IRON = BlockItems.ORES_IRON.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_LAPIS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORES_LAPIS = BlockItems.ORES_LAPIS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_NETHERITE_SCRAP] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORES_NETHERITE_SCRAP = BlockItems.ORES_NETHERITE_SCRAP.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_QUARTZ] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORES_QUARTZ = BlockItems.ORES_QUARTZ.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_REDSTONE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORES_REDSTONE = BlockItems.ORES_REDSTONE.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_IN_GROUND_DEEPSLATE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORES_IN_GROUND_DEEPSLATE = BlockItems.ORES_IN_GROUND_DEEPSLATE.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_IN_GROUND_NETHERRACK] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORES_IN_GROUND_NETHERRACK = BlockItems.ORES_IN_GROUND_NETHERRACK.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_IN_GROUND_STONE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ORES_IN_GROUND_STONE = BlockItems.ORES_IN_GROUND_STONE.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#PUMPKINS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> PUMPKINS = BlockItems.PUMPKINS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#PUMPKINS_NORMAL] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> PUMPKINS_NORMAL = BlockItems.PUMPKINS_NORMAL.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#PUMPKINS_CARVED] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> PUMPKINS_CARVED = BlockItems.PUMPKINS_CARVED.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#PUMPKINS_JACK_O_LANTERNS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> PUMPKINS_JACK_O_LANTERNS = BlockItems.PUMPKINS_JACK_O_LANTERNS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#PLAYER_WORKSTATIONS_CRAFTING_TABLES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> PLAYER_WORKSTATIONS_CRAFTING_TABLES = BlockItems.PLAYER_WORKSTATIONS_CRAFTING_TABLES.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#PLAYER_WORKSTATIONS_FURNACES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> PLAYER_WORKSTATIONS_FURNACES = BlockItems.PLAYER_WORKSTATIONS_FURNACES.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ROPES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> ROPES = BlockItems.ROPES.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> SANDS = BlockItems.SANDS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDS_COLORLESS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> SANDS_COLORLESS = BlockItems.SANDS_COLORLESS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDS_RED] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> SANDS_RED = BlockItems.SANDS_RED.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_BLOCKS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> SANDSTONE_BLOCKS = BlockItems.SANDSTONE_BLOCKS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_SLABS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> SANDSTONE_SLABS = BlockItems.SANDSTONE_SLABS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_STAIRS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> SANDSTONE_STAIRS = BlockItems.SANDSTONE_STAIRS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_RED_BLOCKS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> SANDSTONE_RED_BLOCKS = BlockItems.SANDSTONE_RED_BLOCKS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_RED_SLABS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> SANDSTONE_RED_SLABS = BlockItems.SANDSTONE_RED_SLABS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_RED_STAIRS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> SANDSTONE_RED_STAIRS = BlockItems.SANDSTONE_RED_STAIRS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_UNCOLORED_BLOCKS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> SANDSTONE_UNCOLORED_BLOCKS = BlockItems.SANDSTONE_UNCOLORED_BLOCKS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_UNCOLORED_SLABS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> SANDSTONE_UNCOLORED_SLABS = BlockItems.SANDSTONE_UNCOLORED_SLABS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_UNCOLORED_STAIRS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> SANDSTONE_UNCOLORED_STAIRS = BlockItems.SANDSTONE_UNCOLORED_STAIRS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STONES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STONES = BlockItems.STONES.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STORAGE_BLOCKS = BlockItems.STORAGE_BLOCKS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_BONE_MEAL] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STORAGE_BLOCKS_BONE_MEAL = BlockItems.STORAGE_BLOCKS_BONE_MEAL.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_COAL] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STORAGE_BLOCKS_COAL = BlockItems.STORAGE_BLOCKS_COAL.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_COPPER] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STORAGE_BLOCKS_COPPER = BlockItems.STORAGE_BLOCKS_COPPER.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_DIAMOND] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STORAGE_BLOCKS_DIAMOND = BlockItems.STORAGE_BLOCKS_DIAMOND.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_DRIED_KELP] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STORAGE_BLOCKS_DRIED_KELP = BlockItems.STORAGE_BLOCKS_DRIED_KELP.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_EMERALD] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STORAGE_BLOCKS_EMERALD = BlockItems.STORAGE_BLOCKS_EMERALD.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_GOLD] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STORAGE_BLOCKS_GOLD = BlockItems.STORAGE_BLOCKS_GOLD.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_IRON] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STORAGE_BLOCKS_IRON = BlockItems.STORAGE_BLOCKS_IRON.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_LAPIS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STORAGE_BLOCKS_LAPIS = BlockItems.STORAGE_BLOCKS_LAPIS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_NETHERITE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STORAGE_BLOCKS_NETHERITE = BlockItems.STORAGE_BLOCKS_NETHERITE.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_RAW_COPPER] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STORAGE_BLOCKS_RAW_COPPER = BlockItems.STORAGE_BLOCKS_RAW_COPPER.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_RAW_GOLD] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STORAGE_BLOCKS_RAW_GOLD = BlockItems.STORAGE_BLOCKS_RAW_GOLD.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_RAW_IRON] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STORAGE_BLOCKS_RAW_IRON = BlockItems.STORAGE_BLOCKS_RAW_IRON.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_REDSTONE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STORAGE_BLOCKS_REDSTONE = BlockItems.STORAGE_BLOCKS_REDSTONE.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_RESIN] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STORAGE_BLOCKS_RESIN = BlockItems.STORAGE_BLOCKS_RESIN.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_SLIME] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STORAGE_BLOCKS_SLIME = BlockItems.STORAGE_BLOCKS_SLIME.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_WHEAT] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STORAGE_BLOCKS_WHEAT = BlockItems.STORAGE_BLOCKS_WHEAT.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#OVERWORLD_NATURAL_LOGS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> OVERWORLD_NATURAL_LOGS = BlockItems.OVERWORLD_NATURAL_LOGS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#NETHER_NATURAL_LOGS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> NETHER_NATURAL_LOGS = BlockItems.NETHER_NATURAL_LOGS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#NATURAL_LOGS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> NATURAL_LOGS = BlockItems.NATURAL_LOGS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#NATURAL_WOODS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> NATURAL_WOODS = BlockItems.NATURAL_WOODS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STRIPPED_LOGS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STRIPPED_LOGS = BlockItems.STRIPPED_LOGS.block();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STRIPPED_WOODS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Block> STRIPPED_WOODS = BlockItems.STRIPPED_WOODS.block();
+
+        private static TagKey<Block> tag(String name) {
+            return BlockTags.create(Identifier.fromNamespaceAndPath("c", name));
+        }
+
+        private static TagKey<Block> neoforgeTag(String name) {
+            return BlockTags.create(Identifier.fromNamespaceAndPath("neoforge", name));
+        }
+    }
+
+    /// Tags which exist for both [Block]s and [Item]s.
+    public static class BlockItems {
+        public static final BlockItemTagId BARRELS = tag("barrels");
+        public static final BlockItemTagId BARRELS_WOODEN = tag("barrels/wooden");
+        /// Equivalent to the [`minecraft:bars` tag][BlockItemTags#BARS].
+        public static final BlockItemTagId BARS = tag("bars");
+        public static final BlockItemTagId BARS_COPPER = tag("bars/copper");
+        public static final BlockItemTagId BARS_IRON = tag("bars/iron");
+        public static final BlockItemTagId BOOKSHELVES = tag("bookshelves");
+        /// Budding blocks where buds and clusters are produced from (similar to amethyst).
+        /// 
+        /// @see #BUDS
+        /// @see #CLUSTERS
+        public static final BlockItemTagId BUDDING_BLOCKS = tag("budding_blocks");
+        /// Bud blocks formed from budding blocks (similar to amethyst).
+        /// 
+        /// @see #BUDDING_BLOCKS
+        public static final BlockItemTagId BUDS = tag("buds");
+        public static final BlockItemTagId CHAINS = tag("chains");
+        public static final BlockItemTagId CHESTS = tag("chests");
+        public static final BlockItemTagId CHESTS_ENDER = tag("chests/ender");
+        public static final BlockItemTagId CHESTS_TRAPPED = tag("chests/trapped");
+        public static final BlockItemTagId CHESTS_WOODEN = tag("chests/wooden");
+        /// Cluster blocks forming from budding blocks (similar to amethyst).
+        /// 
+        /// @see #BUDDING_BLOCKS
+        public static final BlockItemTagId CLUSTERS = tag("clusters");
+        public static final BlockItemTagId COBBLESTONES = tag("cobblestones");
+        public static final BlockItemTagId COBBLESTONES_NORMAL = tag("cobblestones/normal");
+        public static final BlockItemTagId COBBLESTONES_INFESTED = tag("cobblestones/infested");
+        public static final BlockItemTagId COBBLESTONES_MOSSY = tag("cobblestones/mossy");
+        public static final BlockItemTagId COBBLESTONES_DEEPSLATE = tag("cobblestones/deepslate");
+        public static final BlockItemTagId CONCRETES = tag("concretes");
+
+        /// Holds all blocks and items which are dyed a specific color.
+        ///
+        /// This does not include color blending blocks and items, such as leather armor; use [DYEABLE] instead.
+        ///
+        /// Note: Use custom ingredients in recipes to do tag intersections and/or tag exclusions to make more powerful
+        /// recipes utilizing multiple tags such as dyed tags for an ingredient, such as [DifferenceIngredient] and [CompoundIngredient].
+        public static final BlockItemTagId DYED = tag("dyed");
+        public static final BlockItemTagId DYED_BLACK = tag("dyed/black");
+        public static final BlockItemTagId DYED_BLUE = tag("dyed/blue");
+        public static final BlockItemTagId DYED_BROWN = tag("dyed/brown");
+        public static final BlockItemTagId DYED_CYAN = tag("dyed/cyan");
+        public static final BlockItemTagId DYED_GRAY = tag("dyed/gray");
+        public static final BlockItemTagId DYED_GREEN = tag("dyed/green");
+        public static final BlockItemTagId DYED_LIGHT_BLUE = tag("dyed/light_blue");
+        public static final BlockItemTagId DYED_LIGHT_GRAY = tag("dyed/light_gray");
+        public static final BlockItemTagId DYED_LIME = tag("dyed/lime");
+        public static final BlockItemTagId DYED_MAGENTA = tag("dyed/magenta");
+        public static final BlockItemTagId DYED_ORANGE = tag("dyed/orange");
+        public static final BlockItemTagId DYED_PINK = tag("dyed/pink");
+        public static final BlockItemTagId DYED_PURPLE = tag("dyed/purple");
+        public static final BlockItemTagId DYED_RED = tag("dyed/red");
+        public static final BlockItemTagId DYED_WHITE = tag("dyed/white");
+        public static final BlockItemTagId DYED_YELLOW = tag("dyed/yellow");
+
+        /// A color collection of the dyed color tags.
+        public static final ColorCollection<BlockItemTagId> DYED_COLORS = new ColorCollection<>(
                 DYED_WHITE,
                 DYED_ORANGE,
                 DYED_MAGENTA,
@@ -141,255 +567,161 @@ public class Tags {
                 DYED_RED,
                 DYED_BLACK);
 
-        /**
-         * Tag that holds blocks which can be dyed but do not have their own color already, like glass.
-         * (Does not include color blending blocks which would behave similarly to leather armor items)
-         */
-        public static final TagKey<Block> DYEABLE_UNDYED_SIMPLE = tag("dyeable/simple/undyed");
+        /// Holds blocks and items which can be dyed but do not have their own color already, such as glass.
+        /// This does not include color blending blocks and items, such as leather armor.
+        public static final BlockItemTagId DYEABLE_UNDYED_SIMPLE = tag("dyeable/simple/undyed");
 
-        /**
-         * Tag that holds blocks which can be dyed despite already having a color, like wool.
-         * (Does not include color blending blocks which would behave similarly to leather armor items)
-         */
-        public static final TagKey<Block> DYEABLE_REDYEABLE_SIMPLE = tag("dyeable/simple/redyeable");
+        /// Holds blocks and items which can be dyed despite already having a color, such as wool.
+        /// This does not include color blending blocks and items, such as leather armor.
+        public static final BlockItemTagId DYEABLE_REDYEABLE_SIMPLE = tag("dyeable/simple/redyeable");
 
-        /**
-         * Tag that holds blocks which can be dyed in a simple fashion without color blending, typically
-         * in the standard 16 colors, whether they have a color already or not.
-         */
-        public static final TagKey<Block> DYEABLE_SIMPLE = tag("dyeable/simple");
+        /// Holds blocks and items which can be dyed in a simple fashion without color blending, typically in the standard
+        /// [16 colors][DyeColor], whether they have a color already or not.
+        public static final BlockItemTagId DYEABLE_SIMPLE = tag("dyeable/simple");
+        /// Holds blocks and items which can be dyed in a dynamic color blending fashion, such as leather armor.
+        public static final BlockItemTagId DYEABLE_DYNAMIC = tag("dyeable/dynamic");
 
-        /**
-         * Tag that holds blocks which can be dyed in a dynamic color blending fashion, similarly to leather armor items.
-         */
-        public static final TagKey<Block> DYEABLE_DYNAMIC = tag("dyeable/dynamic");
+        /// Holds blocks and items which can have dye applied to them, whether they have a color already or not.
+        public static final BlockItemTagId DYEABLE = tag("dyeable");
 
-        /**
-         * Tag that holds blocks which can have dye applied to them, whether they have a color already or not.
-         */
-        public static final TagKey<Block> DYEABLE = tag("dyeable");
-
-        public static final TagKey<Block> END_STONES = tag("end_stones");
-        public static final TagKey<Block> FENCE_GATES = tag("fence_gates");
-        public static final TagKey<Block> FENCE_GATES_WOODEN = tag("fence_gates/wooden");
-        public static final TagKey<Block> FENCES = tag("fences");
-        public static final TagKey<Block> FENCES_NETHER_BRICK = tag("fences/nether_brick");
-        public static final TagKey<Block> FENCES_WOODEN = tag("fences/wooden");
-        /**
-         * Contains living ground-based flowers that are 1 block tall such as Dandelions or Poppy.
-         * Equivalent to the "minecraft:small_flowers" block tag.
-         */
-        public static final TagKey<Block> FLOWERS_SMALL = tag("flowers/small");
-        /**
-         * Contains living ground-based flowers that are 2 block tall such as Rose Bush or Peony.
-         * Equivalent to the "minecraft:tall_flowers" block tag in past Minecraft version.
-         */
-        public static final TagKey<Block> FLOWERS_TALL = tag("flowers/tall");
-        /**
-         * Contains any living plant block that contains flowers or is a flower itself.
-         * Equivalent to the "minecraft:flowers" block tag.
-         */
-        public static final TagKey<Block> FLOWERS = tag("flowers");
+        public static final BlockItemTagId END_STONES = tag("end_stones");
+        public static final BlockItemTagId FENCE_GATES = tag("fence_gates");
+        public static final BlockItemTagId FENCE_GATES_WOODEN = tag("fence_gates/wooden");
+        public static final BlockItemTagId FENCES = tag("fences");
+        public static final BlockItemTagId FENCES_NETHER_BRICK = tag("fences/nether_brick");
+        public static final BlockItemTagId FENCES_WOODEN = tag("fences/wooden");
+        /// Living ground-based flowers that are one block tall, such as dandelions or poppies.
+        /// Equivalent to the [`minecraft:small_flowers` tag][BlockItemTags#SMALL_FLOWERS].
+        public static final BlockItemTagId FLOWERS_SMALL = tag("flowers/small");
+        /// Living ground-based flowers that are two blocks tall, such as rose bushes or peonies.
+        /// Equivalent to the `minecraft:tall_flowers` tag that used to exist in previous Minecraft versions.
+        public static final BlockItemTagId FLOWERS_TALL = tag("flowers/tall");
+        /// Living plants that are or contains flowers.
+        /// Equivalent to the [`minecraft:flowers` tag][BlockItemTags#FLOWERS].
+        public static final BlockItemTagId FLOWERS = tag("flowers");
         /// Light-emitting blocks created when a Frog eats a Magma Cube.
-        public static final TagKey<Block> FROGLIGHTS = tag("froglights");
+        public static final BlockItemTagId FROGLIGHTS = tag("froglights");
 
-        public static final TagKey<Block> GLASS_BLOCKS = tag("glass_blocks");
-        public static final TagKey<Block> GLASS_BLOCKS_COLORLESS = tag("glass_blocks/colorless");
-        /**
-         * Glass which is made from cheap resources like sand and only minor additional ingredients like dyes
-         */
-        public static final TagKey<Block> GLASS_BLOCKS_CHEAP = tag("glass_blocks/cheap");
-        public static final TagKey<Block> GLASS_BLOCKS_TINTED = tag("glass_blocks/tinted");
+        public static final BlockItemTagId GLASS_BLOCKS = tag("glass_blocks");
+        public static final BlockItemTagId GLASS_BLOCKS_COLORLESS = tag("glass_blocks/colorless");
+        /// Glass made from cheap resources like sand and only minor additional ingredients like dyes.
+        public static final BlockItemTagId GLASS_BLOCKS_CHEAP = tag("glass_blocks/cheap");
+        public static final BlockItemTagId GLASS_BLOCKS_TINTED = tag("glass_blocks/tinted");
 
-        public static final TagKey<Block> GLASS_PANES = tag("glass_panes");
-        public static final TagKey<Block> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
-        public static final TagKey<Block> GLAZED_TERRACOTTAS = tag("glazed_terracottas");
+        public static final BlockItemTagId GLASS_PANES = tag("glass_panes");
+        public static final BlockItemTagId GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
+        public static final BlockItemTagId GLAZED_TERRACOTTAS = tag("glazed_terracottas");
 
-        public static final TagKey<Block> GRAVELS = tag("gravels");
-        /**
-         * Tag that holds all blocks that recipe viewers should not show to users.
-         * Recipe viewers may use this to automatically find the corresponding BlockItem to hide.
-         */
-        public static final TagKey<Block> HIDDEN_FROM_RECIPE_VIEWERS = tag("hidden_from_recipe_viewers");
-
-        /**
+        public static final BlockItemTagId GRAVELS = tag("gravels");
+           /**
          * Solid/full blocks of Ice.
          */
-        public static final TagKey<Block> ICE = tag("ice");
+        public static final BlockItemTagId ICE = tag("ice");
+        public static final BlockItemTagId NETHERRACKS = tag("netherracks");
+        public static final BlockItemTagId OBSIDIANS = tag("obsidians");
+        /// Common obsidian that has no special quirks or behaviors, which is ideal for recipe use.
+        ///
+        /// Crying Obsidian, for example, is a light block and harder to obtain, so it is under [#OBSIDIANS_CRYING] rather than this tag.
+        public static final BlockItemTagId OBSIDIANS_NORMAL = tag("obsidians/normal");
+        public static final BlockItemTagId OBSIDIANS_CRYING = tag("obsidians/crying");
+        /// Blocks often replaced by [deepslate ores][#ORES_IN_GROUND_DEEPSLATE] during world generation.
+        public static final BlockItemTagId ORE_BEARING_GROUND_DEEPSLATE = tag("ore_bearing_ground/deepslate");
+        /// Blocks often replaced by [netherrack ores][#ORES_IN_GROUND_NETHERRACK] during world generation.
+        public static final BlockItemTagId ORE_BEARING_GROUND_NETHERRACK = tag("ore_bearing_ground/netherrack");
+        /// Blocks often replaced by [stone ores][#ORES_IN_GROUND_STONE] during world generation.
+        public static final BlockItemTagId ORE_BEARING_GROUND_STONE = tag("ore_bearing_ground/stone");
+        /// Ores which on average result in more than one resource's worth of materials (ignoring fortune and other modifiers).
+        /// For example, copper ore may drop multiple raw copper items, each convertible to one copper ingot.
+        public static final BlockItemTagId ORE_RATES_DENSE = tag("ore_rates/dense");
+        /// Ores which on average result in one resource's worth of materials (ignoring fortune and other modifiers), such as iron ore.
+        /// For example, iron ore drops one raw iron item, which is convertible to one iron ingot.
+        public static final BlockItemTagId ORE_RATES_SINGULAR = tag("ore_rates/singular");
+        /// Ores which on average result in less than one resource's worth of materials (ignoring fortune and other modifiers).
+        /// For example, nether gold ore drops 2-6 gold nuggets, but it takes 9 gold nuggets to convert to one gold ingot (equivalent to one raw gold).
+        public static final BlockItemTagId ORE_RATES_SPARSE = tag("ore_rates/sparse");
+        public static final BlockItemTagId ORES = tag("ores");
+        public static final BlockItemTagId ORES_COAL = tag("ores/coal");
+        public static final BlockItemTagId ORES_COPPER = tag("ores/copper");
+        public static final BlockItemTagId ORES_DIAMOND = tag("ores/diamond");
+        public static final BlockItemTagId ORES_EMERALD = tag("ores/emerald");
+        public static final BlockItemTagId ORES_GOLD = tag("ores/gold");
+        public static final BlockItemTagId ORES_IRON = tag("ores/iron");
+        public static final BlockItemTagId ORES_LAPIS = tag("ores/lapis");
+        public static final BlockItemTagId ORES_NETHERITE_SCRAP = tag("ores/netherite_scrap");
+        public static final BlockItemTagId ORES_QUARTZ = tag("ores/quartz");
+        public static final BlockItemTagId ORES_REDSTONE = tag("ores/redstone");
+        /// Ores in deepslate (or equivalent blocks in [#ORE_BEARING_GROUND_DEEPSLATE]) which could logically use that as recipe input or output.
+        public static final BlockItemTagId ORES_IN_GROUND_DEEPSLATE = tag("ores_in_ground/deepslate");
+        /// Ores in netherrack (or equivalent blocks in [#ORE_BEARING_GROUND_NETHERRACK]) which could logically use that as recipe input or output.
+        public static final BlockItemTagId ORES_IN_GROUND_NETHERRACK = tag("ores_in_ground/netherrack");
+        /// Ores in stone (or equivalent blocks in [#ORE_BEARING_GROUND_STONE]) which could logically use that as recipe input or output.
+        public static final BlockItemTagId ORES_IN_GROUND_STONE = tag("ores_in_ground/stone");
+        public static final BlockItemTagId PUMPKINS = tag("pumpkins");
+        /// Non-carved pumpkins.
+        public static final BlockItemTagId PUMPKINS_NORMAL = tag("pumpkins/normal");
+        /// Carved pumpkins which are not light sources.
+        public static final BlockItemTagId PUMPKINS_CARVED = tag("pumpkins/carved");
+        /// Carved pumpkins which are also light sources.
+        public static final BlockItemTagId PUMPKINS_JACK_O_LANTERNS = tag("pumpkins/jack_o_lanterns");
+        public static final BlockItemTagId PLAYER_WORKSTATIONS_CRAFTING_TABLES = tag("player_workstations/crafting_tables");
+        public static final BlockItemTagId PLAYER_WORKSTATIONS_FURNACES = tag("player_workstations/furnaces");
+        public static final BlockItemTagId ROPES = tag("ropes");
 
-        public static final TagKey<Block> NETHERRACKS = tag("netherracks");
-        public static final TagKey<Block> OBSIDIANS = tag("obsidians");
-        /**
-         * For common obsidian that has no special quirks or behaviors. Ideal for recipe use.
-         * Crying Obsidian, for example, is a light block and harder to obtain. So it gets its own tag instead of being under normal tag.
-         */
-        public static final TagKey<Block> OBSIDIANS_NORMAL = tag("obsidians/normal");
-        public static final TagKey<Block> OBSIDIANS_CRYING = tag("obsidians/crying");
-        /**
-         * Blocks which are often replaced by deepslate ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_DEEPSLATE}, during world generation.
-         * (The block's registry name is used as the tag name)
-         */
-        public static final TagKey<Block> ORE_BEARING_GROUND_DEEPSLATE = tag("ore_bearing_ground/deepslate");
-        /**
-         * Blocks which are often replaced by netherrack ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_NETHERRACK}, during world generation.
-         * (The block's registry name is used as the tag name)
-         */
-        public static final TagKey<Block> ORE_BEARING_GROUND_NETHERRACK = tag("ore_bearing_ground/netherrack");
-        /**
-         * Blocks which are often replaced by stone ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_STONE}, during world generation.
-         * (The block's registry name is used as the tag name)
-         */
-        public static final TagKey<Block> ORE_BEARING_GROUND_STONE = tag("ore_bearing_ground/stone");
-        /**
-         * Ores which on average result in more than one resource worth of materials ignoring fortune and other modifiers.
-         * (example, Copper Ore)
-         */
-        public static final TagKey<Block> ORE_RATES_DENSE = tag("ore_rates/dense");
-        /**
-         * Ores which on average result in one resource worth of materials ignoring fortune and other modifiers.
-         * (Example, Iron Ore)
-         */
-        public static final TagKey<Block> ORE_RATES_SINGULAR = tag("ore_rates/singular");
-        /**
-         * Ores which on average result in less than one resource worth of materials ignoring fortune and other modifiers.
-         * (Example, Nether Gold Ore as it drops 2 to 6 Gold Nuggets which is less than normal Gold Ore's Raw Gold drop)
-         */
-        public static final TagKey<Block> ORE_RATES_SPARSE = tag("ore_rates/sparse");
-        public static final TagKey<Block> ORES = tag("ores");
-        public static final TagKey<Block> ORES_COAL = tag("ores/coal");
-        public static final TagKey<Block> ORES_COPPER = tag("ores/copper");
-        public static final TagKey<Block> ORES_DIAMOND = tag("ores/diamond");
-        public static final TagKey<Block> ORES_EMERALD = tag("ores/emerald");
-        public static final TagKey<Block> ORES_GOLD = tag("ores/gold");
-        public static final TagKey<Block> ORES_IRON = tag("ores/iron");
-        public static final TagKey<Block> ORES_LAPIS = tag("ores/lapis");
-        public static final TagKey<Block> ORES_NETHERITE_SCRAP = tag("ores/netherite_scrap");
-        public static final TagKey<Block> ORES_QUARTZ = tag("ores/quartz");
-        public static final TagKey<Block> ORES_REDSTONE = tag("ores/redstone");
-        /**
-         * Ores in deepslate (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_DEEPSLATE}) which could logically use deepslate as recipe input or output.
-         * (The block's registry name is used as the tag name)
-         */
-        public static final TagKey<Block> ORES_IN_GROUND_DEEPSLATE = tag("ores_in_ground/deepslate");
-        /**
-         * Ores in netherrack (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_NETHERRACK}) which could logically use netherrack as recipe input or output.
-         * (The block's registry name is used as the tag name)
-         */
-        public static final TagKey<Block> ORES_IN_GROUND_NETHERRACK = tag("ores_in_ground/netherrack");
-        /**
-         * Ores in stone (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_STONE}) which could logically use stone as recipe input or output.
-         * (The block's registry name is used as the tag name)
-         */
-        public static final TagKey<Block> ORES_IN_GROUND_STONE = tag("ores_in_ground/stone");
-        public static final TagKey<Block> PUMPKINS = tag("pumpkins");
-        /**
-         * For pumpkins that are not carved.
-         */
-        public static final TagKey<Block> PUMPKINS_NORMAL = tag("pumpkins/normal");
-        /**
-         * For pumpkins that are already carved but not a light source.
-         */
-        public static final TagKey<Block> PUMPKINS_CARVED = tag("pumpkins/carved");
+        public static final BlockItemTagId SANDS = tag("sands");
+        public static final BlockItemTagId SANDS_COLORLESS = tag("sands/colorless");
+        public static final BlockItemTagId SANDS_RED = tag("sands/red");
 
-        /**
-         * For pumpkins that are already carved and a light source.
-         */
-        public static final TagKey<Block> PUMPKINS_JACK_O_LANTERNS = tag("pumpkins/jack_o_lanterns");
-        public static final TagKey<Block> PLAYER_WORKSTATIONS_CRAFTING_TABLES = tag("player_workstations/crafting_tables");
-        public static final TagKey<Block> PLAYER_WORKSTATIONS_FURNACES = tag("player_workstations/furnaces");
-        /**
-         * Blocks should be included in this tag if their movement/relocation can cause serious issues such
-         * as world corruption upon being moved or for balance reason where the block should not be able to be relocated.
-         * Example: Chunk loaders or pipes where other mods that move blocks do not respect
-         * {@link BlockBehaviour.BlockStateBase#getPistonPushReaction}.
-         */
-        public static final TagKey<Block> RELOCATION_NOT_SUPPORTED = tag("relocation_not_supported");
-        public static final TagKey<Block> ROPES = tag("ropes");
+        public static final BlockItemTagId SANDSTONE_BLOCKS = tag("sandstone/blocks");
+        public static final BlockItemTagId SANDSTONE_SLABS = tag("sandstone/slabs");
+        public static final BlockItemTagId SANDSTONE_STAIRS = tag("sandstone/stairs");
+        public static final BlockItemTagId SANDSTONE_RED_BLOCKS = tag("sandstone/red_blocks");
+        public static final BlockItemTagId SANDSTONE_RED_SLABS = tag("sandstone/red_slabs");
+        public static final BlockItemTagId SANDSTONE_RED_STAIRS = tag("sandstone/red_stairs");
+        public static final BlockItemTagId SANDSTONE_UNCOLORED_BLOCKS = tag("sandstone/uncolored_blocks");
+        public static final BlockItemTagId SANDSTONE_UNCOLORED_SLABS = tag("sandstone/uncolored_slabs");
+        public static final BlockItemTagId SANDSTONE_UNCOLORED_STAIRS = tag("sandstone/uncolored_stairs");
+        /// Natural stone-like blocks that can be used as a base ingredient in recipes that takes stone.
+        public static final BlockItemTagId STONES = tag("stones");
+        /// Resource storage blocks. These generally have a recipe to craft a bulk of one kind of resource to the storage block
+        /// and a mirror recipe to reverse the crafting with no loss in resources.
+        ///
+        /// Honey Block is special in that the reversing recipe is not a perfect mirror of the crafting recipe.
+        /// Therefore, it is a special case and not given a storage block tag.
+        public static final BlockItemTagId STORAGE_BLOCKS = tag("storage_blocks");
+        public static final BlockItemTagId STORAGE_BLOCKS_BONE_MEAL = tag("storage_blocks/bone_meal");
+        public static final BlockItemTagId STORAGE_BLOCKS_COAL = tag("storage_blocks/coal");
+        public static final BlockItemTagId STORAGE_BLOCKS_COPPER = tag("storage_blocks/copper");
+        public static final BlockItemTagId STORAGE_BLOCKS_DIAMOND = tag("storage_blocks/diamond");
+        public static final BlockItemTagId STORAGE_BLOCKS_DRIED_KELP = tag("storage_blocks/dried_kelp");
+        public static final BlockItemTagId STORAGE_BLOCKS_EMERALD = tag("storage_blocks/emerald");
+        public static final BlockItemTagId STORAGE_BLOCKS_GOLD = tag("storage_blocks/gold");
+        public static final BlockItemTagId STORAGE_BLOCKS_IRON = tag("storage_blocks/iron");
+        public static final BlockItemTagId STORAGE_BLOCKS_LAPIS = tag("storage_blocks/lapis");
+        public static final BlockItemTagId STORAGE_BLOCKS_NETHERITE = tag("storage_blocks/netherite");
+        public static final BlockItemTagId STORAGE_BLOCKS_RAW_COPPER = tag("storage_blocks/raw_copper");
+        public static final BlockItemTagId STORAGE_BLOCKS_RAW_GOLD = tag("storage_blocks/raw_gold");
+        public static final BlockItemTagId STORAGE_BLOCKS_RAW_IRON = tag("storage_blocks/raw_iron");
+        public static final BlockItemTagId STORAGE_BLOCKS_REDSTONE = tag("storage_blocks/redstone");
+        public static final BlockItemTagId STORAGE_BLOCKS_RESIN = tag("storage_blocks/resin");
+        public static final BlockItemTagId STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
+        public static final BlockItemTagId STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
+        /// Logs found naturally in the Overworld, excluding stripped logs.
+        /// Contains [BlockTags#OVERWORLD_NATURAL_LOGS] for consistency.
+        public static final BlockItemTagId OVERWORLD_NATURAL_LOGS = tag("natural_logs/overworld");
+        /// Logs, including stems, found naturally in the Nether, excluding stripped logs.
+        public static final BlockItemTagId NETHER_NATURAL_LOGS = tag("natural_logs/nether");
+        /// Logs, including stems, found naturally that have not been stripped.
+        public static final BlockItemTagId NATURAL_LOGS = tag("natural_logs");
+        /// Six-sided wood blocks, including hyphae, found naturally that have not been stripped.
+        public static final BlockItemTagId NATURAL_WOODS = tag("natural_woods");
+        /// Logs, including stems, found naturally that have been stripped of their bark.
+        public static final BlockItemTagId STRIPPED_LOGS = tag("stripped_logs");
+        /// Six-sided wood blocks, including hyphae, found naturally that have been stripped of their bark.
+        public static final BlockItemTagId STRIPPED_WOODS = tag("stripped_woods");
 
-        public static final TagKey<Block> SANDS = tag("sands");
-        public static final TagKey<Block> SANDS_COLORLESS = tag("sands/colorless");
-        public static final TagKey<Block> SANDS_RED = tag("sands/red");
-
-        public static final TagKey<Block> SANDSTONE_BLOCKS = tag("sandstone/blocks");
-        public static final TagKey<Block> SANDSTONE_SLABS = tag("sandstone/slabs");
-        public static final TagKey<Block> SANDSTONE_STAIRS = tag("sandstone/stairs");
-        public static final TagKey<Block> SANDSTONE_RED_BLOCKS = tag("sandstone/red_blocks");
-        public static final TagKey<Block> SANDSTONE_RED_SLABS = tag("sandstone/red_slabs");
-        public static final TagKey<Block> SANDSTONE_RED_STAIRS = tag("sandstone/red_stairs");
-        public static final TagKey<Block> SANDSTONE_UNCOLORED_BLOCKS = tag("sandstone/uncolored_blocks");
-        public static final TagKey<Block> SANDSTONE_UNCOLORED_SLABS = tag("sandstone/uncolored_slabs");
-        public static final TagKey<Block> SANDSTONE_UNCOLORED_STAIRS = tag("sandstone/uncolored_stairs");
-        /**
-         * Tag that holds all head based blocks such as Skeleton Skull or Player Head. (Named skulls to match minecraft:skulls item tag)
-         */
-        public static final TagKey<Block> SKULLS = tag("skulls");
-        /**
-         * Natural stone-like blocks that can be used as a base ingredient in recipes that takes stone.
-         */
-        public static final TagKey<Block> STONES = tag("stones");
-        /**
-         * A storage block is generally a block that has a recipe to craft a bulk of 1 kind of resource to a block
-         * and has a mirror recipe to reverse the crafting with no loss in resources.
-         * <p>
-         * Honey Block is special in that the reversing recipe is not a perfect mirror of the crafting recipe
-         * and so, it is considered a special case and not given a storage block tag.
-         */
-        public static final TagKey<Block> STORAGE_BLOCKS = tag("storage_blocks");
-        public static final TagKey<Block> STORAGE_BLOCKS_BONE_MEAL = tag("storage_blocks/bone_meal");
-        public static final TagKey<Block> STORAGE_BLOCKS_COAL = tag("storage_blocks/coal");
-        public static final TagKey<Block> STORAGE_BLOCKS_COPPER = tag("storage_blocks/copper");
-        public static final TagKey<Block> STORAGE_BLOCKS_DIAMOND = tag("storage_blocks/diamond");
-        public static final TagKey<Block> STORAGE_BLOCKS_DRIED_KELP = tag("storage_blocks/dried_kelp");
-        public static final TagKey<Block> STORAGE_BLOCKS_EMERALD = tag("storage_blocks/emerald");
-        public static final TagKey<Block> STORAGE_BLOCKS_GOLD = tag("storage_blocks/gold");
-        public static final TagKey<Block> STORAGE_BLOCKS_IRON = tag("storage_blocks/iron");
-        public static final TagKey<Block> STORAGE_BLOCKS_LAPIS = tag("storage_blocks/lapis");
-        public static final TagKey<Block> STORAGE_BLOCKS_NETHERITE = tag("storage_blocks/netherite");
-        public static final TagKey<Block> STORAGE_BLOCKS_RAW_COPPER = tag("storage_blocks/raw_copper");
-        public static final TagKey<Block> STORAGE_BLOCKS_RAW_GOLD = tag("storage_blocks/raw_gold");
-        public static final TagKey<Block> STORAGE_BLOCKS_RAW_IRON = tag("storage_blocks/raw_iron");
-        public static final TagKey<Block> STORAGE_BLOCKS_REDSTONE = tag("storage_blocks/redstone");
-        public static final TagKey<Block> STORAGE_BLOCKS_RESIN = tag("storage_blocks/resin");
-        public static final TagKey<Block> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
-        public static final TagKey<Block> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
-        /**
-         * For logs found naturally in the Overworld, does not include Stripped Logs.
-         * Contains {@link BlockTags#OVERWORLD_NATURAL_LOGS} for consistency.
-         */
-        public static final TagKey<Block> OVERWORLD_NATURAL_LOGS = tag("natural_logs/overworld");
-        /**
-         * For logs, including Stems, found naturally in the Nether, does not include Stripped Logs.
-         */
-        public static final TagKey<Block> NETHER_NATURAL_LOGS = tag("natural_logs/nether");
-        /**
-         * For logs, including Stems, found naturally that have not been stripped.
-         */
-        public static final TagKey<Block> NATURAL_LOGS = tag("natural_logs");
-        /**
-         * For six-sided wood blocks, including Hyphae, found naturally that have not been stripped.
-         */
-        public static final TagKey<Block> NATURAL_WOODS = tag("natural_woods");
-        /**
-         * For logs, including Stems, found naturally that have been stripped.
-         */
-        public static final TagKey<Block> STRIPPED_LOGS = tag("stripped_logs");
-        /**
-         * For six-sided wood blocks, including Hyphae, found naturally that have been stripped.
-         */
-        public static final TagKey<Block> STRIPPED_WOODS = tag("stripped_woods");
-        public static final TagKey<Block> VILLAGER_JOB_SITES = tag("villager_job_sites");
-
-        /**
-         * Blocks tagged here will be tracked by Farmer Villagers who will attempt to plant crops on top.
-         */
-        public static final TagKey<Block> VILLAGER_FARMLANDS = neoforgeTag("villager_farmlands");
-
-        private static TagKey<Block> tag(String name) {
-            return BlockTags.create(Identifier.fromNamespaceAndPath("c", name));
-        }
-
-        private static TagKey<Block> neoforgeTag(String name) {
-            return BlockTags.create(Identifier.fromNamespaceAndPath("neoforge", name));
+        /// Creates a shared block-item tag that has identical names.
+        private static BlockItemTagId tag(String name) {
+            return BlockItemTagId.create(Identifier.fromNamespaceAndPath("c", name), Identifier.fromNamespaceAndPath("c", name));
         }
     }
 
@@ -445,16 +777,7 @@ public class Tags {
         public static final TagKey<Item> SKELETON_USABLE_BOWS = neoforgeTag("skeleton_usable_bows");
 
         // `c` tags for common conventions
-        public static final TagKey<Item> BARRELS = tag("barrels");
-        public static final TagKey<Item> BARRELS_WOODEN = tag("barrels/wooden");
-        /**
-         * Equivalent to the "minecraft:bars" item tag.
-         */
-        public static final TagKey<Item> BARS = tag("bars");
-        public static final TagKey<Item> BARS_COPPER = tag("bars/copper");
-        public static final TagKey<Item> BARS_IRON = tag("bars/iron");
         public static final TagKey<Item> BONES = tag("bones");
-        public static final TagKey<Item> BOOKSHELVES = tag("bookshelves");
         public static final TagKey<Item> BRICKS = tag("bricks");
         public static final TagKey<Item> BRICKS_NORMAL = tag("bricks/normal");
         public static final TagKey<Item> BRICKS_NETHER = tag("bricks/nether");
@@ -475,32 +798,9 @@ public class Tags {
         public static final TagKey<Item> BUCKETS_ENTITY_WATER = tag("buckets/entity_water");
         public static final TagKey<Item> BUCKETS_ENTITY_DRY = tag("buckets/entity_dry");
         /**
-         * For blocks that are similar to amethyst where their budding block produces buds and cluster blocks
-         */
-        public static final TagKey<Item> BUDDING_BLOCKS = tag("budding_blocks");
-        /**
-         * For blocks that are similar to amethyst where they have buddings forming from budding blocks
-         */
-        public static final TagKey<Item> BUDS = tag("buds");
-        public static final TagKey<Item> CHAINS = tag("chains");
-        public static final TagKey<Item> CHESTS = tag("chests");
-        public static final TagKey<Item> CHESTS_ENDER = tag("chests/ender");
-        public static final TagKey<Item> CHESTS_TRAPPED = tag("chests/trapped");
-        public static final TagKey<Item> CHESTS_WOODEN = tag("chests/wooden");
-        public static final TagKey<Item> COBBLESTONES = tag("cobblestones");
-        public static final TagKey<Item> COBBLESTONES_NORMAL = tag("cobblestones/normal");
-        public static final TagKey<Item> COBBLESTONES_INFESTED = tag("cobblestones/infested");
-        public static final TagKey<Item> COBBLESTONES_MOSSY = tag("cobblestones/mossy");
-        public static final TagKey<Item> COBBLESTONES_DEEPSLATE = tag("cobblestones/deepslate");
-        public static final TagKey<Item> CONCRETES = tag("concretes");
-        /**
          * Block tag equivalent is {@link BlockTags#CONCRETE_POWDER}
          */
         public static final TagKey<Item> CONCRETE_POWDERS = tag("concrete_powders");
-        /**
-         * For blocks that are similar to amethyst where they have clusters forming from budding blocks
-         */
-        public static final TagKey<Item> CLUSTERS = tag("clusters");
         public static final TagKey<Item> CLUMPS = tag("clumps");
         public static final TagKey<Item> CLUMPS_RESIN = tag("clumps/resin");
         /**
@@ -570,84 +870,6 @@ public class Tags {
         public static final TagKey<Item> DUSTS_REDSTONE = tag("dusts/redstone");
         public static final TagKey<Item> DUSTS_GLOWSTONE = tag("dusts/glowstone");
 
-        /**
-         * Tag that holds all blocks and items which are dyed a specific color.
-         * (Does not include color blending items like leather armor
-         * Use {@link net.minecraft.tags.ItemTags#DYEABLE} tag instead for color blending items)
-         * <p>
-         * Note: Use custom ingredients in recipes to do tag intersections and/or tag exclusions
-         * to make more powerful recipes utilizing multiple tags such as dyed tags for an ingredient.
-         * See {@link net.neoforged.neoforge.common.crafting.DifferenceIngredient} and {@link net.neoforged.neoforge.common.crafting.CompoundIngredient}
-         * for various custom ingredients available that can also be used in data generation.
-         */
-        public static final TagKey<Item> DYED = tag("dyed");
-        public static final TagKey<Item> DYED_BLACK = tag("dyed/black");
-        public static final TagKey<Item> DYED_BLUE = tag("dyed/blue");
-        public static final TagKey<Item> DYED_BROWN = tag("dyed/brown");
-        public static final TagKey<Item> DYED_CYAN = tag("dyed/cyan");
-        public static final TagKey<Item> DYED_GRAY = tag("dyed/gray");
-        public static final TagKey<Item> DYED_GREEN = tag("dyed/green");
-        public static final TagKey<Item> DYED_LIGHT_BLUE = tag("dyed/light_blue");
-        public static final TagKey<Item> DYED_LIGHT_GRAY = tag("dyed/light_gray");
-        public static final TagKey<Item> DYED_LIME = tag("dyed/lime");
-        public static final TagKey<Item> DYED_MAGENTA = tag("dyed/magenta");
-        public static final TagKey<Item> DYED_ORANGE = tag("dyed/orange");
-        public static final TagKey<Item> DYED_PINK = tag("dyed/pink");
-        public static final TagKey<Item> DYED_PURPLE = tag("dyed/purple");
-        public static final TagKey<Item> DYED_RED = tag("dyed/red");
-        public static final TagKey<Item> DYED_WHITE = tag("dyed/white");
-        public static final TagKey<Item> DYED_YELLOW = tag("dyed/yellow");
-
-        /**
-         * Dyed color tags as a color collection, for convenience.
-         */
-        public static final ColorCollection<TagKey<Item>> DYED_COLORS = new ColorCollection<>(
-                DYED_WHITE,
-                DYED_ORANGE,
-                DYED_MAGENTA,
-                DYED_LIGHT_BLUE,
-                DYED_YELLOW,
-                DYED_LIME,
-                DYED_PINK,
-                DYED_GRAY,
-                DYED_LIGHT_GRAY,
-                DYED_CYAN,
-                DYED_PURPLE,
-                DYED_BLUE,
-                DYED_BROWN,
-                DYED_GREEN,
-                DYED_RED,
-                DYED_BLACK);
-
-        /**
-         * Tag that holds items which can be dyed but do not have their own color already, like glass.
-         * (Does not include color blending items like leather armor)
-         */
-        public static final TagKey<Item> DYEABLE_UNDYED_SIMPLE = tag("dyeable/simple/undyed");
-
-        /**
-         * Tag that holds items which can be dyed despite already having a color, like wool.
-         * (Does not include color blending items like leather armor)
-         */
-        public static final TagKey<Item> DYEABLE_REDYEABLE_SIMPLE = tag("dyeable/simple/redyeable");
-
-        /**
-         * Tag that holds items which can be dyed in a simple fashion without color blending, typically
-         * in the standard 16 colors, whether they have a color already or not.
-         */
-        public static final TagKey<Item> DYEABLE_SIMPLE = tag("dyeable/simple");
-
-        /**
-         * Tag that holds items which can be dyed in a dynamic color blending fashion, like leather armor.
-         * <br>Note this also includes Firework Stars, which store colors in a different fashion to most.
-         */
-        public static final TagKey<Item> DYEABLE_DYNAMIC = tag("dyeable/dynamic");
-
-        /**
-         * Tag that holds items which can have dye applied to them, whether they have a color already or not.
-         */
-        public static final TagKey<Item> DYEABLE = tag("dyeable");
-
         public static final TagKey<Item> DYES = tag("dyes");
         public static final TagKey<Item> DYES_BLACK = DyeColor.BLACK.getTag();
         public static final TagKey<Item> DYES_RED = DyeColor.RED.getTag();
@@ -691,34 +913,13 @@ public class Tags {
          * For eggs to use for culinary purposes in recipes such as baking a cake.
          */
         public static final TagKey<Item> EGGS = tag("eggs");
-        public static final TagKey<Item> END_STONES = tag("end_stones");
         public static final TagKey<Item> ENDER_PEARLS = tag("ender_pearls");
         public static final TagKey<Item> FEATHERS = tag("feathers");
-        public static final TagKey<Item> FENCE_GATES = tag("fence_gates");
-        public static final TagKey<Item> FENCE_GATES_WOODEN = tag("fence_gates/wooden");
-        public static final TagKey<Item> FENCES = tag("fences");
-        public static final TagKey<Item> FENCES_NETHER_BRICK = tag("fences/nether_brick");
-        public static final TagKey<Item> FENCES_WOODEN = tag("fences/wooden");
         /**
          * For bonemeal-like items that can grow plants.
          * (Note: Could include durability-based modded bonemeal-like items. Check for durability {@link net.minecraft.core.component.DataComponents#DAMAGE} DataComponent to handle them properly)
          */
         public static final TagKey<Item> FERTILIZERS = tag("fertilizers");
-        /**
-         * Contains living ground-based flowers that are 1 block tall such as Dandelions or Poppy.
-         * Equivalent to the "minecraft:small_flowers" item tag.
-         */
-        public static final TagKey<Item> FLOWERS_SMALL = tag("flowers/small");
-        /**
-         * Contains living ground-based flowers that are 2 block tall such as Rose Bush or Peony.
-         * Equivalent to the "minecraft:tall_flowers" item tag in past Minecraft version.
-         */
-        public static final TagKey<Item> FLOWERS_TALL = tag("flowers/tall");
-        /**
-         * Contains any living plant block that contains flowers or is a flower itself.
-         * Equivalent to the "minecraft:flowers" item tag in past minecraft versions.
-         */
-        public static final TagKey<Item> FLOWERS = tag("flowers");
         public static final TagKey<Item> FOODS = tag("foods");
         /**
          * Apples and other foods that are considered fruits in the culinary field belong in this tag.
@@ -784,8 +985,6 @@ public class Tags {
          * (Does not include {@link ItemTags#PARROT_POISONOUS_FOOD})
          */
         public static final TagKey<Item> ANIMAL_FOODS = tag("animal_foods");
-        /// Light-emitting blocks created when a Frog eats a Magma Cube.
-        public static final TagKey<Item> FROGLIGHTS = tag("froglights");
         public static final TagKey<Item> GEMS = tag("gems");
         public static final TagKey<Item> GEMS_DIAMOND = tag("gems/diamond");
         public static final TagKey<Item> GEMS_EMERALD = tag("gems/emerald");
@@ -794,19 +993,6 @@ public class Tags {
         public static final TagKey<Item> GEMS_PRISMARINE = tag("gems/prismarine");
         public static final TagKey<Item> GEMS_QUARTZ = tag("gems/quartz");
 
-        public static final TagKey<Item> GLASS_BLOCKS = tag("glass_blocks");
-        public static final TagKey<Item> GLASS_BLOCKS_COLORLESS = tag("glass_blocks/colorless");
-        /**
-         * Glass which is made from cheap resources like sand and only minor additional ingredients like dyes
-         */
-        public static final TagKey<Item> GLASS_BLOCKS_CHEAP = tag("glass_blocks/cheap");
-        public static final TagKey<Item> GLASS_BLOCKS_TINTED = tag("glass_blocks/tinted");
-
-        public static final TagKey<Item> GLASS_PANES = tag("glass_panes");
-        public static final TagKey<Item> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
-        public static final TagKey<Item> GLAZED_TERRACOTTAS = tag("glazed_terracottas");
-
-        public static final TagKey<Item> GRAVELS = tag("gravels");
         public static final TagKey<Item> GUNPOWDERS = tag("gunpowders");
         /**
          * Tag that holds all items that recipe viewers should not show to users.
@@ -832,76 +1018,10 @@ public class Tags {
          */
         public static final TagKey<Item> MUSIC_DISCS = tag("music_discs");
         public static final TagKey<Item> NETHER_STARS = tag("nether_stars");
-        public static final TagKey<Item> NETHERRACKS = tag("netherracks");
         public static final TagKey<Item> NUGGETS = tag("nuggets");
         public static final TagKey<Item> NUGGETS_GOLD = tag("nuggets/gold");
         public static final TagKey<Item> NUGGETS_IRON = tag("nuggets/iron");
         public static final TagKey<Item> NUGGETS_COPPER = tag("nuggets/copper");
-        public static final TagKey<Item> OBSIDIANS = tag("obsidians");
-        /**
-         * For common obsidian that has no special quirks or behaviors. Ideal for recipe use.
-         * Crying Obsidian, for example, is a light block and harder to obtain. So it gets its own tag instead of being under normal tag.
-         */
-        public static final TagKey<Item> OBSIDIANS_NORMAL = tag("obsidians/normal");
-        public static final TagKey<Item> OBSIDIANS_CRYING = tag("obsidians/crying");
-        /**
-         * Blocks which are often replaced by deepslate ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_DEEPSLATE}, during world generation.
-         * (The block's registry name is used as the tag name)
-         */
-        public static final TagKey<Item> ORE_BEARING_GROUND_DEEPSLATE = tag("ore_bearing_ground/deepslate");
-        /**
-         * Blocks which are often replaced by netherrack ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_NETHERRACK}, during world generation.
-         * (The block's registry name is used as the tag name)
-         */
-        public static final TagKey<Item> ORE_BEARING_GROUND_NETHERRACK = tag("ore_bearing_ground/netherrack");
-        /**
-         * Blocks which are often replaced by stone ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_STONE}, during world generation.
-         * (The block's registry name is used as the tag name)
-         */
-        public static final TagKey<Item> ORE_BEARING_GROUND_STONE = tag("ore_bearing_ground/stone");
-        /**
-         * Ores which on average result in more than one resource worth of materials ignoring fortune and other modifiers.
-         * (example, Copper Ore)
-         */
-        public static final TagKey<Item> ORE_RATES_DENSE = tag("ore_rates/dense");
-        /**
-         * Ores which on average result in one resource worth of materials ignoring fortune and other modifiers.
-         * (Example, Iron Ore)
-         */
-        public static final TagKey<Item> ORE_RATES_SINGULAR = tag("ore_rates/singular");
-        /**
-         * Ores which on average result in less than one resource worth of materials ignoring fortune and other modifiers.
-         * (Example, Nether Gold Ore as it drops 2 to 6 Gold Nuggets which is less than normal Gold Ore's Raw Gold drop)
-         */
-        public static final TagKey<Item> ORE_RATES_SPARSE = tag("ore_rates/sparse");
-        public static final TagKey<Item> ORES = tag("ores");
-        public static final TagKey<Item> ORES_COAL = tag("ores/coal");
-        public static final TagKey<Item> ORES_COPPER = tag("ores/copper");
-        public static final TagKey<Item> ORES_DIAMOND = tag("ores/diamond");
-        public static final TagKey<Item> ORES_EMERALD = tag("ores/emerald");
-        public static final TagKey<Item> ORES_GOLD = tag("ores/gold");
-        public static final TagKey<Item> ORES_IRON = tag("ores/iron");
-        public static final TagKey<Item> ORES_LAPIS = tag("ores/lapis");
-        public static final TagKey<Item> ORES_NETHERITE_SCRAP = tag("ores/netherite_scrap");
-        public static final TagKey<Item> ORES_QUARTZ = tag("ores/quartz");
-        public static final TagKey<Item> ORES_REDSTONE = tag("ores/redstone");
-        /**
-         * Ores in deepslate (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_DEEPSLATE}) which could logically use deepslate as recipe input or output.
-         * (The block's registry name is used as the tag name)
-         */
-        public static final TagKey<Item> ORES_IN_GROUND_DEEPSLATE = tag("ores_in_ground/deepslate");
-        /**
-         * Ores in netherrack (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_NETHERRACK}) which could logically use netherrack as recipe input or output.
-         * (The block's registry name is used as the tag name)
-         */
-        public static final TagKey<Item> ORES_IN_GROUND_NETHERRACK = tag("ores_in_ground/netherrack");
-        /**
-         * Ores in stone (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_STONE}) which could logically use stone as recipe input or output.
-         * (The block's registry name is used as the tag name)
-         */
-        public static final TagKey<Item> ORES_IN_GROUND_STONE = tag("ores_in_ground/stone");
-        public static final TagKey<Item> PLAYER_WORKSTATIONS_CRAFTING_TABLES = tag("player_workstations/crafting_tables");
-        public static final TagKey<Item> PLAYER_WORKSTATIONS_FURNACES = tag("player_workstations/furnaces");
         /**
          * Items that can hold various potion effects by making use of {@link net.minecraft.core.component.DataComponents#POTION_CONTENTS}.
          * Contents of this tag may not always be a kind of bottle. Buckets of potions could go here.
@@ -914,20 +1034,7 @@ public class Tags {
          * If a mod adds a new variant like a seeking potion that applies effect to the closest entity at impact, that would in this tag.
          */
         public static final TagKey<Item> POTIONS_BOTTLE = tag("potions/bottle");
-        public static final TagKey<Item> PUMPKINS = tag("pumpkins");
-        /**
-         * For pumpkins that are not carved.
-         */
-        public static final TagKey<Item> PUMPKINS_NORMAL = tag("pumpkins/normal");
-        /**
-         * For pumpkins that are already carved but not a light source.
-         */
-        public static final TagKey<Item> PUMPKINS_CARVED = tag("pumpkins/carved");
 
-        /**
-         * For pumpkins that are already carved and a light source.
-         */
-        public static final TagKey<Item> PUMPKINS_JACK_O_LANTERNS = tag("pumpkins/jack_o_lanterns");
         public static final TagKey<Item> RAW_MATERIALS = tag("raw_materials");
         public static final TagKey<Item> RAW_MATERIALS_COPPER = tag("raw_materials/copper");
         public static final TagKey<Item> RAW_MATERIALS_GOLD = tag("raw_materials/gold");
@@ -943,21 +1050,6 @@ public class Tags {
          * One example is a mod adds stick variants such as Spruce Sticks but would like stick recipes to be able to use it.
          */
         public static final TagKey<Item> RODS_WOODEN = tag("rods/wooden");
-        public static final TagKey<Item> ROPES = tag("ropes");
-
-        public static final TagKey<Item> SANDS = tag("sands");
-        public static final TagKey<Item> SANDS_COLORLESS = tag("sands/colorless");
-        public static final TagKey<Item> SANDS_RED = tag("sands/red");
-
-        public static final TagKey<Item> SANDSTONE_BLOCKS = tag("sandstone/blocks");
-        public static final TagKey<Item> SANDSTONE_SLABS = tag("sandstone/slabs");
-        public static final TagKey<Item> SANDSTONE_STAIRS = tag("sandstone/stairs");
-        public static final TagKey<Item> SANDSTONE_RED_BLOCKS = tag("sandstone/red_blocks");
-        public static final TagKey<Item> SANDSTONE_RED_SLABS = tag("sandstone/red_slabs");
-        public static final TagKey<Item> SANDSTONE_RED_STAIRS = tag("sandstone/red_stairs");
-        public static final TagKey<Item> SANDSTONE_UNCOLORED_BLOCKS = tag("sandstone/uncolored_blocks");
-        public static final TagKey<Item> SANDSTONE_UNCOLORED_SLABS = tag("sandstone/uncolored_slabs");
-        public static final TagKey<Item> SANDSTONE_UNCOLORED_STAIRS = tag("sandstone/uncolored_stairs");
 
         /**
          * For items that are explicitly seeds for use cases such as refilling a bird feeder block or certain seed-based recipes.
@@ -974,61 +1066,7 @@ public class Tags {
          */
         public static final TagKey<Item> SHULKER_BOXES = tag("shulker_boxes");
         public static final TagKey<Item> SLIME_BALLS = tag("slime_balls");
-        /**
-         * Natural stone-like blocks that can be used as a base ingredient in recipes that takes stone.
-         */
-        public static final TagKey<Item> STONES = tag("stones");
-        /**
-         * A storage block is generally a block that has a recipe to craft a bulk of 1 kind of resource to a block
-         * and has a mirror recipe to reverse the crafting with no loss in resources.
-         * <p>
-         * Honey Block is special in that the reversing recipe is not a perfect mirror of the crafting recipe
-         * and so, it is considered a special case and not given a storage block tag.
-         */
-        public static final TagKey<Item> STORAGE_BLOCKS = tag("storage_blocks");
-        public static final TagKey<Item> STORAGE_BLOCKS_BONE_MEAL = tag("storage_blocks/bone_meal");
-        public static final TagKey<Item> STORAGE_BLOCKS_COAL = tag("storage_blocks/coal");
-        public static final TagKey<Item> STORAGE_BLOCKS_COPPER = tag("storage_blocks/copper");
-        public static final TagKey<Item> STORAGE_BLOCKS_DIAMOND = tag("storage_blocks/diamond");
-        public static final TagKey<Item> STORAGE_BLOCKS_DRIED_KELP = tag("storage_blocks/dried_kelp");
-        public static final TagKey<Item> STORAGE_BLOCKS_EMERALD = tag("storage_blocks/emerald");
-        public static final TagKey<Item> STORAGE_BLOCKS_GOLD = tag("storage_blocks/gold");
-        public static final TagKey<Item> STORAGE_BLOCKS_IRON = tag("storage_blocks/iron");
-        public static final TagKey<Item> STORAGE_BLOCKS_LAPIS = tag("storage_blocks/lapis");
-        public static final TagKey<Item> STORAGE_BLOCKS_NETHERITE = tag("storage_blocks/netherite");
-        public static final TagKey<Item> STORAGE_BLOCKS_RAW_COPPER = tag("storage_blocks/raw_copper");
-        public static final TagKey<Item> STORAGE_BLOCKS_RAW_GOLD = tag("storage_blocks/raw_gold");
-        public static final TagKey<Item> STORAGE_BLOCKS_RAW_IRON = tag("storage_blocks/raw_iron");
-        public static final TagKey<Item> STORAGE_BLOCKS_REDSTONE = tag("storage_blocks/redstone");
-        public static final TagKey<Item> STORAGE_BLOCKS_RESIN = tag("storage_blocks/resin");
-        public static final TagKey<Item> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
-        public static final TagKey<Item> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
         public static final TagKey<Item> STRINGS = tag("strings");
-        /**
-         * For logs found naturally in the Overworld, does not include Stripped Logs.
-         * Contains {@link BlockTags#OVERWORLD_NATURAL_LOGS} for consistency.
-         */
-        public static final TagKey<Item> OVERWORLD_NATURAL_LOGS = tag("natural_logs/overworld");
-        /**
-         * For logs, including Stems, found naturally in the Nether, does not include Stripped Logs.
-         */
-        public static final TagKey<Item> NETHER_NATURAL_LOGS = tag("natural_logs/nether");
-        /**
-         * For logs, including Stems, found naturally that have not been stripped.
-         */
-        public static final TagKey<Item> NATURAL_LOGS = tag("natural_logs");
-        /**
-         * For six-sided wood blocks, including Hyphae, found naturally that have not been stripped.
-         */
-        public static final TagKey<Item> NATURAL_WOODS = tag("natural_woods");
-        /**
-         * For logs, including Stems, found naturally that have been stripped.
-         */
-        public static final TagKey<Item> STRIPPED_LOGS = tag("stripped_logs");
-        /**
-         * For six-sided wood blocks, including Hyphae, found naturally that have been stripped.
-         */
-        public static final TagKey<Item> STRIPPED_WOODS = tag("stripped_woods");
         public static final TagKey<Item> VILLAGER_JOB_SITES = tag("villager_job_sites");
 
         // Tools and Armors
@@ -1180,6 +1218,395 @@ public class Tags {
          * Collects the many enchantable tags into one parent collection for ease.
          */
         public static final TagKey<Item> ENCHANTABLES = tag("enchantables");
+
+        // These fields are deprecated for removal in 26.4.
+        /// @deprecated To be removed in 26.4. Use [BlockItems#BARRELS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> BARRELS = BlockItems.BARRELS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#BARRELS_WOODEN] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> BARRELS_WOODEN = BlockItems.BARRELS_WOODEN.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#BARS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> BARS = BlockItems.BARS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#BARS_COPPER] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> BARS_COPPER = BlockItems.BARS_COPPER.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#BARS_IRON] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> BARS_IRON = BlockItems.BARS_IRON.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#BOOKSHELVES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> BOOKSHELVES = BlockItems.BOOKSHELVES.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#BUDDING_BLOCKS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> BUDDING_BLOCKS = BlockItems.BUDDING_BLOCKS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#BUDS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> BUDS = BlockItems.BUDS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#CHAINS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> CHAINS = BlockItems.CHAINS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#CHESTS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> CHESTS = BlockItems.CHESTS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#CHESTS_ENDER] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> CHESTS_ENDER = BlockItems.CHESTS_ENDER.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#CHESTS_TRAPPED] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> CHESTS_TRAPPED = BlockItems.CHESTS_TRAPPED.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#CHESTS_WOODEN] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> CHESTS_WOODEN = BlockItems.CHESTS_WOODEN.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> COBBLESTONES = BlockItems.COBBLESTONES.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES_NORMAL] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> COBBLESTONES_NORMAL = BlockItems.COBBLESTONES_NORMAL.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES_INFESTED] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> COBBLESTONES_INFESTED = BlockItems.COBBLESTONES_INFESTED.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES_MOSSY] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> COBBLESTONES_MOSSY = BlockItems.COBBLESTONES_MOSSY.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES_DEEPSLATE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> COBBLESTONES_DEEPSLATE = BlockItems.COBBLESTONES_DEEPSLATE.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#CONCRETES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> CONCRETES = BlockItems.CONCRETES.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#CLUSTERS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> CLUSTERS = BlockItems.CLUSTERS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYED = BlockItems.DYED.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_BLACK] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYED_BLACK = BlockItems.DYED_BLACK.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_BLUE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYED_BLUE = BlockItems.DYED_BLUE.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_BROWN] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYED_BROWN = BlockItems.DYED_BROWN.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_CYAN] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYED_CYAN = BlockItems.DYED_CYAN.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_GRAY] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYED_GRAY = BlockItems.DYED_GRAY.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_GREEN] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYED_GREEN = BlockItems.DYED_GREEN.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_LIGHT_BLUE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYED_LIGHT_BLUE = BlockItems.DYED_LIGHT_BLUE.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_LIGHT_GRAY] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYED_LIGHT_GRAY = BlockItems.DYED_LIGHT_GRAY.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_LIME] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYED_LIME = BlockItems.DYED_LIME.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_MAGENTA] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYED_MAGENTA = BlockItems.DYED_MAGENTA.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_ORANGE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYED_ORANGE = BlockItems.DYED_ORANGE.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_PINK] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYED_PINK = BlockItems.DYED_PINK.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_PURPLE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYED_PURPLE = BlockItems.DYED_PURPLE.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_RED] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYED_RED = BlockItems.DYED_RED.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_WHITE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYED_WHITE = BlockItems.DYED_WHITE.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_YELLOW] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYED_YELLOW = BlockItems.DYED_YELLOW.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_COLORS] mapped to the block using [BlockItemTagId#item()] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final ColorCollection<TagKey<Item>> DYED_COLORS = BlockItems.DYED_COLORS.map(BlockItemTagId::item);
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE_UNDYED_SIMPLE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYEABLE_UNDYED_SIMPLE = BlockItems.DYEABLE_UNDYED_SIMPLE.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE_REDYEABLE_SIMPLE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYEABLE_REDYEABLE_SIMPLE = BlockItems.DYEABLE_REDYEABLE_SIMPLE.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE_SIMPLE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYEABLE_SIMPLE = BlockItems.DYEABLE_SIMPLE.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE_DYNAMIC] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYEABLE_DYNAMIC = BlockItems.DYEABLE_DYNAMIC.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> DYEABLE = BlockItems.DYEABLE.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#END_STONES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> END_STONES = BlockItems.END_STONES.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCE_GATES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> FENCE_GATES = BlockItems.FENCE_GATES.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCE_GATES_WOODEN] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> FENCE_GATES_WOODEN = BlockItems.FENCE_GATES_WOODEN.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> FENCES = BlockItems.FENCES.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCES_NETHER_BRICK] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> FENCES_NETHER_BRICK = BlockItems.FENCES_NETHER_BRICK.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCES_WOODEN] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> FENCES_WOODEN = BlockItems.FENCES_WOODEN.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#FLOWERS_SMALL] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> FLOWERS_SMALL = BlockItems.FLOWERS_SMALL.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#FLOWERS_TALL] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> FLOWERS_TALL = BlockItems.FLOWERS_TALL.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#FLOWERS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> FLOWERS = BlockItems.FLOWERS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#FROGLIGHTS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> FROGLIGHTS = BlockItems.FROGLIGHTS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_BLOCKS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> GLASS_BLOCKS = BlockItems.GLASS_BLOCKS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_BLOCKS_COLORLESS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> GLASS_BLOCKS_COLORLESS = BlockItems.GLASS_BLOCKS_COLORLESS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_BLOCKS_CHEAP] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> GLASS_BLOCKS_CHEAP = BlockItems.GLASS_BLOCKS_CHEAP.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_BLOCKS_TINTED] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> GLASS_BLOCKS_TINTED = BlockItems.GLASS_BLOCKS_TINTED.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_PANES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> GLASS_PANES = BlockItems.GLASS_PANES.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_PANES_COLORLESS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> GLASS_PANES_COLORLESS = BlockItems.GLASS_PANES_COLORLESS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#GLAZED_TERRACOTTAS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> GLAZED_TERRACOTTAS = BlockItems.GLAZED_TERRACOTTAS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#GRAVELS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> GRAVELS = BlockItems.GRAVELS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#NETHERRACKS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> NETHERRACKS = BlockItems.NETHERRACKS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#OBSIDIANS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> OBSIDIANS = BlockItems.OBSIDIANS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#OBSIDIANS_NORMAL] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> OBSIDIANS_NORMAL = BlockItems.OBSIDIANS_NORMAL.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#OBSIDIANS_CRYING] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> OBSIDIANS_CRYING = BlockItems.OBSIDIANS_CRYING.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_BEARING_GROUND_DEEPSLATE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORE_BEARING_GROUND_DEEPSLATE = BlockItems.ORE_BEARING_GROUND_DEEPSLATE.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_BEARING_GROUND_NETHERRACK] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORE_BEARING_GROUND_NETHERRACK = BlockItems.ORE_BEARING_GROUND_NETHERRACK.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_BEARING_GROUND_STONE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORE_BEARING_GROUND_STONE = BlockItems.ORE_BEARING_GROUND_STONE.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_RATES_DENSE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORE_RATES_DENSE = BlockItems.ORE_RATES_DENSE.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_RATES_SINGULAR] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORE_RATES_SINGULAR = BlockItems.ORE_RATES_SINGULAR.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_RATES_SPARSE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORE_RATES_SPARSE = BlockItems.ORE_RATES_SPARSE.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORES = BlockItems.ORES.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_COAL] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORES_COAL = BlockItems.ORES_COAL.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_COPPER] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORES_COPPER = BlockItems.ORES_COPPER.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_DIAMOND] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORES_DIAMOND = BlockItems.ORES_DIAMOND.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_EMERALD] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORES_EMERALD = BlockItems.ORES_EMERALD.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_GOLD] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORES_GOLD = BlockItems.ORES_GOLD.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_IRON] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORES_IRON = BlockItems.ORES_IRON.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_LAPIS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORES_LAPIS = BlockItems.ORES_LAPIS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_NETHERITE_SCRAP] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORES_NETHERITE_SCRAP = BlockItems.ORES_NETHERITE_SCRAP.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_QUARTZ] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORES_QUARTZ = BlockItems.ORES_QUARTZ.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_REDSTONE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORES_REDSTONE = BlockItems.ORES_REDSTONE.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_IN_GROUND_DEEPSLATE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORES_IN_GROUND_DEEPSLATE = BlockItems.ORES_IN_GROUND_DEEPSLATE.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_IN_GROUND_NETHERRACK] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORES_IN_GROUND_NETHERRACK = BlockItems.ORES_IN_GROUND_NETHERRACK.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_IN_GROUND_STONE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ORES_IN_GROUND_STONE = BlockItems.ORES_IN_GROUND_STONE.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#PLAYER_WORKSTATIONS_CRAFTING_TABLES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> PLAYER_WORKSTATIONS_CRAFTING_TABLES = BlockItems.PLAYER_WORKSTATIONS_CRAFTING_TABLES.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#PLAYER_WORKSTATIONS_FURNACES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> PLAYER_WORKSTATIONS_FURNACES = BlockItems.PLAYER_WORKSTATIONS_FURNACES.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#PUMPKINS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> PUMPKINS = BlockItems.PUMPKINS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#PUMPKINS_NORMAL] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> PUMPKINS_NORMAL = BlockItems.PUMPKINS_NORMAL.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#PUMPKINS_CARVED] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> PUMPKINS_CARVED = BlockItems.PUMPKINS_CARVED.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#PUMPKINS_JACK_O_LANTERNS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> PUMPKINS_JACK_O_LANTERNS = BlockItems.PUMPKINS_JACK_O_LANTERNS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#ROPES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> ROPES = BlockItems.ROPES.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> SANDS = BlockItems.SANDS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDS_COLORLESS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> SANDS_COLORLESS = BlockItems.SANDS_COLORLESS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDS_RED] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> SANDS_RED = BlockItems.SANDS_RED.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_BLOCKS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> SANDSTONE_BLOCKS = BlockItems.SANDSTONE_BLOCKS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_SLABS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> SANDSTONE_SLABS = BlockItems.SANDSTONE_SLABS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_STAIRS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> SANDSTONE_STAIRS = BlockItems.SANDSTONE_STAIRS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_RED_BLOCKS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> SANDSTONE_RED_BLOCKS = BlockItems.SANDSTONE_RED_BLOCKS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_RED_SLABS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> SANDSTONE_RED_SLABS = BlockItems.SANDSTONE_RED_SLABS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_RED_STAIRS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> SANDSTONE_RED_STAIRS = BlockItems.SANDSTONE_RED_STAIRS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_UNCOLORED_BLOCKS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> SANDSTONE_UNCOLORED_BLOCKS = BlockItems.SANDSTONE_UNCOLORED_BLOCKS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_UNCOLORED_SLABS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> SANDSTONE_UNCOLORED_SLABS = BlockItems.SANDSTONE_UNCOLORED_SLABS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_UNCOLORED_STAIRS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> SANDSTONE_UNCOLORED_STAIRS = BlockItems.SANDSTONE_UNCOLORED_STAIRS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STONES] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STONES = BlockItems.STONES.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STORAGE_BLOCKS = BlockItems.STORAGE_BLOCKS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_BONE_MEAL] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STORAGE_BLOCKS_BONE_MEAL = BlockItems.STORAGE_BLOCKS_BONE_MEAL.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_COAL] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STORAGE_BLOCKS_COAL = BlockItems.STORAGE_BLOCKS_COAL.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_COPPER] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STORAGE_BLOCKS_COPPER = BlockItems.STORAGE_BLOCKS_COPPER.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_DIAMOND] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STORAGE_BLOCKS_DIAMOND = BlockItems.STORAGE_BLOCKS_DIAMOND.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_DRIED_KELP] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STORAGE_BLOCKS_DRIED_KELP = BlockItems.STORAGE_BLOCKS_DRIED_KELP.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_EMERALD] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STORAGE_BLOCKS_EMERALD = BlockItems.STORAGE_BLOCKS_EMERALD.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_GOLD] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STORAGE_BLOCKS_GOLD = BlockItems.STORAGE_BLOCKS_GOLD.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_IRON] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STORAGE_BLOCKS_IRON = BlockItems.STORAGE_BLOCKS_IRON.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_LAPIS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STORAGE_BLOCKS_LAPIS = BlockItems.STORAGE_BLOCKS_LAPIS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_NETHERITE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STORAGE_BLOCKS_NETHERITE = BlockItems.STORAGE_BLOCKS_NETHERITE.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_RAW_COPPER] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STORAGE_BLOCKS_RAW_COPPER = BlockItems.STORAGE_BLOCKS_RAW_COPPER.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_RAW_GOLD] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STORAGE_BLOCKS_RAW_GOLD = BlockItems.STORAGE_BLOCKS_RAW_GOLD.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_RAW_IRON] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STORAGE_BLOCKS_RAW_IRON = BlockItems.STORAGE_BLOCKS_RAW_IRON.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_REDSTONE] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STORAGE_BLOCKS_REDSTONE = BlockItems.STORAGE_BLOCKS_REDSTONE.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_RESIN] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STORAGE_BLOCKS_RESIN = BlockItems.STORAGE_BLOCKS_RESIN.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_SLIME] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STORAGE_BLOCKS_SLIME = BlockItems.STORAGE_BLOCKS_SLIME.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_WHEAT] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STORAGE_BLOCKS_WHEAT = BlockItems.STORAGE_BLOCKS_WHEAT.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#OVERWORLD_NATURAL_LOGS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> OVERWORLD_NATURAL_LOGS = BlockItems.OVERWORLD_NATURAL_LOGS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#NETHER_NATURAL_LOGS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> NETHER_NATURAL_LOGS = BlockItems.NETHER_NATURAL_LOGS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#NATURAL_LOGS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> NATURAL_LOGS = BlockItems.NATURAL_LOGS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#NATURAL_WOODS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> NATURAL_WOODS = BlockItems.NATURAL_WOODS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STRIPPED_LOGS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STRIPPED_LOGS = BlockItems.STRIPPED_LOGS.item();
+        /// @deprecated To be removed in 26.4. Use [BlockItems#STRIPPED_WOODS] instead.
+        @Deprecated(forRemoval = true, since = "26.3")
+        public static final TagKey<Item> STRIPPED_WOODS = BlockItems.STRIPPED_WOODS.item();
 
         private static TagKey<Item> tag(String name) {
             return ItemTags.create(Identifier.fromNamespaceAndPath("c", name));
