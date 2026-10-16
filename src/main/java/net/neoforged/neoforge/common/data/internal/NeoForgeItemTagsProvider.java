@@ -180,7 +180,7 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         copy(Tags.BlockItems.GRAVELS);
         tag(Tags.Items.GUNPOWDERS).add(Items.GUNPOWDER);
         tag(Tags.Items.HIDDEN_FROM_RECIPE_VIEWERS);
-        tag(Tags.Items.ICE).add(Items.ICE, Items.PACKED_ICE, Items.BLUE_ICE);
+        tag(Tags.BlockItems.ICE).add(Items.ICE, Items.PACKED_ICE, Items.BLUE_ICE);
         tag(Tags.Items.INGOTS).addTags(Tags.Items.INGOTS_COPPER, Tags.Items.INGOTS_GOLD, Tags.Items.INGOTS_IRON, Tags.Items.INGOTS_NETHERITE);
         tag(Tags.Items.INGOTS_COPPER).add(Items.COPPER_INGOT);
         tag(Tags.Items.INGOTS_GOLD).add(Items.GOLD_INGOT);
@@ -417,6 +417,10 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
     @Override
     protected Appender tag(TagKey<Item> tag) {
         return new Appender(super.tag(tag));
+    }
+
+    private Appender tag(BlockItemTagId tag) {
+        return tag(tag.item());
     }
 
     private void addColoredTags(Consumer<TagKey<Item>> consumer, TagKey<Item> group) {
