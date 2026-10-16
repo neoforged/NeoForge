@@ -28,27 +28,18 @@ public final class DataPackRegistriesHooks {
     private static final DatapackRegistryGroup RELOADABLE_REGISTRIES = new DatapackRegistryGroup();
     private static final DatapackRegistryGroup SYNCED_REGISTRIES = new DatapackRegistryGroup();
 
-    /// Internal hook for retaining mutable access to [RegistryDataLoader]'s codec registry when it bootstraps.
+    /// Internal hook for retaining mutable access to [RegistryDataLoader]'s world registry list when it bootstraps.
     public static List<RegistryDataLoader.RegistryData<?>> captureWorldRegistries(List<RegistryDataLoader.RegistryData<?>> list) {
-        if (!StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass().equals(RegistryDataLoader.class)) {
-            throw new IllegalCallerException("Attempted to call DataPackRegistriesHooks#captureWorldRegistries()!");
-        }
         return WORLD_REGISTRIES.init(list);
     }
 
-    /// Internal hook for retaining mutable access to [RegistryDataLoader]'s codec registry when it bootstraps.
+    /// Internal hook for retaining mutable access to [RegistryDataLoader]'s reloadable registry list when it bootstraps.
     public static List<RegistryDataLoader.RegistryData<?>> captureReloadableRegistries(List<RegistryDataLoader.RegistryData<?>> list) {
-        if (!StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass().equals(RegistryDataLoader.class)) {
-            throw new IllegalCallerException("Attempted to call DataPackRegistriesHooks#captureReloadableRegistries()!");
-        }
         return RELOADABLE_REGISTRIES.init(list);
     }
 
-    /// Internal hook for retaining mutable access to [RegistryDataLoader]'s codec registry when it bootstraps.
+    /// Internal hook for retaining mutable access to [RegistryDataLoader]'s synced registry list when it bootstraps.
     public static List<RegistryDataLoader.RegistryData<?>> captureSyncedRegistries(List<RegistryDataLoader.RegistryData<?>> list) {
-        if (!StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass().equals(RegistryDataLoader.class)) {
-            throw new IllegalCallerException("Attempted to call DataPackRegistriesHooks#captureSyncedRegistries()!");
-        }
         return SYNCED_REGISTRIES.init(list);
     }
 
