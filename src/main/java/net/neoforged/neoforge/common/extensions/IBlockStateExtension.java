@@ -775,6 +775,6 @@ public interface IBlockStateExtension {
     /// @param pos   Position of this block
     /// @return Your model data
     default ModelData getModelData(Level level, BlockPos pos) {
-        return self().getBlock().getModelData(level, pos, self());
+        return self().getBlock().getModelData(self(), level, pos);
     }
 }

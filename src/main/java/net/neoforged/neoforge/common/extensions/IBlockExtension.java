@@ -988,11 +988,11 @@ public interface IBlockExtension {
     ///
     /// This method is always called on the main client thread.
     ///
+    /// @param blockState The current block state
     /// @param level      Level containing this block
     /// @param pos        Position of this block
-    /// @param blockState The current block state
     /// @return Your model data
-    default ModelData getModelData(Level level, BlockPos pos, BlockState blockState) {
+    default ModelData getModelData(BlockState blockState, Level level, BlockPos pos) {
         var blockEntity = level.getBlockEntity(pos);
 
         if (blockEntity != null) {
