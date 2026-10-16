@@ -998,10 +998,6 @@ public class Tags {
          * Tag that holds all items that recipe viewers should not show to users.
          */
         public static final TagKey<Item> HIDDEN_FROM_RECIPE_VIEWERS = tag("hidden_from_recipe_viewers");
-        /**
-         * Solid/full blocks of Ice.
-         */
-        public static final TagKey<Item> ICE = tag("ice");
         public static final TagKey<Item> INGOTS = tag("ingots");
         public static final TagKey<Item> INGOTS_COPPER = tag("ingots/copper");
         public static final TagKey<Item> INGOTS_GOLD = tag("ingots/gold");
