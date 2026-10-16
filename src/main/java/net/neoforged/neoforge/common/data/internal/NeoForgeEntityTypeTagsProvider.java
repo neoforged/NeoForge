@@ -33,7 +33,8 @@ public class NeoForgeEntityTypeTagsProvider extends EntityTypeTagsProvider {
                         EntityTypeIds.PALE_OAK_CHEST_BOAT,
                         EntityTypeIds.DARK_OAK_CHEST_BOAT,
                         EntityTypeIds.MANGROVE_CHEST_BOAT,
-                        EntityTypeIds.BAMBOO_CHEST_RAFT);
+                        EntityTypeIds.BAMBOO_CHEST_RAFT,
+                        EntityTypeIds.POPLAR_CHEST_BOAT);
         tag(Tags.EntityTypes.ITEM_FRAMES).add(EntityTypeIds.ITEM_FRAME, EntityTypeIds.GLOW_ITEM_FRAME);
         tag(Tags.EntityTypes.CAPTURING_NOT_SUPPORTED);
         tag(Tags.EntityTypes.TELEPORTING_NOT_SUPPORTED);
