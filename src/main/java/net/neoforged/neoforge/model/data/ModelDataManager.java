@@ -35,7 +35,7 @@ public class ModelDataManager {
     private final Level level;
     private final Long2ObjectMap<LongSet> needModelDataRefresh = new Long2ObjectOpenHashMap<>();
     private final Long2ObjectMap<Long2ObjectMap<ModelData>> modelDataCache = new Long2ObjectOpenHashMap<>();
-    public static final Long2ObjectFunction<ModelData> EMPTY_SNAPSHOT = pos -> ModelData.EMPTY;
+    public static final Long2ObjectFunction<ModelData> EMPTY_SNAPSHOT = _ -> ModelData.EMPTY;
 
     public ModelDataManager(Level level) {
         this.level = level;
@@ -52,7 +52,7 @@ public class ModelDataManager {
         }
 
         Preconditions.checkNotNull(pos, "Pos must not be null");
-        needModelDataRefresh.computeIfAbsent(SectionPos.asLong(pos), $ -> new LongOpenHashSet()).add(pos.asLong());
+        needModelDataRefresh.computeIfAbsent(SectionPos.asLong(pos), _ -> new LongOpenHashSet()).add(pos.asLong());
     }
 
     /// Request a refresh of the stored data for the given [BlockEntity].
@@ -129,7 +129,7 @@ public class ModelDataManager {
         LongSet needUpdate = needModelDataRefresh.remove(section);
 
         if (needUpdate != null) {
-            Long2ObjectMap<ModelData> data = modelDataCache.computeIfAbsent(section, $ -> new Long2ObjectOpenHashMap<>());
+            Long2ObjectMap<ModelData> data = modelDataCache.computeIfAbsent(section, _ -> new Long2ObjectOpenHashMap<>());
             LongIterator itr = needUpdate.longIterator();
 
             while (itr.hasNext()) {
