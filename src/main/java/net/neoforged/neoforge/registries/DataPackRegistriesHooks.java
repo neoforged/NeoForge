@@ -85,6 +85,11 @@ public final class DataPackRegistriesHooks {
         return SYNCED_REGISTRIES.registryKeys.contains(registry);
     }
 
+    static {
+        // Force static init of RegistryDataLoader
+        RegistryDataLoader.WORLD_REGISTRIES.size();
+    }
+
     private record DatapackRegistryGroup(List<RegistryDataLoader.RegistryData<?>> registryData, Set<ResourceKey<? extends Registry<?>>> registryKeys) {
         DatapackRegistryGroup() {
             this(new ArrayList<>(), new ReferenceOpenHashSet<>());
