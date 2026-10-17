@@ -613,6 +613,8 @@ public class Tags {
         public static final BlockItemTagId GLAZED_TERRACOTTAS = tag("glazed_terracottas");
 
         public static final BlockItemTagId GRAVELS = tag("gravels");
+        /// Solid/full blocks of ice.
+        public static final BlockItemTagId ICE = tag("ice");
         public static final BlockItemTagId NETHERRACKS = tag("netherracks");
         public static final BlockItemTagId OBSIDIANS = tag("obsidians");
         /// Common obsidian that has no special quirks or behaviors, which is ideal for recipe use.
