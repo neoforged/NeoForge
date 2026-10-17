@@ -75,6 +75,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.BlockItems.GRAVELS.block(), "Gravels");
         add(Tags.Blocks.SKULLS, "Skulls");
         add(Tags.Blocks.HIDDEN_FROM_RECIPE_VIEWERS, "Hidden From Recipe Viewers");
+        add(Tags.BlockItems.ICE.block(), "Ice");
         add(Tags.BlockItems.NETHERRACKS.block(), "Netherracks");
         add(Tags.Blocks.NEEDS_WOOD_TOOL, "Needs Wooden Tools");
         add(Tags.Blocks.NEEDS_GOLD_TOOL, "Needs Gold Tools");
@@ -285,6 +286,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.BlockItems.GRAVELS.item(), "Gravels");
         add(Tags.Items.GUNPOWDERS, "Gunpowders");
         add(Tags.Items.HIDDEN_FROM_RECIPE_VIEWERS, "Hidden From Recipe Viewers");
+        add(Tags.BlockItems.ICE.item(), "Ice");
         add(Tags.Items.INGOTS, "Ingots");
         add(Tags.Items.INGOTS_COPPER, "Copper Ingots");
         add(Tags.Items.INGOTS_GOLD, "Gold Ingots");
