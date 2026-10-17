@@ -19,54 +19,39 @@ import net.minecraft.resources.RegistryValidator;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.UnmodifiableView;
 
 @ApiStatus.Internal
 public final class DataPackRegistriesHooks {
     private DataPackRegistriesHooks() {} // utility class
 
-    private static final List<RegistryDataLoader.RegistryData<?>> SYNCED_REGISTRIES = new ArrayList<>();
-    private static final Set<ResourceKey<? extends Registry<?>>> SYNCED_REGISTRY_KEYS = new ReferenceOpenHashSet<>();
-    private static final List<RegistryDataLoader.RegistryData<?>> WORLD_REGISTRIES = new ArrayList<>(RegistryDataLoader.WORLD_REGISTRIES);
-    private static final List<RegistryDataLoader.RegistryData<?>> WORLD_REGISTRIES_VIEW = Collections.unmodifiableList(WORLD_REGISTRIES);
-    private static final Set<ResourceKey<? extends Registry<?>>> WORLD_REGISTRY_KEYS = new ReferenceOpenHashSet<>(WORLD_REGISTRIES.stream().map(RegistryDataLoader.RegistryData::key).toList());
-    private static final List<RegistryDataLoader.RegistryData<?>> RELOADABLE_REGISTRIES = new ArrayList<>(RegistryDataLoader.RELOADABLE_REGISTRIES);
-    private static final List<RegistryDataLoader.RegistryData<?>> RELOADABLE_REGISTRIES_VIEW = Collections.unmodifiableList(RELOADABLE_REGISTRIES);
-    private static final Set<ResourceKey<? extends Registry<?>>> RELOADABLE_REGISTRY_KEYS = new ReferenceOpenHashSet<>(RELOADABLE_REGISTRIES.stream().map(RegistryDataLoader.RegistryData::key).toList());
+    private static final DatapackRegistryGroup WORLD_REGISTRIES = new DatapackRegistryGroup();
+    private static final DatapackRegistryGroup RELOADABLE_REGISTRIES = new DatapackRegistryGroup();
+    private static final DatapackRegistryGroup SYNCED_REGISTRIES = new DatapackRegistryGroup();
 
-    /// Internal hook for retaining mutable access to [RegistryDataLoader]'s codec registry when it bootstraps.
+    /// Internal hook for retaining mutable access to [RegistryDataLoader]'s world registry list when it bootstraps.
+    public static List<RegistryDataLoader.RegistryData<?>> captureWorldRegistries(List<RegistryDataLoader.RegistryData<?>> list) {
+        return WORLD_REGISTRIES.init(list);
+    }
+
+    /// Internal hook for retaining mutable access to [RegistryDataLoader]'s reloadable registry list when it bootstraps.
+    public static List<RegistryDataLoader.RegistryData<?>> captureReloadableRegistries(List<RegistryDataLoader.RegistryData<?>> list) {
+        return RELOADABLE_REGISTRIES.init(list);
+    }
+
+    /// Internal hook for retaining mutable access to [RegistryDataLoader]'s synced registry list when it bootstraps.
     public static List<RegistryDataLoader.RegistryData<?>> captureSyncedRegistries(List<RegistryDataLoader.RegistryData<?>> list) {
-        if (!StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass().equals(RegistryDataLoader.class)) {
-            throw new IllegalCallerException("Attempted to call DataPackRegistriesHooks#captureSyncedWorldRegistries()!");
-        }
-
-        list.reversed().forEach(SYNCED_REGISTRIES::addFirst);
-        list.stream().map(RegistryDataLoader.RegistryData::key).forEach(SYNCED_REGISTRY_KEYS::add);
-        return Collections.unmodifiableList(SYNCED_REGISTRIES);
+        return SYNCED_REGISTRIES.init(list);
     }
 
     static <T> void addWorldRegistry(NewDatapackRegistryEvent.RegistryData<T> data) {
-        RegistryDataLoader.RegistryData<T> loaderData = data.loaderData();
-        WORLD_REGISTRIES.add(loaderData);
-        WORLD_REGISTRY_KEYS.add(loaderData.key());
+        WORLD_REGISTRIES.add(data.loaderData());
         if (data.networkCodec() != null) {
-            SYNCED_REGISTRIES.add(new RegistryDataLoader.RegistryData<>(loaderData.key(), data.networkCodec(), RegistryValidator.none()));
-            SYNCED_REGISTRY_KEYS.add(loaderData.key());
+            SYNCED_REGISTRIES.add(new RegistryDataLoader.RegistryData<>(data.loaderData().key(), data.networkCodec(), RegistryValidator.none()));
         }
     }
 
     static <T> void addReloadableRegistry(NewDatapackRegistryEvent.RegistryData<T> data) {
-        RegistryDataLoader.RegistryData<T> loaderData = data.loaderData();
-        RELOADABLE_REGISTRIES.add(loaderData);
-        RELOADABLE_REGISTRY_KEYS.add(loaderData.key());
-    }
-
-    /// {@return an unmodifiable view of the list of "world" datapack registries}
-    ///
-    /// These registries are loaded from per-world datapacks on server startup.
-    @UnmodifiableView
-    public static List<RegistryDataLoader.RegistryData<?>> getWorldRegistries() {
-        return WORLD_REGISTRIES_VIEW;
+        RELOADABLE_REGISTRIES.add(data.loaderData());
     }
 
     /// {@return a stream of the "world" and dimension datapack registries}
@@ -76,26 +61,40 @@ public final class DataPackRegistriesHooks {
     /// This method is used in datagen ([RegistryPatchGenerator], [RegistriesDatapackGenerator], [DatapackBuiltinEntriesProvider]) in place
     /// of [RegistryDataLoader#WORLD_REGISTRIES] to ensure mods can datagen [dimensions][RegistryDataLoader#DIMENSION_REGISTRIES].
     public static Stream<RegistryDataLoader.RegistryData<?>> getWorldRegistriesWithDimensions() {
-        return Stream.concat(WORLD_REGISTRIES_VIEW.stream(), RegistryDataLoader.DIMENSION_REGISTRIES.stream());
-    }
-
-    /// {@return an unmodifiable view of the list of reloadable datapack registries}
-    ///
-    /// These registries are loaded from per-world datapacks on server startup and reloaded by `/reload`.
-    @UnmodifiableView
-    public static List<RegistryDataLoader.RegistryData<?>> getReloadableRegistries() {
-        return RELOADABLE_REGISTRIES_VIEW;
+        return Stream.concat(WORLD_REGISTRIES.registryData.stream(), RegistryDataLoader.DIMENSION_REGISTRIES.stream());
     }
 
     public static boolean isWorldRegistry(ResourceKey<? extends Registry<?>> registry) {
-        return WORLD_REGISTRY_KEYS.contains(registry);
+        return WORLD_REGISTRIES.registryKeys.contains(registry);
     }
 
     public static boolean isReloadableRegistry(ResourceKey<? extends Registry<?>> registry) {
-        return RELOADABLE_REGISTRY_KEYS.contains(registry);
+        return RELOADABLE_REGISTRIES.registryKeys.contains(registry);
     }
 
     public static boolean isSyncedRegistry(ResourceKey<? extends Registry<?>> registry) {
-        return SYNCED_REGISTRY_KEYS.contains(registry);
+        return SYNCED_REGISTRIES.registryKeys.contains(registry);
+    }
+
+    static {
+        // Force static init of RegistryDataLoader
+        RegistryDataLoader.WORLD_REGISTRIES.size();
+    }
+
+    private record DatapackRegistryGroup(List<RegistryDataLoader.RegistryData<?>> registryData, Set<ResourceKey<? extends Registry<?>>> registryKeys) {
+        DatapackRegistryGroup() {
+            this(new ArrayList<>(), new ReferenceOpenHashSet<>());
+        }
+
+        List<RegistryDataLoader.RegistryData<?>> init(List<RegistryDataLoader.RegistryData<?>> vanillaData) {
+            vanillaData.reversed().forEach(this.registryData::addFirst);
+            vanillaData.stream().map(RegistryDataLoader.RegistryData::key).forEach(this.registryKeys::add);
+            return Collections.unmodifiableList(this.registryData);
+        }
+
+        void add(RegistryDataLoader.RegistryData<?> data) {
+            this.registryData.add(data);
+            this.registryKeys.add(data.key());
+        }
     }
 }
