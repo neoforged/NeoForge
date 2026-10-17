@@ -50,7 +50,7 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.BlockItems.BUDDING_BLOCKS).add(Blocks.BUDDING_AMETHYST);
         tag(Tags.BlockItems.BUDS).add(Blocks.SMALL_AMETHYST_BUD).add(Blocks.MEDIUM_AMETHYST_BUD).add(Blocks.LARGE_AMETHYST_BUD);
         tag(Tags.BlockItems.CHAINS).add(Blocks.IRON_CHAIN).addAll(Blocks.COPPER_CHAIN.asList().stream().map(b -> b.builtInRegistryHolder().key()));
-        tag(Tags.BlockItems.CHESTS).addAll(Blocks.COPPER_CHEST.asList().stream().map(b -> b.builtInRegistryHolder().key())).addTags(Tags.BlockItems.CHESTS_ENDER, Tags.BlockItems.CHESTS_TRAPPED, Tags.BlockItems.CHESTS_WOODEN);
+        tag(Tags.BlockItems.CHESTS).addTags(Tags.BlockItems.CHESTS_ENDER, Tags.BlockItems.CHESTS_TRAPPED, Tags.BlockItems.CHESTS_WOODEN).addOptionalTag(BlockTags.COPPER_CHESTS);
         tag(Tags.BlockItems.CHESTS_ENDER).add(Blocks.ENDER_CHEST);
         tag(Tags.BlockItems.CHESTS_TRAPPED).add(Blocks.TRAPPED_CHEST);
         tag(Tags.BlockItems.CHESTS_WOODEN).add(Blocks.CHEST, Blocks.TRAPPED_CHEST);
@@ -94,10 +94,15 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.BlockItems.END_STONES).add(Blocks.END_STONE);
         tag(Tags.Blocks.ENDERMAN_PLACE_ON_BLACKLIST);
         tag(Tags.BlockItems.FENCE_GATES).addTags(Tags.BlockItems.FENCE_GATES_WOODEN);
-        tag(Tags.BlockItems.FENCE_GATES_WOODEN).add(Blocks.OAK_FENCE_GATE, Blocks.SPRUCE_FENCE_GATE, Blocks.BIRCH_FENCE_GATE, Blocks.JUNGLE_FENCE_GATE, Blocks.ACACIA_FENCE_GATE, Blocks.DARK_OAK_FENCE_GATE, Blocks.CRIMSON_FENCE_GATE, Blocks.WARPED_FENCE_GATE, Blocks.MANGROVE_FENCE_GATE, Blocks.BAMBOO_FENCE_GATE, Blocks.CHERRY_FENCE_GATE);
+        tag(Tags.BlockItems.FENCE_GATES_WOODEN).add(
+                Blocks.OAK_FENCE_GATE, Blocks.ACACIA_FENCE_GATE, Blocks.DARK_OAK_FENCE_GATE,
+                Blocks.PALE_OAK_FENCE_GATE, Blocks.SPRUCE_FENCE_GATE, Blocks.BIRCH_FENCE_GATE,
+                Blocks.JUNGLE_FENCE_GATE, Blocks.CRIMSON_FENCE_GATE, Blocks.WARPED_FENCE_GATE,
+                Blocks.MANGROVE_FENCE_GATE, Blocks.BAMBOO_FENCE_GATE, Blocks.CHERRY_FENCE_GATE,
+                Blocks.POPLAR_FENCE_GATE);
         tag(Tags.BlockItems.FENCES).addTags(Tags.BlockItems.FENCES_NETHER_BRICK, Tags.BlockItems.FENCES_WOODEN);
         tag(Tags.BlockItems.FENCES_NETHER_BRICK).add(Blocks.NETHER_BRICK_FENCE);
-        tag(Tags.BlockItems.FENCES_WOODEN).addTag(BlockTags.WOODEN_FENCES);
+        tag(Tags.BlockItems.FENCES_WOODEN).addOptionalTag(BlockTags.WOODEN_FENCES);
         tag(Tags.BlockItems.FLOWERS_SMALL).add(Blocks.DANDELION, Blocks.POPPY, Blocks.BLUE_ORCHID, Blocks.ALLIUM, Blocks.AZURE_BLUET, Blocks.RED_TULIP, Blocks.ORANGE_TULIP, Blocks.WHITE_TULIP, Blocks.PINK_TULIP, Blocks.OXEYE_DAISY, Blocks.CORNFLOWER, Blocks.LILY_OF_THE_VALLEY, Blocks.WITHER_ROSE, Blocks.TORCHFLOWER, Blocks.OPEN_EYEBLOSSOM, Blocks.CLOSED_EYEBLOSSOM).addOptionalTag(BlockTags.SMALL_FLOWERS);
         tag(Tags.BlockItems.FLOWERS_TALL).add(Blocks.SUNFLOWER, Blocks.LILAC, Blocks.PEONY, Blocks.ROSE_BUSH, Blocks.PITCHER_PLANT).addOptionalTag(BlockTags.create(Identifier.withDefaultNamespace("tall_flowers")));
         tag(Tags.BlockItems.FLOWERS).add(Blocks.CHERRY_LEAVES, Blocks.FLOWERING_AZALEA_LEAVES, Blocks.FLOWERING_AZALEA, Blocks.MANGROVE_PROPAGULE, Blocks.PINK_PETALS, Blocks.WILDFLOWERS, Blocks.CHORUS_FLOWER, Blocks.SPORE_BLOSSOM, Blocks.CACTUS_FLOWER).addTags(Tags.BlockItems.FLOWERS_SMALL, Tags.BlockItems.FLOWERS_TALL).addOptionalTag(BlockTags.FLOWERS);

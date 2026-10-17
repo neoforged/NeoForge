@@ -94,6 +94,7 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
                 .add(Biomes.OLD_GROWTH_BIRCH_FOREST)
                 .add(Biomes.DARK_FOREST)
                 .add(Biomes.DAPPLED_FOREST)
+                .add(Biomes.PALE_GARDEN)
                 .add(Biomes.CHERRY_GROVE)
                 .add(Biomes.MEADOW)
                 .add(Biomes.SWAMP)
@@ -123,6 +124,7 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
 
         tag(Tags.Biomes.IS_DENSE_VEGETATION_OVERWORLD)
                 .add(Biomes.DARK_FOREST)
+                .add(Biomes.PALE_GARDEN)
                 .add(Biomes.OLD_GROWTH_BIRCH_FOREST)
                 .add(Biomes.OLD_GROWTH_SPRUCE_TAIGA)
                 .add(Biomes.JUNGLE)
