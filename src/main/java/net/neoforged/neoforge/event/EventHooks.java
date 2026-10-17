@@ -696,8 +696,8 @@ public class EventHooks {
         return event.getAction();
     }
 
-    public static int onArrowLoose(ItemStack stack, Level level, Player player, int charge, boolean hasAmmo) {
-        ArrowLooseEvent event = new ArrowLooseEvent(player, stack, level, charge, hasAmmo);
+    public static int onArrowLoose(ItemStack stack, Level level, Player player, int charge) {
+        ArrowLooseEvent event = new ArrowLooseEvent(player, stack, level, charge);
         if (NeoForge.EVENT_BUS.post(event).isCanceled())
             return -1;
         return event.getCharge();

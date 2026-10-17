@@ -4,7 +4,7 @@
              }
  
              int timeHeld = this.getUseDuration(itemStack, entity) - remainingTime;
-+            timeHeld = net.neoforged.neoforge.event.EventHooks.onArrowLoose(itemStack, level, player, timeHeld, !projectile.isEmpty());
++            timeHeld = net.neoforged.neoforge.event.EventHooks.onArrowLoose(itemStack, level, player, timeHeld);
 +            if (timeHeld < 0) return false;
              float pow = getPowerForTime(timeHeld);
              if (pow < 0.1) {
