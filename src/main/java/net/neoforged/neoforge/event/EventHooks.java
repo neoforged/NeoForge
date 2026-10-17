@@ -696,9 +696,7 @@ public class EventHooks {
         return event.getAction();
     }
 
-    /**
-     * @deprecated Use {@link #onArrowLoose(ItemStack, Level, Player, int)}. {@code hasAmmo} was always {@code true}.
-     */
+    /// @deprecated Use [#onArrowLoose(ItemStack, Level, Player, int)] instead.
     @Deprecated(forRemoval = true, since = "26.3")
     public static int onArrowLoose(ItemStack stack, Level level, Player player, int charge, boolean hasAmmo) {
         ArrowLooseEvent event = new ArrowLooseEvent(player, stack, level, charge, hasAmmo);

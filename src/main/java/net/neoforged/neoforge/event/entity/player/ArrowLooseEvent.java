@@ -43,9 +43,7 @@ public class ArrowLooseEvent extends PlayerEvent implements ICancellableEvent {
         this.hasAmmo = true;
     }
 
-    /**
-     * @deprecated Use {@link #ArrowLooseEvent(Player, ItemStack, Level, int)}. {@code hasAmmo} was always {@code true}.
-     */
+    /// @deprecated Use [#ArrowLooseEvent(Player, ItemStack, Level, int)] instead.
     @Deprecated(forRemoval = true, since = "26.3")
     public ArrowLooseEvent(Player player, ItemStack bow, Level level, int charge, boolean hasAmmo) {
         super(player);
@@ -63,9 +61,7 @@ public class ArrowLooseEvent extends PlayerEvent implements ICancellableEvent {
         return this.level;
     }
 
-    /**
-     * @deprecated This always returns {@code true}. Use {@link net.neoforged.neoforge.event.entity.living.LivingGetProjectileEvent} to change the ammo used.
-     */
+    /// @deprecated This always returns `true`.
     @Deprecated(forRemoval = true, since = "26.3")
     public boolean hasAmmo() {
         return this.hasAmmo;
