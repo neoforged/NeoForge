@@ -19,6 +19,25 @@
              } catch (Throwable t) {
                  CrashReport report = CrashReport.forThrowable(t, "Rendering screen");
                  CrashReportCategory category = report.addCategory("Screen render details");
+@@ -218,6 +_,18 @@
+         return this.screen;
+     }
+ 
++    /// Neo: {@return the screens currently rendered by the GUI, from the bottom-most background layer to the top-most screen,
++    /// or an empty list if no screen is rendered}
++    @Contract(pure = true)
++    public List<Screen> visibleScreens() {
++        if (this.screen == null) {
++            return List.of();
++        }
++        List<Screen> screens = new ArrayList<>(this.screenLayers);
++        screens.add(this.screen);
++        return List.copyOf(screens);
++    }
++
+     public void setScreen(@Nullable Screen screen) {
+         if (SharedConstants.IS_RUNNING_IN_IDE && Thread.currentThread() != this.minecraft.getRunningThread()) {
+             LOGGER.error("setScreen called from non-game thread");
 @@ -228,11 +_,7 @@
              this.screenTracySection = null;
          }
