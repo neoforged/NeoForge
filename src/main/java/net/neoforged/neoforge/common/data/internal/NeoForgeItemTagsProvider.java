@@ -15,9 +15,11 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.TagAppender;
 import net.minecraft.references.BlockItemId;
+import net.minecraft.references.BlockItemIds;
 import net.minecraft.references.ItemIds;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockItemTagId;
+import net.minecraft.tags.BlockItemTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
@@ -116,6 +118,26 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         ColorCollection<NeoForgeItemTagsProvider.Appender> dyesBuilders = Tags.Items.DYE_COLORS.map(this::tag);
         ColorCollection.zipApply(dyesBuilders, ItemIds.DYE, NeoForgeItemTagsProvider.Appender::add);
         addColoredTags(tag(Tags.Items.DYES)::addTags, Tags.Items.DYES);
+        tag(Tags.BlockItems.DYEABLE_UNDYED_SIMPLE)
+                .add(Items.CANDLE)
+                .add(Items.GLASS)
+                .add(Items.GLASS_PANE)
+                .add(Items.SHULKER_BOX)
+                .add(Items.TERRACOTTA);
+        tag(Tags.BlockItems.DYEABLE_REDYEABLE_SIMPLE)
+                .addOptionalTag(BlockItemTags.BEDS)
+                .addOptionalTag(BlockItemTags.WOOL)
+                .addOptionalTag(BlockItemTags.WOOL_CARPETS)
+                .addOptionalTag(BlockItemTags.WOOL_SLABS)
+                .addOptionalTag(BlockItemTags.WOOL_STAIRS)
+                .addAll(BlockItemIds.DYED_SHULKER_BOX.map(BlockItemId::item).asList());
+        tag(Tags.BlockItems.DYEABLE_SIMPLE)
+                .addTag(Tags.BlockItems.DYEABLE_UNDYED_SIMPLE)
+                .addTag(Tags.BlockItems.DYEABLE_REDYEABLE_SIMPLE);
+        tag(Tags.BlockItems.DYEABLE_DYNAMIC);
+        tag(Tags.BlockItems.DYEABLE)
+                .addTag(Tags.BlockItems.DYEABLE_SIMPLE)
+                .addTag(Tags.BlockItems.DYEABLE_DYNAMIC);
 
         tag(Tags.Items.DUSTS).addTags(Tags.Items.DUSTS_GLOWSTONE, Tags.Items.DUSTS_REDSTONE);
         tag(Tags.Items.DUSTS_GLOWSTONE).add(Items.GLOWSTONE_DUST);
@@ -347,7 +369,13 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         tag(Tags.Items.ARMORS_HUMANOID)
                 .addTags(ItemTags.HEAD_ARMOR, ItemTags.CHEST_ARMOR, ItemTags.LEG_ARMOR, ItemTags.FOOT_ARMOR);
 
-        tag(Tags.Items.ENCHANTABLES).addTags(ItemTags.ARMOR_ENCHANTABLE, ItemTags.EQUIPPABLE_ENCHANTABLE, ItemTags.WEAPON_ENCHANTABLE, ItemTags.MELEE_WEAPON_ENCHANTABLE, ItemTags.SHARP_WEAPON_ENCHANTABLE, ItemTags.SWEEPING_ENCHANTABLE, ItemTags.MINING_ENCHANTABLE, ItemTags.MINING_LOOT_ENCHANTABLE, ItemTags.FISHING_ENCHANTABLE, ItemTags.TRIDENT_ENCHANTABLE, ItemTags.BOW_ENCHANTABLE, ItemTags.CROSSBOW_ENCHANTABLE, ItemTags.MACE_ENCHANTABLE, ItemTags.FIRE_ASPECT_ENCHANTABLE, ItemTags.DURABILITY_ENCHANTABLE, ItemTags.VANISHING_ENCHANTABLE);
+        tag(Tags.Items.ENCHANTABLES).addTags(
+                ItemTags.ARMOR_ENCHANTABLE, ItemTags.EQUIPPABLE_ENCHANTABLE, ItemTags.WEAPON_ENCHANTABLE,
+                ItemTags.MELEE_WEAPON_ENCHANTABLE, ItemTags.SHARP_WEAPON_ENCHANTABLE, ItemTags.SWEEPING_ENCHANTABLE,
+                ItemTags.LUNGE_ENCHANTABLE, ItemTags.MINING_ENCHANTABLE, ItemTags.MINING_LOOT_ENCHANTABLE,
+                ItemTags.FISHING_ENCHANTABLE, ItemTags.TRIDENT_ENCHANTABLE, ItemTags.BOW_ENCHANTABLE,
+                ItemTags.CROSSBOW_ENCHANTABLE, ItemTags.MACE_ENCHANTABLE, ItemTags.FIRE_ASPECT_ENCHANTABLE,
+                ItemTags.DURABILITY_ENCHANTABLE, ItemTags.VANISHING_ENCHANTABLE);
     }
 
     protected record Appender(TagAppender<Item> app) implements TagAppender<Item> {
@@ -409,6 +437,28 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         public Appender add(BlockItemId... ids) {
             for (ResourceKey<Item> itemResourceKey : Arrays.stream(ids).map(BlockItemId::item).toList()) {
                 add(itemResourceKey);
+            }
+            return this;
+        }
+
+        public NeoForgeItemTagsProvider.Appender addTag(BlockItemTagId tag) {
+            return this.addTag(tag.item());
+        }
+
+        public NeoForgeItemTagsProvider.Appender addOptionalTag(BlockItemTagId tag) {
+            return this.addOptionalTag(tag.item());
+        }
+
+        public NeoForgeItemTagsProvider.Appender addTags(BlockItemTagId... tags) {
+            for (BlockItemTagId tag : tags) {
+                this.addTag(tag);
+            }
+            return this;
+        }
+
+        public NeoForgeItemTagsProvider.Appender addOptionalTags(BlockItemTagId... tags) {
+            for (BlockItemTagId tag : tags) {
+                this.addOptionalTag(tag);
             }
             return this;
         }
