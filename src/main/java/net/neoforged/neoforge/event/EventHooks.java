@@ -52,11 +52,13 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -79,6 +81,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.BlockGetter;
@@ -103,8 +106,14 @@ import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.level.portal.PortalShape;
 import net.minecraft.world.level.storage.PlayerDataStorage;
 import net.minecraft.world.level.storage.ServerLevelData;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootDataType;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
+import net.minecraft.world.level.storage.loot.functions.EnchantedCountIncreaseFunction;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.predicates.BonusLevelTableCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWithEnchantedBonusCondition;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModLoader;
@@ -117,6 +126,8 @@ import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.common.util.InsertableLinkedOpenCustomHashSet;
 import net.neoforged.neoforge.event.brewing.PlayerBrewedPotionEvent;
 import net.neoforged.neoforge.event.brewing.PotionBrewEvent;
+import net.neoforged.neoforge.event.enchanting.EnchantedBlockLootEvent;
+import net.neoforged.neoforge.event.enchanting.EnchantedEntityLootEvent;
 import net.neoforged.neoforge.event.enchanting.EnchantmentLevelSetEvent;
 import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
@@ -128,6 +139,7 @@ import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.item.ItemExpireEvent;
 import net.neoforged.neoforge.event.entity.living.AnimalTameEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
+import net.neoforged.neoforge.event.entity.living.GetEquipmentDropChanceEvent;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDestroyBlockEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
@@ -180,6 +192,7 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -1153,5 +1166,60 @@ public class EventHooks {
         ModifyCustomSpawnersEvent event = new ModifyCustomSpawnersEvent(serverLevel, new ArrayList<>(customSpawners));
         NeoForge.EVENT_BUS.post(event);
         return event.getCustomSpawners();
+    }
+
+    /**
+     * Called from {@link ApplyBonusCount} and {@link BonusLevelTableCondition} when blocks rely on enchantments for evaluating loot bonuses.
+     * <p>
+     * If the necessary context is present, this method will fire the {@link EnchantedBlockLootEvent} and return the event-modified level. Otherwise it returns the original level.
+     *
+     * @param tool      The tool, from {@link LootContextParams#TOOL}.
+     * @param ench      The enchantment being queried.
+     * @param enchLevel The original enchantment level, determined from the item (or possibly {@link GetEnchantmentLevelEvent}).
+     * @param ctx       The loot context for the current block loot evaluation.
+     */
+    public static int getBlockLootEnchantmentLevel(ItemStack tool, Holder<Enchantment> ench, int enchLevel, LootContext ctx) {
+        BlockState state = ctx.getParamOrNull(LootContextParams.BLOCK_STATE);
+        Vec3 pos = ctx.getParamOrNull(LootContextParams.ORIGIN);
+        if (state != null && pos != null) {
+            var event = new EnchantedBlockLootEvent(ctx.getLevel(), BlockPos.containing(pos), state, tool, ench, enchLevel);
+            NeoForge.EVENT_BUS.post(event);
+            return event.getEnchantmentLevel();
+        }
+        return enchLevel;
+    }
+
+    /**
+     * Called from {@link EnchantedCountIncreaseFunction} and {@link LootItemRandomChanceWithEnchantedBonusCondition} when entity loot processing relies on enchantments for evaluating loot bonuses.
+     * <p>
+     * If the necessary context is present, this method will fire the {@link EnchantedEntityLootEvent} and return the event-modified level. Otherwise, it returns the original level.
+     *
+     * @param ench      The enchantment being queried.
+     * @param enchLevel The original enchantment level. How it gets determined depends on the particular call site. Generally it's the attacker's effective enchantment level.
+     * @param ctx       The loot context for the current entity loot evaluation.
+     */
+    public static int getEntityLootEnchantmentLevel(Holder<Enchantment> ench, int enchLevel, LootContext ctx) {
+        Entity entity = ctx.getParamOrNull(LootContextParams.ATTACKING_ENTITY);
+        DamageSource src = ctx.getParamOrNull(LootContextParams.DAMAGE_SOURCE);
+        if (src != null && entity instanceof LivingEntity living) {
+            var event = new EnchantedEntityLootEvent(living, src, ench, enchLevel);
+            NeoForge.EVENT_BUS.post(event);
+            return event.getEnchantmentLevel();
+        }
+        return enchLevel;
+    }
+
+    /**
+     * Called from {@link EnchantmentHelper#processEquipmentDropChance(ServerLevel,LivingEntity,DamageSource,float,EquipmentSlot)} to allow changing the slot chance.
+     *
+     * @param level          Level instance
+     * @param entity         Entity dropping equipment
+     * @param killingBlow    Damage source used to kill the entity
+     * @param chance         Mutable chance to modify in the event
+     * @param originalChance Chance before enchantments ran
+     * @param slot           Slot containing the item to drop
+     */
+    public static void onEquipmentDropChance(ServerLevel level, LivingEntity entity, DamageSource killingBlow, MutableFloat chance, float originalChance, @Nullable EquipmentSlot slot) {
+        NeoForge.EVENT_BUS.post(new GetEquipmentDropChanceEvent(level, entity, killingBlow, chance, originalChance, slot));
     }
 }
