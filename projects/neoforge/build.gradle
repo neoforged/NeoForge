@@ -600,7 +600,7 @@ immaculate {
                 noTabs()
 
                 custom 'equalsTakesNull', { String fileContents ->
-                    fileContents.replaceAll(/(?<=boolean equals\()\s*(?!@Nullable)(?= ?(?:final )?Object [^,]+\))/, "@Nullable ")
+                    fileContents.replaceAll(/(?<=boolean equals\()\s*(?!@[A-Za-z.]*Nullable)(?= ?(?:final )?Object [^,]+\))/, "@org.jspecify.annotations.Nullable ")
                 }
 
                 eclipse {
