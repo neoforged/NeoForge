@@ -47,6 +47,8 @@ import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
 import net.neoforged.neoforge.common.util.BlockRelocability;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelDataManager;
 import org.jspecify.annotations.Nullable;
 
 public interface IBlockStateExtension {
@@ -760,5 +762,19 @@ public interface IBlockStateExtension {
     /// @return whether the adjacent block can connect to this block.
     default TriState canBeConnectedTo(Direction side, Block adjacentBlock) {
         return self().getBlock().canBeConnectedTo(self(), side, adjacentBlock);
+    }
+
+    /// Allows you to return additional model data.
+    ///
+    /// This data can be used to provide additional functionality in your `BlockStateModel`.
+    /// You need to schedule a refresh of your model data via [ModelDataManager#requestRefresh(BlockPos)] if the result of this function changes.
+    ///
+    /// This method is always called on the main client thread.
+    ///
+    /// @param level Level containing this block
+    /// @param pos   Position of this block
+    /// @return Your model data
+    default ModelData getModelData(Level level, BlockPos pos) {
+        return self().getBlock().getModelData(self(), level, pos);
     }
 }
