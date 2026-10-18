@@ -1,9 +1,12 @@
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import net.neoforged.jarcompatibilitychecker.gradle.JCCPlugin
 import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import net.neoforged.moddevgradle.dsl.ModModel
 import net.neoforged.neodev.GenerateFinalizeSpawnTargets
 import net.neoforged.neodev.ProvideCompatibilityCheckJar
 import net.neoforged.neodev.DownloadFile
+import net.neoforged.neodev.immaculate.PatchFormattingAugmentor
 
 plugins {
     id 'java-library'
@@ -11,6 +14,7 @@ plugins {
     id 'net.neoforged.jarcompatibilitychecker' version '0.1.26'
     id 'net.neoforged.gradleutils'
     id 'neoforge.versioning'
+    id 'dev.lukebemish.immaculate'
 }
 
 apply plugin : net.neoforged.neodev.NeoDevPlugin
@@ -581,6 +585,138 @@ publishing {
     }
 }
 
+immaculate {
+    workflows.register("patches") {
+        files.from(fileTree(rootProject.isolated.projectDirectory.dir("patches")))
+        
+        augmentor("patchedFormatting", PatchFormattingAugmentor) {
+            originalJar = tasks.applyPatches.originalJar
+            basePrefix = "a/"
+            
+            toggle {
+                off = 'spotless:off'
+                on = 'spotless:on'
+                
+                noTabs()
+
+                custom 'equalsTakesNull', { String fileContents ->
+                    fileContents.replaceAll(/(?<=boolean equals\()\s*(?!@Nullable)(?= ?(?:final )?Object [^,]+\))/, "@Nullable ")
+                }
+                
+                custom 'disableEclipseOutsidePatches', { String fileContents ->
+                    "//@formatter:off\n"+fileContents.readLines().collect {
+                        if (it.contains("immaculate:neo:start:")) {
+                            "//@formatter:on\n" + it
+                        } else if (it.contains("immaculate:neo:end:")) {
+                            it + "\n//@formatter:off"
+                        } else {
+                            it
+                        }
+                    }.join("\n") + "\n//@formatter:on\n";
+                }
+
+                eclipse {
+                    version = project.jdt_core_version
+                    config = rootProject.file('codeformat/formatter-config-patches.xml')
+                }
+            }
+        }
+
+        custom 'noImportChanges', { String fileContents ->
+            if (fileContents.contains('+import') || fileContents.contains('-import')) {
+                throw new GradleException("Import changes are not allowed in patches!")
+            }
+            return fileContents
+        }
+
+        def interfaceChange = Pattern.compile('[-+].*(implements|(interface.*extends))(.*)\\{')
+        custom 'noInterfaceModifications', { String fileContents ->
+            def interfaceChanges = fileContents.lines().filter { it.matches(interfaceChange) }.toList()
+            if (interfaceChanges.isEmpty()) return fileContents
+            String oldInterfaces = ""
+            // we expect interface additions/removals in pairs of - and then +
+            interfaceChanges.each { String change ->
+                final match = change =~ interfaceChange
+                match.find()
+                final values = match.group(3).trim()
+                if (change.startsWith('-')) {
+                    oldInterfaces = values
+                } else if (oldInterfaces != values) {
+                    throw new GradleException("Modification of interfaces via patches is not allowed!")
+                }
+            }
+            return fileContents
+        }
+
+        //Note: This doesn't detect changing access level to or from package private
+        //TODO: Eventually try and make this support checking package private access level changes?
+        def accessLevelChange = Pattern.compile('^[-+]\\s*(public|private|protected)\\s.*\$', Pattern.UNIX_LINES | Pattern.MULTILINE)
+        custom 'noAccessChanges', { String fileContents ->
+            // Special case: we need to make the field private for our coremod
+            if (fileContents.startsWith("--- a/net/minecraft/world/level/levelgen/structure/Structure.java")) {
+                return fileContents
+            }
+
+            // The anvil menu patches a method to be final, which cannot be done with an AT, but trips this check otherwise.
+            if (fileContents.startsWith("--- a/net/minecraft/world/inventory/AnvilMenu.java")) {
+                return fileContents
+            }
+
+            def accessChanges = fileContents.findAll(accessLevelChange)
+            if (accessChanges.isEmpty()) return fileContents
+            Map<String, Set<String>> removals = Map.of("private", new HashSet<>(), "protected", new HashSet<>(), "public", new HashSet<>())
+            accessChanges.each { String change ->
+                //Get the type of match
+                String[] data = change.substring(1).trim().split(" ", 2)
+                String lineStart = data[1].substring(0, Math.min(30, data[1].length()))
+                if (change.startsWith('-')) {//Removal
+                    removals.get(data[0]).add(lineStart)
+                } else {//Addition
+                    for (var entry : removals.entrySet()) {
+                        if (entry.key == data[0]) {
+                            continue
+                        }
+                        if (entry.value.remove(lineStart)) {
+                            throw new GradleException("Changing access level via patches is not allowed, use an AT! Changed line: " + change)
+                        }
+                    }
+                }
+            }
+            //Note: We allow mismatched counts in case we are removing a method entirely for some reason
+            return fileContents
+        }
+
+        //Trim any trailing whitespace from patch additions
+        def trailingWhitespace = Pattern.compile('^\\+.*[ \t]+\$', Pattern.UNIX_LINES | Pattern.MULTILINE)
+        custom 'trimTrailingWhitespacePatches', { String fileContents ->
+            Matcher matcher = trailingWhitespace.matcher(fileContents)
+            StringBuilder sb = new StringBuilder()
+            while (matcher.find()) {
+                matcher.appendReplacement(sb, matcher.group().trim())
+            }
+            matcher.appendTail(sb)
+            return sb.toString()
+        }
+
+        // Disallow explicit not null in patches, it's always implied.
+        custom 'noNotNull', { String fileContents ->
+            fileContents.eachLine {
+                if (!it.startsWith("+")) return
+                if (it.contains('@NotNull') || it.contains('@Nonnull')
+                        || it.contains('@org.jetbrains.annotations.NotNull')
+                        || it.contains('@javax.annotation.Nonnull')) {
+                    throw new GradleException('@NotNull and @Nonnull are disallowed.')
+                }
+            }
+        }
+
+        //Replace any FQN versions of javax/jetbrains @Nullable with the jspecify variant
+        custom 'jetbrainsNullablePatches', { String fileContents ->
+            fileContents.replace('@javax.annotation.Nullable', '@org.jspecify.annotations.Nullable')
+                    .replace('@org.jetbrains.annotations.Nullable', '@org.jspecify.annotations.Nullable')
+        }
+    }
+}
 
 tasks.withType(JavaCompile.class).configureEach(task -> {
     Collections.addAll(task.getOptions().getCompilerArgs(), "-Xmaxerrs", "9999");

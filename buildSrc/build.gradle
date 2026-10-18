@@ -21,6 +21,7 @@ repositories {
             includeModule("net.neoforged", "minecraft-dependencies")
         }
     }
+    maven { url = 'https://maven.lukebemish.dev/pullrequests/' }
 }
 
 dependencies {
@@ -38,4 +39,6 @@ dependencies {
     implementation "org.ow2.asm:asm:${gradle.parent.ext.asm_version}"
 
     implementation "org.apache.maven:maven-artifact:3.10.0"
+    
+    implementation "dev.lukebemish.immaculate:dev.lukebemish.immaculate.gradle.plugin:0.3.0-pr53"
 }
