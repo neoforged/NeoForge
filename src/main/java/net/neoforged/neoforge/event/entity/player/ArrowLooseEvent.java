@@ -43,7 +43,7 @@ public class ArrowLooseEvent extends PlayerEvent implements ICancellableEvent {
         this.hasAmmo = true;
     }
 
-    /// @deprecated Use [#ArrowLooseEvent(Player, ItemStack, Level, int)] instead.
+    /// @deprecated Use [net.neoforged.neoforge.event.EventHooks#onArrowLoose(ItemStack, Level, Player, int)] instead.
     @Deprecated(forRemoval = true, since = "26.3")
     public ArrowLooseEvent(Player player, ItemStack bow, Level level, int charge, boolean hasAmmo) {
         super(player);
