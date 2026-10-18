@@ -57,6 +57,7 @@ public abstract class PatchFormattingAugmentor extends FormattingAugmentor {
                     var totalOffset = 0;
                     for (var patch : patchFile.patches) {
                         String lastLine = "";
+                        String lastAnyLine = "";
                         patch.start2 += totalOffset;
                         if (patch.diffs.stream().anyMatch(diff -> diff.op == Operation.INSERT && diff.text.contains("immaculate:neo:ignore"))) {
                             continue;
@@ -69,9 +70,12 @@ public abstract class PatchFormattingAugmentor extends FormattingAugmentor {
                                 if (!inserting) {
                                     inserting = true;
                                     indentations.add(calculateIndentation(lastLine));
-                                    newDiffs.add(new Diff(Operation.INSERT, " ".repeat(calculateIndentation(diff.text)) + "//immaculate:neo:start:" + idx));
+                                    newDiffs.add(new Diff(Operation.INSERT, "//immaculate:neo:start:" + idx));
                                     offset++;
                                     totalOffset++;
+                                }
+                                if (!diff.text.isBlank()) {
+                                    lastAnyLine = diff.text;
                                 }
                             } else {
                                 if (inserting) {
@@ -80,8 +84,10 @@ public abstract class PatchFormattingAugmentor extends FormattingAugmentor {
                                     offset++;
                                     totalOffset++;
                                     idx++;
+                                    lastLine = lastAnyLine;
                                 }
                                 if (diff.op == Operation.EQUAL && !diff.text.isBlank()) {
+                                    lastAnyLine = diff.text;
                                     lastLine = diff.text;
                                 }
                             }
@@ -141,11 +147,11 @@ public abstract class PatchFormattingAugmentor extends FormattingAugmentor {
                         var offset = 0;
                         var newDiffs = new ArrayList<Diff>();
                         var inserting = false;
+                        String lastLine = "";
                         for (var diff : patch.diffs) {
                             if (diff.op == Operation.INSERT) {
                                 if (!inserting) {
                                     inserting = true;
-                                    String lastLine = "";
                                     var startTag = "immaculate:neo:start:" + idx;
                                     var endTag = "immaculate:neo:end:" + idx;
                                     var started = false;
