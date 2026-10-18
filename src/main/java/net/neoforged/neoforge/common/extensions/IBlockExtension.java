@@ -75,6 +75,7 @@ import net.neoforged.neoforge.common.util.BlockRelocability;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelDataManager;
 import net.neoforged.neoforge.registries.datamaps.builtin.Flammable;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import org.jspecify.annotations.Nullable;
@@ -978,5 +979,26 @@ public interface IBlockExtension {
     /// @return whether the adjacent block can connect to this block.
     default TriState canBeConnectedTo(BlockState state, Direction side, Block adjacentBlock) {
         return TriState.DEFAULT;
+    }
+
+    /// Allows you to return additional model data.
+    ///
+    /// This data can be used to provide additional functionality in your `BlockStateModel`.
+    /// You need to schedule a refresh of your model data via [ModelDataManager#requestRefresh(BlockPos)] if the result of this function changes.
+    ///
+    /// This method is always called on the main client thread.
+    ///
+    /// @param blockState The current block state
+    /// @param level      Level containing this block
+    /// @param pos        Position of this block
+    /// @return Your model data
+    default ModelData getModelData(BlockState blockState, Level level, BlockPos pos) {
+        var blockEntity = level.getBlockEntity(pos);
+
+        if (blockEntity != null) {
+            return blockEntity.getModelData();
+        }
+
+        return ModelData.EMPTY;
     }
 }
