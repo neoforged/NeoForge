@@ -602,18 +602,6 @@ immaculate {
                 custom 'equalsTakesNull', { String fileContents ->
                     fileContents.replaceAll(/(?<=boolean equals\()\s*(?!@Nullable)(?= ?(?:final )?Object [^,]+\))/, "@Nullable ")
                 }
-                
-                custom 'disableEclipseOutsidePatches', { String fileContents ->
-                    "//@formatter:off\n"+fileContents.readLines().collect {
-                        if (it.contains("immaculate:neo:start:")) {
-                            "//@formatter:on\n" + it
-                        } else if (it.contains("immaculate:neo:end:")) {
-                            it + "\n//@formatter:off"
-                        } else {
-                            it
-                        }
-                    }.join("\n") + "\n//@formatter:on\n";
-                }
 
                 eclipse {
                     version = project.jdt_core_version
