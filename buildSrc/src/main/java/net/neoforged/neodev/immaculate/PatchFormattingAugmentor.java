@@ -37,7 +37,7 @@ public abstract class PatchFormattingAugmentor extends FormattingAugmentor {
     @Input
     public abstract Property<String> getBasePrefix();
 
-    private record Data(PatchFile original) {}
+    private record Data(PatchFile original, List<Integer> originalIndentations) {}
 
     @Override
     public FileAugmentor<?> augmentor() {
@@ -48,15 +48,15 @@ public abstract class PatchFormattingAugmentor extends FormattingAugmentor {
             return new FileAugmentor<Data>() {
                 @Override
                 public String augment(FileParams params, Consumer<Data> store) {
-                    // Store a fresh version of the patch file, to be updated on deaugment
-                    store.accept(new Data(PatchFile.fromLines(params.fileName(), params.text().lines().toList(), true)));
-
                     var patchFile = PatchFile.fromLines(params.fileName(), params.text().lines().toList(), true);
+
+                    var indentations = new ArrayList<Integer>();
 
                     // We surround each patch with flags; this will allow us to recover the formatted version of the original patched lines later
                     var idx = 0;
                     var totalOffset = 0;
                     for (var patch : patchFile.patches) {
+                        String lastLine = "";
                         patch.start2 += totalOffset;
                         if (patch.diffs.stream().anyMatch(diff -> diff.op == Operation.INSERT && diff.text.contains("immaculate:neo:ignore"))) {
                             continue;
@@ -68,7 +68,8 @@ public abstract class PatchFormattingAugmentor extends FormattingAugmentor {
                             if (diff.op == Operation.INSERT) {
                                 if (!inserting) {
                                     inserting = true;
-                                    newDiffs.add(new Diff(Operation.INSERT, "//immaculate:neo:start:" + idx));
+                                    indentations.add(calculateIndentation(lastLine));
+                                    newDiffs.add(new Diff(Operation.INSERT, " ".repeat(calculateIndentation(diff.text)) + "//immaculate:neo:start:" + idx));
                                     offset++;
                                     totalOffset++;
                                 }
@@ -79,6 +80,9 @@ public abstract class PatchFormattingAugmentor extends FormattingAugmentor {
                                     offset++;
                                     totalOffset++;
                                     idx++;
+                                }
+                                if (diff.op == Operation.EQUAL && !diff.text.isBlank()) {
+                                    lastLine = diff.text;
                                 }
                             }
                             newDiffs.add(diff);
@@ -92,6 +96,9 @@ public abstract class PatchFormattingAugmentor extends FormattingAugmentor {
                         patch.diffs = newDiffs;
                         patch.length2 += offset;
                     }
+
+                    // Store a fresh version of the patch file, to be updated on deaugment
+                    store.accept(new Data(PatchFile.fromLines(params.fileName(), params.text().lines().toList(), true), indentations));
 
                     // Find the original file in the base jar, and apply the modified patches to it
                     if (patchFile.basePath == null || !patchFile.basePath.startsWith(aPrefix)) {
@@ -122,6 +129,7 @@ public abstract class PatchFormattingAugmentor extends FormattingAugmentor {
                     var patchFile = value.original();
 
                     var textLines = params.text().lines().iterator();
+                    var indentations = value.originalIndentations().iterator();
 
                     // Take the original patch file, iterate it the same as on augment
                     // Then in each hunk of added lines -- instead find the corresponding set of lines in the input text
@@ -137,9 +145,12 @@ public abstract class PatchFormattingAugmentor extends FormattingAugmentor {
                             if (diff.op == Operation.INSERT) {
                                 if (!inserting) {
                                     inserting = true;
+                                    String lastLine = "";
                                     var startTag = "immaculate:neo:start:" + idx;
                                     var endTag = "immaculate:neo:end:" + idx;
                                     var started = false;
+                                    List<String> lines = new ArrayList<>();
+                                    int updatedIndentation = 0;
                                     while (true) {
                                         if (!textLines.hasNext()) {
                                             final var fStarted = started;
@@ -155,14 +166,31 @@ public abstract class PatchFormattingAugmentor extends FormattingAugmentor {
                                             if (line.contains(endTag)) {
                                                 break;
                                             } else {
-                                                newDiffs.add(new Diff(Operation.INSERT, line));
+                                                lines.add(line);
                                                 offset++;
                                             }
                                         } else {
                                             if (line.contains(startTag)) {
+                                                updatedIndentation = calculateIndentation(lastLine);
                                                 started = true;
                                             }
                                         }
+                                        if (!line.isBlank()) {
+                                            lastLine = line;
+                                        }
+                                    }
+
+                                    // We correct indentation by assuming that if the line _before_ the diff chunk was shifted, everything within it should be shifted the other way by that amount
+                                    var indentOffset = updatedIndentation - indentations.next(); // We gained this many spaced 
+                                    // Then we need to ensure that nothing will be cut off on the left
+                                    var correctedIndentOffset = Math.min(indentOffset, lines.stream().mapToInt(PatchFormattingAugmentor::calculateIndentation)
+                                            .min().orElse(Integer.MAX_VALUE));
+
+                                    var indentPrefix = indentOffset < 0 ? " ".repeat(-correctedIndentOffset) : "";
+                                    var indentDrop = Math.max(correctedIndentOffset, 0);
+
+                                    for (var line : lines) {
+                                        newDiffs.add(new Diff(Operation.INSERT, indentPrefix + line.substring(indentDrop)));
                                     }
                                 }
                                 offset--;
@@ -196,5 +224,9 @@ public abstract class PatchFormattingAugmentor extends FormattingAugmentor {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    private static int calculateIndentation(String line) {
+        return (int) line.codePoints().takeWhile(i -> i == ' ').count();
     }
 }

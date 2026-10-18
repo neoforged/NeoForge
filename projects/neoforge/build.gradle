@@ -605,7 +605,7 @@ immaculate {
 
                 eclipse {
                     version = project.jdt_core_version
-                    config = rootProject.file('codeformat/formatter-config-patches.xml')
+                    config = rootProject.file('codeformat/formatter-config.xml')
                 }
             }
         }
