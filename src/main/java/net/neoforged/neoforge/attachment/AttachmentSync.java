@@ -8,6 +8,8 @@ package net.neoforged.neoforge.attachment;
 import io.netty.buffer.Unpooled;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
@@ -152,33 +154,34 @@ public final class AttachmentSync {
      */
     @Nullable
     private static SyncAttachmentsPayload syncInitialAttachments(AttachmentHolder holder, ServerPlayer to) {
-        if (holder.attachments == null) {
+        Map<AttachmentType<?>, Object> attachments = holder.attachments;
+        if (attachments == null) {
             return null;
         }
-        boolean anySyncableAttachment = false;
-        for (var attachment : holder.attachments.keySet()) {
-            anySyncableAttachment = anySyncableAttachment | attachment.syncHandler != null;
+        List<AttachmentType<?>> syncableTypes = new ArrayList<>();
+        for (AttachmentType<?> type : attachments.keySet()) {
+            if (type.syncHandler != null && type.syncHandler.sendToPlayer(holder, to)) {
+                syncableTypes.add(type);
+            }
         }
-        if (!anySyncableAttachment) {
+        if (syncableTypes.isEmpty()) {
             return null;
         }
-        List<AttachmentType<?>> syncedTypes = new ArrayList<>();
-        var data = FriendlyByteBufUtil.writeCustomData(buf -> {
-            for (var entry : holder.attachments.entrySet()) {
-                AttachmentType<?> type = entry.getKey();
+        List<AttachmentType<?>> syncedTypes = new ArrayList<>(syncableTypes.size());
+        byte[] data = FriendlyByteBufUtil.writeCustomData(buf -> {
+            for (var type : syncableTypes) {
                 @SuppressWarnings("unchecked")
-                var syncHandler = (AttachmentSyncHandler<Object>) type.syncHandler;
-                if (syncHandler != null) {
-                    int indexBefore = buf.writerIndex();
-                    buf.writeBoolean(true);
-                    int indexBetween = buf.writerIndex();
-                    syncHandler.write(buf, entry.getValue(), true);
-                    if (indexBetween < buf.writerIndex()) {
-                        // Actually wrote something
-                        syncedTypes.add(type);
-                    } else {
-                        buf.writerIndex(indexBefore);
-                    }
+                var syncHandler = (AttachmentSyncHandler<Object>) Objects.requireNonNull(type.syncHandler);
+
+                int indexBefore = buf.writerIndex();
+                buf.writeBoolean(true);
+                int indexBetween = buf.writerIndex();
+                syncHandler.write(buf, attachments.get(type), true);
+                if (indexBetween < buf.writerIndex()) {
+                    // Actually wrote something
+                    syncedTypes.add(type);
+                } else {
+                    buf.writerIndex(indexBefore);
                 }
             }
         }, to.registryAccess());
