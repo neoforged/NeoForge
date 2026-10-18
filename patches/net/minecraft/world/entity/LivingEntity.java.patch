@@ -88,10 +88,10 @@
                      Holder<MobEffect> mobEffect = iterator.next();
                      MobEffectInstance effect = this.activeEffects.get(mobEffect);
                      if (!effect.tickServer(serverLevel, this, () -> this.onEffectUpdated(effect, true, null))) {
-+                        if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Expired(this, effect)).isCanceled()) {
++                        /*spotless:off*/if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Expired(this, effect)).isCanceled()) {/*spotless:on*/
                          iterator.remove();
                          this.onEffectsRemoved(List.of(effect));
-+                        }
++                        /*spotless:off*/}/*spotless:on*/
                      } else if (effect.getDuration() % 600 == 0) {
                          this.onEffectUpdated(effect, false, null);
                      }
@@ -637,12 +637,12 @@
              double fluidJumpThreshold = this.getFluidJumpThreshold();
              if (!inWaterAndHasFluidHeight || this.onGround() && !(fluidHeight > fluidJumpThreshold)) {
                  if (!this.isInLava() || this.onGround() && this.isInShallowFluid(FluidTags.LAVA)) {
-+                    if (fluidType.isAir() || this.onGround() && !(fluidHeight > fluidJumpThreshold)) {
++                    /*spotless:off*/if (fluidType.isAir() || this.onGround() && !(fluidHeight > fluidJumpThreshold)) {/*spotless:on*/
                      if ((this.onGround() || inWaterAndHasFluidHeight && fluidHeight <= fluidJumpThreshold) && this.noJumpDelay == 0) {
                          this.jumpFromGround();
                          this.noJumpDelay = 10;
                      }
-+                    } else this.jumpInFluid(fluidType);
++                    /*spotless:off*/} else this.jumpInFluid(fluidType);/*spotless:on*/
                  } else {
 -                    this.jumpInLiquid(FluidTags.LAVA);
 +                    this.jumpInFluid(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
@@ -658,11 +658,11 @@
                  if (freeFallInterval % 2 == 0) {
                      List<EquipmentSlot> slotsWithGliders = EquipmentSlot.VALUES.stream().filter(slot -> canGlideUsing(this.getItemBySlot(slot), slot)).toList();
 +                    //  Neo: If the list is empty, we probably have something else adding the gliding flight attribute (directly to the entity or otherwise)
-+                    if (!slotsWithGliders.isEmpty()) {
++                    /*spotless:off*/if (!slotsWithGliders.isEmpty()) {/*spotless:on*/
                      EquipmentSlot slotToDamage = Util.getRandom(slotsWithGliders, this.random);
 -                    this.getItemBySlot(slotToDamage).hurtAndBreak(1, this, slotToDamage);
 +                    this.getItemBySlot(slotToDamage).onGlideDamage(this, slotToDamage);
-+                    }
++                    /*spotless:off*/}/*spotless:on*/
                  }
  
                  this.gameEvent(GameEvent.ELYTRA_GLIDE);
@@ -735,11 +735,11 @@
          ItemStack itemInUsedHand = this.getItemInHand(this.getUsedItemHand());
          if (!this.useItem.isEmpty() && ItemStack.isSameItem(itemInUsedHand, this.useItem)) {
              this.useItem = itemInUsedHand;
-+            if (!net.neoforged.neoforge.event.EventHooks.onUseItemStop(this, useItem, this.getUseItemRemainingTicks())) {
++            /*spotless:off*/if (!net.neoforged.neoforge.event.EventHooks.onUseItemStop(this, useItem, this.getUseItemRemainingTicks())) {/*spotless:on*/
 +            ItemStack copy = this instanceof Player ? useItem.copy() : null;
              this.useItem.releaseUsing(this.level(), this, this.getUseItemRemainingTicks());
 +            if (copy != null && useItem.isEmpty()) net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem((Player)this, copy, getUsedItemHand());
-+            }
++            /*spotless:off*/}/*spotless:on*/
              if (this.useItem.useOnRelease()) {
                  this.updatingUsingItem();
              }

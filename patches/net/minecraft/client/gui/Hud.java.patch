@@ -102,9 +102,9 @@
                      Equippable equippable = item.get(DataComponents.EQUIPPABLE);
 -                    if (equippable != null && equippable.slot() == slot && equippable.cameraOverlay().isPresent()) {
 +                    if (equippable != null && equippable.slot() == slot) {
-+                        if (equippable.cameraOverlay().isPresent()) {
++                        /*spotless:off*/if (equippable.cameraOverlay().isPresent()) {/*spotless:on*/
                          this.extractTextureOverlay(graphics, equippable.cameraOverlay().get().withPath(p -> "textures/" + p + ".png"), 1.0F);
-+                        }
++                        /*spotless:off*/}/*spotless:on*/
 +
 +                        net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(item).renderFirstPersonOverlay(item, slot, this.minecraft.player, graphics, deltaTracker);
                      }
@@ -251,9 +251,9 @@
              if (alpha > 0) {
 -                graphics.textWithBackdrop(this.getFont(), str, x, y, strWidth, ARGB.white(alpha));
 +                Font font = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(lastToolHighlight).getFont(lastToolHighlight, net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.FontContext.SELECTED_ITEM_NAME);
-+                if (font == null) {
++                /*spotless:off*/if (font == null) {/*spotless:on*/
 +                graphics.textWithBackdrop(this.getFont(), highlightTip, x, y, strWidth, ARGB.white(alpha));
-+                } else {
++                /*spotless:off*/}/*spotless:on*/ else {
 +                    x = (graphics.guiWidth() - font.width(highlightTip)) / 2;
 +                    graphics.textWithBackdrop(font, highlightTip, x, y, strWidth, ARGB.white(alpha));
 +                }

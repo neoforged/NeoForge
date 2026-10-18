@@ -4,7 +4,7 @@
  
              if (height < 3) {
                  int age = state.getValue(AGE);
-+                if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, true)) {
++                /*spotless:off*/if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, true)) {/*spotless:on*/
                  if (age == 15) {
                      level.setBlockAndUpdate(pos.above(), this.defaultBlockState());
 +                    net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(level, pos.above(), this.defaultBlockState());
@@ -12,7 +12,7 @@
                  } else {
                      level.setBlock(pos, state.setValue(AGE, age + 1), 260);
                  }
-+                }
++                /*spotless:off*/}/*spotless:on*/
              }
          }
      }

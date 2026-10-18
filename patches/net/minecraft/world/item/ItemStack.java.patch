@@ -259,24 +259,24 @@
      public void forEachModifier(EquipmentSlotGroup slot, TriConsumer<Holder<Attribute>, AttributeModifier, ItemAttributeModifiers.Display> consumer) {
 +        // Neo: Reflect real attribute modifiers when doing iteration
 +        this.getAttributeModifiers().forEach(slot, consumer);
-+        if (false) {
++        /*spotless:off*/if (false) {/*spotless:on*/
 +        // Start disabled vanilla code
          ItemAttributeModifiers modifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
          modifiers.forEach(slot, consumer);
 +        // end disabled vanilla code
-+        }
++        /*spotless:off*/}/*spotless:on*/
          EnchantmentHelper.forEachModifier(this, slot, (a, b) -> consumer.accept(a, b, ItemAttributeModifiers.Display.attributeModifiers()));
      }
  
      public void forEachModifier(EquipmentSlot slot, BiConsumer<Holder<Attribute>, AttributeModifier> consumer) {
 +        // Neo: Reflect real attribute modifiers when doing iteration
 +        this.getAttributeModifiers().forEach(slot, consumer);
-+        if (false) {
++        /*spotless:off*/if (false) {/*spotless:on*/
 +        // Start disabled vanilla code
          ItemAttributeModifiers modifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
          modifiers.forEach(slot, consumer);
 +        // end disabled vanilla code
-+        }
++        /*spotless:off*/}/*spotless:on*/
          EnchantmentHelper.forEachModifier(this, slot, consumer);
      }
  
