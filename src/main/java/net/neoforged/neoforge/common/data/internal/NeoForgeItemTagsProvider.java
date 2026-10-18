@@ -119,6 +119,7 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         ColorCollection.zipApply(dyesBuilders, ItemIds.DYE, NeoForgeItemTagsProvider.Appender::add);
         addColoredTags(tag(Tags.Items.DYES)::addTags, Tags.Items.DYES);
         tag(Tags.BlockItems.DYEABLE_UNDYED_SIMPLE)
+                .add(Items.BUNDLE)
                 .add(Items.CANDLE)
                 .add(Items.GLASS)
                 .add(Items.GLASS_PANE)
@@ -126,6 +127,9 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
                 .add(Items.TERRACOTTA);
         tag(Tags.BlockItems.DYEABLE_REDYEABLE_SIMPLE)
                 .addOptionalTag(BlockItemTags.BEDS)
+                .addAll(Items.DYED_BUNDLE)
+                .addOptionalTag(ItemTags.CUSHIONS)
+                .addOptionalTag(ItemTags.HARNESSES)
                 .addOptionalTag(BlockItemTags.WOOL)
                 .addOptionalTag(BlockItemTags.WOOL_CARPETS)
                 .addOptionalTag(BlockItemTags.WOOL_SLABS)
@@ -134,7 +138,14 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         tag(Tags.BlockItems.DYEABLE_SIMPLE)
                 .addTag(Tags.BlockItems.DYEABLE_UNDYED_SIMPLE)
                 .addTag(Tags.BlockItems.DYEABLE_REDYEABLE_SIMPLE);
-        tag(Tags.BlockItems.DYEABLE_DYNAMIC);
+        tag(Tags.BlockItems.DYEABLE_DYNAMIC)
+                .add(Items.LEATHER_HELMET)
+                .add(Items.LEATHER_CHESTPLATE)
+                .add(Items.LEATHER_LEGGINGS)
+                .add(Items.LEATHER_BOOTS)
+                .add(Items.LEATHER_HORSE_ARMOR)
+                .add(Items.WOLF_ARMOR)
+                .add(Items.FIREWORK_STAR);
         tag(Tags.BlockItems.DYEABLE)
                 .addTag(Tags.BlockItems.DYEABLE_SIMPLE)
                 .addTag(Tags.BlockItems.DYEABLE_DYNAMIC);
@@ -438,6 +449,11 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
             for (ResourceKey<Item> itemResourceKey : Arrays.stream(ids).map(BlockItemId::item).toList()) {
                 add(itemResourceKey);
             }
+            return this;
+        }
+
+        public NeoForgeItemTagsProvider.Appender addAll(final ColorCollection<Item> collection) {
+            collection.forEach(this::add);
             return this;
         }
 
