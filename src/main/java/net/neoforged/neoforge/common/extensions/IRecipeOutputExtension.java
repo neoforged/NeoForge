@@ -11,8 +11,8 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.data.RecipeContextBuilder;
 import net.neoforged.neoforge.common.data.RecipeOutputWrapper;
-import net.neoforged.neoforge.common.data.RecipeOutputWrapper.ContextBuilder;
 import net.neoforged.neoforge.common.util.NoExceptionAutoCloseable;
 import org.jspecify.annotations.Nullable;
 
@@ -67,7 +67,7 @@ public interface IRecipeOutputExtension {
     /// @param <O> A [RecipeOutput] which is auto closeable.
     /// @param builder A unary operator used to construct the context.
     /// @return A scoped recipe output.
-    default <O extends RecipeOutput & NoExceptionAutoCloseable> O withContext(UnaryOperator<ContextBuilder> builder) {
+    default <O extends RecipeOutput & NoExceptionAutoCloseable> O withContext(UnaryOperator<RecipeContextBuilder> builder) {
         return (O) RecipeOutputWrapper.withContext(self(), builder);
     }
 }
