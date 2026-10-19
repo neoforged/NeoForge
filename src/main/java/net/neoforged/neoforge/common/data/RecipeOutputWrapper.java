@@ -20,7 +20,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
 import net.neoforged.neoforge.common.conditions.ICondition;
-import net.neoforged.neoforge.common.util.NoExceptionAutoCloseable;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
@@ -28,7 +27,7 @@ import org.jspecify.annotations.Nullable;
 /// An internal wrapper around [RecipeOutput] to handle scoping conditions and changing the
 /// default mod id used in [RecipeBuilder]s.
 @ApiStatus.Internal
-public final class RecipeOutputWrapper implements RecipeOutput, NoExceptionAutoCloseable {
+public final class RecipeOutputWrapper implements ScopedRecipeOutput {
     static final ICondition[] EMPTY = new ICondition[0];
 
     private final RecipeOutput output;
