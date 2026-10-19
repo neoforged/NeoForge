@@ -10,16 +10,13 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.storage.loot.functions.EnchantedCountIncreaseFunction;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWithEnchantedBonusCondition;
 import net.neoforged.neoforge.event.entity.living.GetEquipmentDropChanceEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import org.jetbrains.annotations.ApiStatus;
-import org.jspecify.annotations.Nullable;
 
 /// Fired on the server when an entity is dropping loot and the level of a specific enchantment is being queried.
 ///
@@ -33,10 +30,10 @@ public class EnchantedEntityLootEvent extends LivingEvent {
     private final DamageSource damageSource;
     private final Holder<Enchantment> enchantment;
     private int enchantmentLevel;
-    private final @Nullable Entity target;
+    private final Entity target;
 
     @ApiStatus.Internal
-    public EnchantedEntityLootEvent(LivingEntity entity, DamageSource damageSource, Holder<Enchantment> enchantment, int enchantmentLevel, @Nullable Entity target) {
+    public EnchantedEntityLootEvent(LivingEntity entity, DamageSource damageSource, Holder<Enchantment> enchantment, int enchantmentLevel, Entity target) {
         super(entity);
         this.damageSource = damageSource;
         this.enchantment = enchantment;
@@ -75,13 +72,10 @@ public class EnchantedEntityLootEvent extends LivingEvent {
     }
 
     /// Returns the entity that is dropping loot from [LootContextParams#THIS_ENTITY].
-    /// * For [LootContextParamSets#ENTITY], will be the entity killed.
-    /// * For [LootContextParamSets#FISHING], will be the [FishingHook], though may be null when fishing by other means.
     ///
     /// To get the attacking entity, use [#getEntity()].
     ///
     /// @return the entity that is dropping loot.
-    @Nullable
     public Entity getTarget() {
         return this.target;
     }

@@ -1204,8 +1204,9 @@ public class EventHooks {
     public static int getEntityLootEnchantmentLevel(Holder<Enchantment> ench, int enchLevel, LootContext ctx) {
         Entity entity = ctx.getOptional(LootContextParams.ATTACKING_ENTITY);
         DamageSource src = ctx.getOptional(LootContextParams.DAMAGE_SOURCE);
-        if (src != null && entity instanceof LivingEntity living) {
-            var event = new EnchantedEntityLootEvent(living, src, ench, enchLevel, ctx.getOptional(LootContextParams.THIS_ENTITY));
+        Entity target = ctx.getOptional(LootContextParams.THIS_ENTITY);
+        if (src != null && target != null && entity instanceof LivingEntity living) {
+            var event = new EnchantedEntityLootEvent(living, src, ench, enchLevel, target);
             NeoForge.EVENT_BUS.post(event);
             return event.getEnchantmentLevel();
         }
