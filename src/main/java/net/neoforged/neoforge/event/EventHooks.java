@@ -696,8 +696,17 @@ public class EventHooks {
         return event.getAction();
     }
 
+    /// @deprecated Use [#onArrowLoose(ItemStack, Level, Player, int)] instead.
+    @Deprecated(forRemoval = true, since = "26.3")
     public static int onArrowLoose(ItemStack stack, Level level, Player player, int charge, boolean hasAmmo) {
         ArrowLooseEvent event = new ArrowLooseEvent(player, stack, level, charge, hasAmmo);
+        if (NeoForge.EVENT_BUS.post(event).isCanceled())
+            return -1;
+        return event.getCharge();
+    }
+
+    public static int onArrowLoose(ItemStack stack, Level level, Player player, int charge) {
+        ArrowLooseEvent event = new ArrowLooseEvent(player, stack, level, charge);
         if (NeoForge.EVENT_BUS.post(event).isCanceled())
             return -1;
         return event.getCharge();

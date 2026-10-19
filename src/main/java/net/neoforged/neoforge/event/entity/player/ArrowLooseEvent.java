@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * ArrowLooseEvent is fired when a player stops using a bow.<br>
@@ -33,6 +34,17 @@ public class ArrowLooseEvent extends PlayerEvent implements ICancellableEvent {
     private final boolean hasAmmo;
     private int charge;
 
+    @ApiStatus.Internal
+    public ArrowLooseEvent(Player player, ItemStack bow, Level level, int charge) {
+        super(player);
+        this.bow = bow;
+        this.level = level;
+        this.charge = charge;
+        this.hasAmmo = true;
+    }
+
+    /// @deprecated Use [net.neoforged.neoforge.event.EventHooks#onArrowLoose(ItemStack, Level, Player, int)] instead.
+    @Deprecated(forRemoval = true, since = "26.3")
     public ArrowLooseEvent(Player player, ItemStack bow, Level level, int charge, boolean hasAmmo) {
         super(player);
         this.bow = bow;
@@ -49,6 +61,8 @@ public class ArrowLooseEvent extends PlayerEvent implements ICancellableEvent {
         return this.level;
     }
 
+    /// @deprecated This always returns `true`.
+    @Deprecated(forRemoval = true, since = "26.3")
     public boolean hasAmmo() {
         return this.hasAmmo;
     }
