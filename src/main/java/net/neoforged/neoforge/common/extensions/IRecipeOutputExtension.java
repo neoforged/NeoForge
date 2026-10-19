@@ -7,7 +7,6 @@ package net.neoforged.neoforge.common.extensions;
 
 import java.util.function.UnaryOperator;
 import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
@@ -70,10 +69,5 @@ public interface IRecipeOutputExtension {
     /// @return A scoped recipe output.
     default <O extends RecipeOutput & NoExceptionAutoCloseable> O withContext(UnaryOperator<ContextBuilder> builder) {
         return (O) RecipeOutputWrapper.withContext(self(), builder);
-    }
-
-    /// @return The mod id to use when generating a recipe through the [RecipeBuilder].
-    default @Nullable String overrideModId() {
-        return null;
     }
 }

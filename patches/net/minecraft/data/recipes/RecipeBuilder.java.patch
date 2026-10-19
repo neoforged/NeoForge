@@ -1,13 +1,10 @@
 --- a/net/minecraft/data/recipes/RecipeBuilder.java
 +++ b/net/minecraft/data/recipes/RecipeBuilder.java
-@@ -27,13 +_,22 @@
+@@ -27,13 +_,14 @@
          if (defaultKey == null) {
              throw new IllegalStateException("Recipe has no name to derive an id from - save it with an explicit id");
          }
-+        // Neo: Override namespace if set
-+        if (output.overrideModId() != null) {
-+            defaultKey = ResourceKey.create(defaultKey.registryKey(), Identifier.fromNamespaceAndPath(output.overrideModId(), defaultKey.identifier().getPath()));
-+        }
++        defaultKey = net.neoforged.neoforge.common.data.RecipeOutputWrapper.modifyKey(output, defaultKey);
  
          this.save(output, defaultKey);
      }
@@ -15,12 +12,7 @@
      default void save(RecipeOutput output, String id) {
          ResourceKey<Recipe<?>> defaultKey = this.defaultId();
 -        ResourceKey<Recipe<?>> overriddenKey = ResourceKey.create(Registries.RECIPE, Identifier.parse(id));
-+        // Neo: Override namespace if set
-+        Identifier recipeId = Identifier.parse(id);
-+        if (output.overrideModId() != null) {
-+            recipeId = Identifier.fromNamespaceAndPath(output.overrideModId(), recipeId.getPath());
-+        }
-+        ResourceKey<Recipe<?>> overriddenKey = ResourceKey.create(Registries.RECIPE, recipeId);
++        ResourceKey<Recipe<?>> overriddenKey = net.neoforged.neoforge.common.data.RecipeOutputWrapper.modifyKey(output, ResourceKey.create(Registries.RECIPE, Identifier.parse(id)));
          if (overriddenKey == defaultKey) {
              throw new IllegalStateException("Recipe " + id + " should remove its 'save' argument as it is equal to default one");
          }

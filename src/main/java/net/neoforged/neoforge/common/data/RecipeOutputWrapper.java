@@ -17,6 +17,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
 import net.neoforged.neoforge.common.conditions.ICondition;
@@ -88,6 +89,23 @@ public final class RecipeOutputWrapper implements RecipeOutput, NoExceptionAutoC
         }
     }
 
+    /// Modifies the namespace of the key identifier if the current mod id context is not `null`.
+    /// Otherwise, the original key is returned.
+    ///
+    /// @param output   The original recipe output.
+    /// @param original The original `ResourceKey` of the recipe.
+    /// @return The newly wrapped recipe key, or the original if the mod id context is `null`.
+    public static ResourceKey<Recipe<?>> modifyKey(RecipeOutput output, ResourceKey<Recipe<?>> original) {
+        // If the output is a wrapper.
+        if (output instanceof RecipeOutputWrapper wrapper && wrapper.modId() != null) {
+            // Set the namespace for the key.
+            return ResourceKey.create(original.registryKey(), Identifier.fromNamespaceAndPath(wrapper.modId(), original.identifier().getPath()));
+        } else {
+            // Otherwise, return the original key.
+            return original;
+        }
+    }
+
     @Override
     public Advancement.Builder advancement() {
         return this.output.advancement();
@@ -106,11 +124,6 @@ public final class RecipeOutputWrapper implements RecipeOutput, NoExceptionAutoC
     @Override
     public void accept(ResourceKey<Recipe<?>> key, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
         this.output.accept(key, recipe, advancement, mergeConditions(this.conditions(), conditions));
-    }
-
-    @Override
-    public @Nullable String overrideModId() {
-        return this.modId();
     }
 
     @Override
