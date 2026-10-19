@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/ShearsItem.java
 +++ b/net/minecraft/world/item/ShearsItem.java
-@@ -58,20 +_,55 @@
+@@ -58,20 +_,50 @@
          return true;
      }
  
@@ -33,11 +33,6 @@
 +            }
 +        }
 +        return InteractionResult.PASS;
-+    }
-+
-+    @Override
-+    public boolean canPerformAction(ItemInstance stack, net.neoforged.neoforge.common.ItemAbility itemAbility) {
-+        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_SHEARS_ACTIONS.contains(itemAbility);
 +    }
 +
      @Override

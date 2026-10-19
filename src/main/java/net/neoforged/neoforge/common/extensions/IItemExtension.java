@@ -34,11 +34,18 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BrushItem;
+import net.minecraft.world.item.FireChargeItem;
+import net.minecraft.world.item.FishingRodItem;
+import net.minecraft.world.item.FlintAndSteelItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ShearsItem;
+import net.minecraft.world.item.SpyglassItem;
+import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -347,7 +354,16 @@ public interface IItemExtension {
         } else if (itemAbility == ItemAbilities.SHOVEL_DOUSE) {
             return stack.is(ItemTags.DOUSES_CAMPFIRES);
         }
-        return false;
+        return switch (stack.typeHolder().value()) {
+            case BrushItem _ -> ItemAbilities.DEFAULT_BRUSH_ACTIONS.contains(itemAbility);
+            case FireChargeItem _ -> ItemAbilities.DEFAULT_FIRECHARGE_ACTIONS.contains(itemAbility);
+            case FishingRodItem _ -> ItemAbilities.DEFAULT_FISHING_ROD_ACTIONS.contains(itemAbility);
+            case FlintAndSteelItem _ -> ItemAbilities.DEFAULT_FLINT_ACTIONS.contains(itemAbility);
+            case ShearsItem _ -> ItemAbilities.DEFAULT_SHEARS_ACTIONS.contains(itemAbility);
+            case SpyglassItem _ -> ItemAbilities.DEFAULT_SPYGLASS_ACTIONS.contains(itemAbility);
+            case TridentItem _ -> ItemAbilities.DEFAULT_TRIDENT_ACTIONS.contains(itemAbility);
+            default -> false;
+        };
     }
 
     /**
