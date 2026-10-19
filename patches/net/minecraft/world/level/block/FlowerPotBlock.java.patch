@@ -27,7 +27,7 @@
 +    /// Use the [other constructor][#FlowerPotBlock(Properties)] for constructing empty pots.
 +    ///
 +    /// @param emptyPot The empty pot for this pot
-+    /// @param potted The potted flower/plant
++    /// @param potted   The potted flower/plant
 +    public FlowerPotBlock(java.util.function.Supplier<FlowerPotBlock> emptyPot, java.util.function.Supplier<? extends Block> potted, BlockBehaviour.Properties properties) {
 +        super(properties);
 +        this.potted = null; // Unused, redirected by coremod
@@ -49,7 +49,7 @@
      ) {
          BlockState newContents = (itemStack.getItem() instanceof BlockItem blockItem
 -                ? POTTED_BY_CONTENT.getOrDefault(blockItem.getBlock(), Blocks.AIR)
-+                ? emptyPot == null ? getFullPot(blockItem.getBlock()) : Blocks.AIR
++                ? this.emptyPot == null ? getFullPot(blockItem.getBlock()) : Blocks.AIR
                  : Blocks.AIR)
              .defaultBlockState();
          if (newContents.isAir()) {
@@ -62,28 +62,23 @@
          level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
          return InteractionResult.SUCCESS;
      }
-@@ -108,12 +_,37 @@
+@@ -108,7 +_,32 @@
      }
  
      public Block getPotted() {
 -        return this.potted;
-+        return flowerDelegate.get();
-     }
- 
-     @Override
-     protected boolean isPathfindable(BlockState state, PathComputationType type) {
-         return false;
++        return this.flowerDelegate.get();
 +    }
 +
 +    public FlowerPotBlock getEmptyPot() {
-+         return emptyPot == null ? this : emptyPot.get();
++        return this.emptyPot == null ? this : this.emptyPot.get();
 +    }
 +
 +    /// Neo: {@return an unmodifiable view of the map of plant blocks to their associated full pot block}
 +    ///
 +    /// @throws IllegalStateException if this is called on a non-empty pot
 +    public Map<Block, Block> getFullPots() {
-+        if (emptyPot != null) {
++        if (this.emptyPot != null) {
 +            throw new IllegalStateException("Full pots can only be queried from the empty pot");
 +        }
 +        return java.util.Collections.unmodifiableMap(net.neoforged.neoforge.registries.GameData.getFlowerPotBlockTable().row(this));
@@ -94,7 +89,7 @@
 +    /// @param plant the plant block
 +    /// @throws IllegalStateException if this is called on a non-empty pot
 +    public Block getFullPot(Block plant) {
-+        if (emptyPot != null) {
++        if (this.emptyPot != null) {
 +            throw new IllegalStateException("Full pots can only be queried from the empty pot");
 +        }
 +        return net.neoforged.neoforge.registries.GameData.getFlowerPotBlockTable().row(this).getOrDefault(plant, Blocks.AIR);

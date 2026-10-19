@@ -44,11 +44,11 @@
 +    }
 +
 +    private RecipeBookSettings(
-+            RecipeBookSettings.TypeSettings crafting,
-+            RecipeBookSettings.TypeSettings furnace,
-+            RecipeBookSettings.TypeSettings blastFurnace,
-+            RecipeBookSettings.TypeSettings smoker,
-+            java.util.Map<RecipeBookType, RecipeBookSettings.TypeSettings> moddedSettings
++        RecipeBookSettings.TypeSettings crafting,
++        RecipeBookSettings.TypeSettings furnace,
++        RecipeBookSettings.TypeSettings blastFurnace,
++        RecipeBookSettings.TypeSettings smoker,
++        java.util.Map<RecipeBookType, RecipeBookSettings.TypeSettings> moddedSettings
 +    ) {
          this.crafting = crafting;
          this.furnace = furnace;

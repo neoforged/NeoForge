@@ -69,13 +69,13 @@
          if (shouldRenderClouds) {
 +            if (this.levelRenderState.customCloudsRenderer != null) {
 +                this.levelRenderState.customCloudsRenderer.prepare(
-+                        this.levelRenderState,
-+                        this.levelRenderState.cameraRenderState.pos,
-+                        cloudStatus,
-+                        this.levelRenderState.cloudColor,
-+                        this.levelRenderState.cloudHeight,
-+                        this.optionsRenderState.cloudRange,
-+                        this.levelRenderState.cameraRenderState.viewRotationMatrix
++                    this.levelRenderState,
++                    this.levelRenderState.cameraRenderState.pos,
++                    cloudStatus,
++                    this.levelRenderState.cloudColor,
++                    this.levelRenderState.cloudHeight,
++                    this.optionsRenderState.cloudRange,
++                    this.levelRenderState.cameraRenderState.viewRotationMatrix
 +                );
 +            }
              this.cloudRenderer
@@ -132,7 +132,7 @@
 +        profiler.push("neoforge_render_after_translucent_particles");
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentParticles(this, this.levelRenderState, null, this.levelRenderState.cameraRenderState.viewRotationMatrix, this.visibleSections, renderPass));
 +        profiler.pop();
-+        if (shouldRenderClouds && (this.levelRenderState.customCloudsRenderer == null || ! this.levelRenderState.customCloudsRenderer.renderClouds(this.levelRenderState, cloudStatus, this.levelRenderState.cameraRenderState.viewRotationMatrix, renderPass))) {
++        if (shouldRenderClouds && (this.levelRenderState.customCloudsRenderer == null || !this.levelRenderState.customCloudsRenderer.renderClouds(this.levelRenderState, cloudStatus, this.levelRenderState.cameraRenderState.viewRotationMatrix, renderPass))) {
              this.cloudRenderer.render(cloudStatus, renderPass);
          }
  

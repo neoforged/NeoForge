@@ -8,7 +8,7 @@
 +        if (this.constructor instanceof net.neoforged.neoforge.network.IContainerFactory) {
 +            return ((net.neoforged.neoforge.network.IContainerFactory<T>) this.constructor).create(windowId, playerInv, extraData);
 +        }
-+        return create(windowId, playerInv);
++        return this.create(windowId, playerInv);
 +    }
 +
 +    @Override

@@ -9,7 +9,7 @@
          }
      }
  
-@@ -637,9 +_,20 @@
+@@ -637,8 +_,19 @@
          return super.hurtServer(level, source, damage);
      }
  
@@ -20,13 +20,12 @@
 +        this.jumpInLiquidInternal();
 +    }
 +
-+    private void jumpInLiquidInternal() {
-         this.setDeltaMovement(this.getDeltaMovement().add(0.0, 0.01, 0.0));
-+    }
-+
 +    @Override
 +    public void jumpInFluid(net.neoforged.neoforge.fluids.FluidType type) {
 +        this.jumpInLiquidInternal();
++    }
++
++    private void jumpInLiquidInternal() {
+         this.setDeltaMovement(this.getDeltaMovement().add(0.0, 0.01, 0.0));
      }
  
-     @Override

@@ -20,14 +20,14 @@
              );
 +            if (!event.isCanceled()) {
 +                entity.teleportTo(
-+                        level,
-+                        event.getTargetX(),
-+                        event.getTargetY(),
-+                        event.getTargetZ(),
-+                        Set.of(),
-+                        entity.getYRot(),
-+                        entity.getXRot(),
-+                        true
++                    level,
++                    event.getTargetX(),
++                    event.getTargetY(),
++                    event.getTargetZ(),
++                    Set.of(),
++                    entity.getYRot(),
++                    entity.getXRot(),
++                    true
 +                );
 +            }
              double closest = Double.MAX_VALUE;

@@ -7,6 +7,6 @@
 +
 +    @Override
 +    public String toString() {
-+        return String.format(java.util.Locale.ROOT, "%s: %s", getClass().getName(), location.id());
++        return String.format(java.util.Locale.ROOT, "%s: %s", this.getClass().getName(), this.location.id());
 +    }
  }

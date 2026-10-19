@@ -31,7 +31,7 @@
  
      public ItemTransform getTransform(ItemDisplayContext type) {
 +        if (type.isModded()) {
-+            ItemTransform moddedTransform = moddedTransforms.get(type);
++            ItemTransform moddedTransform = this.moddedTransforms.get(type);
 +            if (moddedTransform != null) {
 +                return moddedTransform;
 +            }
@@ -58,7 +58,7 @@
 +                        fallbackType = fallbackType.fallback();
 +                        transform = this.getTransform(context, object, fallbackType);
 +                    }
-+                    if (transform != ItemTransform.NO_TRANSFORM){
++                    if (transform != ItemTransform.NO_TRANSFORM) {
 +                        builder.put(type, transform);
 +                    }
 +                }

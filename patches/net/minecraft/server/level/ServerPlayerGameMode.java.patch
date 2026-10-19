@@ -15,7 +15,7 @@
      }
  
      public void handleBlockBreakAction(BlockPos pos, ServerboundPlayerActionPacket.Action action, Direction direction, int maxY, int sequence) {
-+        net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock event = net.neoforged.neoforge.common.CommonHooks.onLeftClickBlock(player, pos, direction, action);
++        net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock event = net.neoforged.neoforge.common.CommonHooks.onLeftClickBlock(this.player, pos, direction, action);
 +        if (event.isCanceled()) {
 +            return;
 +        }
@@ -37,7 +37,7 @@
 +        // Neo: Fire the BlockBreakEvent, and ignore the original ItemStack#canDestroyBlock check since the break event manages the status of it.
          BlockState state = this.level.getBlockState(pos);
 -        if (!this.player.getMainHandItem().canDestroyBlock(state, this.level, pos, this.player)) {
-+        var event = net.neoforged.neoforge.common.CommonHooks.fireBlockBreak(level, gameModeForPlayer, player, pos, state);
++        var event = net.neoforged.neoforge.common.CommonHooks.fireBlockBreak(this.level, this.gameModeForPlayer, this.player, pos, state);
 +        if (event.isCanceled()) {
              return false;
          }
@@ -56,7 +56,7 @@
 -        }
  
          if (this.player.preventsBlockDrops()) {
-+            removeBlock(pos, adjustedState, false, player.getMainHandItem().copy());
++            this.removeBlock(pos, adjustedState, false, player.getMainHandItem().copy());
              return true;
          }
  
@@ -65,7 +65,7 @@
 -        boolean canDestroy = this.player.hasCorrectToolForDrops(adjustedState);
 +        boolean canDestroy = adjustedState.canHarvestBlock(this.level, pos, this.player); // previously player.hasCorrectToolForDrops(blockstate)
          itemStack.mineBlock(this.level, adjustedState, pos, this.player);
-+        boolean changed = removeBlock(pos, adjustedState, canDestroy, destroyedWith.copy());
++        boolean changed = this.removeBlock(pos, adjustedState, canDestroy, destroyedWith.copy());
 +
          if (changed && canDestroy) {
              block.playerDestroy(this.level, this.player, pos, adjustedState, blockEntity, destroyedWith);
@@ -81,11 +81,11 @@
  
 +    /// Neo: Patched-in method that handles actual removal of blocks for [#destroyBlock(BlockPos)].
 +    ///
-+    /// @param pos The block pos of the destroyed block
-+    /// @param state The state of the destroyed block
++    /// @param pos        The block pos of the destroyed block
++    /// @param state      The state of the destroyed block
 +    /// @param canHarvest If the player breaking the block can harvest the drops of the block
-+    /// @param toolStack The players main-hand prior to destroying the block and applying damage to the tool.
-+    /// @return If the block was removed, as reported by [BlockState#onDestroyedByPlayer].
++    /// @param toolStack  The players main-hand prior to destroying the block and applying damage to the tool.
++    /// @return if the block was removed, as reported by [BlockState#onDestroyedByPlayer].
 +    private boolean removeBlock(BlockPos pos, BlockState state, boolean canHarvest, ItemStack toolStack) {
 +        boolean removed = state.onDestroyedByPlayer(this.level, pos, this.player, toolStack, canHarvest, this.level.getFluidState(pos));
 +        if (removed) {

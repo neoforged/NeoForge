@@ -5,7 +5,7 @@
          PackRepository repository = source.getServer().getPackRepository();
          repository.reload();
 -        Collection<? extends Pack> selectedPacks = repository.getSelectedPacks();
-+        Collection<? extends Pack> selectedPacks = repository.getSelectedPacks().stream().filter(p -> !p.isHidden()).toList();;
++        Collection<? extends Pack> selectedPacks = repository.getSelectedPacks().stream().filter(p -> !p.isHidden()).toList();
          if (selectedPacks.isEmpty()) {
              source.sendSuccess(() -> Component.translatable("commands.datapack.list.enabled.none"), false);
          } else {

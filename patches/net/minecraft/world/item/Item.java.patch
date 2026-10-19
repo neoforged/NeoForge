@@ -83,7 +83,7 @@
 +
 +    @Override
 +    public boolean isCombineRepairable(ItemStack stack) {
-+        return this.canCombineRepair && isDamageable(stack);
++        return this.canCombineRepair && this.isDamageable(stack);
      }
  
      public ItemStack getDefaultInstance() {

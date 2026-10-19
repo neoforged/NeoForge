@@ -24,7 +24,7 @@
 +        StructurePlaceSettings settings,
 +        @Nullable StructureTemplate template
 +    ) {
-+        return processBlock(level, targetPosition, referencePos, originalBlockInfo.pos(), processedBlockInfo, settings);
++        return this.processBlock(level, targetPosition, referencePos, originalBlockInfo.pos(), processedBlockInfo, settings);
 +    }
 +
 +    /// Neo: Add entity processing.

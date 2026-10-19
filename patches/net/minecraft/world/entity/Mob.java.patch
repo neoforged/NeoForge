@@ -128,7 +128,7 @@
          if (this.level() instanceof ServerLevel serverLevel) {
              serverLevel.addFreshEntity(newMob);
          }
-@@ -1397,15 +_,26 @@
+@@ -1397,10 +_,21 @@
          return wasHurt;
      }
  
@@ -139,6 +139,11 @@
 +        this.jumpInLiquidInternal(() -> super.jumpInLiquid(type));
 +    }
 +
++    @Override
++    public void jumpInFluid(net.neoforged.neoforge.fluids.FluidType type) {
++        this.jumpInLiquidInternal(() -> super.jumpInFluid(type));
++    }
++
 +    private void jumpInLiquidInternal(Runnable onSuper) {
          if (this.getNavigation().canFloat()) {
 -            super.jumpInLiquid(type);
@@ -146,17 +151,7 @@
          } else {
              this.setDeltaMovement(this.getDeltaMovement().add(0.0, 0.3, 0.0));
          }
-     }
- 
-+    @Override
-+    public void jumpInFluid(net.neoforged.neoforge.fluids.FluidType type) {
-+        this.jumpInLiquidInternal(() -> super.jumpInFluid(type));
-+    }
-+
-     @VisibleForTesting
-     public void removeFreeWill() {
-         this.removeAllGoals(goal -> true);
-@@ -1480,5 +_,35 @@
+@@ -1480,5 +_,36 @@
  
      public void swing(InteractionHand hand, SwingAnimation animation) {
          this.swing(hand, animation, false);
@@ -173,6 +168,7 @@
 +
 +    /// This method exists so that spawns can be canceled from the [`FinalizeSpawnEvent`][net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent]
 +    /// without needing to hook up an additional handler for the [`EntityJoinLevelEvent`][net.neoforged.neoforge.event.entity.EntityJoinLevelEvent].
++    ///
 +    /// @return if this mob will be blocked from spawning during [Level#addFreshEntity(Entity)]
 +    /// @apiNote Not public-facing API.
 +    @org.jetbrains.annotations.ApiStatus.Internal

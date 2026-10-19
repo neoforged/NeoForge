@@ -4,7 +4,7 @@
      private int viewDistance;
      private int simulationDistance;
      private int sendAllPlayerInfoIn;
-+    private final List<ServerPlayer> playersView = java.util.Collections.unmodifiableList(players);
++    private final List<ServerPlayer> playersView = java.util.Collections.unmodifiableList(this.players);
  
      public PlayerList(
          MinecraftServer server, LayeredRegistryAccess<RegistryLayer> registries, PlayerDataStorage playerIo, NotificationService notificationService

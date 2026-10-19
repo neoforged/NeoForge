@@ -103,7 +103,7 @@
          }
  
 +        /* Neo: the function in use here has been replaced in order to only send the weather info to players in the correct dimension,
-+         * rather than to all players on the server. This is what causes the client-side rain, as the
++         * rather than to all players on the server. This is what causes the client-side rain (MC-197375), as the
 +         * client believes that it has started raining locally, rather than in another dimension.
 +         */
          if (wasRaining != this.isRaining()) {
@@ -254,9 +254,11 @@
          int blockCount = explosion.explode();
          ParticleOptions explosionParticle = explosion.isSmall() ? smallExplosionParticles : largeExplosionParticles;
  
-@@ -1505,7 +_,7 @@
+@@ -1504,8 +_,9 @@
+         return entity != null ? entity : this.dragonParts.get(id);
      }
  
++    // Neo: widen generic to support non-dragon part entities
      @Override
 -    public Collection<EnderDragonPart> dragonParts() {
 +    public Collection<net.neoforged.neoforge.entity.PartEntity<?>> dragonParts() {
@@ -280,18 +282,18 @@
 -            if (entity instanceof EnderDragon dragon) {
 -                for (EnderDragonPart subEntity : dragon.getSubEntities()) {
 +            if (entity.isMultipartEntity()) {
-+                for(net.neoforged.neoforge.entity.PartEntity<?> subEntity : entity.getParts()) {
++                for (net.neoforged.neoforge.entity.PartEntity<?> subEntity : entity.getParts()) {
                      ServerLevel.this.dragonParts.put(subEntity.getId(), subEntity);
                  }
              }
-@@ -2039,18 +_,54 @@
+@@ -2039,18 +_,55 @@
                  ServerLevel.this.navigatingMobs.remove(mob);
              }
  
 -            if (entity instanceof EnderDragon dragon) {
 -                for (EnderDragonPart subEntity : dragon.getSubEntities()) {
 +            if (entity.isMultipartEntity()) {
-+                for(net.neoforged.neoforge.entity.PartEntity<?> subEntity : entity.getParts()) {
++                for (net.neoforged.neoforge.entity.PartEntity<?> subEntity : entity.getParts()) {
                      ServerLevel.this.dragonParts.remove(subEntity.getId());
                  }
              }
@@ -324,6 +326,7 @@
 +    }
 +
 +    /// Register a listener for capability invalidation.
++    ///
 +    /// @see net.neoforged.neoforge.capabilities.ICapabilityInvalidationListener
 +    public void registerCapabilityListener(BlockPos pos, net.neoforged.neoforge.capabilities.ICapabilityInvalidationListener listener) {
 +        this.capListenerHolder.addListener(pos, listener);
