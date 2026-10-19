@@ -106,7 +106,7 @@
 +    }
 +
 +    public Identifier getLootTableId() {
-+        return java.util.Objects.requireNonNull(this.lootTableId, "ID not set");
++        return java.util.Objects.requireNonNullElse(this.lootTableId, net.neoforged.neoforge.common.loot.LootTableIdCondition.UNKNOWN_LOOT_TABLE);
 +    }
 +
 +    // Neo: Retrieve LootPools by name

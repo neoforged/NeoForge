@@ -75,6 +75,9 @@ import net.neoforged.neoforge.common.util.BlockRelocability;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelDataManager;
+import net.neoforged.neoforge.registries.datamaps.builtin.Flammable;
+import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import org.jspecify.annotations.Nullable;
 
 @SuppressWarnings("deprecation")
@@ -586,32 +589,47 @@ public interface IBlockExtension {
         return state.isStickyBlock() || other.isStickyBlock();
     }
 
-    /**
-     * Chance that fire will spread and consume this block.
-     * 300 being a 100% chance, 0, being a 0% chance.
-     *
-     * @param state     The current state
-     * @param level     The current level
-     * @param pos       Block position in level
-     * @param direction The direction that the fire is coming from
-     * @return A number ranging from 0 to 300 relating used to determine if the block will be consumed by fire
-     */
-    default int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-        return ((FireBlock) Blocks.FIRE).getBurnOdds(state);
+    /// Called when fire is updating, checks if a block face can catch fire.
+    ///
+    /// @param state     The current state
+    /// @param level     The current level
+    /// @param pos       Block position in level
+    /// @param direction The direction that the fire is coming from
+    /// @return True if the face can be on fire, false otherwise.
+    default boolean isFlammable(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+        return state.getFireSpreadSpeed(level, pos, direction) > 0;
     }
 
-    /**
-     * Called when fire is updating, checks if a block face can catch fire.
-     *
-     *
-     * @param state     The current state
-     * @param level     The current level
-     * @param pos       Block position in level
-     * @param direction The direction that the fire is coming from
-     * @return True if the face can be on fire, false otherwise.
-     */
-    default boolean isFlammable(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-        return state.getFlammability(level, pos, direction) > 0;
+    /// Called when fire is updating on a neighbor block.
+    /// The higher the number returned, the faster fire will spread around this block.
+    ///
+    /// @param state     The current state
+    /// @param level     The current level
+    /// @param pos       Block position in level
+    /// @param direction The direction that the fire is coming from
+    /// @return A number that is used to determine the speed of fire growth around the block
+    default int getFireSpreadSpeed(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+        if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
+            return 0;
+        }
+        Flammable flammable = state.getBlock().builtInRegistryHolder().getData(NeoForgeDataMaps.FLAMMABLE);
+        return flammable != null ? flammable.igniteOdds() : ((FireBlock) Blocks.FIRE).getIgniteOdds(state);
+    }
+
+    /// Chance that fire will spread and consume this block.
+    /// 300 being a 100% chance, 0, being a 0% chance.
+    ///
+    /// @param state     The current state
+    /// @param level     The current level
+    /// @param pos       Block position in level
+    /// @param direction The direction that the fire is coming from
+    /// @return A number ranging from 0 to 300 relating used to determine if the block will be consumed by fire
+    default int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+        if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
+            return 0;
+        }
+        Flammable flammable = state.getBlock().builtInRegistryHolder().getData(NeoForgeDataMaps.FLAMMABLE);
+        return flammable != null ? flammable.burnOdds() : ((FireBlock) Blocks.FIRE).getBurnOdds(state);
     }
 
     /**
@@ -629,20 +647,6 @@ public interface IBlockExtension {
      */
     default boolean onCaughtFire(BlockState state, Level level, BlockPos pos, @Nullable Direction direction, @Nullable LivingEntity igniter, ItemStack ignitionItem) {
         return true;
-    }
-
-    /**
-     * Called when fire is updating on a neighbor block.
-     * The higher the number returned, the faster fire will spread around this block.
-     *
-     * @param state     The current state
-     * @param level     The current level
-     * @param pos       Block position in level
-     * @param direction The direction that the fire is coming from
-     * @return A number that is used to determine the speed of fire growth around the block
-     */
-    default int getFireSpreadSpeed(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-        return ((FireBlock) Blocks.FIRE).getIgniteOdds(state);
     }
 
     /**
@@ -960,5 +964,41 @@ public interface IBlockExtension {
         return state.is(Tags.Blocks.RELOCATION_NOT_SUPPORTED)
                 ? BlockRelocability.No.INSTANCE
                 : BlockRelocability.Yes.INSTANCE;
+    }
+
+    /// Determines whether the given adjacent block can connect to the given side of this block.
+    /// This is used by iron bars, glass panes, fences and walls to determine whether they can connect.
+    ///
+    /// - Returning [TriState#TRUE] forces the adjacent block to connect.
+    /// - Returning [TriState#DEFAULT] leaves the decision to the connecting block's further checks.
+    /// - Returning [TriState#FALSE] prevents the adjacent block from connecting.
+    ///
+    /// @param state         The state of this block
+    /// @param side          The side of this block being connected to
+    /// @param adjacentBlock The adjacent block attempting to connect to this block
+    /// @return whether the adjacent block can connect to this block.
+    default TriState canBeConnectedTo(BlockState state, Direction side, Block adjacentBlock) {
+        return TriState.DEFAULT;
+    }
+
+    /// Allows you to return additional model data.
+    ///
+    /// This data can be used to provide additional functionality in your `BlockStateModel`.
+    /// You need to schedule a refresh of your model data via [ModelDataManager#requestRefresh(BlockPos)] if the result of this function changes.
+    ///
+    /// This method is always called on the main client thread.
+    ///
+    /// @param blockState The current block state
+    /// @param level      Level containing this block
+    /// @param pos        Position of this block
+    /// @return Your model data
+    default ModelData getModelData(BlockState blockState, Level level, BlockPos pos) {
+        var blockEntity = level.getBlockEntity(pos);
+
+        if (blockEntity != null) {
+            return blockEntity.getModelData();
+        }
+
+        return ModelData.EMPTY;
     }
 }

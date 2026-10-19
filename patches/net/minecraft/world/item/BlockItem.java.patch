@@ -1,6 +1,13 @@
 --- a/net/minecraft/world/item/BlockItem.java
 +++ b/net/minecraft/world/item/BlockItem.java
-@@ -92,15 +_,22 @@
+@@ -89,20 +_,29 @@
+             updateCustomBlockEntityTag(level, player, pos, itemStack);
+             updateBlockEntityComponents(level, pos, itemStack);
+             placedState.getBlock().setPlacedBy(level, pos, placedState, player, itemStack);
++            // Neo: add post-placement callback on the block item
++            this.onBlockPlacedBy(updatedPlaceContext, level, pos, placedState, player, itemStack);
+             if (player instanceof ServerPlayer serverPlayer) {
+                 CriteriaTriggers.PLACED_BLOCK.trigger(serverPlayer, pos, itemStack);
              }
          }
  

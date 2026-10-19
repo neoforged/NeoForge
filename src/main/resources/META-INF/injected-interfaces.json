@@ -188,6 +188,9 @@
   "net/minecraft/world/inventory/MenuType": [
     "net/neoforged/neoforge/common/extensions/IMenuTypeExtension<T>"
   ],
+  "net/minecraft/world/item/BlockItem": [
+    "net/neoforged/neoforge/common/extensions/BlockItemExtension"
+  ],
   "net/minecraft/world/item/DispensibleContainerItem": [
     "net/neoforged/neoforge/common/extensions/IDispensibleContainerItemExtension"
   ],

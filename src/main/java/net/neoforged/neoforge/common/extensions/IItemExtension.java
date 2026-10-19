@@ -263,16 +263,17 @@ public interface IItemExtension {
         return entity.isEquippableInSlot(stack, armorType);
     }
 
-    /**
-     * Override this to set a non-default armor slot for an ItemStack, but <em>do
-     * not use this to get the armor slot of said stack; for that, use
-     * {@link LivingEntity#getEquipmentSlotForItem(ItemStack)}..</em>
-     *
-     * @param stack the ItemStack
-     * @return the armor slot of the ItemStack, or {@code null} to let the default
-     *         vanilla logic as per {@code LivingEntity.getSlotForItemStack(stack)}
-     *         decide
-     */
+    /// {@return the equipment slot for the stack, or `null` to use the vanilla logic in [LivingEntity#getEquipmentSlotForItem(ItemStack)]}
+    ///
+    /// Override this to set a non-default armor slot for an ItemStack, but _do
+    /// not_ call this to get the equipment slot of said stack; for that, use
+    /// [LivingEntity#getEquipmentSlotForItem(ItemStack)].
+    ///
+    /// @param stack the stack
+    /// @deprecated To be removed in 26.4. Apply the [net.minecraft.world.item.equipment.Equippable] component to your item instead, such as through the
+    ///             [Item.Properties#equippable(EquipmentSlot)] helper, using [Item.Properties#component(DataComponentType, Object)], or dynamically
+    ///             adding the component.
+    @Deprecated(forRemoval = true, since = "26.3")
     @Nullable
     default EquipmentSlot getEquipmentSlot(ItemStack stack) {
         return null;
