@@ -19,14 +19,3 @@
              level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
              if (player != null) {
                  context.getItemInHand().hurtAndBreak(1, player, context.getHand().asEquipmentSlot());
-@@ -55,5 +_,10 @@
- 
-             return InteractionResult.SUCCESS;
-         }
-+    }
-+
-+    @Override
-+    public boolean canPerformAction(ItemInstance stack, net.neoforged.neoforge.common.ItemAbility itemAbility) {
-+        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_FLINT_ACTIONS.contains(itemAbility);
-     }
- }

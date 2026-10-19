@@ -12,14 +12,3 @@
              }
  
              level.playSound(
-@@ -60,5 +_,10 @@
-         }
- 
-         return InteractionResult.SUCCESS;
-+    }
-+
-+    @Override
-+    public boolean canPerformAction(ItemInstance stack, net.neoforged.neoforge.common.ItemAbility itemAbility) {
-+        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_FISHING_ROD_ACTIONS.contains(itemAbility);
-     }
- }
