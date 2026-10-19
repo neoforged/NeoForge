@@ -19,14 +19,3 @@
              level.gameEvent(context.getPlayer(), GameEvent.BLOCK_CHANGE, pos);
              used = true;
          }
-@@ -84,5 +_,10 @@
-             .power(1.0F)
-             .overrideDispenseEvent(1018)
-             .build();
-+    }
-+
-+    @Override
-+    public boolean canPerformAction(ItemInstance stack, net.neoforged.neoforge.common.ItemAbility itemAbility) {
-+        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_FIRECHARGE_ACTIONS.contains(itemAbility);
-     }
- }
