@@ -146,7 +146,7 @@
              @Override
              public void apply() {
                  pendingTags.forEach((id, tag) -> {
-@@ -458,6 +_,59 @@
+@@ -458,6 +_,49 @@
                  MappedRegistry.this.refreshTagsInHolders();
              }
          };
@@ -188,16 +188,6 @@
 +        }
 +        this.byId.set(id, holder);
 +        this.toId.put(holder.value(), id);
-+    }
-+
-+    @Override
-+    public int getId(Identifier name) {
-+        return this.getId(this.getValue(name));
-+    }
-+
-+    @Override
-+    public int getId(ResourceKey<T> key) {
-+        return this.getId(this.getValue(key));
 +    }
 +
 +    @Override
