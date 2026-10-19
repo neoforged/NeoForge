@@ -271,10 +271,10 @@
 +                        net.neoforged.neoforge.common.CommonHooks.onEmptyLeftClick(this.player);
                  }
  
-+                /*spotless:off*/if (inputEvent.shouldSwingHand()) {/*spotless:on*/
++                if (inputEvent.shouldSwingHand()) {  /*immaculate:ignore*/
                  this.player.swing(InteractionHand.MAIN_HAND, attackAnimation, false);
                  this.player.connection.send(ServerboundPunchPacket.INSTANCE);
-+                /*spotless:off*/}/*spotless:on*/
++                }  /*immaculate:ignore*/
                  return endAttack;
              }
          }

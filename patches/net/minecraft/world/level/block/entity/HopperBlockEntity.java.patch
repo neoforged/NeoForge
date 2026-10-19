@@ -53,7 +53,7 @@
              return false;
          }
  
-+        /*spotless:off*/if (containerOrHandler.container() != null) {/*spotless:on*/
++        if (containerOrHandler.container() != null) {  /*immaculate:ignore*/
 +        Container container = containerOrHandler.container();
          Direction direction = self.facing.getOpposite();
          if (isFullContainer(container, direction)) {
@@ -62,7 +62,7 @@
          }
  
          return false;
-+        /*spotless:off*/}/*spotless:on*/
++        }  /*immaculate:ignore*/
 +        return net.neoforged.neoforge.transfer.item.VanillaInventoryCodeHooks.insertHook(self, containerOrHandler.itemHandler());
      }
  

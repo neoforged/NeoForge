@@ -137,7 +137,7 @@
 +        boolean canSetSpawn = rule.canSetSpawn(this.level());
 +
 +        // Neo: Encapsulate the vanilla logic for whether the player can sleep
-+        var vanillaResult = ((java.util.function.Supplier<Either<BedSleepingProblem, Unit>>) () -> {
++        var vanillaResult = ((java.util.function.Supplier<Either<BedSleepingProblem, Unit>>) () -> { /*immaculate:ignore*/
 +
 +        // Neo: For bed blocks without the FACING property, assume success
 +        // Mods will have to implement their own logic using the CanPlayerSleepEvent
@@ -152,16 +152,17 @@
              if (!this.bedInRange(pos, direction)) {
                  return Either.left(Player.BedSleepingProblem.TOO_FAR_AWAY);
              }
-@@ -1268,6 +_,20 @@
+@@ -1268,6 +_,21 @@
                  }
              }
  
 +        } else { // Neo: Moved from end of method
++            /*immaculate:patch:ignore this chunk for indentation reasons */
 +            return Either.left(Player.BedSleepingProblem.OTHER_PROBLEM);
 +        }
 +
 +        return Either.right(Unit.INSTANCE); // Neo: Nothing blocks sleep
-+        }).get();
++        }).get(); /*immaculate:ignore*/
 +
 +        // Neo: Fire the CanPlayerStartSleeping event, and return the error if it exists
 +        vanillaResult = net.neoforged.neoforge.event.EventHooks.canPlayerStartSleeping(this, pos, vanillaResult);
@@ -236,9 +237,9 @@
 +                                extraData
 +                        )
 +                );
-+            } else {
++            } /*immaculate:off*/ else { /*immaculate:on*/
              this.connection.send(new ClientboundOpenScreenPacket(menu.containerId, menu.getType(), provider.getDisplayName()));
-+            }
++            } /*immaculate:ignored*/
              this.initMenu(menu);
              this.containerMenu = menu;
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.PlayerContainerEvent.Open(this, this.containerMenu));

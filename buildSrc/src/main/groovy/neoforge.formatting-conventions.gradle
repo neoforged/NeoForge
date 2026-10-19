@@ -42,9 +42,6 @@ final generatePackageInfos = tasks.register('generatePackageInfos', GeneratePack
 immaculate {
     workflows.register('java') {
         toggle {
-            off = 'spotless:off'
-            on = 'spotless:on'
-
             trailingNewline()
             noTabs()
             google {

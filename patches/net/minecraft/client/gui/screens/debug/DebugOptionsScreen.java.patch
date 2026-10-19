@@ -30,7 +30,7 @@
              this.clearEntries();
 +            // Neo: Custom entry appending logic to better handle searching, categories and sorting
 +            net.neoforged.neoforge.client.ClientHooks.updateDebugScreenEntriesForSearch(value, category -> addEntry(new CategoryEntry(category.label())), id -> addEntry(new OptionEntry(id)));
-+            if(false){
++            if (false) { /*immaculate:ignore*/
              List<Map.Entry<Identifier, DebugScreenEntry>> all = new ArrayList<>(DebugScreenEntries.allEntries().entrySet());
              all.sort(COMPARATOR);
              DebugEntryCategory currentCategory = null;
@@ -38,7 +38,7 @@
  
                      this.addEntry(DebugOptionsScreen.this.new OptionEntry(entry.getKey()));
                  }
-+            }
++            } /*immaculate:ignore*/
              }
  
              this.notifyListUpdated();

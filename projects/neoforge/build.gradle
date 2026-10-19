@@ -594,18 +594,19 @@ immaculate {
             basePrefix = "a/"
             
             toggle {
-                off = 'spotless:off'
-                on = 'spotless:on'
-                
-                noTabs()
+                elideContents = true
 
-                custom 'equalsTakesNull', { String fileContents ->
-                    fileContents.replaceAll(/(?<=boolean equals\()\s*(?!@[A-Za-z.]*Nullable)(?= ?(?:final )?Object [^,]+\))/, "@org.jspecify.annotations.Nullable ")
-                }
+                ignoreLines {
+                    noTabs()
 
-                eclipse {
-                    version = project.jdt_core_version
-                    config = rootProject.file('codeformat/formatter-config-patches.xml')
+                    custom 'equalsTakesNull', { String fileContents ->
+                        fileContents.replaceAll(/(?<=boolean equals\()\s*(?!@[A-Za-z.]*Nullable)(?= ?(?:final )?Object [^,]+\))/, "@org.jspecify.annotations.Nullable ")
+                    }
+
+                    eclipse {
+                        version = project.jdt_core_version
+                        config = rootProject.file('codeformat/formatter-config-patches.xml')
+                    }
                 }
             }
         }

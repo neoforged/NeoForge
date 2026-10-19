@@ -63,7 +63,7 @@ license {
     }
 }
 
-// Put spotless here because it wants the files to live inside the project root
+// Put immaculate here. It doesn't have to be, but this makes sense as it formats buildSrc and src
 immaculate {
     workflows.named("java") {
         files.from fileTree("buildSrc/src", {

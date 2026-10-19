@@ -12,7 +12,7 @@
              int height = 1;
              int age = state.getValue(AGE);
  
-+            if(net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, above, state, true)) {
++            if(net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, above, state, true)) {  /*immaculate:ignore*/
              while (level.getBlockState(pos.below(height)).is(this)) {
                  if (++height == 3 && age == 15) {
                      return;
@@ -21,7 +21,7 @@
                  level.setBlock(pos, state.setValue(AGE, age + 1), 260);
              }
 +            net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(level, pos, state);
-+            }
++            }  /*immaculate:ignore*/
          }
      }
  

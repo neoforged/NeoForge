@@ -46,7 +46,7 @@
 +            // Neo: we patch out the returns in the screen handler code to fire the mouse button post event
 +            // therefore we add a boolean to check whether the screen handled the click and if not we let
 +            // vanilla's fallback handle it
-+            /*spotless:off*/if (!screenHandled) {/*spotless:on*/
++            if (!screenHandled) {  /*immaculate:ignore*/
              if (this.minecraft.gui.screen() == null && this.minecraft.gui.overlay() == null) {
                  if (rawButtonInfo.button() == 1) {
                      this.isLeftPressed = pressed;
@@ -54,7 +54,7 @@
                      KeyMapping.click(mouseKey);
                  }
              }
-+            /*spotless:off*/}/*spotless:on*/
++            }  /*immaculate:ignore*/
 +            net.neoforged.neoforge.client.ClientHooks.onMouseButtonPost(rawButtonInfo, action);
          }
      }

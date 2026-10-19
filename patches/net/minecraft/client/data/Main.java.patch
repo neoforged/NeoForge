@@ -27,11 +27,11 @@
 +            boolean validate = optionSet.has(validateSpec);
 +            boolean uncached = optionSet.has(uncachedSpec);
 +            DataGenerator generator = uncached ? new DataGenerator.Uncached(isFlat ? output : output.resolve("minecraft")) : new DataGenerator.Cached(isFlat ? output : output.resolve("minecraft"), SharedConstants.getCurrentVersion(), true);
-+            /*spotless:off*/if (mods.contains("minecraft") || mods.isEmpty()) {/*spotless:on*/
++            if (mods.contains("minecraft") || mods.isEmpty()) {  /*immaculate:ignore*/
              addClientProviders(generator, client);
 -            generator.run();
              Util.shutdownExecutors();
-+            /*spotless:off*/}/*spotless:on*/
++            }  /*immaculate:ignore*/
 +            java.io.File assetsDirValue = optionSet.valueOf(assetsDir);
 +            String assetIndexValue = optionSet.valueOf(assetIndex);
 +            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, output, input, existingPacks, false, false, validate, isFlat, uncached, () -> {

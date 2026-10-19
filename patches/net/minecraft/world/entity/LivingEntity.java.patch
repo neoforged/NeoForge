@@ -48,7 +48,7 @@
                  double scale = Math.min(0.2F + power / 15.0, 2.5);
                  int particles = (int)(150.0 * scale);
 -                level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, onState), x, y, z, particles, 0.0, 0.0, 0.0, 0.15F);
-+                if (!onState.addLandingEffects(level, pos, onState, this, particles))
++                if (!onState.addLandingEffects(level, pos, onState, this, particles))  /*immaculate:ignore*/
 +                level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, onState, pos), x, y, z, particles, 0.0, 0.0, 0.0, 0.15F);
              }
          }
@@ -67,7 +67,7 @@
  
 +            int airSupply = this.getAirSupply();
 +            net.neoforged.neoforge.common.CommonHooks.onLivingBreathe(this, level, airSupply - decreaseAirSupply(airSupply), increaseAirSupply(airSupply) - airSupply);
-+            if (false) // Neo: Handled in CommonHooks#onLivingBreathe(LivingEntity, int, int)
++            if (false) // Neo: Handled in CommonHooks#onLivingBreathe(LivingEntity, int, int)  /*immaculate:ignore*/
              if (this.isEyeInFluid(FluidTags.WATER)
                  && !level.getBlockState(BlockPos.containing(this.getX(), this.getEyeY(), this.getZ())).is(Blocks.BUBBLE_COLUMN)) {
                  boolean canDrownInWater = !this.canBreatheUnderwater()
@@ -88,10 +88,10 @@
                      Holder<MobEffect> mobEffect = iterator.next();
                      MobEffectInstance effect = this.activeEffects.get(mobEffect);
                      if (!effect.tickServer(serverLevel, this, () -> this.onEffectUpdated(effect, true, null))) {
-+                        /*spotless:off*/if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Expired(this, effect)).isCanceled()) {/*spotless:on*/
++                        if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Expired(this, effect)).isCanceled()) {  /*immaculate:ignore*/
                          iterator.remove();
                          this.onEffectsRemoved(List.of(effect));
-+                        /*spotless:off*/}/*spotless:on*/
++                        }  /*immaculate:ignore*/
                      } else if (effect.getDuration() % 600 == 0) {
                          this.onEffectUpdated(effect, false, null);
                      }
@@ -637,12 +637,12 @@
              double fluidJumpThreshold = this.getFluidJumpThreshold();
              if (!inWaterAndHasFluidHeight || this.onGround() && !(fluidHeight > fluidJumpThreshold)) {
                  if (!this.isInLava() || this.onGround() && this.isInShallowFluid(FluidTags.LAVA)) {
-+                    /*spotless:off*/if (fluidType.isAir() || this.onGround() && !(fluidHeight > fluidJumpThreshold)) {/*spotless:on*/
++                    if (fluidType.isAir() || this.onGround() && !(fluidHeight > fluidJumpThreshold)) {  /*immaculate:ignore*/
                      if ((this.onGround() || inWaterAndHasFluidHeight && fluidHeight <= fluidJumpThreshold) && this.noJumpDelay == 0) {
                          this.jumpFromGround();
                          this.noJumpDelay = 10;
                      }
-+                    /*spotless:off*/} else this.jumpInFluid(fluidType);/*spotless:on*/
++                    } else this.jumpInFluid(fluidType);  /*immaculate:ignore*/
                  } else {
 -                    this.jumpInLiquid(FluidTags.LAVA);
 +                    this.jumpInFluid(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
@@ -658,11 +658,11 @@
                  if (freeFallInterval % 2 == 0) {
                      List<EquipmentSlot> slotsWithGliders = EquipmentSlot.VALUES.stream().filter(slot -> canGlideUsing(this.getItemBySlot(slot), slot)).toList();
 +                    //  Neo: If the list is empty, we probably have something else adding the gliding flight attribute (directly to the entity or otherwise)
-+                    /*spotless:off*/if (!slotsWithGliders.isEmpty()) {/*spotless:on*/
++                    if (!slotsWithGliders.isEmpty()) {  /*immaculate:ignore*/
                      EquipmentSlot slotToDamage = Util.getRandom(slotsWithGliders, this.random);
 -                    this.getItemBySlot(slotToDamage).hurtAndBreak(1, this, slotToDamage);
 +                    this.getItemBySlot(slotToDamage).onGlideDamage(this, slotToDamage);
-+                    /*spotless:off*/}/*spotless:on*/
++                    }  /*immaculate:ignore*/
                  }
  
                  this.gameEvent(GameEvent.ELYTRA_GLIDE);
@@ -702,7 +702,7 @@
      protected void updateUsingItem(ItemStack useItem) {
 +        if (!useItem.isEmpty())
 +            this.useItemRemaining = net.neoforged.neoforge.event.EventHooks.onItemUseTick(this, useItem, this.getUseItemRemainingTicks());
-+        if (this.getUseItemRemainingTicks() > 0)
++        if (this.getUseItemRemainingTicks() > 0)  /*immaculate:ignore*/
          useItem.onUseTick(this.level(), this, this.getUseItemRemainingTicks());
 -        if (--this.useItemRemaining == 0 && !this.level().isClientSide() && !useItem.useOnRelease()) {
 +        if (--this.useItemRemaining <= 0 && !this.level().isClientSide() && !useItem.useOnRelease()) {
@@ -735,11 +735,11 @@
          ItemStack itemInUsedHand = this.getItemInHand(this.getUsedItemHand());
          if (!this.useItem.isEmpty() && ItemStack.isSameItem(itemInUsedHand, this.useItem)) {
              this.useItem = itemInUsedHand;
-+            /*spotless:off*/if (!net.neoforged.neoforge.event.EventHooks.onUseItemStop(this, useItem, this.getUseItemRemainingTicks())) {/*spotless:on*/
++            if (!net.neoforged.neoforge.event.EventHooks.onUseItemStop(this, useItem, this.getUseItemRemainingTicks())) {  /*immaculate:ignore*/
 +            ItemStack copy = this instanceof Player ? useItem.copy() : null;
              this.useItem.releaseUsing(this.level(), this, this.getUseItemRemainingTicks());
 +            if (copy != null && useItem.isEmpty()) net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem((Player)this, copy, getUsedItemHand());
-+            /*spotless:off*/}/*spotless:on*/
++            }  /*immaculate:ignore*/
              if (this.useItem.useOnRelease()) {
                  this.updatingUsingItem();
              }

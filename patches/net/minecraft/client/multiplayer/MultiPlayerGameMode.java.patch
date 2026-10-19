@@ -27,7 +27,7 @@
              return false;
          }
  
-+        BlockState removedBlockState =
++        BlockState removedBlockState =  /*immaculate:ignore*/
          oldBlock.playerWillDestroy(level, pos, oldState, this.minecraft.player);
          FluidState fluidState = level.getFluidState(pos);
 -        boolean changed = level.setBlock(pos, fluidState.createLegacyBlock(), 11);

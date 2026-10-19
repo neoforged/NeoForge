@@ -27,12 +27,12 @@
 +            boolean uncached = optionSet.has(uncachedSpec);
 +            DataGenerator generator = uncached ? new DataGenerator.Uncached(isFlat ? output : output.resolve("minecraft")) : new DataGenerator.Cached(isFlat ? output : output.resolve("minecraft"), SharedConstants.getCurrentVersion(), true);
 +            java.util.Collection<Path> existingPacks = optionSet.valuesOf(existing).stream().map(Paths::get).toList();
-+            /*spotless:off*/if (mods.contains("minecraft") || mods.isEmpty()) {/*spotless:on*/
++            if (mods.contains("minecraft") || mods.isEmpty()) {  /*immaculate:ignore*/
              addServerDefinitionProviders(generator, server, reports);
              addServerConverters(generator, input, server, dev);
 -            generator.run();
              Util.shutdownExecutors();
-+            /*spotless:off*/}/*spotless:on*/
++            }  /*immaculate:ignore*/
 +            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, output, input, existingPacks, dev, reports, validate, isFlat, uncached, () -> {},
 +                    net.neoforged.neoforge.data.event.GatherDataEvent.Server::new, generator, packConsumer -> {});
          } else {
