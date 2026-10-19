@@ -28,7 +28,7 @@
 +    }
 +
 +    public void setTooltipForNextFrame(Font font, List<Component> texts, Optional<TooltipComponent> optionalImage, ItemStack stack, int mouseX, int mouseY) {
-+        setTooltipForNextFrame(font, texts, optionalImage, stack, mouseX, mouseY, null);
++        this.setTooltipForNextFrame(font, texts, optionalImage, stack, mouseX, mouseY, null);
 +    }
 +
 +    public void setTooltipForNextFrame(Font font, List<Component> texts, Optional<TooltipComponent> optionalImage, ItemStack stack, int mouseX, int mouseY, @Nullable Identifier style) {
@@ -86,7 +86,7 @@
      }
  
 +    public void setComponentTooltipForNextFrame(Font font, List<? extends FormattedText> tooltips, int mouseX, int mouseY, ItemStack stack) {
-+        setComponentTooltipForNextFrame(font, tooltips, mouseX, mouseY, stack, null);
++        this.setComponentTooltipForNextFrame(font, tooltips, mouseX, mouseY, stack, null);
 +    }
 +
 +    public void setComponentTooltipForNextFrame(Font font, List<? extends FormattedText> tooltips, int mouseX, int mouseY, ItemStack stack, @Nullable Identifier backgroundTexture) {
@@ -97,7 +97,7 @@
 +    }
 +
 +    public void setComponentTooltipFromElementsForNextFrame(Font font, List<com.mojang.datafixers.util.Either<FormattedText, TooltipComponent>> elements, int mouseX, int mouseY, ItemStack stack) {
-+        setComponentTooltipFromElementsForNextFrame(font, elements, mouseX, mouseY, stack, null);
++        this.setComponentTooltipFromElementsForNextFrame(font, elements, mouseX, mouseY, stack, null);
 +    }
 +
 +    public void setComponentTooltipFromElementsForNextFrame(Font font, List<com.mojang.datafixers.util.Either<FormattedText, TooltipComponent>> elements, int mouseX, int mouseY, ItemStack stack, @Nullable Identifier backgroundTexture) {
@@ -120,7 +120,7 @@
              }
          }
      }
-@@ -1139,6 +_,26 @@
+@@ -1139,6 +_,28 @@
          @Nullable Identifier style,
          boolean extraSpaceAfterFirstLine
      ) {
@@ -128,17 +128,19 @@
 +    }
 +
 +    public void tooltip(
-+            Font font,
-+            List<ClientTooltipComponent> lines,
-+            int xo,
-+            int yo,
-+            ClientTooltipPositioner positioner,
-+            @Nullable Identifier style,
-+            boolean extraSpaceAfterFirstLine,
-+            ItemStack tooltipStack
++        Font font,
++        List<ClientTooltipComponent> lines,
++        int xo,
++        int yo,
++        ClientTooltipPositioner positioner,
++        @Nullable Identifier style,
++        boolean extraSpaceAfterFirstLine,
++        ItemStack tooltipStack
 +    ) {
-+        var preEvent = net.neoforged.neoforge.client.ClientHooks.onRenderTooltipPre(tooltipStack, this, xo, yo, guiWidth(), guiHeight(), lines, font, positioner);
-+        if (preEvent.isCanceled()) return;
++        var preEvent = net.neoforged.neoforge.client.ClientHooks.onRenderTooltipPre(tooltipStack, this, xo, yo, this.guiWidth(), this.guiHeight(), lines, font, positioner);
++        if (preEvent.isCanceled()) {
++            return;
++        }
 +
 +        font = preEvent.getFont();
 +        xo = preEvent.getX();
@@ -147,16 +149,14 @@
          int textWidth = 0;
          int tempHeight = extraSpaceAfterFirstLine && lines.size() != 1 ? 0 : -2;
  
-@@ -1157,7 +_,8 @@
+@@ -1157,6 +_,7 @@
          int x = positionedTooltip.x();
          int y = positionedTooltip.y();
          this.pose.pushMatrix();
--        TooltipRenderUtil.extractTooltipBackground(this, x, y, w, h, style);
-+        var textureEvent = net.neoforged.neoforge.client.ClientHooks.onRenderTooltipTexture(tooltipStack, this, x, y, preEvent.getFont(), lines, style);
-+        TooltipRenderUtil.extractTooltipBackground(this, x, y, textWidth, tempHeight, textureEvent.getTexture());
++        style = net.neoforged.neoforge.client.ClientHooks.onRenderTooltipTexture(tooltipStack, this, x, y, font, lines, style).getTexture();
+         TooltipRenderUtil.extractTooltipBackground(this, x, y, w, h, style);
          int localY = y;
  
-         for (int i = 0; i < lines.size(); i++) {
 @@ -1219,6 +_,25 @@
                  default:
              }

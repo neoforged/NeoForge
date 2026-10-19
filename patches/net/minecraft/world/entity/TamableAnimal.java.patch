@@ -9,7 +9,7 @@
      }
  
      public boolean isInSittingPose() {
-@@ -221,13 +_,16 @@
+@@ -221,13 +_,18 @@
  
      @Override
      public void die(DamageSource source) {
@@ -17,7 +17,9 @@
 +        net.minecraft.network.chat.Component deathMessage = this.getCombatTracker().getDeathMessage();
 +        super.die(source);
 +
-+        if (this.dead)
++        if (!this.dead) {
++            return;
++        }
          if (this.level() instanceof ServerLevel serverLevel
              && serverLevel.getGameRules().get(GameRules.SHOW_DEATH_MESSAGES)
              && this.getOwner() instanceof ServerPlayer serverPlayer) {

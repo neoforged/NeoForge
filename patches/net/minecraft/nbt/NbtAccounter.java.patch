@@ -15,7 +15,7 @@
 +    /// This will accurately count the correct byte length to encode this string, plus the 2 bytes for its length prefix.
 +    @org.jetbrains.annotations.Contract("!null->!null")
 +    public @org.jspecify.annotations.Nullable String readUTF(@org.jspecify.annotations.Nullable String data) {
-+        accountBytes(2); // Header length
++        this.accountBytes(2); // Header length
 +        if (data == null) {
 +            return null;
 +        }
@@ -32,7 +32,7 @@
 +                utflen += 2;
 +            }
 +        }
-+        accountBytes(utflen);
++        this.accountBytes(utflen);
 +
 +        return data;
 +    }

@@ -23,11 +23,13 @@
      @Override
      public void tick() {
          super.tick();
-@@ -152,6 +_,7 @@
+@@ -152,6 +_,9 @@
                      );
  
                  for (Entity entity : entities) {
-+                    if (!net.neoforged.neoforge.event.EventHooks.onEntityStruckByLightning(entity, this))
++                    if (net.neoforged.neoforge.event.EventHooks.onEntityStruckByLightning(entity, this)) {
++                        continue;
++                    }
                      entity.thunderHit((ServerLevel)this.level(), this);
                  }
  

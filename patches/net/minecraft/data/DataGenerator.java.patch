@@ -18,7 +18,7 @@
 +    }
 +
 +    public Map<String, DataProvider> getProvidersView() {
-+         return this.providersView;
++        return this.providersView;
 +    }
 +
 +    public PackOutput getPackOutput() {
@@ -38,7 +38,7 @@
 +    }
 +
 +    public <T extends DataProvider> T addProvider(boolean run, DataProvider.Factory<T> factory) {
-+        return addProvider(run, factory.create(this.vanillaPackOutput));
++        return this.addProvider(run, factory.create(this.vanillaPackOutput));
 +    }
 +
 +    public <T extends DataProvider> T addProvider(boolean run, T provider) {

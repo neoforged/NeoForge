@@ -31,7 +31,7 @@
      }
  
      public static FeatureFlagSet of() {
-@@ -30,16 +_,19 @@
+@@ -30,16 +_,21 @@
      }
  
      public static FeatureFlagSet of(FeatureFlag flag) {
@@ -50,11 +50,13 @@
  
      private static long computeMask(FeatureFlagUniverse universe, long mask, Iterable<FeatureFlag> flags) {
          for (FeatureFlag f : flags) {
-+            if (f.extMaskIndex >= 0) continue;
++            if (f.extMaskIndex >= 0) {
++                continue;
++            }
              if (universe != f.universe) {
                  throw new IllegalStateException("Mismatched feature universe, expected '" + universe + "', but got '" + f.universe + "'");
              }
-@@ -50,8 +_,36 @@
+@@ -50,8 +_,38 @@
          return mask;
      }
  
@@ -65,7 +67,9 @@
 +            extMask[firstExtIndex] |= firstMask;
 +        }
 +        for (FeatureFlag flag : otherFlags) {
-+            if (flag.extMaskIndex < 0) continue;
++            if (flag.extMaskIndex < 0) {
++                continue;
++            }
 +            if (universe != flag.universe) {
 +                throw new IllegalStateException("Mismatched feature universe, expected '" + universe + "', but got '" + flag.universe + "'");
 +            }
@@ -125,7 +129,7 @@
 +                return true;
 +            }
 +        }
-+       return (this.mask & set.mask) != 0L;
++        return (this.mask & set.mask) != 0L;
      }
  
      public FeatureFlagSet join(FeatureFlagSet other) {

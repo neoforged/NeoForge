@@ -82,7 +82,7 @@
 +        if (listener instanceof NarratableEntry ne) {
 +            this.narratables.add(ne);
 +        }
-+        children.add(listener);
++        this.children.add(listener);
      }
  
      public record NarratableSearchResult(NarratableEntry entry, int index, NarratableEntry.NarrationPriority priority) {

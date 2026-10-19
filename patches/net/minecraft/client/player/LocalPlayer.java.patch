@@ -54,7 +54,7 @@
 +    protected boolean canGlide() {
 +        // Neo: Override canGlide for the client to check if it is connected to a NeoForge server, and if not then fall back to checking the worn items.
 +        // This way when Player#tryToStartFallFlying is called, on the client, it is able to check for the vanilla components on equipped items
-+        return !getAbilities().flying && canGlide(connection.getConnectionType().isNeoForge());
++        return !this.getAbilities().flying && this.canGlide(this.connection.getConnectionType().isNeoForge());
      }
  
      @Override

@@ -70,6 +70,6 @@
 +    }
 +
 +    public boolean isActivatorRail() {
-+        return isActivator;
++        return this.isActivator;
      }
  }

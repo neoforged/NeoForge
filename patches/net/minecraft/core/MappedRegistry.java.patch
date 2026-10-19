@@ -13,7 +13,7 @@
  
      @Override
      public Holder.Reference<T> register(ResourceKey<T> key, T value, RegistrationInfo registrationInfo) {
-+        return register(this.byId.size(), key, value, registrationInfo);
++        return this.register(this.byId.size(), key, value, registrationInfo);
 +    }
 +
 +    public Holder.Reference<T> register(int id, ResourceKey<T> key, T value, RegistrationInfo registrationInfo) {
@@ -48,12 +48,15 @@
          return holder;
      }
  
-@@ -138,7 +_,7 @@
+@@ -138,7 +_,10 @@
  
      @Override
      public @Nullable T getValue(@Nullable ResourceKey<T> key) {
 -        return getValueFromNullable(this.byKey.get(key));
-+        return getValueFromNullable(this.byKey.get(resolve(key)));
++        if (key == null) {
++            return null;
++        }
++        return getValueFromNullable(this.byKey.get(this.resolve(key)));
      }
  
      @Override
@@ -62,13 +65,13 @@
      @Override
      public Optional<Holder.Reference<T>> get(Identifier id) {
 -        return Optional.ofNullable(this.byLocation.get(id));
-+        return Optional.ofNullable(this.byLocation.get(resolve(id)));
++        return Optional.ofNullable(this.byLocation.get(this.resolve(id)));
      }
  
      @Override
      public Optional<Holder.Reference<T>> get(ResourceKey<T> id) {
 -        return Optional.ofNullable(this.byKey.get(id));
-+        return Optional.ofNullable(this.byKey.get(resolve(id)));
++        return Optional.ofNullable(this.byKey.get(this.resolve(id)));
      }
  
      @Override
@@ -77,7 +80,7 @@
  
      private Holder.Reference<T> getOrCreateHolderOrThrow(ResourceKey<T> key) {
 -        return this.byKey.computeIfAbsent(key, id -> {
-+        return this.byKey.computeIfAbsent(resolve(key), id -> {
++        return this.byKey.computeIfAbsent(this.resolve(key), id -> {
              if (this.unregisteredIntrusiveHolders != null) {
                  throw new IllegalStateException("This registry can't create new holders without value");
              }
@@ -86,7 +89,7 @@
      @Override
      public @Nullable T getValue(@Nullable Identifier key) {
 -        Holder.Reference<T> result = this.byLocation.get(key);
-+        Holder.Reference<T> result = this.byLocation.get(key != null ? resolve(key) : null);
++        Holder.Reference<T> result = this.byLocation.get(key != null ? this.resolve(key) : null);
          return getValueFromNullable(result);
      }
  
@@ -146,7 +149,7 @@
              @Override
              public void apply() {
                  pendingTags.forEach((id, tag) -> {
-@@ -458,6 +_,56 @@
+@@ -458,6 +_,59 @@
                  MappedRegistry.this.refreshTagsInHolders();
              }
          };
@@ -165,9 +168,9 @@
 +            this.byValue.clear();
 +            this.allTags = MappedRegistry.TagSet.unbound();
 +            this.frozenTags.entrySet().removeIf(entry -> !entry.getValue().isBound());
-+            if (unregisteredIntrusiveHolders != null) {
-+                unregisteredIntrusiveHolders.clear();
-+                unregisteredIntrusiveHolders = null;
++            if (this.unregisteredIntrusiveHolders != null) {
++                this.unregisteredIntrusiveHolders.clear();
++                this.unregisteredIntrusiveHolders = null;
 +            }
 +        }
 +    }
@@ -178,28 +181,31 @@
 +        if (id > this.getMaxId()) {
 +            throw new IllegalStateException(String.format(java.util.Locale.ENGLISH, "Invalid id %d - maximum id range of %d exceeded.", id, this.getMaxId()));
 +        }
-+        if (0 <= id && id < this.byId.size() && this.byId.get(id) != null) { // Don't use byId() method, it will return the default value if the entry is absent
++        // Don't use byId() method, it will return the default value if the entry is absent
++        if (0 <= id && id < this.byId.size() && this.byId.get(id) != null) {
 +            throw new IllegalStateException("Duplicate id " + id + " for " + key + " and " + this.getKey(this.byId.get(id).value()));
 +        }
-+        var holder = byKey.get(key);
-+        while (this.byId.size() < (id + 1)) this.byId.add(null);
++        var holder = this.byKey.get(key);
++        while (this.byId.size() < (id + 1)) {
++            this.byId.add(null);
++        }
 +        this.byId.set(id, holder);
 +        this.toId.put(holder.value(), id);
 +    }
 +
 +    @Override
 +    public int getId(Identifier name) {
-+        return getId(getValue(name));
++        return this.getId(this.getValue(name));
 +    }
 +
 +    @Override
 +    public int getId(ResourceKey<T> key) {
-+        return getId(getValue(key));
++        return this.getId(this.getValue(key));
 +    }
 +
 +    @Override
 +    public boolean containsValue(T value) {
-+        return byValue.containsKey(value);
++        return this.byValue.containsKey(value);
      }
  
      private interface TagSet<T> {

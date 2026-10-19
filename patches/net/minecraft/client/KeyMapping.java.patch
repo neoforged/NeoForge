@@ -88,17 +88,17 @@
 +
 +    @Override
 +    public net.neoforged.neoforge.client.settings.IKeyConflictContext getKeyConflictContext() {
-+        return keyConflictContext;
++        return this.keyConflictContext;
 +    }
 +
 +    @Override
 +    public net.neoforged.neoforge.client.settings.KeyModifier getDefaultKeyModifier() {
-+        return keyModifierDefault;
++        return this.keyModifierDefault;
 +    }
 +
 +    @Override
 +    public net.neoforged.neoforge.client.settings.KeyModifier getKeyModifier() {
-+        return keyModifier;
++        return this.keyModifier;
 +    }
 +
 +    @Override
@@ -122,17 +122,17 @@
      }
  
      public boolean same(KeyMapping that) {
-+        if (getKeyConflictContext().conflicts(that.getKeyConflictContext()) || that.getKeyConflictContext().conflicts(getKeyConflictContext())) {
-+            net.neoforged.neoforge.client.settings.KeyModifier keyModifier = getKeyModifier();
++        if (this.getKeyConflictContext().conflicts(that.getKeyConflictContext()) || that.getKeyConflictContext().conflicts(this.getKeyConflictContext())) {
++            net.neoforged.neoforge.client.settings.KeyModifier keyModifier = this.getKeyModifier();
 +            net.neoforged.neoforge.client.settings.KeyModifier otherKeyModifier = that.getKeyModifier();
-+            if (keyModifier.matches(that.getKey()) || otherKeyModifier.matches(getKey())) {
++            if (keyModifier.matches(that.getKey()) || otherKeyModifier.matches(this.getKey())) {
 +                return true;
-+            } else if (getKey().equals(that.getKey())) {
++            } else if (this.getKey().equals(that.getKey())) {
 +                // IN_GAME key contexts have a conflict when at least one modifier is NONE.
 +                // For example: If you hold shift to crouch, you can still press E to open your inventory. This means that a Shift+E hotkey is in conflict with E.
 +                // GUI and other key contexts do not have this limitation.
 +                return keyModifier == otherKeyModifier ||
-+                    (getKeyConflictContext().conflicts(net.neoforged.neoforge.client.settings.KeyConflictContext.IN_GAME) &&
++                    (this.getKeyConflictContext().conflicts(net.neoforged.neoforge.client.settings.KeyConflictContext.IN_GAME) &&
 +                    (keyModifier == net.neoforged.neoforge.client.settings.KeyModifier.NONE || otherKeyModifier == net.neoforged.neoforge.client.settings.KeyModifier.NONE));
 +            }
 +        }
@@ -143,14 +143,14 @@
      }
  
      public Component getTranslatedKeyMessage() {
-+        return getKeyModifier().getCombinedName(key, () -> {
++        return this.getKeyModifier().getCombinedName(key, () -> {
          return this.key.getDisplayName();
 +        });
      }
  
      public boolean isDefault() {
 -        return this.key.equals(this.defaultKey);
-+        return this.key.equals(this.defaultKey) && getKeyModifier() == getDefaultKeyModifier();
++        return this.key.equals(this.defaultKey) && this.getKeyModifier() == this.getDefaultKeyModifier();
      }
  
      public String saveString() {

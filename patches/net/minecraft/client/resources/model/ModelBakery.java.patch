@@ -12,7 +12,7 @@
      public ModelBakery(
          EntityModelSet entityModelSet,
          SpriteGetter sprites,
-@@ -84,6 +_,20 @@
+@@ -84,6 +_,22 @@
          Map<Identifier, ResolvedModel> resolvedModels,
          ResolvedModel missingModel
      ) {
@@ -30,18 +30,11 @@
 +        net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels standaloneModels,
 +        net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations
 +    ) {
++        this.standaloneModels = standaloneModels;
++        this.pendingAnimations = pendingAnimations;
          this.entityModelSet = entityModelSet;
          this.sprites = sprites;
          this.playerSkinRenderCache = playerSkinRenderCache;
-@@ -91,6 +_,8 @@
-         this.clientInfos = clientInfos;
-         this.resolvedModels = resolvedModels;
-         this.missingModel = missingModel;
-+        this.standaloneModels = standaloneModels;
-+        this.pendingAnimations = pendingAnimations;
-     }
- 
-     public CompletableFuture<ModelBakery.BakingResult> bakeModels(MaterialBaker materials, Executor taskExecutor) {
 @@ -114,7 +_,7 @@
                      return clientInfo.model()
                          .bake(
@@ -64,7 +57,7 @@
                  itemStackModelProperties.put(id, properties);
              }
          });
-+        bakedBlockStateModelFuture = bakedBlockStateModelFuture.thenCombine(standaloneModelsFuture, (stateModels, standaloneModels) -> stateModels);
++        bakedBlockStateModelFuture = bakedBlockStateModelFuture.thenCombine(standaloneModelsFuture, (stateModels, _) -> stateModels);
          return bakedBlockStateModelFuture.thenCombine(
              bakedItemStackModelFuture,
              (bakedBlockStateModels, bakedItemStateModels) -> new ModelBakery.BakingResult(
@@ -86,10 +79,10 @@
 +        /// @deprecated Neo: use [#BakingResult(ModelBakery.MissingModels, Map, Map, Map, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels)] instead
 +        @Deprecated
 +        public BakingResult(
-+                ModelBakery.MissingModels missingModels,
-+                Map<BlockState, BlockStateModel> blockStateModels,
-+                Map<Identifier, ItemModel> itemStackModels,
-+                Map<Identifier, ClientItem.Properties> itemProperties
++            ModelBakery.MissingModels missingModels,
++            Map<BlockState, BlockStateModel> blockStateModels,
++            Map<Identifier, ItemModel> itemStackModels,
++            Map<Identifier, ClientItem.Properties> itemProperties
 +        ) {
 +            this(missingModels, blockStateModels, itemStackModels, itemProperties, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels.EMPTY);
 +        }

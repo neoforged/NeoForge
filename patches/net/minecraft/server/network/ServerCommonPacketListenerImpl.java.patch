@@ -82,7 +82,7 @@
 +    /// Neo: Creates a new cookie with connection type info for this connection.
 +    ///
 +    /// @param clientInformation The client information.
-+    /// @param connectionType Whether the connection is modded.
++    /// @param connectionType    Whether the connection is modded.
 +    /// @return the cookie.
 +    protected CommonListenerCookie createCookie(ClientInformation clientInformation, net.neoforged.neoforge.network.connection.ConnectionType connectionType) {
 +        return new CommonListenerCookie(this.playerProfile(), this.latency, clientInformation, this.transferred, connectionType);
@@ -90,7 +90,7 @@
 +
 +    @Override
 +    public Connection getConnection() {
-+        return connection;
++        return this.connection;
 +    }
 +
 +    @Override
@@ -100,6 +100,6 @@
 +
 +    @Override
 +    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {
-+        return connectionType;
++        return this.connectionType;
      }
  }

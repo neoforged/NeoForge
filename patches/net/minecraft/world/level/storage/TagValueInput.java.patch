@@ -21,7 +21,7 @@
 +
 +    @Override
 +    public java.util.Set<String> keySet() {
-+        return java.util.Collections.unmodifiableSet(input.keySet());
++        return java.util.Collections.unmodifiableSet(this.input.keySet());
      }
  
      private ValueInput wrapChild(String name, CompoundTag compoundTag) {

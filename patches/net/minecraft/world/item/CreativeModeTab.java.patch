@@ -84,11 +84,11 @@
 +    }
 +
 +    public int getSearchBarWidth() {
-+        return searchBarWidth;
++        return this.searchBarWidth;
 +    }
 +
 +    public int getLabelColor() {
-+        return labelColor;
++        return this.labelColor;
 +    }
 +
 +    public net.minecraft.resources.Identifier getScrollerSprite() {
@@ -128,7 +128,7 @@
              return this;
          }
  
-@@ -175,12 +_,86 @@
+@@ -175,12 +_,87 @@
              return this;
          }
  
@@ -138,8 +138,9 @@
 +        /// to make sure that your image contains the input box and the scroll bar.
 +        public CreativeModeTab.Builder withSearchBar() {
 +            this.hasSearchBar = true;
-+            if (this.backgroundTexture == CreativeModeTab.DEFAULT_BACKGROUND)
++            if (this.backgroundTexture == CreativeModeTab.DEFAULT_BACKGROUND) {
 +                return this.backgroundTexture(CREATIVE_ITEM_SEARCH_BACKGROUND);
++            }
 +            return this;
 +        }
 +
@@ -147,7 +148,7 @@
 +        /// @param searchBarWidth the width of the search bar
 +        public CreativeModeTab.Builder withSearchBar(int searchBarWidth) {
 +            this.searchBarWidth = searchBarWidth;
-+            return withSearchBar();
++            return this.withSearchBar();
 +        }
 +
 +        /// Sets the location of the scroll bar background.

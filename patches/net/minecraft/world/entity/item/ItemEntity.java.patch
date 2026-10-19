@@ -29,7 +29,7 @@
  
      @Override
      public void tick() {
-+        if (getItem().onEntityItemUpdate(this)) {
++        if (this.getItem().onEntityItemUpdate(this)) {
 +            return;
 +        }
          if (this.getItem().isEmpty()) {
@@ -63,7 +63,7 @@
 -            if (!this.level().isClientSide() && this.age >= 6000) {
 +            ItemStack item = this.getItem();
 +            if (!this.level().isClientSide() && this.age >= lifespan) {
-+            	  // Clamping to MAX_VALUE -1 as age is a Short and going above that would produce an infinite lifespan implicitly (accidentally)
++                // Clamping to MAX_VALUE -1 as age is a Short and going above that would produce an infinite lifespan implicitly (accidentally)
 +                this.lifespan = Mth.clamp(lifespan + net.neoforged.neoforge.event.EventHooks.onItemExpire(this), 0, Short.MAX_VALUE - 1);
 +                if (this.age >= lifespan) {
 +                    this.discard();

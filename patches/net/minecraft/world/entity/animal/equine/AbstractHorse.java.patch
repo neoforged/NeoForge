@@ -5,10 +5,10 @@
          if (!blockState.liquid()) {
              BlockState aboveState = this.level().getBlockState(pos.above());
 -            SoundType soundType = blockState.getSoundType();
-+            SoundType soundType = blockState.getSoundType(level(), pos, this);
++            SoundType soundType = blockState.getSoundType(this.level(), pos, this);
              if (aboveState.is(Blocks.SNOW)) {
 -                soundType = aboveState.getSoundType();
-+                soundType = aboveState.getSoundType(level(), pos, this);
++                soundType = aboveState.getSoundType(this.level(), pos, this);
              }
  
              if (this.isVehicle() && this.canGallop) {

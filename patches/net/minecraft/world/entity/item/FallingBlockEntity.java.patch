@@ -22,8 +22,8 @@
  
              this.setDeltaMovement(this.getDeltaMovement().scale(this.getAirDrag()));
              this.setRequiresPrecisePosition(this.horizontalCollision || this.verticalCollision);
-+            if (isAlive() && block instanceof net.neoforged.neoforge.common.extensions.IFallableExtension feblock) {
-+                feblock.fallingTick(level(), blockPosition(), this);
++            if (this.isAlive() && block instanceof net.neoforged.neoforge.common.extensions.IFallableExtension feblock) {
++                feblock.fallingTick(this.level(), this.blockPosition(), this);
 +            }
          }
      }

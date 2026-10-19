@@ -14,7 +14,7 @@
          Set<ResourceKey<LootTable>> seen = new HashSet<>();
  
 -        for (Block block : BuiltInRegistries.BLOCK) {
-+        for (Block block : getKnownBlocks()) {
++        for (Block block : this.getKnownBlocks()) {
              if (block.isEnabled(this.enabledFeatures)) {
                  block.getLootTable()
                      .ifPresent(

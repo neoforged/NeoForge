@@ -5,8 +5,8 @@
          BlockState blockState = level.getBlockState(pos);
          boolean used = false;
 -        if (!CampfireBlock.canLight(blockState) && !CandleBlock.canLight(blockState) && !CandleCakeBlock.canLight(blockState)) {
-+        BlockState blockstate2 = blockState.getToolModifiedState(context, net.neoforged.neoforge.common.ItemAbilities.FIRESTARTER_LIGHT, false);
-+        if (blockstate2 == null) {
++        BlockState modifiedState = blockState.getToolModifiedState(context, net.neoforged.neoforge.common.ItemAbilities.FIRESTARTER_LIGHT, false);
++        if (modifiedState == null) {
              pos = pos.relative(context.getClickedFace());
              if (BaseFireBlock.canBePlacedAt(level, pos, context.getHorizontalDirection())) {
                  this.playSound(level, pos);
@@ -15,7 +15,7 @@
          } else {
              this.playSound(level, pos);
 -            level.setBlockAndUpdate(pos, blockState.setValue(BlockStateProperties.LIT, true));
-+            level.setBlockAndUpdate(pos, blockstate2);
++            level.setBlockAndUpdate(pos, modifiedState);
              level.gameEvent(context.getPlayer(), GameEvent.BLOCK_CHANGE, pos);
              used = true;
          }

@@ -50,10 +50,10 @@
 -                this.extractTitle(graphics, deltaTracker);
 -                this.extractChat(graphics, deltaTracker);
 -                this.extractTabList(graphics, deltaTracker);
-+            leftHeight = 39;
-+            rightHeight = 39;
++            this.leftHeight = 39;
++            this.rightHeight = 39;
 +            updateContextualBarRenderer();
-+            layerManager.render(graphics, deltaTracker);
++            this.layerManager.render(graphics, deltaTracker);
 +        }
 +    }
 +
@@ -61,31 +61,31 @@
 +        java.util.function.BooleanSupplier hudVisible = () -> !this.isHidden;
 +        java.util.function.BooleanSupplier survivalVisible = () -> this.minecraft.gameMode.canHurtPlayer() && hudVisible.getAsBoolean();
 +
-+        layerManager.add(CAMERA_OVERLAYS, this::extractCameraOverlays, hudVisible);
-+        layerManager.add(CROSSHAIR, this::extractCrosshair, hudVisible);
-+        layerManager.add(AFTER_CAMERA_DECORATIONS, (guiGraphics, _) -> guiGraphics.nextStratum(), hudVisible);
++        this.layerManager.add(CAMERA_OVERLAYS, this::extractCameraOverlays, hudVisible);
++        this.layerManager.add(CROSSHAIR, this::extractCrosshair, hudVisible);
++        this.layerManager.add(AFTER_CAMERA_DECORATIONS, (guiGraphics, _) -> guiGraphics.nextStratum(), hudVisible);
 +        // TODO: Split this up again into its pieces
-+        layerManager.add(HOTBAR, this::extractHotbar, hudVisible);
-+        layerManager.add(PLAYER_HEALTH, (guiGraphics, _) -> extractHealthLevel(guiGraphics), survivalVisible);
-+        layerManager.add(ARMOR_LEVEL, (guiGraphics, _) -> extractArmorLevel(guiGraphics), survivalVisible);
-+        layerManager.add(FOOD_LEVEL, (guiGraphics, _) -> extractFoodLevel(guiGraphics), survivalVisible);
-+        layerManager.add(VEHICLE_HEALTH, (guiGraphics, _) -> extractVehicleHealth(guiGraphics), hudVisible);
-+        layerManager.add(AIR_LEVEL, (guiGraphics, _) -> extractAirLevel(guiGraphics), survivalVisible);
-+        layerManager.add(CONTEXTUAL_INFO_BAR_BACKGROUND, this::extractContextualInfoBarBackground, hudVisible);
-+        layerManager.add(EXPERIENCE_LEVEL, this::extractExperienceLevel, hudVisible);
-+        layerManager.add(CONTEXTUAL_INFO_BAR, this::extractContextualInfoBar, hudVisible);
-+        layerManager.add(SELECTED_ITEM_NAME, this::maybeExtractSelectedItemName, hudVisible);
-+        layerManager.add(SPECTATOR_TOOLTIP, this::maybeExtractSpectatorTooltip, hudVisible);
-+        layerManager.add(EFFECTS, this::extractEffects, hudVisible);
-+        layerManager.add(BOSS_OVERLAY, this::extractBossOverlay, hudVisible);
-+        layerManager.add(SLEEP_OVERLAY, this::extractSleepOverlay);
-+        layerManager.add(DEMO_OVERLAY, this::extractDemoOverlay, hudVisible);
-+        layerManager.add(SCOREBOARD_SIDEBAR, this::extractScoreboardSidebar, hudVisible);
-+        layerManager.add(OVERLAY_MESSAGE, this::extractOverlayMessage, hudVisible);
-+        layerManager.add(TITLE, this::extractTitle, hudVisible);
-+        layerManager.add(CHAT, this::extractChat, hudVisible);
-+        layerManager.add(TAB_LIST, this::extractTabList, hudVisible);
-+        layerManager.add(SUBTITLE_OVERLAY, (graphics, _) -> {
++        this.layerManager.add(HOTBAR, this::extractHotbar, hudVisible);
++        this.layerManager.add(PLAYER_HEALTH, (guiGraphics, _) -> extractHealthLevel(guiGraphics), survivalVisible);
++        this.layerManager.add(ARMOR_LEVEL, (guiGraphics, _) -> extractArmorLevel(guiGraphics), survivalVisible);
++        this.layerManager.add(FOOD_LEVEL, (guiGraphics, _) -> extractFoodLevel(guiGraphics), survivalVisible);
++        this.layerManager.add(VEHICLE_HEALTH, (guiGraphics, _) -> extractVehicleHealth(guiGraphics), hudVisible);
++        this.layerManager.add(AIR_LEVEL, (guiGraphics, _) -> extractAirLevel(guiGraphics), survivalVisible);
++        this.layerManager.add(CONTEXTUAL_INFO_BAR_BACKGROUND, this::extractContextualInfoBarBackground, hudVisible);
++        this.layerManager.add(EXPERIENCE_LEVEL, this::extractExperienceLevel, hudVisible);
++        this.layerManager.add(CONTEXTUAL_INFO_BAR, this::extractContextualInfoBar, hudVisible);
++        this.layerManager.add(SELECTED_ITEM_NAME, this::maybeExtractSelectedItemName, hudVisible);
++        this.layerManager.add(SPECTATOR_TOOLTIP, this::maybeExtractSpectatorTooltip, hudVisible);
++        this.layerManager.add(EFFECTS, this::extractEffects, hudVisible);
++        this.layerManager.add(BOSS_OVERLAY, this::extractBossOverlay, hudVisible);
++        this.layerManager.add(SLEEP_OVERLAY, this::extractSleepOverlay);
++        this.layerManager.add(DEMO_OVERLAY, this::extractDemoOverlay, hudVisible);
++        this.layerManager.add(SCOREBOARD_SIDEBAR, this::extractScoreboardSidebar, hudVisible);
++        this.layerManager.add(OVERLAY_MESSAGE, this::extractOverlayMessage, hudVisible);
++        this.layerManager.add(TITLE, this::extractTitle, hudVisible);
++        this.layerManager.add(CHAT, this::extractChat, hudVisible);
++        this.layerManager.add(TAB_LIST, this::extractTabList, hudVisible);
++        this.layerManager.add(SUBTITLE_OVERLAY, (graphics, _) -> {
 +            if (!this.isHidden) {
                  this.extractSubtitleOverlay(graphics, this.minecraft.gui.screen() == null || this.minecraft.gui.screen().isInGameUi());
              } else if (this.minecraft.gui.screen() != null && this.minecraft.gui.screen().isInGameUi()) {
@@ -117,7 +117,7 @@
 -                graphics.pose().translate(graphics.guiWidth() / 2, graphics.guiHeight() - 68);
 +                // Include a shift based on the bar height plus the difference between the height that renderSelectedItemName
 +                // renders at (59) and the height that the overlay/status bar renders at (68) by default
-+                int yShift = Math.max(leftHeight, rightHeight) + (68 - 59);
++                int yShift = Math.max(this.leftHeight, this.rightHeight) + (68 - 59);
 +                // If y shift is less than the default y level, just render it at the base y level
 +                graphics.pose().translate(graphics.guiWidth() / 2, graphics.guiHeight() - Math.max(yShift, 68));
                  int color;
@@ -229,7 +229,7 @@
      }
  
      private void extractSelectedItemName(GuiGraphicsExtractor graphics) {
-+        extractSelectedItemName(graphics, 0);
++        this.extractSelectedItemName(graphics, 0);
 +    }
 +
 +    private void extractSelectedItemName(GuiGraphicsExtractor graphics, int yShift) {
@@ -271,10 +271,10 @@
 +    /// @deprecated Neo: split up into different layers
 +    @Deprecated
      private void extractPlayerHealth(GuiGraphicsExtractor graphics) {
-+        extractHealthLevel(graphics);
-+        extractArmorLevel(graphics);
-+        extractFoodLevel(graphics);
-+        extractAirLevel(graphics);
++        this.extractHealthLevel(graphics);
++        this.extractArmorLevel(graphics);
++        this.extractFoodLevel(graphics);
++        this.extractAirLevel(graphics);
 +    }
 +
 +    private void extractHealthLevel(GuiGraphicsExtractor graphics) {
@@ -286,13 +286,13 @@
              int xLeft = graphics.guiWidth() / 2 - 91;
              int xRight = graphics.guiWidth() / 2 + 91;
 -            int yLineBase = graphics.guiHeight() - 39;
-+            int yLineBase = graphics.guiHeight() - leftHeight;
++            int yLineBase = graphics.guiHeight() - this.leftHeight;
              float maxHealth = Math.max((float)player.getAttributeValue(Attributes.MAX_HEALTH), Math.max(oldHealth, currentHealth));
              int totalAbsorption = Mth.ceil(player.getAbsorptionAmount());
              int numHealthRows = Mth.ceil((maxHealth + totalAbsorption) / 2.0F / 10.0F);
              int healthRowHeight = Math.max(10 - (numHealthRows - 2), 3);
              int yLineAir = yLineBase - 10;
-+            leftHeight += (numHealthRows - 1) * healthRowHeight + 10;
++            this.leftHeight += (numHealthRows - 1) * healthRowHeight + 10;
              int heartOffsetIndex = -1;
              if (player.hasEffect(MobEffects.REGENERATION)) {
                  heartOffsetIndex = this.tickCount % Mth.ceil(maxHealth + 5.0F);
@@ -312,12 +312,12 @@
 +    private void extractArmorLevel(GuiGraphicsExtractor graphics) {
 +        Player player = this.getCameraPlayer();
 +        if (player != null) {
-+            int l = graphics.guiWidth() / 2 - 91;
++            int xLeft = graphics.guiWidth() / 2 - 91;
 +            Profiler.get().push("armor");
-+            extractArmor(graphics, player, graphics.guiHeight() - leftHeight + 10, 1, 0, l);
++            extractArmor(graphics, player, graphics.guiHeight() - this.leftHeight + 10, 1, 0, xLeft);
 +            Profiler.get().pop();
 +            if (player.getArmorValue() > 0) {
-+                leftHeight += 10;
++                this.leftHeight += 10;
 +            }
 +        }
 +    }
@@ -331,10 +331,10 @@
 -                Profiler.get().popPush("food");
 +                Profiler.get().push("food");
 +                int xRight = graphics.guiWidth() / 2 + 91;
-+                int yLineBase = graphics.guiHeight() - rightHeight;
++                int yLineBase = graphics.guiHeight() - this.rightHeight;
                  this.extractFood(graphics, player, yLineBase, xRight);
 -                yLineAir -= 10;
-+                rightHeight += 10;
++                this.rightHeight += 10;
 +                Profiler.get().pop();
              }
 +        }
@@ -346,7 +346,7 @@
 +        Player player = this.getCameraPlayer();
 +        if (player != null) {
 +            int xRight = graphics.guiWidth() / 2 + 91;
-+            int yLineAir = graphics.guiHeight() - rightHeight;
++            int yLineAir = graphics.guiHeight() - this.rightHeight;
 +            Profiler.get().push("air");
 +            this.extractAirBubbles(graphics, player, 10, yLineAir, xRight);
              Profiler.get().pop();
@@ -366,7 +366,7 @@
                  }
              }
 +
-+            rightHeight += 10;
++            this.rightHeight += 10;
          }
      }
  
@@ -375,7 +375,7 @@
                  int currentHealth = (int)Math.ceil(vehicleWithHearts.getHealth());
                  Profiler.get().popPush("mountHealth");
 -                int yLine1 = graphics.guiHeight() - 39;
-+                int yLine1 = graphics.guiHeight() - rightHeight;
++                int yLine1 = graphics.guiHeight() - this.rightHeight;
                  int xRight = graphics.guiWidth() / 2 + 91;
                  int yo = yLine1;
  
@@ -383,7 +383,7 @@
                      }
  
                      yo -= 10;
-+                    rightHeight += 10;
++                    this.rightHeight += 10;
                  }
              }
          }

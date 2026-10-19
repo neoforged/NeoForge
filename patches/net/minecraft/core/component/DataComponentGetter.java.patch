@@ -8,18 +8,18 @@
 +    // Neo: Utility for modded component types, to remove the need to invoke '.value()'
 +    @Nullable
 +    default <T> T get(java.util.function.Supplier<? extends DataComponentType<? extends T>> componentType) {
-+        return get(componentType.get());
++        return this.get(componentType.get());
 +    }
 +
 +    default <T> T getOrDefault(java.util.function.Supplier<? extends DataComponentType<? extends T>> componentType, T value) {
-+        return getOrDefault(componentType.get(), value);
++        return this.getOrDefault(componentType.get(), value);
 +    }
 +
 +    default <T> boolean has(java.util.function.Supplier<? extends DataComponentType<? extends T>> componentType) {
-+        return get(componentType) != null;
++        return this.get(componentType) != null;
 +    }
 +
 +    default boolean has(DataComponentType<?> componentType) {
-+        return get(componentType) != null;
++        return this.get(componentType) != null;
 +    }
  }

@@ -11,7 +11,7 @@
      public MinecraftApi(
          NotificationManager notificationManager,
          MinecraftAllowListService allowListService,
-@@ -29,6 +_,21 @@
+@@ -29,6 +_,22 @@
          MinecraftServerStateService minecraftServerStateService,
          MinecraftExecutorService executorService
      ) {
@@ -19,28 +19,21 @@
 +    }
 +
 +    public MinecraftApi(
-+            NotificationManager notificationManager,
-+            MinecraftAllowListService allowListService,
-+            MinecraftBanListService banListService,
-+            MinecraftPlayerListService minecraftPlayerListService,
-+            MinecraftGameRuleService gameRuleService,
-+            MinecraftOperatorListService minecraftOperatorListService,
-+            MinecraftServerSettingsService minecraftServerSettingsService,
-+            MinecraftServerStateService minecraftServerStateService,
-+            MinecraftExecutorService executorService,
-+            @org.jspecify.annotations.Nullable JsonRpcLogger logger
++        NotificationManager notificationManager,
++        MinecraftAllowListService allowListService,
++        MinecraftBanListService banListService,
++        MinecraftPlayerListService minecraftPlayerListService,
++        MinecraftGameRuleService gameRuleService,
++        MinecraftOperatorListService minecraftOperatorListService,
++        MinecraftServerSettingsService minecraftServerSettingsService,
++        MinecraftServerStateService minecraftServerStateService,
++        MinecraftExecutorService executorService,
++        @org.jspecify.annotations.Nullable JsonRpcLogger logger
 +    ) {
++        this.logger = logger;
          this.notificationManager = notificationManager;
          this.allowListService = allowListService;
          this.banListService = banListService;
-@@ -38,6 +_,7 @@
-         this.minecraftServerSettingsService = minecraftServerSettingsService;
-         this.minecraftServerStateService = minecraftServerStateService;
-         this.executorService = executorService;
-+        this.logger = logger;
-     }
- 
-     public <V> CompletableFuture<V> submit(Supplier<V> supplier) {
 @@ -80,6 +_,10 @@
          return this.notificationManager;
      }

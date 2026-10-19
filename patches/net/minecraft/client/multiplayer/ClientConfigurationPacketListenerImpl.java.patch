@@ -5,7 +5,7 @@
      protected ChatComponent.@Nullable State chatState;
      private boolean seenCodeOfConduct;
 +    /// Neo: stores the reasons why a connection to the server could not be established
-+    private java.util.Map<net.minecraft.resources.Identifier, net.minecraft.network.chat.Component> failureReasons = new java.util.HashMap<>();
++    private java.util.Map<net.minecraft.resources.Identifier, Component> failureReasons = new java.util.HashMap<>();
  
      public ClientConfigurationPacketListenerImpl(Minecraft minecraft, Connection connection, CommonListenerCookie cookie) {
          super(minecraft, connection, cookie);
@@ -47,7 +47,7 @@
          this.connection.send(ServerboundFinishConfigurationPacket.INSTANCE);
          this.connection
 -            .setupOutboundProtocol(GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registries), new GameProtocols.Context() {
-+            .setupOutboundProtocol(GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registries, connectionType), new GameProtocols.Context() {
++            .setupOutboundProtocol(GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registries, this.connectionType), new GameProtocols.Context() {
                  @Override
                  public boolean hasInfiniteMaterials() {
                      return true;
@@ -105,7 +105,7 @@
 +
 +    @Override
 +    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {
-+        return connectionType;
++        return this.connectionType;
      }
  
      @Override

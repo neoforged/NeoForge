@@ -9,13 +9,12 @@
      public HolderSet<Item> getSupportedItems() {
          return this.definition.supportedItems();
      }
-@@ -126,10 +_,16 @@
+@@ -126,10 +_,15 @@
          return this.definition.slots().stream().anyMatch(group -> group.test(slot));
      }
  
 +    /// @deprecated Neo: Use [ItemStack#isPrimaryItemFor(Holder)] instead
-+    ///
-+    /// This method does not respect [ItemStack#supportsEnchantment(Holder)] since the [Holder] is not available, which makes the result of calling it invalid.
++    ///             This method does not respect [ItemStack#supportsEnchantment(Holder)] since the [Holder] is not available, which makes the result of calling it invalid.
 +    @Deprecated
      public boolean isPrimaryItem(ItemStack item) {
          return this.isSupportedItem(item) && (this.definition.primaryItems.isEmpty() || item.is(this.definition.primaryItems.get()));
@@ -64,7 +63,7 @@
  
 +        /// Allows specifying an operator that can customize the default [Component] created by [#build(Identifier)].
 +        ///
-+        /// @return this
++        /// @return this builder
 +        public Enchantment.Builder withCustomName(java.util.function.UnaryOperator<MutableComponent> nameFactory) {
 +            this.nameFactory = nameFactory;
 +            return this;

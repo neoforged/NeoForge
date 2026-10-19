@@ -43,7 +43,7 @@
      }
  
 +    public BlockState rotate(BlockState state, net.minecraft.world.level.LevelAccessor world, BlockPos pos, Rotation direction) {
-+         return state.getValue(EXTENDED) ? state : super.rotate(state, world, pos, direction);
++        return state.getValue(EXTENDED) ? state : super.rotate(state, world, pos, direction);
 +    }
 +
      @Override

@@ -20,7 +20,7 @@
  
 -    @Nullable SpriteContents loadSprite(Identifier spriteLocation, Resource resource);
 +    default @Nullable SpriteContents loadSprite(Identifier spriteLocation, Resource resource) {
-+        return loadSprite(spriteLocation, resource, SpriteContents::new);
++        return this.loadSprite(spriteLocation, resource, SpriteContents::new);
 +    }
 +
 +    @Nullable SpriteContents loadSprite(Identifier spriteLocation, Resource resource, net.neoforged.neoforge.client.textures.SpriteContentsConstructor constructor);

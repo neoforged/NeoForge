@@ -8,7 +8,7 @@
 +public abstract class BlockEntity extends net.neoforged.neoforge.attachment.AttachmentHolder implements DebugValueSource, TypedInstance<BlockEntityType<?>>, IBlockEntityExtension {
      private static final Codec<BlockEntityType<?>> TYPE_CODEC = BuiltInRegistries.BLOCK_ENTITY_TYPE.byNameCodec();
      private static final Logger LOGGER = LogUtils.getLogger();
-+    /// @deprecated Neo: use [#getType()]
++    /// @deprecated Neo: use [#getType()] instead
 +    @Deprecated
      private final BlockEntityType<?> type;
      protected @Nullable Level level;
@@ -39,7 +39,7 @@
  
      protected void loadAdditional(ValueInput input) {
 +        input.read("NeoForgeData", CompoundTag.CODEC).ifPresent(neoData -> this.customPersistentData = neoData);
-+        input.child(ATTACHMENTS_NBT_KEY).ifPresent(attachments -> this.deserializeAttachments(attachments));
++        input.child(ATTACHMENTS_NBT_KEY).ifPresent(this::deserializeAttachments);
      }
  
      public final void loadWithComponents(ValueInput input) {
@@ -51,7 +51,7 @@
 +            output.store("NeoForgeData", CompoundTag.CODEC, this.customPersistentData.copy());
 +        }
 +        var attachments = output.child(ATTACHMENTS_NBT_KEY);
-+        serializeAttachments(attachments);
++        this.serializeAttachments(attachments);
 +        if (attachments.isEmpty()) {
 +            output.discard(ATTACHMENTS_NBT_KEY);
 +        }
@@ -63,13 +63,13 @@
      public void setRemoved() {
          this.remove = true;
 +        this.invalidateCapabilities();
-+        requestModelDataUpdate();
++        this.requestModelDataUpdate();
      }
  
      public void clearRemoved() {
          this.remove = false;
 +        // Neo: invalidate capabilities on block entity placement
-+        invalidateCapabilities();
++        this.invalidateCapabilities();
      }
  
      public void preRemoveSideEffects(BlockPos pos, BlockState state) {
@@ -90,26 +90,26 @@
 +    @Override
 +    @Nullable
 +    public final <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
-+        setChanged();
++        this.setChanged();
 +        return super.setData(type, data);
 +    }
 +
 +    @Override
 +    @Nullable
 +    public final <T> T removeData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
-+        setChanged();
++        this.setChanged();
 +        return super.removeData(type);
 +    }
 +
 +    @Override
 +    public final void syncData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
-+        if (!(level instanceof ServerLevel serverLevel)) {
++        if (!(this.level instanceof ServerLevel serverLevel)) {
 +            return;
 +        }
-+        if (attachmentTypesToSync == null) {
-+            attachmentTypesToSync = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
++        if (this.attachmentTypesToSync == null) {
++            this.attachmentTypesToSync = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
 +        }
-+        attachmentTypesToSync.add(type);
++        this.attachmentTypesToSync.add(type);
 +        // Schedule the BE for syncing
 +        serverLevel.getChunkSource().blockChanged(worldPosition);
 +    }
@@ -117,8 +117,8 @@
 +    @Nullable
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public final Set<net.neoforged.neoforge.attachment.AttachmentType<?>> getAndClearAttachmentTypesToSync() {
-+        var ret = attachmentTypesToSync;
-+        attachmentTypesToSync = null;
++        var ret = this.attachmentTypesToSync;
++        this.attachmentTypesToSync = null;
 +        return ret;
      }
  

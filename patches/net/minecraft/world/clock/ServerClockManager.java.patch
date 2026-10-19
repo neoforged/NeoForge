@@ -57,7 +57,7 @@
 +        /// @deprecated Neo: Use [#ServerClockInstance(Holder)] instead
 +        @Deprecated
 +        public ServerClockInstance() {
-+            holder = null;
++            this.holder = null;
 +        }
  
          public void loadFrom(ClockState state) {

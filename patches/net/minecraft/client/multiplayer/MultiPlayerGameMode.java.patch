@@ -101,7 +101,7 @@
      private boolean sameDestroyTarget(BlockPos pos) {
          ItemStack selected = this.minecraft.player.getMainHandItem();
 -        return pos.equals(this.destroyBlockPos) && ItemStack.isSameItemSameComponents(selected, this.destroyingItem);
-+        return pos.equals(this.destroyBlockPos) && !destroyingItem.shouldCauseBlockBreakReset(selected);
++        return pos.equals(this.destroyBlockPos) && !this.destroyingItem.shouldCauseBlockBreakReset(selected);
      }
  
      private void ensureHasSentCarriedItem() {

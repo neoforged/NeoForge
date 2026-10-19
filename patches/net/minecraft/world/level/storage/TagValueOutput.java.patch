@@ -6,7 +6,7 @@
      @Override
 +    public void store(CompoundTag tag) {
 +        for (var entry : tag.entrySet()) {
-+            output.put(entry.getKey(), entry.getValue());
++            this.output.put(entry.getKey(), entry.getValue());
 +        }
 +    }
 +
