@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
-
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.problems.ProblemGroup;
 import org.gradle.api.problems.ProblemId;
@@ -138,7 +137,7 @@ public abstract class PatchFormattingAugmentor extends FormattingAugmentor {
                 }
 
                 private static final Pattern BLOCK_CLOSE = Pattern.compile("^\\s*}");
-                
+
                 private IndentInfo findClosestIndent(List<Diff> diffs, int startIdx, int endIdx) {
                     var idx0 = startIdx;
                     var idx1 = endIdx;
