@@ -14,9 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Function;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.server.MinecraftServer;
 import net.neoforged.testframework.junit.EphemeralTestServerProvider;
 import org.junit.jupiter.api.Test;
@@ -44,9 +44,13 @@ public class ComponentHashingTest {
                     patch.put(DataComponents.DAMAGE, damage);
                     patch.put(DataComponents.REPAIR_COST, repairCost);
 
-                    int hashCode = hashPatch(patch, type -> hashCodes.computeIfAbsent(type, _ -> {
+                    int hashCode = PatchedDataComponentMap.hashPatch(patch, type -> hashCodes.computeIfAbsent(type, _ -> {
+                        // Obtain a random 32-bit integer to act as the hash of the component.
                         while (true) {
+                            // Use threaded random in case of test parallelization.
                             int hash = ThreadLocalRandom.current().nextInt();
+                            // Make sure random number does not conflict with any other generated hash codes.
+                            // Otherwise test will produce a lot more collisions.
                             if (!hashCodes.values().contains(hash)) {
                                 return hash;
                             }
@@ -67,22 +71,5 @@ public class ComponentHashingTest {
         if (failedCollisionRates.size() > MAX_ATTEMPTS - NUM_OF_SUCESSES) {
             throw new AssertionError("Too many hash code collisions detected: " + failedCollisionRates);
         }
-    }
-
-    /// Copied from [net.minecraft.core.component.PatchedDataComponentMap#hashPatch(Reference2ObjectMap)]
-    /// to allow for different hash codes per attempt.
-    ///
-    /// @param hashCodes The cached list of hash codes for each key.
-    private static int hashPatch(Reference2ObjectMap<DataComponentType<?>, Object> patch, Function<DataComponentType<?>, Integer> hashCodes) {
-        int h = 0, n = patch.size();
-        var iterator = it.unimi.dsi.fastutil.objects.Reference2ObjectMaps.fastIterator(patch);
-        while (n-- != 0) {
-            var entry = iterator.next();
-            int exponent = hashCodes.apply(entry.getKey()) & 0xff;
-            // Use 8191 instead of the usual 31, as 31 can produce many collisions with typical integer component ranges (0-255) if the exponent difference is only 1
-            int entryHash = com.google.common.math.IntMath.pow(8191, exponent) * entry.getValue().hashCode();
-            h += entryHash;
-        }
-        return h;
     }
 }
