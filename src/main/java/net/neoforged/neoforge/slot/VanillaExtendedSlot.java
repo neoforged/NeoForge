@@ -10,6 +10,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.item.LivingEntityEquipmentWrapper;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Built-in {@link ExtendedEquipmentSlot} implementation that wraps a vanilla {@link EquipmentSlot}. Returns the single
@@ -26,8 +29,12 @@ public record VanillaExtendedSlot(EquipmentSlot slot) implements ExtendedEquipme
     }
 
     @Override
-    public void setStack(LivingEntity entity, ItemStack stack, boolean insideTransaction) {
-        entity.setItemSlot(this.slot, stack, insideTransaction);
+    public void setStack(LivingEntity entity, ItemStack stack, @Nullable TransactionContext transaction) {
+        if (transaction == null) {
+            entity.setItemSlot(this.slot, stack);
+        } else {
+            LivingEntityEquipmentWrapper.setItemSlot(entity, this.slot, stack, transaction);
+        }
     }
 
     @Override

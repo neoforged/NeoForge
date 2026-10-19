@@ -16,7 +16,9 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Extensible replacement for {@link EquipmentSlot}. Used when we need to talk abstractly about any equipment an entity might be wearing, instead of only vanilla equipment slots.
@@ -39,8 +41,10 @@ public interface ExtendedEquipmentSlot {
 
     /**
      * Sets the item in this slot on the entity to the given stack.
+     *
+     * @param transaction the transaction this change is part of, or {@code null} to apply it immediately with its usual side effects
      */
-    void setStack(LivingEntity entity, ItemStack stack, boolean insideTransaction);
+    void setStack(LivingEntity entity, ItemStack stack, @Nullable TransactionContext transaction);
 
     /**
      * The serializer that produced this slot, used by {@link #DIRECT_CODEC} to round-trip the {@code "type"} field.

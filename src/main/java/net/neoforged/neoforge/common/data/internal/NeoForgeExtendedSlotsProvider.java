@@ -7,17 +7,23 @@ package net.neoforged.neoforge.common.data.internal;
 
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.holdersets.AnyHolderSet;
 import net.neoforged.neoforge.slot.ExtendedEquipmentSlot;
+import net.neoforged.neoforge.slot.ExtendedSlotCompat;
 import net.neoforged.neoforge.slot.ExtendedSlotGroup;
+import net.neoforged.neoforge.slot.ExtendedSlotGroups;
 import net.neoforged.neoforge.slot.VanillaExtendedSlot;
 
 /**
@@ -26,46 +32,22 @@ import net.neoforged.neoforge.slot.VanillaExtendedSlot;
 public class NeoForgeExtendedSlotsProvider extends DatapackBuiltinEntriesProvider {
     private static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
             .add(NeoForgeRegistries.Keys.EXTENDED_EQUIPMENT_SLOTS, ctx -> {
-                ctx.register(NeoForgeMod.SLOT_MAINHAND, new VanillaExtendedSlot(EquipmentSlot.MAINHAND));
-                ctx.register(NeoForgeMod.SLOT_OFFHAND, new VanillaExtendedSlot(EquipmentSlot.OFFHAND));
-                ctx.register(NeoForgeMod.SLOT_HEAD, new VanillaExtendedSlot(EquipmentSlot.HEAD));
-                ctx.register(NeoForgeMod.SLOT_CHEST, new VanillaExtendedSlot(EquipmentSlot.CHEST));
-                ctx.register(NeoForgeMod.SLOT_LEGS, new VanillaExtendedSlot(EquipmentSlot.LEGS));
-                ctx.register(NeoForgeMod.SLOT_FEET, new VanillaExtendedSlot(EquipmentSlot.FEET));
-                ctx.register(NeoForgeMod.SLOT_BODY, new VanillaExtendedSlot(EquipmentSlot.BODY));
-                ctx.register(NeoForgeMod.SLOT_SADDLE, new VanillaExtendedSlot(EquipmentSlot.SADDLE));
+                for (EquipmentSlot slot : EquipmentSlot.values()) {
+                    ctx.register(ExtendedSlotCompat.slotKey(slot), new VanillaExtendedSlot(slot));
+                }
             })
             .add(NeoForgeRegistries.Keys.EXTENDED_SLOT_GROUPS, ctx -> {
-                var slots = ctx.lookup(NeoForgeRegistries.Keys.EXTENDED_EQUIPMENT_SLOTS);
-                HolderSet<ExtendedEquipmentSlot> allVanillaSlots = HolderSet.direct(
-                        slots.getOrThrow(NeoForgeMod.SLOT_MAINHAND),
-                        slots.getOrThrow(NeoForgeMod.SLOT_OFFHAND),
-                        slots.getOrThrow(NeoForgeMod.SLOT_HEAD),
-                        slots.getOrThrow(NeoForgeMod.SLOT_CHEST),
-                        slots.getOrThrow(NeoForgeMod.SLOT_LEGS),
-                        slots.getOrThrow(NeoForgeMod.SLOT_FEET),
-                        slots.getOrThrow(NeoForgeMod.SLOT_BODY),
-                        slots.getOrThrow(NeoForgeMod.SLOT_SADDLE));
+                HolderGetter<ExtendedEquipmentSlot> slots = ctx.lookup(NeoForgeRegistries.Keys.EXTENDED_EQUIPMENT_SLOTS);
+                Function<EquipmentSlot, Holder<ExtendedEquipmentSlot>> resolve = slot -> slots.getOrThrow(ExtendedSlotCompat.slotKey(slot));
 
-                var set = new AnyHolderSet<ExtendedEquipmentSlot>(NeoForgeRegistries.Keys.EXTENDED_EQUIPMENT_SLOTS, ctx.holderLookup(NeoForgeRegistries.Keys.EXTENDED_EQUIPMENT_SLOTS).get());
-                ctx.register(NeoForgeMod.GROUP_ANY, new ExtendedSlotGroup(set));
-                ctx.register(NeoForgeMod.GROUP_ANY_VANILLA, new ExtendedSlotGroup(allVanillaSlots));
-                ctx.register(NeoForgeMod.GROUP_MAINHAND, new ExtendedSlotGroup(HolderSet.direct(slots.getOrThrow(NeoForgeMod.SLOT_MAINHAND))));
-                ctx.register(NeoForgeMod.GROUP_OFFHAND, new ExtendedSlotGroup(HolderSet.direct(slots.getOrThrow(NeoForgeMod.SLOT_OFFHAND))));
-                ctx.register(NeoForgeMod.GROUP_HAND, new ExtendedSlotGroup(HolderSet.direct(
-                        slots.getOrThrow(NeoForgeMod.SLOT_MAINHAND),
-                        slots.getOrThrow(NeoForgeMod.SLOT_OFFHAND))));
-                ctx.register(NeoForgeMod.GROUP_HEAD, new ExtendedSlotGroup(HolderSet.direct(slots.getOrThrow(NeoForgeMod.SLOT_HEAD))));
-                ctx.register(NeoForgeMod.GROUP_CHEST, new ExtendedSlotGroup(HolderSet.direct(slots.getOrThrow(NeoForgeMod.SLOT_CHEST))));
-                ctx.register(NeoForgeMod.GROUP_LEGS, new ExtendedSlotGroup(HolderSet.direct(slots.getOrThrow(NeoForgeMod.SLOT_LEGS))));
-                ctx.register(NeoForgeMod.GROUP_FEET, new ExtendedSlotGroup(HolderSet.direct(slots.getOrThrow(NeoForgeMod.SLOT_FEET))));
-                ctx.register(NeoForgeMod.GROUP_ARMOR, new ExtendedSlotGroup(HolderSet.direct(
-                        slots.getOrThrow(NeoForgeMod.SLOT_HEAD),
-                        slots.getOrThrow(NeoForgeMod.SLOT_CHEST),
-                        slots.getOrThrow(NeoForgeMod.SLOT_LEGS),
-                        slots.getOrThrow(NeoForgeMod.SLOT_FEET))));
-                ctx.register(NeoForgeMod.GROUP_BODY, new ExtendedSlotGroup(HolderSet.direct(slots.getOrThrow(NeoForgeMod.SLOT_BODY))));
-                ctx.register(NeoForgeMod.GROUP_SADDLE, new ExtendedSlotGroup(HolderSet.direct(slots.getOrThrow(NeoForgeMod.SLOT_SADDLE))));
+                for (EquipmentSlotGroup group : EquipmentSlotGroup.values()) {
+                    ctx.register(ExtendedSlotCompat.groupKey(group), new ExtendedSlotGroup(HolderSet.direct(resolve, group.slots())));
+                }
+
+                HolderLookup<ExtendedEquipmentSlot> allSlots = ctx.holderLookup(NeoForgeRegistries.Keys.EXTENDED_EQUIPMENT_SLOTS).orElseThrow();
+                ctx.register(ExtendedSlotGroups.ANY, new ExtendedSlotGroup(new AnyHolderSet<>(NeoForgeRegistries.Keys.EXTENDED_EQUIPMENT_SLOTS, allSlots)));
+                ctx.register(ExtendedSlotGroups.HUMANOID_ARMOR, new ExtendedSlotGroup(HolderSet.direct(resolve,
+                        EquipmentSlot.VALUES.stream().filter(slot -> slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR).toList())));
             });
 
     public NeoForgeExtendedSlotsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {

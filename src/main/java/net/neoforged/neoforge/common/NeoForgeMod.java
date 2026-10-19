@@ -198,36 +198,6 @@ public class NeoForgeMod {
      */
     public static final Holder<MapCodec<? extends ExtendedEquipmentSlot>> VANILLA_SLOT_TYPE = EXTENDED_EQUIPMENT_SLOT_SERIALIZERS.register("vanilla", () -> VanillaExtendedSlot.CODEC);
 
-    public static final ResourceKey<ExtendedEquipmentSlot> SLOT_MAINHAND = slotKey("mainhand");
-    public static final ResourceKey<ExtendedEquipmentSlot> SLOT_OFFHAND = slotKey("offhand");
-    public static final ResourceKey<ExtendedEquipmentSlot> SLOT_HEAD = slotKey("head");
-    public static final ResourceKey<ExtendedEquipmentSlot> SLOT_CHEST = slotKey("chest");
-    public static final ResourceKey<ExtendedEquipmentSlot> SLOT_LEGS = slotKey("legs");
-    public static final ResourceKey<ExtendedEquipmentSlot> SLOT_FEET = slotKey("feet");
-    public static final ResourceKey<ExtendedEquipmentSlot> SLOT_BODY = slotKey("body");
-    public static final ResourceKey<ExtendedEquipmentSlot> SLOT_SADDLE = slotKey("saddle");
-
-    public static final ResourceKey<ExtendedSlotGroup> GROUP_ANY = groupKey("any");
-    public static final ResourceKey<ExtendedSlotGroup> GROUP_ANY_VANILLA = groupKey("any_vanilla");
-    public static final ResourceKey<ExtendedSlotGroup> GROUP_MAINHAND = groupKey("mainhand");
-    public static final ResourceKey<ExtendedSlotGroup> GROUP_OFFHAND = groupKey("offhand");
-    public static final ResourceKey<ExtendedSlotGroup> GROUP_HAND = groupKey("hand");
-    public static final ResourceKey<ExtendedSlotGroup> GROUP_HEAD = groupKey("head");
-    public static final ResourceKey<ExtendedSlotGroup> GROUP_CHEST = groupKey("chest");
-    public static final ResourceKey<ExtendedSlotGroup> GROUP_LEGS = groupKey("legs");
-    public static final ResourceKey<ExtendedSlotGroup> GROUP_FEET = groupKey("feet");
-    public static final ResourceKey<ExtendedSlotGroup> GROUP_ARMOR = groupKey("armor");
-    public static final ResourceKey<ExtendedSlotGroup> GROUP_BODY = groupKey("body");
-    public static final ResourceKey<ExtendedSlotGroup> GROUP_SADDLE = groupKey("saddle");
-
-    private static ResourceKey<ExtendedEquipmentSlot> slotKey(String name) {
-        return ResourceKey.create(NeoForgeRegistries.Keys.EXTENDED_EQUIPMENT_SLOTS, Identifier.fromNamespaceAndPath(MOD_ID, name));
-    }
-
-    private static ResourceKey<ExtendedSlotGroup> groupKey(String name) {
-        return ResourceKey.create(NeoForgeRegistries.Keys.EXTENDED_SLOT_GROUPS, Identifier.fromNamespaceAndPath(MOD_ID, name));
-    }
-
     @SuppressWarnings({ "unchecked", "rawtypes" }) // Uses Holder instead of DeferredHolder as the type due to weirdness between ECJ and javac.
     private static final Holder<ArgumentTypeInfo<?, ?>> ENUM_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("enum", () -> ArgumentTypeInfos.registerByClass(EnumArgument.class, new EnumArgument.Info()));
     private static final DeferredHolder<ArgumentTypeInfo<?, ?>, SingletonArgumentInfo<ModIdArgument>> MODID_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("modid", () -> ArgumentTypeInfos.registerByClass(ModIdArgument.class,

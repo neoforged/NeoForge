@@ -17,6 +17,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.CombinedResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * Exposes the armor or hands inventory of an {@link LivingEntity} as a {@code ResourceHandler<ItemResource>}
@@ -76,6 +77,14 @@ public class LivingEntityEquipmentWrapper {
         return internalOf(entity, equipmentSlot.getType()).getSlotWrapper(equipmentSlot.getIndex());
     }
 
+    /**
+     * Sets the stack in the given {@linkplain EquipmentSlot equipment slot} as part of a transaction, without the validity
+     * and capacity checks that inserting into {@link #of(LivingEntity, EquipmentSlot)} performs.
+     */
+    public static void setItemSlot(LivingEntity entity, EquipmentSlot slot, ItemStack stack, TransactionContext transaction) {
+        internalOf(entity, slot.getType()).getSlotWrapper(slot.getIndex()).set(stack, transaction);
+    }
+
     private static EquipmentTypeWrapper internalOf(LivingEntity entity, EquipmentSlot.Type equipmentType) {
         var wrapper = wrappers.computeIfAbsent(entity, LivingEntityEquipmentWrapper::new);
         return wrapper.byType.get(equipmentType);
@@ -127,6 +136,11 @@ public class LivingEntityEquipmentWrapper {
         protected void setStack(ItemStack stack) {
             // We pass insideTransaction = true to disable all non-transactional actions.
             entity.setItemSlot(slot, stack, true);
+        }
+
+        void set(ItemStack stack, TransactionContext transaction) {
+            updateSnapshots(transaction);
+            setStack(stack);
         }
 
         @Override

@@ -1,8 +1,9 @@
 {
   "slots": [
-    "neoforge:head",
-    "neoforge:chest",
+    "neoforge:feet",
     "neoforge:legs",
-    "neoforge:feet"
+    "neoforge:chest",
+    "neoforge:head",
+    "neoforge:body"
   ]
 }
