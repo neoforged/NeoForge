@@ -1,12 +1,10 @@
 --- a/net/minecraft/client/renderer/state/level/BlockOutlineRenderState.java
 +++ b/net/minecraft/client/renderer/state/level/BlockOutlineRenderState.java
-@@ -14,9 +_,30 @@
-     VoxelShape shape,
+@@ -15,8 +_,29 @@
      @Nullable VoxelShape collisionShape,
      @Nullable VoxelShape occlusionShape,
--    @Nullable VoxelShape interactionShape
-+    @Nullable VoxelShape interactionShape,
-+    java.util.List<net.neoforged.neoforge.client.CustomBlockOutlineRenderer> customRenderers
+     @Nullable VoxelShape interactionShape
++    , java.util.List<net.neoforged.neoforge.client.CustomBlockOutlineRenderer> customRenderers
  ) {
 +    /// @deprecated Neo: use [#BlockOutlineRenderState(BlockPos, boolean, boolean, VoxelShape, VoxelShape, VoxelShape, VoxelShape, java.util.List)] instead
 +    @Deprecated

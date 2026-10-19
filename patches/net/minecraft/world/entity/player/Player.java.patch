@@ -208,7 +208,7 @@
                      itemStack.setCount(itemStackClone.getCount());
                  }
  
-+                if (!this.abilities.instabuild && itemStack.isEmpty()) {
++                if (!this.hasInfiniteMaterials() && itemStack.isEmpty()) {
 +                    net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(this, itemStackClone, hand);
 +                }
 +
@@ -462,7 +462,7 @@
          }
  
 -        return this.hasInfiniteMaterials() ? new ItemStack(Items.ARROW) : ItemStack.EMPTY;
-+        return net.neoforged.neoforge.common.CommonHooks.getProjectile(this, heldWeapon, this.abilities.instabuild ? ((ProjectileWeaponItem)heldWeapon.getItem()).getDefaultCreativeAmmo(this, heldWeapon) : ItemStack.EMPTY);
++        return net.neoforged.neoforge.common.CommonHooks.getProjectile(this, heldWeapon, this.hasInfiniteMaterials() ? ((ProjectileWeaponItem)heldWeapon.getItem()).getDefaultCreativeAmmo(this, heldWeapon) : ItemStack.EMPTY);
      }
  
      @Override

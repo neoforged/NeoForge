@@ -312,7 +312,7 @@
          if (sourceEntity instanceof Player playerSource) {
              this.setLastHurtByPlayer(playerSource, 100);
 -        } else if (sourceEntity instanceof Wolf wolf && wolf.isTame()) {
-+        } else if (sourceEntity instanceof TamableAnimal wolf && wolf.isTame()) {
++        } else if (sourceEntity instanceof TamableAnimal wolf && wolf.isTame()) { // Neo: expand source player resolution to all tamable animals
              if (wolf.getOwnerReference() != null) {
                  this.setLastHurtByPlayer(wolf.getOwnerReference().getUUID(), 100);
              } else {

@@ -1,12 +1,10 @@
 --- a/net/minecraft/client/multiplayer/CommonListenerCookie.java
 +++ b/net/minecraft/client/multiplayer/CommonListenerCookie.java
-@@ -29,6 +_,28 @@
-     Map<String, String> customReportDetails,
+@@ -30,5 +_,27 @@
      ServerLinks serverLinks,
      Map<UUID, PlayerInfo> seenPlayers,
--    boolean seenInsecureChatWarning
-+    boolean seenInsecureChatWarning,
-+    net.neoforged.neoforge.network.connection.ConnectionType connectionType
+     boolean seenInsecureChatWarning
++    , net.neoforged.neoforge.network.connection.ConnectionType connectionType
  ) {
 +    /// @deprecated Neo: Use [#CommonListenerCookie(LevelLoadTracker, GameProfile, WorldSessionTelemetryManager, RegistryAccess.Frozen, FeatureFlagSet, String, ServerData, Screen, Map, ChatComponent.State, Map, ServerLinks, Map, boolean, net.neoforged.neoforge.network.connection.ConnectionType)]
 +    /// instead, to indicate whether the connection is modded.

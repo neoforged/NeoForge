@@ -12,7 +12,7 @@
      public static Identifier getKey(EntityType<?> type) {
          return BuiltInRegistries.ENTITY_TYPE.getKey(type);
      }
-@@ -97,6 +_,31 @@
+@@ -97,6 +_,35 @@
          boolean allowedInPeaceful,
          boolean trackDeltas
      ) {
@@ -41,20 +41,13 @@
 +        final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier,
 +        boolean onlyOpCanSetNbt
 +    ) {
-         this.factory = factory;
-         this.category = category;
-         this.canSpawnFarFromPlayer = canSpawnFarFromPlayer;
-@@ -113,6 +_,10 @@
-         this.requiredFeatures = requiredFeatures;
-         this.allowedInPeaceful = allowedInPeaceful;
-         this.trackDeltas = trackDeltas;
 +        this.trackDeltasSupplier = trackDeltasSupplier;
 +        this.trackingRangeSupplier = trackingRangeSupplier;
 +        this.updateIntervalSupplier = updateIntervalSupplier;
 +        this.onlyOpCanSetNbt = onlyOpCanSetNbt;
-     }
- 
-     public @Nullable T spawn(
+         this.factory = factory;
+         this.category = category;
+         this.canSpawnFarFromPlayer = canSpawnFarFromPlayer;
 @@ -204,6 +_,13 @@
              mob.yHeadRot = mob.getYRot();
              mob.yBodyRot = mob.getYRot();

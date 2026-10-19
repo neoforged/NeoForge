@@ -48,51 +48,48 @@
          return holder;
      }
  
-@@ -138,7 +_,10 @@
+@@ -138,6 +_,9 @@
  
      @Override
      public @Nullable T getValue(@Nullable ResourceKey<T> key) {
--        return getValueFromNullable(this.byKey.get(key));
-+        if (key == null) {
-+            return null;
++        if (key != null) {
++            key = this.resolve(key);
 +        }
-+        return getValueFromNullable(this.byKey.get(this.resolve(key)));
+         return getValueFromNullable(this.byKey.get(key));
      }
  
-     @Override
-@@ -153,12 +_,12 @@
+@@ -153,11 +_,13 @@
  
      @Override
      public Optional<Holder.Reference<T>> get(Identifier id) {
--        return Optional.ofNullable(this.byLocation.get(id));
-+        return Optional.ofNullable(this.byLocation.get(this.resolve(id)));
++        id = this.resolve(id);
+         return Optional.ofNullable(this.byLocation.get(id));
      }
  
      @Override
      public Optional<Holder.Reference<T>> get(ResourceKey<T> id) {
--        return Optional.ofNullable(this.byKey.get(id));
-+        return Optional.ofNullable(this.byKey.get(this.resolve(id)));
++        id = this.resolve(id);
+         return Optional.ofNullable(this.byKey.get(id));
      }
  
-     @Override
-@@ -173,7 +_,7 @@
+@@ -173,6 +_,7 @@
      }
  
      private Holder.Reference<T> getOrCreateHolderOrThrow(ResourceKey<T> key) {
--        return this.byKey.computeIfAbsent(key, id -> {
-+        return this.byKey.computeIfAbsent(this.resolve(key), id -> {
++        key = this.resolve(key);
+         return this.byKey.computeIfAbsent(key, id -> {
              if (this.unregisteredIntrusiveHolders != null) {
                  throw new IllegalStateException("This registry can't create new holders without value");
-             }
-@@ -205,7 +_,7 @@
+@@ -205,6 +_,9 @@
  
      @Override
      public @Nullable T getValue(@Nullable Identifier key) {
--        Holder.Reference<T> result = this.byLocation.get(key);
-+        Holder.Reference<T> result = this.byLocation.get(key != null ? this.resolve(key) : null);
++        if (key != null) {
++            key = this.resolve(key);
++        }
+         Holder.Reference<T> result = this.byLocation.get(key);
          return getValueFromNullable(result);
      }
- 
 @@ -271,6 +_,17 @@
          return Objects.requireNonNull(this.componentLookup, "Registry not frozen yet");
      }
