@@ -47,6 +47,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.network.chat.Component;
@@ -95,6 +96,7 @@ import net.neoforged.neoforge.common.data.GeneratingOverlayMetadataSection;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.common.data.SoundDefinition;
 import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
+import net.neoforged.neoforge.common.extensions.IRecipeOutputExtension;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.data.event.GatherDataRegistryEntriesEvent;
 import org.apache.commons.lang3.tuple.Triple;
@@ -269,10 +271,16 @@ public class DataGeneratorTest {
                     .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
                     .save(output, recipeKey("compound_ingredient_custom_types"));
 
-            // Scoped #save(RecipeOutput, String) should generate in namespace
-            try (var modOutput = this.output.forMod(MODID)) {
+            // Scoped #save should generate in namespace
+            try (var _ = this.output.withContext(builder -> builder.forMod(MODID))) {
                 this.oneToOneConversionRecipe(Items.APPLE, Items.DIAMOND, null);
                 this.twoByTwoPacker(RecipeCategory.MISC, Items.DIAMOND, Items.APPLE);
+            }
+
+            // Scoped should generate all recipes in conditions
+            try (var _ = this.output.withContext(builder -> builder.withConditions(NeoForgeConditions.tagEmpty(ItemTags.PLANKS)))) {
+                this.oneToOneConversionRecipe(Items.POTATO, Items.EMERALD, null);
+                this.twoByTwoPacker(RecipeCategory.MISC, Items.EMERALD, Items.POTATO);
             }
         }
     }

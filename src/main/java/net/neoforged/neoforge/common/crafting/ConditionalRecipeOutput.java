@@ -24,6 +24,7 @@ import org.jspecify.annotations.Nullable;
  * Do not use directly, obtain via {@link RecipeOutput#withConditions(ICondition...)}.
  */
 @ApiStatus.Internal
+@Deprecated(forRemoval = true)
 public class ConditionalRecipeOutput implements RecipeOutput {
     private final RecipeOutput inner;
     private final ICondition[] conditions;

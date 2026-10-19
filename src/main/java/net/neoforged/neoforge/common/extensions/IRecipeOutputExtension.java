@@ -8,17 +8,20 @@ package net.neoforged.neoforge.common.extensions;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
 import net.neoforged.neoforge.common.conditions.ICondition;
-import net.neoforged.neoforge.common.crafting.ConditionalRecipeOutput;
+import net.neoforged.neoforge.common.data.RecipeOutputWrapper;
+import net.neoforged.neoforge.common.data.RecipeOutputWrapper.ContextBuilder;
+import net.neoforged.neoforge.common.util.NoExceptionAutoCloseable;
 import org.jspecify.annotations.Nullable;
+
+import java.util.function.UnaryOperator;
 
 /**
  * Extra methods for {@link RecipeOutput}.
  */
-public interface IRecipeOutputExtension extends AutoCloseable {
+public interface IRecipeOutputExtension {
     private RecipeOutput self() {
         return (RecipeOutput) this;
     }
@@ -28,26 +31,30 @@ public interface IRecipeOutputExtension extends AutoCloseable {
      */
     void accept(ResourceKey<Recipe<?>> key, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions);
 
-    /**
-     * Builds a wrapper around this recipe output that adds conditions to all received recipes.
-     */
+    /// Builds a wrapper around this recipe output that adds conditions to all received recipes.
+    ///
+    /// @param conditions The conditions to apply to the recipe output.
+    /// @return The wrapped recipe output.
     default RecipeOutput withConditions(ICondition... conditions) {
-        return new ConditionalRecipeOutput(self(), conditions);
+        return RecipeOutputWrapper.singleUse(self(), builder -> builder.withConditions(conditions));
     }
 
-    /// Sets the mod id that should be used as the namespace for generating recipes via
-    /// [RecipeBuilder#save(RecipeOutput)] or [RecipeBuilder#save(RecipeOutput, String)].
-    /// This is provided as a helper for existing [RecipeProvider] methods that assume that
-    /// do not provide some way to set the recipe namespace.
+    /// Scopes the [RecipeOutput] to use a specific context.
     ///
-    /// This should be scoped through a `try`-with-resources block:
+    /// This should be used via a `try`-with-resources block:
     /// <!-- @formatter:off because of https://github.com/eclipse-jdt/eclipse.jdt.core/issues/5474 -->
     /// ```java
     /// // In some `RecipeProvider` subclass
     /// @Override
     /// protected void buildRecipes() {
-    ///     try (var modOutput = this.output.forMod("examplemod")) {
+    ///     try (var _ = this.output.withContext(
+    ///             builder -> builder.forMod("examplemod")
+    ///                 .withConditions(
+    ///                     NeoForgeConditions.modLoaded("examplemod")
+    ///                 )
+    ///     )) {
     ///         // Sets the recipe id to "examplemod:diamond_to_apple".
+    ///         // Will only load if "examplemod" is present.
     ///         this.shapeless(RecipeCategory.MISC, Items.APPLE)
     ///             .requires(Items.DIAMOND)
     ///             .unlockedBy(getHasName(Items.APPLE), this.has(Items.APPLE))
@@ -59,17 +66,15 @@ public interface IRecipeOutputExtension extends AutoCloseable {
     /// ```
     /// <!-- @formatter:on -->
     ///
-    /// @param modId The mod id to use.
-    /// @return This recipe output.
-    default RecipeOutput forMod(String modId) {
-        return self();
+    /// @param <O> A [RecipeOutput] which is auto closeable.
+    /// @param builder A unary operator used to construct the context.
+    /// @return A scoped recipe output.
+    default <O extends RecipeOutput & NoExceptionAutoCloseable> O withContext(UnaryOperator<ContextBuilder> builder) {
+        return (O) RecipeOutputWrapper.withContext(self(), builder);
     }
 
     /// @return The mod id to use when generating a recipe through the [RecipeBuilder].
     default @Nullable String overrideModId() {
         return null;
     }
-
-    @Override
-    default void close() {}
 }

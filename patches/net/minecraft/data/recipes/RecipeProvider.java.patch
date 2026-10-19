@@ -1,31 +1,26 @@
 --- a/net/minecraft/data/recipes/RecipeProvider.java
 +++ b/net/minecraft/data/recipes/RecipeProvider.java
-@@ -95,16 +_,38 @@
+@@ -92,19 +_,33 @@
+         .put(BlockFamily.Variant.COBBLED, (context, result, base) -> context.stonecutterResultFromBase(RecipeCategory.BUILDING_BLOCKS, result, base, 1))
+         .build();
+ 
++    /// @deprecated Neo: Use ddefault mod id and condition variant instead.
++    @Deprecated
      protected RecipeProvider(BootstrapContext<Recipe<?>> recipeOutput, BootstrapContext<Advancement> advancementOutput) {
++        this(recipeOutput, advancementOutput, null);
++    }
++
++    /// A Neo-added constructor that allows providers to specify the default mod id and conditions that should
++    /// apply to all recipes.
++    /// @param defaultModId The default mod id to apply to [RecipeBuilder#save(RecipeOutput)] and [RecipeBuilder#save(RecipeOutput, String)].
++    /// @param conditions The base conditions to apply to all recipes.
++    protected RecipeProvider(BootstrapContext<Recipe<?>> recipeOutput, BootstrapContext<Advancement> advancementOutput, @Nullable String defaultModId, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
          this.advancementOutput = advancementOutput;
-         this.output = new RecipeOutput() {
--            @Override
+-        this.output = new RecipeOutput() {
++        this.output = new net.neoforged.neoforge.common.data.RecipeOutputWrapper(new RecipeOutput() {
+             @Override
 -            public void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancementHolder) {
 -                recipeOutput.register(id, recipe);
-+            private @Nullable String overrideModId;
-+
-+            @Override
-+            public RecipeOutput forMod(String modId) {
-+                this.overrideModId = modId;
-+                return this;
-+            }
-+
-+            @Override
-+            public @Nullable String overrideModId() {
-+                return this.overrideModId;
-+            }
-+
-+            @Override
-+            public void close() {
-+                this.overrideModId = null;
-+            }
-+
-+            @Override
 +            public void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancementHolder, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
 +                recipeOutput.register(id, recipe, conditions);
                  if (advancementHolder != null) {
@@ -44,7 +39,13 @@
              }
  
              @Override
-@@ -127,6 +_,20 @@
+@@ -122,11 +_,25 @@
+             public <S> Stream<Holder.Reference<S>> listContextElements(ResourceKey<? extends Registry<? extends S>> key) {
+                 return recipeOutput.listContextElements(key);
+             }
+-        };
++        }, defaultModId, conditions);
+         this.items = recipeOutput.lookup(Registries.ITEM);
          this.trimPatterns = recipeOutput.lookup(Registries.TRIM_PATTERN);
      }
  
