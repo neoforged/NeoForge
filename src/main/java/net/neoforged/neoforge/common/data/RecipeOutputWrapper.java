@@ -1,7 +1,14 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.common.data;
 
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.Holder;
@@ -18,21 +25,17 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
-import java.util.function.UnaryOperator;
-import java.util.stream.Stream;
-
 /// An internal wrapper around [RecipeOutput] to handle scoping conditions and changing the
 /// default mod id used in [RecipeBuilder]s.
 @ApiStatus.Internal
 public final class RecipeOutputWrapper implements RecipeOutput, NoExceptionAutoCloseable {
-
     private static final ICondition[] EMPTY = new ICondition[0];
 
     private final RecipeOutput output;
     private final Stack<Context> context;
 
-    /// @param output The original [RecipeOutput].
-    /// @param defaultModId The default mod id to apply to [RecipeBuilder#save(RecipeOutput)] and [RecipeBuilder#save(RecipeOutput, String)].
+    /// @param output        The original [RecipeOutput].
+    /// @param defaultModId      The default mod id to apply to [RecipeBuilder#save(RecipeOutput)] and [RecipeBuilder#save(RecipeOutput, String)].
     /// @param defaultConditions The base conditions to apply to all recipes.
     public RecipeOutputWrapper(RecipeOutput output, @Nullable String defaultModId, ICondition[] defaultConditions) {
         this.output = output;
@@ -49,7 +52,7 @@ public final class RecipeOutputWrapper implements RecipeOutput, NoExceptionAutoC
     /// Otherwise, a new [RecipeOutputWrapper] is created. This should be used in a `try`-with-resources
     /// block.
     ///
-    /// @param output The original recipe output.
+    /// @param output  The original recipe output.
     /// @param builder A unary operator used to construct the context.
     /// @return A wrapped recipe output.
     public static RecipeOutputWrapper withContext(RecipeOutput output, UnaryOperator<ContextBuilder> builder) {
@@ -71,7 +74,7 @@ public final class RecipeOutputWrapper implements RecipeOutput, NoExceptionAutoC
     /// This should be used only if the context is provided for a few recipes. Otherwise, use
     /// [#withContext(RecipeOutput, UnaryOperator)].
     ///
-    /// @param output The original recipe output.
+    /// @param output  The original recipe output.
     /// @param builder A unary operator used to construct the context.
     /// @return A single use recipe output.
     public static RecipeOutput singleUse(RecipeOutput output, UnaryOperator<ContextBuilder> builder) {
@@ -131,7 +134,7 @@ public final class RecipeOutputWrapper implements RecipeOutput, NoExceptionAutoC
     /// A helper to merge two condition arrays into a new array.
     ///
     /// @param originalConditions The original condition array to merge.
-    /// @param newConditions The array of new conditions to merge.
+    /// @param newConditions      The array of new conditions to merge.
     /// @return A new array containing all conditions.
     private static ICondition[] mergeConditions(ICondition[] originalConditions, ICondition... newConditions) {
         if (newConditions.length == 0) {
@@ -147,7 +150,6 @@ public final class RecipeOutputWrapper implements RecipeOutput, NoExceptionAutoC
 
     /// A builder for constructing the new context the recipe output should use.
     public static final class ContextBuilder {
-
         private @Nullable String modId;
         private ICondition[] conditions = EMPTY;
 

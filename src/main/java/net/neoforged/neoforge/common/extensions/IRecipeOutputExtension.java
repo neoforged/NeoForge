@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.common.extensions;
 
+import java.util.function.UnaryOperator;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -15,8 +16,6 @@ import net.neoforged.neoforge.common.data.RecipeOutputWrapper;
 import net.neoforged.neoforge.common.data.RecipeOutputWrapper.ContextBuilder;
 import net.neoforged.neoforge.common.util.NoExceptionAutoCloseable;
 import org.jspecify.annotations.Nullable;
-
-import java.util.function.UnaryOperator;
 
 /**
  * Extra methods for {@link RecipeOutput}.
