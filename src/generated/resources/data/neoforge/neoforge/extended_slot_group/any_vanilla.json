@@ -2,10 +2,10 @@
   "slots": [
     "neoforge:mainhand",
     "neoforge:offhand",
-    "neoforge:head",
-    "neoforge:chest",
-    "neoforge:legs",
     "neoforge:feet",
+    "neoforge:legs",
+    "neoforge:chest",
+    "neoforge:head",
     "neoforge:body",
     "neoforge:saddle"
   ]

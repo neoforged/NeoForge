@@ -7,6 +7,7 @@ package net.neoforged.neoforge.slot;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import java.util.Objects;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.RegistryAccess;
@@ -14,7 +15,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
@@ -30,28 +30,28 @@ public final class ExtendedSlotCompat {
     private ExtendedSlotCompat() {}
 
     private static final BiMap<EquipmentSlot, ResourceKey<ExtendedEquipmentSlot>> SLOT_KEY_MAP = Util.make(HashBiMap.create(8), m -> {
-        m.put(EquipmentSlot.MAINHAND, NeoForgeMod.SLOT_MAINHAND);
-        m.put(EquipmentSlot.OFFHAND, NeoForgeMod.SLOT_OFFHAND);
-        m.put(EquipmentSlot.HEAD, NeoForgeMod.SLOT_HEAD);
-        m.put(EquipmentSlot.CHEST, NeoForgeMod.SLOT_CHEST);
-        m.put(EquipmentSlot.LEGS, NeoForgeMod.SLOT_LEGS);
-        m.put(EquipmentSlot.FEET, NeoForgeMod.SLOT_FEET);
-        m.put(EquipmentSlot.BODY, NeoForgeMod.SLOT_BODY);
-        m.put(EquipmentSlot.SADDLE, NeoForgeMod.SLOT_SADDLE);
+        m.put(EquipmentSlot.MAINHAND, ExtendedEquipmentSlots.MAINHAND);
+        m.put(EquipmentSlot.OFFHAND, ExtendedEquipmentSlots.OFFHAND);
+        m.put(EquipmentSlot.HEAD, ExtendedEquipmentSlots.HEAD);
+        m.put(EquipmentSlot.CHEST, ExtendedEquipmentSlots.CHEST);
+        m.put(EquipmentSlot.LEGS, ExtendedEquipmentSlots.LEGS);
+        m.put(EquipmentSlot.FEET, ExtendedEquipmentSlots.FEET);
+        m.put(EquipmentSlot.BODY, ExtendedEquipmentSlots.BODY);
+        m.put(EquipmentSlot.SADDLE, ExtendedEquipmentSlots.SADDLE);
     });
 
     private static final BiMap<EquipmentSlotGroup, ResourceKey<ExtendedSlotGroup>> GROUP_KEY_MAP = Util.make(HashBiMap.create(11), m -> {
-        m.put(EquipmentSlotGroup.ANY, NeoForgeMod.GROUP_ANY_VANILLA);
-        m.put(EquipmentSlotGroup.MAINHAND, NeoForgeMod.GROUP_MAINHAND);
-        m.put(EquipmentSlotGroup.OFFHAND, NeoForgeMod.GROUP_OFFHAND);
-        m.put(EquipmentSlotGroup.HAND, NeoForgeMod.GROUP_HAND);
-        m.put(EquipmentSlotGroup.HEAD, NeoForgeMod.GROUP_HEAD);
-        m.put(EquipmentSlotGroup.CHEST, NeoForgeMod.GROUP_CHEST);
-        m.put(EquipmentSlotGroup.LEGS, NeoForgeMod.GROUP_LEGS);
-        m.put(EquipmentSlotGroup.FEET, NeoForgeMod.GROUP_FEET);
-        m.put(EquipmentSlotGroup.ARMOR, NeoForgeMod.GROUP_ARMOR);
-        m.put(EquipmentSlotGroup.BODY, NeoForgeMod.GROUP_BODY);
-        m.put(EquipmentSlotGroup.SADDLE, NeoForgeMod.GROUP_SADDLE);
+        m.put(EquipmentSlotGroup.ANY, ExtendedSlotGroups.ANY_VANILLA);
+        m.put(EquipmentSlotGroup.MAINHAND, ExtendedSlotGroups.MAINHAND);
+        m.put(EquipmentSlotGroup.OFFHAND, ExtendedSlotGroups.OFFHAND);
+        m.put(EquipmentSlotGroup.HAND, ExtendedSlotGroups.HAND);
+        m.put(EquipmentSlotGroup.HEAD, ExtendedSlotGroups.HEAD);
+        m.put(EquipmentSlotGroup.CHEST, ExtendedSlotGroups.CHEST);
+        m.put(EquipmentSlotGroup.LEGS, ExtendedSlotGroups.LEGS);
+        m.put(EquipmentSlotGroup.FEET, ExtendedSlotGroups.FEET);
+        m.put(EquipmentSlotGroup.ARMOR, ExtendedSlotGroups.ARMOR);
+        m.put(EquipmentSlotGroup.BODY, ExtendedSlotGroups.BODY);
+        m.put(EquipmentSlotGroup.SADDLE, ExtendedSlotGroups.SADDLE);
     });
 
     /**
@@ -66,26 +66,26 @@ public final class ExtendedSlotCompat {
      * {@return the registry key of the built-in extended slot corresponding to a vanilla {@link EquipmentSlot}.}
      */
     public static ResourceKey<ExtendedEquipmentSlot> slotKey(EquipmentSlot slot) {
-        return SLOT_KEY_MAP.get(slot);
+        return Objects.requireNonNull(SLOT_KEY_MAP.get(slot), () -> "No extended equipment slot is mapped to vanilla slot " + slot);
     }
 
     /**
      * {@return the registry key of the built-in extended slot group corresponding to a vanilla {@link EquipmentSlotGroup}.}
      */
     public static ResourceKey<ExtendedSlotGroup> groupKey(EquipmentSlotGroup group) {
-        return GROUP_KEY_MAP.get(group);
+        return Objects.requireNonNull(GROUP_KEY_MAP.get(group), () -> "No extended slot group is mapped to vanilla slot group " + group);
     }
 
     /**
      * Convert an extended slot-group holder back to the vanilla enum value, or null if the group does not map to vanilla.
      * <p>
-     * As a special case, we remap {@link NeoForgeMod#GROUP_ANY} back to {@link EquipmentSlotGroup#ANY}, even though {@link #fromVanilla} will give us GROUP_ANY_VANILLA.
+     * As a special case, we remap {@link ExtendedSlotGroups#ANY} back to {@link EquipmentSlotGroup#ANY}, even though {@link #fromVanilla} will give us {@link ExtendedSlotGroups#ANY_VANILLA}.
      */
     @Nullable
     public static EquipmentSlotGroup toVanillaGroup(Holder<ExtendedSlotGroup> group) {
         ResourceKey<ExtendedSlotGroup> key = group.unwrapKey().orElse(null);
         if (key == null) return null;
-        if (key == NeoForgeMod.GROUP_ANY) return EquipmentSlotGroup.ANY;
+        if (key == ExtendedSlotGroups.ANY) return EquipmentSlotGroup.ANY;
         return GROUP_KEY_MAP.inverse().get(key);
     }
 
