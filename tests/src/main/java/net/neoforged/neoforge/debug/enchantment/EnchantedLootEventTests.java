@@ -5,11 +5,12 @@
 
 package net.neoforged.neoforge.debug.enchantment;
 
+import java.util.List;
+import java.util.Optional;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityTypes;
@@ -40,9 +41,6 @@ import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
-import java.util.List;
-import java.util.Optional;
-
 @ForEachTest(groups = "enchantment_loot")
 public class EnchantedLootEventTests {
     /// evaluates the given loot table using the given seed
@@ -68,14 +66,14 @@ public class EnchantedLootEventTests {
         ResourceKey<LootTable> conditionLootTable = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(test.createModId(), "flat_chance"));
 
         reg.registriesForTest(registries -> registries.lootTable(
-            new LootTableProvider.SubProviderEntry(context -> () -> {
-                context.accept(
-                    conditionLootTable,
-                    LootTable.lootTable().withPool(LootPool.lootPool()
-                        .add(LootItem.lootTableItem(Items.DIAMOND)
-                            // 0% chance at level 0, 100% at level 1
-                            .when(BonusLevelTableCondition.bonusLevelFlatChance(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE), 0, 1)))));
-            }, LootContextParamSets.BLOCK)));
+                new LootTableProvider.SubProviderEntry(context -> () -> {
+                    context.accept(
+                            conditionLootTable,
+                            LootTable.lootTable().withPool(LootPool.lootPool()
+                                    .add(LootItem.lootTableItem(Items.DIAMOND)
+                                            // 0% chance at level 0, 100% at level 1
+                                            .when(BonusLevelTableCondition.bonusLevelFlatChance(context.lookup(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE), 0, 1)))));
+                }, LootContextParamSets.BLOCK)));
 
         test.eventListeners().forge().addListener((EnchantedBlockLootEvent e) -> {
             if (e.getEnchantment().is(Enchantments.FORTUNE) && e.getEntity() instanceof LivingEntity living && living.getOffhandItem().is(Items.LAPIS_LAZULI)) {
@@ -96,12 +94,12 @@ public class EnchantedLootEventTests {
 
             // build context, we can reuse it for all calls
             LootParams params = new LootParams.Builder(helper.getLevel())
-              .withParameter(LootContextParams.ORIGIN, Vec3.ZERO)
-              .withParameter(LootContextParams.TOOL, ItemStack.EMPTY)
-              .withOptionalParameter(LootContextParams.THIS_ENTITY, player)
-              .withOptionalParameter(LootContextParams.BLOCK_ENTITY, null)
-              .withParameter(LootContextParams.BLOCK_STATE, block.defaultBlockState())
-              .create(LootContextParamSets.BLOCK);
+                    .withParameter(LootContextParams.ORIGIN, Vec3.ZERO)
+                    .withParameter(LootContextParams.TOOL, ItemStack.EMPTY)
+                    .withOptionalParameter(LootContextParams.THIS_ENTITY, player)
+                    .withOptionalParameter(LootContextParams.BLOCK_ENTITY, null)
+                    .withParameter(LootContextParams.BLOCK_STATE, block.defaultBlockState())
+                    .create(LootContextParamSets.BLOCK);
 
             // empty hand means no fortune
             player.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
@@ -141,14 +139,14 @@ public class EnchantedLootEventTests {
         ResourceKey<LootTable> conditionLootTable = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(test.createModId(), "flat_chance"));
 
         reg.registriesForTest(registries -> registries.lootTable(
-          new LootTableProvider.SubProviderEntry(context -> () -> {
-              context.accept(
-                conditionLootTable,
-                LootTable.lootTable().withPool(LootPool.lootPool()
-                  .add(LootItem.lootTableItem(Items.DIAMOND)
-                    // 0% chance at level 0, 100% at level 1
-                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(context.lookup(Registries.ENCHANTMENT), 0, 1)))));
-          }, LootContextParamSets.ENTITY)));
+                new LootTableProvider.SubProviderEntry(context -> () -> {
+                    context.accept(
+                            conditionLootTable,
+                            LootTable.lootTable().withPool(LootPool.lootPool()
+                                    .add(LootItem.lootTableItem(Items.DIAMOND)
+                                            // 0% chance at level 0, 100% at level 1
+                                            .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(context.lookup(Registries.ENCHANTMENT), 0, 1)))));
+                }, LootContextParamSets.ENTITY)));
 
         test.eventListeners().forge().addListener((EnchantedEntityLootEvent e) -> {
             if (e.getEnchantment().is(Enchantments.LOOTING)) {
@@ -172,12 +170,12 @@ public class EnchantedLootEventTests {
 
             // build context, we can reuse it for both calls
             LootParams params = new LootParams.Builder(helper.getLevel())
-              .withParameter(LootContextParams.THIS_ENTITY, zombie)
-              .withParameter(LootContextParams.ORIGIN, Vec3.ZERO)
-              .withParameter(LootContextParams.DAMAGE_SOURCE, helper.getLevel().damageSources().playerAttack(player))
-              .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, player)
-              .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, player)
-              .create(LootContextParamSets.ENTITY);
+                    .withParameter(LootContextParams.THIS_ENTITY, zombie)
+                    .withParameter(LootContextParams.ORIGIN, Vec3.ZERO)
+                    .withParameter(LootContextParams.DAMAGE_SOURCE, helper.getLevel().damageSources().playerAttack(player))
+                    .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, player)
+                    .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, player)
+                    .create(LootContextParamSets.ENTITY);
 
             // no looting with empty offhand
             player.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
