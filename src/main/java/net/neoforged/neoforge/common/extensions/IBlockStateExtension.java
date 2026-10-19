@@ -31,6 +31,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.SignalGetter;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -46,6 +47,8 @@ import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
 import net.neoforged.neoforge.common.util.BlockRelocability;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelDataManager;
 import org.jspecify.annotations.Nullable;
 
 public interface IBlockStateExtension {
@@ -441,29 +444,36 @@ public interface IBlockStateExtension {
         return self().getBlock().canStickTo(self(), other);
     }
 
-    /**
-     * Chance that fire will spread and consume this block.
-     * 300 being a 100% chance, 0, being a 0% chance.
-     *
-     * @param level The current level
-     * @param pos   Block position in level
-     * @param face  The face that the fire is coming from
-     * @return A number ranging from 0 to 300 relating used to determine if the block will be consumed by fire
-     */
-    default int getFlammability(BlockGetter level, BlockPos pos, Direction face) {
-        return self().getBlock().getFlammability(self(), level, pos, face);
-    }
-
-    /**
-     * Called when fire is updating, checks if a block face can catch fire.
-     *
-     * @param level The current level
-     * @param pos   Block position in level
-     * @param face  The face that the fire is coming from
-     * @return True if the face can be on fire, false otherwise.
-     */
+    /// Called when fire is updating, checks if a block face can catch fire.
+    ///
+    /// @param level The current level
+    /// @param pos   Block position in level
+    /// @param face  The face that the fire is coming from
+    /// @return True if the face can be on fire, false otherwise.
     default boolean isFlammable(BlockGetter level, BlockPos pos, Direction face) {
         return self().getBlock().isFlammable(self(), level, pos, face);
+    }
+
+    /// Called when fire is updating on a neighbor block.
+    /// The higher the number returned, the faster fire will spread around this block.
+    ///
+    /// @param level The current level
+    /// @param pos   Block position in level
+    /// @param face  The face that the fire is coming from
+    /// @return A number that is used to determine the speed of fire growth around the block
+    default int getFireSpreadSpeed(BlockGetter level, BlockPos pos, Direction face) {
+        return self().getBlock().getFireSpreadSpeed(self(), level, pos, face);
+    }
+
+    /// Chance that fire will spread and consume this block.
+    /// 300 being a 100% chance, 0, being a 0% chance.
+    ///
+    /// @param level The current level
+    /// @param pos   Block position in level
+    /// @param face  The face that the fire is coming from
+    /// @return A number ranging from 0 to 300 relating used to determine if the block will be consumed by fire
+    default int getFlammability(BlockGetter level, BlockPos pos, Direction face) {
+        return self().getBlock().getFlammability(self(), level, pos, face);
     }
 
     /**
@@ -480,19 +490,6 @@ public interface IBlockStateExtension {
      */
     default boolean onCaughtFire(Level level, BlockPos pos, @Nullable Direction face, @Nullable LivingEntity igniter, ItemStack ignitionItem) {
         return self().getBlock().onCaughtFire(self(), level, pos, face, igniter, ignitionItem);
-    }
-
-    /**
-     * Called when fire is updating on a neighbor block.
-     * The higher the number returned, the faster fire will spread around this block.
-     *
-     * @param level The current level
-     * @param pos   Block position in level
-     * @param face  The face that the fire is coming from
-     * @return A number that is used to determine the speed of fire growth around the block
-     */
-    default int getFireSpreadSpeed(BlockGetter level, BlockPos pos, Direction face) {
-        return self().getBlock().getFireSpreadSpeed(self(), level, pos, face);
     }
 
     /**
@@ -751,5 +748,33 @@ public interface IBlockStateExtension {
     /// @see IBlockExtension#getRelocability
     default BlockRelocability getRelocability(LevelReader level, BlockPos pos) {
         return self().getBlock().getRelocability(level, pos, self());
+    }
+
+    /// Determines whether the given adjacent block can connect to the given side of this block.
+    /// This is used by iron bars, glass panes, fences and walls to determine whether they can connect.
+    ///
+    /// - Returning [TriState#TRUE] forces the adjacent block to connect.
+    /// - Returning [TriState#DEFAULT] leaves the decision to the connecting block's further checks.
+    /// - Returning [TriState#FALSE] prevents the adjacent block from connecting.
+    ///
+    /// @param side          The side of this block being connected to
+    /// @param adjacentBlock The adjacent block attempting to connect to this block
+    /// @return whether the adjacent block can connect to this block.
+    default TriState canBeConnectedTo(Direction side, Block adjacentBlock) {
+        return self().getBlock().canBeConnectedTo(self(), side, adjacentBlock);
+    }
+
+    /// Allows you to return additional model data.
+    ///
+    /// This data can be used to provide additional functionality in your `BlockStateModel`.
+    /// You need to schedule a refresh of your model data via [ModelDataManager#requestRefresh(BlockPos)] if the result of this function changes.
+    ///
+    /// This method is always called on the main client thread.
+    ///
+    /// @param level Level containing this block
+    /// @param pos   Position of this block
+    /// @return Your model data
+    default ModelData getModelData(Level level, BlockPos pos) {
+        return self().getBlock().getModelData(self(), level, pos);
     }
 }

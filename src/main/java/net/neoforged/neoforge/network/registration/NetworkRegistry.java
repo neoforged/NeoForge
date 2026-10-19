@@ -43,6 +43,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.NeoForgeVersion;
+import net.neoforged.neoforge.common.config.NeoForgeLocalConfig;
 import net.neoforged.neoforge.common.extensions.ICommonPacketListener;
 import net.neoforged.neoforge.network.configuration.CommonRegisterTask;
 import net.neoforged.neoforge.network.configuration.CommonVersionTask;
@@ -240,6 +241,10 @@ public class NetworkRegistry {
     public static StreamCodec<? super FriendlyByteBuf, ? extends CustomPacketPayload> getCodec(Identifier id, ConnectionProtocol protocol, PacketFlow flow) {
         // Custom modded packets which can be sent before a payload setup is negotiated.
         if (BUILTIN_PAYLOADS.containsKey(id)) {
+            if (flow == PacketFlow.SERVERBOUND
+                    && (id.equals(ModdedNetworkPayload.ID) || id.equals(ModdedNetworkSetupFailedPayload.ID))) {
+                return null;
+            }
             return BUILTIN_PAYLOADS.get(id);
         }
 
@@ -584,7 +589,15 @@ public class NetworkRegistry {
      * @param resourceLocations The resource locations to add.
      */
     public static void onMinecraftRegister(Connection connection, Set<Identifier> resourceLocations) {
-        ChannelAttributes.getOrCreateAdHocChannels(connection).addAll(resourceLocations);
+        var channels = ChannelAttributes.getOrCreateAdHocChannels(connection);
+        if ((channels.size() + resourceLocations.size()) > NeoForgeLocalConfig.INSTANCE.maxAdhocChannelLimit.getAsInt()) {
+            if (connection.getPacketListener() instanceof ICommonPacketListener listener) {
+                listener.disconnect(Component.translatable("neoforge.network.adhoc_channels.too_many"));
+                return;
+            }
+            throw new RuntimeException("Too many ad-hoc channels.");
+        }
+        channels.addAll(resourceLocations);
     }
 
     /**
