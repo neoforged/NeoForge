@@ -24,7 +24,7 @@
          }
  
 -        if (shape == RailShape.NORTH_SOUTH) {
-+        if (shape == RailShape.NORTH_SOUTH && canMakeSlopes) {
++        if (shape == RailShape.NORTH_SOUTH && this.canMakeSlopes) {
              if (BaseRailBlock.isRail(this.level, north.above())) {
                  shape = RailShape.ASCENDING_NORTH;
              }
@@ -33,7 +33,7 @@
          }
  
 -        if (shape == RailShape.EAST_WEST) {
-+        if (shape == RailShape.EAST_WEST && canMakeSlopes) {
++        if (shape == RailShape.EAST_WEST && this.canMakeSlopes) {
              if (BaseRailBlock.isRail(this.level, east.above())) {
                  shape = RailShape.ASCENDING_EAST;
              }
@@ -54,7 +54,7 @@
          }
  
 -        if (shape == RailShape.NORTH_SOUTH) {
-+        if (shape == RailShape.NORTH_SOUTH && canMakeSlopes) {
++        if (shape == RailShape.NORTH_SOUTH && this.canMakeSlopes) {
              if (BaseRailBlock.isRail(this.level, north.above())) {
                  shape = RailShape.ASCENDING_NORTH;
              }
@@ -63,7 +63,7 @@
          }
  
 -        if (shape == RailShape.EAST_WEST) {
-+        if (shape == RailShape.EAST_WEST && canMakeSlopes) {
++        if (shape == RailShape.EAST_WEST && this.canMakeSlopes) {
              if (BaseRailBlock.isRail(this.level, east.above())) {
                  shape = RailShape.ASCENDING_EAST;
              }

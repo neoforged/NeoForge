@@ -46,6 +46,6 @@
 +
 +    /// Neo: {@return the position of the block this particle was spawned for, if available}
 +    public net.minecraft.core.@org.jspecify.annotations.Nullable BlockPos getPos() {
-+        return pos;
++        return this.pos;
      }
  }

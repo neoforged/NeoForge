@@ -63,11 +63,14 @@
          Slot slot = this.getHoveredSlot(event.x(), event.y());
          this.doubleclick = this.lastClickSlot == slot && doubleClick;
          this.skipNextRelease = false;
-@@ -307,6 +_,7 @@
+@@ -307,6 +_,10 @@
              int xo = this.leftPos;
              int yo = this.topPos;
              boolean clickedOutside = this.hasClickedOutside(event.x(), event.y(), xo, yo);
-+            if (slot != null) clickedOutside = false; // Neo: prevent dropping of items through slots outside of GUI boundaries
++            if (slot != null) {
++                // Neo: prevent dropping of items through slots outside of GUI boundaries
++                clickedOutside = false;
++            }
              int slotId = -1;
              if (slot != null) {
                  slotId = slot.index;
@@ -151,30 +154,34 @@
                      this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, i, ContainerInput.SWAP);
                      return true;
                  }
-@@ -588,6 +_,28 @@
+@@ -588,6 +_,32 @@
      @Override
      public T getMenu() {
          return this.menu;
 +    }
 +
-+    // Neo: Add getters for non-public fields
-+    @org.jspecify.annotations.Nullable
++    /// Neo: {@return the currently hovered slot}
++    @Nullable
 +    public Slot getHoveredSlot() {
 +        return this.hoveredSlot;
 +    }
 +
++    /// Neo: {@return the X coordinate of this container screen's content}
 +    public int getLeftPos() {
 +        return leftPos;
 +    }
 +
++    /// Neo: {@return the Y coordinate of this container screen's content}
 +    public int getTopPos() {
 +        return topPos;
 +    }
 +
++    /// Neo: {@return the width of this container screen's content}
 +    public int getImageWidth() {
 +        return imageWidth;
 +    }
 +
++    /// Neo: {@return the height of this container screen's content}
 +    public int getImageHeight() {
 +        return imageHeight;
      }

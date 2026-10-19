@@ -11,11 +11,13 @@
              if ((mainHandIsFishing || offHandIsFishing) && this.distanceToSqr(owner) <= 1024.0) {
                  return false;
              }
-@@ -268,6 +_,7 @@
+@@ -268,6 +_,9 @@
  
      private void checkCollision() {
          HitResult hitResult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
-+        if (hitResult.getType() == HitResult.Type.MISS || !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitResult))
++        if (hitResult.getType() != HitResult.Type.MISS && net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitResult)) {
++            return;
++        }
          this.hitTargetOrDeflectSelf(hitResult);
      }
  

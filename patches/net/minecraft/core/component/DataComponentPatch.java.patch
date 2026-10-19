@@ -17,7 +17,7 @@
 +        return (T) Removed.removedToNull(value);
 +    }
 +
-+    public Set<DataComponentType<?>> keySet(){
++    public Set<DataComponentType<?>> keySet() {
 +        return this.map.keySet();
 +    }
 +

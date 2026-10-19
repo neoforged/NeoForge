@@ -102,6 +102,6 @@
 +    }
 +
 +    public boolean shouldForceNaturalSpawning(ChunkPos chunkPos) {
-+        return chunksWithForceNaturalSpawning.contains(chunkPos.pack());
++        return this.chunksWithForceNaturalSpawning.contains(chunkPos.pack());
      }
  }

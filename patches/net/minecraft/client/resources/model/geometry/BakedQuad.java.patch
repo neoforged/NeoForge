@@ -52,7 +52,7 @@
 +        }
 +
 +        public static BakedQuad.MaterialInfo of(
-+                Material.Baked material, Transparency transparency, int tintIndex, @Nullable Direction shadeDirectionOverride, int lightEmission, boolean ambientOcclusion
++            Material.Baked material, Transparency transparency, int tintIndex, @Nullable Direction shadeDirectionOverride, int lightEmission, boolean ambientOcclusion
 +        ) {
              ChunkSectionLayer layer = ChunkSectionLayer.byTransparency(transparency);
              RenderType itemRenderType;

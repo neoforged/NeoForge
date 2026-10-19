@@ -39,9 +39,9 @@
 +        @Nullable
 +        @Override
 +        public <A> A getData(net.neoforged.neoforge.registries.datamaps.DataMapType<T, A> type) {
-+            HolderLookup.RegistryLookup<T> lookup = unwrapLookup();
++            HolderLookup.RegistryLookup<T> lookup = this.unwrapLookup();
 +            if (lookup != null) {
-+                return lookup.getData(type, key());
++                return lookup.getData(type, this.key());
 +            }
 +            return null;
 +        }

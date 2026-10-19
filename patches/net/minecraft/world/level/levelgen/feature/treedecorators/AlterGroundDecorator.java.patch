@@ -30,7 +30,7 @@
      }
  
      private void placeCircle(TreeDecorator.Context context, BlockPos pos) {
-+        placeCircle(context, pos, this.provider.value()::getOptionalState);
++        this.placeCircle(context, pos, this.provider.value()::getOptionalState);
 +    }
 +
 +    private void placeCircle(TreeDecorator.Context context, BlockPos pos, net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider eventProvider) {
@@ -45,7 +45,7 @@
      }
  
      private void placeBlockAt(TreeDecorator.Context context, BlockPos pos) {
-+        placeBlockAt(context, pos, this.provider.value()::getOptionalState);
++        this.placeBlockAt(context, pos, this.provider.value()::getOptionalState);
 +    }
 +
 +    private void placeBlockAt(TreeDecorator.Context context, BlockPos pos, net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider eventProvider) {

@@ -22,15 +22,15 @@
 +
 +    // Neo: Used in datagen
 +    public Identifier getId() {
-+        return id;
++        return this.id;
 +    }
 +
 +    public boolean isRequired() {
-+        return required;
++        return this.required;
 +    }
 +
 +    public boolean isTag() {
-+        return tag;
++        return this.tag;
      }
  
      public interface Lookup<T> {

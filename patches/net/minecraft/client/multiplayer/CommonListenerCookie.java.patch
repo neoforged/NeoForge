@@ -12,20 +12,20 @@
 +    /// instead, to indicate whether the connection is modded.
 +    @Deprecated
 +    public CommonListenerCookie(
-+            LevelLoadTracker levelLoadTracker,
-+            GameProfile localGameProfile,
-+            WorldSessionTelemetryManager telemetryManager,
-+            RegistryAccess.Frozen receivedRegistries,
-+            FeatureFlagSet enabledFeatures,
-+            @Nullable String serverBrand,
-+            @Nullable ServerData serverData,
-+            @Nullable Screen postDisconnectScreen,
-+            Map<Identifier, byte[]> serverCookies,
-+            ChatComponent.@Nullable State chatState,
-+            Map<String, String> customReportDetails,
-+            ServerLinks serverLinks,
-+            Map<UUID, PlayerInfo> seenPlayers,
-+            boolean seenInsecureChatWarning
++        LevelLoadTracker levelLoadTracker,
++        GameProfile localGameProfile,
++        WorldSessionTelemetryManager telemetryManager,
++        RegistryAccess.Frozen receivedRegistries,
++        FeatureFlagSet enabledFeatures,
++        @Nullable String serverBrand,
++        @Nullable ServerData serverData,
++        @Nullable Screen postDisconnectScreen,
++        Map<Identifier, byte[]> serverCookies,
++        ChatComponent.@Nullable State chatState,
++        Map<String, String> customReportDetails,
++        ServerLinks serverLinks,
++        Map<UUID, PlayerInfo> seenPlayers,
++        boolean seenInsecureChatWarning
 +    ) {
 +        this(levelLoadTracker, localGameProfile, telemetryManager, receivedRegistries, enabledFeatures, serverBrand, serverData, postDisconnectScreen, serverCookies, chatState, customReportDetails, serverLinks, seenPlayers, seenInsecureChatWarning, net.neoforged.neoforge.network.connection.ConnectionType.OTHER);
 +    }

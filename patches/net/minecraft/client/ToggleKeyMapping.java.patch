@@ -5,7 +5,7 @@
      public void setDown(boolean down) {
          if (this.needsToggle.getAsBoolean()) {
 -            if (down) {
-+            if (down && isConflictContextAndModifierActive()) {
++            if (down && this.isConflictContextAndModifierActive()) {
                  super.setDown(!this.isDown());
              }
          } else {
@@ -15,7 +15,7 @@
 +
 +    @Override
 +    public boolean isDown() {
-+        return this.isDown && (isConflictContextAndModifierActive() || needsToggle.getAsBoolean());
++        return this.isDown && (this.isConflictContextAndModifierActive() || this.needsToggle.getAsBoolean());
      }
  
      @Override

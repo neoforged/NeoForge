@@ -11,20 +11,21 @@
          if (!state.canSurvive(level, pos)) {
              level.destroyBlock(pos, true);
          }
-@@ -50,6 +_,7 @@
+@@ -47,6 +_,9 @@
+     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+         BlockPos above = pos.above();
+         if (level.isEmptyBlock(above)) {
++            if (!net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, above, state, true)) {
++                return;
++            }
              int height = 1;
              int age = state.getValue(AGE);
  
-+            if(net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, above, state, true)) {
-             while (level.getBlockState(pos.below(height)).is(this)) {
-                 if (++height == 3 && age == 15) {
-                     return;
-@@ -71,6 +_,8 @@
+@@ -71,6 +_,7 @@
              if (age < 15) {
                  level.setBlock(pos, state.setValue(AGE, age + 1), 260);
              }
 +            net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(level, pos, state);
-+            }
          }
      }
  

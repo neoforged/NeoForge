@@ -5,7 +5,7 @@
              DebugScreenEntry entry = DebugScreenEntries.getEntry(location);
              this.isAllowed = entry != null && entry.isAllowed(DebugOptionsScreen.this.minecraft.showOnlyReducedInfo());
 -            String name = location.getPath();
-+            // Neo: Display the full RL for modded entries
++            // Neo: Display the full ID for modded entries
 +            String name = location.toShortString();
              if (this.isAllowed) {
                  this.name = name;

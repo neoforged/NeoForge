@@ -196,7 +196,7 @@
  
          return inAnyFluid;
      }
-@@ -1740,12 +_,13 @@
+@@ -1740,12 +_,15 @@
      }
  
      public boolean canSpawnSprintParticle() {
@@ -207,7 +207,9 @@
      protected void spawnSprintParticle() {
          BlockPos pos = this.getOnPosLegacy();
          BlockState blockState = this.level().getBlockState(pos);
-+        if(!blockState.addRunningEffects(level, pos, this))
++        if (blockState.addRunningEffects(level, pos, this)) {
++            return;
++        }
          if (blockState.getRenderShape() != RenderShape.INVISIBLE) {
              Vec3 movement = this.getDeltaMovement();
              BlockPos entityPosition = this.blockPosition();
@@ -241,7 +243,7 @@
              }
  
 +            var attachments = output.child(ATTACHMENTS_NBT_KEY);
-+            serializeAttachments(attachments);
++            this.serializeAttachments(attachments);
 +            if (attachments.isEmpty()) {
 +                output.discard(ATTACHMENTS_NBT_KEY);
 +            }
@@ -255,7 +257,7 @@
                  this.hasVisualFire = input.getBooleanOr("HasVisualFire", false);
                  this.customData = input.read("data", CustomData.CODEC).orElse(CustomData.EMPTY);
 +                input.read("NeoForgeData", net.minecraft.nbt.CompoundTag.CODEC).ifPresent(neoData -> this.persistentData = neoData);
-+                input.child(ATTACHMENTS_NBT_KEY).ifPresent(attachments -> this.deserializeAttachments(attachments));
++                input.child(ATTACHMENTS_NBT_KEY).ifPresent(this::deserializeAttachments);
                  this.tags.clear();
                  input.read("Tags", TAG_LIST_CODEC).ifPresent(this.tags::addAll);
                  input.getString("Team").ifPresent(teamName -> {
@@ -263,8 +265,8 @@
  
          ItemEntity entity = new ItemEntity(level, this.getX() + offset.x, this.getY() + offset.y, this.getZ() + offset.z, itemStack);
          entity.setDefaultPickUpDelay();
-+        if (captureDrops() != null) {
-+            captureDrops().add(entity);
++        if (this.captureDrops() != null) {
++            this.captureDrops().add(entity);
 +        } else
          level.addFreshEntity(entity);
          return entity;

@@ -1,10 +1,11 @@
 --- a/net/minecraft/gametest/framework/GameTestMainUtil.java
 +++ b/net/minecraft/gametest/framework/GameTestMainUtil.java
-@@ -75,6 +_,7 @@
+@@ -75,6 +_,8 @@
  
              Bootstrap.bootStrap();
              Util.startTimerHackThread();
-+            net.neoforged.neoforge.server.loading.ServerModLoader.load(true); // Load mods before the level and packs are loaded
++            // Neo: Load mods before the level and packs are loaded
++            net.neoforged.neoforge.server.loading.ServerModLoader.load(true);
              String universePath = options.valueOf(universe);
              createOrResetDir(universePath);
              onUniverseCreated.accept(universePath);

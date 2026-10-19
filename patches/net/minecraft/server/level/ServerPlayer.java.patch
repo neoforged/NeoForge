@@ -275,7 +275,7 @@
 +        //Allows mods to specify data that persists after players respawn.
 +        var old = oldPlayer.getPersistentData();
 +        if (old.contains(PERSISTED_NBT_TAG)) {
-+            getPersistentData().put(PERSISTED_NBT_TAG, old.get(PERSISTED_NBT_TAG));
++            this.getPersistentData().put(PERSISTED_NBT_TAG, old.get(PERSISTED_NBT_TAG));
 +        }
 +        net.neoforged.neoforge.event.EventHooks.onPlayerClone(this, oldPlayer, !restoreAll);
 +        this.tabListHeader = oldPlayer.tabListHeader;

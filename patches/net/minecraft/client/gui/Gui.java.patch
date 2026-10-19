@@ -32,7 +32,7 @@
              this.minecraft.setLastInputType(InputType.NONE);
          }
  
-@@ -254,6 +_,21 @@
+@@ -254,6 +_,23 @@
              }
          }
  
@@ -40,7 +40,9 @@
 +        Screen old = this.screen;
 +        if (screen != null) {
 +            var event = new net.neoforged.neoforge.client.event.ScreenEvent.Opening(old, screen);
-+            if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) return;
++            if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) {
++                return;
++            }
 +            screen = event.getNewScreen();
 +        }
 +

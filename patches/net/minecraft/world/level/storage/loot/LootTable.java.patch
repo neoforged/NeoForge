@@ -120,7 +120,7 @@
 +    // Neo: Remove LootPools by name
 +    @org.jspecify.annotations.Nullable
 +    public LootPool removePool(String name) {
-+        checkFrozen();
++        this.checkFrozen();
 +        for (LootPool pool : this.pools) {
 +            if (name.equals(pool.getName())) {
 +                this.pools.remove(pool);
@@ -132,7 +132,7 @@
 +
 +    // Neo: Allow adding new pools to LootTable
 +    public void addPool(LootPool pool) {
-+        checkFrozen();
++        this.checkFrozen();
 +        if (pools.stream().anyMatch(e -> e == pool || e.getName() != null && e.getName().equals(pool.getName()))) {
 +            throw new RuntimeException("Attempted to add a duplicate pool to loot table: " + pool.getName());
 +        }

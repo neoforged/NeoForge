@@ -15,6 +15,6 @@
 +    }
 +
 +    public File getPlayerDir() {
-+        return playerDir;
++        return this.playerDir;
      }
  }

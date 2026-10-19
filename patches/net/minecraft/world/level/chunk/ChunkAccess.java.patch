@@ -18,7 +18,7 @@
      }
  
      public void findBlocks(Predicate<BlockState> predicate, BiConsumer<BlockPos, BlockState> consumer) {
-+        findBlocks(predicate, (state, _) -> predicate.test(state), consumer);
++        this.findBlocks(predicate, (state, _) -> predicate.test(state), consumer);
 +    }
 +
 +    public void findBlocks(Predicate<BlockState> predicate, java.util.function.BiPredicate<BlockState, BlockPos> fineFilter, BiConsumer<BlockPos, BlockState> consumer) {
@@ -34,7 +34,7 @@
              }
          }
      }
-@@ -463,6 +_,77 @@
+@@ -463,6 +_,79 @@
      @Override
      public ChunkSkyLightSources getSkyLightSources() {
          return this.skyLightSources;
@@ -42,37 +42,37 @@
 +
 +    @Override
 +    public boolean hasAttachments() {
-+        return getAttachmentHolder().hasAttachments();
++        return this.getAttachmentHolder().hasAttachments();
 +    }
 +
 +    @Override
 +    public boolean hasData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
-+        return getAttachmentHolder().hasData(type);
++        return this.getAttachmentHolder().hasData(type);
 +    }
 +
 +    @Override
 +    public <T> T getData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
-+        return getAttachmentHolder().getData(type);
++        return this.getAttachmentHolder().getData(type);
 +    }
 +
 +    @Override
 +    @Nullable
 +    public <T> T getExistingDataOrNull(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
-+        return getAttachmentHolder().getExistingDataOrNull(type);
++        return this.getAttachmentHolder().getExistingDataOrNull(type);
 +    }
 +
 +    @Override
 +    @Nullable
 +    public <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
-+        markUnsaved();
-+        return getAttachmentHolder().setData(type, data);
++        this.markUnsaved();
++        return this.getAttachmentHolder().setData(type, data);
 +    }
 +
 +    @Override
 +    @Nullable
 +    public <T> T removeData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
-+        markUnsaved();
-+        return getAttachmentHolder().removeData(type);
++        this.markUnsaved();
++        return this.getAttachmentHolder().removeData(type);
 +    }
 +
 +    /// **FOR INTERNAL USE ONLY**
@@ -83,8 +83,10 @@
 +    public final CompoundTag writeAttachmentsToNBT(HolderLookup.Provider provider) {
 +        ProblemReporter.Collector reporter = new ProblemReporter.Collector();
 +        var tag = net.minecraft.world.level.storage.TagValueOutput.createWithContext(reporter, provider);
-+        getAttachmentHolder().serializeAttachments(tag);
-+        if (!reporter.isEmpty()) throw new IllegalArgumentException("Attachments failed to serialise: " + reporter.getReport());
++        this.getAttachmentHolder().serializeAttachments(tag);
++        if (!reporter.isEmpty()) {
++            throw new IllegalArgumentException("Attachments failed to serialise: " + reporter.getReport());
++        }
 +        return tag.isEmpty() ? null : tag.buildResult();
 +    }
 +
@@ -95,7 +97,7 @@
 +    public final void readAttachmentsFromNBT(HolderLookup.Provider provider, CompoundTag tag) {
 +        ProblemReporter.Collector reporter = new ProblemReporter.Collector();
 +        var input = net.minecraft.world.level.storage.TagValueInput.create(reporter, provider, tag);
-+        getAttachmentHolder().deserializeInternal(provider, input);
++        this.getAttachmentHolder().deserializeInternal(provider, input);
 +        if (!reporter.isEmpty()) {
 +            throw new IllegalArgumentException("Attachments failed to deserialise: " + reporter.getReport());
 +        }
@@ -103,7 +105,7 @@
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public net.neoforged.neoforge.attachment.AttachmentHolder.AsField getAttachmentHolder() {
-+        return attachmentHolder;
++        return this.attachmentHolder;
 +    }
 +
 +    /// Neo: {@return the Level a chunk is tied to if available}

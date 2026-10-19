@@ -7,8 +7,8 @@
 +    /// Neo: Use this in conjunction with a [`DeferredRegister#register(String, Supplier)`][net.neoforged.neoforge.registries.DeferredRegister#register(String, java.util.function.Supplier)]
 +    /// call to both populate the [#BY_CLASS] map and register the argument type info so it can be used in commands.
 +    ///
-+    /// @param infoClass the class type of the argument type info
-+    /// @param argumentTypeInfo the argument type info instance
++    /// @param infoClass        The class type of the argument type info
++    /// @param argumentTypeInfo The argument type info instance
 +    /// @return the provided argument type info instance for chaining
 +    public static synchronized <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>> I registerByClass(Class<A> infoClass, I argumentTypeInfo) {
 +        BY_CLASS.put(infoClass, argumentTypeInfo);

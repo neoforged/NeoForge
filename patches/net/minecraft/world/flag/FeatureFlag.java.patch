@@ -21,6 +21,6 @@
 +    }
 +
 +    public boolean isModded() {
-+        return modded;
++        return this.modded;
      }
  }

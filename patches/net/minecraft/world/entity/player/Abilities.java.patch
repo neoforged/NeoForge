@@ -4,7 +4,7 @@
      private static final float DEFAULT_WALKING_SPEED = 0.1F;
      public boolean invulnerable;
      public boolean flying;
-+    /// @deprecated Neoforge: use [net.neoforged.neoforge.common.extensions.IPlayerExtension#mayFly] to read and [net.neoforged.neoforge.common.NeoForgeMod#CREATIVE_FLIGHT] Attribute to modify
++    /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.IPlayerExtension#mayFly] to read and [net.neoforged.neoforge.common.NeoForgeMod#CREATIVE_FLIGHT] Attribute to modify
 +    @Deprecated
      public boolean mayfly;
      public boolean instabuild;

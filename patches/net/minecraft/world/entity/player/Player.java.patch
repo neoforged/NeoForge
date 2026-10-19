@@ -76,8 +76,8 @@
      }
  
      protected void updatePlayerPose() {
-+        if (forcedPose != null) {
-+            this.setPose(forcedPose);
++        if (this.forcedPose != null) {
++            this.setPose(this.forcedPose);
 +            return;
 +        }
          if (this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.SWIMMING)) {
@@ -100,7 +100,7 @@
 +    /// @deprecated Neo: use [#getDestroySpeed(BlockState, BlockPos)] instead
 +    @Deprecated
      public float getDestroySpeed(BlockState state) {
-+        return getDestroySpeed(state, null);
++        return this.getDestroySpeed(state, null);
 +    }
 +
 +    public float getDestroySpeed(BlockState state, @Nullable BlockPos pos) {
@@ -325,7 +325,7 @@
 +    /// @deprecated Neo: Use [#doSweepAttack(Entity, float, DamageSource, float, AABB)] instead
 +    @Deprecated
      private void doSweepAttack(Entity entity, float baseDamage, DamageSource damageSource, float attackStrengthScale) {
-+        doSweepAttack(entity, baseDamage, damageSource, attackStrengthScale, entity.getBoundingBox().inflate(1.0, 0.25, 1.0));
++        this.doSweepAttack(entity, baseDamage, damageSource, attackStrengthScale, entity.getBoundingBox().inflate(1.0, 0.25, 1.0));
 +    }
 +
 +    private void doSweepAttack(Entity entity, float baseDamage, DamageSource damageSource, float attackStrengthScale, AABB sweepHitBox) {
@@ -397,7 +397,7 @@
  
      public void onEnchantmentPerformed(ItemStack itemStack, int enchantmentCost) {
 -        this.experienceLevel -= enchantmentCost;
-+        giveExperienceLevels(-enchantmentCost);
++        this.giveExperienceLevels(-enchantmentCost);
          if (this.experienceLevel < 0) {
              this.experienceLevel = 0;
              this.experienceProgress = 0.0F;
@@ -483,12 +483,12 @@
 +
 +    /// Neo: {@return the player name prefixes}
 +    public Collection<MutableComponent> getPrefixes() {
-+         return this.prefixes;
++        return this.prefixes;
 +    }
 +
 +    /// Neo: {@return the player name suffixes}
 +    public Collection<MutableComponent> getSuffixes() {
-+         return this.suffixes;
++        return this.suffixes;
 +    }
 +
 +    /// Neo: Force the displayed name to refresh, by firing [net.neoforged.neoforge.event.entity.player.PlayerEvent.NameFormat], using the real player name as event parameter.

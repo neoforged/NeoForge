@@ -126,11 +126,12 @@
          }
      }
  
-@@ -630,6 +_,7 @@
+@@ -630,6 +_,8 @@
          if (this.isInValidBounds(pos)) {
              this.getChunkAt(pos).removeBlockEntity(pos);
          }
-+        this.updateNeighbourForOutputSignal(pos, getBlockState(pos).getBlock()); //Notify neighbors of changes
++        // Neo: Notify neighbors of changes
++        this.updateNeighbourForOutputSignal(pos, this.getBlockState(pos).getBlock());
      }
  
      public boolean isLoaded(BlockPos pos) {
@@ -191,11 +192,12 @@
          return hasEntities.isTrue();
      }
  
-@@ -783,7 +_,7 @@
+@@ -783,7 +_,8 @@
          return this.getPlayerByUUID(uuid);
      }
  
 -    public abstract Collection<EnderDragonPart> dragonParts();
++    // Neo: widen generic to support non-dragon part entities
 +    public abstract Collection<? extends net.neoforged.neoforge.entity.PartEntity<?>> dragonParts();
  
      public void blockEntityChanged(BlockPos pos) {

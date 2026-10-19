@@ -75,25 +75,24 @@
          ItemEntity entity = this.createItemStackToDrop(itemStack, false, thrownFromHand);
          if (entity != null) {
 -            this.level().addFreshEntity(entity);
-+            if (captureDrops() != null) {
-+                captureDrops().add(entity);
++            if (this.captureDrops() != null) {
++                this.captureDrops().add(entity);
 +            } else {
 +                this.level().addFreshEntity(entity);
 +            }
          }
  
          return entity;
-@@ -852,8 +_,10 @@
+@@ -852,6 +_,9 @@
                      Holder<MobEffect> mobEffect = iterator.next();
                      MobEffectInstance effect = this.activeEffects.get(mobEffect);
                      if (!effect.tickServer(serverLevel, this, () -> this.onEffectUpdated(effect, true, null))) {
-+                        if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Expired(this, effect)).isCanceled()) {
++                        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Expired(this, effect)).isCanceled()) {
++                            continue;
++                        }
                          iterator.remove();
                          this.onEffectsRemoved(List.of(effect));
-+                        }
                      } else if (effect.getDuration() % 600 == 0) {
-                         this.onEffectUpdated(effect, false, null);
-                     }
 @@ -900,8 +_,9 @@
          List<ParticleOptions> visibleEffectParticles = this.activeEffects
              .values()
@@ -308,19 +307,15 @@
                  if (damageBlocked > 0.0F && !source.is(DamageTypeTags.IS_PROJECTILE) && source.getDirectEntity() instanceof LivingEntity livingEntity) {
                      this.blockUsingItem(level, livingEntity, source, damage, damageBlocked >= damage);
                  }
-@@ -1368,9 +_,9 @@
+@@ -1368,7 +_,7 @@
          Entity sourceEntity = source.getEntity();
          if (sourceEntity instanceof Player playerSource) {
              this.setLastHurtByPlayer(playerSource, 100);
 -        } else if (sourceEntity instanceof Wolf wolf && wolf.isTame()) {
--            if (wolf.getOwnerReference() != null) {
--                this.setLastHurtByPlayer(wolf.getOwnerReference().getUUID(), 100);
-+        } else if (sourceEntity instanceof TamableAnimal tamableAnimal && tamableAnimal.isTame()) {
-+            if (tamableAnimal.getOwnerReference() != null) {
-+                this.setLastHurtByPlayer(tamableAnimal.getOwnerReference().getUUID(), 100);
++        } else if (sourceEntity instanceof TamableAnimal wolf && wolf.isTame()) {
+             if (wolf.getOwnerReference() != null) {
+                 this.setLastHurtByPlayer(wolf.getOwnerReference().getUUID(), 100);
              } else {
-                 this.lastHurtByPlayer = null;
-                 this.lastHurtByPlayerMemoryTime = 0;
 @@ -1401,7 +_,7 @@
          for (InteractionHand hand : InteractionHand.values()) {
              ItemStack itemStack = this.getItemInHand(hand);
@@ -363,9 +358,9 @@
          this.dropEquipment(level);
          this.dropExperience(level, source.getEntity());
 +
-+        Collection<ItemEntity> drops = captureDrops(null);
++        Collection<ItemEntity> drops = this.captureDrops(null);
 +        if (!net.neoforged.neoforge.common.CommonHooks.onLivingDrops(this, source, drops, lastHurtByPlayerMemoryTime > 0)) {
-+            drops.forEach(e -> level().addFreshEntity(e));
++            drops.forEach(this.level()::addFreshEntity);
 +        }
      }
  
@@ -376,7 +371,7 @@
              )) {
 -            ExperienceOrb.award(level, this.position(), this.getExperienceReward(level, killer));
 +            int reward = net.neoforged.neoforge.event.EventHooks.getExperienceDrop(this, this.getLastHurtByPlayer(), this.getExperienceReward(level, killer));
-+            ExperienceOrb.award((ServerLevel) this.level(), this.position(), reward);
++            ExperienceOrb.award(level, this.position(), reward);
          }
      }
  
@@ -469,7 +464,7 @@
  
          if (enchantmentArmor > 0.0F) {
              damage = CombatRules.getDamageAfterMagicAbsorb(damage, enchantmentArmor);
-+            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ENCHANTMENTS,this.damageContainers.peek().getNewDamage() - damage);
++            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ENCHANTMENTS, this.damageContainers.peek().getNewDamage() - damage);
          }
  
          return damage;
@@ -549,7 +544,7 @@
  
      public void setItemSlot(EquipmentSlot slot, ItemStack itemStack) {
 -        this.onEquipItem(slot, this.equipment.set(slot, itemStack), itemStack);
-+        setItemSlot(slot, itemStack, false);
++        this.setItemSlot(slot, itemStack, false);
 +    }
 +
 +    /// Neo: Passing `true` for `insideTransaction` sets the item without side-effects (calling [#onEquipItem]).
@@ -581,7 +576,7 @@
 +    @Deprecated
      protected void jumpInLiquid(TagKey<Fluid> type) {
 -        this.setDeltaMovement(this.getDeltaMovement().add(0.0, 0.04F, 0.0));
-+        this.setDeltaMovement(this.getDeltaMovement().add(0.0D, (double)0.04F * this.getAttributeValue(net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED), 0.0D));
++        this.setDeltaMovement(this.getDeltaMovement().add(0.0, 0.04F * this.getAttributeValue(net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED), 0.0));
      }
  
      protected float getWaterSlowDown() {
@@ -688,7 +683,7 @@
      }
  
      protected boolean canGlide() {
-+        return canGlide(true);
++        return this.canGlide(true);
 +    }
 +
 +    protected boolean canGlide(boolean isNeoForgeConnection) {

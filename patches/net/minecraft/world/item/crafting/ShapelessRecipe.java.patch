@@ -27,7 +27,7 @@
      public boolean matches(CraftingInput input, Level level) {
          if (input.ingredientCount() != this.ingredients.size()) {
              return false;
-+        } else if (!isSimple) {
++        } else if (!this.isSimple) {
 +            List<ItemStack> nonEmptyItems = new java.util.ArrayList<>(input.ingredientCount());
 +            for (var item : input.items()) {
 +                if (!item.isEmpty()) {

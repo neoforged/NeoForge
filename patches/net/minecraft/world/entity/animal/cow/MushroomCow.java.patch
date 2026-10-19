@@ -13,7 +13,7 @@
      @Override
      public void shear(ServerLevel level, SoundSource soundSource, ItemStack tool) {
          level.playSound(null, this, SoundEvents.MOOSHROOM_SHEAR, soundSource, 1.0F, 1.0F);
-+        if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityTypes.COW, (timer) -> {})) {
++        if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityTypes.COW, _ -> {})) {
 +            return;
 +        }
          this.convertTo(EntityTypes.COW, ConversionParams.single(this, false, false), cow -> {

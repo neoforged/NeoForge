@@ -9,8 +9,8 @@
 +    ///
 +    /// Only called on the logical server.
 +    ///
-+    /// @param ammo The ammo stack (containing this item)
-+    /// @param bow  The bow stack
++    /// @param ammo         The ammo stack (containing this item)
++    /// @param bow          The bow stack
 +    /// @param livingEntity The entity who is firing the bow
 +    /// @return True if the arrow is infinite
 +    public boolean isInfinite(ItemStack ammo, ItemStack bow, net.minecraft.world.entity.LivingEntity livingEntity) {

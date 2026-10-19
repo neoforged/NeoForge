@@ -77,15 +77,15 @@
      }
  
 +    public boolean isHidden() {
-+        return hidden;
++        return this.hidden;
 +    }
 +
 +    public List<Pack> getChildren() {
-+        return children;
++        return this.children;
 +    }
 +
 +    public java.util.stream.Stream<Pack> streamSelfAndChildren() {
-+        return java.util.stream.Stream.concat(java.util.stream.Stream.of(this), children.stream());
++        return java.util.stream.Stream.concat(java.util.stream.Stream.of(this), this.children.stream());
 +    }
 +
 +    /// Neo: {@return a copy of the pack with the provided children in place of any children this pack currently has}
@@ -112,7 +112,7 @@
      }
  
 -    public record Metadata(Component description, PackCompatibility compatibility, FeatureFlagSet requestedFeatures, List<String> overlays) {
-+    public static record Metadata(Component description, PackCompatibility compatibility, FeatureFlagSet requestedFeatures, List<String> overlays, boolean isHidden) {
++    public record Metadata(Component description, PackCompatibility compatibility, FeatureFlagSet requestedFeatures, List<String> overlays, boolean isHidden) {
 +        /// @deprecated Neo: use [#Metadata(Component, PackCompatibility, FeatureFlagSet, List, boolean)] instead
 +        @Deprecated
 +        public Metadata(Component description, PackCompatibility compatibility, FeatureFlagSet requestedFeatures, List<String> overlays) {

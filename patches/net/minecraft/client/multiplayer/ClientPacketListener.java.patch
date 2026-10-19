@@ -58,7 +58,7 @@
 +    /// @deprecated Neo: use [#startWaitingForNewLevel(LocalPlayer, ClientLevel, LevelLoadingScreen.Reason, ResourceKey, ResourceKey)] instead.
 +    @Deprecated
      private void startWaitingForNewLevel(LocalPlayer player, ClientLevel level, LevelLoadingScreen.Reason reason) {
-+        startWaitingForNewLevel(player, level, reason, null, null);
++        this.startWaitingForNewLevel(player, level, reason, null, null);
 +    }
 +
 +    /// Neo: overload with support for custom transition screens based on the source and/or destination dimension.

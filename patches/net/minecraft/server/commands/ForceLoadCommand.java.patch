@@ -23,7 +23,7 @@
              source.sendSuccess(
                  () -> Component.translatable(
 -                    "commands.forceload.query.success", Component.translationArg(chunkPos), Component.translationArg(dimension.identifier())
-+                        "commands.forceload.query.success", Component.translationArg(chunkPos), level.getDescription() // Neo: Use dimension translation, if one exists
++                    "commands.forceload.query.success", Component.translationArg(chunkPos), level.getDescription() // Neo: Use dimension translation, if one exists
                  ),
                  false
              );

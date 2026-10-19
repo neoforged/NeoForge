@@ -5,7 +5,7 @@
          double yOffset;
          if (blockFront.is(BlockTags.RAILS)) {
 -            if (getRailShape(blockFront).isSlope()) {
-+            if (getRailShape(blockFront, level,front).isSlope()) {
++            if (getRailShape(blockFront, level, front).isSlope()) {
                  yOffset = 0.6;
              } else {
                  yOffset = 0.1;
@@ -25,7 +25,7 @@
 -    private static RailShape getRailShape(BlockState blockFront) {
 -        return blockFront.getBlock() instanceof BaseRailBlock railBlock ? blockFront.getValue(railBlock.getShapeProperty()) : RailShape.NORTH_SOUTH;
 +    private static RailShape getRailShape(BlockState blockFront, ServerLevel level, BlockPos pos) {
-+        return blockFront.getBlock() instanceof BaseRailBlock baserailblock ? baserailblock.getRailDirection(blockFront, level, pos, null) : RailShape.NORTH_SOUTH;
++        return blockFront.getBlock() instanceof BaseRailBlock railBlock ? railBlock.getRailDirection(blockFront, level, pos, null) : RailShape.NORTH_SOUTH;
      }
  
      @Override

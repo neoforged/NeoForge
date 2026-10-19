@@ -7,7 +7,7 @@
 +        @SuppressWarnings("unchecked")
 +        @Override
 +        public @Nullable <T> T get(DataComponentType<? extends T> type) {
-+            return (T) map.get(type);
++            return (T) this.map.get(type);
 +        }
 +
          public <T> DataComponentMap.Builder set(DataComponentType<T> type, @Nullable T value) {

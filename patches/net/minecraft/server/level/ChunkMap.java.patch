@@ -75,7 +75,7 @@
  
 +    /// Neo: {@return all players watching the given entity}
 +    public List<ServerPlayer> getPlayersWatching(Entity entity) {
-+        var trackedEntity = entityMap.get(entity.getId());
++        var trackedEntity = this.entityMap.get(entity.getId());
 +        if (trackedEntity != null) {
 +            var ret = new java.util.ArrayList<ServerPlayer>(trackedEntity.seenBy.size());
 +            for (var connection : trackedEntity.seenBy) {
@@ -106,6 +106,6 @@
 +    /// Use this method to schedule tasks for loading chunks in your whenCompleteAsync method call so the tasks gets processed properly over time and not leak.
 +    /// See [net.neoforged.neoforge.server.command.generation.GenerationTask#enqueueChunks] as an example usage of this method.
 +    public void scheduleOnMainThreadMailbox(Runnable runnable) {
-+        mainThreadExecutor.schedule(runnable);
++        this.mainThreadExecutor.schedule(runnable);
      }
  }

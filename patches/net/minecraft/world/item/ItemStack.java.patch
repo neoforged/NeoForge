@@ -21,7 +21,7 @@
 +        } else if (!context.getLevel().isClientSide()) {
 +            return net.neoforged.neoforge.common.CommonHooks.onPlaceItemIntoWorld(context);
 +        }
-+        return onItemUse(context, getItem()::useOn);
++        return onItemUse(context, this.getItem()::useOn);
 +    }
 +
 +    @Override
@@ -30,7 +30,7 @@
 +        if (e.isCanceled()) {
 +            return e.getCancellationResult();
 +        }
-+        return onItemUse(context, (c) -> getItem().onItemUseFirst(this, c));
++        return onItemUse(context, (c) -> this.getItem().onItemUseFirst(this, c));
 +    }
 +
 +    private InteractionResult onItemUse(UseOnContext context, java.util.function.Function<UseOnContext, InteractionResult> callback) {
@@ -206,7 +206,7 @@
 +    }
 +
 +    private void addDetailsToTooltipComponents(
-+            Item.TooltipContext context, TooltipDisplay display, @Nullable Player player, TooltipFlag tooltipFlag, Consumer<Component> builder
++        Item.TooltipContext context, TooltipDisplay display, @Nullable Player player, TooltipFlag tooltipFlag, Consumer<Component> builder
 +    ) {
          this.addToTooltip(DataComponents.TROPICAL_FISH_PATTERN, context, display, builder, tooltipFlag);
          this.addToTooltip(DataComponents.INSTRUMENT, context, display, builder, tooltipFlag);

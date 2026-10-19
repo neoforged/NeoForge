@@ -27,7 +27,7 @@
 +
 +        @Override
 +        public void addInvalidationListener(Runnable runnable) {
-+            invalidationCallbacks.add(runnable);
++            this.invalidationCallbacks.add(runnable);
 +        }
 +
 +        @Override

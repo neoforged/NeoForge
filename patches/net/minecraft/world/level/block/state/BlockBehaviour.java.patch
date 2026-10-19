@@ -95,7 +95,7 @@
  
          public MapColor getMapColor(BlockGetter level, BlockPos pos) {
 -            return this.mapColor;
-+            return getBlock().getMapColor(this.asState(), level, pos, this.mapColor);
++            return this.getBlock().getMapColor(this.asState(), level, pos, this.mapColor);
          }
  
 +        /// @deprecated use [BlockState#rotate(LevelAccessor, BlockPos, Rotation)] instead
@@ -107,7 +107,7 @@
          }
  
          public PushReaction getPistonPushReaction() {
-+            PushReaction reaction = getBlock().getPistonPushReaction(asState());
++            PushReaction reaction = this.getBlock().getPistonPushReaction(asState());
 +            if (reaction != null) {
 +                return reaction;
 +            }

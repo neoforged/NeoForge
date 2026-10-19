@@ -1,24 +1,25 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -507,18 +_,21 @@
+@@ -507,18 +_,22 @@
  
                  if (fail && level.noCollision(vehicle, oldAABB) || this.isEntityCollidingWithAnythingNew(level, vehicle, oldAABB, targetX, targetY, targetZ)) {
                      vehicle.absSnapTo(oldX, oldY, oldZ, targetYRot, targetXRot);
-+                    resyncPlayerWithVehicle(vehicle); // Neo - Resync player position on vehicle moving
++                    this.resyncPlayerWithVehicle(vehicle); // Neo - Resync player position on vehicle moving
                      this.send(ClientboundMoveVehiclePacket.fromEntity(vehicle));
                      vehicle.removeLatestMovementRecording();
                      return;
                  }
  
                  vehicle.absSnapTo(targetX, targetY, targetZ, targetYRot, targetXRot);
-+                resyncPlayerWithVehicle(vehicle); // Neo - Resync player position on vehicle moving
++                this.resyncPlayerWithVehicle(vehicle); // Neo - Resync player position on vehicle moving
                  this.player.level().getChunkSource().move(this.player);
                  Vec3 clientDeltaMovement = new Vec3(vehicle.getX() - oldX, vehicle.getY() - oldY, vehicle.getZ() - oldZ);
                  this.handlePlayerKnownMovement(clientDeltaMovement);
                  vehicle.setOnGroundWithMovement(packet.onGround(), clientDeltaMovement);
                  vehicle.doCheckFallDamage(clientDeltaMovement.x, clientDeltaMovement.y, clientDeltaMovement.z, packet.onGround());
                  this.player.checkMovementStatistics(clientDeltaMovement.x, clientDeltaMovement.y, clientDeltaMovement.z);
-+                this.player.checkRidingStatistics(clientDeltaMovement.x, clientDeltaMovement.y, clientDeltaMovement.z); // Neo: check riding stats too as vanilla checks them in rideTick based on the assumption that Entity#rideTick will move the entity, which we break
++                // Neo: check riding stats too as vanilla checks them in rideTick based on the assumption that Entity#rideTick will move the entity, which we break
++                this.player.checkRidingStatistics(clientDeltaMovement.x, clientDeltaMovement.y, clientDeltaMovement.z);
                  this.clientVehicleIsFloating = oyDist >= -0.03125
                      && !vehicleRestsOnSomething
                      && !this.server.allowFlight()

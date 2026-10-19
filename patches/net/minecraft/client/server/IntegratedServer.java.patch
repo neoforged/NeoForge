@@ -18,7 +18,7 @@
  
      @Override
      public void halt(boolean wait) {
-+        if (!isRunning()) {
++        if (!this.isRunning()) {
 +            return;
 +        }
          this.executeBlocking(() -> {

@@ -8,7 +8,7 @@
      public <E extends BlockEntity, S extends BlockEntityRenderState> @Nullable S tryExtractRenderState(
          E blockEntity, float partialTicks, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress, boolean isGloballyRendered
      ) {
-+        return tryExtractRenderState(blockEntity, partialTicks, breakProgress, isGloballyRendered, null);
++        return this.tryExtractRenderState(blockEntity, partialTicks, breakProgress, isGloballyRendered, null);
 +    }
 +
 +    public <E extends BlockEntity, S extends BlockEntityRenderState> @Nullable S tryExtractRenderState(

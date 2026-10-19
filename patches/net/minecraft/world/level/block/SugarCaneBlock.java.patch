@@ -1,21 +1,18 @@
 --- a/net/minecraft/world/level/block/SugarCaneBlock.java
 +++ b/net/minecraft/world/level/block/SugarCaneBlock.java
-@@ -50,12 +_,15 @@
+@@ -50,8 +_,12 @@
  
              if (height < 3) {
                  int age = state.getValue(AGE);
-+                if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, true)) {
++                if (!net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, true)) {
++                    return;
++                }
                  if (age == 15) {
                      level.setBlockAndUpdate(pos.above(), this.defaultBlockState());
 +                    net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(level, pos.above(), this.defaultBlockState());
                      level.setBlock(pos, state.setValue(AGE, 0), 260);
                  } else {
                      level.setBlock(pos, state.setValue(AGE, age + 1), 260);
-                 }
-+                }
-             }
-         }
-     }
 @@ -85,13 +_,18 @@
              return true;
          }

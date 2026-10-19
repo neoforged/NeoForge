@@ -7,11 +7,11 @@
 +        if (entity instanceof Entity actualEntity && net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityJoinLevelEvent(actualEntity, actualEntity.level(), loaded)).isCanceled()) {
 +            return false;
 +        }
-+        return addEntityWithoutEvent(entity, loaded);
++        return this.addEntityWithoutEvent(entity, loaded);
 +    }
 +
 +    public boolean addNewEntityWithoutEvent(T entity) {
-+        return addEntityWithoutEvent(entity, false);
++        return this.addEntityWithoutEvent(entity, false);
 +    }
 +
 +    private boolean addEntityWithoutEvent(T entity, boolean loaded) {
@@ -42,14 +42,16 @@
      }
  
      private void startTicking(T entity) {
-@@ -232,7 +_,10 @@
+@@ -232,7 +_,12 @@
      public void processPendingLoads() {
          ChunkEntities<T> loadedChunk;
          while ((loadedChunk = this.loadingInbox.poll()) != null) {
 -            loadedChunk.getEntities().forEach(e -> this.addEntity((T)e, true));
 +            loadedChunk.getEntities().forEach(e -> {
 +                this.addEntity(e, true);
-+                if (e instanceof Entity entity) entity.onAddedToLevel();
++                if (e instanceof Entity entity) {
++                    entity.onAddedToLevel();
++                }
 +            });
              this.chunkLoadStatuses.put(loadedChunk.getPos().pack(), PersistentEntitySectionManager.ChunkLoadStatus.LOADED);
          }

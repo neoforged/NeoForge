@@ -122,12 +122,13 @@
          if (except == this.minecraft.player) {
              this.minecraft.getSoundManager().play(new EntityBoundSoundInstance(sound.value(), source, volume, pitch, sourceEntity, seed));
          }
-@@ -920,7 +_,8 @@
+@@ -920,7 +_,9 @@
          return this.players;
      }
  
 -    public List<EnderDragonPart> dragonParts() {
 +    // Neo: widen generic to support non-dragon part entities
++    @Override
 +    public List<net.neoforged.neoforge.entity.PartEntity<?>> dragonParts() {
          return this.dragonParts;
      }

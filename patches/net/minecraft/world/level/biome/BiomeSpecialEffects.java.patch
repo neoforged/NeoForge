@@ -18,13 +18,13 @@
  
 -        public abstract int modifyColor(final double x, final double z, final int baseColor);
 +        public int modifyColor(double x, double z, int baseColor) {
-+            return delegate.modifyGrassColor(x, z, baseColor);
++            return this.delegate.modifyGrassColor(x, z, baseColor);
 +        }
  
 +        @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
          GrassColorModifier(String name) {
              this.name = name;
-+            this.delegate = null;
++            this.delegate = (_, _, color) -> color;
 +        }
 +
 +        GrassColorModifier(String name, ColorModifier delegate) {

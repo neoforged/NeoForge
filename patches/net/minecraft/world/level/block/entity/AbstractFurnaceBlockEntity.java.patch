@@ -82,7 +82,7 @@
  
      @Override
      public void setItem(int slot, ItemStack itemStack) {
-+        setItem(slot, itemStack, false);
++        this.setItem(slot, itemStack, false);
 +    }
 +
 +    // Neo: Skip side-effects if insideTransaction is true so the caller can defer them until the transaction commits
@@ -103,7 +103,7 @@
 +    @Override
 +    public void onTransfer(int slot, int amountChange, net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
 +        if (slot == 0) {
-+            int currentAmount = getItem(slot).getCount();
++            int currentAmount = this.getItem(slot).getCount();
 +            if (currentAmount == 0 || currentAmount == amountChange) {
 +                this.cookingResetJournal.updateSnapshots(transaction);
 +                this.needsCookingReset = true;

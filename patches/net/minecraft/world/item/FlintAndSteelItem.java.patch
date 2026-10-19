@@ -5,8 +5,8 @@
          BlockPos pos = context.getClickedPos();
          BlockState state = level.getBlockState(pos);
 -        if (!CampfireBlock.canLight(state) && !CandleBlock.canLight(state) && !CandleCakeBlock.canLight(state)) {
-+        BlockState blockstate2 = state.getToolModifiedState(context, net.neoforged.neoforge.common.ItemAbilities.FIRESTARTER_LIGHT, false);
-+        if (blockstate2 == null) {
++        BlockState modifiedState = state.getToolModifiedState(context, net.neoforged.neoforge.common.ItemAbilities.FIRESTARTER_LIGHT, false);
++        if (modifiedState == null) {
              BlockPos relativePos = pos.relative(context.getClickedFace());
              if (BaseFireBlock.canBePlacedAt(level, relativePos, context.getHorizontalDirection())) {
                  level.playSound(player, relativePos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
@@ -15,7 +15,7 @@
          } else {
              level.playSound(player, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
 -            level.setBlock(pos, state.setValue(BlockStateProperties.LIT, true), 11);
-+            level.setBlock(pos, blockstate2, 11);
++            level.setBlock(pos, modifiedState, 11);
              level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
              if (player != null) {
                  context.getItemInHand().hurtAndBreak(1, player, context.getHand().asEquipmentSlot());

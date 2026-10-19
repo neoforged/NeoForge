@@ -7,7 +7,7 @@
 +    public static boolean isVisible(AdvancementNode advancement, Predicate<AdvancementNode> test) {
 +        Stack<AdvancementVisibilityEvaluator.VisibilityRule> stack = new ObjectArrayList<>();
 +
-+        for(int i = 0; i <= 2; ++i) {
++        for (int i = 0; i <= 2; ++i) {
 +            stack.push(AdvancementVisibilityEvaluator.VisibilityRule.NO_CHANGE);
 +        }
 +        return evaluateVisibility(advancement.root(), stack, test, (adv, visible) -> {});

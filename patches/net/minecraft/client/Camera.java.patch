@@ -63,7 +63,7 @@
 +    /// @deprecated Neo: use [#setRotation(float, float, float)] instead
 +    @Deprecated
      protected void setRotation(float yRot, float xRot) {
-+        setRotation(yRot, xRot, 0F);
++        this.setRotation(yRot, xRot, 0F);
 +    }
 +
 +    protected void setRotation(float yRot, float xRot, float roll) {
