@@ -1,11 +1,10 @@
 --- a/net/minecraft/data/recipes/RecipeProvider.java
 +++ b/net/minecraft/data/recipes/RecipeProvider.java
-@@ -92,19 +_,33 @@
+@@ -92,19 +_,32 @@
          .put(BlockFamily.Variant.COBBLED, (context, result, base) -> context.stonecutterResultFromBase(RecipeCategory.BUILDING_BLOCKS, result, base, 1))
          .build();
  
-+    /// @deprecated Neo: Use ddefault mod id and condition variant instead.
-+    @Deprecated
++    /// Neo: If you want to set the default mod id or conditions to apply, use the other constructor.
      protected RecipeProvider(BootstrapContext<Recipe<?>> recipeOutput, BootstrapContext<Advancement> advancementOutput) {
 +        this(recipeOutput, advancementOutput, null);
 +    }
