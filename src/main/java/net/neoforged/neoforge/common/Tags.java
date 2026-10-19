@@ -93,391 +93,391 @@ public class Tags {
         public static final TagKey<Block> VILLAGER_FARMLANDS = neoforgeTag("villager_farmlands");
 
         // These fields are deprecated for removal in 26.4.
-        /// @deprecated To be removed in 26.4. Use [BlockItems#BARRELS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#BARRELS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> BARRELS = BlockItems.BARRELS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#BARRELS_WOODEN] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#BARRELS_WOODEN] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> BARRELS_WOODEN = BlockItems.BARRELS_WOODEN.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#BARS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#BARS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> BARS = BlockItems.BARS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#BARS_COPPER] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#BARS_COPPER] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> BARS_COPPER = BlockItems.BARS_COPPER.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#BARS_IRON] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#BARS_IRON] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> BARS_IRON = BlockItems.BARS_IRON.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#BOOKSHELVES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#BOOKSHELVES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> BOOKSHELVES = BlockItems.BOOKSHELVES.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#BUDDING_BLOCKS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#BUDDING_BLOCKS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> BUDDING_BLOCKS = BlockItems.BUDDING_BLOCKS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#BUDS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#BUDS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> BUDS = BlockItems.BUDS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#CHAINS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#CHAINS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> CHAINS = BlockItems.CHAINS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#CHESTS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#CHESTS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> CHESTS = BlockItems.CHESTS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#CHESTS_ENDER] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#CHESTS_ENDER] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> CHESTS_ENDER = BlockItems.CHESTS_ENDER.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#CHESTS_TRAPPED] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#CHESTS_TRAPPED] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> CHESTS_TRAPPED = BlockItems.CHESTS_TRAPPED.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#CHESTS_WOODEN] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#CHESTS_WOODEN] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> CHESTS_WOODEN = BlockItems.CHESTS_WOODEN.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#CLUSTERS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#CLUSTERS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> CLUSTERS = BlockItems.CLUSTERS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#COBBLESTONES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> COBBLESTONES = BlockItems.COBBLESTONES.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES_NORMAL] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#COBBLESTONES_NORMAL] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> COBBLESTONES_NORMAL = BlockItems.COBBLESTONES_NORMAL.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES_INFESTED] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#COBBLESTONES_INFESTED] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> COBBLESTONES_INFESTED = BlockItems.COBBLESTONES_INFESTED.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES_MOSSY] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#COBBLESTONES_MOSSY] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> COBBLESTONES_MOSSY = BlockItems.COBBLESTONES_MOSSY.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES_DEEPSLATE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#COBBLESTONES_DEEPSLATE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> COBBLESTONES_DEEPSLATE = BlockItems.COBBLESTONES_DEEPSLATE.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#CONCRETES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#CONCRETES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> CONCRETES = BlockItems.CONCRETES.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYED = BlockItems.DYED.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_BLACK] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_BLACK] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYED_BLACK = BlockItems.DYED_BLACK.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_BLUE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_BLUE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYED_BLUE = BlockItems.DYED_BLUE.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_BROWN] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_BROWN] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYED_BROWN = BlockItems.DYED_BROWN.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_CYAN] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_CYAN] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYED_CYAN = BlockItems.DYED_CYAN.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_GRAY] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_GRAY] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYED_GRAY = BlockItems.DYED_GRAY.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_GREEN] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_GREEN] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYED_GREEN = BlockItems.DYED_GREEN.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_LIGHT_BLUE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_LIGHT_BLUE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYED_LIGHT_BLUE = BlockItems.DYED_LIGHT_BLUE.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_LIGHT_GRAY] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_LIGHT_GRAY] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYED_LIGHT_GRAY = BlockItems.DYED_LIGHT_GRAY.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_LIME] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_LIME] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYED_LIME = BlockItems.DYED_LIME.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_MAGENTA] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_MAGENTA] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYED_MAGENTA = BlockItems.DYED_MAGENTA.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_ORANGE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_ORANGE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYED_ORANGE = BlockItems.DYED_ORANGE.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_PINK] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_PINK] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYED_PINK = BlockItems.DYED_PINK.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_PURPLE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_PURPLE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYED_PURPLE = BlockItems.DYED_PURPLE.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_RED] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_RED] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYED_RED = BlockItems.DYED_RED.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_WHITE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_WHITE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYED_WHITE = BlockItems.DYED_WHITE.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_YELLOW] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_YELLOW] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYED_YELLOW = BlockItems.DYED_YELLOW.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_COLORS] mapped to the block using [BlockItemTagId#block()] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_COLORS] mapped to the block using [BlockItemTagId#block()] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final ColorCollection<TagKey<Block>> DYED_COLORS = BlockItems.DYED_COLORS.map(BlockItemTagId::block);
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE_UNDYED_SIMPLE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYEABLE_UNDYED_SIMPLE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYEABLE_UNDYED_SIMPLE = BlockItems.DYEABLE_UNDYED_SIMPLE.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE_REDYEABLE_SIMPLE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYEABLE_REDYEABLE_SIMPLE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYEABLE_REDYEABLE_SIMPLE = BlockItems.DYEABLE_REDYEABLE_SIMPLE.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE_SIMPLE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYEABLE_SIMPLE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYEABLE_SIMPLE = BlockItems.DYEABLE_SIMPLE.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE_DYNAMIC] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYEABLE_DYNAMIC] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYEABLE_DYNAMIC = BlockItems.DYEABLE_DYNAMIC.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYEABLE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> DYEABLE = BlockItems.DYEABLE.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#END_STONES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#END_STONES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> END_STONES = BlockItems.END_STONES.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCE_GATES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#FENCE_GATES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> FENCE_GATES = BlockItems.FENCE_GATES.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCE_GATES_WOODEN] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#FENCE_GATES_WOODEN] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> FENCE_GATES_WOODEN = BlockItems.FENCE_GATES_WOODEN.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#FENCES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> FENCES = BlockItems.FENCES.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCES_NETHER_BRICK] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#FENCES_NETHER_BRICK] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> FENCES_NETHER_BRICK = BlockItems.FENCES_NETHER_BRICK.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCES_WOODEN] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#FENCES_WOODEN] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> FENCES_WOODEN = BlockItems.FENCES_WOODEN.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#FLOWERS_SMALL] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#FLOWERS_SMALL] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> FLOWERS_SMALL = BlockItems.FLOWERS_SMALL.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#FLOWERS_TALL] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#FLOWERS_TALL] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> FLOWERS_TALL = BlockItems.FLOWERS_TALL.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#FLOWERS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#FLOWERS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> FLOWERS = BlockItems.FLOWERS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#FROGLIGHTS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#FROGLIGHTS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> FROGLIGHTS = BlockItems.FROGLIGHTS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_BLOCKS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#GLASS_BLOCKS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> GLASS_BLOCKS = BlockItems.GLASS_BLOCKS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_BLOCKS_COLORLESS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#GLASS_BLOCKS_COLORLESS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> GLASS_BLOCKS_COLORLESS = BlockItems.GLASS_BLOCKS_COLORLESS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_BLOCKS_CHEAP] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#GLASS_BLOCKS_CHEAP] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> GLASS_BLOCKS_CHEAP = BlockItems.GLASS_BLOCKS_CHEAP.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_BLOCKS_TINTED] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#GLASS_BLOCKS_TINTED] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> GLASS_BLOCKS_TINTED = BlockItems.GLASS_BLOCKS_TINTED.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_PANES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#GLASS_PANES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> GLASS_PANES = BlockItems.GLASS_PANES.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_PANES_COLORLESS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#GLASS_PANES_COLORLESS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> GLASS_PANES_COLORLESS = BlockItems.GLASS_PANES_COLORLESS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#GLAZED_TERRACOTTAS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#GLAZED_TERRACOTTAS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> GLAZED_TERRACOTTAS = BlockItems.GLAZED_TERRACOTTAS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#GRAVELS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#GRAVELS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> GRAVELS = BlockItems.GRAVELS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#NETHERRACKS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#NETHERRACKS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> NETHERRACKS = BlockItems.NETHERRACKS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#OBSIDIANS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#OBSIDIANS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> OBSIDIANS = BlockItems.OBSIDIANS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#OBSIDIANS_NORMAL] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#OBSIDIANS_NORMAL] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> OBSIDIANS_NORMAL = BlockItems.OBSIDIANS_NORMAL.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#OBSIDIANS_CRYING] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#OBSIDIANS_CRYING] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> OBSIDIANS_CRYING = BlockItems.OBSIDIANS_CRYING.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_BEARING_GROUND_DEEPSLATE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORE_BEARING_GROUND_DEEPSLATE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORE_BEARING_GROUND_DEEPSLATE = BlockItems.ORE_BEARING_GROUND_DEEPSLATE.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_BEARING_GROUND_NETHERRACK] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORE_BEARING_GROUND_NETHERRACK] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORE_BEARING_GROUND_NETHERRACK = BlockItems.ORE_BEARING_GROUND_NETHERRACK.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_BEARING_GROUND_STONE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORE_BEARING_GROUND_STONE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORE_BEARING_GROUND_STONE = BlockItems.ORE_BEARING_GROUND_STONE.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_RATES_DENSE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORE_RATES_DENSE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORE_RATES_DENSE = BlockItems.ORE_RATES_DENSE.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_RATES_SINGULAR] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORE_RATES_SINGULAR] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORE_RATES_SINGULAR = BlockItems.ORE_RATES_SINGULAR.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_RATES_SPARSE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORE_RATES_SPARSE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORE_RATES_SPARSE = BlockItems.ORE_RATES_SPARSE.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORES = BlockItems.ORES.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_COAL] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_COAL] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORES_COAL = BlockItems.ORES_COAL.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_COPPER] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_COPPER] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORES_COPPER = BlockItems.ORES_COPPER.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_DIAMOND] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_DIAMOND] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORES_DIAMOND = BlockItems.ORES_DIAMOND.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_EMERALD] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_EMERALD] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORES_EMERALD = BlockItems.ORES_EMERALD.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_GOLD] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_GOLD] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORES_GOLD = BlockItems.ORES_GOLD.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_IRON] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_IRON] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORES_IRON = BlockItems.ORES_IRON.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_LAPIS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_LAPIS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORES_LAPIS = BlockItems.ORES_LAPIS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_NETHERITE_SCRAP] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_NETHERITE_SCRAP] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORES_NETHERITE_SCRAP = BlockItems.ORES_NETHERITE_SCRAP.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_QUARTZ] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_QUARTZ] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORES_QUARTZ = BlockItems.ORES_QUARTZ.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_REDSTONE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_REDSTONE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORES_REDSTONE = BlockItems.ORES_REDSTONE.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_IN_GROUND_DEEPSLATE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_IN_GROUND_DEEPSLATE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORES_IN_GROUND_DEEPSLATE = BlockItems.ORES_IN_GROUND_DEEPSLATE.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_IN_GROUND_NETHERRACK] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_IN_GROUND_NETHERRACK] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORES_IN_GROUND_NETHERRACK = BlockItems.ORES_IN_GROUND_NETHERRACK.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_IN_GROUND_STONE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_IN_GROUND_STONE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ORES_IN_GROUND_STONE = BlockItems.ORES_IN_GROUND_STONE.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#PUMPKINS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#PUMPKINS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> PUMPKINS = BlockItems.PUMPKINS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#PUMPKINS_NORMAL] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#PUMPKINS_NORMAL] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> PUMPKINS_NORMAL = BlockItems.PUMPKINS_NORMAL.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#PUMPKINS_CARVED] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#PUMPKINS_CARVED] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> PUMPKINS_CARVED = BlockItems.PUMPKINS_CARVED.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#PUMPKINS_JACK_O_LANTERNS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#PUMPKINS_JACK_O_LANTERNS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> PUMPKINS_JACK_O_LANTERNS = BlockItems.PUMPKINS_JACK_O_LANTERNS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#PLAYER_WORKSTATIONS_CRAFTING_TABLES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#PLAYER_WORKSTATIONS_CRAFTING_TABLES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> PLAYER_WORKSTATIONS_CRAFTING_TABLES = BlockItems.PLAYER_WORKSTATIONS_CRAFTING_TABLES.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#PLAYER_WORKSTATIONS_FURNACES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#PLAYER_WORKSTATIONS_FURNACES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> PLAYER_WORKSTATIONS_FURNACES = BlockItems.PLAYER_WORKSTATIONS_FURNACES.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ROPES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ROPES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> ROPES = BlockItems.ROPES.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> SANDS = BlockItems.SANDS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDS_COLORLESS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDS_COLORLESS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> SANDS_COLORLESS = BlockItems.SANDS_COLORLESS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDS_RED] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDS_RED] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> SANDS_RED = BlockItems.SANDS_RED.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_BLOCKS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDSTONE_BLOCKS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> SANDSTONE_BLOCKS = BlockItems.SANDSTONE_BLOCKS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_SLABS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDSTONE_SLABS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> SANDSTONE_SLABS = BlockItems.SANDSTONE_SLABS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_STAIRS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDSTONE_STAIRS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> SANDSTONE_STAIRS = BlockItems.SANDSTONE_STAIRS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_RED_BLOCKS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDSTONE_RED_BLOCKS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> SANDSTONE_RED_BLOCKS = BlockItems.SANDSTONE_RED_BLOCKS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_RED_SLABS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDSTONE_RED_SLABS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> SANDSTONE_RED_SLABS = BlockItems.SANDSTONE_RED_SLABS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_RED_STAIRS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDSTONE_RED_STAIRS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> SANDSTONE_RED_STAIRS = BlockItems.SANDSTONE_RED_STAIRS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_UNCOLORED_BLOCKS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDSTONE_UNCOLORED_BLOCKS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> SANDSTONE_UNCOLORED_BLOCKS = BlockItems.SANDSTONE_UNCOLORED_BLOCKS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_UNCOLORED_SLABS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDSTONE_UNCOLORED_SLABS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> SANDSTONE_UNCOLORED_SLABS = BlockItems.SANDSTONE_UNCOLORED_SLABS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_UNCOLORED_STAIRS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDSTONE_UNCOLORED_STAIRS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> SANDSTONE_UNCOLORED_STAIRS = BlockItems.SANDSTONE_UNCOLORED_STAIRS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STONES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STONES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STONES = BlockItems.STONES.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STORAGE_BLOCKS = BlockItems.STORAGE_BLOCKS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_BONE_MEAL] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_BONE_MEAL] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STORAGE_BLOCKS_BONE_MEAL = BlockItems.STORAGE_BLOCKS_BONE_MEAL.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_COAL] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_COAL] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STORAGE_BLOCKS_COAL = BlockItems.STORAGE_BLOCKS_COAL.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_COPPER] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_COPPER] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STORAGE_BLOCKS_COPPER = BlockItems.STORAGE_BLOCKS_COPPER.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_DIAMOND] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_DIAMOND] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STORAGE_BLOCKS_DIAMOND = BlockItems.STORAGE_BLOCKS_DIAMOND.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_DRIED_KELP] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_DRIED_KELP] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STORAGE_BLOCKS_DRIED_KELP = BlockItems.STORAGE_BLOCKS_DRIED_KELP.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_EMERALD] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_EMERALD] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STORAGE_BLOCKS_EMERALD = BlockItems.STORAGE_BLOCKS_EMERALD.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_GOLD] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_GOLD] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STORAGE_BLOCKS_GOLD = BlockItems.STORAGE_BLOCKS_GOLD.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_IRON] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_IRON] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STORAGE_BLOCKS_IRON = BlockItems.STORAGE_BLOCKS_IRON.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_LAPIS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_LAPIS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STORAGE_BLOCKS_LAPIS = BlockItems.STORAGE_BLOCKS_LAPIS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_NETHERITE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_NETHERITE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STORAGE_BLOCKS_NETHERITE = BlockItems.STORAGE_BLOCKS_NETHERITE.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_RAW_COPPER] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_RAW_COPPER] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STORAGE_BLOCKS_RAW_COPPER = BlockItems.STORAGE_BLOCKS_RAW_COPPER.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_RAW_GOLD] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_RAW_GOLD] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STORAGE_BLOCKS_RAW_GOLD = BlockItems.STORAGE_BLOCKS_RAW_GOLD.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_RAW_IRON] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_RAW_IRON] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STORAGE_BLOCKS_RAW_IRON = BlockItems.STORAGE_BLOCKS_RAW_IRON.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_REDSTONE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_REDSTONE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STORAGE_BLOCKS_REDSTONE = BlockItems.STORAGE_BLOCKS_REDSTONE.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_RESIN] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_RESIN] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STORAGE_BLOCKS_RESIN = BlockItems.STORAGE_BLOCKS_RESIN.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_SLIME] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_SLIME] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STORAGE_BLOCKS_SLIME = BlockItems.STORAGE_BLOCKS_SLIME.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_WHEAT] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_WHEAT] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STORAGE_BLOCKS_WHEAT = BlockItems.STORAGE_BLOCKS_WHEAT.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#OVERWORLD_NATURAL_LOGS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#OVERWORLD_NATURAL_LOGS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> OVERWORLD_NATURAL_LOGS = BlockItems.OVERWORLD_NATURAL_LOGS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#NETHER_NATURAL_LOGS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#NETHER_NATURAL_LOGS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> NETHER_NATURAL_LOGS = BlockItems.NETHER_NATURAL_LOGS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#NATURAL_LOGS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#NATURAL_LOGS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> NATURAL_LOGS = BlockItems.NATURAL_LOGS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#NATURAL_WOODS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#NATURAL_WOODS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> NATURAL_WOODS = BlockItems.NATURAL_WOODS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STRIPPED_LOGS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STRIPPED_LOGS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STRIPPED_LOGS = BlockItems.STRIPPED_LOGS.block();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STRIPPED_WOODS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STRIPPED_WOODS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Block> STRIPPED_WOODS = BlockItems.STRIPPED_WOODS.block();
 
@@ -1214,391 +1214,391 @@ public class Tags {
         public static final TagKey<Item> ENCHANTABLES = tag("enchantables");
 
         // These fields are deprecated for removal in 26.4.
-        /// @deprecated To be removed in 26.4. Use [BlockItems#BARRELS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#BARRELS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> BARRELS = BlockItems.BARRELS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#BARRELS_WOODEN] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#BARRELS_WOODEN] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> BARRELS_WOODEN = BlockItems.BARRELS_WOODEN.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#BARS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#BARS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> BARS = BlockItems.BARS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#BARS_COPPER] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#BARS_COPPER] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> BARS_COPPER = BlockItems.BARS_COPPER.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#BARS_IRON] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#BARS_IRON] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> BARS_IRON = BlockItems.BARS_IRON.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#BOOKSHELVES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#BOOKSHELVES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> BOOKSHELVES = BlockItems.BOOKSHELVES.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#BUDDING_BLOCKS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#BUDDING_BLOCKS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> BUDDING_BLOCKS = BlockItems.BUDDING_BLOCKS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#BUDS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#BUDS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> BUDS = BlockItems.BUDS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#CHAINS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#CHAINS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> CHAINS = BlockItems.CHAINS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#CHESTS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#CHESTS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> CHESTS = BlockItems.CHESTS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#CHESTS_ENDER] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#CHESTS_ENDER] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> CHESTS_ENDER = BlockItems.CHESTS_ENDER.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#CHESTS_TRAPPED] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#CHESTS_TRAPPED] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> CHESTS_TRAPPED = BlockItems.CHESTS_TRAPPED.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#CHESTS_WOODEN] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#CHESTS_WOODEN] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> CHESTS_WOODEN = BlockItems.CHESTS_WOODEN.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#COBBLESTONES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> COBBLESTONES = BlockItems.COBBLESTONES.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES_NORMAL] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#COBBLESTONES_NORMAL] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> COBBLESTONES_NORMAL = BlockItems.COBBLESTONES_NORMAL.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES_INFESTED] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#COBBLESTONES_INFESTED] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> COBBLESTONES_INFESTED = BlockItems.COBBLESTONES_INFESTED.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES_MOSSY] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#COBBLESTONES_MOSSY] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> COBBLESTONES_MOSSY = BlockItems.COBBLESTONES_MOSSY.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#COBBLESTONES_DEEPSLATE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#COBBLESTONES_DEEPSLATE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> COBBLESTONES_DEEPSLATE = BlockItems.COBBLESTONES_DEEPSLATE.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#CONCRETES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#CONCRETES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> CONCRETES = BlockItems.CONCRETES.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#CLUSTERS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#CLUSTERS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> CLUSTERS = BlockItems.CLUSTERS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYED = BlockItems.DYED.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_BLACK] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_BLACK] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYED_BLACK = BlockItems.DYED_BLACK.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_BLUE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_BLUE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYED_BLUE = BlockItems.DYED_BLUE.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_BROWN] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_BROWN] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYED_BROWN = BlockItems.DYED_BROWN.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_CYAN] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_CYAN] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYED_CYAN = BlockItems.DYED_CYAN.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_GRAY] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_GRAY] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYED_GRAY = BlockItems.DYED_GRAY.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_GREEN] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_GREEN] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYED_GREEN = BlockItems.DYED_GREEN.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_LIGHT_BLUE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_LIGHT_BLUE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYED_LIGHT_BLUE = BlockItems.DYED_LIGHT_BLUE.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_LIGHT_GRAY] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_LIGHT_GRAY] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYED_LIGHT_GRAY = BlockItems.DYED_LIGHT_GRAY.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_LIME] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_LIME] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYED_LIME = BlockItems.DYED_LIME.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_MAGENTA] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_MAGENTA] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYED_MAGENTA = BlockItems.DYED_MAGENTA.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_ORANGE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_ORANGE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYED_ORANGE = BlockItems.DYED_ORANGE.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_PINK] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_PINK] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYED_PINK = BlockItems.DYED_PINK.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_PURPLE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_PURPLE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYED_PURPLE = BlockItems.DYED_PURPLE.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_RED] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_RED] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYED_RED = BlockItems.DYED_RED.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_WHITE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_WHITE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYED_WHITE = BlockItems.DYED_WHITE.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_YELLOW] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_YELLOW] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYED_YELLOW = BlockItems.DYED_YELLOW.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYED_COLORS] mapped to the block using [BlockItemTagId#item()] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYED_COLORS] mapped to the block using [BlockItemTagId#item()] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final ColorCollection<TagKey<Item>> DYED_COLORS = BlockItems.DYED_COLORS.map(BlockItemTagId::item);
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE_UNDYED_SIMPLE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYEABLE_UNDYED_SIMPLE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYEABLE_UNDYED_SIMPLE = BlockItems.DYEABLE_UNDYED_SIMPLE.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE_REDYEABLE_SIMPLE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYEABLE_REDYEABLE_SIMPLE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYEABLE_REDYEABLE_SIMPLE = BlockItems.DYEABLE_REDYEABLE_SIMPLE.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE_SIMPLE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYEABLE_SIMPLE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYEABLE_SIMPLE = BlockItems.DYEABLE_SIMPLE.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE_DYNAMIC] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYEABLE_DYNAMIC] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYEABLE_DYNAMIC = BlockItems.DYEABLE_DYNAMIC.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#DYEABLE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#DYEABLE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> DYEABLE = BlockItems.DYEABLE.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#END_STONES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#END_STONES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> END_STONES = BlockItems.END_STONES.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCE_GATES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#FENCE_GATES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> FENCE_GATES = BlockItems.FENCE_GATES.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCE_GATES_WOODEN] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#FENCE_GATES_WOODEN] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> FENCE_GATES_WOODEN = BlockItems.FENCE_GATES_WOODEN.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#FENCES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> FENCES = BlockItems.FENCES.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCES_NETHER_BRICK] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#FENCES_NETHER_BRICK] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> FENCES_NETHER_BRICK = BlockItems.FENCES_NETHER_BRICK.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#FENCES_WOODEN] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#FENCES_WOODEN] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> FENCES_WOODEN = BlockItems.FENCES_WOODEN.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#FLOWERS_SMALL] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#FLOWERS_SMALL] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> FLOWERS_SMALL = BlockItems.FLOWERS_SMALL.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#FLOWERS_TALL] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#FLOWERS_TALL] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> FLOWERS_TALL = BlockItems.FLOWERS_TALL.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#FLOWERS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#FLOWERS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> FLOWERS = BlockItems.FLOWERS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#FROGLIGHTS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#FROGLIGHTS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> FROGLIGHTS = BlockItems.FROGLIGHTS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_BLOCKS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#GLASS_BLOCKS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> GLASS_BLOCKS = BlockItems.GLASS_BLOCKS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_BLOCKS_COLORLESS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#GLASS_BLOCKS_COLORLESS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> GLASS_BLOCKS_COLORLESS = BlockItems.GLASS_BLOCKS_COLORLESS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_BLOCKS_CHEAP] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#GLASS_BLOCKS_CHEAP] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> GLASS_BLOCKS_CHEAP = BlockItems.GLASS_BLOCKS_CHEAP.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_BLOCKS_TINTED] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#GLASS_BLOCKS_TINTED] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> GLASS_BLOCKS_TINTED = BlockItems.GLASS_BLOCKS_TINTED.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_PANES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#GLASS_PANES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> GLASS_PANES = BlockItems.GLASS_PANES.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#GLASS_PANES_COLORLESS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#GLASS_PANES_COLORLESS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> GLASS_PANES_COLORLESS = BlockItems.GLASS_PANES_COLORLESS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#GLAZED_TERRACOTTAS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#GLAZED_TERRACOTTAS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> GLAZED_TERRACOTTAS = BlockItems.GLAZED_TERRACOTTAS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#GRAVELS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#GRAVELS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> GRAVELS = BlockItems.GRAVELS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#NETHERRACKS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#NETHERRACKS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> NETHERRACKS = BlockItems.NETHERRACKS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#OBSIDIANS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#OBSIDIANS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> OBSIDIANS = BlockItems.OBSIDIANS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#OBSIDIANS_NORMAL] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#OBSIDIANS_NORMAL] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> OBSIDIANS_NORMAL = BlockItems.OBSIDIANS_NORMAL.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#OBSIDIANS_CRYING] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#OBSIDIANS_CRYING] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> OBSIDIANS_CRYING = BlockItems.OBSIDIANS_CRYING.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_BEARING_GROUND_DEEPSLATE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORE_BEARING_GROUND_DEEPSLATE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORE_BEARING_GROUND_DEEPSLATE = BlockItems.ORE_BEARING_GROUND_DEEPSLATE.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_BEARING_GROUND_NETHERRACK] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORE_BEARING_GROUND_NETHERRACK] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORE_BEARING_GROUND_NETHERRACK = BlockItems.ORE_BEARING_GROUND_NETHERRACK.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_BEARING_GROUND_STONE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORE_BEARING_GROUND_STONE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORE_BEARING_GROUND_STONE = BlockItems.ORE_BEARING_GROUND_STONE.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_RATES_DENSE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORE_RATES_DENSE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORE_RATES_DENSE = BlockItems.ORE_RATES_DENSE.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_RATES_SINGULAR] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORE_RATES_SINGULAR] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORE_RATES_SINGULAR = BlockItems.ORE_RATES_SINGULAR.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORE_RATES_SPARSE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORE_RATES_SPARSE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORE_RATES_SPARSE = BlockItems.ORE_RATES_SPARSE.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORES = BlockItems.ORES.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_COAL] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_COAL] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORES_COAL = BlockItems.ORES_COAL.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_COPPER] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_COPPER] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORES_COPPER = BlockItems.ORES_COPPER.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_DIAMOND] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_DIAMOND] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORES_DIAMOND = BlockItems.ORES_DIAMOND.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_EMERALD] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_EMERALD] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORES_EMERALD = BlockItems.ORES_EMERALD.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_GOLD] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_GOLD] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORES_GOLD = BlockItems.ORES_GOLD.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_IRON] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_IRON] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORES_IRON = BlockItems.ORES_IRON.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_LAPIS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_LAPIS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORES_LAPIS = BlockItems.ORES_LAPIS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_NETHERITE_SCRAP] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_NETHERITE_SCRAP] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORES_NETHERITE_SCRAP = BlockItems.ORES_NETHERITE_SCRAP.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_QUARTZ] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_QUARTZ] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORES_QUARTZ = BlockItems.ORES_QUARTZ.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_REDSTONE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_REDSTONE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORES_REDSTONE = BlockItems.ORES_REDSTONE.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_IN_GROUND_DEEPSLATE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_IN_GROUND_DEEPSLATE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORES_IN_GROUND_DEEPSLATE = BlockItems.ORES_IN_GROUND_DEEPSLATE.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_IN_GROUND_NETHERRACK] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_IN_GROUND_NETHERRACK] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORES_IN_GROUND_NETHERRACK = BlockItems.ORES_IN_GROUND_NETHERRACK.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ORES_IN_GROUND_STONE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ORES_IN_GROUND_STONE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ORES_IN_GROUND_STONE = BlockItems.ORES_IN_GROUND_STONE.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#PLAYER_WORKSTATIONS_CRAFTING_TABLES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#PLAYER_WORKSTATIONS_CRAFTING_TABLES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> PLAYER_WORKSTATIONS_CRAFTING_TABLES = BlockItems.PLAYER_WORKSTATIONS_CRAFTING_TABLES.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#PLAYER_WORKSTATIONS_FURNACES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#PLAYER_WORKSTATIONS_FURNACES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> PLAYER_WORKSTATIONS_FURNACES = BlockItems.PLAYER_WORKSTATIONS_FURNACES.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#PUMPKINS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#PUMPKINS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> PUMPKINS = BlockItems.PUMPKINS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#PUMPKINS_NORMAL] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#PUMPKINS_NORMAL] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> PUMPKINS_NORMAL = BlockItems.PUMPKINS_NORMAL.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#PUMPKINS_CARVED] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#PUMPKINS_CARVED] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> PUMPKINS_CARVED = BlockItems.PUMPKINS_CARVED.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#PUMPKINS_JACK_O_LANTERNS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#PUMPKINS_JACK_O_LANTERNS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> PUMPKINS_JACK_O_LANTERNS = BlockItems.PUMPKINS_JACK_O_LANTERNS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#ROPES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#ROPES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> ROPES = BlockItems.ROPES.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> SANDS = BlockItems.SANDS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDS_COLORLESS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDS_COLORLESS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> SANDS_COLORLESS = BlockItems.SANDS_COLORLESS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDS_RED] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDS_RED] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> SANDS_RED = BlockItems.SANDS_RED.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_BLOCKS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDSTONE_BLOCKS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> SANDSTONE_BLOCKS = BlockItems.SANDSTONE_BLOCKS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_SLABS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDSTONE_SLABS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> SANDSTONE_SLABS = BlockItems.SANDSTONE_SLABS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_STAIRS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDSTONE_STAIRS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> SANDSTONE_STAIRS = BlockItems.SANDSTONE_STAIRS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_RED_BLOCKS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDSTONE_RED_BLOCKS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> SANDSTONE_RED_BLOCKS = BlockItems.SANDSTONE_RED_BLOCKS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_RED_SLABS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDSTONE_RED_SLABS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> SANDSTONE_RED_SLABS = BlockItems.SANDSTONE_RED_SLABS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_RED_STAIRS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDSTONE_RED_STAIRS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> SANDSTONE_RED_STAIRS = BlockItems.SANDSTONE_RED_STAIRS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_UNCOLORED_BLOCKS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDSTONE_UNCOLORED_BLOCKS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> SANDSTONE_UNCOLORED_BLOCKS = BlockItems.SANDSTONE_UNCOLORED_BLOCKS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_UNCOLORED_SLABS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDSTONE_UNCOLORED_SLABS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> SANDSTONE_UNCOLORED_SLABS = BlockItems.SANDSTONE_UNCOLORED_SLABS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#SANDSTONE_UNCOLORED_STAIRS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#SANDSTONE_UNCOLORED_STAIRS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> SANDSTONE_UNCOLORED_STAIRS = BlockItems.SANDSTONE_UNCOLORED_STAIRS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STONES] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STONES] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STONES = BlockItems.STONES.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STORAGE_BLOCKS = BlockItems.STORAGE_BLOCKS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_BONE_MEAL] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_BONE_MEAL] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STORAGE_BLOCKS_BONE_MEAL = BlockItems.STORAGE_BLOCKS_BONE_MEAL.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_COAL] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_COAL] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STORAGE_BLOCKS_COAL = BlockItems.STORAGE_BLOCKS_COAL.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_COPPER] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_COPPER] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STORAGE_BLOCKS_COPPER = BlockItems.STORAGE_BLOCKS_COPPER.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_DIAMOND] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_DIAMOND] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STORAGE_BLOCKS_DIAMOND = BlockItems.STORAGE_BLOCKS_DIAMOND.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_DRIED_KELP] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_DRIED_KELP] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STORAGE_BLOCKS_DRIED_KELP = BlockItems.STORAGE_BLOCKS_DRIED_KELP.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_EMERALD] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_EMERALD] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STORAGE_BLOCKS_EMERALD = BlockItems.STORAGE_BLOCKS_EMERALD.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_GOLD] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_GOLD] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STORAGE_BLOCKS_GOLD = BlockItems.STORAGE_BLOCKS_GOLD.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_IRON] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_IRON] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STORAGE_BLOCKS_IRON = BlockItems.STORAGE_BLOCKS_IRON.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_LAPIS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_LAPIS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STORAGE_BLOCKS_LAPIS = BlockItems.STORAGE_BLOCKS_LAPIS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_NETHERITE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_NETHERITE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STORAGE_BLOCKS_NETHERITE = BlockItems.STORAGE_BLOCKS_NETHERITE.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_RAW_COPPER] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_RAW_COPPER] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STORAGE_BLOCKS_RAW_COPPER = BlockItems.STORAGE_BLOCKS_RAW_COPPER.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_RAW_GOLD] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_RAW_GOLD] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STORAGE_BLOCKS_RAW_GOLD = BlockItems.STORAGE_BLOCKS_RAW_GOLD.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_RAW_IRON] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_RAW_IRON] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STORAGE_BLOCKS_RAW_IRON = BlockItems.STORAGE_BLOCKS_RAW_IRON.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_REDSTONE] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_REDSTONE] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STORAGE_BLOCKS_REDSTONE = BlockItems.STORAGE_BLOCKS_REDSTONE.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_RESIN] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_RESIN] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STORAGE_BLOCKS_RESIN = BlockItems.STORAGE_BLOCKS_RESIN.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_SLIME] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_SLIME] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STORAGE_BLOCKS_SLIME = BlockItems.STORAGE_BLOCKS_SLIME.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STORAGE_BLOCKS_WHEAT] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STORAGE_BLOCKS_WHEAT] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STORAGE_BLOCKS_WHEAT = BlockItems.STORAGE_BLOCKS_WHEAT.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#OVERWORLD_NATURAL_LOGS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#OVERWORLD_NATURAL_LOGS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> OVERWORLD_NATURAL_LOGS = BlockItems.OVERWORLD_NATURAL_LOGS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#NETHER_NATURAL_LOGS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#NETHER_NATURAL_LOGS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> NETHER_NATURAL_LOGS = BlockItems.NETHER_NATURAL_LOGS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#NATURAL_LOGS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#NATURAL_LOGS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> NATURAL_LOGS = BlockItems.NATURAL_LOGS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#NATURAL_WOODS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#NATURAL_WOODS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> NATURAL_WOODS = BlockItems.NATURAL_WOODS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STRIPPED_LOGS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STRIPPED_LOGS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STRIPPED_LOGS = BlockItems.STRIPPED_LOGS.item();
-        /// @deprecated To be removed in 26.4. Use [BlockItems#STRIPPED_WOODS] instead.
+        /// @deprecated This specific field is to be removed in 26.4. The tag itself will remain. Use [BlockItems#STRIPPED_WOODS] instead.
         @Deprecated(forRemoval = true, since = "26.3")
         public static final TagKey<Item> STRIPPED_WOODS = BlockItems.STRIPPED_WOODS.item();
 
