@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/entity/animal/cow/MushroomCow.java
 +++ b/net/minecraft/world/entity/animal/cow/MushroomCow.java
-@@ -76,7 +_,7 @@
-     }
- 
-     public static boolean checkMushroomSpawnRules(
--        EntityType<MushroomCow> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
-+        EntityType<? extends MushroomCow> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
-     ) {
-         return level.getBlockState(pos.below()).is(BlockTags.MOOSHROOMS_SPAWNABLE_ON) && isBrightEnoughToSpawn(level, pos);
-     }
 @@ -187,11 +_,19 @@
      @Override
      public void shear(ServerLevel level, SoundSource soundSource, ItemStack tool) {
