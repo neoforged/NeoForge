@@ -26,7 +26,7 @@
                          blockState,
                          item -> this.player.onEquippedItemBroken(item, EquipmentSlot.MAINHAND)
                      );
-+                    if (event.getUseBlock() != net.minecraft.util.TriState.FALSE)
++                    if (event.getUseBlock() != net.minecraft.util.TriState.FALSE) /*immaculate:ignore*/
                      blockState.attack(this.level, pos, this.player);
                      progress = blockState.getDestroyProgress(this.player, this.player.level(), pos);
                  }

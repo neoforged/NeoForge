@@ -260,7 +260,7 @@
 +                }
                  PiercingWeapon piercingWeapon = heldItem.get(DataComponents.PIERCING_WEAPON);
                  if (piercingWeapon != null) {
-+                    if (inputEvent.shouldSwingHand())
++                    if (inputEvent.shouldSwingHand()) /*immaculate:ignore*/
                      this.gameMode.piercingAttack(attackAnimation, piercingWeapon);
                      return true;
                  }

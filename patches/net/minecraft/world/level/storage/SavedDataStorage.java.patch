@@ -49,9 +49,9 @@
              }
  
              int version = NbtUtils.getDataVersion(tag, 1343);
-+            if (type != null)
++            if (type != null) /*immaculate:ignore*/
              return type.update(this.fixerUpper, tag, version, newVersion);
-+            else return tag;
++            return tag;
 +        } finally {
 +            // Neo: delete any temporary files so that we don't inflate disk space unnecessarily.
 +            this.pendingWriteFuture = this.pendingWriteFuture.thenRunAsync(

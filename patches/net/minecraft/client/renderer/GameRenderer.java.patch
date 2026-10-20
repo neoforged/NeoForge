@@ -31,7 +31,7 @@
                  break;
              case null:
              default:
-+                if (!net.neoforged.neoforge.client.ClientHooks.loadEntityShader(cameraEntity, this))
++                if (!net.neoforged.neoforge.client.ClientHooks.loadEntityShader(cameraEntity, this)) /*immaculate:ignore*/
                  this.clearSpectatedEntityPostEffect();
          }
      }

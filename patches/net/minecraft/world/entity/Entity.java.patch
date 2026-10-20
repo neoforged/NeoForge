@@ -191,7 +191,7 @@
      protected void spawnSprintParticle() {
          BlockPos pos = this.getOnPosLegacy();
          BlockState blockState = this.level().getBlockState(pos);
-+        if(!blockState.addRunningEffects(level, pos, this))
++        if(!blockState.addRunningEffects(level, pos, this)) /*immaculate:ignore*/
          if (blockState.getRenderShape() != RenderShape.INVISIBLE) {
              Vec3 movement = this.getDeltaMovement();
              BlockPos entityPosition = this.blockPosition();

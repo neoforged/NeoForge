@@ -9,8 +9,8 @@
 +        return target;
 +    }
 +
-+    // Neo: Reintroduced to allow subclasses to customize the serialization logic, many implementations just delegating
-+    public JsonObject createBaseTemplate(Identifier target, Map<TextureSlot, Material> slots) {
++    // Neo: Reintroduced to allow subclasses to customize the serialization logic, many implementations just delegating /*immaculate:patch:ignore indentation */
++    public JsonObject createBaseTemplate(Identifier target, Map<TextureSlot, Material> slots) { /*immaculate:on*/
              JsonObject result = new JsonObject();
              this.model.ifPresent(m -> result.addProperty("parent", m.toString()));
              if (!slots.isEmpty()) {

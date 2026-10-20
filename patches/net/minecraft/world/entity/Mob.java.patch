@@ -125,7 +125,7 @@
  
          params.type().convert(this, newMob, params);
          afterConversion.finalizeConversion(newMob);
-+        if (!preventConversionSpawns)
++        if (!preventConversionSpawns) /*immaculate:ignore*/
          if (this.level() instanceof ServerLevel serverLevel) {
              serverLevel.addFreshEntity(newMob);
          }

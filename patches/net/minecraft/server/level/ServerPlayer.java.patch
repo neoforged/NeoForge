@@ -207,7 +207,7 @@
          }
  
          if (this.containerMenu != this.inventoryMenu) {
-+            if (provider.shouldTriggerClientSideContainerClosingOnOpen())
++            if (provider.shouldTriggerClientSideContainerClosingOnOpen()) /*immaculate:ignore*/
              this.closeContainer();
 +            else
 +                this.doCloseContainer();

@@ -589,7 +589,7 @@
          boolean isFalling = this.getDeltaMovement().y <= 0.0;
          double oldY = this.getY();
          double baseGravity = this.getEffectiveGravity();
-+        if (!this.getFluidInteraction().isInFluidMatching(this, (entity, type, _) -> !type.isVanilla() && entity.moveInFluid(type, input, baseGravity)))
++        if (!this.getFluidInteraction().isInFluidMatching(this, (entity, type, _) -> !type.isVanilla() && entity.moveInFluid(type, input, baseGravity))) /*immaculate:ignore*/
          if (this.isInWater()) {
              this.travelInWater(input, baseGravity, isFalling, oldY);
 -        } else {

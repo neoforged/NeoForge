@@ -5,14 +5,14 @@
          poseStack.pushPose();
          if (state.scoreText != null) {
 +            var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.DoRender(state, state.scoreText, this, poseStack, submitNodeCollector, camera, state.partialTick);
-+            if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled())
++            if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) /*immaculate:ignore*/
              submitNodeCollector.submitNameTag(poseStack, state.nameTagAttachment, offset, state.scoreText, !state.isDiscrete, state.lightCoords, camera);
              poseStack.translate(0.0F, 9.0F * 1.15F * 0.025F, 0.0F);
          }
  
          if (state.nameTag != null) {
 +            var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.DoRender(state, state.nameTag, this, poseStack, submitNodeCollector, camera, state.partialTick);
-+            if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled())
++            if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) /*immaculate:ignore*/
              submitNodeCollector.submitNameTag(poseStack, state.nameTagAttachment, offset, state.nameTag, !state.isDiscrete, state.lightCoords, camera);
          }
  

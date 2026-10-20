@@ -13,7 +13,7 @@
 +            if (!variants.isEmpty()) {
 +                throw new IllegalArgumentException("Cannot specify both a variant list and a custom blockstate model");
 +            }
-+        } else
++        } /*immaculate:off*/ else /*immaculate:on*/
          if (variants.isEmpty()) {
              throw new IllegalArgumentException("Variant list must contain at least one element");
          }

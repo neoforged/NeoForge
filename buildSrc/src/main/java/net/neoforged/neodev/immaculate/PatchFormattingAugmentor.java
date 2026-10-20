@@ -136,7 +136,7 @@ public abstract class PatchFormattingAugmentor extends FormattingAugmentor {
                     return String.join("\n", patcher.lines);
                 }
 
-                private static final Pattern PREFER_AFTER = Pattern.compile("^\\s*[}a-zA-Z.]");
+                private static final Pattern PREFER_AFTER = Pattern.compile("^\\s*[}]");
 
                 private IndentInfo findClosestIndent(List<Diff> diffs, int startIdx, int endIdx) {
                     var idx0 = startIdx;

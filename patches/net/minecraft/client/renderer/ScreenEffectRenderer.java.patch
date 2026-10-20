@@ -4,7 +4,7 @@
          PoseStack poseStack = new PoseStack();
          AvatarRenderState avatarRenderState = playerRenderState.avatarRenderState;
          if (!cameraRenderState.entityRenderState.isSleeping && playerRenderState.hasPlayer && avatarRenderState != null) {
-+            if (playerRenderState.customBlockOverlayRenderer == null || !playerRenderState.customBlockOverlayRenderer.submit(playerRenderState, cameraRenderState, submitNodeCollector, poseStack, this.sprites, partialTicks, hideGui))
++            if (playerRenderState.customBlockOverlayRenderer == null || !playerRenderState.customBlockOverlayRenderer.submit(playerRenderState, cameraRenderState, submitNodeCollector, poseStack, this.sprites, partialTicks, hideGui)) /*immaculate:ignore*/
              if (playerRenderState.blockOverlay != null) {
                  submitBlockSprite(
                      playerRenderState.blockOverlay.atlasLocation(),
@@ -12,14 +12,14 @@
              }
  
              if (cameraRenderState.isFirstPerson && !avatarRenderState.isSpectator) {
-+                if (playerRenderState.customFluidOverlayRenderer == null || !playerRenderState.customFluidOverlayRenderer.submit(playerRenderState, cameraRenderState, submitNodeCollector, poseStack, this.sprites, partialTicks, hideGui))
++                if (playerRenderState.customFluidOverlayRenderer == null || !playerRenderState.customFluidOverlayRenderer.submit(playerRenderState, cameraRenderState, submitNodeCollector, poseStack, this.sprites, partialTicks, hideGui)) /*immaculate:ignore*/
                  if (playerRenderState.waterOverlay != null) {
                      submitWater(playerRenderState.waterOverlay, poseStack, submitNodeCollector);
                  }
  
                  if (playerRenderState.isOnFire) {
                      TextureAtlasSprite fireSprite = this.sprites.get(ModelBakery.FIRE_1);
-+                    if (playerRenderState.customFireOverlayRenderer == null || !playerRenderState.customFireOverlayRenderer.submit(playerRenderState, cameraRenderState, submitNodeCollector, poseStack, this.sprites, partialTicks, hideGui))
++                    if (playerRenderState.customFireOverlayRenderer == null || !playerRenderState.customFireOverlayRenderer.submit(playerRenderState, cameraRenderState, submitNodeCollector, poseStack, this.sprites, partialTicks, hideGui)) /*immaculate:ignore*/
                      submitFire(poseStack, submitNodeCollector, fireSprite);
                  }
              }

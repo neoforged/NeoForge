@@ -1,45 +1,48 @@
 --- a/net/minecraft/resources/RegistryDataLoader.java
 +++ b/net/minecraft/resources/RegistryDataLoader.java
-@@ -95,7 +_,7 @@
+@@ -95,7 +_,8 @@
  public class RegistryDataLoader {
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final Comparator<ResourceKey<?>> ERROR_KEY_COMPARATOR = Comparator.<ResourceKey<?>, Identifier>comparing(ResourceKey::registry).thenComparing(ResourceKey::identifier);
 -    public static final List<RegistryDataLoader.RegistryData<?>> WORLD_REGISTRIES = List.of(
-+    public static final List<RegistryDataLoader.RegistryData<?>> WORLD_REGISTRIES = net.neoforged.neoforge.registries.DataPackRegistriesHooks.captureWorldRegistries(List.of( /*immaculate:ignore*/
++    public static final List<RegistryDataLoader.RegistryData<?>> WORLD_REGISTRIES = net.neoforged.neoforge.registries.DataPackRegistriesHooks.captureWorldRegistries(
++        List.of( /*immaculate:ignore*/
          new RegistryDataLoader.RegistryData<>(Registries.DIMENSION_TYPE, DimensionType.DIRECT_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.BIOME, Biome.DIRECT_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.CHAT_TYPE, ChatType.DIRECT_CODEC),
-@@ -147,11 +_,11 @@
+@@ -147,11 +_,13 @@
          new RegistryDataLoader.RegistryData<>(Registries.DECORATED_POT_PATTERN, DecoratedPotPattern.CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.BLOCK_TRANSFORMER, BlockTransformer.DIRECT_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.BLOCK_STATE_PROVIDER, BlockStateProvider.DIRECT_CODEC)
--    );
-+    )); // Neo: Keep the list so custom registries can be added later /*immaculate:ignore*/
++        ) // Neo: Keep the list so custom registries can be added later /*immaculate:ignore*/
+     );
      public static final List<RegistryDataLoader.RegistryData<?>> DIMENSION_REGISTRIES = List.of(
          new RegistryDataLoader.RegistryData<>(Registries.LEVEL_STEM, LevelStem.CODEC)
      );
 -    public static final List<RegistryDataLoader.RegistryData<?>> RELOADABLE_REGISTRIES = List.of(
-+    public static final List<RegistryDataLoader.RegistryData<?>> RELOADABLE_REGISTRIES = net.neoforged.neoforge.registries.DataPackRegistriesHooks.captureReloadableRegistries(List.of( /*immaculate:ignore*/
++    public static final List<RegistryDataLoader.RegistryData<?>> RELOADABLE_REGISTRIES = net.neoforged.neoforge.registries.DataPackRegistriesHooks.captureReloadableRegistries(
++        List.of( /*immaculate:ignore*/
          new RegistryDataLoader.RegistryData<>(Registries.LOOT_TABLE, LootTable.DIRECT_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.PREDICATE, LootItemCondition.DIRECT_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.CONTEXT_FLOAT_PROVIDER, ContextFloatProviders.DIRECT_CODEC),
-@@ -160,8 +_,8 @@
+@@ -160,8 +_,10 @@
          new RegistryDataLoader.RegistryData<>(Registries.SLOT_SOURCE, SlotSources.TYPED_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.ADVANCEMENT, Advancement.CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.RECIPE, Recipe.DIRECT_CODEC)
--    );
++        ) // Neo: Keep the list so custom registries can be added later /*immaculate:ignore*/
+     );
 -    public static final List<RegistryDataLoader.RegistryData<?>> SYNCHRONIZED_REGISTRIES = List.of(
-+    )); // Neo: Keep the list so custom registries can be added later /*immaculate:ignore*/
-+    public static final List<RegistryDataLoader.RegistryData<?>> SYNCHRONIZED_REGISTRIES = net.neoforged.neoforge.registries.DataPackRegistriesHooks.captureSyncedRegistries(List.of( /*immaculate:ignore*/
++    public static final List<RegistryDataLoader.RegistryData<?>> SYNCHRONIZED_REGISTRIES = net.neoforged.neoforge.registries.DataPackRegistriesHooks.captureSyncedRegistries(
++        List.of( /*immaculate:ignore*/
          new RegistryDataLoader.RegistryData<>(Registries.BIOME, Biome.NETWORK_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.CHAT_TYPE, ChatType.DIRECT_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.TRIM_PATTERN, TrimPattern.DIRECT_CODEC),
-@@ -194,21 +_,33 @@
+@@ -194,21 +_,34 @@
          new RegistryDataLoader.RegistryData<>(Registries.DECORATED_POT_PATTERN, DecoratedPotPattern.CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.BLOCK_TRANSFORMER, BlockTransformer.DIRECT_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.BLOCK_STATE_PROVIDER, BlockStateProvider.DIRECT_CODEC)
--    );
-+    )); // Neo: Keep the list so custom registries can be added later /*immaculate:ignore*/
++        ) // Neo: Keep the list so custom registries can be added later /*immaculate:ignore*/
+     );
  
 +    /// @deprecated Neo: use [#load(ResourceManager, List, List, Executor, List)] instead
 +    @Deprecated

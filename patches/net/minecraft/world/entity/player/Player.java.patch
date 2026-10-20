@@ -137,7 +137,7 @@
  
          this.removeEntitiesOnShoulder();
 +        damage = Math.max(0.0F, source.type().scaling().getScalingFunction().scaleDamage(source, this, damage, this.level().getDifficulty()));
-+        if (false)
++        if (false) /*immaculate:ignore*/
          if (source.scalesWithDifficulty()) {
              if (level.getDifficulty() == Difficulty.PEACEFUL) {
                  damage = 0.0F;
