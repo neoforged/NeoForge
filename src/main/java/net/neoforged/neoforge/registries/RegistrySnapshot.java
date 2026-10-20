@@ -67,8 +67,8 @@ public class RegistrySnapshot {
     private RegistrySnapshot(Int2ObjectSortedMap<Identifier> ids, Map<Identifier, Identifier> aliases) {
         this.ids = ids;
         this.aliases = aliases;
-        this.fullBackup = null;
         super();
+        this.fullBackup = null;
     }
 
     /**
