@@ -19,8 +19,10 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBundlePacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -76,6 +78,7 @@ public final class AttachmentSync {
             case AttachmentHolder.AsField asField when asField.getExposedHolder() instanceof LevelChunk chunk -> new SyncAttachmentsPayload.ChunkTarget(chunk.getPos());
             case Entity entity -> new SyncAttachmentsPayload.EntityTarget(entity.getId());
             case Level ignored -> new SyncAttachmentsPayload.LevelTarget();
+            case SessionData ignored -> new SyncAttachmentsPayload.SessionTarget();
             default -> throw new UnsupportedOperationException("Attachment holder class is not supported: " + holder);
         };
     }
@@ -155,6 +158,18 @@ public final class AttachmentSync {
             return;
         }
         syncUpdate(level, type, level.players());
+    }
+
+    public static void syncSessionUpdate(MinecraftServer server, SessionData holder, AttachmentType<?> type) {
+        if (type.syncHandler == null) {
+            return;
+        }
+        // Null during the MinecraftServer constructor, when the saved data is loaded
+        PlayerList playerList = server.getPlayerList();
+        if (playerList == null) {
+            return;
+        }
+        syncUpdate(holder, type, playerList.getPlayers());
     }
 
     /**
@@ -247,6 +262,17 @@ public final class AttachmentSync {
         var packet = syncInitialAttachments(level, to);
         if (packet != null) {
             to.connection.send(packet.toVanillaClientbound());
+        }
+    }
+
+    /**
+     * Handles initial syncing of session attachments. Only needs to be called for login,
+     * since the client's session survives respawns and teleports.
+     */
+    public static void syncInitialSessionAttachments(ServerPlayer player) {
+        var packet = syncInitialAttachments(player.level().getServer().getSessionData(), player);
+        if (packet != null) {
+            player.connection.send(packet.toVanillaClientbound());
         }
     }
 
