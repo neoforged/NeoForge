@@ -145,7 +145,7 @@
                  }
              }
  
-+            if (false)
++            if (false) /*immaculate:ignore*/
              if (e instanceof EnderDragon enderDragon) {
                  for (EnderDragonPart subEntity : enderDragon.getSubEntities()) {
                      T castSubPart = type.tryCast(subEntity);
@@ -169,7 +169,7 @@
                  return Continuation.ABORT;
              }
  
-+            if (false)
++            if (false) /*immaculate:ignore*/
              if (e instanceof EnderDragon enderDragon) {
                  for (EnderDragonPart subEntity : enderDragon.getSubEntities()) {
                      T castSubPart = type.tryCast(subEntity);

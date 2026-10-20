@@ -239,7 +239,7 @@
 +                );
 +            } /*immaculate:off*/ else { /*immaculate:on*/
              this.connection.send(new ClientboundOpenScreenPacket(menu.containerId, menu.getType(), provider.getDisplayName()));
-+            } /*immaculate:ignored*/
++            } /*immaculate:ignore*/
              this.initMenu(menu);
              this.containerMenu = menu;
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.PlayerContainerEvent.Open(this, this.containerMenu));

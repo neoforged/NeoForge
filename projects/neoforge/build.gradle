@@ -586,6 +586,8 @@ publishing {
 }
 
 immaculate {
+    reportIssuesRootPath = rootProject.isolated.projectDirectory
+
     workflows.register("patches") {
         files.from(fileTree(rootProject.isolated.projectDirectory.dir("patches")))
         

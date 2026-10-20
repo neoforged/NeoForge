@@ -214,18 +214,18 @@
      public void resizeGui() {
          int guiScale = this.window.calculateScale(this.options.guiScale().get(), this.isEnforceUnicode());
          this.window.setGuiScale(guiScale);
-+        if (this.gui != null) { // Neo: prevent crash during ELS handover
++        if (this.gui != null) { // Neo: prevent crash during ELS handover /*immaculate:ignore*/
 +        net.neoforged.neoforge.client.ClientHooks.fireWindowResize(this.window);
          if (this.gui.screen() != null) {
              this.gui.screen().resize(this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
 +            this.gui.resizeScreenLayers(this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
-+        }
          }
++        } /*immaculate:ignore*/
  
-+        if (this.mouseHandler != null) { // Neo: prevent crash during ELS handover
++        if (this.mouseHandler != null) { // Neo: prevent crash during ELS handover /*immaculate:ignore*/
          this.mouseHandler.resyncMousePosition();
          this.mouseHandler.setIgnoreFirstMove();
-+        }
++        } /*immaculate:ignore*/
      }
  
      @Override

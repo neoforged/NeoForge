@@ -136,7 +136,7 @@ public abstract class PatchFormattingAugmentor extends FormattingAugmentor {
                     return String.join("\n", patcher.lines);
                 }
 
-                private static final Pattern BLOCK_CLOSE = Pattern.compile("^\\s*}");
+                private static final Pattern PREFER_AFTER = Pattern.compile("^\\s*[}a-zA-Z.]");
 
                 private IndentInfo findClosestIndent(List<Diff> diffs, int startIdx, int endIdx) {
                     var idx0 = startIdx;
@@ -154,7 +154,7 @@ public abstract class PatchFormattingAugmentor extends FormattingAugmentor {
                         if (idx0 < 0 && idx1 >= diffs.size()) {
                             return new IndentInfo(0, true);
                         }
-                        if (idx1 < diffs.size() && BLOCK_CLOSE.matcher(diffs.get(idx1).text).find()) {
+                        if (idx1 < diffs.size() && PREFER_AFTER.matcher(diffs.get(idx1).text).find()) {
                             // Preferentially pick the following line if it is a block close, since these should be more stable
                             return new IndentInfo(calculateIndentation(diffs.get(idx1).text), false);
                         } else if (idx0 >= 0 && !diffs.get(idx0).text.isBlank()) {

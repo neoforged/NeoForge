@@ -4,8 +4,8 @@
  import org.jspecify.annotations.Nullable;
  
  import net.neoforged.fml.common.asm.enumextension.IExtensibleEnum;
-+// Neo: Exceptionally add a static wildcard import to make the patch bearable, and comments to avoid the detection by formatting rules.
-+/* immaculate:off */ import static net.neoforged.neoforge.client.gui.VanillaGuiLayers.* /* immaculate:on */;
++// Neo: Exceptionally add a static wildcard import to make the patch bearable, and comments to avoid the detection by spotless rules.
++/* space for import change */ import static net.neoforged.neoforge.client.gui.VanillaGuiLayers.* /* space for wildcard import */;
  
  @OnlyIn(Dist.CLIENT)
  public class Hud {
@@ -253,7 +253,7 @@
 +                Font font = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(lastToolHighlight).getFont(lastToolHighlight, net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.FontContext.SELECTED_ITEM_NAME);
 +                if (font == null) {  /*immaculate:ignore*/
 +                graphics.textWithBackdrop(this.getFont(), highlightTip, x, y, strWidth, ARGB.white(alpha));
-+                }  /*immaculate:ignore*/ else {
++                /*immaculate:off*/ } else /*immaculate:on*/ {
 +                    x = (graphics.guiWidth() - font.width(highlightTip)) / 2;
 +                    graphics.textWithBackdrop(font, highlightTip, x, y, strWidth, ARGB.white(alpha));
 +                }

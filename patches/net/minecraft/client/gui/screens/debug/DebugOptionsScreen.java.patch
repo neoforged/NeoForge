@@ -34,11 +34,11 @@
              List<Map.Entry<Identifier, DebugScreenEntry>> all = new ArrayList<>(DebugScreenEntries.allEntries().entrySet());
              all.sort(COMPARATOR);
              DebugEntryCategory currentCategory = null;
-@@ -311,6 +_,7 @@
- 
+@@ -312,6 +_,7 @@
                      this.addEntry(DebugOptionsScreen.this.new OptionEntry(entry.getKey()));
                  }
-+            } /*immaculate:ignore*/
              }
++            } /*immaculate:ignore*/
  
              this.notifyListUpdated();
+         }

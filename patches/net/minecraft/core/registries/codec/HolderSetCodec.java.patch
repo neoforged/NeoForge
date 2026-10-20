@@ -30,7 +30,7 @@
                      DataResult<HolderSet<E>> result = tagKeyOrValues.getFirst()
                          .map(
 +                            DataResult::success,
-+                            tagOrList -> tagOrList.map(
++                            tagOrList -> tagOrList.map( /*immaculate:ignore*/
                              tagKey -> {
                                  if (ops instanceof RegistryOps<T> registryOps) {
                                      Optional<HolderGetter<E>> maybeRegistry = registryOps.getter(this.registryKey);
@@ -38,7 +38,7 @@
                                  }
                              },
                              values -> DataResult.success(HolderSet.direct((List<? extends Holder<E>>)values))
-+                            )
++                            ) /*immaculate:ignore*/
                          );
                      return result.map(holders -> Pair.of((HolderSet<E>)holders, (T)tagKeyOrValues.getSecond()));
                  }

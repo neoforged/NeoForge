@@ -209,7 +209,7 @@
 +            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, identifier, xscr, yscr + (int)((yscr2 - yscr - 17) * this.scrollOffs), 12, 15);
          }
  
-+        if (currentPage.getVisibleTabs().contains(selectedTab)) //Forge: only display tab selection when the selected tab is on the current page
++        if (currentPage.getVisibleTabs().contains(selectedTab)) //Forge: only display tab selection when the selected tab is on the current page /*immaculate:ignore*/
          this.extractTabButton(graphics, mouseX, mouseY, selectedTab);
          if (selectedTab.getType() == CreativeModeTab.Type.INVENTORY) {
              InventoryScreen.extractEntityInInventoryFollowsMouse(

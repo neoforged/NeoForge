@@ -74,7 +74,7 @@
 +                                    this.lighter.prepareQuadFlat(level, state, pos, lightCoords, quad, this.quadInstance);
 +                                    this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
 +                                }
-+                            } else
++                            } /*immaculate:off*/ else /*immaculate:on*/
                              for (BakedQuad quad : culledQuads) {
 +                                if (!quad.materialInfo().ambientOcclusion()) {
 +                                    this.lighter.prepareQuadFlat(level, state, pos, -1, quad, this.quadInstance);

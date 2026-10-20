@@ -137,7 +137,7 @@
          }
  
          Vec3 cameraPos = this.levelRenderState.cameraRenderState.pos;
-+        if (this.levelRenderState.customWeatherEffectRenderer == null || !this.levelRenderState.customWeatherEffectRenderer.renderSnowAndRain(this.levelRenderState, this.levelRenderState.weatherRenderState, this.levelRenderState.cameraRenderState.pos, renderPass))
++        if (this.levelRenderState.customWeatherEffectRenderer == null || !this.levelRenderState.customWeatherEffectRenderer.renderSnowAndRain(this.levelRenderState, this.levelRenderState.weatherRenderState, this.levelRenderState.cameraRenderState.pos, renderPass)) /*immaculate:ignore*/
          this.weatherEffectRenderer.render(this.levelRenderState.weatherRenderState, renderPass);
 +        profiler.push("neoforge_render_after_weather");
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterWeather(this, this.levelRenderState, null, this.levelRenderState.cameraRenderState.viewRotationMatrix, this.visibleSections, renderPass));
