@@ -25,10 +25,11 @@
              }
          }
      }
-@@ -464,6 +_,83 @@
+@@ -463,6 +_,85 @@
+     @Override
      public ChunkSkyLightSources getSkyLightSources() {
          return this.skyLightSources;
-     }
++    }
 +
 +    // Neo: Hook in AttachmentHolder to chunks for data storage and retrieval
 +    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
@@ -105,7 +106,8 @@
 +    }
 +
 +    // Neo: Allow for exposing the Level a chunk is tied to if available
-+    public net.minecraft.world.level.@Nullable Level getLevel() { return null; }
++    public net.minecraft.world.level.@Nullable Level getLevel() {
++        return null;
+     }
  
      public static ProblemReporter.PathElement problemPath(ChunkPos pos) {
-         return new ChunkAccess.ChunkPathElement(pos);

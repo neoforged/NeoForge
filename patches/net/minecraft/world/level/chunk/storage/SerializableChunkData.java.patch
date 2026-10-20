@@ -20,23 +20,23 @@
 +     */
 +    @Deprecated
 +    SerializableChunkData(
-+            PalettedContainerFactory containerFactory,
-+            ChunkPos chunkPos,
-+            int minSectionY,
-+            long lastUpdateTime,
-+            long inhabitedTime,
-+            ChunkStatus chunkStatus,
-+            BlendingData.@Nullable Packed blendingData,
-+            @Nullable BelowZeroRetrogen belowZeroRetrogen,
-+            UpgradeData upgradeData,
-+            Map<Heightmap.Types, long[]> heightmaps,
-+            ChunkAccess.PackedTicks packedTicks,
-+            ShortList[] postProcessingSections,
-+            boolean lightCorrect,
-+            List<SerializableChunkData.SectionData> sectionData,
-+            List<CompoundTag> entities,
-+            List<CompoundTag> blockEntities,
-+            CompoundTag structureData
++        PalettedContainerFactory containerFactory,
++        ChunkPos chunkPos,
++        int minSectionY,
++        long lastUpdateTime,
++        long inhabitedTime,
++        ChunkStatus chunkStatus,
++        BlendingData.@Nullable Packed blendingData,
++        @Nullable BelowZeroRetrogen belowZeroRetrogen,
++        UpgradeData upgradeData,
++        Map<Heightmap.Types, long[]> heightmaps,
++        ChunkAccess.PackedTicks packedTicks,
++        ShortList[] postProcessingSections,
++        boolean lightCorrect,
++        List<SerializableChunkData.SectionData> sectionData,
++        List<CompoundTag> entities,
++        List<CompoundTag> blockEntities,
++        CompoundTag structureData
 +    ) {
 +        this(containerFactory, chunkPos, minSectionY, lastUpdateTime, inhabitedTime, chunkStatus, blendingData, belowZeroRetrogen, upgradeData, heightmaps, packedTicks, postProcessingSections, lightCorrect, sectionData, entities, blockEntities, structureData, null, null);
 +    }
@@ -70,7 +70,7 @@
                  BlendingData.unpack(this.blendingData)
              );
 +            if (this.auxLightData != null) {
-+                ((LevelChunk) chunk).getAuxLightManager(chunkPos).deserializeNBT(this.auxLightData);
++                ((LevelChunk)chunk).getAuxLightManager(chunkPos).deserializeNBT(this.auxLightData);
 +            }
          } else {
              ProtoChunkTicks<Block> blockTicks = ProtoChunkTicks.load(this.packedTicks.blocks());

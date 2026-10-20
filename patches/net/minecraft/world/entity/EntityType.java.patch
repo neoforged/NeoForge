@@ -20,26 +20,26 @@
 +    }
 +
 +    public EntityType(
-+            EntityType.EntityFactory<T> factory,
-+            MobCategory category,
-+            boolean serialize,
-+            boolean summon,
-+            boolean fireImmune,
-+            boolean canSpawnFarFromPlayer,
-+            TagKey<Block> immuneTo,
-+            EntityDimensions dimensions,
-+            float spawnDimensionsScale,
-+            int clientTrackingRange,
-+            int updateInterval,
-+            String descriptionId,
-+            Optional<ResourceKey<LootTable>> lootTable,
-+            FeatureFlagSet requiredFeatures,
-+            boolean allowedInPeaceful,
-+            boolean trackDeltas,
-+            final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier,
-+            final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier,
-+            final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier,
-+            boolean onlyOpCanSetNbt
++        EntityType.EntityFactory<T> factory,
++        MobCategory category,
++        boolean serialize,
++        boolean summon,
++        boolean fireImmune,
++        boolean canSpawnFarFromPlayer,
++        TagKey<Block> immuneTo,
++        EntityDimensions dimensions,
++        float spawnDimensionsScale,
++        int clientTrackingRange,
++        int updateInterval,
++        String descriptionId,
++        Optional<ResourceKey<LootTable>> lootTable,
++        FeatureFlagSet requiredFeatures,
++        boolean allowedInPeaceful,
++        boolean trackDeltas,
++        final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier,
++        final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier,
++        final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier,
++        boolean onlyOpCanSetNbt
 +    ) {
          this.factory = factory;
          this.category = category;
@@ -96,7 +96,7 @@
          return this.updateInterval != Integer.MAX_VALUE;
      }
  
-@@ -450,9 +_,12 @@
+@@ -450,9 +_,14 @@
      }
  
      public boolean onlyOpCanSetNbt() {
@@ -104,7 +104,9 @@
          return EntityTypes.OP_ONLY_CUSTOM_DATA.contains(this);
      }
  
-+    public Stream<net.minecraft.tags.TagKey<EntityType<?>>> getTags() {return this.builtInRegistryHolder().tags();}
++    public Stream<net.minecraft.tags.TagKey<EntityType<?>>> getTags() {
++        return this.builtInRegistryHolder().tags();
++    }
 +
      public static class Builder<T extends Entity> {
          private final EntityType.EntityFactory<T> factory;
@@ -125,17 +127,17 @@
          }
  
 +        public EntityType.Builder<T> setUpdateInterval(int interval) {
-+            this.updateIntervalSupplier = t->interval;
++            this.updateIntervalSupplier = t -> interval;
 +            return this;
 +        }
 +
 +        public EntityType.Builder<T> setTrackingRange(int range) {
-+            this.trackingRangeSupplier = t->range;
++            this.trackingRangeSupplier = t -> range;
 +            return this;
 +        }
 +
 +        public EntityType.Builder<T> setShouldReceiveVelocityUpdates(boolean value) {
-+            this.velocityUpdateSupplier = t->value;
++            this.velocityUpdateSupplier = t -> value;
 +            return this;
 +        }
 +

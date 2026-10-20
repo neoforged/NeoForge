@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
-@@ -165,18 +_,18 @@
+@@ -165,18 +_,20 @@
          this.guiRenderer = new GuiRenderer(
              this.gameRenderState.guiRenderState,
              this.featureRenderDispatcher,
@@ -10,14 +10,15 @@
 -                new GuiBookModelRenderer(),
 -                new GuiBannerResultRenderer(atlasManager),
 -                new GuiProfilerChartRenderer()
--            )
-+            net.neoforged.neoforge.client.ClientHooks.gatherPictureInPictureRenderers(List.of(
-+                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.renderer.state.gui.pip.GuiEntityRenderState.class, () -> new GuiEntityRenderer(minecraft.getEntityRenderDispatcher())),
-+                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.renderer.state.gui.pip.GuiSkinRenderState.class, GuiSkinRenderer::new),
-+                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.renderer.state.gui.pip.GuiBookModelRenderState.class, GuiBookModelRenderer::new),
-+                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.renderer.state.gui.pip.GuiBannerResultRenderState.class, () -> new GuiBannerResultRenderer(atlasManager)),
-+                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.renderer.state.gui.pip.GuiProfilerChartRenderState.class, GuiProfilerChartRenderer::new)
-+            ))
++            net.neoforged.neoforge.client.ClientHooks.gatherPictureInPictureRenderers(
++                List.of(
++                    new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.renderer.state.gui.pip.GuiEntityRenderState.class, () -> new GuiEntityRenderer(minecraft.getEntityRenderDispatcher())),
++                    new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.renderer.state.gui.pip.GuiSkinRenderState.class, GuiSkinRenderer::new),
++                    new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.renderer.state.gui.pip.GuiBookModelRenderState.class, GuiBookModelRenderer::new),
++                    new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.renderer.state.gui.pip.GuiBannerResultRenderState.class, () -> new GuiBannerResultRenderer(atlasManager)),
++                    new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.renderer.state.gui.pip.GuiProfilerChartRenderState.class, GuiProfilerChartRenderer::new)
++                )
+             )
          );
          this.screenEffectRenderer = new ScreenEffectRenderer(this, atlasManager);
          this.debugCrosshairRenderer = new DebugCrosshairRenderer();

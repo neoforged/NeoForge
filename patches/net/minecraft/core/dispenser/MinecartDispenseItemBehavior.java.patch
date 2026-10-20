@@ -5,7 +5,7 @@
          double yOffset;
          if (blockFront.is(BlockTags.RAILS)) {
 -            if (getRailShape(blockFront).isSlope()) {
-+            if (getRailShape(blockFront, level,front).isSlope()) {
++            if (getRailShape(blockFront, level, front).isSlope()) {
                  yOffset = 0.6;
              } else {
                  yOffset = 0.1;

@@ -19,16 +19,16 @@
 +    }
 +
 +    public MinecraftApi(
-+            NotificationManager notificationManager,
-+            MinecraftAllowListService allowListService,
-+            MinecraftBanListService banListService,
-+            MinecraftPlayerListService minecraftPlayerListService,
-+            MinecraftGameRuleService gameRuleService,
-+            MinecraftOperatorListService minecraftOperatorListService,
-+            MinecraftServerSettingsService minecraftServerSettingsService,
-+            MinecraftServerStateService minecraftServerStateService,
-+            MinecraftExecutorService executorService,
-+            @org.jspecify.annotations.Nullable JsonRpcLogger logger
++        NotificationManager notificationManager,
++        MinecraftAllowListService allowListService,
++        MinecraftBanListService banListService,
++        MinecraftPlayerListService minecraftPlayerListService,
++        MinecraftGameRuleService gameRuleService,
++        MinecraftOperatorListService minecraftOperatorListService,
++        MinecraftServerSettingsService minecraftServerSettingsService,
++        MinecraftServerStateService minecraftServerStateService,
++        MinecraftExecutorService executorService,
++        @org.jspecify.annotations.Nullable JsonRpcLogger logger
 +    ) {
          this.notificationManager = notificationManager;
          this.allowListService = allowListService;

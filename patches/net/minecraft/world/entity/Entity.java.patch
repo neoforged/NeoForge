@@ -76,7 +76,7 @@
                          && !this.isSuppressingBounce()
                          && !effectState.is(BlockTags.SUPPRESSES_BOUNCE)
 -                    ? Math.max(restitution, this.getBlockBounciness(effectState.getBlock()))
-+                    ? Math.max(restitution, this.getBlockBounciness(effectPos, effectState)) // NeoForge: Allow bounciness to be state and position specific
++                            ? Math.max(restitution, this.getBlockBounciness(effectPos, effectState)) // NeoForge: Allow bounciness to be state and position specific
                      : 0.0;
              }
  
@@ -390,12 +390,12 @@
          }
 +        // Neo: ensure target chunk is loaded.
 +        if (this.isAddedToLevel() && !this.level.isClientSide() && !this.isRemoved()) {
-+            this.level.getChunk((int) Math.floor(x) >> 4, (int) Math.floor(z) >> 4);
++            this.level.getChunk((int)Math.floor(x) >> 4, (int)Math.floor(z) >> 4);
 +        }
      }
  
      public void checkDespawn() {
-@@ -4096,6 +_,93 @@
+@@ -4096,6 +_,99 @@
          return true;
      }
  
@@ -433,8 +433,8 @@
 +    public boolean canTrample(ServerLevel level, BlockState state, BlockPos pos, double fallDistance) {
 +        if (level.getRandom().nextFloat() < fallDistance - .5F && this instanceof LivingEntity) {
 +            boolean canTrample = this instanceof Player player
-+                                 ? !level.getServer().isUnderSpawnProtection(level, pos, player)
-+                                 : net.neoforged.neoforge.event.EventHooks.canEntityGrief(level, this);
++                ? !level.getServer().isUnderSpawnProtection(level, pos, player)
++                : net.neoforged.neoforge.event.EventHooks.canEntityGrief(level, this);
 +            return canTrample && this.getBbWidth() * this.getBbWidth() * this.getBbHeight() > 0.512F;
 +        }
 +        return false;
@@ -448,13 +448,19 @@
 +    private boolean isAddedToLevel;
 +
 +    @Override
-+    public final boolean isAddedToLevel() { return this.isAddedToLevel; }
++    public final boolean isAddedToLevel() {
++        return this.isAddedToLevel;
++    }
 +
 +    @Override
-+    public void onAddedToLevel() { this.isAddedToLevel = true; }
++    public void onAddedToLevel() {
++        this.isAddedToLevel = true;
++    }
 +
 +    @Override
-+    public void onRemovedFromLevel() { this.isAddedToLevel = false; }
++    public void onRemovedFromLevel() {
++        this.isAddedToLevel = false;
++    }
 +
 +    // Neo: Helper method to stop an entity from being removed if already marked for removal
 +    @Override

@@ -18,7 +18,7 @@
          this.textureDiffuseColor = ARGB.opaque(textureDiffuseColor);
          this.fireworkColor = fireworkColor;
      }
-@@ -121,6 +_,38 @@
+@@ -121,6 +_,40 @@
      @Override
      public String getSerializedName() {
          return this.name;
@@ -26,6 +26,7 @@
 +
 +    /**
 +     * Gets the tag key representing the set of items which provide this dye color.
++     *
 +     * @return A {@link net.minecraft.tags.TagKey<Item>} representing the set of items which provide this dye color.
 +     */
 +    public net.minecraft.tags.TagKey<Item> getTag() {
@@ -34,6 +35,7 @@
 +
 +    /**
 +     * Gets the tag key representing the set of items which are dyed with this color.
++     *
 +     * @return A {@link net.minecraft.tags.TagKey<Item>} representing the set of items which are dyed with this color.
 +     */
 +    public net.minecraft.tags.TagKey<Item> getDyedTag() {

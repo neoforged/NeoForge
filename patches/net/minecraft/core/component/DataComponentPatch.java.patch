@@ -14,10 +14,10 @@
 +        if (value == null) {
 +            throw new IllegalStateException("DataComponentType " + type + " is not patched");
 +        }
-+        return (T) Removed.removedToNull(value);
++        return (T)Removed.removedToNull(value);
 +    }
 +
-+    public Set<DataComponentType<?>> keySet(){
++    public Set<DataComponentType<?>> keySet() {
 +        return this.map.keySet();
 +    }
 +

@@ -188,9 +188,9 @@
 -                () -> packsToEnable.stream()
 -                    .map(this.packRepository::getPack)
 -                    .filter(Objects::nonNull)
-+                () -> this.packRepository
-+                    .rebuildSelected(packsToEnable)
-+                    .stream()
++            () -> this.packRepository
++                .rebuildSelected(packsToEnable)
++                .stream()
                      .flatMap(Pack::open)
                      .collect(ImmutableList.toImmutableList()),
                  this
@@ -229,7 +229,7 @@
      }
  
 +    public MinecraftServer.ReloadableResources getServerResources() {
-+         return resources;
++        return resources;
 +    }
 +
      public RegistryAccess.Frozen registryAccess() {
@@ -259,19 +259,21 @@
      }
  
      @Deprecated
-@@ -2200,6 +_,19 @@
+@@ -2200,6 +_,21 @@
  
      public ServerDebugSubscribers debugSubscribers() {
          return this.debugSubscribers;
 +    }
 +
-+    public long @Nullable[] getTickTime(ResourceKey<Level> dim) {
++    public long @Nullable [] getTickTime(ResourceKey<Level> dim) {
 +        return this.perWorldTickTimes.get(dim);
 +    }
 +
 +    private void resetStatusCache(ServerStatus status) {
-+        this.cachedServerStatus = STATUS_GSON.toJson(ServerStatus.CODEC.encodeStart(com.mojang.serialization.JsonOps.INSTANCE, status)
-+                .result().orElseThrow());
++        this.cachedServerStatus = STATUS_GSON.toJson(
++            ServerStatus.CODEC.encodeStart(com.mojang.serialization.JsonOps.INSTANCE, status)
++                .result().orElseThrow()
++        );
 +    }
 +
 +    public @Nullable String getStatusJson() {

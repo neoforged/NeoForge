@@ -1,11 +1,12 @@
 --- a/net/minecraft/network/syncher/EntityDataSerializers.java
 +++ b/net/minecraft/network/syncher/EntityDataSerializers.java
-@@ -147,16 +_,27 @@
+@@ -147,16 +_,28 @@
      public static final EntityDataSerializer<HumanoidArm> HUMANOID_ARM = EntityDataSerializer.forValueType(HumanoidArm.STREAM_CODEC);
      public static final EntityDataSerializer<DyeColor> DYE_COLOR = EntityDataSerializer.forValueType(DyeColor.STREAM_CODEC);
  
 +    private static final org.slf4j.Logger LOGGER = com.mojang.logging.LogUtils.getLogger();
 +    private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
++
 +    /**
 +     * @deprecated NeoForge: Use {@link net.neoforged.neoforge.registries.NeoForgeRegistries#ENTITY_DATA_SERIALIZERS} instead
 +     */

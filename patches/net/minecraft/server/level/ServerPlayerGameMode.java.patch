@@ -82,10 +82,10 @@
 +    /**
 +     * Neo: Patched-in method that handles actual removal of blocks for {@link #destroyBlock(BlockPos)}.
 +     *
-+     * @param pos The block pos of the destroyed block
-+     * @param state The state of the destroyed block
++     * @param pos        The block pos of the destroyed block
++     * @param state      The state of the destroyed block
 +     * @param canHarvest If the player breaking the block can harvest the drops of the block
-+     * @param toolStack The players main-hand prior to destroying the block and applying damage to the tool.
++     * @param toolStack  The players main-hand prior to destroying the block and applying damage to the tool.
 +     * @return If the block was removed, as reported by {@link BlockState#onDestroyedByPlayer}.
 +     */
 +    private boolean removeBlock(BlockPos pos, BlockState state, boolean canHarvest, ItemStack toolStack) {

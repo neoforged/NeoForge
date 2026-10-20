@@ -15,12 +15,14 @@
      @Override
      public void onResourceManagerReload(ResourceManager resourceManager) {
          EntityRendererProvider.Context context = new EntityRendererProvider.Context(
-@@ -211,5 +_,8 @@
+@@ -211,5 +_,10 @@
          this.renderers = EntityRenderers.createEntityRenderers(context);
          this.playerRenderers = EntityRenderers.createAvatarRenderers(context);
          this.mannequinRenderers = EntityRenderers.createAvatarRenderers(context);
-+        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.EntityRenderersEvent.AddLayers(
++        net.neoforged.fml.ModLoader.postEvent(
++            new net.neoforged.neoforge.client.event.EntityRenderersEvent.AddLayers(
 +                renderers, playerRenderers, mannequinRenderers, context
-+        ));
++            )
++        );
      }
  }

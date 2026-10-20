@@ -28,7 +28,7 @@
          Item item = itemStack.getItem();
 +        // Neo: Allow Farmer Villagers to pick up SpecialPlantable items.
 +        boolean isFarmerDesiredSeed = (itemStack.getItem() instanceof net.neoforged.neoforge.common.SpecialPlantable specialPlantable && specialPlantable.villagerCanPlantItem(this))
-+                && this.getVillagerData().profession().value().secondaryPoi().stream().anyMatch(secondaryPoi -> secondaryPoi.defaultBlockState().is(net.neoforged.neoforge.common.Tags.Blocks.VILLAGER_FARMLANDS));
++            && this.getVillagerData().profession().value().secondaryPoi().stream().anyMatch(secondaryPoi -> secondaryPoi.defaultBlockState().is(net.neoforged.neoforge.common.Tags.Blocks.VILLAGER_FARMLANDS));
          return (
                  itemStack.is(ItemTags.VILLAGER_PICKS_UP)
                      || itemStack.has(DataComponents.VILLAGER_FOOD)

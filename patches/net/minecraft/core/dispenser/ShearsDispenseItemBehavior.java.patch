@@ -17,7 +17,7 @@
 -                shearable.shear(level, SoundSource.BLOCKS, tool);
 +            if (entity instanceof net.neoforged.neoforge.common.IShearable shearable && shearable.isShearable(null, tool, level, pos)) {
 +                shearable.onSheared(null, tool, level, pos)
-+                        .forEach(drop -> shearable.spawnShearedDrop(level, pos, drop));
++                    .forEach(drop -> shearable.spawnShearedDrop(level, pos, drop));
                  level.gameEvent(null, GameEvent.SHEAR, pos);
                  return true;
              }

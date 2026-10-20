@@ -146,8 +146,8 @@
 +     * Side sensitive version that calls the block function.
 +     *
 +     * @param world The current world
-+     * @param pos Block position
-+     * @param face The side the fire is coming from
++     * @param pos   Block position
++     * @param face  The side the fire is coming from
 +     * @return True if the face can catch fire.
 +     */
 +    public boolean canCatchFire(BlockGetter world, BlockPos pos, Direction face) {

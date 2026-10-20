@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/DamageTypeTagsProvider.java
 +++ b/net/minecraft/data/tags/DamageTypeTagsProvider.java
-@@ -9,8 +_,13 @@
+@@ -9,8 +_,14 @@
  import net.minecraft.world.damagesource.DamageTypes;
  
  public class DamageTypeTagsProvider extends TagsProvider<DamageType> {
@@ -9,6 +9,7 @@
      public DamageTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
          super(output, Registries.DAMAGE_TYPE, lookupProvider);
 +    }
++
 +    public DamageTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
 +        super(output, Registries.DAMAGE_TYPE, lookupProvider, modId);
      }

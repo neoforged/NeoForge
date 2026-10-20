@@ -134,7 +134,7 @@
                  level, pos, Direction.UP
              )
 -            && state.getLightEmission() < 14;
-+            && state.getLightEmission(level, pos) < 14;
++                && state.getLightEmission(level, pos) < 14;
          private BlockBehaviour.StatePredicate isRedstoneConductor = BlockBehaviour.BlockStateBase::isCollisionShapeFullBlock;
          private BlockBehaviour.StatePredicate isSuffocating = (state, level, pos) -> state.is(BlockTags.CAUSES_SUFFOCATION)
              && state.isCollisionShapeFullBlock(level, pos);

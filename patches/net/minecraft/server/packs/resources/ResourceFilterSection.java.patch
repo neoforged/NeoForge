@@ -7,8 +7,8 @@
 +
 +    // Neo: Fix MC-271761 by properly coupling namespace and path in a single predicate check
 +    public boolean isFiltered(net.minecraft.resources.Identifier id) {
-+        return this.blockList.stream().anyMatch(pattern ->
-+                pattern.namespacePredicate().test(id.getNamespace()) && pattern.pathPredicate().test(id.getPath())
++        return this.blockList.stream().anyMatch(
++            pattern -> pattern.namespacePredicate().test(id.getNamespace()) && pattern.pathPredicate().test(id.getPath())
 +        );
 +    }
  }

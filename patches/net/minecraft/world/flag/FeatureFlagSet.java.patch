@@ -125,7 +125,7 @@
 +                return true;
 +            }
 +        }
-+       return (this.mask & set.mask) != 0L;
++        return (this.mask & set.mask) != 0L;
      }
  
      public FeatureFlagSet join(FeatureFlagSet other) {
@@ -174,7 +174,7 @@
 -        return (int)HashCommon.mix(this.mask);
 +        int hash = (int)HashCommon.mix(this.mask);
 +        for (long extMask : this.extendedMask) {
-+            hash = 13 * hash + (int) HashCommon.mix(extMask);
++            hash = 13 * hash + (int)HashCommon.mix(extMask);
 +        }
 +        return hash;
      }

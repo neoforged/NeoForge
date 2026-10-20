@@ -99,8 +99,8 @@
                              ignored -> {
 +                                if (fromResources && net.neoforged.neoforge.gametest.GameTestHooks.isGametestEnabled()) {
 +                                    var byKeyMap = loadTasks.stream().collect(java.util.stream.Collectors.toMap(d -> d.registryKey(), d -> d.readOnlyRegistry()));
-+                                    var envRegistry = (net.minecraft.core.WritableRegistry) byKeyMap.get(Registries.TEST_ENVIRONMENT);
-+                                    var testsRegistry = (net.minecraft.core.WritableRegistry) byKeyMap.get(Registries.TEST_INSTANCE);
++                                    var envRegistry = (net.minecraft.core.WritableRegistry)byKeyMap.get(Registries.TEST_ENVIRONMENT);
++                                    var testsRegistry = (net.minecraft.core.WritableRegistry)byKeyMap.get(Registries.TEST_INSTANCE);
 +                                    if (envRegistry != null && testsRegistry != null) {
 +                                        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.event.RegisterGameTestsEvent(envRegistry, testsRegistry));
 +                                    }

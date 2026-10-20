@@ -15,7 +15,7 @@
          this.tagKeyOrValuesCodec = Codec.either(TagKey.hashedCodec(registryKey), directCodec(elementCodec, alwaysUseList));
 +        // Neo: make registry-specific dispatch codec and make custom-or-vanilla either codec
 +        this.customDispatchCodec = net.neoforged.neoforge.registries.NeoForgeRegistries.HOLDER_SET_TYPES.byNameCodec()
-+                .dispatch(net.neoforged.neoforge.registries.holdersets.ICustomHolderSet::type, type -> type.makeCodec(registryKey, elementCodec, alwaysUseList));
++            .dispatch(net.neoforged.neoforge.registries.holdersets.ICustomHolderSet::type, type -> type.makeCodec(registryKey, elementCodec, alwaysUseList));
 +        this.combinedCodec = Codec.either(this.customDispatchCodec, this.tagKeyOrValuesCodec);
      }
  

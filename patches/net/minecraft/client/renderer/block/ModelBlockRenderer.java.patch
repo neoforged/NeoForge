@@ -21,7 +21,7 @@
                  Vec3 offset = blockState.getOffset(pos);
 -                if (this.ambientOcclusion && blockState.getLightEmission() == 0 && this.parts.getFirst().useAmbientOcclusion()) {
 +                boolean perPartAO = net.neoforged.neoforge.client.config.NeoForgeClientConfig.INSTANCE.handleAmbientOcclusionPerPart.getAsBoolean();
-+                boolean useAO = this.ambientOcclusion && (perPartAO || switch(parts.getFirst().ambientOcclusion()) {
++                boolean useAO = this.ambientOcclusion && (perPartAO || switch (parts.getFirst().ambientOcclusion()) {
 +                    case TRUE -> true;
 +                    case DEFAULT -> blockState.getLightEmission(level, pos) == 0;
 +                    case FALSE -> false;
@@ -88,13 +88,14 @@
                  }
              }
  
-+            if (!ao) {
-+                for (BakedQuad quad : part.getQuads(null)) {
-+                    this.lighter.prepareQuadFlat(level, state, pos, -1, quad, this.quadInstance);
-+                    this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
-+                }
-+            } /*immaculate:of*/ else /*immaculate:on*/
-             for (BakedQuad quad : part.getQuads(null)) {
+-            for (BakedQuad quad : part.getQuads(null)) {
++        if (!ao) {
++            for (BakedQuad quad : part.getQuads(null)) {
++                this.lighter.prepareQuadFlat(level, state, pos, -1, quad, this.quadInstance);
++                this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
++            }
++        } /*immaculate:of*/ else /*immaculate:on*/
++            for (BakedQuad quad : part.getQuads(null)) {
 +                if (!quad.materialInfo().ambientOcclusion()) {
 +                    this.lighter.prepareQuadFlat(level, state, pos, -1, quad, this.quadInstance);
 +                    this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
@@ -136,7 +137,7 @@
              this.tintSourcesInitialized = true;
 +            if (this.tintSources.isEmpty()) {
 +                net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(state)
-+                        .collectDynamicTintValues(state, level, pos, this.computedTintValues);
++                    .collectDynamicTintValues(state, level, pos, this.computedTintValues);
 +                if (!this.computedTintValues.isEmpty()) {
 +                    for (int i = 0; i < this.computedTintValues.size(); i++) {
 +                        this.tintSources.add(null);

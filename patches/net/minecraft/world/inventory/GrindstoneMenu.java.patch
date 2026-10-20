@@ -54,7 +54,7 @@
          int remaining = remaining1 + remaining2 + durability * 5 / 100;
          int count = 1;
 -        if (!input.isDamageableItem()) {
-+        if (!input.isDamageableItem()  || !input.isCombineRepairable()) {
++        if (!input.isDamageableItem() || !input.isCombineRepairable()) {
              if (input.getMaxStackSize() < 2 || !ItemStack.matches(input, additional)) {
                  return ItemStack.EMPTY;
              }

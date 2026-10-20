@@ -10,17 +10,17 @@
 -            Item.BY_BLOCK.put(alternative, item);
 -        }
 +        Item item = registerItem(
-+                ResourceKey.create(net.minecraft.core.registries.Registries.ITEM, block.builtInRegistryHolder().key().identifier()),
-+                p -> new BlockItem(block, p) {
-+                    @Override
-+                    public void registerBlocks(java.util.Map<Block, Item> map, Item self) {
-+                        super.registerBlocks(map, self);
-+                        for (Block block : alternatives) {
-+                            map.put(block, self);
-+                        }
++            ResourceKey.create(net.minecraft.core.registries.Registries.ITEM, block.builtInRegistryHolder().key().identifier()),
++            p -> new BlockItem(block, p) {
++                @Override
++                public void registerBlocks(java.util.Map<Block, Item> map, Item self) {
++                    super.registerBlocks(map, self);
++                    for (Block block : alternatives) {
++                        map.put(block, self);
 +                    }
-+                },
-+                new Item.Properties().useBlockDescriptionPrefix()
++                }
++            },
++            new Item.Properties().useBlockDescriptionPrefix()
 +        );
  
          return item;

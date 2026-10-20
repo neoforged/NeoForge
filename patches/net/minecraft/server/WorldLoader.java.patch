@@ -14,7 +14,7 @@
                                      .toList();
                                  return RegistryDataLoader.load(
 -                                        resources, dimensionContextRegistries, RegistryDataLoader.DIMENSION_REGISTRIES, backgroundExecutor
-+                                        resources, dimensionContextRegistries, RegistryDataLoader.DIMENSION_REGISTRIES, backgroundExecutor, staticLayerTags
++                                    resources, dimensionContextRegistries, RegistryDataLoader.DIMENSION_REGISTRIES, backgroundExecutor, staticLayerTags
                                      )
                                      .thenComposeAsync(
                                          initialWorldgenDimensions -> {

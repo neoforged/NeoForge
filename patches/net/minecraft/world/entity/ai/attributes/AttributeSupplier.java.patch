@@ -9,7 +9,7 @@
          private boolean instanceFrozen;
 +        private final java.util.List<AttributeSupplier.Builder> others = new java.util.ArrayList<>();
 +
-+        public Builder() { }
++        public Builder() {}
 +
 +        public Builder(AttributeSupplier attributeMap) {
 +            this.builder.putAll(attributeMap.instances);

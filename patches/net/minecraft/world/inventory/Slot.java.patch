@@ -9,7 +9,7 @@
      }
  
      public ItemStack remove(int amount) {
-@@ -92,6 +_,37 @@
+@@ -92,6 +_,39 @@
  
      public boolean isActive() {
          return true;
@@ -27,6 +27,7 @@
 +
 +    /**
 +     * Checks if the other slot is in the same inventory, by comparing the inventory reference.
++     *
 +     * @param other
 +     * @return true if the other slot is in the same inventory
 +     */
@@ -35,6 +36,7 @@
 +    }
 +
 +    private Identifier backgroundSprite;
++
 +    /**
 +     * Sets the background atlas and sprite location.
 +     *
@@ -42,8 +44,8 @@
 +     * @return this, to allow chaining.
 +     */
 +    public Slot setBackground(Identifier sprite) {
-+         this.backgroundSprite = sprite;
-+         return this;
++        this.backgroundSprite = sprite;
++        return this;
      }
  
      public Optional<ItemStack> tryRemove(int amount, int maxAmount, Player player) {

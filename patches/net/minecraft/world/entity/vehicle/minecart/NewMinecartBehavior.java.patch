@@ -9,7 +9,7 @@
              Pair<Vec3i, Vec3i> exits = AbstractMinecart.exits(shape);
              Vec3 exit0 = new Vec3(exits.getFirst()).scale(0.5);
              Vec3 exit1 = new Vec3(exits.getSecond()).scale(0.5);
-@@ -246,12 +_,12 @@
+@@ -246,12 +_,13 @@
              if (onRails) {
                  this.minecart.resetFallDistance();
                  this.minecart.setOldPosAndRot();
@@ -20,7 +20,8 @@
                  }
  
 -                RailShape shape = currentState.getValue(((BaseRailBlock)currentState.getBlock()).getShapeProperty());
-+                RailShape shape = ((BaseRailBlock)currentState.getBlock()).getRailDirection(currentState, this.level(), currentPos, this.minecart);;
++                RailShape shape = ((BaseRailBlock)currentState.getBlock()).getRailDirection(currentState, this.level(), currentPos, this.minecart);
++                ;
                  Vec3 newDeltaMovement = this.calculateTrackSpeed(level, initialStepDeltaMovement.horizontal(), trackIteration, currentPos, currentState, shape);
                  if (trackIteration.firstIteration) {
                      trackIteration.movementLeft = newDeltaMovement.horizontalDistance();

@@ -16,7 +16,7 @@
          OptionSet optionSet = parser.parse(args);
          if (!optionSet.has(helpOption) && optionSet.hasOptions()) {
              Path output = Paths.get(outputOption.value(optionSet));
-@@ -82,11 +_,19 @@
+@@ -82,11 +_,21 @@
              boolean dev = allOptions || optionSet.has(devOption);
              boolean reports = allOptions || optionSet.has(reportsOption);
              Collection<Path> input = optionSet.valuesOf(inputOption).stream().map(x$0 -> Paths.get(x$0)).toList();
@@ -33,8 +33,10 @@
 -            generator.run();
              Util.shutdownExecutors();
 +            }  /*immaculate:ignore*/
-+            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, output, input, existingPacks, dev, reports, validate, isFlat, uncached, () -> {},
-+                    net.neoforged.neoforge.data.event.GatherDataEvent.Server::new, generator, packConsumer -> {});
++            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(
++                mods, output, input, existingPacks, dev, reports, validate, isFlat, uncached, () -> {},
++                net.neoforged.neoforge.data.event.GatherDataEvent.Server::new, generator, packConsumer -> {}
++            );
          } else {
              parser.printHelpOn(System.out);
          }

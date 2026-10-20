@@ -18,7 +18,7 @@
 +    }
 +
 +    public Map<String, DataProvider> getProvidersView() {
-+         return this.providersView;
++        return this.providersView;
 +    }
 +
 +    public PackOutput getPackOutput() {
@@ -55,7 +55,7 @@
 +
 +    public void merge(DataGenerator other) {
 +        other.providersToRun.forEach((id, provider) -> {
-+            if(!allProviderIds.add(id))
++            if (!allProviderIds.add(id))
 +                throw new IllegalStateException("Duplicate provider: " + id);
 +
 +            providersToRun.put(id, provider);

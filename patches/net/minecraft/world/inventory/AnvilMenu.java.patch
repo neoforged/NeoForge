@@ -62,15 +62,16 @@
                              compatible = true;
                          }
  
-@@ -305,4 +_,11 @@
+@@ -304,5 +_,12 @@
+ 
      public int getCost() {
          return this.cost.get();
-     }
++    }
 +
 +    /**
 +     * Neo: Sets the cost. Negative values are clamped to zero.
 +     */
 +    public void setCost(int value) {
 +        this.cost.set(Math.max(0, value));
-+     }
+     }
  }

@@ -5,7 +5,7 @@
                  case ClickEvent.Custom custom:
                      if (this.allowOpFeatures) {
 -                        level.getServer().handleCustomClickAction(custom.id(), custom.payload());
-+                        level.getServer().handleCustomClickAction(custom.id(), custom.payload(), (net.minecraft.server.level.ServerPlayer) player, player.getGameProfile());
++                        level.getServer().handleCustomClickAction(custom.id(), custom.payload(), (net.minecraft.server.level.ServerPlayer)player, player.getGameProfile());
                      }
  
                      hasAnyClickCommand = true;

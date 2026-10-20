@@ -10,11 +10,11 @@
              return null;
 -        }, this);
 +        }, this)
-+        .exceptionallyCompose(ex -> {
-+            // Neo: Log since this is usually swallowed
-+            LOGGER.error(LogUtils.FATAL_MARKER, "Error executing task on {}", name(), ex);
-+            return CompletableFuture.failedStage(ex);
-+        });
++            .exceptionallyCompose(ex -> {
++                // Neo: Log since this is usually swallowed
++                LOGGER.error(LogUtils.FATAL_MARKER, "Error executing task on {}", name(), ex);
++                return CompletableFuture.failedStage(ex);
++            });
      }
  
      @CheckReturnValue

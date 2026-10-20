@@ -32,18 +32,20 @@
      }
  
      @Deprecated
-@@ -173,6 +_,21 @@
+@@ -173,6 +_,23 @@
          return this.builtInRegistryHolder.components();
      }
  
 +    /** @deprecated Neo: do not use, use {@link net.neoforged.neoforge.transfer.item.ItemResource#of} instead. */
-+    @org.jetbrains.annotations.ApiStatus.Internal @Deprecated
++    @org.jetbrains.annotations.ApiStatus.Internal
++    @Deprecated
 +    public void resetDefaultResource() {
 +        this.defaultResource = null;
 +    }
 +
 +    /** @deprecated Neo: do not use, use {@link net.neoforged.neoforge.transfer.item.ItemResource#of} instead. */
-+    @org.jetbrains.annotations.ApiStatus.Internal @Deprecated
++    @org.jetbrains.annotations.ApiStatus.Internal
++    @Deprecated
 +    public net.neoforged.neoforge.transfer.item.ItemResource computeDefaultResource(java.util.function.Function<Item, net.neoforged.neoforge.transfer.item.ItemResource> resourceConstructor) {
 +        if (this.defaultResource == null) {
 +            this.defaultResource = resourceConstructor.apply(this);

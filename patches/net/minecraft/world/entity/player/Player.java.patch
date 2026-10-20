@@ -476,7 +476,7 @@
      }
  
      @Override
-@@ -2022,5 +_,52 @@
+@@ -2022,5 +_,53 @@
          public static final Player.BedSleepingProblem OBSTRUCTED = new Player.BedSleepingProblem(Component.translatable("block.minecraft.bed.obstructed"));
          public static final Player.BedSleepingProblem OTHER_PROBLEM = new Player.BedSleepingProblem(null);
          public static final Player.BedSleepingProblem NOT_SAFE = new Player.BedSleepingProblem(Component.translatable("block.minecraft.bed.not_safe"));
@@ -484,11 +484,11 @@
 +
 +    // Neo: Getters for the Player's name prefixes and suffixes
 +    public Collection<MutableComponent> getPrefixes() {
-+         return this.prefixes;
++        return this.prefixes;
 +    }
 +
 +    public Collection<MutableComponent> getSuffixes() {
-+         return this.suffixes;
++        return this.suffixes;
 +    }
 +
 +    private Component displayname = null;
@@ -511,6 +511,7 @@
 +
 +    /**
 +     * Neo:
++     *
 +     * @return The forced pose if set, null otherwise
 +     */
 +    @Nullable

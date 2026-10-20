@@ -222,17 +222,19 @@
                          this.neighborChanged(state, relativePos, changedBlock, null, false);
                      }
                  }
-@@ -988,6 +_,18 @@
+@@ -988,6 +_,20 @@
      @Override
      public BiomeManager getBiomeManager() {
          return this.biomeManager;
 +    }
 +
 +    private double maxEntityRadius = 2.0D;
++
 +    @Override
 +    public double getMaxEntityRadius() {
 +        return maxEntityRadius;
 +    }
++
 +    @Override
 +    public double increaseMaxEntityRadius(double value) {
 +        if (value > maxEntityRadius)

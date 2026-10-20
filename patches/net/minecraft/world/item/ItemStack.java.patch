@@ -82,7 +82,7 @@
      }
  
      public void hurtAndBreak(int amount, ServerLevel level, @Nullable ServerPlayer player, Consumer<ItemStack> onBreak) {
-+        this.hurtAndBreak(amount, level, (LivingEntity) player, onBreak);
++        this.hurtAndBreak(amount, level, (LivingEntity)player, onBreak);
 +    }
 +
 +    public void hurtAndBreak(int amount, ServerLevel level, @Nullable LivingEntity player, Consumer<ItemStack> onBreak) {
@@ -94,7 +94,7 @@
      }
  
      private int processDurabilityChange(int amount, ServerLevel level, @Nullable ServerPlayer player) {
-+        return processDurabilityChange(amount, level, (LivingEntity) player);
++        return processDurabilityChange(amount, level, (LivingEntity)player);
 +    }
 +
 +    private int processDurabilityChange(int amount, ServerLevel level, @Nullable LivingEntity player) {
@@ -107,7 +107,7 @@
      private void applyDamage(int newDamage, @Nullable ServerPlayer player, Consumer<ItemStack> onBreak) {
 -        if (player != null) {
 -            CriteriaTriggers.ITEM_DURABILITY_CHANGED.trigger(player, this, newDamage);
-+        applyDamage(newDamage, (LivingEntity) player, onBreak);
++        applyDamage(newDamage, (LivingEntity)player, onBreak);
 +    }
 +
 +    private void applyDamage(int newDamage, @Nullable LivingEntity player, Consumer<ItemStack> onBreak) {
@@ -207,7 +207,7 @@
 +    }
 +
 +    private void addDetailsToTooltipComponents(
-+            Item.TooltipContext context, TooltipDisplay display, @Nullable Player player, TooltipFlag tooltipFlag, Consumer<Component> builder
++        Item.TooltipContext context, TooltipDisplay display, @Nullable Player player, TooltipFlag tooltipFlag, Consumer<Component> builder
 +    ) {
          this.addToTooltip(DataComponents.TROPICAL_FISH_PATTERN, context, display, builder, tooltipFlag);
          this.addToTooltip(DataComponents.INSTRUMENT, context, display, builder, tooltipFlag);

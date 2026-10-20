@@ -58,7 +58,7 @@
 +                        fallbackType = fallbackType.fallback();
 +                        transform = this.getTransform(context, object, fallbackType);
 +                    }
-+                    if (transform != ItemTransform.NO_TRANSFORM){
++                    if (transform != ItemTransform.NO_TRANSFORM) {
 +                        builder.put(type, transform);
 +                    }
 +                }

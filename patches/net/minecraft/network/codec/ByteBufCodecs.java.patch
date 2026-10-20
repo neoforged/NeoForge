@@ -42,7 +42,7 @@
 +            }
 +
 +            private <H extends net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<T>> H cast(net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<T> holderSet) {
-+                return (H) holderSet;
++                return (H)holderSet;
 +            }
 +
              public HolderSet<T> decode(RegistryFriendlyByteBuf input) {

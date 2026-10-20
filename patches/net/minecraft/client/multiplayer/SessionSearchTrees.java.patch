@@ -9,7 +9,7 @@
                  CompletableFuture<?> previous = this.recipeSearch;
                  this.recipeSearch = CompletableFuture.supplyAsync(
                      () -> new FullTextSearchTree<>(
-@@ -89,36 +_,50 @@
+@@ -89,36 +_,52 @@
      }
  
      public void updateCreativeTags(List<ItemStack> items) {
@@ -24,10 +24,12 @@
 -                CompletableFuture<?> previous = this.creativeByTagSearch;
 -                this.creativeByTagSearch = CompletableFuture.supplyAsync(
 +                CompletableFuture<?> previous = net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getTagSearchTree(key);
-+                net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.putTagSearchTree(key, CompletableFuture.supplyAsync(
++                net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.putTagSearchTree(
++                    key, CompletableFuture.supplyAsync(
                      () -> new IdSearchTree<>(itemStack -> itemStack.tags().map(TagKey::location), items), Util.backgroundExecutor()
 -                );
-+                ));
++                )
++            );
                  previous.cancel(true);
              }
          );

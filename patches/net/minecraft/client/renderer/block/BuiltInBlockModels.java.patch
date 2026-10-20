@@ -4,7 +4,7 @@
      }
  
      public static BuiltInBlockModels.SpecialModelFactory createMobHead(SkullBlock.Types type) {
-+        return createMobHead((SkullBlock.Type) type);
++        return createMobHead((SkullBlock.Type)type);
 +    }
 +
 +    public static BuiltInBlockModels.SpecialModelFactory createMobHead(SkullBlock.Type type) {
@@ -14,7 +14,7 @@
      }
  
      public static BuiltInBlockModels.SpecialModelFactory createMobWallHead(SkullBlock.Types type) {
-+        return createMobWallHead((SkullBlock.Type) type);
++        return createMobWallHead((SkullBlock.Type)type);
 +    }
 +
 +    public static BuiltInBlockModels.SpecialModelFactory createMobWallHead(SkullBlock.Type type) {
@@ -24,7 +24,7 @@
      }
  
      public static void createMobHeads(BuiltInBlockModels.Builder builder, SkullBlock.Types type, Block ground, Block wall) {
-+        createMobHeads(builder, (SkullBlock.Type) type, ground, wall);
++        createMobHeads(builder, (SkullBlock.Type)type, ground, wall);
 +    }
 +
 +    public static void createMobHeads(BuiltInBlockModels.Builder builder, SkullBlock.Type type, Block ground, Block wall) {

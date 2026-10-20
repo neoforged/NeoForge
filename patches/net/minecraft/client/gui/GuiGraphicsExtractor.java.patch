@@ -69,7 +69,7 @@
  
      public void setComponentTooltipForNextFrame(Font font, List<Component> lines, int xo, int yo) {
 -        this.setComponentTooltipForNextFrame(font, lines, xo, yo, null);
-+        this.setComponentTooltipForNextFrame(font, lines, xo, yo, (Identifier) null);
++        this.setComponentTooltipForNextFrame(font, lines, xo, yo, (Identifier)null);
      }
  
      public void setComponentTooltipForNextFrame(Font font, List<Component> lines, int xo, int yo, @Nullable Identifier style) {
@@ -128,14 +128,14 @@
 +    }
 +
 +    public void tooltip(
-+            Font font,
-+            List<ClientTooltipComponent> lines,
-+            int xo,
-+            int yo,
-+            ClientTooltipPositioner positioner,
-+            @Nullable Identifier style,
-+            boolean extraSpaceAfterFirstLine,
-+            ItemStack tooltipStack
++        Font font,
++        List<ClientTooltipComponent> lines,
++        int xo,
++        int yo,
++        ClientTooltipPositioner positioner,
++        @Nullable Identifier style,
++        boolean extraSpaceAfterFirstLine,
++        ItemStack tooltipStack
 +    ) {
 +        var preEvent = net.neoforged.neoforge.client.ClientHooks.onRenderTooltipPre(tooltipStack, this, xo, yo, guiWidth(), guiHeight(), lines, font, positioner);
 +        if (preEvent.isCanceled()) return;

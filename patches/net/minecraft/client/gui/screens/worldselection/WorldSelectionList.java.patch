@@ -4,7 +4,7 @@
      private static final Identifier WARNING_SPRITE = Identifier.withDefaultNamespace("world_list/warning");
      private static final Identifier JOIN_HIGHLIGHTED_SPRITE = Identifier.withDefaultNamespace("world_list/join_highlighted");
      private static final Identifier JOIN_SPRITE = Identifier.withDefaultNamespace("world_list/join");
-+    private static final Identifier FORGE_EXPERIMENTAL_WARNING_ICON = Identifier.fromNamespaceAndPath("neoforge","textures/gui/experimental_warning.png");
++    private static final Identifier FORGE_EXPERIMENTAL_WARNING_ICON = Identifier.fromNamespaceAndPath("neoforge", "textures/gui/experimental_warning.png");
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final Component FROM_NEWER_TOOLTIP_1 = Component.translatable("selectWorld.tooltip.fromNewerVersion1").withStyle(ChatFormatting.RED);
      private static final Component FROM_NEWER_TOOLTIP_2 = Component.translatable("selectWorld.tooltip.fromNewerVersion2").withStyle(ChatFormatting.RED);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -82,6 +_,41 @@
+@@ -82,6 +_,42 @@
          this.getItems().set(slot, itemStack);
          itemStack.limitSize(this.getMaxStackSize(itemStack));
      }
@@ -10,6 +10,7 @@
 +        protected Integer createSnapshot() {
 +            return cooldownTime;
 +        }
++
 +        @Override
 +        protected void revertToSnapshot(Integer snapshot) {
 +            cooldownTime = snapshot;
@@ -107,7 +108,7 @@
 +
 +    public static net.neoforged.neoforge.transfer.item.ContainerOrHandler getContainerOrHandlerAt(Level level, BlockPos pos, @Nullable Direction side) {
 +        return getContainerOrHandlerAt(
-+                level, pos, level.getBlockState(pos), (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, side
++            level, pos, level.getBlockState(pos), (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, side
 +        );
 +    }
 +

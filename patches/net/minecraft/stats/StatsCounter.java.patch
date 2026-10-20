@@ -5,7 +5,7 @@
  
      public void setValue(Player player, Stat<?> stat, int count) {
 -        this.stats.put(stat, count);
-+        net.neoforged.neoforge.event.StatAwardEvent event = net.neoforged.neoforge.event.EventHooks.onStatAward(player, stat,count);
++        net.neoforged.neoforge.event.StatAwardEvent event = net.neoforged.neoforge.event.EventHooks.onStatAward(player, stat, count);
 +        if (!event.isCanceled()) this.stats.put(event.getStat(), event.getValue());
      }
  

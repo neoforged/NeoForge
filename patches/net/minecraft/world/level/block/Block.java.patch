@@ -77,7 +77,7 @@
          }
      }
  
-@@ -412,19 +_,26 @@
+@@ -412,19 +_,25 @@
      }
  
      private static void popResource(Level level, Supplier<ItemEntity> entityFactory, ItemStack itemStack) {
@@ -89,8 +89,7 @@
 +            // Neo: Add drops to the captured list if capturing is enabled.
 +            if (capturedDrops != null) {
 +                capturedDrops.add(entity);
-+            }
-+            else {
++            } else {
 +                level.addFreshEntity(entity);
 +            }
          }

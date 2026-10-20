@@ -21,7 +21,7 @@
 +
          this.data = data;
 -        this.registry = new MappedRegistry<>(data.key(), lifecycle);
-+        this.registry = (WritableRegistry<T>) registryBuilder.disableRegistrationCheck().create();
++        this.registry = (WritableRegistry<T>)registryBuilder.disableRegistrationCheck().create();
          this.loadingErrors = loadingErrors;
          this.concurrentRegistrationGetter = new ConcurrentHolderGetter<>(this.registryWriteLock, this.registry.createRegistrationLookup());
      }
@@ -65,7 +65,7 @@
 +                    resultLootTable.setLootTableId(elementKey.identifier());
 +                    // The variable and type are known to be LootTable at this point
 +                    //noinspection unchecked
-+                    elementCandidate = (T) resultLootTable;
++                    elementCandidate = (T)resultLootTable;
 +                }
 +
 +                return Either.left(elementCandidate);

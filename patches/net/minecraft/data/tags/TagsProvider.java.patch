@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/TagsProvider.java
 +++ b/net/minecraft/data/tags/TagsProvider.java
-@@ -31,26 +_,49 @@
+@@ -31,26 +_,50 @@
      private final CompletableFuture<TagsProvider.TagLookup<T>> parentProvider;
      protected final ResourceKey<? extends Registry<T>> registryKey;
      protected final Map<Identifier, TagBuilder> builders = Maps.newLinkedHashMap();
@@ -12,12 +12,15 @@
 +    @Deprecated
      protected TagsProvider(PackOutput output, ResourceKey<? extends Registry<T>> registryKey, CompletableFuture<HolderLookup.Provider> lookupProvider) {
 -        this(output, registryKey, lookupProvider, CompletableFuture.completedFuture(TagsProvider.TagLookup.empty()));
+-    }
+-
 +        this(output, registryKey, lookupProvider, "vanilla");
 +    }
++
 +    protected TagsProvider(PackOutput output, ResourceKey<? extends Registry<T>> registryKey, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
 +        this(output, registryKey, lookupProvider, CompletableFuture.completedFuture(TagsProvider.TagLookup.empty()), modId);
-     }
- 
++    }
++
 +    /**
 +     * @deprecated Forge: Use the {@linkplain #TagsProvider(PackOutput, ResourceKey, CompletableFuture, CompletableFuture, String) mod id variant}
 +     */
@@ -58,9 +61,9 @@
                                      List<TagEntry> entries = builder.build();
 -                                    List<TagEntry> unresolvedEntries = entries.stream().filter(e -> !e.verifyIfPresent(elementCheck, tagCheck)).toList();
 +                                    List<TagEntry> unresolvedEntries = java.util.stream.Stream.concat(entries.stream(), builder.getRemoveEntries())
-+                                               // Neo: Assume tags from other namespaces always exists
-+                                              .filter((e) -> e.getId().getNamespace().equals(modId) && !e.verifyIfPresent(elementCheck, tagCheck))
-+                                              .toList();
++                                        // Neo: Assume tags from other namespaces always exists
++                                        .filter((e) -> e.getId().getNamespace().equals(modId) && !e.verifyIfPresent(elementCheck, tagCheck))
++                                        .toList();
                                      if (!unresolvedEntries.isEmpty()) {
                                          throw new IllegalArgumentException(
                                              String.format(

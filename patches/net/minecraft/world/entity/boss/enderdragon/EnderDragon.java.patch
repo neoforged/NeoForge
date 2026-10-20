@@ -34,8 +34,8 @@
          if (this.level() instanceof ServerLevel level) {
              if (this.dragonDeathTime > 150 && this.dragonDeathTime % 5 == 0 && level.getGameRules().get(GameRules.MOB_DROPS)) {
 -                ExperienceOrb.award(level, this.position(), Mth.floor(xpCount * 0.08F));
-+                int award = net.neoforged.neoforge.event.EventHooks.getExperienceDrop(this, net.minecraft.world.entity.EntityReference.get(this.unlimitedLastHurtByPlayer, level, Player.class), Mth.floor((float) xpCount * 0.08F));
-+                ExperienceOrb.award((ServerLevel) this.level(), this.position(), award);
++                int award = net.neoforged.neoforge.event.EventHooks.getExperienceDrop(this, net.minecraft.world.entity.EntityReference.get(this.unlimitedLastHurtByPlayer, level, Player.class), Mth.floor((float)xpCount * 0.08F));
++                ExperienceOrb.award((ServerLevel)this.level(), this.position(), award);
              }
  
              if (this.dragonDeathTime == 1 && !this.isSilent()) {
@@ -44,8 +44,8 @@
          if (this.dragonDeathTime >= 200 && this.level() instanceof ServerLevel level) {
              if (level.getGameRules().get(GameRules.MOB_DROPS)) {
 -                ExperienceOrb.award(level, this.position(), Mth.floor(xpCount * 0.2F));
-+                int award = net.neoforged.neoforge.event.EventHooks.getExperienceDrop(this, net.minecraft.world.entity.EntityReference.get(this.unlimitedLastHurtByPlayer, level, Player.class), Mth.floor((float) xpCount * 0.2F));
-+                ExperienceOrb.award((ServerLevel) this.level(), this.position(), award);
++                int award = net.neoforged.neoforge.event.EventHooks.getExperienceDrop(this, net.minecraft.world.entity.EntityReference.get(this.unlimitedLastHurtByPlayer, level, Player.class), Mth.floor((float)xpCount * 0.2F));
++                ExperienceOrb.award((ServerLevel)this.level(), this.position(), award);
              }
  
              if (this.dragonFight != null) {

@@ -6,7 +6,7 @@
                  case 0:
 +                    if (litTotalTime > Short.MAX_VALUE) {
 +                        // Neo: preserve litTime / litDuration ratio on the client as data slots are synced as shorts.
-+                        return net.minecraft.util.Mth.floor(((double) litTimeRemaining / litTotalTime) * Short.MAX_VALUE);
++                        return net.minecraft.util.Mth.floor(((double)litTimeRemaining / litTotalTime) * Short.MAX_VALUE);
 +                    }
 +
                      return AbstractFurnaceBlockEntity.this.litTimeRemaining;
@@ -54,7 +54,7 @@
      }
  
      private static int getTotalCookTime(RecipeHolder<? extends AbstractCookingRecipe> recipe, AbstractFurnaceBlockEntity entity) {
-@@ -326,14 +_,54 @@
+@@ -326,14 +_,56 @@
  
      @Override
      public void setItem(int slot, ItemStack itemStack) {
@@ -83,10 +83,12 @@
 +        protected Boolean createSnapshot() {
 +            return needsCookingReset;
 +        }
++
 +        @Override
 +        protected void revertToSnapshot(Boolean snapshot) {
 +            needsCookingReset = snapshot;
 +        }
++
 +        @Override
 +        protected void onRootCommit(Boolean originalState) {
 +            if (needsCookingReset) {

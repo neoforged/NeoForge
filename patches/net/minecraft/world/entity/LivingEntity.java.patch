@@ -371,7 +371,7 @@
              )) {
 -            ExperienceOrb.award(level, this.position(), this.getExperienceReward(level, killer));
 +            int reward = net.neoforged.neoforge.event.EventHooks.getExperienceDrop(this, this.getLastHurtByPlayer(), this.getExperienceReward(level, killer));
-+            ExperienceOrb.award((ServerLevel) this.level(), this.position(), reward);
++            ExperienceOrb.award((ServerLevel)this.level(), this.position(), reward);
          }
      }
  
@@ -379,7 +379,7 @@
      }
  
      public void knockback(double power, double xd, double zd, DamageSource source, float damage, boolean comesFromEffect) {
-+        net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent event = net.neoforged.neoforge.common.CommonHooks.onLivingKnockBack(this, (float) power, xd, zd);
++        net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent event = net.neoforged.neoforge.common.CommonHooks.onLivingKnockBack(this, (float)power, xd, zd);
 +        if (event.isCanceled()) return;
 +        power = event.getStrength();
 +        xd = event.getRatioX();
@@ -458,7 +458,7 @@
  
          if (enchantmentArmor > 0.0F) {
              damage = CombatRules.getDamageAfterMagicAbsorb(damage, enchantmentArmor);
-+            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ENCHANTMENTS,this.damageContainers.peek().getNewDamage() - damage);
++            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ENCHANTMENTS, this.damageContainers.peek().getNewDamage() - damage);
          }
  
          return damage;
@@ -531,15 +531,18 @@
      }
  
      @Override
-@@ -2263,7 +_,13 @@
+@@ -2263,7 +_,16 @@
      }
  
      public void setItemSlot(EquipmentSlot slot, ItemStack itemStack) {
 -        this.onEquipItem(slot, this.equipment.set(slot, itemStack), itemStack);
 +        setItemSlot(slot, itemStack, false);
 +    }
-+    /** Neo: Passing {@code true} for {@code insideTransaction} sets the item without side-effects (calling {@link #onEquipItem}).
-+     * Callers are responsible for performing the deferred side-effects, when the active transaction commits. */
++
++    /**
++     * Neo: Passing {@code true} for {@code insideTransaction} sets the item without side-effects (calling {@link #onEquipItem}).
++     * Callers are responsible for performing the deferred side-effects, when the active transaction commits.
++     */
 +    public void setItemSlot(EquipmentSlot slot, ItemStack itemStack, boolean insideTransaction) {
 +        var oldStack = this.equipment.set(slot, itemStack);
 +        if (!insideTransaction) this.onEquipItem(slot, oldStack, itemStack);
@@ -779,24 +782,23 @@
                  }
  
                  y--;
-@@ -3670,8 +_,15 @@
+@@ -3670,9 +_,16 @@
          return false;
      }
  
--    private boolean checkPositionAndTeleport(
--        double xx, double y, double zz, boolean showParticles, Predicate<BlockState> isInvalidPosition, BlockState state, Level level
 +    // Neo: Add overload with the consumed item causing the random teleport
-+    private boolean checkPositionAndTeleport(
-+            double xx, double y, double zz, boolean showParticles, Predicate<BlockState> isInvalidPosition, BlockState state, Level level
-+    ) {
+     private boolean checkPositionAndTeleport(
+         double xx, double y, double zz, boolean showParticles, Predicate<BlockState> isInvalidPosition, BlockState state, Level level
+     ) {
 +        return checkPositionAndTeleport(xx, y, zz, showParticles, isInvalidPosition, state, level, ItemStack.EMPTY);
 +    }
 +
 +    private boolean checkPositionAndTeleport(
 +        double xx, double y, double zz, boolean showParticles, Predicate<BlockState> isInvalidPosition, BlockState state, Level level, ItemStack consumedStack
-     ) {
++    ) {
          if (isInvalidPosition.test(state)) {
              return false;
+         }
 @@ -3685,6 +_,22 @@
              }
  
