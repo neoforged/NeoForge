@@ -33,7 +33,7 @@
      @Override
      public boolean equals(Object obj) {
          return this == obj
-@@ -226,7 +_,24 @@
+@@ -226,7 +_,30 @@
  
      @Override
      public int hashCode() {
@@ -41,16 +41,22 @@
 +        return this.prototype.hashCode() + hashPatch(this.patch) * 31;
 +    }
 +
++    private static int hashPatch(Reference2ObjectMap<DataComponentType<?>, Object> patch) {
++        return hashPatch(patch, System::identityHashCode);
++    }
++
 +    // Neo: Change implementation of hashCode to reduce collisions.
 +    // For a map, hashCode is specified as the sum of the hash codes of its entries.
 +    // We do that, but change the entry hash code to 8191^<key hash> * <value hash>,
 +    // where <key hash> is the lower bits of the identity hash code of the key.
-+    private static int hashPatch(Reference2ObjectMap<DataComponentType<?>, Object> patch) {
++    @org.jetbrains.annotations.VisibleForTesting
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public static int hashPatch(Reference2ObjectMap<DataComponentType<?>, Object> patch, java.util.function.ToIntFunction<DataComponentType<?>> hashCode) {
 +        int h = 0, n = patch.size();
 +        var iterator = it.unimi.dsi.fastutil.objects.Reference2ObjectMaps.fastIterator(patch);
 +        while (n-- != 0) {
 +            var entry = iterator.next();
-+            int exponent = System.identityHashCode(entry.getKey()) & 0xff;
++            int exponent = hashCode.applyAsInt(entry.getKey()) & 0xff;
 +            // Use 8191 instead of the usual 31, as 31 can produce many collisions with typical integer component ranges (0-255) if the exponent difference is only 1
 +            int entryHash = com.google.common.math.IntMath.pow(8191, exponent) * entry.getValue().hashCode();
 +            h += entryHash;
