@@ -5,7 +5,7 @@
  
          graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, this.getX(), this.getY(), this.width, this.height);
 +        // Neo: Make it easier for custom recipe button implementations to override target rendering
-+        extractDisplayRenderState(graphics, mouseX, mouseY, a, this.hasMultipleRecipes() && this.allRecipesHaveSameResultDisplay);
++        this.extractDisplayRenderState(graphics, mouseX, mouseY, a, this.hasMultipleRecipes() && this.allRecipesHaveSameResultDisplay);
 +        if (shouldAnimate) {
 +            graphics.pose().popMatrix();
 +        }

@@ -26,7 +26,7 @@ import net.minecraft.world.item.crafting.display.RecipeDisplay;
 import net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay;
 import net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
-import net.neoforged.neoforge.client.RecipeBookManager.RecipeOverlayButtonCreator;
+import net.neoforged.neoforge.client.recipebook.RecipeOverlayButtonCreator;
 
 public class RecipeBookTestComponent extends RecipeBookComponent<RecipeBookTestMenu> {
     private static final Identifier OVERLAY_ENABLED_SPRITE = Identifier.withDefaultNamespace("recipe_book/crafting_overlay");

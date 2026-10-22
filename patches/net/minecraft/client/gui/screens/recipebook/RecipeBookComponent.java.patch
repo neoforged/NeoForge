@@ -8,13 +8,13 @@
 +    }
 +
 +    public RecipeBookComponent(T menu, List<RecipeBookComponent.TabInfo> tabInfos,
-+          net.neoforged.neoforge.client.RecipeBookManager.@Nullable RecipeOverlayButtonCreator overlayButtonCreator) {
++          net.neoforged.neoforge.client.recipebook.@Nullable RecipeOverlayButtonCreator overlayButtonCreator) {
 +        this(menu, tabInfos, RecipeButton::new, overlayButtonCreator);
 +    }
 +
 +    public RecipeBookComponent(T menu, List<RecipeBookComponent.TabInfo> tabInfos,
 +          java.util.function.Function<SlotSelectTime, ? extends RecipeButton> recipeButtonCreator,
-+          net.neoforged.neoforge.client.RecipeBookManager.@Nullable RecipeOverlayButtonCreator overlayButtonCreator) {
++          net.neoforged.neoforge.client.recipebook.@Nullable RecipeOverlayButtonCreator overlayButtonCreator) {
          this.menu = menu;
          this.tabInfos = tabInfos;
          SlotSelectTime slotSelectTime = () -> Mth.floor(this.time / 30.0F);

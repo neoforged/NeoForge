@@ -13,9 +13,9 @@ import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.client.RecipeBookManager.RecipeDisplayResultIdExtractor;
 import net.neoforged.neoforge.client.RecipeBookManager.RecipeDisplayResultInfo;
-import net.neoforged.neoforge.client.RecipeBookManager.RecipeDisplayResultTooltipExtractor;
+import net.neoforged.neoforge.client.recipebook.RecipeDisplayResultIdExtractor;
+import net.neoforged.neoforge.client.recipebook.RecipeDisplayResultTooltipExtractor;
 import org.jetbrains.annotations.ApiStatus;
 
 /**

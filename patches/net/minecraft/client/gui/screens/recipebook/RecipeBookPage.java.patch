@@ -9,7 +9,7 @@
 +
 +    public RecipeBookPage(RecipeBookComponent<?> parent, SlotSelectTime slotSelectTime, boolean isFurnaceMenu,
 +          java.util.function.Function<SlotSelectTime, ? extends RecipeButton> recipeButtonCreator,
-+          net.neoforged.neoforge.client.RecipeBookManager.@Nullable RecipeOverlayButtonCreator overlayButtonCreator) {
++          net.neoforged.neoforge.client.recipebook.@Nullable RecipeOverlayButtonCreator overlayButtonCreator) {
          this.parent = parent;
 -        this.overlay = new OverlayRecipeComponent(slotSelectTime, isFurnaceMenu);
 +        this.overlay = new OverlayRecipeComponent(slotSelectTime, isFurnaceMenu, overlayButtonCreator);

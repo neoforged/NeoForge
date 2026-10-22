@@ -5,13 +5,13 @@
      private final SlotSelectTime slotSelectTime;
      private final boolean isFurnaceMenu;
 +    /// Neo: Make it possible for modded recipe books to have custom recipe book overlays.
-+    private final net.neoforged.neoforge.client.RecipeBookManager.@Nullable RecipeOverlayButtonCreator overlayButtonCreator;
++    private final net.neoforged.neoforge.client.recipebook.@Nullable RecipeOverlayButtonCreator overlayButtonCreator;
  
      public OverlayRecipeComponent(SlotSelectTime slotSelectTime, boolean isFurnaceMenu) {
 +        this(slotSelectTime, isFurnaceMenu, null);
 +    }
 +
-+    public OverlayRecipeComponent(SlotSelectTime slotSelectTime, boolean isFurnaceMenu, net.neoforged.neoforge.client.RecipeBookManager.@Nullable RecipeOverlayButtonCreator overlayButtonCreator) {
++    public OverlayRecipeComponent(SlotSelectTime slotSelectTime, boolean isFurnaceMenu, net.neoforged.neoforge.client.recipebook.@Nullable RecipeOverlayButtonCreator overlayButtonCreator) {
 +        this.overlayButtonCreator = overlayButtonCreator;
          this.slotSelectTime = slotSelectTime;
          this.isFurnaceMenu = isFurnaceMenu;
@@ -20,8 +20,8 @@
              int y = this.y + 5 + 25 * (i / maxRow);
              if (this.isFurnaceMenu) {
                  this.recipeButtons.add(new OverlayRecipeComponent.OverlaySmeltingRecipeButton(x, y, recipe.id(), recipe.display(), context, canCraft));
-+            } else if (overlayButtonCreator != null) {
-+                this.recipeButtons.add(overlayButtonCreator.create(this, x, y, recipe.id(), recipe.display(), context, canCraft));
++            } else if (this.overlayButtonCreator != null) {
++                this.recipeButtons.add(this.overlayButtonCreator.create(this, x, y, recipe.id(), recipe.display(), context, canCraft));
              } else {
                  this.recipeButtons.add(new OverlayRecipeComponent.OverlayCraftingRecipeButton(x, y, recipe.id(), recipe.display(), context, canCraft));
              }
