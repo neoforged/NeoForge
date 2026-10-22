@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.recipebook.OverlayRecipeComponent;
 import net.minecraft.client.gui.screens.recipebook.OverlayRecipeComponent.OverlayRecipeButton;
 import net.minecraft.client.gui.screens.recipebook.RecipeCollection;
 import net.minecraft.core.Registry;
@@ -135,13 +136,14 @@ public final class RecipeBookManager {
     @FunctionalInterface
     public interface RecipeOverlayButtonCreator {
         /// Creates a new overlay recipe button.
-        /// 
+        ///
+        /// @param parent      Overlay recipe component to treat as the captured `this` instance.
         /// @param x           X position of the button.
         /// @param y           Y position of the button.
         /// @param id          Id representation of the recipe the button is being created for.
         /// @param recipe      Display of the recipe the button is being created for.
         /// @param context     Context data for recipes.
         /// @param isCraftable `true` if the recipe is craftable from the contents in the player's inventory.
-        OverlayRecipeButton create(int x, int y, RecipeDisplayId id, RecipeDisplay recipe, ContextMap context, boolean isCraftable);
+        OverlayRecipeButton create(OverlayRecipeComponent parent, int x, int y, RecipeDisplayId id, RecipeDisplay recipe, ContextMap context, boolean isCraftable);
     }
 }

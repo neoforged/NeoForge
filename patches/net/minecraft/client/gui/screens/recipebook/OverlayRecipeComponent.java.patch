@@ -21,7 +21,7 @@
              if (this.isFurnaceMenu) {
                  this.recipeButtons.add(new OverlayRecipeComponent.OverlaySmeltingRecipeButton(x, y, recipe.id(), recipe.display(), context, canCraft));
 +            } else if (overlayButtonCreator != null) {
-+                this.recipeButtons.add(overlayButtonCreator.create(x, y, recipe.id(), recipe.display(), context, canCraft));
++                this.recipeButtons.add(overlayButtonCreator.create(this, x, y, recipe.id(), recipe.display(), context, canCraft));
              } else {
                  this.recipeButtons.add(new OverlayRecipeComponent.OverlayCraftingRecipeButton(x, y, recipe.id(), recipe.display(), context, canCraft));
              }
