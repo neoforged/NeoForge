@@ -30,6 +30,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfigs;
+import net.neoforged.neoforge.client.RecipeBookManager.RecipeDisplayResultIdExtractor;
+import net.neoforged.neoforge.client.RecipeBookManager.RecipeDisplayResultTooltipExtractor;
 import net.neoforged.neoforge.client.color.item.FluidContentsTint;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.data.internal.NeoForgeSpriteSourceProvider;
@@ -45,6 +47,7 @@ import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterFeatureRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
+import net.neoforged.neoforge.client.event.RegisterRecipeBookSearchCategoriesEvent;
 import net.neoforged.neoforge.client.event.RegisterSpriteSourcesEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
@@ -84,6 +87,8 @@ import net.neoforged.neoforge.common.data.internal.VanillaSoundDefinitionsProvid
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.data.event.GatherDataRegistryEntriesEvent;
 import net.neoforged.neoforge.event.DefaultDataComponentsBoundEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.display.FluidStackContentsFactory;
 import net.neoforged.neoforge.internal.BrandingControl;
 import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
 import org.jetbrains.annotations.ApiStatus;
@@ -211,6 +216,13 @@ public class ClientNeoForgeMod {
         event.addListener(NeoForgeReloadListeners.ENTITY_ANIMATIONS, AnimationLoader.INSTANCE);
         // Animations need to be loaded before entity renderers are instantiated
         event.addDependency(NeoForgeReloadListeners.ENTITY_ANIMATIONS, VanillaClientListeners.ENTITY_RENDERER);
+    }
+
+    @SubscribeEvent
+    static void onRegisterRecipeSearch(RegisterRecipeBookSearchCategoriesEvent event) {
+        //As many mods might add recipes that produce fluids, register a result search provider for fluid displays
+        event.registerResultIndexer(RecipeDisplayResultTooltipExtractor.forStack(FluidStackContentsFactory.INSTANCE, FluidStack::getTooltipLines),
+                RecipeDisplayResultIdExtractor.forRegisteredType(FluidStackContentsFactory.INSTANCE, Registries.FLUID));
     }
 
     @SubscribeEvent
