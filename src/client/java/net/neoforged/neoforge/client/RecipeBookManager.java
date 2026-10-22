@@ -29,7 +29,7 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.client.event.RegisterRecipeBookSearchCategoriesEvent;
 import net.neoforged.neoforge.client.recipebook.RecipeDisplayResultIdExtractor;
 import net.neoforged.neoforge.client.recipebook.RecipeDisplayResultTooltipExtractor;
-import org.jetbrains.annotations.ApiStatus.Internal;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Manager for mod-provided search {@link ExtendedRecipeBookCategory} implementations.
@@ -42,7 +42,7 @@ public final class RecipeBookManager {//TODO - 26.4: Move this to the recipebook
         return searchCategories;
     }
 
-    @Internal
+    @ApiStatus.Internal
     public static void init() {
         var searchCategories = new IdentityHashMap<ExtendedRecipeBookCategory, List<RecipeBookCategory>>();
         List<RecipeDisplayResultInfo> recipeDisplaySearchInfo = new ArrayList<>();
@@ -56,7 +56,7 @@ public final class RecipeBookManager {//TODO - 26.4: Move this to the recipebook
         RecipeBookManager.recipeDisplaySearchInfo = Collections.unmodifiableList(recipeDisplaySearchInfo);
     }
 
-    @Internal
+    @ApiStatus.Internal
     public static Stream<String> getTooltipLines(RecipeCollection collection, ContextMap recipeContext, Item.TooltipContext context, TooltipFlag tooltipFlag) {
         return collection.getRecipes().stream()
                 .flatMap(e -> {
@@ -67,12 +67,12 @@ public final class RecipeBookManager {//TODO - 26.4: Move this to the recipebook
                 .filter(s -> !s.isEmpty());
     }
 
-    @Internal
+    @ApiStatus.Internal
     public static Stream<Identifier> getResultIds(RecipeDisplayEntry entry, RegistryAccess registryAccess, Registry<Item> itemRegistries, ContextMap recipeContext) {
         SlotDisplay result = entry.display().result();
         return recipeDisplaySearchInfo.stream().flatMap(info -> info.idExtractor.extract(result, registryAccess, itemRegistries, recipeContext));
     }
 
-    @Internal
+    @ApiStatus.Internal
     public record RecipeDisplayResultInfo(RecipeDisplayResultTooltipExtractor tooltipExtractor, RecipeDisplayResultIdExtractor idExtractor) {}
 }
