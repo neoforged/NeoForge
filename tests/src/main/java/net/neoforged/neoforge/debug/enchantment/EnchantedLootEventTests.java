@@ -12,6 +12,7 @@ import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
@@ -40,6 +41,7 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
+import org.jspecify.annotations.Nullable;
 
 @ForEachTest(groups = "enchantment_loot")
 public class EnchantedLootEventTests {
@@ -151,10 +153,10 @@ public class EnchantedLootEventTests {
         test.eventListeners().forge().addListener((EnchantedEntityLootEvent e) -> {
             if (e.getEnchantment().is(Enchantments.LOOTING)) {
                 // chances are effectively boolean so 1 level is fine
-                if (e.getEntity() instanceof LivingEntity living && living.getOffhandItem().is(Items.LAPIS_LAZULI)) {
+                if (e.getAttacker() instanceof LivingEntity living && living.getOffhandItem().is(Items.LAPIS_LAZULI)) {
                     e.setEnchantmentLevel(25);
                 }
-                if (e.getTarget() instanceof LivingEntity living && living.getOffhandItem().is(Items.EMERALD)) {
+                if (e.getEntity().getOffhandItem().is(Items.EMERALD)) {
                     e.setEnchantmentLevel(25);
                 }
             }
@@ -164,50 +166,58 @@ public class EnchantedLootEventTests {
             // the important thing is that the drop count is impossible without that level of looting
             long functionSeed = 1337;
             Player player = helper.makeMockPlayer();
+            player.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
             Zombie zombie = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, 1, 1, 1);
             Optional<ResourceKey<LootTable>> functionLootTable = zombie.getLootTable();
             helper.assertTrue(functionLootTable.isPresent(), "Missing loot table for zombie");
 
-            // build context, we can reuse it for both calls
-            LootParams params = new LootParams.Builder(helper.getLevel())
-                    .withParameter(LootContextParams.THIS_ENTITY, zombie)
-                    .withParameter(LootContextParams.ORIGIN, Vec3.ZERO)
-                    .withParameter(LootContextParams.DAMAGE_SOURCE, helper.getLevel().damageSources().playerAttack(player))
-                    .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, player)
-                    .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, player)
-                    .create(LootContextParamSets.ENTITY);
+            // run for both a player attacker and a null attacker ot make sure the event fires without a living attacker
+            for (Player attacker : new @Nullable Player[] {player, null}) {
+                String variant = attacker != null ? "with attacker" : "without attacker";
+                // build context, we can reuse it for all calls
+                DamageSources damageSources = helper.getLevel().damageSources();
+                LootParams params = new LootParams.Builder(helper.getLevel())
+                  .withParameter(LootContextParams.THIS_ENTITY, zombie)
+                  .withParameter(LootContextParams.ORIGIN, Vec3.ZERO)
+                  .withParameter(LootContextParams.DAMAGE_SOURCE, attacker != null ? damageSources.playerAttack(attacker) : damageSources.fall())
+                  .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, attacker)
+                  .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, attacker)
+                  .create(LootContextParamSets.ENTITY);
 
-            // no looting with empty offhand
-            player.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
-            // should get 0 diamonds in the condition table
-            List<ItemStack> drops = getLootTableItems(conditionLootTable, params, 0);
-            int count = countDrops(drops, Items.DIAMOND);
-            helper.assertTrue(count == 0, "Received " + count + " diamonds without looting from event, expected 0.");
-            // should get at most 2 rotten flesh in the function table
-            drops = getLootTableItems(conditionLootTable, params, 0);
-            count = countDrops(drops, Items.ROTTEN_FLESH);
-            helper.assertTrue(count <= 2, "Received " + count + " rotten flesh, which is higher than the maximum 2 the zombie loot table produces without looting.");
+                // no looting with empty offhand
+                zombie.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
+                // should get 0 diamonds in the condition table
+                List<ItemStack> drops = getLootTableItems(conditionLootTable, params, 0);
+                int count = countDrops(drops, Items.DIAMOND);
+                helper.assertTrue(count == 0, "Received " + count + " diamonds without looting " + variant + ", expected 0.");
+                // should get at most 2 rotten flesh in the function table
+                drops = getLootTableItems(conditionLootTable, params, 0);
+                count = countDrops(drops, Items.ROTTEN_FLESH);
+                helper.assertTrue(count <= 2, "Received " + count + " rotten flesh without looting " + variant + ", which is higher than the maximum 2 the zombie loot table produces.");
 
-            // add fortune by target holding emerald in offhand
-            zombie.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.EMERALD));
-            // condition table will get exactly 1 diamond
-            drops = getLootTableItems(conditionLootTable, params, 0);
-            count = countDrops(drops, Items.DIAMOND);
-            helper.assertTrue(count == 1, "Received " + count + " diamonds with looting from target from event, expected 1.");
-            // will get some number larger than the max without fortune for lapis drops
-            drops = getLootTableItems(functionLootTable.get(), params, functionSeed);
-            count = countDrops(drops, Items.ROTTEN_FLESH);
-            helper.assertTrue(count > 2, "Received " + count + " rotten flesh, despite the fact Looting 25 should drop way more.");
+                // add fortune by target holding emerald in offhand
+                zombie.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.EMERALD));
+                // condition table will get exactly 1 diamond
+                drops = getLootTableItems(conditionLootTable, params, 0);
+                count = countDrops(drops, Items.DIAMOND);
+                helper.assertTrue(count == 1, "Received " + count + " diamonds with looting from target " + variant + ", expected 1.");
+                // will get some number larger than the max without fortune for lapis drops
+                drops = getLootTableItems(functionLootTable.get(), params, functionSeed);
+                count = countDrops(drops, Items.ROTTEN_FLESH);
+                helper.assertTrue(count > 2, "Received " + count + " rotten flesh with looting from target " + variant + ", despite the fact Looting 25 should drop way more.");
 
-            // alternatively add fortune by attacker holding lapis - same deal as above
-            zombie.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
-            player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.LAPIS_LAZULI));
-            drops = getLootTableItems(conditionLootTable, params, 0);
-            count = countDrops(drops, Items.DIAMOND);
-            helper.assertTrue(count == 1, "Received " + count + " diamonds with looting from attacker, expected 1.");
-            drops = getLootTableItems(functionLootTable.get(), params, functionSeed);
-            count = countDrops(drops, Items.ROTTEN_FLESH);
-            helper.assertTrue(count > 2, "Received " + count + " rotten flesh, despite the fact Looting 25 should drop way more.");
+                // alternatively add fortune by attacker holding lapis - same deal as above
+                if (attacker != null) {
+                    zombie.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
+                    attacker.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.LAPIS_LAZULI));
+                    drops = getLootTableItems(conditionLootTable, params, 0);
+                    count = countDrops(drops, Items.DIAMOND);
+                    helper.assertTrue(count == 1, "Received " + count + " diamonds with looting from attacker, expected 1.");
+                    drops = getLootTableItems(functionLootTable.get(), params, functionSeed);
+                    count = countDrops(drops, Items.ROTTEN_FLESH);
+                    helper.assertTrue(count > 2, "Received " + count + " rotten flesh with looting from attacker, despite the fact Looting 25 should drop way more.");
+                }
+            }
 
             zombie.remove(Entity.RemovalReason.DISCARDED);
             helper.succeed();
