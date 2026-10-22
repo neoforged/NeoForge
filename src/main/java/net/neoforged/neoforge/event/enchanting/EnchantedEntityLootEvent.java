@@ -30,20 +30,18 @@ public class EnchantedEntityLootEvent extends LivingEvent {
     private final DamageSource damageSource;
     private final Holder<Enchantment> enchantment;
     private int enchantmentLevel;
-    private final @Nullable Entity attacker;
 
     @ApiStatus.Internal
-    public EnchantedEntityLootEvent(LivingEntity entity, DamageSource damageSource, Holder<Enchantment> enchantment, int enchantmentLevel, @Nullable Entity attacker) {
+    public EnchantedEntityLootEvent(LivingEntity entity, DamageSource damageSource, Holder<Enchantment> enchantment, int enchantmentLevel) {
         super(entity);
         this.damageSource = damageSource;
         this.enchantment = enchantment;
         this.enchantmentLevel = enchantmentLevel;
-        this.attacker = attacker;
     }
 
     /// Returns the entity that is dropping loot. This is generally the entity that was killed.
     ///
-    /// To get the attacking entity, use the [#getAttacker()].
+    /// To get the attacking entity, use the [#getDamageSource()] or the [#getAttacker()] helper.
     @Override
     public LivingEntity getEntity() {
         return super.getEntity();
@@ -71,8 +69,8 @@ public class EnchantedEntityLootEvent extends LivingEvent {
         this.enchantmentLevel = enchantmentLevel;
     }
 
-    /// {@return the attacking entity} To get the target entity, use [#getEntity()].
+    /// {@return the attacking entity} If living, the enchantment level was originally queried from that entity. To get the target entity, use [#getEntity()].
     public @Nullable Entity getAttacker() {
-        return this.attacker;
+        return this.damageSource.getEntity();
     }
 }
