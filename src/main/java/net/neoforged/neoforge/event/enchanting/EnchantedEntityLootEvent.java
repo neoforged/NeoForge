@@ -12,7 +12,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.storage.loot.functions.EnchantedCountIncreaseFunction;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWithEnchantedBonusCondition;
 import net.neoforged.neoforge.event.entity.living.GetEquipmentDropChanceEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;

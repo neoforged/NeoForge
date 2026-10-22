@@ -172,17 +172,17 @@ public class EnchantedLootEventTests {
             helper.assertTrue(functionLootTable.isPresent(), "Missing loot table for zombie");
 
             // run for both a player attacker and a null attacker ot make sure the event fires without a living attacker
-            for (Player attacker : new @Nullable Player[] {player, null}) {
+            for (Player attacker : new @Nullable Player[] { player, null }) {
                 String variant = attacker != null ? "with attacker" : "without attacker";
                 // build context, we can reuse it for all calls
                 DamageSources damageSources = helper.getLevel().damageSources();
                 LootParams params = new LootParams.Builder(helper.getLevel())
-                  .withParameter(LootContextParams.THIS_ENTITY, zombie)
-                  .withParameter(LootContextParams.ORIGIN, Vec3.ZERO)
-                  .withParameter(LootContextParams.DAMAGE_SOURCE, attacker != null ? damageSources.playerAttack(attacker) : damageSources.fall())
-                  .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, attacker)
-                  .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, attacker)
-                  .create(LootContextParamSets.ENTITY);
+                        .withParameter(LootContextParams.THIS_ENTITY, zombie)
+                        .withParameter(LootContextParams.ORIGIN, Vec3.ZERO)
+                        .withParameter(LootContextParams.DAMAGE_SOURCE, attacker != null ? damageSources.playerAttack(attacker) : damageSources.fall())
+                        .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, attacker)
+                        .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, attacker)
+                        .create(LootContextParamSets.ENTITY);
 
                 // no looting with empty offhand
                 zombie.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
