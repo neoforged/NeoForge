@@ -18,16 +18,14 @@
          ChestModel model = this.models.select(state.type);
          submitNodeCollector.submitModel(model, open, poseStack, state.lightCoords, OverlayTexture.NO_OVERLAY, -1, spriteId, this.sprites, 0);
          if (state.breakProgress != null) {
-@@ -124,5 +_,20 @@
+@@ -124,5 +_,18 @@
  
      private static Transformation createModelTransformation(Direction facing) {
          return new Transformation(new Matrix4f().rotationAround(Axis.YP.rotationDegrees(-facing.toYRot()), 0.5F, 0.0F, 0.5F));
 +    }
 +
-+    /**
-+     * Neo: Return a custom {@link SpriteId} to render the chest with or {@code null} to
-+     * fall back to the vanilla material selection.
-+     */
++    /// Neo: Return a custom [SpriteId] to render the chest with or `null` to
++    /// fall back to the vanilla material selection.
 +    @Nullable
 +    protected SpriteId getCustomSprite(T blockEntity, ChestRenderState renderState) {
 +        return null;

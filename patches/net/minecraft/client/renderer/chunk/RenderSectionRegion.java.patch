@@ -32,7 +32,7 @@
 +
 +    @Override
 +    public net.neoforged.neoforge.model.data.ModelData getModelData(BlockPos pos) {
-+        return modelDataSnapshot.get(pos.asLong());
++        return this.modelDataSnapshot.get(pos.asLong());
 +    }
 +
 +    @Override

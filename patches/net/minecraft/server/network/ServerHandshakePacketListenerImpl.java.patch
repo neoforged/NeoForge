@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
+@@ -32,7 +_,7 @@
+                 ServerStatus status = this.server.getStatus();
+                 this.connection.setupOutboundProtocol(StatusProtocols.CLIENTBOUND);
+                 if (this.server.repliesToStatus() && status != null) {
+-                    this.connection.setupInboundProtocol(StatusProtocols.SERVERBOUND, new ServerStatusPacketListenerImpl(status, this.connection));
++                    this.connection.setupInboundProtocol(StatusProtocols.SERVERBOUND, new ServerStatusPacketListenerImpl(status, this.connection, this.server.getStatusJson()));
+                 } else {
+                     this.connection.disconnect(IGNORE_STATUS_REASON);
+                 }

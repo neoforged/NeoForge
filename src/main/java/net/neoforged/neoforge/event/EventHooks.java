@@ -645,7 +645,7 @@ public class EventHooks {
     }
 
     public static boolean onSwitchHotbarSlotPre(Player player, int oldSlotIndex, int newSlotIndex) {
-        return NeoForge.EVENT_BUS.post(new PlayerSwitchHotbarSlotEvent.Pre(player, oldSlotIndex, newSlotIndex)).isCanceled();
+        return oldSlotIndex != newSlotIndex && NeoForge.EVENT_BUS.post(new PlayerSwitchHotbarSlotEvent.Pre(player, oldSlotIndex, newSlotIndex)).isCanceled();
     }
 
     public static void onSwitchHotbarSlotPost(Player player, int oldSlotIndex, int newSlotIndex) {

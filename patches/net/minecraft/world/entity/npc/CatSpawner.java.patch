@@ -4,7 +4,7 @@
      private void spawnCat(BlockPos spawnPos, ServerLevel level, boolean makePersistent) {
          Cat cat = EntityTypes.CAT.create(level, EntitySpawnReason.NATURAL);
          if (cat != null) {
-+            cat.snapTo(spawnPos, 0.0F, 0.0F); // Fix MC-147659: Some witch huts spawn the incorrect cat
++            cat.snapTo(spawnPos, 0.0F, 0.0F); // Neo: Fix MC-147659: Some witch huts spawn the incorrect cat
              cat.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnPos), EntitySpawnReason.NATURAL, null);
              if (makePersistent) {
                  cat.setPersistenceRequired();

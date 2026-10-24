@@ -1,11 +1,13 @@
 --- a/net/minecraft/world/level/block/BambooSaplingBlock.java
 +++ b/net/minecraft/world/level/block/BambooSaplingBlock.java
-@@ -38,6 +_,8 @@
+@@ -38,6 +_,10 @@
  
      @Override
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
 +        var soilDecision = level.getBlockState(pos.below()).canSustainPlant(level, pos.below(), net.minecraft.core.Direction.UP, state);
-+        if (!soilDecision.isDefault()) return soilDecision.isTrue();
++        if (!soilDecision.isDefault()) {
++            return soilDecision.isTrue();
++        }
          return level.getBlockState(pos.below()).is(BlockTags.SUPPORTS_BAMBOO);
      }
  

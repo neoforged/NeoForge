@@ -6,6 +6,6 @@
      }
 +
 +    public ProtocolInfo<T> getProtocolInfo() {
-+        return protocolInfo;
++        return this.protocolInfo;
 +    }
  }

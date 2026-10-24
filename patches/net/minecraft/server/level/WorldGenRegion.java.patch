@@ -1,10 +1,12 @@
 --- a/net/minecraft/server/level/WorldGenRegion.java
 +++ b/net/minecraft/server/level/WorldGenRegion.java
-@@ -368,6 +_,7 @@
+@@ -368,6 +_,9 @@
  
      @Override
      public boolean addFreshEntity(Entity entity) {
-+        if (entity instanceof net.minecraft.world.entity.Mob mob && mob.isSpawnCancelled()) return false;
++        if (entity instanceof net.minecraft.world.entity.Mob mob && mob.isSpawnCancelled()) {
++            return false;
++        }
          int xc = SectionPos.blockToSectionCoord(entity.getBlockX());
          int zc = SectionPos.blockToSectionCoord(entity.getBlockZ());
          this.getChunk(xc, zc).addEntity(entity);

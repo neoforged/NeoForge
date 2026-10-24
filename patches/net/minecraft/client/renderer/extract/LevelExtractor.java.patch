@@ -33,7 +33,7 @@
              if (this.isEntityVisible(entity, frustum, camX, camY, camZ, entityPartialTicks, chunkFadeDuration)
                  && (entity != camera.entity() || camera.isDetached() || camera.entity() instanceof LivingEntity && ((LivingEntity)camera.entity()).isSleeping())
 -                && (!(entity instanceof LocalPlayer) || camera.entity() == entity)) {
-+                && (!(entity instanceof LocalPlayer) || camera.entity() == entity || (entity == minecraft.player && !minecraft.player.isSpectator()))) { // Neo: render local player entity when it is not the camera entity
++                && (!(entity instanceof LocalPlayer) || camera.entity() == entity || (entity == this.minecraft.player && !this.minecraft.player.isSpectator()))) { // Neo: render local player entity when it is not the camera entity
                  if (entity.tickCount == 0) {
                      entity.xOld = entity.getX();
                      entity.yOld = entity.getY();
@@ -97,7 +97,7 @@
 -                    BlockState viewBlockingState = getViewBlockingState(player, camera.getCullFrustum());
 -                    if (viewBlockingState != null) {
 +                    var stateAndPos = getViewBlockingStateAndPos(player, camera.getCullFrustum());
-+                    if (stateAndPos != null && !net.neoforged.neoforge.client.ClientHooks.extractBlockScreenEffect(player, state,stateAndPos.getRight(), stateAndPos.getLeft(), camera, worldPartialTicks, playerPartialTick)) {
++                    if (stateAndPos != null && !net.neoforged.neoforge.client.ClientHooks.extractBlockScreenEffect(player, state, stateAndPos.getRight(), stateAndPos.getLeft(), camera, worldPartialTicks, playerPartialTick)) {
 +                        BlockState viewBlockingState = stateAndPos.getLeft();
                          TextureAtlasSprite sprite = this.minecraft.getModelManager().getBlockStateModelSet().getParticleMaterial(viewBlockingState).sprite();
                          state.blockOverlay = new PlayerRenderState.BlockOverlay(

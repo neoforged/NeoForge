@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -40,9 +_,13 @@
+@@ -40,9 +_,11 @@
  
  import net.neoforged.neoforge.common.extensions.IBlockEntityExtension;
  
@@ -8,9 +8,7 @@
 +public abstract class BlockEntity extends net.neoforged.neoforge.attachment.AttachmentHolder implements DebugValueSource, TypedInstance<BlockEntityType<?>>, IBlockEntityExtension {
      private static final Codec<BlockEntityType<?>> TYPE_CODEC = BuiltInRegistries.BLOCK_ENTITY_TYPE.byNameCodec();
      private static final Logger LOGGER = LogUtils.getLogger();
-+    /**
-+     * @deprecated Neo: use {@link #getType()}
-+     */
++    /// @deprecated Neo: use [#getType()] instead
 +    @Deprecated
      private final BlockEntityType<?> type;
      protected @Nullable Level level;
@@ -41,19 +39,22 @@
  
      protected void loadAdditional(ValueInput input) {
 +        input.read("NeoForgeData", CompoundTag.CODEC).ifPresent(neoData -> this.customPersistentData = neoData);
-+        input.child(ATTACHMENTS_NBT_KEY).ifPresent(attachments -> this.deserializeAttachments(attachments));
++        input.child(ATTACHMENTS_NBT_KEY).ifPresent(this::deserializeAttachments);
      }
  
      public final void loadWithComponents(ValueInput input) {
-@@ -107,6 +_,11 @@
+@@ -107,6 +_,14 @@
      }
  
      protected void saveAdditional(ValueOutput output) {
-+        if (this.customPersistentData != null) output.store("NeoForgeData", CompoundTag.CODEC, this.customPersistentData.copy());
-+        HolderLookup.Provider registries = this.level != null ? this.level.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY;
++        if (this.customPersistentData != null) {
++            output.store("NeoForgeData", CompoundTag.CODEC, this.customPersistentData.copy());
++        }
 +        var attachments = output.child(ATTACHMENTS_NBT_KEY);
-+        serializeAttachments(attachments);
-+        if (attachments.isEmpty()) output.discard(ATTACHMENTS_NBT_KEY);
++        this.serializeAttachments(attachments);
++        if (attachments.isEmpty()) {
++            output.discard(ATTACHMENTS_NBT_KEY);
++        }
      }
  
      public final CompoundTag saveWithFullMetadata(HolderLookup.Provider registries) {
@@ -62,17 +63,17 @@
      public void setRemoved() {
          this.remove = true;
 +        this.invalidateCapabilities();
-+        requestModelDataUpdate();
++        this.requestModelDataUpdate();
      }
  
      public void clearRemoved() {
          this.remove = false;
 +        // Neo: invalidate capabilities on block entity placement
-+        invalidateCapabilities();
++        this.invalidateCapabilities();
      }
  
      public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-@@ -259,6 +_,48 @@
+@@ -259,6 +_,49 @@
  
      public BlockEntityType<?> getType() {
          return this.type;
@@ -80,34 +81,35 @@
 +
 +    @Override
 +    public CompoundTag getPersistentData() {
-+        if (this.customPersistentData == null)
++        if (this.customPersistentData == null) {
 +            this.customPersistentData = new CompoundTag();
++        }
 +        return this.customPersistentData;
 +    }
 +
 +    @Override
 +    @Nullable
 +    public final <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
-+        setChanged();
++        this.setChanged();
 +        return super.setData(type, data);
 +    }
 +
 +    @Override
 +    @Nullable
 +    public final <T> T removeData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
-+        setChanged();
++        this.setChanged();
 +        return super.removeData(type);
 +    }
 +
 +    @Override
 +    public final void syncData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
-+        if (!(level instanceof ServerLevel serverLevel)) {
++        if (!(this.level instanceof ServerLevel serverLevel)) {
 +            return;
 +        }
-+        if (attachmentTypesToSync == null) {
-+            attachmentTypesToSync = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
++        if (this.attachmentTypesToSync == null) {
++            this.attachmentTypesToSync = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
 +        }
-+        attachmentTypesToSync.add(type);
++        this.attachmentTypesToSync.add(type);
 +        // Schedule the BE for syncing
 +        serverLevel.getChunkSource().blockChanged(worldPosition);
 +    }
@@ -115,8 +117,8 @@
 +    @Nullable
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public final Set<net.neoforged.neoforge.attachment.AttachmentType<?>> getAndClearAttachmentTypesToSync() {
-+        var ret = attachmentTypesToSync;
-+        attachmentTypesToSync = null;
++        var ret = this.attachmentTypesToSync;
++        this.attachmentTypesToSync = null;
 +        return ret;
      }
  

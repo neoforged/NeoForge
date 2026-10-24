@@ -67,11 +67,11 @@
 +
 +    @Override
 +    public Map<String, String> getLanguageData() {
-+        return storage;
++        return this.storage;
 +    }
 +
 +    @Override
 +    public net.minecraft.network.chat.@org.jspecify.annotations.Nullable Component getComponent(String key) {
-+        return componentStorage.get(key);
++        return this.componentStorage.get(key);
      }
  }

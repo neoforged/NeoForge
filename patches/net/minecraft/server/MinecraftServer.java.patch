@@ -229,22 +229,23 @@
      }
  
 +    public MinecraftServer.ReloadableResources getServerResources() {
-+         return resources;
++        return this.resources;
 +    }
 +
      public RegistryAccess.Frozen registryAccess() {
          return this.registries.compositeAccess();
      }
-@@ -2047,6 +_,13 @@
+@@ -2047,6 +_,14 @@
          return true;
      }
  
 +    public void handleCustomClickAction(Identifier id, Optional<Tag> payload, @Nullable ServerPlayer player, GameProfile profile) {
-+        if (!net.neoforged.neoforge.common.CommonHooks.onCustomClickAction(player, profile, id, payload))
-+            handleCustomClickAction(id, payload);
++        if (!net.neoforged.neoforge.common.CommonHooks.onCustomClickAction(player, profile, id, payload)) {
++            this.handleCustomClickAction(id, payload);
++        }
 +    }
 +
-+    /// @deprecated Neo: Use the overload that has the player context and triggers the appropriate event.
++    /// @deprecated Neo: Use [#handleCustomClickAction(Identifier, Optional, ServerPlayer, GameProfile)] instead
 +    @Deprecated
      public void handleCustomClickAction(Identifier id, Optional<Tag> payload) {
          LOGGER.debug("Received custom click action {} with payload {}", id, payload.orElse(null));

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/blockscan/BlockScanUtils.java
 +++ b/net/minecraft/world/level/blockscan/BlockScanUtils.java
-@@ -11,17 +_,29 @@
+@@ -11,18 +_,30 @@
  
  public class BlockScanUtils {
      static boolean findBlocks(LevelReader level, BlockPos from, BlockPos to, Predicate<BlockState> predicate, BlockStateConsumer consumer) {
@@ -16,25 +16,22 @@
          int maxY = Math.max(from.getY(), to.getY());
          int maxZ = Math.max(from.getZ(), to.getZ());
 -        return sectionBasedScan(level, minX, minY, minZ, maxX, maxY, maxZ, predicate, consumer);
--    }
--
--    private static boolean sectionBasedScan(
--        LevelReader level, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, Predicate<BlockState> predicate, BlockStateConsumer consumer
 +        return sectionBasedScan(level, minX, minY, minZ, maxX, maxY, maxZ, predicate, positionPredicate, consumer);
-+    }
-+
-+    private static boolean sectionBasedScan(
-+            LevelReader level, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, Predicate<BlockState> predicate, BlockStateConsumer consumer
-+    ) {
+     }
+ 
+     private static boolean sectionBasedScan(
+         LevelReader level, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, Predicate<BlockState> predicate, BlockStateConsumer consumer
+     ) {
 +        return sectionBasedScan(level, minX, minY, minZ, maxX, maxY, maxZ, predicate, BlockMatcher.NO_POSITION_PREDICATE, consumer);
 +    }
 +
 +    /// Neo: Add overload of [#sectionBasedScan(LevelReader, int, int, int, int, int, int, Predicate, BlockStateConsumer)] which accepts a position-based predicate (evaluated only if the state predicate accepts)
 +    private static boolean sectionBasedScan(
 +        LevelReader level, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, Predicate<BlockState> predicate, java.util.function.BiPredicate<BlockState, BlockPos> positionPredicate, BlockStateConsumer consumer
-     ) {
++    ) {
          int minSectionX = SectionPos.blockToSectionCoord(minX);
          int minSectionY = Math.max(level.getMinSectionY(), SectionPos.blockToSectionCoord(minY));
+         int minSectionZ = SectionPos.blockToSectionCoord(minZ);
 @@ -47,7 +_,7 @@
                          int toY = SectionPos.sectionRelative(Math.min(SectionPos.sectionToBlockCoord(y, 15), maxY));
                          int toZ = SectionPos.sectionRelative(Math.min(SectionPos.sectionToBlockCoord(z, 15), maxZ));
@@ -44,37 +41,30 @@
                              return true;
                          }
                      }
-@@ -79,6 +_,22 @@
-     }
- 
-     public static boolean findBlocksInSection(
-+            LevelChunkSection section,
-+            BlockPos origin,
-+            int fromX,
-+            int fromY,
-+            int fromZ,
-+            int toX,
-+            int toY,
-+            int toZ,
-+            Predicate<BlockState> predicate,
-+            BlockStateConsumer consumer
-+    ) {
+@@ -90,6 +_,23 @@
+         Predicate<BlockState> predicate,
+         BlockStateConsumer consumer
+     ) {
 +        return findBlocksInSection(section, origin, fromX, fromY, fromZ, toX, toY, toZ, predicate, BlockMatcher.NO_POSITION_PREDICATE, consumer);
 +    }
 +
 +    /// Neo: Add overload of [#findBlocksInSection(LevelChunkSection, BlockPos, int, int, int, int, int, int, Predicate, BlockStateConsumer)] which accepts a position-based predicate (evaluated only if the state predicate accepts)
 +    public static boolean findBlocksInSection(
-         LevelChunkSection section,
-         BlockPos origin,
-         int fromX,
-@@ -88,6 +_,7 @@
-         int toY,
-         int toZ,
-         Predicate<BlockState> predicate,
++        LevelChunkSection section,
++        BlockPos origin,
++        int fromX,
++        int fromY,
++        int fromZ,
++        int toX,
++        int toY,
++        int toZ,
++        Predicate<BlockState> predicate,
 +        java.util.function.BiPredicate<BlockState, BlockPos> positionPredicate,
-         BlockStateConsumer consumer
-     ) {
++        BlockStateConsumer consumer
++    ) {
          BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
+ 
+         for (int y = fromY; y <= toY; y++) {
 @@ -98,7 +_,7 @@
                      BlockState blockState = section.getBlockState(x, y, z);
                      if (predicate.test(blockState)) {

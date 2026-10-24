@@ -1,11 +1,13 @@
 --- a/net/minecraft/world/entity/vehicle/minecart/MinecartCommandBlock.java
 +++ b/net/minecraft/world/entity/vehicle/minecart/MinecartCommandBlock.java
-@@ -87,6 +_,8 @@
+@@ -87,6 +_,10 @@
  
      @Override
      public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
 +        InteractionResult ret = super.interact(player, hand, location);
-+        if (ret.consumesAction()) return ret;
++        if (ret.consumesAction()) {
++            return ret;
++        }
          if (!player.canUseGameMasterBlocks()) {
              return InteractionResult.PASS;
          }

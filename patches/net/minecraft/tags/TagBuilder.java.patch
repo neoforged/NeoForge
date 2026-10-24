@@ -25,7 +25,7 @@
 +
 +    /// Neo: Shorthand for `setReplace(true)`.
 +    public TagBuilder replace() {
-+        return setReplace(true);
++        return this.setReplace(true);
 +    }
 +
 +    /// Neo: Returns the entries to be removed from this tag.

@@ -28,12 +28,12 @@
      }
  
 +    public CuboidModel(
-+            @Nullable UnbakedGeometry geometry,
-+            UnbakedModel.@Nullable GuiLight guiLight,
-+            @Nullable Boolean ambientOcclusion,
-+            @Nullable ItemTransforms transforms,
-+            TextureSlots.Data textureSlots,
-+            @Nullable Identifier parent
++        @Nullable UnbakedGeometry geometry,
++        UnbakedModel.@Nullable GuiLight guiLight,
++        @Nullable Boolean ambientOcclusion,
++        @Nullable ItemTransforms transforms,
++        TextureSlots.Data textureSlots,
++        @Nullable Identifier parent
 +    ) {
 +        this(geometry, guiLight, ambientOcclusion, transforms, textureSlots, parent, null, java.util.Map.of(), it.unimi.dsi.fastutil.ints.Int2ObjectMaps.emptyMap());
 +    }

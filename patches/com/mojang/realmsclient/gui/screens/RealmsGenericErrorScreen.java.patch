@@ -1,18 +1,19 @@
 --- a/com/mojang/realmsclient/gui/screens/RealmsGenericErrorScreen.java
 +++ b/com/mojang/realmsclient/gui/screens/RealmsGenericErrorScreen.java
-@@ -60,6 +_,15 @@
+@@ -59,6 +_,16 @@
+         return CommonComponents.joinForNarration(super.getNarrationMessage(), this.detail);
      }
  
-     @Override
++    /// Neo: ensure pressing ESC behaves the same way as the Ok button
++    @Override
 +    public boolean keyPressed(net.minecraft.client.input.KeyEvent keyEvent) {
 +        if (keyEvent.isEscape()) {
-+            minecraft.gui.setScreen(this.nextScreen);
++            this.minecraft.gui.setScreen(this.nextScreen);
 +            return true;
 +        }
 +        return super.keyPressed(keyEvent);
 +    }
 +
-+    @Override
+     @Override
      public void extractRenderState(GuiGraphicsExtractor graphics, int xm, int ym, float a) {
          super.extractRenderState(graphics, xm, ym, a);
-         graphics.centeredText(this.font, this.title, this.width / 2, 80, -1);

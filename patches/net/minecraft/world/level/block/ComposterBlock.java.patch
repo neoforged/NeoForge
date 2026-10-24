@@ -1,18 +1,22 @@
 --- a/net/minecraft/world/level/block/ComposterBlock.java
 +++ b/net/minecraft/world/level/block/ComposterBlock.java
-@@ -111,6 +_,15 @@
+@@ -111,6 +_,19 @@
          if (state.getValue(LEVEL) == 7) {
              level.scheduleTick(pos, state.getBlock(), 20);
          }
 +        // Neo: Invalidate composter capabilities when a composter is added
-+        if (!oldState.is(this)) level.invalidateCapabilities(pos);
++        if (!oldState.is(this)) {
++            level.invalidateCapabilities(pos);
++        }
 +    }
 +
 +    @Override
 +    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
 +        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
 +        // Neo: Invalidate composter capabilities when a composter is removed
-+        if (!level.getBlockState(pos).is(state.getBlock())) level.invalidateCapabilities(pos);
++        if (!level.getBlockState(pos).is(state.getBlock())) {
++            level.invalidateCapabilities(pos);
++        }
      }
  
      @Override
