@@ -37,6 +37,10 @@ abstract class TransformSources extends JavaExec {
     @InputFiles
     public abstract ConfigurableFileCollection getInterfaceInjectionData();
 
+    @Optional
+    @InputFiles
+    public abstract ConfigurableFileCollection getGenericsWideningData();
+
     @InputFile
     public abstract RegularFileProperty getInputJar();
 
@@ -84,6 +88,15 @@ abstract class TransformSources extends JavaExec {
             for (var file : getInterfaceInjectionData().getFiles()) {
                 args.addAll(Arrays.asList(
                         "--interface-injection-data", file.getAbsolutePath()));
+            }
+        }
+
+        if (!getGenericsWideningData().isEmpty()) {
+            args.add("--enable-generics-widening");
+
+            for (var file : getGenericsWideningData().getFiles()) {
+                args.addAll(Arrays.asList(
+                        "--generics-widening-data", file.getAbsolutePath()));
             }
         }
 
