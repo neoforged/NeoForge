@@ -1187,7 +1187,7 @@ public class EventHooks {
         BlockState state = ctx.getOptionalParameter(LootContextParams.BLOCK_STATE);
         Vec3 pos = ctx.getOptionalParameter(LootContextParams.ORIGIN);
         if (state != null && pos != null) {
-            var event = new EnchantedBlockLootEvent(ctx.getLevel(), BlockPos.containing(pos), state, tool, ench, enchLevel);
+            var event = new EnchantedBlockLootEvent(ctx.getLevel(), BlockPos.containing(pos), state, tool, ench, enchLevel, ctx.getOptional(LootContextParams.THIS_ENTITY));
             NeoForge.EVENT_BUS.post(event);
             return event.getEnchantmentLevel();
         }

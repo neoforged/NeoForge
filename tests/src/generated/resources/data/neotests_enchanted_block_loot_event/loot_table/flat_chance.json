@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:table_bonus",
+            "chances": [
+              0.0,
+              1.0
+            ],
+            "enchantment": "minecraft:fortune"
+          },
+          "name": "minecraft:diamond"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "neotests_enchanted_block_loot_event:flat_chance"
+}
