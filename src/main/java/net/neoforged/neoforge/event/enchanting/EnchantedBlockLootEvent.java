@@ -9,6 +9,7 @@ import com.google.common.base.Preconditions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,6 +18,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.BonusLevelTableCondition;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Fired on the server when a block's loot table queries the level of an enchantment to determine what the block will drop.
@@ -30,13 +32,15 @@ public class EnchantedBlockLootEvent extends BlockEvent {
     private final ItemStack tool;
     private final Holder<Enchantment> enchantment;
     private int enchantmentLevel;
+    private final @Nullable Entity entity;
 
     @ApiStatus.Internal
-    public EnchantedBlockLootEvent(ServerLevel level, BlockPos pos, BlockState state, ItemStack tool, Holder<Enchantment> enchantment, int enchantmentLevel) {
+    public EnchantedBlockLootEvent(ServerLevel level, BlockPos pos, BlockState state, ItemStack tool, Holder<Enchantment> enchantment, int enchantmentLevel, @Nullable Entity entity) {
         super(level, pos, state);
         this.tool = tool;
         this.enchantment = enchantment;
         this.enchantmentLevel = enchantmentLevel;
+        this.entity = entity;
     }
 
     /**
@@ -62,5 +66,20 @@ public class EnchantedBlockLootEvent extends BlockEvent {
     public void setEnchantmentLevel(int enchantmentLevel) {
         Preconditions.checkArgument(enchantmentLevel >= 0, "Enchantment level cannot be negative");
         this.enchantmentLevel = enchantmentLevel;
+    }
+
+    /**
+     * Gets the entity that broke the block from {@link LootContextParams#THIS_ENTITY}.
+     * <ul>
+     * <li>Might be the player when blocks are mined using tools.</li>
+     * <li>For explosions will be the direct cause such as TNT.</li>
+     * <li>Might be null if the block was broken without an entity, such as neighbor change.</li>
+     * </ul>
+     * 
+     * @return the entity that broke the block.
+     */
+    @Nullable
+    public Entity getEntity() {
+        return entity;
     }
 }
