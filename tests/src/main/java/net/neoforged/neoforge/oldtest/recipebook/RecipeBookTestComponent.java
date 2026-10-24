@@ -5,10 +5,13 @@
 
 package net.neoforged.neoforge.oldtest.recipebook;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.recipebook.GhostSlots;
+import net.minecraft.client.gui.screens.recipebook.OverlayRecipeComponent;
+import net.minecraft.client.gui.screens.recipebook.OverlayRecipeComponent.OverlayRecipeButton;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeCollection;
 import net.minecraft.network.chat.Component;
@@ -21,8 +24,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.display.RecipeDisplay;
 import net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay;
+import net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.neoforged.neoforge.client.recipebook.RecipeOverlayButtonCreator;
 
 public class RecipeBookTestComponent extends RecipeBookComponent<RecipeBookTestMenu> {
+    private static final Identifier OVERLAY_ENABLED_SPRITE = Identifier.withDefaultNamespace("recipe_book/crafting_overlay");
+    private static final Identifier OVERLAY_HIGHLIGHTED_ENABLED_SPRITE = Identifier.withDefaultNamespace("recipe_book/crafting_overlay_highlighted");
+    private static final Identifier OVERLAY_DISABLED_SPRITE = Identifier.withDefaultNamespace("recipe_book/crafting_overlay_disabled");
+    private static final Identifier OVERLAY_HIGHLIGHTED_DISABLED_SPRITE = Identifier.withDefaultNamespace("recipe_book/crafting_overlay_disabled_highlighted");
     private static final WidgetSprites FILTER_BUTTON_SPRITES = new WidgetSprites(
             Identifier.withDefaultNamespace("recipe_book/filter_enabled"),
             Identifier.withDefaultNamespace("recipe_book/filter_disabled"),
@@ -31,9 +41,44 @@ public class RecipeBookTestComponent extends RecipeBookComponent<RecipeBookTestM
     private static final List<RecipeBookComponent.TabInfo> TABS = List.of(
             new RecipeBookComponent.TabInfo(new ItemStack(Items.COMPASS), Optional.empty(), RecipeBookExtensionTest.SEARCH_CATEGORY),
             new RecipeBookComponent.TabInfo(Items.DIAMOND, RecipeBookExtensionTest.RECIPE_BOOK_TEST_CAT1.get()));
+    //OverlayRecipeButton create(OverlayRecipeComponent parent, int x, int y, RecipeDisplayId id, RecipeDisplay recipe, ContextMap context, boolean isCraftable);
+    private static final RecipeOverlayButtonCreator OVERLAY_BUTTON_CREATOR = (parent, x, y, id, recipe, context, isCraftable) -> {
+        //Create a custom overlay button that is like vanilla's crafting table one
+        List<OverlayRecipeComponent.OverlayRecipeButton.Pos> result = new ArrayList<>();
+        switch (recipe) {
+            case ShapedCraftingRecipeDisplay shaped -> {
+                PlaceRecipeHelper.placeRecipe(3, 3, shaped.width(), shaped.height(), shaped.ingredients(), (ingredient, _, gridXPos, gridYPos) -> {
+                    List<ItemStack> itemsx = ingredient.resolveForStacks(context);
+                    if (!itemsx.isEmpty()) {
+                        result.add(OverlayRecipeButton.createGridPos(gridXPos, gridYPos, itemsx));
+                    }
+                });
+            }
+            case ShapelessCraftingRecipeDisplay shapeless -> {
+                List<SlotDisplay> ingredients = shapeless.ingredients();
+                for (int i = 0; i < ingredients.size(); i++) {
+                    List<ItemStack> items = ingredients.get(i).resolveForStacks(context);
+                    if (!items.isEmpty()) {
+                        result.add(OverlayRecipeButton.createGridPos(i % 3, i / 3, items));
+                    }
+                }
+            }
+            default -> {}
+        }
+        return parent.new OverlayRecipeButton(x, y, id, isCraftable, result) {
+            @Override
+            protected Identifier getSprite(boolean isCraftable) {
+                if (isCraftable) {
+                    return this.isHoveredOrFocused() ? OVERLAY_HIGHLIGHTED_ENABLED_SPRITE : OVERLAY_ENABLED_SPRITE;
+                } else {
+                    return this.isHoveredOrFocused() ? OVERLAY_HIGHLIGHTED_DISABLED_SPRITE : OVERLAY_DISABLED_SPRITE;
+                }
+            }
+        };
+    };
 
     public RecipeBookTestComponent(RecipeBookTestMenu menu) {
-        super(menu, TABS);
+        super(menu, TABS, OVERLAY_BUTTON_CREATOR);
     }
 
     @Override
