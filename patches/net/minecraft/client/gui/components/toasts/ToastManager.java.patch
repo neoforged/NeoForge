@@ -1,5 +1,40 @@
 --- a/net/minecraft/client/gui/components/toasts/ToastManager.java
 +++ b/net/minecraft/client/gui/components/toasts/ToastManager.java
+@@ -91,14 +_,31 @@
+                 toast.extractRenderState(graphics, screenWidth);
+             }
+ 
+-            if (this.minecraft.options.musicToast().get().renderToast()
+-                && this.nowPlayingToast != null
+-                && (this.minecraft.gui.screen() == null || !(this.minecraft.gui.screen() instanceof PauseScreen))) {
++            if (this.shouldRenderNowPlayingToast()) {
+                 this.nowPlayingToast.extractRenderState(graphics, screenWidth);
+             }
+         }
+     }
+ 
++    private boolean shouldRenderNowPlayingToast() {
++        return this.minecraft.options.musicToast().get().renderToast()
++            && this.nowPlayingToast != null
++            && (this.minecraft.gui.screen() == null || !(this.minecraft.gui.screen() instanceof PauseScreen));
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public void collectScreenAreas(java.util.function.Consumer<net.minecraft.client.gui.navigation.ScreenRectangle> consumer) {
++        if (!this.minecraft.gui.hud.isHidden()) {
++            int screenWidth = this.minecraft.getWindow().getGuiScaledWidth();
++            for (ToastManager.ToastInstance<?> toast : this.visibleToasts) {
++                toast.collectScreenAreas(consumer, screenWidth);
++            }
++            if (this.shouldRenderNowPlayingToast()) {
++                this.nowPlayingToast.collectScreenAreas(consumer, screenWidth);
++            }
++        }
++    }
++
+     private int findFreeSlotsIndex(int requiredCount) {
+         if (this.freeSlotCount() >= requiredCount) {
+             int consecutiveFreeSlotCount = 0;
 @@ -142,6 +_,7 @@
      }
  
@@ -8,3 +43,29 @@
          this.queued.add(toast);
      }
  
+@@ -265,10 +_,24 @@
+ 
+         public void extractRenderState(GuiGraphicsExtractor graphics, int screenWidth) {
+             if (!this.hasFinishedRendering) {
++                float x = this.toast.xPos(screenWidth, this.visiblePortion);
++                float y = this.toast.yPos(this.firstSlotIndex);
+                 graphics.pose().pushMatrix();
+-                graphics.pose().translate(this.toast.xPos(screenWidth, this.visiblePortion), this.toast.yPos(this.firstSlotIndex));
++                graphics.pose().translate(x, y);
+                 this.toast.extractRenderState(graphics, ToastManager.this.minecraft.font, this.fullyVisibleFor);
+                 graphics.pose().popMatrix();
++            }
++        }
++
++        private void collectScreenAreas(java.util.function.Consumer<net.minecraft.client.gui.navigation.ScreenRectangle> consumer, int screenWidth) {
++            if (!this.hasFinishedRendering && this.visiblePortion > 0.0F) {
++                float x = this.toast.xPos(screenWidth, this.visiblePortion);
++                float y = this.toast.yPos(this.firstSlotIndex);
++                int left = Mth.floor(x);
++                int top = Mth.floor(y);
++                consumer.accept(new net.minecraft.client.gui.navigation.ScreenRectangle(
++                    left, top, Mth.ceil(x + this.toast.width()) - left, Mth.ceil(y + this.toast.height()) - top
++                ));
+             }
+         }
+     }

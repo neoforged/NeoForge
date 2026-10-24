@@ -242,11 +242,12 @@
          int x = this.leftPos + this.getTabX(tab);
          int y = this.topPos - (isTop ? 28 : -(this.imageHeight - 4));
          Identifier[] sprites;
-@@ -845,6 +_,7 @@
+@@ -845,6 +_,8 @@
              graphics.requestCursor(CursorTypes.POINTING_HAND);
          }
  
 +        // TODO 1.20.2: Deal with custom tab backgrounds, and deal with transparency.
++        this.recordScreenArea(new net.minecraft.client.gui.navigation.ScreenRectangle(x, y, 26, 32));
          graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprites[Mth.clamp(pos, 0, sprites.length)], x, y, 26, 32);
          int iconX = x + 13 - 8;
          int iconY = y + 16 - 8 + (isTop ? 1 : -1);

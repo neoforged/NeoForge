@@ -9,3 +9,23 @@
                  tabButton.visible = true;
                  tabButton.setPosition(xPosTab, yPosTab + 27 * index++);
              } else if (tabButton.updateVisibility(this.book)) {
+@@ -316,6 +_,19 @@
+ 
+             this.filterButton.extractRenderState(graphics, mouseX, mouseY, a);
+             this.recipeBookPage.extractRenderState(graphics, xo, yo, mouseX, mouseY, a);
++        }
++    }
++
++    /// Neo: Collects the current panel and visible tab areas without reproducing their layout.
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public void collectScreenAreas(java.util.function.Consumer<ScreenRectangle> consumer) {
++        if (this.isVisible()) {
++            consumer.accept(new ScreenRectangle(this.getXOrigin(), this.getYOrigin(), IMAGE_WIDTH, IMAGE_HEIGHT));
++            for (RecipeBookTabButton tabButton : this.tabButtons) {
++                if (tabButton.visible) {
++                    consumer.accept(tabButton.getRectangle());
++                }
++            }
+         }
+     }
+ 

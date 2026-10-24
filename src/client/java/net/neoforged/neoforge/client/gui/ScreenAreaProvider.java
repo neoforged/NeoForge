@@ -6,28 +6,22 @@
 package net.neoforged.neoforge.client.gui;
 
 import java.util.function.Consumer;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.resources.Identifier;
+import net.neoforged.neoforge.client.event.ScreenEvent;
+import org.jspecify.annotations.Nullable;
 
-/// Declares the screen areas occupied by a screen, so that other UIs can query and avoid them.
+/// Declares additional areas occupied by UI attached to a screen.
 ///
-/// Providers are registered via [RegisterScreenAreaProviderEvent][net.neoforged.neoforge.client.event.RegisterScreenAreaProviderEvent]
-/// and are queried on demand with the live screen instance, so the declared areas may change between queries.
-///
-/// @param <S> the type of screen the areas are declared for
+/// Providers can be added through [ScreenEvent.Init#addScreenAreaProvider]. They are queried on
+/// demand, so their areas may change between queries. A provider can compare the requester id with
+/// its own id to avoid reporting its areas to its owner.
 @FunctionalInterface
-public interface ScreenAreaProvider<S extends Screen> {
-    /// Collects the areas currently occupied by this UI, in GUI-scaled absolute screen coordinates
-    /// (origin at the top-left, y pointing down).
+public interface ScreenAreaProvider {
+    /// Collects the currently occupied areas in GUI-scaled absolute screen coordinates.
     ///
-    /// A provider may declare nothing (for example because the UI is hidden). Degenerate areas
-    /// (width or height `<= 0`) are ignored.
-    ///
-    /// The provider is only queried for screens that are instances of the screen class it was
-    /// registered for. It must not query [ScreenAreaManager] while it is being evaluated; the areas
-    /// of the providers evaluated before it are available through the given lookup.
-    ///
-    /// @param screen  the screen the areas are queried for
-    /// @param earlier the areas declared by the providers evaluated before this one
-    /// @param out     accepts the declared areas
-    void collectAreas(S screen, ScreenAreaLookup earlier, Consumer<ScreenArea> out);
+    /// @param includePrimary whether the query includes the screen's primary content area
+    /// @param requesterId    the id of the UI requesting the areas, or `null` if it has no id
+    /// @param out            accepts the occupied areas
+    void collectAreas(boolean includePrimary, @Nullable Identifier requesterId, Consumer<ScreenRectangle> out);
 }

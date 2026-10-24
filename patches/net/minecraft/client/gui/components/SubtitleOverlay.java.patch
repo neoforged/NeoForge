@@ -1,0 +1,167 @@
+--- a/net/minecraft/client/gui/components/SubtitleOverlay.java
++++ b/net/minecraft/client/gui/components/SubtitleOverlay.java
+@@ -27,7 +_,6 @@
+     private final Minecraft minecraft;
+     private final List<SubtitleOverlay.Subtitle> subtitles = Lists.newArrayList();
+     private boolean isListening;
+-    private final List<SubtitleOverlay.Subtitle> audibleSubtitles = new ArrayList<>();
+ 
+     public SubtitleOverlay(Minecraft minecraft) {
+         this.minecraft = minecraft;
+@@ -44,69 +_,100 @@
+         }
+ 
+         if (this.isListening) {
++            List<SubtitleLayout> layouts = this.getSubtitleLayouts();
++            if (!layouts.isEmpty()) {
++                graphics.nextStratum();
++            }
+             ListenerTransform listener = soundManager.getListenerTransform();
+             Vec3 position = listener.position();
+             Vec3 forwards = listener.forward();
+             Vec3 right = listener.right();
+             double displayTimeMultiplier = this.minecraft.options.notificationDisplayTime().get();
+-            this.audibleSubtitles.clear();
+-            int width = 0;
+-
+-            for (SubtitleOverlay.Subtitle subtitle : this.subtitles) {
+-                if (!subtitle.playedAt.isEmpty()) {
+-                    subtitle.purgeOldInstances(3000.0 * displayTimeMultiplier);
+-                }
+-
+-                if (subtitle.isAudibleFrom(position) && subtitle.isStillActive()) {
+-                    this.audibleSubtitles.add(subtitle);
+-                    width = Math.max(width, this.minecraft.font.width(subtitle.getText()));
+-                }
+-            }
+-
+-            if (!this.audibleSubtitles.isEmpty()) {
+-                width += this.minecraft.font.width("<") + this.minecraft.font.width(" ") + this.minecraft.font.width(">") + this.minecraft.font.width(" ");
+-                if (!this.audibleSubtitles.isEmpty()) {
+-                    graphics.nextStratum();
+-                }
+-
+-                int row = 0;
+-
+-                for (SubtitleOverlay.Subtitle subtitle : this.audibleSubtitles) {
+-                    int alpha = 255;
+-                    Component text = subtitle.getText();
+-                    SubtitleOverlay.SoundPlayedAt closestRecentLocation = subtitle.getBestSubtitleCandidate(position);
+-                    if (closestRecentLocation != null) {
+-                        Vec3 delta = closestRecentLocation.location.subtract(position).normalize();
+-                        double rightness = right.dot(delta);
+-                        double forwardness = forwards.dot(delta);
+-                        boolean inView = forwardness > 0.5;
+-                        int halfWidth = width / 2;
+-                        int height = 9;
+-                        int halfHeight = height / 2;
+-                        float scale = 1.0F;
+-                        int textWidth = this.minecraft.font.width(text);
+-                        int brightness = subtitle.getBrightness(closestRecentLocation, displayTimeMultiplier);
+-                        graphics.pose().pushMatrix();
+-                        graphics.pose().translate(graphics.guiWidth() - halfWidth * 1.0F - 2.0F, graphics.guiHeight() - 35 - row * (height + 1) * 1.0F);
+-                        graphics.pose().scale(1.0F, 1.0F);
+-                        graphics.fill(-halfWidth - 1, -halfHeight - 1, halfWidth + 1, halfHeight + 1, this.minecraft.options.getBackgroundColor(0.8F));
+-                        int textColor = ARGB.color(255, brightness, brightness, brightness);
+-                        if (!inView) {
+-                            if (rightness > 0.0) {
+-                                graphics.text(this.minecraft.font, ">", halfWidth - this.minecraft.font.width(">"), -halfHeight, textColor);
+-                            } else if (rightness < 0.0) {
+-                                graphics.text(this.minecraft.font, "<", -halfWidth, -halfHeight, textColor);
+-                            }
+-                        }
+-
+-                        graphics.text(this.minecraft.font, text, -textWidth / 2, -halfHeight, textColor);
+-                        graphics.pose().popMatrix();
+-                        row++;
++            for (SubtitleLayout layout : layouts) {
++                SubtitleOverlay.Subtitle subtitle = layout.subtitle();
++                SubtitleOverlay.SoundPlayedAt closestRecentLocation = layout.closestRecentLocation();
++                int alpha = 255;
++                Component text = subtitle.getText();
++                Vec3 delta = closestRecentLocation.location.subtract(position).normalize();
++                double rightness = right.dot(delta);
++                double forwardness = forwards.dot(delta);
++                boolean inView = forwardness > 0.5;
++                int halfWidth = layout.width() / 2;
++                int height = 9;
++                int halfHeight = height / 2;
++                float scale = 1.0F;
++                int textWidth = this.minecraft.font.width(text);
++                int brightness = subtitle.getBrightness(closestRecentLocation, displayTimeMultiplier);
++                graphics.pose().pushMatrix();
++                graphics.pose().translate(graphics.guiWidth() - halfWidth * 1.0F - 2.0F, graphics.guiHeight() - 35 - layout.row() * (height + 1) * 1.0F);
++                graphics.pose().scale(1.0F, 1.0F);
++                graphics.fill(-halfWidth - 1, -halfHeight - 1, halfWidth + 1, halfHeight + 1, this.minecraft.options.getBackgroundColor(0.8F));
++                int textColor = ARGB.color(255, brightness, brightness, brightness);
++                if (!inView) {
++                    if (rightness > 0.0) {
++                        graphics.text(this.minecraft.font, ">", halfWidth - this.minecraft.font.width(">"), -halfHeight, textColor);
++                    } else if (rightness < 0.0) {
++                        graphics.text(this.minecraft.font, "<", -halfWidth, -halfHeight, textColor);
+                     }
+                 }
+-            }
+-        }
+-    }
++
++                graphics.text(this.minecraft.font, text, -textWidth / 2, -halfHeight, textColor);
++                graphics.pose().popMatrix();
++            }
++        }
++    }
++
++    private List<SubtitleLayout> getSubtitleLayouts() {
++        Vec3 position = this.minecraft.getSoundManager().getListenerTransform().position();
++        double displayTimeMultiplier = this.minecraft.options.notificationDisplayTime().get();
++        List<SubtitleOverlay.Subtitle> audibleSubtitles = new ArrayList<>();
++        int width = 0;
++        for (SubtitleOverlay.Subtitle subtitle : this.subtitles) {
++            if (!subtitle.playedAt.isEmpty()) {
++                subtitle.purgeOldInstances(3000.0 * displayTimeMultiplier);
++            }
++            if (subtitle.isAudibleFrom(position) && subtitle.isStillActive()) {
++                audibleSubtitles.add(subtitle);
++                width = Math.max(width, this.minecraft.font.width(subtitle.getText()));
++            }
++        }
++        if (audibleSubtitles.isEmpty()) {
++            return List.of();
++        }
++
++        width += this.minecraft.font.width("<") + this.minecraft.font.width(" ") + this.minecraft.font.width(">") + this.minecraft.font.width(" ");
++        List<SubtitleLayout> layouts = new ArrayList<>();
++        int row = 0;
++        for (SubtitleOverlay.Subtitle subtitle : audibleSubtitles) {
++            SubtitleOverlay.SoundPlayedAt closestRecentLocation = subtitle.getBestSubtitleCandidate(position);
++            if (closestRecentLocation != null) {
++                layouts.add(new SubtitleLayout(subtitle, closestRecentLocation, width, row++));
++            }
++        }
++        return layouts;
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public void collectScreenAreas(java.util.function.Consumer<net.minecraft.client.gui.navigation.ScreenRectangle> consumer) {
++        if (this.minecraft.options.showSubtitles().get()) {
++            int guiWidth = this.minecraft.getWindow().getGuiScaledWidth();
++            int guiHeight = this.minecraft.getWindow().getGuiScaledHeight();
++            for (SubtitleLayout layout : this.getSubtitleLayouts()) {
++                int halfWidth = layout.width() / 2;
++                int height = 9;
++                int halfHeight = height / 2;
++                float scale = 1.0F;
++                consumer.accept(new net.minecraft.client.gui.navigation.ScreenRectangle(
++                    Mth.floor(guiWidth - 2 * halfWidth * scale - 3),
++                    Mth.floor(guiHeight - 35 - layout.row() * (height + 1) * scale - halfHeight * scale - 1),
++                    Mth.ceil(2 * halfWidth * scale + 2),
++                    Mth.ceil(2 * halfHeight * scale + 2)
++                ));
++            }
++        }
++    }
++
++    private record SubtitleLayout(Subtitle subtitle, SoundPlayedAt closestRecentLocation, int width, int row) {}
+ 
+     @Override
+     public void onPlaySound(SoundInstance sound, WeighedSoundEvents soundEvent, float range) {

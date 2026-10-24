@@ -19,27 +19,19 @@
              } catch (Throwable t) {
                  CrashReport report = CrashReport.forThrowable(t, "Rendering screen");
                  CrashReportCategory category = report.addCategory("Screen render details");
-@@ -218,6 +_,25 @@
+@@ -218,6 +_,17 @@
          return this.screen;
      }
  
-+    /// Neo: {@return the screens currently rendered by the GUI, from the bottom-most background layer to the top-most screen,
-+    /// or an empty list if no screen is rendered}
-+    @Contract(pure = true)
-+    public List<Screen> visibleScreens() {
-+        if (this.screen == null) {
-+            return List.of();
-+        }
-+        List<Screen> screens = new ArrayList<>(this.screenLayers);
-+        screens.add(this.screen);
-+        return List.copyOf(screens);
-+    }
-+
 +    /// Neo: {@return an iterator over the screens currently rendered by the GUI, from the bottom-most background layer
 +    /// to the top-most screen} The returned iterator is over an immutable snapshot.
 +    @Contract(pure = true)
 +    public java.util.ListIterator<Screen> screenStackIterator() {
-+        return this.visibleScreens().listIterator();
++        List<Screen> screens = new ArrayList<>(this.screenLayers);
++        if (this.screen != null) {
++            screens.add(this.screen);
++        }
++        return List.copyOf(screens).listIterator();
 +    }
 +
      public void setScreen(@Nullable Screen screen) {
