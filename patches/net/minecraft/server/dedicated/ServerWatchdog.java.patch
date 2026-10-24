@@ -1,16 +1,17 @@
 --- a/net/minecraft/server/dedicated/ServerWatchdog.java
 +++ b/net/minecraft/server/dedicated/ServerWatchdog.java
-@@ -48,7 +_,13 @@
+@@ -48,7 +_,14 @@
                      String.format(Locale.ROOT, "%.2f", this.server.tickRateManager().millisecondsPerTick() / (float)TimeUtil.MILLISECONDS_PER_SECOND)
                  );
                  LOGGER.error(LogUtils.FATAL_MARKER, "Considering it to be crashed, server will forcibly shutdown.");
 -                CrashReport report = createWatchdogCrashReport("Watching Server", this.server.getRunningThread().threadId());
 +                // Neo: don't just make a crash report with a seemingly-inexplicable Error
 +                String message = String.format(
-+                        Locale.ROOT,
-+                        "ServerWatchdog detected that a single server tick took %.2f seconds (should be max %.2f)",
-+                        (float)deltaNanos / (float)TimeUtil.NANOSECONDS_PER_SECOND,
-+                        this.server.tickRateManager().millisecondsPerTick() / (float)TimeUtil.MILLISECONDS_PER_SECOND);
++                    Locale.ROOT,
++                    "ServerWatchdog detected that a single server tick took %.2f seconds (should be max %.2f)",
++                    (float)deltaNanos / (float)TimeUtil.NANOSECONDS_PER_SECOND,
++                    this.server.tickRateManager().millisecondsPerTick() / (float)TimeUtil.MILLISECONDS_PER_SECOND
++                );
 +                CrashReport report = createWatchdogCrashReport("Watching Server", this.server.getRunningThread().threadId(), message);
                  this.server.fillSystemReport(report.getSystemReport());
                  CrashReportCategory serverStats = report.addCategory("Performance stats");

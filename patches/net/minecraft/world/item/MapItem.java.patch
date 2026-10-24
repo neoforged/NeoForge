@@ -6,7 +6,7 @@
      public static @Nullable MapItemSavedData getSavedData(ItemStack itemStack, Level level) {
 +        // Neo: Add instance method so that mods can override
 +        Item map = itemStack.getItem();
-+        if(map instanceof MapItem) {
++        if (map instanceof MapItem) {
 +            return ((MapItem)map).getCustomMapData(itemStack, level);
 +        }
 +        return null;

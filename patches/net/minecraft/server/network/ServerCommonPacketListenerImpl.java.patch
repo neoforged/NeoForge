@@ -91,7 +91,7 @@
 +     * Creates a new cookie for this connection.
 +     *
 +     * @param clientInformation The client information.
-+     * @param connectionType Whether the connection is modded.
++     * @param connectionType    Whether the connection is modded.
 +     * @return The cookie.
 +     */
 +    protected CommonListenerCookie createCookie(ClientInformation clientInformation, net.neoforged.neoforge.network.connection.ConnectionType connectionType) {

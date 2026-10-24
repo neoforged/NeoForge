@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -217,12 +_,18 @@
+@@ -217,12 +_,19 @@
      private boolean handlingTick;
      private final List<CustomSpawner> customSpawners;
      private @Nullable EnderDragonFight dragonFight;
@@ -13,6 +13,7 @@
      private final LevelDebugSynchronizers debugSynchronizers = new LevelDebugSynchronizers(this);
 +    // NeoForge: If present, this level uses its own seed instead of the server's global seed
 +    private final java.util.OptionalLong seedOverride;
++
 +    /// {@return the override for the seed, specified in the [LevelStem] this level was constructed from}, if any
 +    public java.util.OptionalLong getSeedOverride() {
 +        return this.seedOverride;
@@ -271,26 +272,18 @@
 -            if (entity instanceof EnderDragon dragon) {
 -                for (EnderDragonPart subEntity : dragon.getSubEntities()) {
 +            if (entity.isMultipartEntity()) {
-+                for(net.neoforged.neoforge.entity.PartEntity<?> subEntity : entity.getParts()) {
++                for (net.neoforged.neoforge.entity.PartEntity<?> subEntity : entity.getParts()) {
                      ServerLevel.this.dragonParts.put(subEntity.getId(), subEntity);
                  }
              }
-@@ -2032,25 +_,62 @@
-                 if (ServerLevel.this.isUpdatingNavigations) {
-                     String message = "onTrackingStart called during navigation iteration";
-                     Util.logAndPauseIfInIde(
--                        "onTrackingStart called during navigation iteration", new IllegalStateException("onTrackingStart called during navigation iteration")
-+                              "onTrackingStart called during navigation iteration", new IllegalStateException("onTrackingStart called during navigation iteration")
-                     );
-                 }
- 
+@@ -2039,18 +_,56 @@
                  ServerLevel.this.navigatingMobs.remove(mob);
              }
  
 -            if (entity instanceof EnderDragon dragon) {
 -                for (EnderDragonPart subEntity : dragon.getSubEntities()) {
 +            if (entity.isMultipartEntity()) {
-+                for(net.neoforged.neoforge.entity.PartEntity<?> subEntity : entity.getParts()) {
++                for (net.neoforged.neoforge.entity.PartEntity<?> subEntity : entity.getParts()) {
                      ServerLevel.this.dragonParts.remove(subEntity.getId());
                  }
              }
@@ -326,6 +319,7 @@
 +
 +    /**
 +     * Register a listener for capability invalidation.
++     *
 +     * @see net.neoforged.neoforge.capabilities.ICapabilityInvalidationListener
 +     */
 +    public void registerCapabilityListener(BlockPos pos, net.neoforged.neoforge.capabilities.ICapabilityInvalidationListener listener) {

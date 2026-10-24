@@ -14,7 +14,7 @@
      private int strafingTime = -1;
  
 +    public <M extends Monster & RangedAttackMob> RangedBowAttackGoal(M mob, double speedModifier, int attackIntervalMin, float attackRadius) {
-+        this((T) mob, speedModifier, attackIntervalMin, attackRadius);
++        this((T)mob, speedModifier, attackIntervalMin, attackRadius);
 +    }
 +
      public RangedBowAttackGoal(T mob, double speedModifier, int attackIntervalMin, float attackRadius) {

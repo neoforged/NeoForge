@@ -14,7 +14,7 @@
      private int updatePathDelay;
  
 +    public <M extends Monster & CrossbowAttackMob> RangedCrossbowAttackGoal(M mob, double speedModifier, float attackRadius) {
-+        this((T) mob, speedModifier, attackRadius);
++        this((T)mob, speedModifier, attackRadius);
 +    }
 +
      public RangedCrossbowAttackGoal(T mob, double speedModifier, float attackRadius) {

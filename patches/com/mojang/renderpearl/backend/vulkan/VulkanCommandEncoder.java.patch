@@ -4,7 +4,7 @@
                      depthAttachmentInfo.loadOp(0);
                  }
  
-+                if (depthAttachment.textureView().texture().getFormat().hasDepthAspect())
++                if (depthAttachment.textureView().texture().getFormat().hasDepthAspect()) /*immaculate:ignore*/
                  renderingInfo.pDepthAttachment(depthAttachmentInfo);
 +
 +                if (vulkanDepthAttachment.texture().getFormat().hasStencilAspect()) {

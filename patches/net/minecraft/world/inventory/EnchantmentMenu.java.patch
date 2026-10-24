@@ -27,13 +27,13 @@
  
                      for (int ixx = 0; ixx < 3; ixx++) {
 -                        this.costs[ixx] = EnchantmentHelper.getEnchantmentCost(this.random, ixx, bookcases, itemStack);
-+                        this.costs[ixx] = EnchantmentHelper.getEnchantmentCost(this.random, ixx, (int) bookcases, itemStack);
++                        this.costs[ixx] = EnchantmentHelper.getEnchantmentCost(this.random, ixx, (int)bookcases, itemStack);
                          this.enchantClue[ixx] = -1;
                          this.levelClue[ixx] = -1;
                          if (this.costs[ixx] < ixx + 1) {
                              this.costs[ixx] = 0;
                          }
-+                        this.costs[ixx] = net.neoforged.neoforge.event.EventHooks.onEnchantmentLevelSet(level, pos, ixx, (int) bookcases, itemStack, costs[ixx]);
++                        this.costs[ixx] = net.neoforged.neoforge.event.EventHooks.onEnchantmentLevelSet(level, pos, ixx, (int)bookcases, itemStack, costs[ixx]);
                      }
  
                      for (int ix = 0; ix < 3; ix++) {

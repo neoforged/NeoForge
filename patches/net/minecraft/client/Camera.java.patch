@@ -26,13 +26,15 @@
          return fov;
      }
  
-@@ -262,7 +_,10 @@
+@@ -262,7 +_,12 @@
              this.setRotation(this.entity.getViewYRot(partialTicks), this.entity.getViewXRot(partialTicks));
              this.setPosition(behavior.getCartLerpPosition(partialTicks).add(positionOffset));
          } else {
 -            this.setRotation(this.entity.getViewYRot(partialTicks), this.entity.getViewXRot(partialTicks));
-+            var cameraSetup = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ViewportEvent.ComputeCameraAngles(
-+                    this, partialTicks, entity.getViewYRot(partialTicks), entity.getViewXRot(partialTicks), 0)
++            var cameraSetup = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(
++                new net.neoforged.neoforge.client.event.ViewportEvent.ComputeCameraAngles(
++                    this, partialTicks, entity.getViewYRot(partialTicks), entity.getViewXRot(partialTicks), 0
++                )
 +            );
 +            this.setRotation(cameraSetup.getYaw(), cameraSetup.getPitch(), cameraSetup.getRoll());
              this.setPosition(
@@ -71,7 +73,7 @@
          this.yRot = yRot;
 -        this.rotation.rotationYXZ((float) Math.PI - yRot * (float) (Math.PI / 180.0), -xRot * (float) (Math.PI / 180.0), 0.0F);
 +        this.roll = roll;
-+        this.rotation.rotationYXZ((float) Math.PI - yRot * (float) (Math.PI / 180.0), -xRot * (float) (Math.PI / 180.0), -roll * (float) (Math.PI / 180.0));
++        this.rotation.rotationYXZ((float)Math.PI - yRot * (float)(Math.PI / 180.0), -xRot * (float)(Math.PI / 180.0), -roll * (float)(Math.PI / 180.0));
          FORWARDS.rotate(this.rotation, this.forwards);
          UP.rotate(this.rotation, this.up);
          LEFT.rotate(this.rotation, this.left);

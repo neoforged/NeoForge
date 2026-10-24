@@ -5,7 +5,7 @@
  public class RecipeManager implements RecipeAccess {
      private static final Logger LOGGER = LogUtils.getLogger();
 -    private static final Map<ResourceKey<RecipePropertySet>, RecipeManager.IngredientExtractor> RECIPE_PROPERTY_SETS = Map.of(
-+    private static final Map<ResourceKey<RecipePropertySet>, RecipeManager.IngredientExtractor> RECIPE_PROPERTY_SETS = net.neoforged.neoforge.common.crafting.RecipePropertySetManager.captureVanillaSets(Map.of(
++    private static final Map<ResourceKey<RecipePropertySet>, RecipeManager.IngredientExtractor> RECIPE_PROPERTY_SETS = net.neoforged.neoforge.common.crafting.RecipePropertySetManager.captureVanillaSets(Map.of( /*immaculate:ignore*/
          RecipePropertySet.SMITHING_ADDITION,
          recipe -> recipe instanceof SmithingRecipe smithingRecipe ? smithingRecipe.additionIngredient() : Optional.empty(),
          RecipePropertySet.SMITHING_BASE,
@@ -14,7 +14,7 @@
          RecipePropertySet.BREWING_REAGENTS,
          recipe -> recipe instanceof BrewingRecipe brewingRecipe ? Optional.of(brewingRecipe.getReagent().ingredient()) : Optional.empty()
 -    );
-+    ));
++    )); /*immaculate:ignore*/
      private final RecipeMap recipes;
      private Map<ResourceKey<RecipePropertySet>, RecipePropertySet> propertySets = Map.of();
      private SelectableRecipe.SingleInputSet<StonecutterRecipe> stonecutterRecipes = SelectableRecipe.SingleInputSet.empty();

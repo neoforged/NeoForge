@@ -111,7 +111,7 @@
      }
  
      public void sendAllPlayerInfo(ServerPlayer player) {
-@@ -790,6 +_,12 @@
+@@ -790,6 +_,13 @@
      }
  
      public PlayerAdvancements getPlayerAdvancements(ServerPlayer player) {
@@ -119,7 +119,8 @@
 +        if (player.isFakePlayer()) {
 +            Path path = this.server.getWorldPath(LevelResource.PLAYER_ADVANCEMENTS_DIR).resolve("_fake.json");
 +            return new net.neoforged.neoforge.common.util.FakePlayer.FakePlayerAdvancements(
-+                    this.server.getFixerUpper(), this, this.server.getAdvancements(), path, player);
++                this.server.getFixerUpper(), this, this.server.getAdvancements(), path, player
++            );
 +        }
          UUID uuid = player.getUUID();
          PlayerAdvancements result = this.advancements.get(uuid);

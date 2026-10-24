@@ -27,7 +27,7 @@
                      );
  
                  for (Entity entity : entities) {
-+                    if (!net.neoforged.neoforge.event.EventHooks.onEntityStruckByLightning(entity, this))
++                    if (!net.neoforged.neoforge.event.EventHooks.onEntityStruckByLightning(entity, this)) /*immaculate:ignore*/
                      entity.thunderHit((ServerLevel)this.level(), this);
                  }
  

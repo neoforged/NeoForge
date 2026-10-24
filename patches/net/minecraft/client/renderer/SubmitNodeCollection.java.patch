@@ -15,17 +15,17 @@
  
 +    @Override
 +    public void submitMultiLayerBlockModel(
-+            PoseStack poseStack,
-+            List<BlockStateModelPart> modelParts,
-+            boolean translucent,
-+            int[] tintLayers,
-+            int lightCoords,
-+            int overlayCoords,
-+            int outlineColor
++        PoseStack poseStack,
++        List<BlockStateModelPart> modelParts,
++        boolean translucent,
++        int[] tintLayers,
++        int lightCoords,
++        int overlayCoords,
++        int outlineColor
 +    ) {
 +        PoseStack.Pose pose = poseStack.last().copy();
 +        var submit = new net.neoforged.neoforge.client.submit.ExtendedBlockModelFeatureRenderer.Submit(
-+                pose, modelParts, translucent, tintLayers, lightCoords, overlayCoords, -1
++            pose, modelParts, translucent, tintLayers, lightCoords, overlayCoords, -1
 +        );
 +        if (translucent) {
 +            this.translucentBlocksAndItems.submit(submit);

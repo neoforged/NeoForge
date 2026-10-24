@@ -64,14 +64,14 @@
 +                if (!this.isLastKeyHeldDown && !this.isLastModifierHeldDown) {
 +                    if (!this.lastPressedKey.equals(InputConstants.UNKNOWN)) {
 +                        this.selectedKey.setKeyModifierAndCode(
-+                                net.neoforged.neoforge.client.settings.KeyModifier.getKeyModifier(this.lastPressedModifier),
-+                                this.lastPressedKey
++                            net.neoforged.neoforge.client.settings.KeyModifier.getKeyModifier(this.lastPressedModifier),
++                            this.lastPressedKey
 +                        );
 +                        this.selectedKey.setKey(this.lastPressedKey);
 +                    } else {
 +                        this.selectedKey.setKeyModifierAndCode(
-+                                net.neoforged.neoforge.client.settings.KeyModifier.NONE,
-+                                this.lastPressedModifier
++                            net.neoforged.neoforge.client.settings.KeyModifier.NONE,
++                            this.lastPressedModifier
 +                        );
 +                        this.selectedKey.setKey(this.lastPressedModifier);
 +                    }

@@ -27,7 +27,7 @@
              return false;
          }
  
-+        BlockState removedBlockState =
++        BlockState removedBlockState =  /*immaculate:ignore*/
          oldBlock.playerWillDestroy(level, pos, oldState, this.minecraft.player);
          FluidState fluidState = level.getFluidState(pos);
 -        boolean changed = level.setBlock(pos, fluidState.createLegacyBlock(), 11);
@@ -42,7 +42,7 @@
              }
  
              this.startPrediction(this.minecraft.level, sequence -> {
-+                if (!net.neoforged.neoforge.common.CommonHooks.onLeftClickBlock(this.minecraft.player, pos, direction, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK).isCanceled())
++                if (!net.neoforged.neoforge.common.CommonHooks.onLeftClickBlock(this.minecraft.player, pos, direction, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK).isCanceled()) /*immaculate:ignore*/
                  this.destroyBlock(pos);
                  return new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
              });
@@ -58,7 +58,7 @@
              this.startPrediction(this.minecraft.level, sequence -> {
                  boolean notAir = !state.isAir();
                  if (notAir && this.destroyProgress == 0.0F) {
-+                    if (event.getUseBlock() != net.minecraft.util.TriState.FALSE)
++                    if (event.getUseBlock() != net.minecraft.util.TriState.FALSE) /*immaculate:ignore*/
                      state.attack(this.minecraft.level, pos, this.minecraft.player);
                  }
  
@@ -80,7 +80,7 @@
              }
  
              this.startPrediction(this.minecraft.level, sequence -> {
-+                if (!net.neoforged.neoforge.common.CommonHooks.onLeftClickBlock(this.minecraft.player, pos, direction, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK).isCanceled())
++                if (!net.neoforged.neoforge.common.CommonHooks.onLeftClickBlock(this.minecraft.player, pos, direction, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK).isCanceled()) /*immaculate:ignore*/
                  this.destroyBlock(pos);
                  return new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
              });

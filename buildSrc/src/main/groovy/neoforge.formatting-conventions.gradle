@@ -41,41 +41,40 @@ final generatePackageInfos = tasks.register('generatePackageInfos', GeneratePack
 
 immaculate {
     workflows.register('java') {
-        java()
-        trailingNewline()
-        noTabs()
-        google {
-            fixImports()
-        }
-        toggleOff = 'spotless:off'
-        toggleOn = 'spotless:on'
-        eclipse {
-            version = project.jdt_core_version
-            config = rootProject.file('codeformat/formatter-config.xml')
-        }
-
-
-        // courtesy of diffplug/spotless#240
-        // https://github.com/diffplug/spotless/issues/240#issuecomment-385206606
-        custom 'noWildcardImports', { String fileContents ->
-            if (fileContents.contains('*;\n')) {
-                throw new GradleException('No wildcard imports are allowed!')
+        toggle {
+            trailingNewline()
+            noTabs()
+            google {
+                fixImports()
             }
-        }
-
-        custom 'noNotNull', { String fileContents ->
-            if (fileContents.contains('@NotNull') || fileContents.contains('@Nonnull') || fileContents.contains('@NonNull')) {
-                throw new GradleException('Non-nullability annotations are disallowed.')
+            eclipse {
+                version = project.jdt_core_version
+                config = rootProject.file('codeformat/formatter-config.xml')
             }
-        }
 
-        custom 'jspecifyNullable', { String fileContents ->
-            fileContents.replace('javax.annotation.Nullable', 'org.jspecify.annotations.Nullable')
-                    .replace('org.jetbrains.annotations.Nullable', 'org.jspecify.annotations.Nullable')
-        }
 
-        custom 'equalsTakesNull', { String fileContents ->
-            fileContents.replaceAll(/(?<=boolean equals\()\s*(?!@Nullable)(?= ?(?:final )?Object [^,]+\))/, "@Nullable ")
+            // courtesy of diffplug/spotless#240
+            // https://github.com/diffplug/spotless/issues/240#issuecomment-385206606
+            custom 'noWildcardImports', { String fileContents ->
+                if (fileContents.contains('*;\n')) {
+                    throw new GradleException('No wildcard imports are allowed!')
+                }
+            }
+
+            custom 'noNotNull', { String fileContents ->
+                if (fileContents.contains('@NotNull') || fileContents.contains('@Nonnull') || fileContents.contains('@NonNull')) {
+                    throw new GradleException('Non-nullability annotations are disallowed.')
+                }
+            }
+
+            custom 'jspecifyNullable', { String fileContents ->
+                fileContents.replace('javax.annotation.Nullable', 'org.jspecify.annotations.Nullable')
+                        .replace('org.jetbrains.annotations.Nullable', 'org.jspecify.annotations.Nullable')
+            }
+
+            custom 'equalsTakesNull', { String fileContents ->
+                fileContents.replaceAll(/(?<=boolean equals\()\s*(?!@Nullable)(?= ?(?:final )?Object [^,]+\))/, "@Nullable ")
+            }
         }
     }
 }

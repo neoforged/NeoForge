@@ -37,7 +37,7 @@
      ) {
          this.row = row;
          this.column = column;
-@@ -40,12 +_,27 @@
+@@ -40,12 +_,28 @@
          this.iconGenerator = iconGenerator;
          this.displayItemsGenerator = displayItemsGenerator;
          this.type = type;
@@ -61,7 +61,8 @@
          return Identifier.withDefaultNamespace("textures/gui/container/creative_inventory/tab_" + name + ".png");
      }
  
-+    /** @deprecated Forge: use {@link #builder()} **/ @Deprecated
++    /** @deprecated Forge: use {@link #builder()} **/
++    @Deprecated
      public static CreativeModeTab.Builder builder(CreativeModeTab.Row row, int column) {
          return new CreativeModeTab.Builder(row, column);
      }
@@ -125,7 +126,7 @@
              return this;
          }
  
-@@ -175,12 +_,94 @@
+@@ -175,12 +_,97 @@
              return this;
          }
  
@@ -142,6 +143,7 @@
 +
 +        /**
 +         * Gives this tab a search bar, with a specific width.
++         *
 +         * @param searchBarWidth the width of the search bar
 +         */
 +        public CreativeModeTab.Builder withSearchBar(int searchBarWidth) {
@@ -176,7 +178,7 @@
 +            return this;
 +        }
 +
-+        /** Define tabs that should come <i>after</i> this tab. This tab will be placed <strong>before</strong> the {@code tabs}.**/
++        /** Define tabs that should come <i>after</i> this tab. This tab will be placed <strong>before</strong> the {@code tabs}. **/
 +        public CreativeModeTab.Builder withTabsAfter(net.minecraft.resources.Identifier... tabs) {
 +            this.tabsAfter.addAll(java.util.List.of(tabs));
 +            return this;
@@ -189,7 +191,7 @@
 +            return this;
 +        }
 +
-+        /** Define tabs that should come <i>after</i> this tab. This tab will be placed <strong>before</strong> the {@code tabs}.**/
++        /** Define tabs that should come <i>after</i> this tab. This tab will be placed <strong>before</strong> the {@code tabs}. **/
 +        @SafeVarargs
 +        public final CreativeModeTab.Builder withTabsAfter(net.minecraft.resources.ResourceKey<CreativeModeTab>... tabs) {
 +            java.util.stream.Stream.of(tabs).map(net.minecraft.resources.ResourceKey::identifier).forEach(this.tabsAfter::add);
@@ -203,12 +205,14 @@
 +         * Note that like the vanilla method this overrides any other calls for this tab to {@link #displayItems}.
 +         */
 +        public CreativeModeTab.Builder displayItems(Collection<? extends net.minecraft.core.Holder<? extends ItemLike>> collection) {
-+            return this.displayItems((p, o) -> collection.stream()
++            return this.displayItems(
++                (p, o) -> collection.stream()
 +                    .map(net.minecraft.core.Holder::value)
 +                    .map(ItemLike::asItem)
 +                    .filter(i -> i != Items.AIR)
 +                    .filter(i -> i.isEnabled(p.enabledFeatures()))
-+                    .forEach(o::accept));
++                    .forEach(o::accept)
++            );
 +        }
 +
          public CreativeModeTab build() {

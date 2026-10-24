@@ -30,7 +30,7 @@
      public @Nullable AABB getAABB(FluidState state, BlockGetter level, BlockPos pos) {
          if (this.isEmpty()) {
              return null;
-@@ -125,5 +_,22 @@
+@@ -125,5 +_,23 @@
      @Deprecated
      public Holder.Reference<Fluid> builtInRegistryHolder() {
          return this.builtInRegistryHolder;
@@ -45,7 +45,8 @@
 +    }
 +
 +    /** @deprecated Neo: do not use, use {@link net.neoforged.neoforge.transfer.fluid.FluidResource#of} instead. */
-+    @org.jetbrains.annotations.ApiStatus.Internal @Deprecated
++    @org.jetbrains.annotations.ApiStatus.Internal
++    @Deprecated
 +    public net.neoforged.neoforge.transfer.fluid.FluidResource computeDefaultResource(java.util.function.Function<Fluid, net.neoforged.neoforge.transfer.fluid.FluidResource> resourceConstructor) {
 +        if (this.defaultResource == null) {
 +            this.defaultResource = resourceConstructor.apply(this);

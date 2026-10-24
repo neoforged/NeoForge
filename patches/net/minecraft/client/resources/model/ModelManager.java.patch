@@ -26,14 +26,13 @@
      }
  
      public ClientItem.Properties getItemProperties(Identifier id) {
-@@ -112,8 +_,10 @@
+@@ -112,8 +_,9 @@
              () -> BuiltInBlockModels.createBlockModels(this.blockColors), taskExecutor
          );
          CompletableFuture<ClientItemInfoLoader.LoadedClientInfos> itemStackModels = ClientItemInfoLoader.scheduleLoad(manager, taskExecutor);
 -        CompletableFuture<ModelManager.ResolvedModels> modelDiscovery = CompletableFuture.allOf(modelCache, blockStateModels, itemStackModels)
 -            .thenApplyAsync(var3 -> discoverModelDependencies(modelCache.join(), blockStateModels.join(), itemStackModels.join()), taskExecutor);
-+        CompletableFuture<net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels> standaloneModelsFuture =
-+                net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.load(taskExecutor);
++        CompletableFuture<net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels> standaloneModelsFuture = net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.load(taskExecutor);
 +        CompletableFuture<ModelManager.ResolvedModels> modelDiscovery = CompletableFuture.allOf(modelCache, blockStateModels, itemStackModels, standaloneModelsFuture)
 +            .thenApplyAsync(var3 -> discoverModelDependencies(modelCache.join(), blockStateModels.join(), itemStackModels.join(), standaloneModelsFuture.join()), taskExecutor);
          CompletableFuture<Object2IntMap<BlockState>> modelGroups = blockStateModels.thenApplyAsync(

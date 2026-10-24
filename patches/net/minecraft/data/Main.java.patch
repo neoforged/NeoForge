@@ -16,7 +16,7 @@
          OptionSet optionSet = parser.parse(args);
          if (!optionSet.has(helpOption) && optionSet.hasOptions()) {
              Path output = Paths.get(outputOption.value(optionSet));
-@@ -82,11 +_,19 @@
+@@ -82,11 +_,21 @@
              boolean dev = allOptions || optionSet.has(devOption);
              boolean reports = allOptions || optionSet.has(reportsOption);
              Collection<Path> input = optionSet.valuesOf(inputOption).stream().map(x$0 -> Paths.get(x$0)).toList();
@@ -27,14 +27,16 @@
 +            boolean uncached = optionSet.has(uncachedSpec);
 +            DataGenerator generator = uncached ? new DataGenerator.Uncached(isFlat ? output : output.resolve("minecraft")) : new DataGenerator.Cached(isFlat ? output : output.resolve("minecraft"), SharedConstants.getCurrentVersion(), true);
 +            java.util.Collection<Path> existingPacks = optionSet.valuesOf(existing).stream().map(Paths::get).toList();
-+            if (mods.contains("minecraft") || mods.isEmpty()) {
++            if (mods.contains("minecraft") || mods.isEmpty()) {  /*immaculate:ignore*/
              addServerDefinitionProviders(generator, server, reports);
              addServerConverters(generator, input, server, dev);
 -            generator.run();
              Util.shutdownExecutors();
-+            }
-+            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, output, input, existingPacks, dev, reports, validate, isFlat, uncached, () -> {},
-+                    net.neoforged.neoforge.data.event.GatherDataEvent.Server::new, generator, packConsumer -> {});
++            }  /*immaculate:ignore*/
++            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(
++                mods, output, input, existingPacks, dev, reports, validate, isFlat, uncached, () -> {},
++                net.neoforged.neoforge.data.event.GatherDataEvent.Server::new, generator, packConsumer -> {}
++            );
          } else {
              parser.printHelpOn(System.out);
          }

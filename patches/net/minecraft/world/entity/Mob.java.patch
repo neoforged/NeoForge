@@ -19,8 +19,8 @@
 -        this.target = this.asValidTarget(target);
 +        target = this.asValidTarget(target);
 +        net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent changeTargetEvent = net.neoforged.neoforge.common.CommonHooks.onLivingChangeTarget(this, target, net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET);
-+        if(!changeTargetEvent.isCanceled()) {
-+             this.target = changeTargetEvent.getNewAboutToBeSetTarget();
++        if (!changeTargetEvent.isCanceled()) {
++            this.target = changeTargetEvent.getNewAboutToBeSetTarget();
 +        }
      }
  
@@ -48,18 +48,17 @@
      }
  
      @Override
-@@ -407,6 +_,14 @@
+@@ -407,6 +_,13 @@
          this.lootTable = input.read("DeathLootTable", LootTable.KEY_CODEC);
          this.lootTableSeed = input.getLongOr("DeathLootTableSeed", 0L);
          this.setNoAi(input.getBooleanOr("NoAI", false));
 +
 +        input.getString("neoforge:spawn_type")
-+                .ifPresent(spawnType -> {
-+                    try {
-+                        this.spawnType = EntitySpawnReason.valueOf(spawnType);
-+                    } catch (Exception ignored) {
-+                    }
-+                });
++            .ifPresent(spawnType -> {
++                try {
++                    this.spawnType = EntitySpawnReason.valueOf(spawnType);
++                } catch (Exception ignored) {}
++            });
      }
  
      @Override
@@ -125,7 +124,7 @@
  
          params.type().convert(this, newMob, params);
          afterConversion.finalizeConversion(newMob);
-+        if (!preventConversionSpawns)
++        if (!preventConversionSpawns) /*immaculate:ignore*/
          if (this.level() instanceof ServerLevel serverLevel) {
              serverLevel.addFreshEntity(newMob);
          }
@@ -155,7 +154,7 @@
      @VisibleForTesting
      public void removeFreeWill() {
          this.removeAllGoals(goal -> true);
-@@ -1480,5 +_,35 @@
+@@ -1480,5 +_,36 @@
  
      public void swing(InteractionHand hand, SwingAnimation animation) {
          this.swing(hand, animation, false);
@@ -172,6 +171,7 @@
 +
 +    /// This method exists so that spawns can be canceled from the [`FinalizeSpawnEvent`][net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent]
 +    /// without needing to hook up an additional handler for the [`EntityJoinLevelEvent`][net.neoforged.neoforge.event.entity.EntityJoinLevelEvent].
++    ///
 +    /// @return if this mob will be blocked from spawning during [Level#addFreshEntity(Entity)]
 +    /// @apiNote Not public-facing API.
 +    @org.jetbrains.annotations.ApiStatus.Internal

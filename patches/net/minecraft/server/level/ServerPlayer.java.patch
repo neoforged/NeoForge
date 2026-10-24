@@ -5,7 +5,7 @@
  
          private void broadcastDataValue(AbstractContainerMenu container, int id, int value) {
 +            if (ServerPlayer.this.connection.hasChannel(net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload.TYPE)) {
-+                ServerPlayer.this.connection.send(new net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload((byte) container.containerId, (short) id, value));
++                ServerPlayer.this.connection.send(new net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload((byte)container.containerId, (short)id, value));
 +                return;
 +            }
              ServerPlayer.this.connection.send(new ClientboundContainerSetDataPacket(container.containerId, id, value));
@@ -41,7 +41,7 @@
 +                        this.awardStat(Stats.TIME_SINCE_REST);
 +                    } else {
 +                        float speed = level().clockManager().getInstance(defaultClock.get()).rate();
-+                        int fullTicks = (int) speed;
++                        int fullTicks = (int)speed;
 +                        partialTimeSinceRestTick += speed;
 +                        if (partialTimeSinceRestTick >= 1) {
 +                            partialTimeSinceRestTick = 0;
@@ -137,7 +137,7 @@
 +        boolean canSetSpawn = rule.canSetSpawn(this.level());
 +
 +        // Neo: Encapsulate the vanilla logic for whether the player can sleep
-+        var vanillaResult = ((java.util.function.Supplier<Either<BedSleepingProblem, Unit>>) () -> {
++        var vanillaResult = ((java.util.function.Supplier<Either<BedSleepingProblem, Unit>>) () -> { /*immaculate:ignore*/
 +
 +        // Neo: For bed blocks without the FACING property, assume success
 +        // Mods will have to implement their own logic using the CanPlayerSleepEvent
@@ -152,16 +152,17 @@
              if (!this.bedInRange(pos, direction)) {
                  return Either.left(Player.BedSleepingProblem.TOO_FAR_AWAY);
              }
-@@ -1268,6 +_,20 @@
+@@ -1268,6 +_,21 @@
                  }
              }
  
 +        } else { // Neo: Moved from end of method
++            /*immaculate:patch:ignore this chunk for indentation reasons */
 +            return Either.left(Player.BedSleepingProblem.OTHER_PROBLEM);
 +        }
 +
 +        return Either.right(Unit.INSTANCE); // Neo: Nothing blocks sleep
-+        }).get();
++        }).get(); /*immaculate:ignore*/
 +
 +        // Neo: Fire the CanPlayerStartSleeping event, and return the error if it exists
 +        vanillaResult = net.neoforged.neoforge.event.EventHooks.canPlayerStartSleeping(this, pos, vanillaResult);
@@ -196,7 +197,7 @@
  
      @Override
      public OptionalInt openMenu(@Nullable MenuProvider provider) {
-+        return openMenu(provider, (java.util.function.Consumer<net.minecraft.network.RegistryFriendlyByteBuf>) null);
++        return openMenu(provider, (java.util.function.Consumer<net.minecraft.network.RegistryFriendlyByteBuf>)null);
 +    }
 +
 +    @Override
@@ -206,7 +207,7 @@
          }
  
          if (this.containerMenu != this.inventoryMenu) {
-+            if (provider.shouldTriggerClientSideContainerClosingOnOpen())
++            if (provider.shouldTriggerClientSideContainerClosingOnOpen()) /*immaculate:ignore*/
              this.closeContainer();
 +            else
 +                this.doCloseContainer();
@@ -236,9 +237,9 @@
 +                                extraData
 +                        )
 +                );
-+            } else {
++            } /*immaculate:off*/ else { /*immaculate:on*/
              this.connection.send(new ClientboundOpenScreenPacket(menu.containerId, menu.getType(), provider.getDisplayName()));
-+            }
++            } /*immaculate:ignore*/
              this.initMenu(menu);
              this.containerMenu = menu;
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.PlayerContainerEvent.Open(this, this.containerMenu));
@@ -278,7 +279,7 @@
 +        //Allows mods to specify data that persists after players respawn.
 +        var old = oldPlayer.getPersistentData();
 +        if (old.contains(PERSISTED_NBT_TAG))
-+             getPersistentData().put(PERSISTED_NBT_TAG, old.get(PERSISTED_NBT_TAG));
++            getPersistentData().put(PERSISTED_NBT_TAG, old.get(PERSISTED_NBT_TAG));
 +        net.neoforged.neoforge.event.EventHooks.onPlayerClone(this, oldPlayer, !restoreAll);
 +        this.tabListHeader = oldPlayer.tabListHeader;
 +        this.tabListFooter = oldPlayer.tabListFooter;
@@ -323,7 +324,7 @@
          if (showMessage && respawnConfig != null && !respawnConfig.isSamePosition(this.respawnConfig)) {
              this.sendSystemMessage(SPAWN_SET_MESSAGE);
          }
-@@ -2048,6 +_,75 @@
+@@ -2048,6 +_,76 @@
          return entity;
      }
  
@@ -372,7 +373,7 @@
 +     */
 +    public void setTabListHeaderFooter(final Component header, final Component footer) {
 +        if (java.util.Objects.equals(header, this.tabListHeader)
-+                && java.util.Objects.equals(footer, this.tabListFooter)) {
++            && java.util.Objects.equals(footer, this.tabListFooter)) {
 +            return;
 +        }
 +
@@ -385,6 +386,7 @@
 +    // We need this as tablistDisplayname may be null even if the event was fired.
 +    private boolean hasTabListName = false;
 +    private Component tabListDisplayName = null;
++
 +    /**
 +     * Force the name displayed in the tab list to refresh, by firing {@link net.neoforged.neoforge.event.entity.player.PlayerEvent.TabListNameFormat}.
 +     */

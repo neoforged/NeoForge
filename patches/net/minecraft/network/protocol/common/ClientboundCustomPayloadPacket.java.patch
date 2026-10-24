@@ -12,9 +12,9 @@
          .map(ClientboundCustomPayloadPacket::new, ClientboundCustomPayloadPacket::payload);
      public static final StreamCodec<FriendlyByteBuf, ClientboundCustomPayloadPacket> CONFIG_STREAM_CODEC = CustomPacketPayload.<FriendlyByteBuf>codec(
 -            id -> DiscardedPayload.codec(id, 1048576), List.of(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC))
-+            id -> DiscardedPayload.codec(id, 1048576), List.of(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)),
-+            net.minecraft.network.ConnectionProtocol.CONFIGURATION,
-+            net.minecraft.network.protocol.PacketFlow.CLIENTBOUND
++        id -> DiscardedPayload.codec(id, 1048576), List.of(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)),
++        net.minecraft.network.ConnectionProtocol.CONFIGURATION,
++        net.minecraft.network.protocol.PacketFlow.CLIENTBOUND
          )
          .map(ClientboundCustomPayloadPacket::new, ClientboundCustomPayloadPacket::payload);
  

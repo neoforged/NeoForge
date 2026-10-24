@@ -12,7 +12,7 @@
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public void refreshFeaturesPerStep() {
-+        ((net.neoforged.neoforge.common.util.Lazy<?>) this.featuresPerStep).invalidate();
++        ((net.neoforged.neoforge.common.util.Lazy<?>)this.featuresPerStep).invalidate();
      }
  
      public void validate() {

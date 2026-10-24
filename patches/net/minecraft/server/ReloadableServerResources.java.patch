@@ -23,7 +23,7 @@
      }
  
      public ServerFunctionLibrary getFunctionLibrary() {
-@@ -71,6 +_,29 @@
+@@ -71,6 +_,30 @@
          return List.of(this.functionLibrary);
      }
  
@@ -34,12 +34,13 @@
 +        if (listener == null) {
 +            throw new IllegalArgumentException("No listener registered for key " + key);
 +        }
-+        return (T) listener;
++        return (T)listener;
 +    }
 +
 +    /// Exposes the current condition context for usage in other reload listeners.
 +    ///
 +    /// This is not useful outside the reloading stage.
++    ///
 +    /// @return The condition context for the currently active reload.
 +    public net.neoforged.neoforge.common.conditions.ICondition.IContext getConditionContext() {
 +        return this.context;

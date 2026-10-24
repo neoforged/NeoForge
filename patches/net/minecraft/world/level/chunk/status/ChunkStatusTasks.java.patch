@@ -4,7 +4,7 @@
              }
  
              levelChunk.setFullStatus(holder::getFullStatus);
-+            try {
++            try { /*immaculate:patch:ignore this chunk has too much indentation nonsense to format nicely */
 +                holder.currentlyLoading = levelChunk; // Neo: bypass the future chain when getChunk is called, this prevents deadlocks.
              levelChunk.runPostLoad();
 +            } finally {

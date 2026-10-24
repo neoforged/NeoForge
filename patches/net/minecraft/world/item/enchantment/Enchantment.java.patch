@@ -18,7 +18,7 @@
 +    /**
 +     * @deprecated Neo: Use {@link ItemStack#isPrimaryItemFor(Holder)}
 +     *
-+     * This method does not respect {@link ItemStack#supportsEnchantment(Holder)} since the {@link Holder} is not available, which makes the result of calling it invalid.
++     *             This method does not respect {@link ItemStack#supportsEnchantment(Holder)} since the {@link Holder} is not available, which makes the result of calling it invalid.
 +     */
 +    @Deprecated
      public boolean isPrimaryItem(ItemStack item) {

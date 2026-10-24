@@ -14,14 +14,14 @@
          ClientboundStatusResponsePacket::new
      );
 +    public static final StreamCodec<net.minecraft.network.FriendlyByteBuf, ClientboundStatusResponsePacket> STREAM_CODEC = StreamCodec.of(
-+            (buffer, packet) -> {
-+                if (packet.cachedStatus != null) {
-+                    buffer.writeUtf(packet.cachedStatus);
-+                } else {
-+                    VANILLA_STREAM_CODEC.encode(buffer, packet);
-+                }
-+            },
-+            VANILLA_STREAM_CODEC::decode
++        (buffer, packet) -> {
++            if (packet.cachedStatus != null) {
++                buffer.writeUtf(packet.cachedStatus);
++            } else {
++                VANILLA_STREAM_CODEC.encode(buffer, packet);
++            }
++        },
++        VANILLA_STREAM_CODEC::decode
 +    );
 +
 +    public ClientboundStatusResponsePacket(ServerStatus status) {

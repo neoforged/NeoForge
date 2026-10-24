@@ -7,8 +7,8 @@
 +    private static <T> Dynamic<T> updateMobEffectIdFieldConsideringForge(Dynamic<T> input, String oldFieldName, Dynamic<T> output, String newFieldName, String forgeFieldId) {
 +        final var forgeField = input.get(forgeFieldId).result();
 +        if (forgeField.isPresent()) {
-+                return setFieldIfPresent((input == output ? input.remove(forgeFieldId) : output), newFieldName, forgeField);
-+            }
++            return setFieldIfPresent((input == output ? input.remove(forgeFieldId) : output), newFieldName, forgeField);
++        }
 +        return updateMobEffectIdField(input, oldFieldName, output, newFieldName);
 +    }
 +

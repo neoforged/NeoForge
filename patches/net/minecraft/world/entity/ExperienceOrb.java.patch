@@ -41,7 +41,7 @@
          if (selected.isPresent()) {
              ItemStack itemStack = selected.get().itemStack();
 -            int toRepairFromXpAmount = EnchantmentHelper.modifyDurabilityToRepairFromXp(player.level(), itemStack, amount);
-+            int toRepairFromXpAmount = EnchantmentHelper.modifyDurabilityToRepairFromXp(player.level(), itemStack, (int) (amount * itemStack.getXpRepairRatio()));
++            int toRepairFromXpAmount = EnchantmentHelper.modifyDurabilityToRepairFromXp(player.level(), itemStack, (int)(amount * itemStack.getXpRepairRatio()));
              int repair = Math.min(toRepairFromXpAmount, itemStack.getDamageValue());
              itemStack.setDamageValue(itemStack.getDamageValue() - repair);
              if (repair > 0) {

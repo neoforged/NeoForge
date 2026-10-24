@@ -60,7 +60,7 @@
  
          private Callback(T entity, long currentSectionKey, EntitySection<T> currentSection) {
              this.entity = entity;
-+            this.realEntity = entity instanceof Entity ? (Entity) entity : null;
++            this.realEntity = entity instanceof Entity ? (Entity)entity : null;
              this.currentSectionKey = currentSectionKey;
              this.currentSection = currentSection;
          }

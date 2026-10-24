@@ -18,7 +18,7 @@
 +        this.potted = null; // Unused, redirected by coremod
 +        this.flowerDelegate = () -> potted;
 +        // If we're constructing the empty pot at Blocks.FLOWER_POT, then the field will be null
-+        this.emptyPot = Blocks.FLOWER_POT == null ? null : () -> (FlowerPotBlock) Blocks.FLOWER_POT;
++        this.emptyPot = Blocks.FLOWER_POT == null ? null : () -> (FlowerPotBlock)Blocks.FLOWER_POT;
 +    }
 +
 +    /// Neo: Constructs a flower pot with the given empty pot and potted flower/plant.
@@ -27,7 +27,7 @@
 +    /// Use the [other constructor][#FlowerPotBlock(Properties)] for constructing empty pots.
 +    ///
 +    /// @param emptyPot The empty pot for this pot
-+    /// @param potted The potted flower/plant
++    /// @param potted   The potted flower/plant
 +    public FlowerPotBlock(java.util.function.Supplier<FlowerPotBlock> emptyPot, java.util.function.Supplier<? extends Block> potted, BlockBehaviour.Properties properties) {
 +        super(properties);
 +        this.potted = null; // Unused, redirected by coremod
@@ -49,7 +49,7 @@
      ) {
          BlockState newContents = (itemStack.getItem() instanceof BlockItem blockItem
 -                ? POTTED_BY_CONTENT.getOrDefault(blockItem.getBlock(), Blocks.AIR)
-+                ? emptyPot == null ? getFullPot(blockItem.getBlock()) : Blocks.AIR
++            ? emptyPot == null ? getFullPot(blockItem.getBlock()) : Blocks.AIR
                  : Blocks.AIR)
              .defaultBlockState();
          if (newContents.isAir()) {
@@ -76,7 +76,7 @@
 +    }
 +
 +    public FlowerPotBlock getEmptyPot() {
-+         return emptyPot == null ? this : emptyPot.get();
++        return emptyPot == null ? this : emptyPot.get();
 +    }
 +
 +    /// Neo: {@return an unmodifiable view of the map of plant blocks to their associated full pot block}

@@ -9,12 +9,12 @@
 +        /// @deprecated Neo: use [#BakingContext(ModelBaker, EntityModelSet, SpriteGetter, PlayerSkinRenderCache, MissingItemModel, RegistryContextSwapper, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations)] instead
 +        @Deprecated
 +        public BakingContext(
-+                ModelBaker blockModelBaker,
-+                EntityModelSet entityModelSet,
-+                SpriteGetter sprites,
-+                PlayerSkinRenderCache playerSkinRenderCache,
-+                MissingItemModel missingItemModel,
-+                @Nullable RegistryContextSwapper contextSwapper
++            ModelBaker blockModelBaker,
++            EntityModelSet entityModelSet,
++            SpriteGetter sprites,
++            PlayerSkinRenderCache playerSkinRenderCache,
++            MissingItemModel missingItemModel,
++            @Nullable RegistryContextSwapper contextSwapper
 +        ) {
 +            this(blockModelBaker, entityModelSet, sprites, playerSkinRenderCache, missingItemModel, contextSwapper, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY);
 +        }

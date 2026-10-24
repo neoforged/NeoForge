@@ -6,7 +6,7 @@
  
 +    @Nullable
 +    public <T extends EntitySubPredicate> T getPartIfExists(Codec<T> type) {
-+        return (T) parts.get(type);
++        return (T)parts.get(type);
 +    }
 +
      public static LootContext createContext(ServerPlayer player, Entity entity) {

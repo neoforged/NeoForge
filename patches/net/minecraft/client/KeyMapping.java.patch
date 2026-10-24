@@ -139,7 +139,7 @@
 +                // GUI and other key contexts do not have this limitation.
 +                return keyModifier == otherKeyModifier ||
 +                    (getKeyConflictContext().conflicts(net.neoforged.neoforge.client.settings.KeyConflictContext.IN_GAME) &&
-+                    (keyModifier == net.neoforged.neoforge.client.settings.KeyModifier.NONE || otherKeyModifier == net.neoforged.neoforge.client.settings.KeyModifier.NONE));
++                        (keyModifier == net.neoforged.neoforge.client.settings.KeyModifier.NONE || otherKeyModifier == net.neoforged.neoforge.client.settings.KeyModifier.NONE));
 +            }
 +        }
          return this.key.equals(that.key);

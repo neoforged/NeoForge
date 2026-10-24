@@ -4,7 +4,7 @@
                  ListTag entities = new ListTag();
                  chunk.getEntities().forEach(e -> {
                      TagValueOutput output = TagValueOutput.createWithContext(reporter.forChild(e.problemPath()), e.registryAccess());
-+                    try {
++                    try { /*immaculate:patch:ignore this patch has too much indentation nonsense to format nicely */
                      if (e.save(output)) {
                          CompoundTag result = output.buildResult();
                          entities.add(result);

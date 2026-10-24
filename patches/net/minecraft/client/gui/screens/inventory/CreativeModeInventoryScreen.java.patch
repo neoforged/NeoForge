@@ -58,7 +58,7 @@
 +                this.currentPage = this.pages.get(0);
 +            }
 +            if (this.pages.size() > 1) {
-+                addRenderableWidget(net.minecraft.client.gui.components.Button.builder(Component.literal("<"), b -> setCurrentPage(this.pages.get(Math.max(this.pages.indexOf(this.currentPage) - 1, 0)))).pos(leftPos,  topPos - 50).size(20, 20).build());
++                addRenderableWidget(net.minecraft.client.gui.components.Button.builder(Component.literal("<"), b -> setCurrentPage(this.pages.get(Math.max(this.pages.indexOf(this.currentPage) - 1, 0)))).pos(leftPos, topPos - 50).size(20, 20).build());
 +                addRenderableWidget(net.minecraft.client.gui.components.Button.builder(Component.literal(">"), b -> setCurrentPage(this.pages.get(Math.min(this.pages.indexOf(this.currentPage) + 1, this.pages.size() - 1)))).pos(leftPos + imageWidth - 20, topPos - 50).size(20, 20).build());
 +            }
 +            this.currentPage = this.pages.stream().filter(page -> page.getVisibleTabs().contains(selectedTab)).findFirst().orElse(this.currentPage);
@@ -209,7 +209,7 @@
 +            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, identifier, xscr, yscr + (int)((yscr2 - yscr - 17) * this.scrollOffs), 12, 15);
          }
  
-+        if (currentPage.getVisibleTabs().contains(selectedTab)) //Forge: only display tab selection when the selected tab is on the current page
++        if (currentPage.getVisibleTabs().contains(selectedTab)) //Forge: only display tab selection when the selected tab is on the current page /*immaculate:ignore*/
          this.extractTabButton(graphics, mouseX, mouseY, selectedTab);
          if (selectedTab.getType() == CreativeModeTab.Type.INVENTORY) {
              InventoryScreen.extractEntityInInventoryFollowsMouse(

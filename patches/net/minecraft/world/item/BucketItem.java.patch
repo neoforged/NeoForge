@@ -72,7 +72,7 @@
      protected void playEmptySound(@Nullable LivingEntity user, LevelAccessor level, BlockPos pos) {
 -        SoundEvent soundEvent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
 +        SoundEvent soundEvent = this.content.getFluidType().getSound(user, level, pos, net.neoforged.neoforge.common.SoundActions.BUCKET_EMPTY);
-+        if(soundEvent == null) soundEvent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
++        if (soundEvent == null) soundEvent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
          level.playSound(user, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
          level.gameEvent(user, GameEvent.FLUID_PLACE, pos);
 +    }

@@ -14,14 +14,14 @@
      public static StreamCodec<? super RegistryFriendlyByteBuf, BlockParticleOption> streamCodec(ParticleType<BlockParticleOption> type) {
 -        return ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY).map(state -> new BlockParticleOption(type, state), o -> o.state);
 +        return StreamCodec.composite(
-+                ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY),
-+                option -> option.state,
-+                net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs.connectionAware(
-+                        ByteBufCodecs.optional(net.minecraft.core.BlockPos.STREAM_CODEC),
-+                        net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs.uncheckedUnit(java.util.Optional.empty())
-+                ),
-+                option -> java.util.Optional.ofNullable(option.pos),
-+                (state, pos) -> new BlockParticleOption(type, state, pos.orElse(null))
++            ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY),
++            option -> option.state,
++            net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs.connectionAware(
++                ByteBufCodecs.optional(net.minecraft.core.BlockPos.STREAM_CODEC),
++                net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs.uncheckedUnit(java.util.Optional.empty())
++            ),
++            option -> java.util.Optional.ofNullable(option.pos),
++            (state, pos) -> new BlockParticleOption(type, state, pos.orElse(null))
 +        );
      }
  

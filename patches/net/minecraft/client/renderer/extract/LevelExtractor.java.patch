@@ -4,7 +4,7 @@
                          section.sectionMesh.get() != CompiledSectionMesh.UNCOMPILED
                              || this.sectionUpdateTracker.hasAllNeighbors(this.level, section.getSectionNode())
                      )) {
-+                    var additionalRenderers = net.neoforged.neoforge.client.ClientHooks.gatherAdditionalRenderers(section.getRenderOrigin(), this.level);
++                var additionalRenderers = net.neoforged.neoforge.client.ClientHooks.gatherAdditionalRenderers(section.getRenderOrigin(), this.level);
                      this.levelRenderState
                          .sectionUpdateRenderStates
                          .add(
@@ -14,7 +14,7 @@
                              )
                          );
                      dirtyState.setNotDirty();
-@@ -235,6 +_,13 @@
+@@ -235,6 +_,15 @@
  
          this.levelRenderState.shouldShowEntityOutlines = shouldShowEntityOutlines(camera, this.levelRenderState.playerRenderState);
          this.extractGizmos();
@@ -22,9 +22,11 @@
 +        this.levelRenderState.customWeatherEffectRenderer = net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager.getCustomWeatherEffectRenderer(this.level, camera.position());
 +        this.levelRenderState.customSkyboxRenderer = net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager.getCustomSkyboxRenderer(this.level, camera.position());
 +        this.levelRenderState.customCloudsRenderer = net.neoforged.neoforge.client.CustomEnvironmentEffectsRendererManager.getCustomCloudsRenderer(this.level, camera.position());
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent(
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(
++            new net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent(
 +                this, this.levelRenderState, this.minecraft.gameRenderer.gameRenderState().optionsRenderState, this.level, camera, cullFrustum, deltaTracker
-+        ));
++            )
++        );
          profiler.pop();
          profiler.pop();
      }
@@ -97,7 +99,7 @@
 -                    BlockState viewBlockingState = getViewBlockingState(player, camera.getCullFrustum());
 -                    if (viewBlockingState != null) {
 +                    var stateAndPos = getViewBlockingStateAndPos(player, camera.getCullFrustum());
-+                    if (stateAndPos != null && !net.neoforged.neoforge.client.ClientHooks.extractBlockScreenEffect(player, state,stateAndPos.getRight(), stateAndPos.getLeft(), camera, worldPartialTicks, playerPartialTick)) {
++                    if (stateAndPos != null && !net.neoforged.neoforge.client.ClientHooks.extractBlockScreenEffect(player, state, stateAndPos.getRight(), stateAndPos.getLeft(), camera, worldPartialTicks, playerPartialTick)) {
 +                        BlockState viewBlockingState = stateAndPos.getLeft();
                          TextureAtlasSprite sprite = this.minecraft.getModelManager().getBlockStateModelSet().getParticleMaterial(viewBlockingState).sprite();
                          state.blockOverlay = new PlayerRenderState.BlockOverlay(

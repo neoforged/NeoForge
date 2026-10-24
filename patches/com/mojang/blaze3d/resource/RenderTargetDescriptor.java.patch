@@ -16,7 +16,7 @@
              RenderSystem.getDevice().createCommandEncoder().clearDepthTexture(resource.getDepthTexture(), this.depth.clearColor.x());
 +        }
 +        if (this.depth != null && this.depth.clearColor != null && this.depth.format.hasStencilAspect()) {
-+            int value = (int) (this.depth.format.hasDepthAspect() ? this.depth.clearColor.y() : this.depth.clearColor.x());
++            int value = (int)(this.depth.format.hasDepthAspect() ? this.depth.clearColor.y() : this.depth.clearColor.x());
 +            RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(resource.getDepthTexture(), value);
          }
      }

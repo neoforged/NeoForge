@@ -45,7 +45,7 @@
  
      private void createResult() {
 +        this.xp = net.neoforged.neoforge.common.CommonHooks.onGrindstoneChange(this.repairSlots.getItem(0), this.repairSlots.getItem(1), this.resultSlots, -1);
-+        if (this.xp == Integer.MIN_VALUE)
++        if (this.xp == Integer.MIN_VALUE) /*immaculate:ignore*/
          this.resultSlots.setItem(0, this.computeResult(this.repairSlots.getItem(0), this.repairSlots.getItem(1)));
          this.broadcastChanges();
      }
@@ -54,7 +54,7 @@
          int remaining = remaining1 + remaining2 + durability * 5 / 100;
          int count = 1;
 -        if (!input.isDamageableItem()) {
-+        if (!input.isDamageableItem()  || !input.isCombineRepairable()) {
++        if (!input.isDamageableItem() || !input.isCombineRepairable()) {
              if (input.getMaxStackSize() < 2 || !ItemStack.matches(input, additional)) {
                  return ItemStack.EMPTY;
              }

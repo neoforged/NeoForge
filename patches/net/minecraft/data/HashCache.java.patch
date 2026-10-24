@@ -21,7 +21,7 @@
              if (this.cachesToWrite.contains(providerId)) {
                  Path cachePath = this.getProviderCachePath(providerId);
 +                // Forge: Only rewrite the cache file if it changed or is missing
-+                if (!cache.equals(this.originalCaches.get(providerId)) || !Files.exists(cachePath))
++                if (!cache.equals(this.originalCaches.get(providerId)) || !Files.exists(cachePath)) /*immaculate:ignore*/
                  cache.save(this.rootDir, cachePath, DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(ZonedDateTime.now()) + "\t" + providerId);
              }
  

@@ -51,12 +51,11 @@
                              ),
                              IDENTITY
                          );
-@@ -125,6 +_,8 @@
+@@ -125,6 +_,7 @@
              },
              taskExecutor
          );
-+        CompletableFuture<net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels> standaloneModelsFuture =
-+                net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.bake(this.standaloneModels, baker, taskExecutor);
++        CompletableFuture<net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels> standaloneModelsFuture = net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.bake(this.standaloneModels, baker, taskExecutor);
          Map<Identifier, ClientItem.Properties> itemStackModelProperties = new HashMap<>(this.clientInfos.size());
          this.clientInfos.forEach((id, clientInfo) -> {
              ClientItem.Properties properties = clientInfo.properties();
@@ -86,10 +85,10 @@
 +        /// @deprecated Neo: use [#BakingResult(ModelBakery.MissingModels, Map, Map, Map, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels)] instead
 +        @Deprecated
 +        public BakingResult(
-+                ModelBakery.MissingModels missingModels,
-+                Map<BlockState, BlockStateModel> blockStateModels,
-+                Map<Identifier, ItemModel> itemStackModels,
-+                Map<Identifier, ClientItem.Properties> itemProperties
++            ModelBakery.MissingModels missingModels,
++            Map<BlockState, BlockStateModel> blockStateModels,
++            Map<Identifier, ItemModel> itemStackModels,
++            Map<Identifier, ClientItem.Properties> itemProperties
 +        ) {
 +            this(missingModels, blockStateModels, itemStackModels, itemProperties, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels.EMPTY);
 +        }

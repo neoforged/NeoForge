@@ -47,7 +47,7 @@
          this.connection.send(ServerboundFinishConfigurationPacket.INSTANCE);
          this.connection
 -            .setupOutboundProtocol(GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registries), new GameProtocols.Context() {
-+                .setupOutboundProtocol(GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registries, connectionType), new GameProtocols.Context() {
++            .setupOutboundProtocol(GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registries, connectionType), new GameProtocols.Context() {
                  @Override
                  public boolean hasInfiniteMaterials() {
                      return true;

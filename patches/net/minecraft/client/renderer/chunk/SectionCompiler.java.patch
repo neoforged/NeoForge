@@ -19,7 +19,7 @@
                      FluidState fluidState = blockState.getFluidState();
                      if (!fluidState.isEmpty()) {
 +                        var customRenderer = this.fluidModelSet.get(fluidState).customRenderer();
-+                        if (customRenderer == null || !customRenderer.renderFluid(fluidRenderer, fluidState, region, pos, fluidOutput, blockState))
++                        if (customRenderer == null || !customRenderer.renderFluid(fluidRenderer, fluidState, region, pos, fluidOutput, blockState)) /*immaculate:ignore*/
                          fluidRenderer.tesselate(region, pos, fluidOutput, blockState, fluidState);
                      }
  

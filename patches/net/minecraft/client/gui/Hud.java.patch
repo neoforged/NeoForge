@@ -102,9 +102,9 @@
                      Equippable equippable = item.get(DataComponents.EQUIPPABLE);
 -                    if (equippable != null && equippable.slot() == slot && equippable.cameraOverlay().isPresent()) {
 +                    if (equippable != null && equippable.slot() == slot) {
-+                        if (equippable.cameraOverlay().isPresent()) {
++                        if (equippable.cameraOverlay().isPresent()) {  /*immaculate:ignore*/
                          this.extractTextureOverlay(graphics, equippable.cameraOverlay().get().withPath(p -> "textures/" + p + ".png"), 1.0F);
-+                        }
++                        }  /*immaculate:ignore*/
 +
 +                        net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(item).renderFirstPersonOverlay(item, slot, this.minecraft.player, graphics, deltaTracker);
                      }
@@ -130,11 +130,11 @@
 +            // Neo: Allow customizing position of chat component
 +            var chatBottomMargin = 40; // See ChatComponent#BOTTOM_MARGIN (used in translate calls in ChatComponent#render)
 +            var event = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(
-+                    new net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.Chat(window, graphics, deltaTracker, 0, graphics.guiHeight() - chatBottomMargin)
++                new net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.Chat(window, graphics, deltaTracker, 0, graphics.guiHeight() - chatBottomMargin)
 +            );
 +            // The event is given the absolute Y position; account for chat component's own offsetting here
 +            graphics.pose().pushMatrix();
-+            graphics.pose().translate(event.getPosX(), (event.getPosY() - graphics.guiHeight() + chatBottomMargin) / (float) this.chat.getScale());
++            graphics.pose().translate(event.getPosX(), (event.getPosY() - graphics.guiHeight() + chatBottomMargin) / (float)this.chat.getScale());
              int mouseX = Mth.floor(this.minecraft.mouseHandler.getScaledXPos(window));
              int mouseY = Mth.floor(this.minecraft.mouseHandler.getScaledYPos(window));
              graphics.nextStratum();
@@ -251,9 +251,9 @@
              if (alpha > 0) {
 -                graphics.textWithBackdrop(this.getFont(), str, x, y, strWidth, ARGB.white(alpha));
 +                Font font = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(lastToolHighlight).getFont(lastToolHighlight, net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.FontContext.SELECTED_ITEM_NAME);
-+                if (font == null) {
++                if (font == null) {  /*immaculate:ignore*/
 +                graphics.textWithBackdrop(this.getFont(), highlightTip, x, y, strWidth, ARGB.white(alpha));
-+                } else {
++                /*immaculate:off*/ } else /*immaculate:on*/ {
 +                    x = (graphics.guiWidth() - font.width(highlightTip)) / 2;
 +                    graphics.textWithBackdrop(font, highlightTip, x, y, strWidth, ARGB.white(alpha));
 +                }

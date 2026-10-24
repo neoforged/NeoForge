@@ -5,7 +5,7 @@
          value -> Component.translatableEscape("advancement.advancementNotFound", value)
      );
 +    private static final com.mojang.brigadier.exceptions.SimpleCommandExceptionType ERROR_NO_RECIPES_ON_CLIENT = new com.mojang.brigadier.exceptions.SimpleCommandExceptionType(
-+            Component.translatable("commands.neoforge.vanilla.resource_key.no_recipes_on_client")
++        Component.translatable("commands.neoforge.vanilla.resource_key.no_recipes_on_client")
 +    );
      private final ResourceKey<? extends Registry<T>> registryKey;
      private final Predicate<T> filter;

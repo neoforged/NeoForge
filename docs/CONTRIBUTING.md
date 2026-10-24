@@ -5,7 +5,7 @@ Contributing to NeoForge
 
 2) TODO: Test Mods
 
-3) Follow the code style of the class you're working in (braces on newlines & spaces instead of tabs in Forge classes, inline brackets in patches, etc).
+3) Follow the code style of the class you're working in (spaces instead of tabs in Forge classes, etc).
 
 ## Workflow
 
@@ -26,10 +26,20 @@ Contributing to NeoForge
    - Run `gradlew :tests:runClient` or `tests - Client` from IDE
    - If possible, write an automated test under the tests project. See [NEOGAMETESTS.md](NEOGAMETESTS.md) for more info.
 10. Run `gradlew genPatches` to generate patch-files from the patched sources
-11. Run `gradlew applyAllFormatting` to automatically format sources
+11. Run `gradlew applyAllFormatting` to automatically format sources and patch files
 12. Check correct formatting with `gradlew checkFormatting`
 13. Commit & Push
 14. Make PR
+
+## Patch Code Formatting
+
+Code formatting rules are applied to patches. Some patches must necessarily use "bad" formatting: for instance, disabling
+a block of vanilla code with `if (false)` without that whole chunk being indented.
+
+Some of these cases the patch formatting workflow should handle nicely out of the box. If it is not, try (in order):
+1. Add `/*immaculate:ignore*/` on the line or lines that are the cause of indentation weirdness to ignore the whole line; if wrapping vanilla code in a condition, this would be the `if (...) {` and the `}` inserted.
+2. Add `/*immaculate:off*/` and a corresponding `/*immaculate:on*/` around the culprit.
+3. Add `/*immaculate:patch:ignore your description here*/` anywhere in your patch, and that entire patch chunk will have no formatting ran.
 
 ## Porting
 

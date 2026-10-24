@@ -9,7 +9,7 @@
                  CompletableFuture<?> previous = this.recipeSearch;
                  this.recipeSearch = CompletableFuture.supplyAsync(
                      () -> new FullTextSearchTree<>(
-@@ -89,44 +_,60 @@
+@@ -89,36 +_,52 @@
      }
  
      public void updateCreativeTags(List<ItemStack> items) {
@@ -24,10 +24,12 @@
 -                CompletableFuture<?> previous = this.creativeByTagSearch;
 -                this.creativeByTagSearch = CompletableFuture.supplyAsync(
 +                CompletableFuture<?> previous = net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getTagSearchTree(key);
-+                net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.putTagSearchTree(key, CompletableFuture.supplyAsync(
++                net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.putTagSearchTree(
++                    key, CompletableFuture.supplyAsync(
                      () -> new IdSearchTree<>(itemStack -> itemStack.tags().map(TagKey::location), items), Util.backgroundExecutor()
 -                );
-+                ));
++                )
++            );
                  previous.cancel(true);
              }
          );
@@ -57,18 +59,19 @@
 -                this.creativeByNameSearch = CompletableFuture.supplyAsync(
 +                TooltipFlag tooltipFlag = net.neoforged.neoforge.client.ClientTooltipFlag.of(TooltipFlag.Default.NORMAL.asCreative());
 +                CompletableFuture<?> previous = net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getNameSearchTree(key);
-+                net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.putNameSearchTree(key, CompletableFuture.supplyAsync(
++                net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.putNameSearchTree(key, /*immaculate:ignore*/
++                CompletableFuture.supplyAsync(
                      () -> new FullTextSearchTree<>(
                          itemStack -> getTooltipLines(Stream.of(itemStack), tooltipContext, tooltipFlag),
                          itemStack -> itemStack.typeHolder().unwrapKey().map(ResourceKey::identifier).stream(),
                          itemStacks
                      ),
                      Util.backgroundExecutor()
--                );
-+                ));
++                ) /*immaculate:ignore*/
+                 );
                  previous.cancel(true);
              }
-         );
+@@ -126,7 +_,11 @@
      }
  
      public SearchTree<ItemStack> creativeNameSearch() {

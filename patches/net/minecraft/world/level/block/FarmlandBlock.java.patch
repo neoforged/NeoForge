@@ -21,7 +21,7 @@
 -        return level.findBlocksIn(pos.offset(-4, 0, -4), pos.offset(4, 1, 4)).filterState(state -> state.getFluidState().is(FluidTags.WATER)).anyMatched();
 +        BlockState farmland = level.getBlockState(pos);
 +        return level.findBlocksIn(pos.offset(-4, 0, -4), pos.offset(4, 1, 4)).filterState(state -> farmland.canBeHydrated(level, pos, state.getFluidState())).anyMatched()
-+                || net.neoforged.neoforge.common.FarmlandWaterManager.hasBlockWaterTicket(level, pos);
++            || net.neoforged.neoforge.common.FarmlandWaterManager.hasBlockWaterTicket(level, pos);
      }
  
      @Override

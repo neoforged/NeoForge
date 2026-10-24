@@ -5,7 +5,7 @@
              if (this.closeOnSubmit) {
                  this.exitReason = ChatScreen.ExitReason.DONE;
 +                // Neo: Prevent closing the screen if another screen has been opened.
-+                if (this.minecraft.gui.screen() == this)
++                if (this.minecraft.gui.screen() == this) /*immaculate:ignore*/
                  this.minecraft.gui.setScreen(null);
              } else {
                  this.input.setValue("");

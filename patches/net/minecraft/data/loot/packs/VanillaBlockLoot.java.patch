@@ -8,8 +8,8 @@
 +    @Override
 +    public Iterable<Block> getKnownBlocks() {
 +        return net.minecraft.core.registries.BuiltInRegistries.BLOCK.listElements()
-+                .filter(b -> b.key().identifier().getNamespace().equals("minecraft"))
-+                .map(net.minecraft.core.Holder::value)
-+                .toList();
++            .filter(b -> b.key().identifier().getNamespace().equals("minecraft"))
++            .map(net.minecraft.core.Holder::value)
++            .toList();
 +    }
  }

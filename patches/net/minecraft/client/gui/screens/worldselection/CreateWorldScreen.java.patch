@@ -14,7 +14,7 @@
          } else {
 +            if (worldDataAndGenSettings.data().worldGenSettingsLifecycle() != Lifecycle.stable()) {
 +                // Neo: set experimental settings confirmation flag so user is not shown warning on next open
-+                ((PrimaryLevelData) worldDataAndGenSettings.data()).withConfirmedWarning(true);
++                ((PrimaryLevelData)worldDataAndGenSettings.data()).withConfirmedWarning(true);
 +            }
              this.minecraft
                  .createWorldOpenFlows()

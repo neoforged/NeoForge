@@ -7,8 +7,8 @@
 -        boolean isSupported = this.level().findBlocksIn(this.calculateSupportBox()).filterState(HangingEntity::isSupportingBlock).allMatched();
 +        // Neo: Allow hanging entities to be supported by sturdy faces of non-solid blocks
 +        boolean isSupported = this.level().findBlocksIn(this.calculateSupportBox())
-+                .filterPosition((state, pos) -> isSupportingBlock(state) || net.minecraft.world.level.block.Block.canSupportCenter(this.level(), pos, this.getDirection()))
-+                .allMatched();
++            .filterPosition((state, pos) -> isSupportingBlock(state) || net.minecraft.world.level.block.Block.canSupportCenter(this.level(), pos, this.getDirection()))
++            .allMatched();
          return isSupported && this.canCoexist(false);
      }
  

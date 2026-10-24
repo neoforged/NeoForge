@@ -18,7 +18,7 @@
  
      @Override
      public void halt(boolean wait) {
-+        if (isRunning())
++        if (isRunning()) /*immaculate:ignore*/
          this.executeBlocking(() -> {
              for (ServerPlayer player : Lists.newArrayList(this.getPlayerList().getPlayers())) {
                  if (!player.getUUID().equals(this.uuid)) {

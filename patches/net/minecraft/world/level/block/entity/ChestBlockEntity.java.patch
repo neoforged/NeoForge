@@ -10,7 +10,7 @@
 +        super.setBlockState(blockState);
 +        // Neo: Chest state change might change the chest item handler -> invalidate
 +        if ((oldState.getValue(ChestBlock.FACING) != blockState.getValue(ChestBlock.FACING))
-+                || (oldState.getValue(ChestBlock.TYPE) != blockState.getValue(ChestBlock.TYPE))) {
++            || (oldState.getValue(ChestBlock.TYPE) != blockState.getValue(ChestBlock.TYPE))) {
 +            this.invalidateCapabilities();
 +        }
 +    }

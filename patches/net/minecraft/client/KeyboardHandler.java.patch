@@ -1,28 +1,24 @@
 --- a/net/minecraft/client/KeyboardHandler.java
 +++ b/net/minecraft/client/KeyboardHandler.java
-@@ -496,7 +_,11 @@
+@@ -496,7 +_,9 @@
                  if (screen != null) {
                      try {
                          if (action != 1 && action != -1) {
 -                            if (action == 0 && screen.keyReleased(event)) {
-+                            if (action == 0 && (
-+                                net.neoforged.neoforge.client.ClientHooks.onScreenKeyReleasedPre(screen, event) ||
++                            if (action == 0 && (net.neoforged.neoforge.client.ClientHooks.onScreenKeyReleasedPre(screen, event) ||
 +                                screen.keyReleased(event) ||
-+                                net.neoforged.neoforge.client.ClientHooks.onScreenKeyReleasedPost(screen, event))
-+                            ) {
++                                net.neoforged.neoforge.client.ClientHooks.onScreenKeyReleasedPost(screen, event))) {
                                  if (options.keyDebugModifier.matches(event)) {
                                      this.usedDebugKeyAsModifier = false;
                                  }
-@@ -505,7 +_,11 @@
+@@ -505,7 +_,9 @@
                              }
                          } else {
                              screen.afterKeyboardAction();
 -                            if (screen.keyPressed(event)) {
-+                            if (
-+                                net.neoforged.neoforge.client.ClientHooks.onScreenKeyPressedPre(screen, event) ||
++                            if (net.neoforged.neoforge.client.ClientHooks.onScreenKeyPressedPre(screen, event) ||
 +                                screen.keyPressed(event) ||
-+                                net.neoforged.neoforge.client.ClientHooks.onScreenKeyPressedPost(screen, event)
-+                            ) {
++                                net.neoforged.neoforge.client.ClientHooks.onScreenKeyPressedPost(screen, event)) {
                                  if (this.minecraft.gui.screen() == null) {
                                      InputConstants.Key key = InputConstants.getKey(event);
                                      KeyMapping.set(key, false);

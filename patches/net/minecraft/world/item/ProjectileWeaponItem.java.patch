@@ -62,7 +62,7 @@
              ? EnchantmentHelper.processAmmoUse(serverLevel, weapon, projectile, 1)
              : 0;
          if (ammoToUse > projectile.getCount()) {
-@@ -139,5 +_,20 @@
+@@ -139,5 +_,21 @@
          }
  
          return used;
@@ -75,7 +75,8 @@
 +    /**
 +     * Neo: Controls what ammo ItemStack that Creative Mode should return if the player has no valid ammo in inventory.
 +     * Modded weapons should override this to return their own ammo if they do not use vanilla arrows.
-+     * @param player The player (if in context) firing the weapon
++     *
++     * @param player               The player (if in context) firing the weapon
 +     * @param projectileWeaponItem The weapon ItemStack the ammo is for
 +     * @return The default ammo ItemStack for this weapon
 +     */

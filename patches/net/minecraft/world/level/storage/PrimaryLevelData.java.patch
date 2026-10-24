@@ -35,7 +35,7 @@
      }
  
      public static void writeLastPlayed(CompoundTag tag) {
-@@ -344,10 +_,33 @@
+@@ -344,10 +_,35 @@
          return this.settings.copy();
      }
  
@@ -61,11 +61,13 @@
 +        // we do not care about the returned FeatureFlagSet, only the flags which do not exist
 +        net.minecraft.world.flag.FeatureFlags.REGISTRY.fromNames(enabledFeatures.map(net.minecraft.resources.Identifier::parse).collect(Collectors.toSet()), unknownFeatureFlags::add);
 +        // concat the received removed flags with our new additions
-+        return java.util.stream.Stream.concat(removedFeatures, unknownFeatureFlags.stream()
++        return java.util.stream.Stream.concat(
++            removedFeatures, unknownFeatureFlags.stream()
 +                // we only want modded flags, mojang has datafixers for vanilla flags
 +                .filter(java.util.function.Predicate.not(name -> name.getNamespace().equals(net.minecraft.resources.Identifier.DEFAULT_NAMESPACE)))
-+                .map(net.minecraft.resources.Identifier::toString))
-+                // no duplicates should exist in this stream
-+                .distinct();
++                .map(net.minecraft.resources.Identifier::toString)
++        )
++            // no duplicates should exist in this stream
++            .distinct();
      }
  }

@@ -13,7 +13,7 @@
 -                if (TntBlock.prime(level, targetPos, null, dispensed)) {
 +            } else if (target.isFlammable(level, targetPos, source.state().getValue(DispenserBlock.FACING).getOpposite())) {
 +                if (target.onCaughtFire(level, targetPos, source.state().getValue(DispenserBlock.FACING).getOpposite(), null, dispensed)) {
-+                    if (target.getBlock() instanceof TntBlock)
++                    if (target.getBlock() instanceof TntBlock) /*immaculate:ignore*/
                      level.removeBlock(targetPos, false);
                  } else {
                      this.setSuccess(false);

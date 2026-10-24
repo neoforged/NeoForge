@@ -17,7 +17,7 @@
 +        net.minecraft.network.chat.Component deathMessage = this.getCombatTracker().getDeathMessage();
 +        super.die(source);
 +
-+        if (this.dead)
++        if (this.dead)  /*immaculate:ignore*/
          if (this.level() instanceof ServerLevel serverLevel
              && serverLevel.getGameRules().get(GameRules.SHOW_DEATH_MESSAGES)
              && this.getOwner() instanceof ServerPlayer serverPlayer) {

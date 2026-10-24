@@ -46,7 +46,7 @@
          Direction finalDirection = calculateFacing(vertexPositions);
          if (elementRotation == null && finalDirection != null) {
 +            // Neo: Suppress winding re-calculation when the quads may not be axis-aligned due to root transforms
-+            if (!modelState.mayApplyArbitraryRotation())
++            if (!modelState.mayApplyArbitraryRotation()) /*immaculate:ignore*/
              recalculateWinding(vertexPositions, vertexPackedUvs, finalDirection);
          }
  

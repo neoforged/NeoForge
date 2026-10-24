@@ -27,7 +27,7 @@
      }
  
      protected void extractLabels(GuiGraphicsExtractor graphics, int xm, int ym) {
-@@ -237,6 +_,13 @@
+@@ -237,6 +_,14 @@
                  graphics.fill(x, y, x + 16, y + 16, -2130706433);
              }
  
@@ -37,7 +37,8 @@
 +
 +    protected void renderSlotContents(GuiGraphicsExtractor graphics, ItemStack itemStack, Slot slot, @Nullable String itemCount) {
 +        {
-+            int x = slot.x; int y = slot.y;
++            int x = slot.x;
++            int y = slot.y;
              int seed = slot.x + slot.y * this.imageWidth;
              if (slot.isFake()) {
                  graphics.fakeItem(itemStack, x, y, seed);

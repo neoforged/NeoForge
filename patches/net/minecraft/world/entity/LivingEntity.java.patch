@@ -48,7 +48,7 @@
                  double scale = Math.min(0.2F + power / 15.0, 2.5);
                  int particles = (int)(150.0 * scale);
 -                level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, onState), x, y, z, particles, 0.0, 0.0, 0.0, 0.15F);
-+                if (!onState.addLandingEffects(level, pos, onState, this, particles))
++                if (!onState.addLandingEffects(level, pos, onState, this, particles))  /*immaculate:ignore*/
 +                level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, onState, pos), x, y, z, particles, 0.0, 0.0, 0.0, 0.15F);
              }
          }
@@ -67,7 +67,7 @@
  
 +            int airSupply = this.getAirSupply();
 +            net.neoforged.neoforge.common.CommonHooks.onLivingBreathe(this, level, airSupply - decreaseAirSupply(airSupply), increaseAirSupply(airSupply) - airSupply);
-+            if (false) // Neo: Handled in CommonHooks#onLivingBreathe(LivingEntity, int, int)
++            if (false) // Neo: Handled in CommonHooks#onLivingBreathe(LivingEntity, int, int)  /*immaculate:ignore*/
              if (this.isEyeInFluid(FluidTags.WATER)
                  && !level.getBlockState(BlockPos.containing(this.getX(), this.getEyeY(), this.getZ())).is(Blocks.BUBBLE_COLUMN)) {
                  boolean canDrownInWater = !this.canBreatheUnderwater()
@@ -88,10 +88,10 @@
                      Holder<MobEffect> mobEffect = iterator.next();
                      MobEffectInstance effect = this.activeEffects.get(mobEffect);
                      if (!effect.tickServer(serverLevel, this, () -> this.onEffectUpdated(effect, true, null))) {
-+                        if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Expired(this, effect)).isCanceled()) {
++                        if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobEffectEvent.Expired(this, effect)).isCanceled()) {  /*immaculate:ignore*/
                          iterator.remove();
                          this.onEffectsRemoved(List.of(effect));
-+                        }
++                        }  /*immaculate:ignore*/
                      } else if (effect.getDuration() % 600 == 0) {
                          this.onEffectUpdated(effect, false, null);
                      }
@@ -371,7 +371,7 @@
              )) {
 -            ExperienceOrb.award(level, this.position(), this.getExperienceReward(level, killer));
 +            int reward = net.neoforged.neoforge.event.EventHooks.getExperienceDrop(this, this.getLastHurtByPlayer(), this.getExperienceReward(level, killer));
-+            ExperienceOrb.award((ServerLevel) this.level(), this.position(), reward);
++            ExperienceOrb.award((ServerLevel)this.level(), this.position(), reward);
          }
      }
  
@@ -379,7 +379,7 @@
      }
  
      public void knockback(double power, double xd, double zd, DamageSource source, float damage, boolean comesFromEffect) {
-+        net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent event = net.neoforged.neoforge.common.CommonHooks.onLivingKnockBack(this, (float) power, xd, zd);
++        net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent event = net.neoforged.neoforge.common.CommonHooks.onLivingKnockBack(this, (float)power, xd, zd);
 +        if (event.isCanceled()) return;
 +        power = event.getStrength();
 +        xd = event.getRatioX();
@@ -458,7 +458,7 @@
  
          if (enchantmentArmor > 0.0F) {
              damage = CombatRules.getDamageAfterMagicAbsorb(damage, enchantmentArmor);
-+            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ENCHANTMENTS,this.damageContainers.peek().getNewDamage() - damage);
++            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.ENCHANTMENTS, this.damageContainers.peek().getNewDamage() - damage);
          }
  
          return damage;
@@ -531,15 +531,18 @@
      }
  
      @Override
-@@ -2263,7 +_,13 @@
+@@ -2263,7 +_,16 @@
      }
  
      public void setItemSlot(EquipmentSlot slot, ItemStack itemStack) {
 -        this.onEquipItem(slot, this.equipment.set(slot, itemStack), itemStack);
 +        setItemSlot(slot, itemStack, false);
 +    }
-+    /** Neo: Passing {@code true} for {@code insideTransaction} sets the item without side-effects (calling {@link #onEquipItem}).
-+     * Callers are responsible for performing the deferred side-effects, when the active transaction commits. */
++
++    /**
++     * Neo: Passing {@code true} for {@code insideTransaction} sets the item without side-effects (calling {@link #onEquipItem}).
++     * Callers are responsible for performing the deferred side-effects, when the active transaction commits.
++     */
 +    public void setItemSlot(EquipmentSlot slot, ItemStack itemStack, boolean insideTransaction) {
 +        var oldStack = this.equipment.set(slot, itemStack);
 +        if (!insideTransaction) this.onEquipItem(slot, oldStack, itemStack);
@@ -589,7 +592,7 @@
          boolean isFalling = this.getDeltaMovement().y <= 0.0;
          double oldY = this.getY();
          double baseGravity = this.getEffectiveGravity();
-+        if (!this.getFluidInteraction().isInFluidMatching(this, (entity, type, _) -> !type.isVanilla() && entity.moveInFluid(type, input, baseGravity)))
++        if (!this.getFluidInteraction().isInFluidMatching(this, (entity, type, _) -> !type.isVanilla() && entity.moveInFluid(type, input, baseGravity))) /*immaculate:ignore*/
          if (this.isInWater()) {
              this.travelInWater(input, baseGravity, isFalling, oldY);
 -        } else {
@@ -637,12 +640,12 @@
              double fluidJumpThreshold = this.getFluidJumpThreshold();
              if (!inWaterAndHasFluidHeight || this.onGround() && !(fluidHeight > fluidJumpThreshold)) {
                  if (!this.isInLava() || this.onGround() && this.isInShallowFluid(FluidTags.LAVA)) {
-+                    if (fluidType.isAir() || this.onGround() && !(fluidHeight > fluidJumpThreshold)) {
++                    if (fluidType.isAir() || this.onGround() && !(fluidHeight > fluidJumpThreshold)) {  /*immaculate:ignore*/
                      if ((this.onGround() || inWaterAndHasFluidHeight && fluidHeight <= fluidJumpThreshold) && this.noJumpDelay == 0) {
                          this.jumpFromGround();
                          this.noJumpDelay = 10;
                      }
-+                    } else this.jumpInFluid(fluidType);
++                    } else this.jumpInFluid(fluidType);  /*immaculate:ignore*/
                  } else {
 -                    this.jumpInLiquid(FluidTags.LAVA);
 +                    this.jumpInFluid(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
@@ -658,11 +661,11 @@
                  if (freeFallInterval % 2 == 0) {
                      List<EquipmentSlot> slotsWithGliders = EquipmentSlot.VALUES.stream().filter(slot -> canGlideUsing(this.getItemBySlot(slot), slot)).toList();
 +                    //  Neo: If the list is empty, we probably have something else adding the gliding flight attribute (directly to the entity or otherwise)
-+                    if (!slotsWithGliders.isEmpty()) {
++                    if (!slotsWithGliders.isEmpty()) {  /*immaculate:ignore*/
                      EquipmentSlot slotToDamage = Util.getRandom(slotsWithGliders, this.random);
 -                    this.getItemBySlot(slotToDamage).hurtAndBreak(1, this, slotToDamage);
 +                    this.getItemBySlot(slotToDamage).onGlideDamage(this, slotToDamage);
-+                    }
++                    }  /*immaculate:ignore*/
                  }
  
                  this.gameEvent(GameEvent.ELYTRA_GLIDE);
@@ -702,7 +705,7 @@
      protected void updateUsingItem(ItemStack useItem) {
 +        if (!useItem.isEmpty())
 +            this.useItemRemaining = net.neoforged.neoforge.event.EventHooks.onItemUseTick(this, useItem, this.getUseItemRemainingTicks());
-+        if (this.getUseItemRemainingTicks() > 0)
++        if (this.getUseItemRemainingTicks() > 0)  /*immaculate:ignore*/
          useItem.onUseTick(this.level(), this, this.getUseItemRemainingTicks());
 -        if (--this.useItemRemaining == 0 && !this.level().isClientSide() && !useItem.useOnRelease()) {
 +        if (--this.useItemRemaining <= 0 && !this.level().isClientSide() && !useItem.useOnRelease()) {
@@ -735,11 +738,11 @@
          ItemStack itemInUsedHand = this.getItemInHand(this.getUsedItemHand());
          if (!this.useItem.isEmpty() && ItemStack.isSameItem(itemInUsedHand, this.useItem)) {
              this.useItem = itemInUsedHand;
-+            if (!net.neoforged.neoforge.event.EventHooks.onUseItemStop(this, useItem, this.getUseItemRemainingTicks())) {
++            if (!net.neoforged.neoforge.event.EventHooks.onUseItemStop(this, useItem, this.getUseItemRemainingTicks())) {  /*immaculate:ignore*/
 +            ItemStack copy = this instanceof Player ? useItem.copy() : null;
              this.useItem.releaseUsing(this.level(), this, this.getUseItemRemainingTicks());
 +            if (copy != null && useItem.isEmpty()) net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem((Player)this, copy, getUsedItemHand());
-+            }
++            }  /*immaculate:ignore*/
              if (this.useItem.useOnRelease()) {
                  this.updatingUsingItem();
              }
@@ -779,24 +782,23 @@
                  }
  
                  y--;
-@@ -3670,8 +_,15 @@
+@@ -3670,9 +_,16 @@
          return false;
      }
  
--    private boolean checkPositionAndTeleport(
--        double xx, double y, double zz, boolean showParticles, Predicate<BlockState> isInvalidPosition, BlockState state, Level level
 +    // Neo: Add overload with the consumed item causing the random teleport
-+    private boolean checkPositionAndTeleport(
-+            double xx, double y, double zz, boolean showParticles, Predicate<BlockState> isInvalidPosition, BlockState state, Level level
-+    ) {
+     private boolean checkPositionAndTeleport(
+         double xx, double y, double zz, boolean showParticles, Predicate<BlockState> isInvalidPosition, BlockState state, Level level
+     ) {
 +        return checkPositionAndTeleport(xx, y, zz, showParticles, isInvalidPosition, state, level, ItemStack.EMPTY);
 +    }
 +
 +    private boolean checkPositionAndTeleport(
 +        double xx, double y, double zz, boolean showParticles, Predicate<BlockState> isInvalidPosition, BlockState state, Level level, ItemStack consumedStack
-     ) {
++    ) {
          if (isInvalidPosition.test(state)) {
              return false;
+         }
 @@ -3685,6 +_,22 @@
              }
  

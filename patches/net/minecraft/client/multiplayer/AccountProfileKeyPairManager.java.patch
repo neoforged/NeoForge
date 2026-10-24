@@ -5,7 +5,7 @@
                      return Optional.ofNullable(fetchedKeyPair);
                  } catch (IOException | CryptException | MinecraftClientException e) {
 +                    // Neo: The offline user api service always returns a null profile key pair, so let's hide this useless exception if in dev
-+                    if (net.neoforged.fml.loading.FMLEnvironment.isProduction() || this.userApiService != UserApiService.OFFLINE)
++                    if (net.neoforged.fml.loading.FMLEnvironment.isProduction() || this.userApiService != UserApiService.OFFLINE) /*immaculate:ignore*/
                      LOGGER.error("Failed to retrieve profile key pair", e);
                      this.writeProfileKeyPair(null);
                      return cachedKeyPair;

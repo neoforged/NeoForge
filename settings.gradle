@@ -2,6 +2,7 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
         maven { url = 'https://maven.neoforged.net/releases' }
+        maven { url = 'https://maven.lukebemish.dev/pullrequests/' }
         mavenLocal()
     }
 }
@@ -22,6 +23,7 @@ dependencyResolutionManagement {
     rulesMode = RulesMode.FAIL_ON_PROJECT_RULES
     repositories {
         mavenCentral()
+        maven { url = 'https://maven.lukebemish.dev/pullrequests/' }
     }
 }
 

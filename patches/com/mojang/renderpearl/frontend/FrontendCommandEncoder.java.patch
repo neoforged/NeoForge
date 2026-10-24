@@ -26,16 +26,16 @@
 +            if (sourceFormat.hasDepthAspect() || sourceFormat.hasStencilAspect()) {
 +                if (sourceFormat != destFormat) {
 +                    throw new IllegalArgumentException(
-+                            "When copying depth or stencil data, the source and destination texture formats must be identical. Source: "
-+                                    + sourceFormat + ", Destination: " + destFormat
++                        "When copying depth or stencil data, the source and destination texture formats must be identical. Source: "
++                            + sourceFormat + ", Destination: " + destFormat
 +                    );
 +                }
 +            }
 +
 +            if (sourceFormat.hasColorAspect() != destFormat.hasColorAspect()) {
 +                throw new IllegalArgumentException(
-+                        "Source and destination texture formats must have consistent color aspects. Source: "
-+                                + sourceFormat + ", Destination: " + destFormat
++                    "Source and destination texture formats must have consistent color aspects. Source: "
++                        + sourceFormat + ", Destination: " + destFormat
 +                );
 +            }
 +

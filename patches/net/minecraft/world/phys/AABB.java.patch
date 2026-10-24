@@ -17,7 +17,7 @@
 +    /// {@return true if this AABB is infinite in all directions}
 +    public boolean isInfinite() {
 +        return this == INFINITE || (Double.isInfinite(this.minX) && Double.isInfinite(this.minY) && Double.isInfinite(this.minZ)
-+                && Double.isInfinite(this.maxX) && Double.isInfinite(this.maxY) && Double.isInfinite(this.maxZ));
++            && Double.isInfinite(this.maxX) && Double.isInfinite(this.maxY) && Double.isInfinite(this.maxZ));
      }
  
      public static class Builder {
