@@ -296,9 +296,9 @@ public interface IBlockExtension {
     }
 
     /**
-     * Allows a block to override the standard EntityLivingBase.updateFallState
+     * Allows a block to override the standard {@link LivingEntity#checkFallDamage}
      * particles, this is a server side method that spawns particles with
-     * WorldServer.spawnParticle.
+     * {@link ServerLevel#sendParticles}.
      *
      * @param level             The current server level
      * @param pos               The position of the block.
