@@ -58,6 +58,7 @@ import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.components.debug.DebugEntryCategory;
 import net.minecraft.client.gui.components.debug.DebugScreenEntries;
 import net.minecraft.client.gui.components.toasts.Toast;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
@@ -368,6 +369,12 @@ public class ClientHooks {
         SelectMusicEvent e = new SelectMusicEvent(situational, playing);
         NeoForge.EVENT_BUS.post(e);
         return e.getMusic();
+    }
+
+    @ApiStatus.Internal
+    public static void collectSpecialScreenAreas(Minecraft minecraft, Consumer<ScreenRectangle> consumer) {
+        minecraft.gui.toastManager().collectScreenAreas(consumer);
+        minecraft.gui.hud.collectSpecialScreenAreas(consumer);
     }
 
     public static void extractScreen(Screen screen, Stack<Screen> backgroundLayers, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {

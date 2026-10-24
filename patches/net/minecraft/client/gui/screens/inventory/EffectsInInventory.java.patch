@@ -33,7 +33,11 @@
              graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Hud.getMobEffectSprite(effect.getEffect()), x0 + 7, y0 + 7, 18, 18);
              y0 += yStep;
          }
-@@ -85,9 +_,15 @@
+@@ -82,12 +_,19 @@
+         int durationWidth = 32 + font.width(duration) + 7;
+         int textureWidth = Math.min(maxTextureWidth, Math.max(nameWidth, durationWidth));
+         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, isAmbient ? EFFECT_BACKGROUND_AMBIENT_SPRITE : EFFECT_BACKGROUND_SPRITE, x0, y0, textureWidth, 32);
++        this.screen.recordScreenArea(new net.minecraft.client.gui.navigation.ScreenRectangle(x0, y0, textureWidth, 32));
          return textureWidth;
      }
  
