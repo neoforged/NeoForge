@@ -8,11 +8,13 @@ package net.neoforged.neoforge.common.extensions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.attachment.SessionData;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.model.data.ModelDataManager;
@@ -57,6 +59,22 @@ public interface ILevelExtension {
     @Nullable
     default ModelDataManager getModelDataManager() {
         return null;
+    }
+
+    /**
+     * {@return the session attachments of the server ({@link ServerLevel}) or connection (client level) this level belongs to}
+     *
+     * @throws UnsupportedOperationException if a session data is not available.
+     * @see SessionData
+     * @implNote ClientLevel overrides this to reach the ClientPacketListener's session data instead.
+     */
+    default SessionData getSessionData() {
+        MinecraftServer server = self().getServer();
+        if (server == null) {
+            // Custom Level implementations should override this method to delegate to the appropriate "real" session data.
+            throw new UnsupportedOperationException("Level " + self() + " has no available SessionData!");
+        }
+        return server.getSessionData();
     }
 
     /**

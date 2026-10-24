@@ -15,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -215,6 +216,10 @@ final class ClientPayloadHandler {
             }
             case SyncAttachmentsPayload.LevelTarget() -> {
                 AttachmentSync.receiveSyncedDataAttachments(context.player().level(), context.player().registryAccess(), payload.types(), payload.syncPayload());
+            }
+            case SyncAttachmentsPayload.SessionTarget() -> {
+                var listener = (ClientPacketListener) context.listener();
+                AttachmentSync.receiveSyncedDataAttachments(listener.getSessionData(), listener.registryAccess(), payload.types(), payload.syncPayload());
             }
         }
     }

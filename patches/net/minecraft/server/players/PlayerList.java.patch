@@ -30,11 +30,12 @@
          this.sendPlayerPermissionLevel(player);
          player.getStats().markAllDirty();
          player.getRecipeBook().sendInitialRecipeBook(player);
-@@ -224,6 +_,9 @@
+@@ -224,6 +_,10 @@
          player.initInventoryMenu();
          this.server.notificationManager().playerJoined(player);
          playerConnection.resumeFlushing();
 +
++        net.neoforged.neoforge.attachment.AttachmentSync.syncInitialSessionAttachments(player);
 +        net.neoforged.neoforge.attachment.AttachmentSync.syncInitialPlayerAttachments(player);
 +        net.neoforged.neoforge.event.EventHooks.firePlayerLoggedIn(player);
      }
