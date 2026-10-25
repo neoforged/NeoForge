@@ -8,12 +8,14 @@ package net.neoforged.neoforge.event.enchanting;
 import com.google.common.base.Preconditions;
 import net.minecraft.core.Holder;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.storage.loot.functions.EnchantedCountIncreaseFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWithEnchantedBonusCondition;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Fired on the server when an entity is dropping loot and the level of a specific enchantment is being queried.
@@ -41,7 +43,7 @@ public class EnchantedEntityLootEvent extends LivingEvent {
     /**
      * Returns the entity that is dropping loot. This is generally the entity that was killed.
      * <p>
-     * To get the attacking entity, use the {@link #getDamageSource() damage source}.
+     * To get the attacking entity, use the {@link #getDamageSource() damage source} or the {@link #getAttacker()} helper.
      */
     @Override
     public LivingEntity getEntity() {
@@ -68,5 +70,10 @@ public class EnchantedEntityLootEvent extends LivingEvent {
     public void setEnchantmentLevel(int enchantmentLevel) {
         Preconditions.checkArgument(enchantmentLevel >= 0, "Enchantment level cannot be negative");
         this.enchantmentLevel = enchantmentLevel;
+    }
+
+    /** {@return the attacking entity} If living, the enchantment level was originally queried from that entity. To get the target entity, use {@link #getEntity()} */
+    public @Nullable Entity getAttacker() {
+        return this.damageSource.getEntity();
     }
 }
