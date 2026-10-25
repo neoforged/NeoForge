@@ -42,12 +42,11 @@
          this.structureCheck = new StructureCheck(
              this.chunkSource.chunkScanner(),
              this.registryAccess(),
-@@ -303,6 +_,11 @@
+@@ -303,6 +_,10 @@
          this.waypointManager = new ServerWaypointManager();
          this.environmentAttributes = EnvironmentAttributeSystem.builder().addDefaultLayers(this).build();
          this.updateSkyBrightness();
 +
-+        net.neoforged.neoforge.attachment.LevelAttachmentsSavedData.init(this);
 +        // Neo: Move the initialization of customSpawners to the end of costructor
 +        // Providing a fully initialized ServerLevel instance for the ServerLevelEvent.CustomSpawners
 +        this.customSpawners = net.neoforged.neoforge.event.EventHooks.getCustomSpawners(this, customSpawners);
@@ -272,7 +271,7 @@
                      ServerLevel.this.dragonParts.put(subEntity.getId(), subEntity);
                  }
              }
-@@ -1927,25 +_,62 @@
+@@ -1927,25 +_,57 @@
                  if (ServerLevel.this.isUpdatingNavigations) {
                      String message = "onTrackingStart called during navigation iteration";
                      Util.logAndPauseIfInIde(
@@ -302,11 +301,6 @@
          public void onSectionChange(Entity entity) {
              entity.updateDynamicGameEventListener(DynamicGameEventListener::move);
          }
-+    }
-+
-+    @Override
-+    public final void syncData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
-+        net.neoforged.neoforge.attachment.AttachmentSync.syncLevelUpdate(this, type);
 +    }
 +
 +    private final net.neoforged.neoforge.capabilities.CapabilityListenerHolder capListenerHolder = new net.neoforged.neoforge.capabilities.CapabilityListenerHolder();
