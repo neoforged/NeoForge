@@ -7,11 +7,8 @@ package net.neoforged.neoforge.event.server;
 
 import java.util.Map;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.dedicated.DedicatedServerSettings;
-import net.minecraft.server.jsonrpc.JsonRpc;
 import net.minecraft.server.jsonrpc.ManagementServer;
 import net.minecraft.server.jsonrpc.api.SchemaComponent;
-import net.minecraft.server.notifications.NotificationManager;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -24,7 +21,7 @@ import org.jetbrains.annotations.ApiStatus;
 ///
 /// This event is fired on the [game event bus][NeoForge#EVENT_BUS], 
 /// only on the [dedicated server][Dist#DEDICATED_SERVER] 
-/// before the [ManagementServer] is instantiated in [JsonRpc#create(DedicatedServerSettings, NotificationManager)].
+/// before the [ManagementServer] is instantiated.
 public class RegisterRpcSchemaEvent extends Event {
     private final Map<String, SchemaComponent<?>> components;
 

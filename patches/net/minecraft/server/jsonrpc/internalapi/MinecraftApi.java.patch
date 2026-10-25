@@ -11,10 +11,12 @@
      private final NotificationManager notificationManager;
      private final MinecraftAllowListService allowListService;
      private final MinecraftBanListService banListService;
-@@ -16,7 +_,10 @@
+@@ -16,7 +_,12 @@
      private final MinecraftServerSettingsService minecraftServerSettingsService;
      private final MinecraftServerStateService minecraftServerStateService;
      private final MinecraftExecutorService executorService;
++    // Neo: Store server and logger
++    private final @org.jspecify.annotations.Nullable DedicatedServer server;
 +    private final @org.jspecify.annotations.Nullable JsonRpcLogger logger;
  
 +    /// @deprecated Neo: Use the constructor with the server and logger instead
@@ -22,11 +24,11 @@
      public MinecraftApi(
          NotificationManager notificationManager,
          MinecraftAllowListService allowListService,
-@@ -28,6 +_,21 @@
+@@ -28,6 +_,22 @@
          MinecraftServerStateService minecraftServerStateService,
          MinecraftExecutorService executorService
      ) {
-+        this(notificationManager, allowListService, banListService, minecraftPlayerListService, gameRuleService, minecraftOperatorListService, minecraftServerSettingsService, minecraftServerStateService, executorService, null);
++        this(notificationManager, allowListService, banListService, minecraftPlayerListService, gameRuleService, minecraftOperatorListService, minecraftServerSettingsService, minecraftServerStateService, executorService, null, null);
 +    }
 +
 +    public MinecraftApi(
@@ -39,36 +41,44 @@
 +            MinecraftServerSettingsService minecraftServerSettingsService,
 +            MinecraftServerStateService minecraftServerStateService,
 +            MinecraftExecutorService executorService,
++            @org.jspecify.annotations.Nullable DedicatedServer server,
 +            @org.jspecify.annotations.Nullable JsonRpcLogger logger
 +    ) {
          this.notificationManager = notificationManager;
          this.allowListService = allowListService;
          this.banListService = banListService;
-@@ -37,6 +_,7 @@
+@@ -37,6 +_,8 @@
          this.minecraftServerSettingsService = minecraftServerSettingsService;
          this.minecraftServerStateService = minecraftServerStateService;
          this.executorService = executorService;
++        this.server = server;
 +        this.logger = logger;
      }
  
      public <V> CompletableFuture<V> submit(Supplier<V> supplier) {
-@@ -72,6 +_,10 @@
+@@ -79,6 +_,15 @@
+         return this.notificationManager;
      }
  
-     public MinecraftServerStateService serverStateService() {
++    // Neo: Add getters for server and logger
++    public DedicatedServer server() {
++        return java.util.Objects.requireNonNull(this.server);
++    }
++
 +    public JsonRpcLogger logger() {
 +        return java.util.Objects.requireNonNull(this.logger);
 +    }
 +
-         return this.minecraftServerStateService;
-     }
- 
-@@ -98,7 +_,8 @@
+     public static MinecraftApi of(DedicatedServer server) {
+         JsonRpcLogger jsonrpcLogger = new JsonRpcLogger();
+         MinecraftAllowListServiceImpl allowListService = new MinecraftAllowListServiceImpl(server, jsonrpcLogger);
+@@ -98,7 +_,9 @@
              operatorListService,
              serverSettingsService,
              serverStateService,
 -            executorService
 +            executorService,
++            server,
 +            jsonrpcLogger
          );
      }

@@ -15,14 +15,13 @@
          private IncomingRpcMethod<?, ?> register(Registry<IncomingRpcMethod<?, ?>> methodRegistry, Identifier id) {
              return Registry.register(methodRegistry, id, this.build());
          }
-@@ -143,18 +_,22 @@
+@@ -143,18 +_,21 @@
                          paramsJsonElement = jsonArray.get(0);
                      }
  
 +                // Neo: Add registry context to the ops used for decoding the params and encoding the result so that registry references can be resolved.
-+                //      The server null checking is needed because the management api is started before the server is constructed.
-+                net.minecraft.server.dedicated.DedicatedServer server = minecraftApi.notificationManager().server();
-+                com.mojang.serialization.DynamicOps<JsonElement> ops = server == null ? JsonOps.INSTANCE : server.registryAccess().createSerializationContext(JsonOps.INSTANCE);
++                net.minecraft.server.dedicated.DedicatedServer server = minecraftApi.server();
++                com.mojang.serialization.DynamicOps<JsonElement> ops = server.registryAccess().createSerializationContext(JsonOps.INSTANCE);
                      Params params = this.info
                          .params()
                          .get()
@@ -40,14 +39,13 @@
                      }
                  }
              } else {
-@@ -176,12 +_,16 @@
+@@ -176,12 +_,15 @@
                      if (this.info.result().isEmpty()) {
                          throw new IllegalStateException("No result codec defined");
                      } else {
 +                        // Neo: Add registry context to the ops used for encoding the result so that registry references can be resolved.
-+                        //      The server null checking is needed because the management api is started before the server is constructed.
-+                        net.minecraft.server.dedicated.DedicatedServer server = minecraftApi.notificationManager().server();
-+                        com.mojang.serialization.DynamicOps<JsonElement> ops = server == null ? JsonOps.INSTANCE : server.registryAccess().createSerializationContext(JsonOps.INSTANCE);
++                        net.minecraft.server.dedicated.DedicatedServer server = minecraftApi.server();
++                        com.mojang.serialization.DynamicOps<JsonElement> ops = server.registryAccess().createSerializationContext(JsonOps.INSTANCE);
                          return this.info
                              .result()
                              .get()
