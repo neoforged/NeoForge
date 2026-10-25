@@ -268,6 +268,18 @@ public class DataGeneratorTest {
                     }))))
                     .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
                     .save(output, recipeKey("compound_ingredient_custom_types"));
+
+            // Scoped #save should generate in namespace
+            try (var _ = this.output.withContext(builder -> builder.forMod(MODID))) {
+                this.oneToOneConversionRecipe(Items.APPLE, Items.DIAMOND, null);
+                this.twoByTwoPacker(RecipeCategory.MISC, Items.DIAMOND, Items.APPLE);
+            }
+
+            // Scoped should generate all recipes in conditions
+            try (var _ = this.output.withContext(builder -> builder.withConditions(NeoForgeConditions.tagEmpty(ItemTags.PLANKS)))) {
+                this.oneToOneConversionRecipe(Items.POTATO, Items.EMERALD, null);
+                this.twoByTwoPacker(RecipeCategory.MISC, Items.EMERALD, Items.POTATO);
+            }
         }
     }
 
