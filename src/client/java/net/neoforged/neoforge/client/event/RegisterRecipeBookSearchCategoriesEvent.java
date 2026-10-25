@@ -13,6 +13,9 @@ import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.neoforge.client.RecipeBookManager.RecipeDisplayResultInfo;
+import net.neoforged.neoforge.client.recipebook.RecipeDisplayResultIdExtractor;
+import net.neoforged.neoforge.client.recipebook.RecipeDisplayResultTooltipExtractor;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -21,12 +24,15 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.
  */
-public class RegisterRecipeBookSearchCategoriesEvent extends Event implements IModBusEvent {
+public class RegisterRecipeBookSearchCategoriesEvent extends Event implements IModBusEvent {//TODO - 26.4: Rename to RegisterRecipeBookSearchDataEvent
     private final Map<ExtendedRecipeBookCategory, List<RecipeBookCategory>> categories;
+    private final List<RecipeDisplayResultInfo> recipeDisplaySearchInfo;
 
     @ApiStatus.Internal
-    public RegisterRecipeBookSearchCategoriesEvent(Map<ExtendedRecipeBookCategory, List<RecipeBookCategory>> categories) {
+    public RegisterRecipeBookSearchCategoriesEvent(Map<ExtendedRecipeBookCategory, List<RecipeBookCategory>> categories,
+            List<RecipeDisplayResultInfo> recipeDisplaySearchInfo) {
         this.categories = categories;
+        this.recipeDisplaySearchInfo = recipeDisplaySearchInfo;
     }
 
     public void register(ExtendedRecipeBookCategory searchCategory, RecipeBookCategory... includedCategories) {
@@ -37,5 +43,16 @@ public class RegisterRecipeBookSearchCategoriesEvent extends Event implements IM
             throw new IllegalArgumentException("Duplicate registration of search category " + searchCategory);
         }
         categories.put(searchCategory, List.of(includedCategories));
+    }
+
+    /// Registers a recipe result indexer to allow for having search index things other than just item results in recipes.
+    /// 
+    /// @param tooltipExtractor Logic to extract the tooltip from the result display.
+    /// @param idExtractor      Logic to extract the element's id from the result display.
+    /// @apiNote NeoForge registers indexers for any recipes that may expose fluids in their result.
+    /// @see RecipeDisplayResultTooltipExtractor#forStack
+    /// @see RecipeDisplayResultIdExtractor#forRegisteredType
+    public void registerResultIndexer(RecipeDisplayResultTooltipExtractor tooltipExtractor, RecipeDisplayResultIdExtractor idExtractor) {
+        recipeDisplaySearchInfo.add(new RecipeDisplayResultInfo(tooltipExtractor, idExtractor));
     }
 }
