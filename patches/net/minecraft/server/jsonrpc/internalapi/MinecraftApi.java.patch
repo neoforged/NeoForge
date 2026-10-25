@@ -1,16 +1,5 @@
 --- a/net/minecraft/server/jsonrpc/internalapi/MinecraftApi.java
 +++ b/net/minecraft/server/jsonrpc/internalapi/MinecraftApi.java
-@@ -6,7 +_,9 @@
- import net.minecraft.server.jsonrpc.JsonRpcLogger;
- import net.minecraft.server.notifications.NotificationManager;
- 
--public class MinecraftApi implements net.neoforged.neoforge.server.jsonrpc.IMinecraftApiExtension {
-+import net.neoforged.neoforge.server.jsonrpc.IMinecraftApiExtension;
-+
-+public class MinecraftApi implements IMinecraftApiExtension {
-     private final NotificationManager notificationManager;
-     private final MinecraftAllowListService allowListService;
-     private final MinecraftBanListService banListService;
 @@ -16,7 +_,12 @@
      private final MinecraftServerSettingsService minecraftServerSettingsService;
      private final MinecraftServerStateService minecraftServerStateService;
