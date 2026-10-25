@@ -1,11 +1,12 @@
 --- a/net/minecraft/network/chat/ClickEvent.java
 +++ b/net/minecraft/network/chat/ClickEvent.java
-@@ -57,7 +_,7 @@
+@@ -57,7 +_,8 @@
          }
  
          public static DataResult<ClickEvent.Action> filterForSerialization(ClickEvent.Action action) {
 -            return !action.isAllowedFromServer()
-+            return !action.isAllowedFromServer() && (net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer() == null || net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer().isDedicatedServer()) // Neo: Allow open file commands to work on integrated servers. PR #915
++            // Neo: Allow open file commands to work on integrated servers. PR #915
++            return !action.isAllowedFromServer() && (net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer() == null || net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer().isDedicatedServer())
                  ? DataResult.error(() -> "Click event type not allowed: " + action)
                  : DataResult.success(action, Lifecycle.stable());
          }

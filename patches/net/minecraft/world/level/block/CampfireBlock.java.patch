@@ -9,12 +9,13 @@
              if (!level.isClientSide()) {
                  level.levelEvent(null, 1009, pos, 0);
              }
-@@ -254,7 +_,7 @@
+@@ -254,7 +_,8 @@
                  return true;
              }
  
 -            boolean smokeBlocked = Shapes.joinIsNotEmpty(SHAPE_VIRTUAL_POST, blockState.getCollisionShape(level, pos, CollisionContext.empty()), BooleanOp.AND);
-+            boolean smokeBlocked = Shapes.joinIsNotEmpty(SHAPE_VIRTUAL_POST, blockState.getCollisionShape(level, posToCheck, CollisionContext.empty()), BooleanOp.AND); // FORGE: Fix MC-201374
++            // Neo: Fix MC-201374
++            boolean smokeBlocked = Shapes.joinIsNotEmpty(SHAPE_VIRTUAL_POST, blockState.getCollisionShape(level, posToCheck, CollisionContext.empty()), BooleanOp.AND);
              if (smokeBlocked) {
                  BlockState belowState = level.getBlockState(posToCheck.below());
                  return isLitCampfire(belowState);

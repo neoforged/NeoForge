@@ -9,11 +9,11 @@
      private final ResourceKey<? extends Registry<T>> key;
      private final ObjectList<Holder.Reference<T>> byId = new ObjectArrayList<>(256);
      private final Reference2IntMap<T> toId = Util.make(new Reference2IntOpenHashMap<>(), t -> t.defaultReturnValue(-1));
-@@ -86,9 +_,17 @@
+@@ -86,9 +_,18 @@
  
      @Override
      public Holder.Reference<T> register(ResourceKey<T> key, T value, RegistrationInfo registrationInfo) {
-+        return register(this.byId.size(), key, value, registrationInfo);
++        return this.register(this.byId.size(), key, value, registrationInfo);
 +    }
 +
 +    public Holder.Reference<T> register(int id, ResourceKey<T> key, T value, RegistrationInfo registrationInfo) {
@@ -21,8 +21,9 @@
          Objects.requireNonNull(key);
          Objects.requireNonNull(value);
 +        int newId = id;
-+        if (newId > this.getMaxId())
++        if (newId > this.getMaxId()) {
 +            throw new IllegalStateException(String.format(java.util.Locale.ENGLISH, "Invalid id %d - maximum id range of %d exceeded.", newId, this.getMaxId()));
++        }
 +
          if (this.byLocation.containsKey(key.identifier())) {
              throw (IllegalStateException)Util.pauseInIde(new IllegalStateException("Adding duplicate key '" + key + "' to registry"));
@@ -47,55 +48,55 @@
          return holder;
      }
  
-@@ -138,7 +_,7 @@
+@@ -138,6 +_,9 @@
  
      @Override
      public @Nullable T getValue(@Nullable ResourceKey<T> key) {
--        return getValueFromNullable(this.byKey.get(key));
-+        return getValueFromNullable(this.byKey.get(resolve(key)));
++        if (key != null) {
++            key = this.resolve(key);
++        }
+         return getValueFromNullable(this.byKey.get(key));
      }
  
-     @Override
-@@ -153,12 +_,12 @@
+@@ -153,11 +_,13 @@
  
      @Override
      public Optional<Holder.Reference<T>> get(Identifier id) {
--        return Optional.ofNullable(this.byLocation.get(id));
-+        return Optional.ofNullable(this.byLocation.get(resolve(id)));
++        id = this.resolve(id);
+         return Optional.ofNullable(this.byLocation.get(id));
      }
  
      @Override
      public Optional<Holder.Reference<T>> get(ResourceKey<T> id) {
--        return Optional.ofNullable(this.byKey.get(id));
-+        return Optional.ofNullable(this.byKey.get(resolve(id)));
++        id = this.resolve(id);
+         return Optional.ofNullable(this.byKey.get(id));
      }
  
-     @Override
-@@ -173,7 +_,7 @@
+@@ -173,6 +_,7 @@
      }
  
      private Holder.Reference<T> getOrCreateHolderOrThrow(ResourceKey<T> key) {
--        return this.byKey.computeIfAbsent(key, id -> {
-+        return this.byKey.computeIfAbsent(resolve(key), id -> {
++        key = this.resolve(key);
+         return this.byKey.computeIfAbsent(key, id -> {
              if (this.unregisteredIntrusiveHolders != null) {
                  throw new IllegalStateException("This registry can't create new holders without value");
-             }
-@@ -205,7 +_,7 @@
+@@ -205,6 +_,9 @@
  
      @Override
      public @Nullable T getValue(@Nullable Identifier key) {
--        Holder.Reference<T> result = this.byLocation.get(key);
-+        Holder.Reference<T> result = this.byLocation.get(key != null ? resolve(key) : null);
++        if (key != null) {
++            key = this.resolve(key);
++        }
+         Holder.Reference<T> result = this.byLocation.get(key);
          return getValueFromNullable(result);
      }
- 
 @@ -271,6 +_,17 @@
          return Objects.requireNonNull(this.componentLookup, "Registry not frozen yet");
      }
  
-+    /** @deprecated Neo: For internal use only. Use the Register events when registering values. */
-+    @Deprecated
++    /// Neo: For internal use only. Use [net.neoforged.neoforge.registries.DeferredRegister] or [net.neoforged.neoforge.registries.RegisterEvent] for registering values.
 +    @Override
++    @org.jetbrains.annotations.ApiStatus.Internal
 +    public void unfreeze(boolean clearTags) {
 +        if (clearTags) {
 +            // unbind tags which were bound by the previous freeze
@@ -145,7 +146,7 @@
              @Override
              public void apply() {
                  pendingTags.forEach((id, tag) -> {
-@@ -458,6 +_,55 @@
+@@ -458,6 +_,49 @@
                  MappedRegistry.this.refreshTagsInHolders();
              }
          };
@@ -164,9 +165,9 @@
 +            this.byValue.clear();
 +            this.allTags = MappedRegistry.TagSet.unbound();
 +            this.frozenTags.entrySet().removeIf(entry -> !entry.getValue().isBound());
-+            if (unregisteredIntrusiveHolders != null) {
-+                unregisteredIntrusiveHolders.clear();
-+                unregisteredIntrusiveHolders = null;
++            if (this.unregisteredIntrusiveHolders != null) {
++                this.unregisteredIntrusiveHolders.clear();
++                this.unregisteredIntrusiveHolders = null;
 +            }
 +        }
 +    }
@@ -174,30 +175,24 @@
 +    @Override
 +    protected void registerIdMapping(ResourceKey<T> key, int id) {
 +        this.validateWrite(key);
-+        if (id > this.getMaxId())
++        if (id > this.getMaxId()) {
 +            throw new IllegalStateException(String.format(java.util.Locale.ENGLISH, "Invalid id %d - maximum id range of %d exceeded.", id, this.getMaxId()));
-+        if (0 <= id && id < this.byId.size() && this.byId.get(id) != null) { // Don't use byId() method, it will return the default value if the entry is absent
++        }
++        // Don't use byId() method, it will return the default value if the entry is absent
++        if (0 <= id && id < this.byId.size() && this.byId.get(id) != null) {
 +            throw new IllegalStateException("Duplicate id " + id + " for " + key + " and " + this.getKey(this.byId.get(id).value()));
 +        }
-+        var holder = byKey.get(key);
-+        while (this.byId.size() < (id + 1)) this.byId.add(null);
++        var holder = this.byKey.get(key);
++        while (this.byId.size() < (id + 1)) {
++            this.byId.add(null);
++        }
 +        this.byId.set(id, holder);
 +        this.toId.put(holder.value(), id);
 +    }
 +
 +    @Override
-+    public int getId(Identifier name) {
-+        return getId(getValue(name));
-+    }
-+
-+    @Override
-+    public int getId(ResourceKey<T> key) {
-+        return getId(getValue(key));
-+    }
-+
-+    @Override
 +    public boolean containsValue(T value) {
-+        return byValue.containsKey(value);
++        return this.byValue.containsKey(value);
      }
  
      private interface TagSet<T> {

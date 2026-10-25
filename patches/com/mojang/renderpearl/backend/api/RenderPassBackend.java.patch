@@ -1,9 +1,15 @@
 --- a/com/mojang/renderpearl/backend/api/RenderPassBackend.java
 +++ b/com/mojang/renderpearl/backend/api/RenderPassBackend.java
-@@ -24,6 +_,8 @@
+@@ -24,6 +_,14 @@
  
      void pushConstants(ByteBuffer value);
  
++    /// Neo: set the viewport to render into.
++    ///
++    /// @param x      The X position of the viewport
++    /// @param y      The Y position of the viewport
++    /// @param width  The width of the viewport
++    /// @param height The height of the viewport
 +    void setViewport(int x, int y, int width, int height);
 +
      void enableScissor(final int x, final int y, final int width, final int height);

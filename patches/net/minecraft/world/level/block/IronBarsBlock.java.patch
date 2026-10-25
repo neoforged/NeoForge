@@ -37,7 +37,7 @@
 +    /// @return whether this block can connect to the given neighbor
 +    public boolean attachesTo(BlockState state, boolean faceSolid, Direction direction) {
 +        var adjResult = state.canBeConnectedTo(direction, this);
-+        return adjResult.isTrue() || (!adjResult.isFalse() && attachsTo(state, faceSolid));
++        return adjResult.isTrue() || (!adjResult.isFalse() && this.attachsTo(state, faceSolid));
 +    }
 +
 +    /// @deprecated Neo: use [#attachesTo(BlockState, boolean, Direction)] instead

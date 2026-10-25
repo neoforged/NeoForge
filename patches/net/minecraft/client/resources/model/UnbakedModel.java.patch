@@ -6,7 +6,7 @@
          }
 +
 +        public String getSerializedName() {
-+            return name;
++            return this.name;
 +        }
      }
  }

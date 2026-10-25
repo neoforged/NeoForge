@@ -9,7 +9,7 @@
      public enum GrassColorModifier implements StringRepresentable, IExtensibleEnum {
          NONE("none") {
              @Override
-@@ -95,12 +_,22 @@
+@@ -95,11 +_,20 @@
          };
  
          private final String name;
@@ -18,21 +18,19 @@
  
 -        public abstract int modifyColor(final double x, final double z, final int baseColor);
 +        public int modifyColor(double x, double z, int baseColor) {
-+            return delegate.modifyGrassColor(x, z, baseColor);
++            return this.delegate.modifyGrassColor(x, z, baseColor);
 +        }
  
 +        @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
          GrassColorModifier(String name) {
-             this.name = name;
-+            this.delegate = null;
++            this(name, (_, _, color) -> color);
 +        }
 +
 +        GrassColorModifier(String name, ColorModifier delegate) {
-+            this.name = name;
 +            this.delegate = delegate;
+             this.name = name;
          }
  
-         public String getName() {
 @@ -110,6 +_,15 @@
          @Override
          public String getSerializedName() {

@@ -1,26 +1,24 @@
 --- a/com/mojang/renderpearl/backend/opengl/DirectStateAccess.java
 +++ b/com/mojang/renderpearl/backend/opengl/DirectStateAccess.java
-@@ -40,10 +_,18 @@
+@@ -40,7 +_,17 @@
  
      public abstract int createFrameBufferObject();
  
 -    public abstract void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot);
 +    public abstract void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot, int stencil, int stencilMipLevel);
 +
++    /// Neo: add support for binding a stencil buffer independent of the depth buffer
 +    public void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot) {
 +        this.bindFrameBufferTextures(fbo, color, colorMipLevels, depth, depthMipLevel, bindSlot, 0, 0);
 +    }
- 
-     public void bindFrameBufferTextures(int fbo, int color, int depth, int mipLevel, int bindSlot) {
--        this.bindFrameBufferTextures(fbo, new int[]{color}, new int[]{mipLevel}, depth, mipLevel, bindSlot);
-+        this.bindFrameBufferTextures(fbo, color, depth, mipLevel, bindSlot, 0, 0);
-+    }
 +
++    /// Neo: add support for binding a stencil buffer independent of the depth buffer
 +    public void bindFrameBufferTextures(int fbo, int color, int depth, int mipLevel, int bindSlot, int stencil, int stencilMipLevel) {
 +        this.bindFrameBufferTextures(fbo, new int[]{color}, new int[]{mipLevel}, depth, mipLevel, bindSlot, stencil, stencilMipLevel);
-     }
++    }
  
-     public abstract void blitFrameBuffers(
+     public void bindFrameBufferTextures(int fbo, int color, int depth, int mipLevel, int bindSlot) {
+         this.bindFrameBufferTextures(fbo, new int[]{color}, new int[]{mipLevel}, depth, mipLevel, bindSlot);
 @@ -102,12 +_,13 @@
          }
  

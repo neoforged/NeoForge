@@ -6,7 +6,7 @@
      }
 +
 +    @Override
-+    public boolean getWeakChanges(BlockState state, net.minecraft.world.level.LevelReader world, BlockPos pos) {
++    public boolean getWeakChanges(BlockState state, net.minecraft.world.level.LevelReader level, BlockPos pos) {
 +        return state.is(Blocks.COMPARATOR);
 +    }
 +

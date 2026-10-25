@@ -18,22 +18,22 @@
                              destroyed = level.destroyBlock(blockPos, true, this) || destroyed;
                          }
                      }
-@@ -352,6 +_,10 @@
+@@ -352,6 +_,8 @@
          }
      }
  
-+    /**
-+     * @deprecated Forge: Use {@link BlockState#canEntityDestroy(net.minecraft.world.level.BlockGetter, BlockPos, Entity)} instead.
-+     */
++    /// @deprecated Neo: Use [BlockState#canEntityDestroy(net.minecraft.world.level.BlockGetter, BlockPos, Entity)] instead.
 +    @Deprecated
      public static boolean canDestroy(BlockState state) {
          return !state.isAir() && !state.is(BlockTags.WITHER_IMMUNE);
      }
-@@ -495,6 +_,7 @@
+@@ -495,6 +_,9 @@
  
      @Override
      public void checkDespawn() {
-+        if (net.neoforged.neoforge.event.EventHooks.checkMobDespawn(this)) return;
++        if (net.neoforged.neoforge.event.EventHooks.checkMobDespawn(this)) {
++            return;
++        }
          if (this.level().getDifficulty() == Difficulty.PEACEFUL && !this.getType().isAllowedInPeaceful()) {
              this.discard();
          } else {

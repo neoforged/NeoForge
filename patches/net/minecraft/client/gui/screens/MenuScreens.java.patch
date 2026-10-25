@@ -1,10 +1,10 @@
 --- a/net/minecraft/client/gui/screens/MenuScreens.java
 +++ b/net/minecraft/client/gui/screens/MenuScreens.java
-@@ -41,18 +_,27 @@
+@@ -41,18 +_,25 @@
      private static final Map<MenuType<?>, MenuScreens.ScreenConstructor<?, ?>> SCREENS = Maps.newHashMap();
  
      public static <T extends AbstractContainerMenu> void create(MenuType<T> type, Minecraft minecraft, int containerId, Component title) {
-+        getScreenFactory(type).ifPresent(f -> f.fromPacket(title, type, minecraft, containerId));
++        getScreenFactory(type).ifPresent(factory -> factory.fromPacket(title, type, minecraft, containerId));
 +    }
 +
 +    public static <T extends AbstractContainerMenu> java.util.Optional<ScreenConstructor<T, ?>> getScreenFactory(MenuType<T> type) {
@@ -22,9 +22,7 @@
          return (MenuScreens.ScreenConstructor<T, ?>)SCREENS.get(type);
      }
  
-+    /**
-+     * @deprecated use {@link net.neoforged.neoforge.client.event.RegisterMenuScreensEvent} instead
-+     */
++    /// @deprecated Neo: use [net.neoforged.neoforge.client.event.RegisterMenuScreensEvent] instead
 +    @Deprecated
      private static <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(
          MenuType<? extends M> type, MenuScreens.ScreenConstructor<M, U> factory

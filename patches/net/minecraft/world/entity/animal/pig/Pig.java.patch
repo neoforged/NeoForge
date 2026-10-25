@@ -5,7 +5,7 @@
      @Override
      public void thunderHit(ServerLevel level, LightningBolt lightningBolt) {
 -        if (level.getDifficulty() != Difficulty.PEACEFUL) {
-+        if (level.getDifficulty() != Difficulty.PEACEFUL && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityTypes.ZOMBIFIED_PIGLIN, (timer) -> {})) {
++        if (level.getDifficulty() != Difficulty.PEACEFUL && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityTypes.ZOMBIFIED_PIGLIN, _ -> {})) {
              ZombifiedPiglin zombifiedPiglin = this.convertTo(EntityTypes.ZOMBIFIED_PIGLIN, ConversionParams.single(this, false, true), zp -> {
                  zp.populateDefaultEquipmentSlots(this.getRandom(), level.getCurrentDifficultyAt(this.blockPosition()));
                  zp.setPersistenceRequired();

@@ -33,7 +33,7 @@
          return false;
      }
  
-+    /** @deprecated Forge: use {@link LavaFluid#isFlammable(LevelReader,BlockPos,Direction)} instead */
++    /// @deprecated Neo: use [LavaFluid#isFlammable(LevelReader,BlockPos,Direction)] instead
 +    @Deprecated
      private boolean isFlammable(LevelReader level, BlockPos pos) {
          return level.isInsideBuildHeight(pos.getY()) && !level.hasChunkAt(pos) ? false : level.getBlockState(pos).ignitedByLava();
@@ -55,7 +55,7 @@
              if (this.is(FluidTags.LAVA) && fluidState.is(FluidTags.WATER)) {
                  if (state.getBlock() instanceof LiquidBlock) {
 -                    level.setBlockAndUpdate(pos, Blocks.STONE.defaultBlockState());
-+                    level.setBlock(pos, net.neoforged.neoforge.event.EventHooks.fireFluidPlaceBlockEvent(level, pos, pos, Blocks.STONE.defaultBlockState()), 3);
++                    level.setBlockAndUpdate(pos, net.neoforged.neoforge.event.EventHooks.fireFluidPlaceBlockEvent(level, pos, pos, Blocks.STONE.defaultBlockState()));
                  }
  
                  this.fizz(level, pos);

@@ -35,13 +35,15 @@
      }
  
      @Override
-@@ -193,7 +_,9 @@
+@@ -193,7 +_,11 @@
          if (fluidAbove.isSame(Fluids.EMPTY)) {
              return level.environmentAttributes().getValue(EnvironmentAttributes.DEFAULT_DRIPSTONE_PARTICLE, posAbove);
          } else {
 -            return fluidAbove.is(FluidTags.LAVA) ? ParticleTypes.DRIPPING_DRIPSTONE_LAVA : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
 +            ParticleOptions options = fluidAbove.getFluidType().getDripInfo() != null ? fluidAbove.getFluidType().getDripInfo().dripParticle() : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
-+            if (options == null) options = level.environmentAttributes().getValue(EnvironmentAttributes.DEFAULT_DRIPSTONE_PARTICLE, posAbove);
++            if (options == null) {
++                options = level.environmentAttributes().getValue(EnvironmentAttributes.DEFAULT_DRIPSTONE_PARTICLE, posAbove);
++            }
 +            return options;
          }
      }

@@ -14,7 +14,7 @@
 -            this.send(requestid, 0, response.substring(0, dataLen));
 -            response = response.substring(dataLen);
 -            len = response.length();
-+            this.send(requestid, 0, new String(java.util.Arrays.copyOfRange(whole, start, dataLen+start), StandardCharsets.UTF_8));
++            this.send(requestid, 0, new String(java.util.Arrays.copyOfRange(whole, start, dataLen + start), StandardCharsets.UTF_8));
 +            len -= dataLen;
 +            start += dataLen;
          } while (0 != len);
