@@ -18,3 +18,5 @@ modId="custom_feature_flags_test"
 featureFlags="feature_flags.json"
 [[mods]]
 modId="consumable_item_access_test"
+[[mods]]
+modId="client_session_data_test"

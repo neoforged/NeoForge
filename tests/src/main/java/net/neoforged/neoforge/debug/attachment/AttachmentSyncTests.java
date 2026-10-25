@@ -210,6 +210,22 @@ public class AttachmentSyncTests {
 
                         player.clearOutboundPackets();
                     })
+                    // Test that players receive updates for changes to the game session (sent to every online player)
+                    .thenExecute(entity -> {
+                        var session = helper.getLevel().getSessionData();
+                        helper.assertTrue(session == helper.getLevel().getServer().getSessionData(), "Expected the level to forward to the server's session data");
+                        var testValue = helper.randomInt();
+                        session.setData(intAttachment, testValue);
+
+                        var payload = player.requireOutboundPayload(SyncAttachmentsPayload.class);
+                        helper.expectTarget(payload, new SyncAttachmentsPayload.SessionTarget());
+
+                        var holder = helper.holder();
+                        holder.readFrom(payload);
+                        holder.assertEqual(intAttachment, testValue);
+
+                        player.clearOutboundPackets();
+                    })
                     // Test that players receive initial login packets
                     .thenMap(entity -> Pair.of(entity, helper.makeTickingMockServerPlayerInCorner(GameType.CREATIVE)))
                     // Wait 1 tick to let the player tick so that it starts tracking the other entities
@@ -227,9 +243,13 @@ public class AttachmentSyncTests {
                                                 new SyncAttachmentsPayload.BlockEntityTarget(helper.absolutePos(feetPos)),
                                                 new SyncAttachmentsPayload.ChunkTarget(player.chunkPosition()),
                                                 new SyncAttachmentsPayload.EntityTarget(player.getId()),
-                                                new SyncAttachmentsPayload.EntityTarget(entity.getId()))),
+                                                new SyncAttachmentsPayload.EntityTarget(entity.getId()),
+                                                new SyncAttachmentsPayload.SessionTarget())),
                                 "Expected to find that player received all sync payloads");
                         newPlayer.disconnectGameTest();
+                        // Session data outlives this test, clean up
+                        helper.getLevel().getSessionData().removeData(intAttachment);
+                        player.clearOutboundPackets();
                     })
                     .thenMap(Pair::getFirst)
                     // Test that removing data causes players to receive packets
