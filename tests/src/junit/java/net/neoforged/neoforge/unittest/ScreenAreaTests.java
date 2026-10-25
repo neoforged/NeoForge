@@ -8,105 +8,133 @@ package net.neoforged.neoforge.unittest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.neoforged.neoforge.client.event.RegisterScreenAreaProviderEvent;
-import net.neoforged.neoforge.client.gui.ScreenAreaContext;
-import net.neoforged.neoforge.client.gui.ScreenAreaManager;
+import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.client.gui.ScreenAreaProvider;
 import org.junit.jupiter.api.Test;
 
 public class ScreenAreaTests {
-    private static final Identifier TEST_AREA = Identifier.fromNamespaceAndPath("test", "area");
+    private static final ScreenRectangle PRIMARY = new ScreenRectangle(1, 2, 300, 200);
+    private static final ScreenRectangle EXTRA = new ScreenRectangle(10, 20, 30, 40);
+    private static final ScreenRectangle PROVIDED = new ScreenRectangle(50, 60, 70, 80);
+    private static final Identifier REQUESTER = Identifier.fromNamespaceAndPath("test", "requester");
 
     @Test
-    void freeAreaWithoutOccupiedAreas() {
-        ScreenRectangle bounds = new ScreenRectangle(10, 10, 100, 50);
-        assertEquals(bounds, ScreenAreaManager.largestFreeAreaWithin(bounds, List.of()));
+    void primaryAreaUsesScreenDimensionsByDefault() {
+        TestScreen screen = new TestScreen(null);
+        screen.width = 300;
+        screen.height = 200;
+
+        assertEquals(new ScreenRectangle(0, 0, 300, 200), screen.getPrimaryScreenArea());
     }
 
     @Test
-    void freeAreaWithNonIntersectingOccupiedArea() {
-        ScreenRectangle bounds = new ScreenRectangle(10, 10, 100, 50);
-        ScreenRectangle occupied = new ScreenRectangle(200, 200, 30, 30);
-        assertEquals(bounds, ScreenAreaManager.largestFreeAreaWithin(bounds, List.of(occupied)));
+    void primaryAreaCanBeOverriddenAndQueriedSeparately() {
+        TestScreen screen = new TestScreen(PRIMARY);
+        screen.extraAreas.add(EXTRA);
+
+        assertEquals(PRIMARY, screen.getPrimaryScreenArea());
+        assertEquals(List.of(PRIMARY, EXTRA), collect(screen, true, null));
     }
 
     @Test
-    void freeAreaAvoidsSingleOccupiedArea() {
-        ScreenRectangle bounds = new ScreenRectangle(0, 0, 100, 100);
-        // A vertical band cutting the bounds in two halves of 40 and 50 pixels
-        ScreenRectangle occupied = new ScreenRectangle(40, 0, 10, 100);
-        assertEquals(new ScreenRectangle(50, 0, 50, 100), ScreenAreaManager.largestFreeAreaWithin(bounds, List.of(occupied)));
+    void queryCanOmitPrimaryArea() {
+        TestScreen screen = new TestScreen(PRIMARY);
+        screen.extraAreas.add(EXTRA);
+
+        assertEquals(List.of(EXTRA), collect(screen, false, null));
     }
 
     @Test
-    void freeAreaAvoidsMultipleOccupiedAreas() {
-        ScreenRectangle bounds = new ScreenRectangle(0, 0, 100, 100);
-        // After avoiding the left band, the remainder (20, 0, 80, 100) still intersects the bottom band
-        List<ScreenRectangle> occupied = List.of(
-                new ScreenRectangle(0, 0, 20, 100),
-                new ScreenRectangle(20, 80, 80, 20));
-        assertEquals(new ScreenRectangle(20, 0, 80, 80), ScreenAreaManager.largestFreeAreaWithin(bounds, occupied));
+    void providersRunAfterTheScreensOwnAreas() {
+        TestScreen screen = new TestScreen(PRIMARY);
+        screen.extraAreas.add(EXTRA);
+        addProvider(screen, (includePrimary, requesterId, out) -> out.accept(PROVIDED));
+
+        assertEquals(List.of(PRIMARY, EXTRA, PROVIDED), collect(screen, true, null));
     }
 
     @Test
-    void freeAreaReturnsNullWhenFullyOccupied() {
-        ScreenRectangle bounds = new ScreenRectangle(0, 0, 100, 100);
-        ScreenRectangle occupied = new ScreenRectangle(-10, -10, 120, 120);
-        assertNull(ScreenAreaManager.largestFreeAreaWithin(bounds, List.of(occupied)));
+    void queryParametersAreForwardedToEveryProvider() {
+        TestScreen screen = new TestScreen(PRIMARY);
+        List<Boolean> includePrimary = new ArrayList<>();
+        List<Identifier> requesterIds = new ArrayList<>();
+        addProvider(screen, (primary, requester, out) -> {
+            includePrimary.add(primary);
+            requesterIds.add(requester);
+        });
+        addProvider(screen, (primary, requester, out) -> {
+            includePrimary.add(primary);
+            requesterIds.add(requester);
+        });
+
+        assertEquals(List.of(), collect(screen, false, REQUESTER));
+        assertEquals(List.of(false, false), includePrimary);
+        assertEquals(2, requesterIds.size());
+        assertSame(REQUESTER, requesterIds.getFirst());
+        assertSame(REQUESTER, requesterIds.getLast());
     }
 
     @Test
-    void freeAreaReturnsNullForDegenerateBounds() {
-        assertNull(ScreenAreaManager.largestFreeAreaWithin(new ScreenRectangle(0, 0, 0, 100), List.of()));
-        assertNull(ScreenAreaManager.largestFreeAreaWithin(new ScreenRectangle(0, 0, 100, 0), List.of()));
+    void defaultQueryHasNoRequester() {
+        TestScreen screen = new TestScreen(PRIMARY);
+        List<Identifier> requesterIds = new ArrayList<>();
+        addProvider(screen, (includePrimary, requesterId, out) -> requesterIds.add(requesterId));
+
+        screen.getScreenAreas(area -> {});
+
+        assertEquals(1, requesterIds.size());
+        assertNull(requesterIds.getFirst());
     }
 
     @Test
-    void registrationRejectsDuplicateIds() {
-        RegisterScreenAreaProviderEvent event = new RegisterScreenAreaProviderEvent(new ArrayList<>());
-        event.registerGlobal(TEST_AREA, context -> List.of());
+    void providersAreClearedWithWidgets() {
+        TestScreen screen = new TestScreen(PRIMARY);
+        addProvider(screen, (includePrimary, requesterId, out) -> out.accept(PROVIDED));
 
-        assertThrows(IllegalArgumentException.class, () -> event.registerGlobal(TEST_AREA, context -> List.of()));
-        assertThrows(IllegalArgumentException.class, () -> event.registerFor(ChatScreen.class, TEST_AREA, context -> List.of()));
+        screen.clearWidgetsForTest();
+
+        assertEquals(List.of(PRIMARY), collect(screen, true, null));
     }
 
-    @Test
-    void replaceRequiresRegisteredId() {
-        RegisterScreenAreaProviderEvent event = new RegisterScreenAreaProviderEvent(new ArrayList<>());
-        assertThrows(IllegalArgumentException.class, () -> event.replace(TEST_AREA, context -> List.of()));
+    private static void addProvider(TestScreen screen, ScreenAreaProvider provider) {
+        new ScreenEvent.Init.Post(screen, List.of(), listener -> {}, listener -> {}).addScreenAreaProvider(provider);
     }
 
-    @Test
-    void replaceSwapsProviderAndKeepsScope() {
-        List<ScreenAreaManager.ScreenAreaRegistration> registrations = new ArrayList<>();
-        RegisterScreenAreaProviderEvent event = new RegisterScreenAreaProviderEvent(registrations);
-        event.registerFor(ChatScreen.class, TEST_AREA, context -> List.of(new ScreenRectangle(0, 0, 10, 10)));
-
-        ScreenRectangle replacementArea = new ScreenRectangle(1, 1, 11, 11);
-        event.replace(TEST_AREA, context -> List.of(replacementArea));
-
-        assertEquals(1, registrations.size());
-        ScreenAreaManager.ScreenAreaRegistration registration = registrations.get(0);
-        assertEquals(ChatScreen.class, registration.screenClass());
-        assertEquals(List.of(replacementArea), List.copyOf(registration.provider().getAreas(new ScreenAreaContext(null, 100, 100))));
+    private static List<ScreenRectangle> collect(TestScreen screen, boolean includePrimary, Identifier requesterId) {
+        List<ScreenRectangle> areas = new ArrayList<>();
+        screen.getScreenAreas(areas::add, includePrimary, requesterId);
+        return areas;
     }
 
-    @Test
-    void wrapCanDelegateToTheWrappedProvider() {
-        List<ScreenAreaManager.ScreenAreaRegistration> registrations = new ArrayList<>();
-        RegisterScreenAreaProviderEvent event = new RegisterScreenAreaProviderEvent(registrations);
-        ScreenRectangle area = new ScreenRectangle(0, 0, 10, 10);
-        event.registerGlobal(TEST_AREA, context -> List.of(area));
+    private static final class TestScreen extends Screen {
+        private final ScreenRectangle primaryArea;
+        private final List<ScreenRectangle> extraAreas = new ArrayList<>();
 
-        event.wrap(TEST_AREA, old -> context -> old.getAreas(context));
+        private TestScreen(ScreenRectangle primaryArea) {
+            super(org.mockito.Mockito.mock(net.minecraft.client.Minecraft.class), org.mockito.Mockito.mock(net.minecraft.client.gui.Font.class), Component.empty());
+            this.primaryArea = primaryArea;
+        }
 
-        ScreenAreaManager.ScreenAreaRegistration registration = registrations.get(0);
-        assertSame(area, registration.provider().getAreas(new ScreenAreaContext(null, 100, 100)).iterator().next());
+        @Override
+        public ScreenRectangle getPrimaryScreenArea() {
+            return this.primaryArea != null ? this.primaryArea : super.getPrimaryScreenArea();
+        }
+
+        @Override
+        protected void collectExtraScreenAreas(Consumer<ScreenRectangle> consumer) {
+            this.extraAreas.forEach(consumer);
+        }
+
+        private void clearWidgetsForTest() {
+            this.clearWidgets();
+        }
     }
 }

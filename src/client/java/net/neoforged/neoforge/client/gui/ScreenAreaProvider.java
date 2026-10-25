@@ -5,23 +5,23 @@
 
 package net.neoforged.neoforge.client.gui;
 
-import java.util.Collection;
+import java.util.function.Consumer;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.resources.Identifier;
+import net.neoforged.neoforge.client.event.ScreenEvent;
+import org.jspecify.annotations.Nullable;
 
-/// Declares screen areas that are occupied by a UI, so that other UIs can avoid them.
+/// Declares additional areas occupied by UI attached to a screen.
 ///
-/// Providers are registered via [RegisterScreenAreaProviderEvent][net.neoforged.neoforge.client.event.RegisterScreenAreaProviderEvent]
-/// and are queried on demand, so the returned areas may change between calls.
+/// Providers can be added through [ScreenEvent.Init#addScreenAreaProvider]. They are queried on
+/// demand, so their areas may change between queries. A provider can compare the requester id with
+/// its own id to avoid reporting its areas to its owner.
 @FunctionalInterface
 public interface ScreenAreaProvider {
-    /// Returns the areas currently occupied by this UI, in GUI-scaled absolute screen
-    /// coordinates (origin at the top-left, y pointing down).
+    /// Collects the currently occupied areas in GUI-scaled absolute screen coordinates.
     ///
-    /// An empty collection may be returned to declare that nothing is currently occupied
-    /// (for example because the UI is hidden). Degenerate areas (width or height `<= 0`)
-    /// are ignored.
-    ///
-    /// @param context the context the areas are queried in
-    /// @return the occupied areas
-    Collection<ScreenRectangle> getAreas(ScreenAreaContext context);
+    /// @param includePrimary whether the query includes the screen's primary content area
+    /// @param requesterId    the id of the UI requesting the areas, or `null` if it has no id
+    /// @param out            accepts the occupied areas
+    void collectAreas(boolean includePrimary, @Nullable Identifier requesterId, Consumer<ScreenRectangle> out);
 }

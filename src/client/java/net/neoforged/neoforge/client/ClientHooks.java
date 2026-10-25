@@ -58,6 +58,7 @@ import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.components.debug.DebugEntryCategory;
 import net.minecraft.client.gui.components.debug.DebugScreenEntries;
 import net.minecraft.client.gui.components.toasts.Toast;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
@@ -191,7 +192,6 @@ import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtension
 import net.neoforged.neoforge.client.gamerules.GameRuleEntryFactoryManager;
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
 import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
-import net.neoforged.neoforge.client.gui.ScreenAreaManager;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
@@ -369,6 +369,12 @@ public class ClientHooks {
         SelectMusicEvent e = new SelectMusicEvent(situational, playing);
         NeoForge.EVENT_BUS.post(e);
         return e.getMusic();
+    }
+
+    @ApiStatus.Internal
+    public static void collectSpecialScreenAreas(Minecraft minecraft, Consumer<ScreenRectangle> consumer) {
+        minecraft.gui.toastManager().collectScreenAreas(consumer);
+        minecraft.gui.hud.collectSubtitleAreas(consumer);
     }
 
     public static void extractScreen(Screen screen, Stack<Screen> backgroundLayers, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
@@ -817,7 +823,6 @@ public class ClientHooks {
         EntitySpectatorShaderManager.init();
         RecipeBookManager.init();
         mc.gui.hud.initModdedOverlays();
-        ScreenAreaManager.init();
         CustomEnvironmentEffectsRendererManager.init();
         ColorResolverManager.init();
         ItemDecoratorHandler.init();

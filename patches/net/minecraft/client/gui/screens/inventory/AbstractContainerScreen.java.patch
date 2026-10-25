@@ -146,7 +146,7 @@
                      this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, i, ContainerInput.SWAP);
                      return true;
                  }
-@@ -588,6 +_,28 @@
+@@ -588,6 +_,33 @@
      @Override
      public T getMenu() {
          return this.menu;
@@ -172,6 +172,11 @@
 +
 +    public int getImageHeight() {
 +        return imageHeight;
++    }
++
++    @Override
++    public net.minecraft.client.gui.navigation.ScreenRectangle getPrimaryScreenArea() {
++        return new net.minecraft.client.gui.navigation.ScreenRectangle(this.leftPos, this.topPos, this.imageWidth, this.imageHeight);
      }
  
      @Override

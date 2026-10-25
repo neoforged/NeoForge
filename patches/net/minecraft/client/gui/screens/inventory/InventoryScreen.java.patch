@@ -1,5 +1,18 @@
 --- a/net/minecraft/client/gui/screens/inventory/InventoryScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/InventoryScreen.java
+@@ -86,6 +_,12 @@
+     }
+ 
+     @Override
++    protected void collectExtraScreenAreas(java.util.function.Consumer<net.minecraft.client.gui.navigation.ScreenRectangle> consumer) {
++        super.collectExtraScreenAreas(consumer);
++        this.effects.collectScreenAreas(consumer);
++    }
++
++    @Override
+     public boolean showsActiveEffects() {
+         return this.effects.canSeeEffects();
+     }
 @@ -111,6 +_,13 @@
          float centerY = (y0 + y1) / 2.0F;
          float xAngle = (float)Math.atan((centerX - mouseX) / 40.0F);

@@ -23,6 +23,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.client.gui.ScreenAreaProvider;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
@@ -96,6 +97,16 @@ public abstract class ScreenEvent extends Event {
          */
         public void addListener(GuiEventListener listener) {
             add.accept(listener);
+        }
+
+        /**
+         * Adds a provider of additional areas occupied by UI attached to the screen.
+         * Providers are cleared together with the screen's widgets when it is reinitialized.
+         *
+         * @param provider the provider to add
+         */
+        public void addScreenAreaProvider(ScreenAreaProvider provider) {
+            getScreen().addScreenAreaProvider(provider);
         }
 
         /**

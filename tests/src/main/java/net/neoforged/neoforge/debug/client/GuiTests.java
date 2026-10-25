@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.debug.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.renderpearl.api.pipeline.ColorTargetState;
@@ -40,13 +41,11 @@ import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
-import net.neoforged.neoforge.client.event.RegisterScreenAreaProviderEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.gui.GuiLayer;
-import net.neoforged.neoforge.client.gui.ScreenAreaManager;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
-import net.neoforged.neoforge.client.gui.VanillaScreenAreas;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 import net.neoforged.neoforge.client.gui.widget.ExtendedSlider;
 import net.neoforged.neoforge.common.util.Lazy;
@@ -339,42 +338,86 @@ public class GuiTests {
         });
     }
 
-    @TestHolder(description = "Checks that screen areas can be declared, queried and replaced")
+    @TestHolder(description = "Checks that screens and attached UI can declare areas and exclude the requester's own areas")
     static void testScreenAreas(DynamicTest test) {
-        test.framework().modEventBus().addListener((RegisterScreenAreaProviderEvent event) -> {
-            event.registerGlobal(Identifier.fromNamespaceAndPath(test.createModId(), "occupied_band"), context -> {
-                if (!test.framework().tests().isEnabled(test.id())) return List.of();
-                // Occupy a band on the left edge of the screen
-                return List.of(new ScreenRectangle(0, 0, 20, context.guiHeight()));
-            });
-            // Disable the vanilla container panel area while the test is enabled, to demonstrate
-            // replacing an area declared by NeoForge
-            event.wrap(VanillaScreenAreas.CONTAINER, provider -> context -> {
-                if (test.framework().tests().isEnabled(test.id())) return List.of();
-                return provider.getAreas(context);
-            });
+        Identifier requesterId = Identifier.fromNamespaceAndPath(test.createModId(), "area_viewer");
+        test.eventListeners().forge().addListener((ScreenEvent.Init.Post event) -> {
+            if (event.getScreen() instanceof AbstractContainerScreen<?>) {
+                event.addScreenAreaProvider((includePrimary, requester, out) -> {
+                    if (test.framework().tests().isEnabled(test.id()) && !requesterId.equals(requester)) {
+                        out.accept(new ScreenRectangle(0, 0, 20, Minecraft.getInstance().getWindow().getGuiScaledHeight()));
+                    }
+                });
+            }
         });
 
         test.framework().modEventBus().addListener((RegisterGuiLayersEvent event) -> {
             event.registerAboveAll(Identifier.fromNamespaceAndPath(test.createModId(), "screen_area_test"), (graphics, _) -> {
                 if (!test.framework().tests().isEnabled(test.id())) return;
-                // Draw the declared occupied band
-                graphics.fill(0, 0, 20, graphics.guiHeight(), 0x8000FF00);
-                // Draw the largest area of the screen that avoids all occupied areas (the band and the vanilla hotbar)
-                ScreenRectangle free = ScreenAreaManager.largestFreeAreaWithin(new ScreenRectangle(0, 0, graphics.guiWidth(), graphics.guiHeight()));
-                if (free != null) {
-                    graphics.fill(free.left(), free.top(), free.right(), free.bottom(), 0x40FF0000);
+                for (Screen screen : Minecraft.getInstance().gui.getScreenStack()) {
+                    if (screen instanceof AbstractContainerScreen<?>) {
+                        screen.getScreenAreas(area -> graphics.fill(area.left(), area.top(), area.right(), area.bottom(), 0x30FF0000), true, requesterId);
+                    }
                 }
+                graphics.fill(0, 0, 20, graphics.guiHeight(), 0x8000FF00);
             });
         });
 
         test.eventListeners().forge().addListener((ClientChatEvent chatEvent) -> {
             if (chatEvent.getMessage().equalsIgnoreCase("screen area test")) {
                 test.requestConfirmation(Minecraft.getInstance().player, Component.literal(
-                        """
-                                Do you see a green band on the left edge, and a red overlay that avoids both the band and the hotbar?
-                                With a container screen open, does the red overlay cover its panel? (this test disables the vanilla container area)
-                                """));
+                        "With a container screen open, do you see its occupied areas in red and the test's own left band in green, without a red overlay on the band?"));
+            }
+        });
+    }
+
+    @TestHolder(description = "Checks that inventory effect areas follow the actual rendering after the effect event moves, compacts or cancels them")
+    static void testContainerEffectAreas(DynamicTest test) {
+        boolean[] hidden = { false };
+        int[] renderedOffset = { 0 };
+        boolean[] rendered = { false };
+        Screen[] eventScreen = { null };
+        test.eventListeners().forge().addListener((ScreenEvent.RenderInventoryMobEffects event) -> {
+            if (!test.framework().tests().isEnabled(test.id())) return;
+            eventScreen[0] = event.getScreen();
+            rendered[0] = true;
+            event.setCompact(true);
+            event.addHorizontalOffset(20);
+            renderedOffset[0] = event.getHorizontalOffset();
+            if (hidden[0]) {
+                event.setCanceled(true);
+            }
+        });
+
+        test.eventListeners().forge().addListener((ScreenEvent.KeyPressed.Pre event) -> {
+            if (event.getKey() == InputConstants.KEY_G) {
+                hidden[0] = !hidden[0];
+            }
+        });
+
+        boolean[] offsetChecked = { false };
+        boolean[] hiddenChecked = { false };
+        test.eventListeners().forge().addListener((ClientTickEvent.Post event) -> {
+            Minecraft minecraft = Minecraft.getInstance();
+            if (!test.framework().tests().isEnabled(test.id()) || !rendered[0] || minecraft.gui.screen() != eventScreen[0]) return;
+            List<ScreenRectangle> areas = new java.util.ArrayList<>();
+            eventScreen[0].getScreenAreas(areas::add, false, null);
+            List<ScreenRectangle> effectAreas = areas.stream().filter(area -> area.left() == renderedOffset[0]).toList();
+            if (hidden[0]) {
+                if (!effectAreas.isEmpty()) {
+                    test.fail("The effect stack is hidden, but its rendered areas are still reported");
+                    return;
+                }
+                hiddenChecked[0] = true;
+            } else if (!effectAreas.isEmpty()) {
+                if (effectAreas.stream().anyMatch(area -> area.width() != 32)) {
+                    test.fail("Compact effect rendering produced an area with the wrong width");
+                    return;
+                }
+                offsetChecked[0] = true;
+            }
+            if (offsetChecked[0] && hiddenChecked[0]) {
+                test.pass();
             }
         });
     }
