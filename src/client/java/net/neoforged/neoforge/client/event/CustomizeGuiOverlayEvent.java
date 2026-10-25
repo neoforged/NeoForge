@@ -45,15 +45,13 @@ public abstract class CustomizeGuiOverlayEvent extends Event {
         return partialTick;
     }
 
-    /**
-     * Fired <b>before</b> a boss health bar is rendered to the screen.
-     *
-     * <p>This event is {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
-     * Cancelling this event will prevent the given bar from rendering.</p>
-     *
-     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
-     * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
-     */
+    /// Fired **before** a boss health bar is rendered to the screen.
+    ///
+    /// This event is [cancellable][ICancellableEvent]. Cancelling this event will prevent the given bar from rendering.
+    /// The [Y position increment][#getIncrement()] is always applied, even if the event is canceled, to give way for any
+    /// custom elements rendered in place of vanilla's bar rendering.
+    ///
+    /// This event is fired on the [game event bus][NeoForge#EVENT_BUS], only on the [logical client][LogicalSide#CLIENT].
     public static class BossEventProgress extends CustomizeGuiOverlayEvent implements ICancellableEvent {
         private final LerpingBossEvent bossEvent;
         private final int x;
@@ -69,39 +67,30 @@ public abstract class CustomizeGuiOverlayEvent extends Event {
             this.increment = increment;
         }
 
-        /**
-         * @return the boss health bar currently being rendered
-         */
+        /// {@return the boss health bar currently being rendered}
         public LerpingBossEvent getBossEvent() {
             return bossEvent;
         }
 
-        /**
-         * {@return the X position of the boss health bar}
-         */
+        /// {@return the X position of the boss health bar}
         public int getX() {
             return x;
         }
 
-        /**
-         * {@return the Y position of the boss health bar}
-         */
+        /// {@return the Y position of the boss health bar}
         public int getY() {
             return y;
         }
 
-        /**
-         * {@return the Y position increment before rendering the next boss health bar}
-         */
+        /// {@return the Y position increment, applied before rendering the next boss health bar}
+        /// This is always applied, even if the event is [canceled][#setCanceled(boolean)].
         public int getIncrement() {
             return increment;
         }
 
-        /**
-         * Sets the Y position increment before rendering the next boss health bar.
-         *
-         * @param increment the new Y position increment
-         */
+        /// Sets the Y position increment, which is applied before rendering the next boss health bar.
+        ///
+        /// @param increment the new Y position increment
         public void setIncrement(int increment) {
             this.increment = increment;
         }

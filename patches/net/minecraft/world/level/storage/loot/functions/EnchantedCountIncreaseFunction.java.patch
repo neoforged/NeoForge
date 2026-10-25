@@ -1,11 +1,14 @@
 --- a/net/minecraft/world/level/storage/loot/functions/EnchantedCountIncreaseFunction.java
 +++ b/net/minecraft/world/level/storage/loot/functions/EnchantedCountIncreaseFunction.java
-@@ -72,6 +_,10 @@
+@@ -70,8 +_,11 @@
+     @Override
+     public ItemStack run(ItemStack itemStack, LootContext context) {
          Entity killer = context.getOptionalParameter(LootContextParams.ATTACKING_ENTITY);
-         if (killer instanceof LivingEntity entity) {
-             int level = EnchantmentHelper.getEnchantmentLevel(this.enchantment, entity);
-+
-+            // Neo: Allow mods to modify the enchantment level for loot calculations with relevant context.
+-        if (killer instanceof LivingEntity entity) {
+-            int level = EnchantmentHelper.getEnchantmentLevel(this.enchantment, entity);
++        // Neo: Allow mods to modify the enchantment level for loot calculations with relevant context.
++        if (true) {
++            int level = killer instanceof LivingEntity entity ? EnchantmentHelper.getEnchantmentLevel(this.enchantment, entity) : 0;
 +            level = net.neoforged.neoforge.event.EventHooks.getEntityLootEnchantmentLevel(this.enchantment, level, context);
 +
              if (level == 0) {
