@@ -1,0 +1,18 @@
+--- a/net/minecraft/data/recipes/RecipeBuilder.java
++++ b/net/minecraft/data/recipes/RecipeBuilder.java
+@@ -27,13 +_,14 @@
+         if (defaultKey == null) {
+             throw new IllegalStateException("Recipe has no name to derive an id from - save it with an explicit id");
+         }
++        defaultKey = net.neoforged.neoforge.common.data.RecipeOutputWrapper.modifyKey(output, defaultKey);
+ 
+         this.save(output, defaultKey);
+     }
+ 
+     default void save(RecipeOutput output, String id) {
+         ResourceKey<Recipe<?>> defaultKey = this.defaultId();
+-        ResourceKey<Recipe<?>> overriddenKey = ResourceKey.create(Registries.RECIPE, Identifier.parse(id));
++        ResourceKey<Recipe<?>> overriddenKey = net.neoforged.neoforge.common.data.RecipeOutputWrapper.modifyKey(output, ResourceKey.create(Registries.RECIPE, Identifier.parse(id)));
+         if (overriddenKey == defaultKey) {
+             throw new IllegalStateException("Recipe " + id + " should remove its 'save' argument as it is equal to default one");
+         }

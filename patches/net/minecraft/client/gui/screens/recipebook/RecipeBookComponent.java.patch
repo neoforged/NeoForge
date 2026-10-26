@@ -1,5 +1,54 @@
 --- a/net/minecraft/client/gui/screens/recipebook/RecipeBookComponent.java
 +++ b/net/minecraft/client/gui/screens/recipebook/RecipeBookComponent.java
+@@ -95,11 +_,22 @@
+     private @Nullable ScreenRectangle magnifierIconPlacement;
+ 
+     public RecipeBookComponent(T menu, List<RecipeBookComponent.TabInfo> tabInfos) {
++        this(menu, tabInfos, null);
++    }
++
++    public RecipeBookComponent(T menu, List<RecipeBookComponent.TabInfo> tabInfos,
++          net.neoforged.neoforge.client.recipebook.@Nullable RecipeOverlayButtonCreator overlayButtonCreator) {
++        this(menu, tabInfos, RecipeButton::new, overlayButtonCreator);
++    }
++
++    public RecipeBookComponent(T menu, List<RecipeBookComponent.TabInfo> tabInfos,
++          java.util.function.Function<SlotSelectTime, ? extends RecipeButton> recipeButtonCreator,
++          net.neoforged.neoforge.client.recipebook.@Nullable RecipeOverlayButtonCreator overlayButtonCreator) {
+         this.menu = menu;
+         this.tabInfos = tabInfos;
+         SlotSelectTime slotSelectTime = () -> Mth.floor(this.time / 30.0F);
+         this.ghostSlots = new GhostSlots(slotSelectTime);
+-        this.recipeBookPage = new RecipeBookPage(this, slotSelectTime, menu instanceof AbstractFurnaceMenu);
++        this.recipeBookPage = new RecipeBookPage(this, slotSelectTime, menu instanceof AbstractFurnaceMenu, recipeButtonCreator, overlayButtonCreator);
+     }
+ 
+     public void init(int width, int height, Minecraft minecraft, boolean widthTooNarrow) {
+@@ -146,7 +_,7 @@
+         this.tabButtons.clear();
+ 
+         for (RecipeBookComponent.TabInfo tabInfo : this.tabInfos) {
+-            this.tabButtons.add(new RecipeBookTabButton(0, 0, tabInfo, this::onTabButtonPress));
++            this.tabButtons.add(createTabButton(0, 0, tabInfo, this::onTabButtonPress));
+         }
+ 
+         if (this.selectedTab != null) {
+@@ -163,6 +_,15 @@
+         this.updateCollections(false, isFiltering);
+     }
+ 
++    /// Neo: Helper method to allow overriding the created recipe book tab button to change out rendering.
++    /// @param x       X position (Always zero)
++    /// @param y       Y position (Always zero)
++    /// @param tabInfo Icon information for the corresponding tab
++    /// @param onPress Button press behavior for when the tab button is clicked.
++    protected RecipeBookTabButton createTabButton(int x, int y, RecipeBookComponent.TabInfo tabInfo, Button.OnPress onPress) {
++        return new RecipeBookTabButton(x, y, tabInfo, onPress);
++    }
++
+     private int getYOrigin() {
+         return (this.height - 166) / 2;
+     }
 @@ -262,7 +_,7 @@
  
          for (RecipeBookTabButton tabButton : this.tabButtons) {

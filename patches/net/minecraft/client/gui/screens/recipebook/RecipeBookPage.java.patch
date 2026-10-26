@@ -1,0 +1,22 @@
+--- a/net/minecraft/client/gui/screens/recipebook/RecipeBookPage.java
++++ b/net/minecraft/client/gui/screens/recipebook/RecipeBookPage.java
+@@ -52,11 +_,17 @@
+     private boolean isFiltering;
+ 
+     public RecipeBookPage(RecipeBookComponent<?> parent, SlotSelectTime slotSelectTime, boolean isFurnaceMenu) {
++        this(parent, slotSelectTime, isFurnaceMenu, RecipeButton::new, null);
++    }
++
++    public RecipeBookPage(RecipeBookComponent<?> parent, SlotSelectTime slotSelectTime, boolean isFurnaceMenu,
++          java.util.function.Function<SlotSelectTime, ? extends RecipeButton> recipeButtonCreator,
++          net.neoforged.neoforge.client.recipebook.@Nullable RecipeOverlayButtonCreator overlayButtonCreator) {
+         this.parent = parent;
+-        this.overlay = new OverlayRecipeComponent(slotSelectTime, isFurnaceMenu);
++        this.overlay = new OverlayRecipeComponent(slotSelectTime, isFurnaceMenu, overlayButtonCreator);
+ 
+         for (int i = 0; i < 20; i++) {
+-            this.buttons.add(new RecipeButton(slotSelectTime));
++            this.buttons.add(recipeButtonCreator.apply(slotSelectTime));
+         }
+     }
+ 
