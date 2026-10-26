@@ -1,14 +1,17 @@
-package net.neoforged.neoforge.client.model.obj;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
 
-import net.minecraft.server.packs.resources.Resource;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
-import org.jspecify.annotations.Nullable;
+package net.neoforged.neoforge.client.model.obj;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import net.minecraft.server.packs.resources.Resource;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
+import org.jspecify.annotations.Nullable;
 
 public class ObjReader implements AutoCloseable {
     // No OBJ command is longer than 32 bytes, so this is a reasonable limit.
@@ -132,9 +135,8 @@ public class ObjReader implements AutoCloseable {
 
     public record Face(Vertex[] vertices) {
         public record Vertex(int positionIndex,
-            @Nullable Integer textureCoordinateIndex,
-            @Nullable Integer normalIndex
-        ) { }
+                @Nullable Integer textureCoordinateIndex,
+                @Nullable Integer normalIndex) {}
     }
 
     /// Reads a face in the stream.

@@ -1,12 +1,16 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.model.obj;
 
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
+import java.util.List;
 import net.minecraft.core.Direction;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
-
-import java.util.List;
 
 public class ObjModel {
     private final List<Object> _objects;
@@ -39,8 +43,8 @@ public class ObjModel {
         public final int smoothingGroup;
 
         private Object(String name, @Nullable String material, int smoothingGroup,
-            List<Vector3fc> positions, List<Vector3fc> normals, List<Vector3fc> uvs,
-            List<Face> faces) {
+                List<Vector3fc> positions, List<Vector3fc> normals, List<Vector3fc> uvs,
+                List<Face> faces) {
             this.name = name;
             this.material = material;
             this.smoothingGroup = smoothingGroup;
@@ -69,13 +73,11 @@ public class ObjModel {
     }
 
     public record Face(
-        List<Vertex> vertices
-    ) {
+            List<Vertex> vertices) {
         // TODO: This should normalize the references such that there are no negative numbers.
         public record Vertex(int positionReference,
-            @Nullable Integer textureCoordinateReference,
-            @Nullable Integer normalReference
-        ) { }
+                @Nullable Integer textureCoordinateReference,
+                @Nullable Integer normalReference) {}
 
         public Direction computeApproximateDirection(Object object, Vector3f overallNormal) {
             overallNormal.zero();
@@ -104,7 +106,7 @@ public class ObjModel {
         private String _material = null;
         private int _smoothingGroup;
 
-        private Builder() { }
+        private Builder() {}
 
         public ObjModel build() {
             return new ObjModel(null, _objects);
@@ -113,10 +115,9 @@ public class ObjModel {
         public ObjModel build(MaterialLibrary materialLibrary) {
             if (_objectName != null) {
                 _objects.add(new Object(
-                    _objectName, _material, _smoothingGroup,
-                    _vertexPositions, _vertexNormals, _vertexUvs,
-                    new ReferenceArrayList<>(_objectFaces)
-                ));
+                        _objectName, _material, _smoothingGroup,
+                        _vertexPositions, _vertexNormals, _vertexUvs,
+                        new ReferenceArrayList<>(_objectFaces)));
             }
 
             return new ObjModel(materialLibrary, _objects);
@@ -135,10 +136,9 @@ public class ObjModel {
         public Builder beginObject(String name) {
             if (_objectName != null) {
                 _objects.add(new Object(
-                    _objectName, _material, _smoothingGroup,
-                    _vertexPositions, _vertexNormals, _vertexUvs,
-                    new ReferenceArrayList<>(_objectFaces)
-                ));
+                        _objectName, _material, _smoothingGroup,
+                        _vertexPositions, _vertexNormals, _vertexUvs,
+                        new ReferenceArrayList<>(_objectFaces)));
             }
 
             _objectName = name;

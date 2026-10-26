@@ -58,7 +58,6 @@ import net.neoforged.neoforge.client.model.EmptyModel;
 import net.neoforged.neoforge.client.model.block.CompositeBlockModel;
 import net.neoforged.neoforge.client.model.item.DynamicFluidContainerModel;
 import net.neoforged.neoforge.client.model.item.TrimmedArmorModel;
-import net.neoforged.neoforge.client.model.obj.ObjLoader;
 import net.neoforged.neoforge.client.model.obj.loader.ObjModelLoader;
 import net.neoforged.neoforge.client.recipebook.RecipeDisplayResultIdExtractor;
 import net.neoforged.neoforge.client.recipebook.RecipeDisplayResultTooltipExtractor;

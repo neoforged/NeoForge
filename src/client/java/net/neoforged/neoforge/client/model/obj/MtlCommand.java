@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.model.obj;
 
 import org.jspecify.annotations.Nullable;
@@ -5,8 +10,7 @@ import org.jspecify.annotations.Nullable;
 /// A command within an MTL file. This is designed for compatibility with MTL
 /// files as exported by Blender. Other programs may use features which are
 /// unsupported.
-public enum MtlCommand
-{
+public enum MtlCommand {
     /// A new material command (newmtl)
     NewMaterial,
 
@@ -74,21 +78,21 @@ public enum MtlCommand
         var maxIndex = start + length;
         if (maxIndex >= command.length)
             throw new IllegalArgumentException(
-                "The maximum possible index (" + maxIndex +
-                    ") is larger than the length of the array (" +
-                    command.length + ")");
+                    "The maximum possible index (" + maxIndex +
+                            ") is larger than the length of the array (" +
+                            command.length + ")");
 
         return switch (length) {
             case 1 -> parseSingle(command[start]);
             case 2 -> parseDouble(command[start], command[start + 1]);
             case 4 -> parseQuad(command[start], command[start + 1],
-                command[start + 2], command[start + 3]);
+                    command[start + 2], command[start + 3]);
             case 5 -> parseQuint(command[start], command[start + 1],
-                command[start + 2], command[start + 3],
-                command[start + 4]);
+                    command[start + 2], command[start + 3],
+                    command[start + 4]);
             case 6 -> parseHex(command[start], command[start + 1],
-                command[start + 2], command[start + 3],
-                command[start + 4], command[start + 5]);
+                    command[start + 2], command[start + 3],
+                    command[start + 4], command[start + 5]);
 
             case 15, 18 -> parseTintIndex(command, start);
             default -> null;
@@ -121,8 +125,7 @@ public enum MtlCommand
     }
 
     private static @Nullable MtlCommand parseQuad(char first, char second,
-        char third, char fourth) {
-
+            char third, char fourth) {
         return switch (first) {
             case 'd' -> (second == 'i' && third == 's' && fourth == 'p') ? DisplacementMap : null;
             case 'b' -> (second == 'u' && third == 'm' && fourth == 'p') ? BumpMap : null;
@@ -132,9 +135,8 @@ public enum MtlCommand
     }
 
     private static @Nullable MtlCommand parseQuint(char first, char second,
-        char third, char fourth,
-        char fifth) {
-
+            char third, char fourth,
+            char fifth) {
         if (first == 'i' && second == 'l' && third == 'l' && fourth == 'u' && fifth == 'm') {
             return IlluminationModel;
         }
@@ -143,9 +145,8 @@ public enum MtlCommand
     }
 
     private static @Nullable MtlCommand parseHex(char first, char second,
-        char third, char fourth,
-        char fifth, char sixth) {
-
+            char third, char fourth,
+            char fifth, char sixth) {
         // newmtl
         if (first == 'n' && second == 'e' && third == 'w' && fourth == 'm' && fifth == 't' && sixth == 'l') {
             return NewMaterial;
@@ -171,40 +172,40 @@ public enum MtlCommand
     private static @Nullable MtlCommand parseTintIndex(char[] buffer, int start) {
         switch (buffer[start]) {
             case 'f': // 'forge_TintIndex'
-                if (buffer[start +  1] == 'o' &&
-                    buffer[start +  2] == 'r' &&
-                    buffer[start +  3] == 'g' &&
-                    buffer[start +  4] == 'e' &&
-                    buffer[start +  5] == '_' &&
-                    buffer[start +  6] == 'T' &&
-                    buffer[start +  7] == 'i' &&
-                    buffer[start +  8] == 'n' &&
-                    buffer[start +  9] == 't' &&
-                    buffer[start + 10] == 'I' &&
-                    buffer[start + 11] == 'n' &&
-                    buffer[start + 12] == 'd' &&
-                    buffer[start + 13] == 'e' &&
-                    buffer[start + 14] == 'x')
+                if (buffer[start + 1] == 'o' &&
+                        buffer[start + 2] == 'r' &&
+                        buffer[start + 3] == 'g' &&
+                        buffer[start + 4] == 'e' &&
+                        buffer[start + 5] == '_' &&
+                        buffer[start + 6] == 'T' &&
+                        buffer[start + 7] == 'i' &&
+                        buffer[start + 8] == 'n' &&
+                        buffer[start + 9] == 't' &&
+                        buffer[start + 10] == 'I' &&
+                        buffer[start + 11] == 'n' &&
+                        buffer[start + 12] == 'd' &&
+                        buffer[start + 13] == 'e' &&
+                        buffer[start + 14] == 'x')
                     return NeoForgeTintIndex;
                 break;
             case 'n': // 'neoforge_TintIndex'
-                if (buffer[start +  1] == 'e' &&
-                    buffer[start +  2] == 'o' &&
-                    buffer[start +  3] == 'f' &&
-                    buffer[start +  4] == 'o' &&
-                    buffer[start +  5] == 'r' &&
-                    buffer[start +  6] == 'g' &&
-                    buffer[start +  7] == 'e' &&
-                    buffer[start +  8] == '_' &&
-                    buffer[start +  9] == 'T' &&
-                    buffer[start + 10] == 'i' &&
-                    buffer[start + 11] == 'n' &&
-                    buffer[start + 12] == 't' &&
-                    buffer[start + 13] == 'I' &&
-                    buffer[start + 14] == 'n' &&
-                    buffer[start + 15] == 'd' &&
-                    buffer[start + 16] == 'e' &&
-                    buffer[start + 17] == 'x')
+                if (buffer[start + 1] == 'e' &&
+                        buffer[start + 2] == 'o' &&
+                        buffer[start + 3] == 'f' &&
+                        buffer[start + 4] == 'o' &&
+                        buffer[start + 5] == 'r' &&
+                        buffer[start + 6] == 'g' &&
+                        buffer[start + 7] == 'e' &&
+                        buffer[start + 8] == '_' &&
+                        buffer[start + 9] == 'T' &&
+                        buffer[start + 10] == 'i' &&
+                        buffer[start + 11] == 'n' &&
+                        buffer[start + 12] == 't' &&
+                        buffer[start + 13] == 'I' &&
+                        buffer[start + 14] == 'n' &&
+                        buffer[start + 15] == 'd' &&
+                        buffer[start + 16] == 'e' &&
+                        buffer[start + 17] == 'x')
                     return NeoForgeTintIndex;
                 break;
         }

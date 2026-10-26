@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.model.obj;
 
 import java.util.Arrays;
@@ -6,13 +11,14 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 // Array pool based on the implementation used in .NET
 public final class ArrayPool {
     private static final int NUMBER_OF_BUCKETS = 27;
-    private static final char[] EMPTY = new char[] { };
+    private static final char[] EMPTY = new char[] {};
 
     private static final ThreadLocal<char[][]> _threadLocalArrays = new ThreadLocal<>();
     private static final AtomicReferenceArray<Partitions> _buckets = new AtomicReferenceArray<>(NUMBER_OF_BUCKETS);
 
     public static final ArrayPool SHARED = new ArrayPool();
-    private ArrayPool() { }
+
+    private ArrayPool() {}
 
     private static int selectBucketIndex(int minimumLength) {
         var log2 = 31 ^ Integer.numberOfLeadingZeros(minimumLength - 1 | 15);
@@ -64,7 +70,7 @@ public final class ArrayPool {
 
         if (bucketIndex < threadLocalArrays.length) {
             if (clear) {
-                Arrays.fill(array, (char)0);
+                Arrays.fill(array, (char) 0);
             }
             if (array.length != (16 << bucketIndex)) {
                 throw new IllegalArgumentException("array must be from the pool");
@@ -73,8 +79,7 @@ public final class ArrayPool {
             // Keep the most recent array in the thread-local cache for better locality.
             var previous = threadLocalArrays[bucketIndex];
             threadLocalArrays[bucketIndex] = array;
-            if (previous != null)
-            {
+            if (previous != null) {
                 var bucket = _buckets.get(bucketIndex);
                 if (bucket == null) {
                     bucket = createPerCorePartitions(bucketIndex);
@@ -118,7 +123,7 @@ public final class ArrayPool {
         public boolean tryPush(char[] array) {
             var partitions = _partitions;
             // N.B. this was ProcessorId in .NET
-            var index = ((int)Thread.currentThread().threadId() % PARTITION_COUNT);
+            var index = ((int) Thread.currentThread().threadId() % PARTITION_COUNT);
             for (int i = 0; i < partitions.length; i++) {
                 if (partitions[index].tryPush(array)) return true;
                 if (++index == partitions.length) index = 0;
@@ -131,7 +136,7 @@ public final class ArrayPool {
             char[] array;
             var partitions = _partitions;
             // N.B. this was ProcessorId in .NET
-            var index = ((int)Thread.currentThread().threadId() % PARTITION_COUNT);
+            var index = ((int) Thread.currentThread().threadId() % PARTITION_COUNT);
 
             for (int i = 0; i < partitions.length; i++) {
                 if ((array = partitions[index].tryPop()) != null) return array;

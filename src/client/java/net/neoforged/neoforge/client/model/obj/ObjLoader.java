@@ -1,17 +1,21 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.model.obj;
 
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
+import java.io.IOException;
+import java.util.Collections;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.neoforged.neoforge.client.model.obj.ObjModel.Builder;
 import net.neoforged.neoforge.client.model.obj.ObjModel.Face;
 import net.neoforged.neoforge.client.model.obj.ObjModel.Face.Vertex;
 
-import java.io.IOException;
-import java.util.Collections;
-
 public final class ObjLoader {
-    private ObjLoader() { }
+    private ObjLoader() {}
 
     @FunctionalInterface
     public interface ResourceLocator {
@@ -61,20 +65,19 @@ public final class ObjLoader {
                             throw new IllegalStateException("Invalid face: vertex index " + i + " references invalid position " + originalVertex.positionIndex());
 
                         if (originalVertex.normalIndex() != null &&
-                            (originalVertex.normalIndex() < 0 || originalVertex.normalIndex() > builder.vertexNormalCount()))
+                                (originalVertex.normalIndex() < 0 || originalVertex.normalIndex() > builder.vertexNormalCount()))
 
                             throw new IllegalStateException("Invalid face: vertex index " + i + " references invalid normal " + originalVertex.positionIndex());
 
                         if (originalVertex.textureCoordinateIndex() != null &&
-                            (originalVertex.textureCoordinateIndex() < 0 || originalVertex.textureCoordinateIndex() > builder.vertexTextureCoordinateCount()))
+                                (originalVertex.textureCoordinateIndex() < 0 || originalVertex.textureCoordinateIndex() > builder.vertexTextureCoordinateCount()))
 
                             throw new IllegalStateException("Invalid face: vertex index " + i + " references invalid texture coordinate " + originalVertex.positionIndex());
 
                         vertices.add(new Vertex(
-                            originalVertex.positionIndex(),
-                            originalVertex.textureCoordinateIndex(),
-                            originalVertex.normalIndex()
-                        ));
+                                originalVertex.positionIndex(),
+                                originalVertex.textureCoordinateIndex(),
+                                originalVertex.normalIndex()));
                     }
 
                     builder.addFace(new Face(Collections.unmodifiableList(vertices)));

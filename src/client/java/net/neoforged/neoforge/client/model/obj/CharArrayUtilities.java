@@ -1,22 +1,27 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.model.obj;
 
 final class CharArrayUtilities {
-    private CharArrayUtilities() { }
+    private CharArrayUtilities() {}
 
     /// Finds the first whitespace character within the given character array.
     /// The array will be indexed from `start` to `start + length`.
     ///
     /// @param buffer The buffer to search in
-    /// @param start The index to start searching from
+    /// @param start  The index to start searching from
     /// @param length The maximum number of characters to read
     public static int findFirstWhitespace(char[] buffer, int start, int length) {
         var maxIndex = start + length;
 
         if (maxIndex > buffer.length)
             throw new IllegalArgumentException(
-                "The maximum possible index (" + maxIndex +
-                    ") is larger than the length of the array (" +
-                    buffer.length + ")");
+                    "The maximum possible index (" + maxIndex +
+                            ") is larger than the length of the array (" +
+                            buffer.length + ")");
 
         var foundIndex = -1;
         for (int i = start; i < maxIndex; i++) {
@@ -33,16 +38,16 @@ final class CharArrayUtilities {
     /// The array will be indexed from `start` to `start + length`.
     ///
     /// @param buffer The buffer to search in
-    /// @param start The index to start searching from
+    /// @param start  The index to start searching from
     /// @param length The maximum number of characters to read
     public static int findFirstNonDigit(char[] buffer, int start, int length) {
         var maxIndex = start + length;
 
         if (maxIndex > buffer.length)
             throw new IllegalArgumentException(
-                "The maximum possible index (" + maxIndex +
-                    ") is larger than the length of the array (" +
-                    buffer.length + ")");
+                    "The maximum possible index (" + maxIndex +
+                            ") is larger than the length of the array (" +
+                            buffer.length + ")");
 
         var foundIndex = -1;
         for (int i = start; i < maxIndex; i++) {
@@ -61,16 +66,16 @@ final class CharArrayUtilities {
     /// The array will be indexed from `start` to `start + length`.
     ///
     /// @param buffer The buffer to search in
-    /// @param start The index to start searching from
+    /// @param start  The index to start searching from
     /// @param length The maximum number of characters to read
     public static int findFirstNonFloat(char[] buffer, int start, int length) {
         var maxIndex = start + length;
 
         if (maxIndex > buffer.length)
             throw new IllegalArgumentException(
-                "The maximum possible index (" + maxIndex +
-                    ") is larger than the length of the array (" +
-                    buffer.length + ")");
+                    "The maximum possible index (" + maxIndex +
+                            ") is larger than the length of the array (" +
+                            buffer.length + ")");
 
         var foundIndex = -1;
         for (int i = start; i < maxIndex; i++) {

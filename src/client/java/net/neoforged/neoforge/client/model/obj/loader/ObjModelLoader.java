@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.model.obj.loader;
 
 import com.google.gson.JsonDeserializationContext;
@@ -5,6 +10,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.math.MatrixUtil;
 import com.mojang.math.Transformation;
+import java.io.IOException;
+import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.dispatch.ModelState;
 import net.minecraft.client.resources.model.ModelBaker;
@@ -26,14 +33,10 @@ import net.neoforged.neoforge.client.model.quad.BakedColors;
 import net.neoforged.neoforge.client.model.quad.MutableQuad;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import java.io.IOException;
-import java.util.Map;
-
 public class ObjModelLoader implements UnbakedModelLoader<ObjModelLoader.Unbaked> {
-    private ObjModelLoader() { };
+    private ObjModelLoader() {};
 
     public static ObjModelLoader INSTANCE = new ObjModelLoader();
 
@@ -47,15 +50,14 @@ public class ObjModelLoader implements UnbakedModelLoader<ObjModelLoader.Unbaked
 
         // TODO: a geometry cache may be necessary here
         return new Unbaked(
-            () -> {
-                var resource = resourceMapper.apply(origin, origin.getPath());
-                return ObjLoader.load(origin, resource, resourceMapper);
-            },
-            StandardModelParameters.parse(jsonObject, deserializationContext)
-        );
+                () -> {
+                    var resource = resourceMapper.apply(origin, origin.getPath());
+                    return ObjLoader.load(origin, resource, resourceMapper);
+                },
+                StandardModelParameters.parse(jsonObject, deserializationContext));
     }
 
-    private static ObjLoader.@NonNull ResourceLocator getResourceMapper() {
+    private static ObjLoader.ResourceLocator getResourceMapper() {
         var manager = Minecraft.getInstance().getResourceManager();
         return (origin, name) -> {
             // Assume it's a resource location with an absolute location if possible.
@@ -75,8 +77,6 @@ public class ObjModelLoader implements UnbakedModelLoader<ObjModelLoader.Unbaked
             return resource;
         };
     }
-
-
 
     @FunctionalInterface
     private interface ObjModelSupplier {
@@ -121,22 +121,20 @@ public class ObjModelLoader implements UnbakedModelLoader<ObjModelLoader.Unbaked
 
         @Override
         public QuadCollection bake(
-            final TextureSlots textureSlots,
-            final ModelBaker modelBaker,
-            final ModelState modelState,
-            final ModelDebugName modelDebugName
-        ) {
+                final TextureSlots textureSlots,
+                final ModelBaker modelBaker,
+                final ModelState modelState,
+                final ModelDebugName modelDebugName) {
             return bake(textureSlots, modelBaker, modelState, modelDebugName, ContextMap.EMPTY);
         }
 
         @Override
         public QuadCollection bake(
-            final TextureSlots textureSlots,
-            final ModelBaker baker,
-            final ModelState state,
-            final ModelDebugName debugName,
-            final ContextMap additionalProperties
-        ) {
+                final TextureSlots textureSlots,
+                final ModelBaker baker,
+                final ModelState state,
+                final ModelDebugName debugName,
+                final ContextMap additionalProperties) {
             var result = new QuadCollection.Builder();
             var visibilityMap = additionalProperties.getOrDefault(NeoForgeModelProperties.PART_VISIBILITY, Map.of());
             var transform = additionalProperties.getOrDefault(NeoForgeModelProperties.TRANSFORM, Transformation.IDENTITY);
@@ -150,15 +148,14 @@ public class ObjModelLoader implements UnbakedModelLoader<ObjModelLoader.Unbaked
         }
 
         private void bakeObject(
-            QuadCollection.Builder result,
-            ObjModel.Object object,
-            TextureSlots slots,
-            ModelBaker baker,
-            ModelState state,
-            ModelDebugName debugName,
-            Map<String, Boolean> visibilityMap,
-            Transformation transform
-        ) {
+                QuadCollection.Builder result,
+                ObjModel.Object object,
+                TextureSlots slots,
+                ModelBaker baker,
+                ModelState state,
+                ModelDebugName debugName,
+                Map<String, Boolean> visibilityMap,
+                Transformation transform) {
             if (!visibilityMap.getOrDefault(object.name, true)) return;
 
             for (var face : object.faces()) {
@@ -167,15 +164,14 @@ public class ObjModelLoader implements UnbakedModelLoader<ObjModelLoader.Unbaked
         }
 
         private void bakeFace(
-            QuadCollection.Builder result,
-            ObjModel.Object object,
-            ObjModel.Face face,
-            TextureSlots slots,
-            ModelBaker baker,
-            ModelState state,
-            ModelDebugName debugName,
-            Transformation transform)
-        {
+                QuadCollection.Builder result,
+                ObjModel.Object object,
+                ObjModel.Face face,
+                TextureSlots slots,
+                ModelBaker baker,
+                ModelState state,
+                ModelDebugName debugName,
+                Transformation transform) {
             var numberOfFaces = face.vertices().size();
             if (numberOfFaces != 3 && numberOfFaces != 4)
                 throw new IllegalStateException("Only triangles and quads are permitted");
@@ -200,7 +196,7 @@ public class ObjModelLoader implements UnbakedModelLoader<ObjModelLoader.Unbaked
 
                     if (mtlMaterial.ambientReflectivity() != null) {
                         var avgLight = (mtlMaterial.ambientReflectivity().x() + mtlMaterial.ambientReflectivity().y() + mtlMaterial.ambientReflectivity().z()) / 3;
-                        _scratchQuad.setLightEmission((int)(avgLight * 15));
+                        _scratchQuad.setLightEmission((int) (avgLight * 15));
                     }
 
                     float r = 1, g = 1, b = 1, a = mtlMaterial.dissolve();
@@ -210,7 +206,7 @@ public class ObjModelLoader implements UnbakedModelLoader<ObjModelLoader.Unbaked
                         b *= mtlMaterial.diffuseReflectivity().z();
                     }
 
-                    _scratchQuad.setColor(BakedColors.of(ARGB.colorFromFloat(a,r,g,b)));
+                    _scratchQuad.setColor(BakedColors.of(ARGB.colorFromFloat(a, r, g, b)));
                 }
             }
 

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.model.obj;
 
 import org.jspecify.annotations.Nullable;
@@ -40,16 +45,16 @@ public enum ObjCommand {
         var maxIndex = start + length;
         if (maxIndex >= command.length)
             throw new IllegalArgumentException(
-                "The maximum possible index (" + maxIndex +
-                    ") is larger than the length of the array (" +
-                    command.length + ")");
+                    "The maximum possible index (" + maxIndex +
+                            ") is larger than the length of the array (" +
+                            command.length + ")");
 
         return switch (length) {
             case 1 -> parseSingle(command[start]);
             case 2 -> parseDouble(command[start], command[start + 1]);
             case 6 -> parseHex(command[start], command[start + 1],
-                command[start + 2], command[start + 3],
-                command[start + 4], command[start + 5]);
+                    command[start + 2], command[start + 3],
+                    command[start + 4], command[start + 5]);
             default -> null;
         };
     }
@@ -75,9 +80,8 @@ public enum ObjCommand {
     }
 
     private static @Nullable ObjCommand parseHex(char first, char second,
-        char third, char fourth,
-        char fifth, char sixth) {
-
+            char third, char fourth,
+            char fifth, char sixth) {
         if (first == 'm' && second == 't' && third == 'l' && fourth == 'l' && fifth == 'i' && sixth == 'b') return MaterialLibraryReference;
         if (first == 'u' && second == 's' && third == 'e' && fourth == 'm' && fifth == 't' && sixth == 'l') return MaterialReference;
 

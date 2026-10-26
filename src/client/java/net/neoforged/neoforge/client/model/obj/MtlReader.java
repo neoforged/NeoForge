@@ -1,13 +1,16 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.model.obj;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import net.minecraft.server.packs.resources.Resource;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.util.Arrays;
 
 public class MtlReader implements AutoCloseable {
     // No MTL command is longer than 32 bytes, so this is a reasonable limit.
