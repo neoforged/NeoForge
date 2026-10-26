@@ -59,6 +59,7 @@ import net.neoforged.neoforge.client.model.block.CompositeBlockModel;
 import net.neoforged.neoforge.client.model.item.DynamicFluidContainerModel;
 import net.neoforged.neoforge.client.model.item.TrimmedArmorModel;
 import net.neoforged.neoforge.client.model.obj.ObjLoader;
+import net.neoforged.neoforge.client.model.obj.loader.ObjModelLoader;
 import net.neoforged.neoforge.client.recipebook.RecipeDisplayResultIdExtractor;
 import net.neoforged.neoforge.client.recipebook.RecipeDisplayResultTooltipExtractor;
 import net.neoforged.neoforge.client.resources.VanillaClientListeners;
@@ -199,7 +200,7 @@ public class ClientNeoForgeMod {
     @SubscribeEvent
     static void onRegisterModelLoaders(ModelEvent.RegisterLoaders event) {
         event.register(neoForgeId("empty"), EmptyModel.LOADER);
-        event.register(neoForgeId("obj"), ObjLoader.INSTANCE);
+        event.register(neoForgeId("obj"), ObjModelLoader.INSTANCE);
         event.register(neoForgeId("composite"), CompositeUnbakedModel.Loader.INSTANCE);
         event.register(ConditionalModelLoader.ID, ConditionalModelLoader.INSTANCE);
     }
@@ -211,7 +212,7 @@ public class ClientNeoForgeMod {
         // These run before vanilla reload listeners.
         event.addDependency(NeoForgeReloadListeners.BRANDING, VanillaClientListeners.FIRST);
 
-        event.addListener(NeoForgeReloadListeners.OBJ_LOADER, ObjLoader.INSTANCE);
+        //event.addListener(NeoForgeReloadListeners.OBJ_LOADER, ObjModelLoader.INSTANCE);
 
         event.addListener(NeoForgeReloadListeners.ENTITY_ANIMATIONS, AnimationLoader.INSTANCE);
         // Animations need to be loaded before entity renderers are instantiated

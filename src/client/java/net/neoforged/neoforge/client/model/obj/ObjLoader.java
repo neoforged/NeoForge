@@ -1,86 +1,118 @@
-/*
- * Copyright (c) Forge Development LLC and contributors
- * SPDX-License-Identifier: LGPL-2.1-only
- */
-
 package net.neoforged.neoforge.client.model.obj;
 
-import com.google.common.collect.Maps;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import java.io.FileNotFoundException;
-import java.util.Map;
-import net.minecraft.client.Minecraft;
+import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.minecraft.util.GsonHelper;
-import net.neoforged.neoforge.client.model.StandardModelParameters;
-import net.neoforged.neoforge.client.model.UnbakedModelLoader;
+import net.neoforged.neoforge.client.model.obj.ObjModel.Builder;
+import net.neoforged.neoforge.client.model.obj.ObjModel.Face;
+import net.neoforged.neoforge.client.model.obj.ObjModel.Face.Vertex;
 
-/**
- * A loader for {@link ObjModel OBJ models}.
- * <p>
- * Allows the user to enable automatic face culling, toggle quad shading, flip UVs, render emissively and specify a
- * {@link ObjMaterialLibrary material library} override.
- */
-public class ObjLoader implements UnbakedModelLoader<ObjModel>, ResourceManagerReloadListener {
-    public static ObjLoader INSTANCE = new ObjLoader();
+import java.io.IOException;
+import java.util.Collections;
 
-    private final Map<ObjGeometry.Settings, ObjGeometry> geometryCache = Maps.newConcurrentMap();
-    private final Map<Identifier, ObjMaterialLibrary> materialCache = Maps.newConcurrentMap();
+public final class ObjLoader {
+    private ObjLoader() { }
 
-    private final ResourceManager manager = Minecraft.getInstance().getResourceManager();
-
-    @Override
-    public void onResourceManagerReload(ResourceManager resourceManager) {
-        geometryCache.clear();
-        materialCache.clear();
+    @FunctionalInterface
+    public interface ResourceLocator {
+        Resource apply(Identifier origin, String name) throws IOException;
     }
 
-    @Override
-    public ObjModel read(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        if (!jsonObject.has("model"))
-            throw new JsonParseException("OBJ Loader requires a 'model' key that points to a valid .OBJ model.");
+    public static ObjModel load(Identifier origin, Resource resource, ResourceLocator locator) throws IOException {
+        Builder model;
+        try (var reader = new ObjReader(resource)) {
+            model = process(reader);
+        }
 
-        String modelLocation = jsonObject.get("model").getAsString();
-
-        boolean automaticCulling = GsonHelper.getAsBoolean(jsonObject, "automatic_culling", true);
-        boolean shadeQuads = GsonHelper.getAsBoolean(jsonObject, "shade_quads", true);
-        boolean flipV = GsonHelper.getAsBoolean(jsonObject, "flip_v", false);
-        boolean emissiveAmbient = GsonHelper.getAsBoolean(jsonObject, "emissive_ambient", true);
-        String mtlOverride = GsonHelper.getAsString(jsonObject, "mtl_override", null);
-        StandardModelParameters parameters = StandardModelParameters.parse(jsonObject, jsonDeserializationContext);
-
-        var geometry = loadGeometry(new ObjGeometry.Settings(Identifier.parse(modelLocation), automaticCulling, shadeQuads, flipV, emissiveAmbient, mtlOverride));
-        return new ObjModel(parameters, geometry);
-    }
-
-    public ObjGeometry loadGeometry(ObjGeometry.Settings settings) {
-        return geometryCache.computeIfAbsent(settings, (data) -> {
-            Resource resource = manager.getResource(settings.modelLocation()).orElseThrow();
-            try (ObjTokenizer tokenizer = new ObjTokenizer(resource.open())) {
-                return ObjGeometry.parse(tokenizer, data);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException("Could not find OBJ model", e);
-            } catch (Exception e) {
-                throw new RuntimeException("Could not read OBJ model", e);
+        if (model.materialLibrary() != null) {
+            MaterialLibrary materials;
+            try (var reader = new MtlReader(locator.apply(origin, model.materialLibrary()))) {
+                materials = process(reader).build();
             }
-        });
+
+            return model.build(materials);
+        }
+
+        return model.build();
     }
 
-    public ObjMaterialLibrary loadMaterialLibrary(Identifier materialLocation) {
-        return materialCache.computeIfAbsent(materialLocation, (location) -> {
-            Resource resource = manager.getResource(location).orElseThrow();
-            try (ObjTokenizer rdr = new ObjTokenizer(resource.open())) {
-                return new ObjMaterialLibrary(rdr);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException("Could not find OBJ material library", e);
-            } catch (Exception e) {
-                throw new RuntimeException("Could not read OBJ material library", e);
+    private static Builder process(ObjReader reader) throws IOException {
+        var builder = ObjModel.builder();
+        while (reader.hasMoreData()) {
+            switch (reader.readCommand()) {
+                case MaterialLibraryReference -> builder.setMaterialLibrary(reader.readString());
+                case Object -> builder.beginObject(reader.readString());
+                case VertexPosition -> builder.addVertexPosition(reader.readVertexPosition());
+                case VertexNormal -> builder.addVertexNormal(reader.readVertexNormal());
+                case VertexTexture -> builder.addVertexTextureCoordinate(reader.readTextureCoordinate());
+                case MaterialReference -> builder.setMaterial(reader.readString());
+                case SmoothingGroup -> builder.setSmoothingGroup(reader.readSmoothingGroup());
+
+                case Face -> {
+                    var face = reader.readFace();
+
+                    // Ensure we're only permitting OBJs with triangles or quads.
+                    var numberOfVertices = face.vertices().length;
+                    var vertices = new ReferenceArrayList<Vertex>(numberOfVertices);
+                    for (int i = 0; i < numberOfVertices; i++) {
+                        var originalVertex = face.vertices()[i];
+
+                        if (originalVertex.positionIndex() < 0 || originalVertex.positionIndex() > builder.vertexPositionCount())
+                            throw new IllegalStateException("Invalid face: vertex index " + i + " references invalid position " + originalVertex.positionIndex());
+
+                        if (originalVertex.normalIndex() != null &&
+                            (originalVertex.normalIndex() < 0 || originalVertex.normalIndex() > builder.vertexNormalCount()))
+
+                            throw new IllegalStateException("Invalid face: vertex index " + i + " references invalid normal " + originalVertex.positionIndex());
+
+                        if (originalVertex.textureCoordinateIndex() != null &&
+                            (originalVertex.textureCoordinateIndex() < 0 || originalVertex.textureCoordinateIndex() > builder.vertexTextureCoordinateCount()))
+
+                            throw new IllegalStateException("Invalid face: vertex index " + i + " references invalid texture coordinate " + originalVertex.positionIndex());
+
+                        vertices.add(new Vertex(
+                            originalVertex.positionIndex(),
+                            originalVertex.textureCoordinateIndex(),
+                            originalVertex.normalIndex()
+                        ));
+                    }
+
+                    builder.addFace(new Face(Collections.unmodifiableList(vertices)));
+                }
+
+                case null -> { /* no-op, likely means we reached EOF */ }
             }
-        });
+        }
+
+        return builder;
+    }
+
+    private static MaterialLibrary.Builder process(MtlReader reader) throws IOException {
+        var builder = MaterialLibrary.builder();
+        while (reader.hasMoreData()) {
+            switch (reader.readCommand()) {
+                case NewMaterial -> builder.addMaterial(reader.readString());
+                case SpecularExponent -> builder.setSpecularExponent(reader.readFloat());
+                case OpticalDensity -> builder.setOpticalDensity(reader.readFloat());
+                case AmbientReflectivity -> builder.setAmbientReflectivity(reader.readColor());
+                case DiffuseReflectivity -> builder.setDiffuseReflectivity(reader.readColor());
+                case SpecularReflectivity -> builder.setSpecularReflectivity(reader.readColor());
+                case SpecularEmission -> builder.setSpecularEmission(reader.readColor());
+                case Dissolve -> builder.setDissolve(reader.readFloat());
+                case IlluminationModel -> builder.setIlluminationModel(reader.readInteger());
+                case MappedSpecularityExponent -> builder.setSpecularityExponentMap(reader.readString());
+                case MappedAmbientReflectivity -> builder.setAmbientReflectivityMap(reader.readString());
+                case MappedDiffuseReflectivity -> builder.setDiffuseReflectivityMap(reader.readString());
+                case MappedSpecularReflectivity -> builder.setSpecularReflectivityMap(reader.readString());
+                case MappedSpecularEmission -> builder.setSpecularEmissionMap(reader.readString());
+                case DisplacementMap -> builder.setDisplacementMap(reader.readString());
+                case BumpMap -> builder.setBumpMap(reader.readString());
+                case ReflectionMap -> builder.setReflectionMap(reader.readString());
+                case NeoForgeTintIndex -> builder.setNeoForgeTintIndex(reader.readInteger());
+                case null -> { /* no-op, likely means we reached EOF */ }
+            }
+        }
+
+        return builder;
     }
 }
