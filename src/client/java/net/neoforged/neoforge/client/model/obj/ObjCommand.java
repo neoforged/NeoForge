@@ -36,7 +36,7 @@ public enum ObjCommand {
     public static ObjCommand parse(char[] command, int start, int length) {
         var parsed = tryParse(command, start, length);
         if (parsed == null)
-            throw new IllegalArgumentException("Unable to parse command");
+            throw new IllegalArgumentException("Unable to parse command '" + String.valueOf(command, start, length) + "'");
 
         return parsed;
     }
