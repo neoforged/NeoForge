@@ -5,15 +5,18 @@
 
 package net.neoforged.neoforge.client.model.obj;
 
+import com.google.common.primitives.Ints;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.util.Mth;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
 
 public class ObjReader implements AutoCloseable {
+
     // No OBJ command is longer than 32 bytes, so this is a reasonable limit.
     private static final int OBJ_COMMAND_READ_AHEAD_LIMIT = 32;
     // An integer is at most 11 characters (10 digits and the minus sign)
@@ -23,12 +26,23 @@ public class ObjReader implements AutoCloseable {
     // Comments are arbitrarily sized, but let's assume most are short for now.
     private static final int COMMENT_READ_AHEAD_LIMIT = 64;
 
+    private static final int READ_BUFFER_SIZE = Mth.smallestEncompassingPowerOfTwo(
+            Ints.max(
+                    OBJ_COMMAND_READ_AHEAD_LIMIT,
+                    INTEGER_READ_AHEAD_LIMIT,
+                    FLOAT_READ_AHEAD_LIMIT,
+                    COMMENT_READ_AHEAD_LIMIT));
+
     private final Resource _resource;
     private final BufferedReader _reader;
+
+    private final char[] _readBuffer;
 
     public ObjReader(Resource resource) throws IOException {
         _resource = resource;
         _reader = resource.openAsReader();
+
+        _readBuffer = new char[READ_BUFFER_SIZE];
     }
 
     @Override
@@ -51,23 +65,18 @@ public class ObjReader implements AutoCloseable {
         // Return early if we've reached the end of the file.
         if (!hasMoreData()) return null;
 
-        var buffer = ArrayPool.SHARED.rentArray(OBJ_COMMAND_READ_AHEAD_LIMIT);
-        try {
-            _reader.mark(OBJ_COMMAND_READ_AHEAD_LIMIT);
-            var read = _reader.read(buffer, 0, OBJ_COMMAND_READ_AHEAD_LIMIT);
-            _reader.reset();
+        _reader.mark(OBJ_COMMAND_READ_AHEAD_LIMIT);
+        var read = _reader.read(_readBuffer, 0, OBJ_COMMAND_READ_AHEAD_LIMIT);
+        _reader.reset();
 
-            if (read < 0) throw new IOException("Couldn't read command");
-            read = CharArrayUtilities.findFirstWhitespace(buffer, 0, read);
-            if (read < 0) throw new IOException("Unable to tokenize command");
+        if (read < 0) throw new IOException("Couldn't read command");
+        read = CharArrayUtilities.findFirstWhitespace(_readBuffer, 0, read);
+        if (read < 0) throw new IOException("Unable to tokenize command");
 
-            // The read command is now between [0, read)
-            var cmd = ObjCommand.parse(buffer, 0, read);
-            var _ = _reader.skip(read);
-            return cmd;
-        } finally {
-            ArrayPool.SHARED.returnArray(buffer);
-        }
+        // The read command is now between [0, read)
+        var cmd = ObjCommand.parse(_readBuffer, 0, read);
+        var _ = _reader.skip(read);
+        return cmd;
     }
 
     /// Reads a string in the stream.
@@ -190,20 +199,15 @@ public class ObjReader implements AutoCloseable {
         if (isInteger()) return readInteger();
 
         // Otherwise, check for 'off'.
-        var buffer = ArrayPool.SHARED.rentArray(3);
-        try {
-            _reader.mark(3);
-            var read = _reader.read(buffer, 0, 3);
-            _reader.reset();
+        _reader.mark(3);
+        var read = _reader.read(_readBuffer, 0, 3);
+        _reader.reset();
 
-            if (read < 3) throw new IOException("Couldn't read smoothing group");
-            if (buffer[0] != 'o' || buffer[1] != 'f' || buffer[2] != 'f') throw new IOException("Invalid smoothing group specification");
+        if (read < 3) throw new IOException("Couldn't read smoothing group");
+        if (_readBuffer[0] != 'o' || _readBuffer[1] != 'f' || _readBuffer[2] != 'f') throw new IOException("Invalid smoothing group specification");
 
-            var _ = _reader.skip(3);
-            return 0;
-        } finally {
-            ArrayPool.SHARED.returnArray(buffer);
-        }
+        var _ = _reader.skip(3);
+        return 0;
     }
 
     /// Skips whitespace-like content in the stream, including comments.
@@ -245,33 +249,28 @@ public class ObjReader implements AutoCloseable {
 
     /// Skips a comment in the stream.
     private void skipComment() throws IOException {
-        var buffer = ArrayPool.SHARED.rentArray(COMMENT_READ_AHEAD_LIMIT);
-        try {
-            while (true) {
-                _reader.mark(COMMENT_READ_AHEAD_LIMIT);
-                var read = _reader.read(buffer, 0, COMMENT_READ_AHEAD_LIMIT);
-                _reader.reset();
+        while (true) {
+            _reader.mark(COMMENT_READ_AHEAD_LIMIT);
+            var read = _reader.read(_readBuffer, 0, COMMENT_READ_AHEAD_LIMIT);
+            _reader.reset();
 
-                if (read < 0) {
-                    throw new IOException("Couldn't read a comment");
-                }
-
-                // Skip the first character
-                for (int i = 0; i < read; i++) {
-                    if ((i < read - 1) && (buffer[i] == '\r') && (buffer[i + 1] == '\n')) {
-                        var _ = _reader.skip(i + 2);
-                        return;
-                    } else if (buffer[i] == '\n') {
-                        var _ = _reader.skip(i + 1);
-                        return;
-                    }
-                }
-
-                // If there was no newline, skip forward to read the next block.
-                var _ = _reader.skip(read);
+            if (read < 0) {
+                throw new IOException("Couldn't read a comment");
             }
-        } finally {
-            ArrayPool.SHARED.returnArray(buffer);
+
+            // Skip the first character
+            for (int i = 0; i < read; i++) {
+                if ((i < read - 1) && (_readBuffer[i] == '\r') && (_readBuffer[i + 1] == '\n')) {
+                    var _ = _reader.skip(i + 2);
+                    return;
+                } else if (_readBuffer[i] == '\n') {
+                    var _ = _reader.skip(i + 1);
+                    return;
+                }
+            }
+
+            // If there was no newline, skip forward to read the next block.
+            var _ = _reader.skip(read);
         }
     }
 
@@ -293,53 +292,45 @@ public class ObjReader implements AutoCloseable {
     ///
     /// Throws `NumberFormatException` if there was no valid number.
     private float readFloat() throws IOException {
-        var buffer = ArrayPool.SHARED.rentArray(FLOAT_READ_AHEAD_LIMIT);
-        try {
-            _reader.mark(FLOAT_READ_AHEAD_LIMIT);
-            var read = _reader.read(buffer, 0, FLOAT_READ_AHEAD_LIMIT);
-            _reader.reset();
+        _reader.mark(FLOAT_READ_AHEAD_LIMIT);
+        var read = _reader.read(_readBuffer, 0, FLOAT_READ_AHEAD_LIMIT);
+        _reader.reset();
 
-            if (read < 0) {
-                throw new IOException("Couldn't read a number");
-            }
-            var firstNonDigit = CharArrayUtilities.findFirstNonFloat(buffer, 0, read);
-            if (firstNonDigit >= 0) {
-                read = firstNonDigit;
-            }
-
-            // Unfortunately because Java is stupid we have to allocate a string here.
-            var result = Float.parseFloat(String.valueOf(buffer, 0, read));
-            var _ = _reader.skip(read);
-            return result;
-        } finally {
-            ArrayPool.SHARED.returnArray(buffer);
+        if (read < 0) {
+            throw new IOException("Couldn't read a number");
         }
+        var firstNonDigit = CharArrayUtilities.findFirstNonFloat(_readBuffer, 0, read);
+        if (firstNonDigit >= 0) {
+            read = firstNonDigit;
+        }
+
+        // Unfortunately because Java is stupid we have to allocate a string here.
+        var result = Float.parseFloat(String.valueOf(_readBuffer, 0, read));
+        var _ = _reader.skip(read);
+        return result;
     }
 
     /// Reads an optional float in the stream.
     private float readOptionalFloat(float defaultValue) throws IOException {
-        var buffer = ArrayPool.SHARED.rentArray(FLOAT_READ_AHEAD_LIMIT);
         try {
             _reader.mark(FLOAT_READ_AHEAD_LIMIT);
-            var read = _reader.read(buffer, 0, FLOAT_READ_AHEAD_LIMIT);
+            var read = _reader.read(_readBuffer, 0, FLOAT_READ_AHEAD_LIMIT);
             _reader.reset();
 
             if (read < 0) {
                 return defaultValue;
             }
-            var firstNonDigit = CharArrayUtilities.findFirstNonFloat(buffer, 0, read);
+            var firstNonDigit = CharArrayUtilities.findFirstNonFloat(_readBuffer, 0, read);
             if (firstNonDigit >= 0) {
                 read = firstNonDigit;
             }
 
             // Unfortunately because Java is stupid we have to allocate a string here.
-            var result = Float.parseFloat(String.valueOf(buffer, 0, read));
+            var result = Float.parseFloat(String.valueOf(_readBuffer, 0, read));
             var _ = _reader.skip(read);
             return result;
         } catch (NumberFormatException _) {
             return defaultValue;
-        } finally {
-            ArrayPool.SHARED.returnArray(buffer);
         }
     }
 
@@ -356,26 +347,21 @@ public class ObjReader implements AutoCloseable {
     ///
     /// Throws `NumberFormatException` if there was no valid integer.
     private int readInteger() throws IOException {
-        var buffer = ArrayPool.SHARED.rentArray(INTEGER_READ_AHEAD_LIMIT);
-        try {
-            _reader.mark(INTEGER_READ_AHEAD_LIMIT);
-            var read = _reader.read(buffer, 0, INTEGER_READ_AHEAD_LIMIT);
-            _reader.reset();
+        _reader.mark(INTEGER_READ_AHEAD_LIMIT);
+        var read = _reader.read(_readBuffer, 0, INTEGER_READ_AHEAD_LIMIT);
+        _reader.reset();
 
-            if (read < 0) {
-                throw new IOException("Couldn't read a number");
-            }
-            var firstNonDigit = CharArrayUtilities.findFirstNonDigit(buffer, 0, read);
-            if (firstNonDigit >= 0) {
-                read = firstNonDigit;
-            }
-
-            // Unfortunately because Java is stupid we have to allocate a string here.
-            var result = Integer.parseInt(String.valueOf(buffer, 0, read));
-            var _ = _reader.skip(read);
-            return result;
-        } finally {
-            ArrayPool.SHARED.returnArray(buffer);
+        if (read < 0) {
+            throw new IOException("Couldn't read a number");
         }
+        var firstNonDigit = CharArrayUtilities.findFirstNonDigit(_readBuffer, 0, read);
+        if (firstNonDigit >= 0) {
+            read = firstNonDigit;
+        }
+
+        // Unfortunately because Java is stupid we have to allocate a string here.
+        var result = Integer.parseInt(String.valueOf(_readBuffer, 0, read));
+        var _ = _reader.skip(read);
+        return result;
     }
 }

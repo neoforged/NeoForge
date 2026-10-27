@@ -5,9 +5,11 @@
 
 package net.neoforged.neoforge.client.model.obj;
 
+import com.google.common.primitives.Ints;
 import java.io.BufferedReader;
 import java.io.IOException;
 import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.util.Mth;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
@@ -22,12 +24,23 @@ public class MtlReader implements AutoCloseable {
     // Comments are arbitrarily sized, but let's assume most are short for now.
     private static final int COMMENT_READ_AHEAD_LIMIT = 64;
 
+    private static final int READ_BUFFER_SIZE = Mth.smallestEncompassingPowerOfTwo(
+            Ints.max(
+                    MTL_COMMAND_READ_AHEAD_LIMIT,
+                    INTEGER_READ_AHEAD_LIMIT,
+                    FLOAT_READ_AHEAD_LIMIT,
+                    COMMENT_READ_AHEAD_LIMIT));
+
     private final Resource _resource;
     private final BufferedReader _reader;
+
+    private final char[] _readBuffer;
 
     public MtlReader(Resource resource) throws IOException {
         _resource = resource;
         _reader = resource.openAsReader();
+
+        _readBuffer = new char[READ_BUFFER_SIZE];
     }
 
     @Override
@@ -50,23 +63,18 @@ public class MtlReader implements AutoCloseable {
         // Return early if we've reached the end of the file.
         if (!hasMoreData()) return null;
 
-        var buffer = ArrayPool.SHARED.rentArray(MTL_COMMAND_READ_AHEAD_LIMIT);
-        try {
-            _reader.mark(MTL_COMMAND_READ_AHEAD_LIMIT);
-            var read = _reader.read(buffer, 0, MTL_COMMAND_READ_AHEAD_LIMIT);
-            _reader.reset();
+        _reader.mark(MTL_COMMAND_READ_AHEAD_LIMIT);
+        var read = _reader.read(_readBuffer, 0, MTL_COMMAND_READ_AHEAD_LIMIT);
+        _reader.reset();
 
-            if (read < 0) throw new IOException("Couldn't read command");
-            read = CharArrayUtilities.findFirstWhitespace(buffer, 0, read);
-            if (read < 0) throw new IOException("Unable to tokenize command");
+        if (read < 0) throw new IOException("Couldn't read command");
+        read = CharArrayUtilities.findFirstWhitespace(_readBuffer, 0, read);
+        if (read < 0) throw new IOException("Unable to tokenize command");
 
-            // The read command is now between [0, read)
-            var cmd = MtlCommand.parse(buffer, 0, read);
-            var _ = _reader.skip(read);
-            return cmd;
-        } finally {
-            ArrayPool.SHARED.returnArray(buffer);
-        }
+        // The read command is now between [0, read)
+        var cmd = MtlCommand.parse(_readBuffer, 0, read);
+        var _ = _reader.skip(read);
+        return cmd;
     }
 
     public Vector3fc readColor() throws IOException {
@@ -98,27 +106,22 @@ public class MtlReader implements AutoCloseable {
         // Before reading anything, skip any whitespace tokens so we're aligned correctly.
         skipWhitespace();
 
-        var buffer = ArrayPool.SHARED.rentArray(FLOAT_READ_AHEAD_LIMIT);
-        try {
-            _reader.mark(FLOAT_READ_AHEAD_LIMIT);
-            var read = _reader.read(buffer, 0, FLOAT_READ_AHEAD_LIMIT);
-            _reader.reset();
+        _reader.mark(FLOAT_READ_AHEAD_LIMIT);
+        var read = _reader.read(_readBuffer, 0, FLOAT_READ_AHEAD_LIMIT);
+        _reader.reset();
 
-            if (read < 0) {
-                throw new IOException("Couldn't read a number");
-            }
-            var firstNonDigit = CharArrayUtilities.findFirstNonFloat(buffer, 0, read);
-            if (firstNonDigit >= 0) {
-                read = firstNonDigit;
-            }
-
-            // Unfortunately because Java is stupid we have to allocate a string here.
-            var result = Float.parseFloat(String.valueOf(buffer, 0, read));
-            var _ = _reader.skip(read);
-            return result;
-        } finally {
-            ArrayPool.SHARED.returnArray(buffer);
+        if (read < 0) {
+            throw new IOException("Couldn't read a number");
         }
+        var firstNonDigit = CharArrayUtilities.findFirstNonFloat(_readBuffer, 0, read);
+        if (firstNonDigit >= 0) {
+            read = firstNonDigit;
+        }
+
+        // Unfortunately because Java is stupid we have to allocate a string here.
+        var result = Float.parseFloat(String.valueOf(_readBuffer, 0, read));
+        var _ = _reader.skip(read);
+        return result;
     }
 
     /// Reads a required integer in the stream.
@@ -128,27 +131,22 @@ public class MtlReader implements AutoCloseable {
         // Before reading anything, skip any whitespace tokens so we're aligned correctly.
         skipWhitespace();
 
-        var buffer = ArrayPool.SHARED.rentArray(INTEGER_READ_AHEAD_LIMIT);
-        try {
-            _reader.mark(INTEGER_READ_AHEAD_LIMIT);
-            var read = _reader.read(buffer, 0, INTEGER_READ_AHEAD_LIMIT);
-            _reader.reset();
+        _reader.mark(INTEGER_READ_AHEAD_LIMIT);
+        var read = _reader.read(_readBuffer, 0, INTEGER_READ_AHEAD_LIMIT);
+        _reader.reset();
 
-            if (read < 0) {
-                throw new IOException("Couldn't read a number");
-            }
-            var firstNonDigit = CharArrayUtilities.findFirstNonDigit(buffer, 0, read);
-            if (firstNonDigit >= 0) {
-                read = firstNonDigit;
-            }
-
-            // Unfortunately because Java is stupid we have to allocate a string here.
-            var result = Integer.parseInt(String.valueOf(buffer, 0, read));
-            var _ = _reader.skip(read);
-            return result;
-        } finally {
-            ArrayPool.SHARED.returnArray(buffer);
+        if (read < 0) {
+            throw new IOException("Couldn't read a number");
         }
+        var firstNonDigit = CharArrayUtilities.findFirstNonDigit(_readBuffer, 0, read);
+        if (firstNonDigit >= 0) {
+            read = firstNonDigit;
+        }
+
+        // Unfortunately because Java is stupid we have to allocate a string here.
+        var result = Integer.parseInt(String.valueOf(_readBuffer, 0, read));
+        var _ = _reader.skip(read);
+        return result;
     }
 
     /// Skips whitespace-like content in the stream, including comments.
@@ -190,33 +188,28 @@ public class MtlReader implements AutoCloseable {
 
     /// Skips a comment in the stream.
     private void skipComment() throws IOException {
-        var buffer = ArrayPool.SHARED.rentArray(COMMENT_READ_AHEAD_LIMIT);
-        try {
-            while (true) {
-                _reader.mark(COMMENT_READ_AHEAD_LIMIT);
-                var read = _reader.read(buffer, 0, COMMENT_READ_AHEAD_LIMIT);
-                _reader.reset();
+        while (true) {
+            _reader.mark(COMMENT_READ_AHEAD_LIMIT);
+            var read = _reader.read(_readBuffer, 0, COMMENT_READ_AHEAD_LIMIT);
+            _reader.reset();
 
-                if (read < 0) {
-                    throw new IOException("Couldn't read a comment");
-                }
-
-                // Skip the first character
-                for (int i = 0; i < read; i++) {
-                    if ((i < read - 1) && (buffer[i] == '\r') && (buffer[i + 1] == '\n')) {
-                        var _ = _reader.skip(i + 2);
-                        return;
-                    } else if (buffer[i] == '\n') {
-                        var _ = _reader.skip(i + 1);
-                        return;
-                    }
-                }
-
-                // If there was no newline, skip forward to read the next block.
-                var _ = _reader.skip(read);
+            if (read < 0) {
+                throw new IOException("Couldn't read a comment");
             }
-        } finally {
-            ArrayPool.SHARED.returnArray(buffer);
+
+            // Skip the first character
+            for (int i = 0; i < read; i++) {
+                if ((i < read - 1) && (_readBuffer[i] == '\r') && (_readBuffer[i + 1] == '\n')) {
+                    var _ = _reader.skip(i + 2);
+                    return;
+                } else if (_readBuffer[i] == '\n') {
+                    var _ = _reader.skip(i + 1);
+                    return;
+                }
+            }
+
+            // If there was no newline, skip forward to read the next block.
+            var _ = _reader.skip(read);
         }
     }
 }
