@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/ScreenEffectRenderer.java
 +++ b/net/minecraft/client/renderer/ScreenEffectRenderer.java
-@@ -60,19 +_,26 @@
+@@ -60,19 +_,27 @@
          Player player = this.minecraft.player;
          if (isFirstPerson && !isSleeping) {
              if (!player.noPhysics) {
@@ -11,11 +11,6 @@
 +                if (overlay != null && !net.neoforged.neoforge.client.ClientHooks.renderBlockOverlay(player, poseStack, net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent.OverlayType.BLOCK, overlay.getLeft(), overlay.getRight(), this.sprites, bufferSource)) {
 +                    renderTex(this.minecraft.getModelManager().getBlockStateModelSet().getParticleMaterial(overlay.getLeft(), this.minecraft.level, overlay.getRight()).sprite(), poseStack, this.bufferSource);
                  }
-+                } else {
-+                    var fluidType = player.getFluidInteraction().getFirstEyeInFluid();
-+                    if (!fluidType.isAir()) {
-+                        net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(fluidType).renderOverlay(this.minecraft, poseStack, bufferSource);
-+                    }
              }
  
              if (!this.minecraft.player.isSpectator()) {
@@ -23,6 +18,12 @@
 +                    if (!net.neoforged.neoforge.client.ClientHooks.renderWaterOverlay(player, poseStack, this.sprites, bufferSource))
                      renderWater(this.minecraft, poseStack, this.bufferSource);
                  }
++                else {
++                    var fluidType = player.getFluidInteraction().getFirstEyeInFluid();
++                    if (!fluidType.isAir()) {
++                        net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(fluidType).renderOverlay(this.minecraft, poseStack, bufferSource);
++                    }
++                }
  
                  if (this.minecraft.player.isOnFire()) {
                      TextureAtlasSprite fireSprite = this.sprites.get(ModelBakery.FIRE_1);
