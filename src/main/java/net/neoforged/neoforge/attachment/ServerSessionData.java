@@ -17,6 +17,7 @@ import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.VisibleForTesting;
 
 /**
  * Session Data for a server. Saves through {@link MinecraftServer#getDataStorage()}.
@@ -28,6 +29,7 @@ public final class ServerSessionData extends SessionData {
     private final MinecraftServer server;
     private final SavedDataType<Storage> savedDataType;
 
+    @VisibleForTesting
     public ServerSessionData(MinecraftServer server) {
         this.server = server;
         Codec<Storage> codec = makeCodec();
@@ -37,7 +39,8 @@ public final class ServerSessionData extends SessionData {
     /**
      * Creates the holder and loads it from the server's data storage, which then keeps it registered for saving.
      */
-    public static ServerSessionData load(MinecraftServer server) {
+    public static ServerSessionData create(MinecraftServer server) {
+        // This is called once during server startup, so creating a new instance and always returning it is fine.
         var data = new ServerSessionData(server);
         server.getDataStorage().computeIfAbsent(data.savedDataType);
         return data;

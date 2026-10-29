@@ -31,7 +31,7 @@
          this.customBossEvents = this.savedDataStorage.computeIfAbsent(CustomBossEvents.TYPE);
          this.scheduledEvents = this.savedDataStorage.computeIfAbsent(TimerQueue.TYPE);
 +        // Neo: Actually initialize the session data
-+        this.sessionData = net.neoforged.neoforge.attachment.ServerSessionData.load(this);
++        this.sessionData = net.neoforged.neoforge.attachment.ServerSessionData.create(this);
      }
  
      protected abstract boolean initServer() throws IOException;
