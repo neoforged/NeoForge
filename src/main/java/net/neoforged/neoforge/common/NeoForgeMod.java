@@ -162,6 +162,9 @@ import net.neoforged.neoforge.server.command.ModIdArgument;
 import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
 import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
 import net.neoforged.neoforge.server.permission.nodes.PermissionTypes;
+import net.neoforged.neoforge.slot.ExtendedEquipmentSlot;
+import net.neoforged.neoforge.slot.ExtendedSlotGroup;
+import net.neoforged.neoforge.slot.VanillaExtendedSlot;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -188,6 +191,12 @@ public class NeoForgeMod {
     private static final DeferredRegister<HolderSetType> HOLDER_SET_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.HOLDER_SET_TYPES, MOD_ID);
     private static final DeferredRegister<AttributeType<?>> ATTRIBUTE_TYPES = DeferredRegister.create(Registries.ATTRIBUTE_TYPE, MOD_ID);
     private static final DeferredRegister<EnvironmentAttribute<?>> ENVIRONMENT_ATTRIBUTES = DeferredRegister.create(Registries.ENVIRONMENT_ATTRIBUTE, MOD_ID);
+    private static final DeferredRegister<MapCodec<? extends ExtendedEquipmentSlot>> EXTENDED_EQUIPMENT_SLOT_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.EXTENDED_EQUIPMENT_SLOT_SERIALIZERS, MOD_ID);
+
+    /**
+     * Built-in serializer for vanilla-equipment-slot-backed {@link ExtendedEquipmentSlot}s.
+     */
+    public static final Holder<MapCodec<? extends ExtendedEquipmentSlot>> VANILLA_SLOT_TYPE = EXTENDED_EQUIPMENT_SLOT_SERIALIZERS.register("vanilla", () -> VanillaExtendedSlot.CODEC);
 
     @SuppressWarnings({ "unchecked", "rawtypes" }) // Uses Holder instead of DeferredHolder as the type due to weirdness between ECJ and javac.
     private static final Holder<ArgumentTypeInfo<?, ?>> ENUM_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("enum", () -> ArgumentTypeInfos.registerByClass(EnumArgument.class, new EnumArgument.Info()));
@@ -549,6 +558,9 @@ public class NeoForgeMod {
         modEventBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
             event.dataPackRegistry(NeoForgeRegistries.Keys.BIOME_MODIFIERS, BiomeModifier.DIRECT_CODEC);
             event.dataPackRegistry(NeoForgeRegistries.Keys.STRUCTURE_MODIFIERS, StructureModifier.DIRECT_CODEC);
+            Codec<ExtendedEquipmentSlot> slotLoadCodec = NeoForgeRegistries.EXTENDED_EQUIPMENT_SLOT_SERIALIZERS.byNameCodec().dispatch(ExtendedEquipmentSlot::codec, Function.identity());
+            event.dataPackRegistry(NeoForgeRegistries.Keys.EXTENDED_EQUIPMENT_SLOTS, slotLoadCodec, slotLoadCodec);
+            event.dataPackRegistry(NeoForgeRegistries.Keys.EXTENDED_SLOT_GROUPS, ExtendedSlotGroup.LOAD_CODEC, ExtendedSlotGroup.LOAD_CODEC);
         });
         modEventBus.addListener(this::preInit);
         modEventBus.addListener(this::loadComplete);
@@ -572,6 +584,7 @@ public class NeoForgeMod {
         GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
         ATTRIBUTE_TYPES.register(modEventBus);
         ENVIRONMENT_ATTRIBUTES.register(modEventBus);
+        EXTENDED_EQUIPMENT_SLOT_SERIALIZERS.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
         ConfigSync.registerEventListeners();
         container.registerConfig(ModConfig.Type.SERVER, NeoForgeServerConfig.SPEC);
