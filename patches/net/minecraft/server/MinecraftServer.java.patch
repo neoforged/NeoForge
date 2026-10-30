@@ -1,24 +1,19 @@
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -216,6 +_,8 @@
-     protected final LevelStorageSource.LevelStorageAccess storageSource;
-     protected final PlayerDataStorage playerDataStorage;
-     private final SavedDataStorage savedDataStorage;
-+    /// Neo: data attachments scoped to this server
-+    private final net.neoforged.neoforge.attachment.ServerSessionData sessionData;
-     private final List<Runnable> tickables = Lists.newArrayList();
-     private final GameRules gameRules;
-     private MetricsRecorder metricsRecorder = InactiveMetricsRecorder.INSTANCE;
-@@ -290,10 +_,15 @@
-     private final PacketProcessor packetProcessor;
+@@ -291,9 +_,19 @@
      private final TimerQueue<MinecraftServer> scheduledEvents;
      private final ServerClockManager clockManager;
+ 
 +    private static final com.google.gson.Gson STATUS_GSON = new com.google.gson.Gson();
++
 +    /// Neo: cache the server status JSON in case a client spams requests
 +    @Nullable
 +    private String cachedServerStatus;
 +    private final Map<ResourceKey<Level>, long[]> perWorldTickTimes = Maps.newIdentityHashMap();
- 
++
++    /// Neo: data attachments scoped to this server
++    private final net.neoforged.neoforge.attachment.ServerSessionData sessionData;
++
      public static <S extends MinecraftServer> S spin(Function<Thread, S> factory) {
          AtomicReference<S> serverReference = new AtomicReference<>();
 -        Thread thread = new Thread(() -> serverReference.get().runServer(), "Server thread");
@@ -277,22 +272,15 @@
      }
  
      @Deprecated
-@@ -2119,6 +_,11 @@
-         return this.savedDataStorage;
-     }
- 
-+    @Override
-+    public net.neoforged.neoforge.attachment.SessionData getSessionData() {
-+        return this.sessionData;
-+    }
-+
-     public TimerQueue<MinecraftServer> getScheduledEvents() {
-         return this.scheduledEvents;
-     }
-@@ -2202,6 +_,19 @@
+@@ -2202,6 +_,24 @@
  
      public ServerDebugSubscribers debugSubscribers() {
          return this.debugSubscribers;
++    }
++
++    @Override
++    public net.neoforged.neoforge.attachment.SessionData getSessionData() {
++        return this.sessionData;
 +    }
 +
 +    public long @Nullable[] getTickTime(ResourceKey<Level> dim) {
