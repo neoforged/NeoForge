@@ -126,6 +126,14 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getOutputJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/interface-injected-sources.jar")));
         });
 
+        // 4. Apply generics widening after interface injections
+        // this jar is only used for the patches in the repo
+        var applyGenericsWidening = project.getTasks().register("applyGenericsWidening", TransformSources.class, task -> {
+            task.getInputJar().set(applyInterfaceInjection.flatMap(TransformSources::getOutputJar));
+            task.getGenericsWideningData().from(project.getRootProject().file("src/main/resources/META-INF/spawn-placement-generics-wideners.json"));
+            task.getOutputJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/generics-widened-sources.jar")));
+        });
+
         tasks.withType(TransformSources.class, task -> {
             task.setGroup(INTERNAL_GROUP);
             task.classpath(configurations.getExecutableTool(Tools.JST));
@@ -134,17 +142,17 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getLibrariesFile().set(neoDevBuildDir.map(dir -> dir.file("minecraft-libraries-for-" + task.getName() + ".txt")));
         });
 
-        // 4. Apply patches to the source jar from 3.
+        // 5. Apply patches to the source jar from 4.
         var patchesFolder = project.getRootProject().file("patches");
         var applyPatches = tasks.register("applyPatches", ApplyPatches.class, task -> {
             task.setGroup(INTERNAL_GROUP);
-            task.getOriginalJar().set(applyInterfaceInjection.flatMap(TransformSources::getOutputJar));
+            task.getOriginalJar().set(applyGenericsWidening.flatMap(TransformSources::getOutputJar));
             task.getPatchesFolder().set(patchesFolder);
             task.getPatchedJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/patched-sources.jar")));
             task.getRejectsFolder().set(project.getRootProject().file("rejects"));
         });
 
-        // 5. Split source jar from 4. into client and server.
+        // 6. Split source jar from 5. into client and server.
         var splitPatchedSources = tasks.register("splitPatchedSources", SplitMergedSources.class, task -> {
             task.setGroup(INTERNAL_GROUP);
             task.getOriginalResourcesJar().set(decompilationSetup.vanillaResources.flatMap(Zip::getArchiveFile));
@@ -153,7 +161,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getClientJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/client-patched-sources.jar")));
         });
 
-        // 6. Unpack jars from 5.
+        // 7. Unpack jars from 6.
         var setupCommon = tasks.register("setupCommon", Sync.class, task -> {
             task.setGroup(INTERNAL_GROUP);
             task.from(project.zipTree(splitPatchedSources.flatMap(SplitMergedSources::getCommonJar)));
@@ -248,10 +256,10 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getArchiveFileName().set("common-patched-sources.jar");
         });
 
-        // Generate source patches into a patch archive, based on the jar with injected interfaces.
+        // Generate source patches into a patch archive, based on the jar with injected interfaces and widened generics.
         var genSourcePatches = tasks.register("generateSourcePatches", GenerateSourcePatches.class, task -> {
             task.setGroup(INTERNAL_GROUP);
-            task.getOriginalJar().set(applyInterfaceInjection.flatMap(TransformSources::getOutputJar));
+            task.getOriginalJar().set(applyGenericsWidening.flatMap(TransformSources::getOutputJar));
             task.getModifiedSources().set(mergeSources.flatMap(AbstractArchiveTask::getArchiveFile));
             task.getPatchesJar().set(neoDevBuildDir.map(dir -> dir.file("source-patches.zip")));
         });
