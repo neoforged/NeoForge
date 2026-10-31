@@ -68,14 +68,6 @@
          }
      }
  
-@@ -422,6 +_,7 @@
-     }
- 
-     public static ChannelFuture connect(InetSocketAddress address, EventLoopGroupHolder eventLoopGroupHolder, Connection connection) {
-+        net.neoforged.neoforge.network.DualStackUtils.checkIPv6(address.getAddress());
-         return new Bootstrap().group(eventLoopGroupHolder.eventLoopGroup()).handler(new ChannelInitializer<Channel>() {
-             @Override
-             protected void initChannel(Channel channel) {
 @@ -588,5 +_,17 @@
  
      public void setBandwidthLogger(LocalSampleLogger bandwidthLogger) {
