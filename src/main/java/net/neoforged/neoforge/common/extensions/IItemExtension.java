@@ -200,6 +200,9 @@ public interface IItemExtension {
      * Is called when a EntityItem is spawned in the world, if true and
      * Item#createCustomEntity returns non null, the EntityItem will be destroyed
      * and the new Entity will be added to the world.
+     * <p>
+     * Fake item entities, which expire on their next tick (see {@link net.minecraft.world.entity.item.ItemEntity#makeFakeItem()}),
+     * are never replaced.
      *
      * @param stack The current item stack
      * @return True of the item has a custom entity, If true,

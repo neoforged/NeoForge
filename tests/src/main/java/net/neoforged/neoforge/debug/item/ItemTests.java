@@ -24,6 +24,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
@@ -39,6 +40,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.animal.pig.Pig;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.DispensibleContainerItem;
@@ -54,6 +56,7 @@ import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.equipment.ArmorMaterials;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.equipment.EquipmentAssets;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -122,6 +125,46 @@ public class ItemTests {
                                     "Expected the boat near " + expectedPos + ", found it at " + helper.relativePos(boat.blockPosition()));
                         } finally {
                             dispensedEntities.forEach(Entity::discard);
+                        }
+                    })
+                    .thenSucceed();
+        });
+    }
+
+    @GameTest(batch = GROUP + ".give_custom_entity") // Isolate this test because it counts every custom item entity added
+    @EmptyTemplate
+    @TestHolder(description = "Tests that /give does not leave a copy of an item with a custom entity behind")
+    static void giveDoesNotDuplicateCustomItemEntity(final DynamicTest test, final RegistrationHelper reg) {
+        final var customEntities = new ArrayList<Entity>();
+        final var item = reg.items().registerItem("custom_entity_item", props -> new Item(props) {
+            @Override
+            public boolean hasCustomEntity(ItemStack stack) {
+                return true;
+            }
+
+            @Override
+            public Entity createEntity(Level level, Entity location, ItemStack stack) {
+                final var entity = new ItemEntity(level, location.getX(), location.getY(), location.getZ(), stack.copy()) {};
+                customEntities.add(entity);
+                return entity;
+            }
+        });
+
+        test.onGameTest(helper -> {
+            final var player = helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL);
+            final var server = helper.getLevel().getServer();
+            helper.startSequence()
+                    .thenExecute(customEntities::clear)
+                    .thenExecute(() -> server.getCommands().performPrefixedCommand(
+                            server.createCommandSourceStack().withEntity(player).withSuppressedOutput(),
+                            "give @s " + BuiltInRegistries.ITEM.getKey(item.get())))
+                    .thenExecuteAfter(5, () -> {
+                        try {
+                            final int given = player.getInventory().countItem(item.get());
+                            helper.assertTrue(given == 1, "Expected the player to have exactly one item, found " + given);
+                            helper.assertTrue(customEntities.isEmpty(), "Expected no custom item entity to be spawned, found " + customEntities.size());
+                        } finally {
+                            customEntities.forEach(Entity::discard);
                         }
                     })
                     .thenSucceed();

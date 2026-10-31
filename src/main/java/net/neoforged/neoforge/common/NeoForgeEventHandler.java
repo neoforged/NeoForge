@@ -53,7 +53,13 @@ public class NeoForgeEventHandler {
     public void onEntityJoinWorld(EntityJoinLevelEvent event) {
         Entity entity = event.getEntity();
         if (entity.getClass().equals(ItemEntity.class)) {
-            ItemStack stack = ((ItemEntity) entity).getItem();
+            ItemEntity itemEntity = (ItemEntity) entity;
+            // Fake items (see ItemEntity#makeFakeItem, used by /give) are visual only and expire on their next tick.
+            // Replacing one with a custom entity would leave a real copy of the item behind.
+            if (itemEntity.hasPickUpDelay() && itemEntity.getAge() >= itemEntity.lifespan - 1) {
+                return;
+            }
+            ItemStack stack = itemEntity.getItem();
             Item item = stack.getItem();
             if (item.hasCustomEntity(stack)) {
                 Entity newEntity = item.createEntity(event.getLevel(), entity, stack);
