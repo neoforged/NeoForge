@@ -9,6 +9,8 @@ import com.mojang.logging.LogUtils;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.storage.ValueInput;
@@ -27,6 +29,12 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     public static final String ATTACHMENTS_NBT_KEY = "neoforge:attachments";
     private static final boolean IN_DEV = !FMLEnvironment.isProduction();
     private static final Logger LOGGER = LogUtils.getLogger();
+    /**
+     * Keys of skipped attachments that have already been reported at error level.
+     * Data left behind by a removed mod is present on every chunk or entity that had it, so only the first occurrence
+     * of each key is logged as an error. Attachments may be deserialized concurrently from worker threads.
+     */
+    private static final Set<String> REPORTED_SKIPPED_KEYS = ConcurrentHashMap.newKeySet();
 
     private void validateAttachmentType(AttachmentType<?> type) {
         Objects.requireNonNull(type);
@@ -146,13 +154,13 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             // Use tryParse to not discard valid attachment type keys, even if there is a malformed key.
             Identifier keyLocation = Identifier.tryParse(key);
             if (keyLocation == null) {
-                LOGGER.error("Encountered invalid data attachment key {}. Skipping.", key);
+                logSkippedKey("Encountered invalid data attachment key {}. Skipping.", key);
                 continue;
             }
 
             var type = NeoForgeRegistries.ATTACHMENT_TYPES.getValue(keyLocation);
             if (type == null || type.serializer == null) {
-                LOGGER.error("Encountered unknown or non-serializable data attachment {}. Skipping.", key);
+                logSkippedKey("Encountered unknown or non-serializable data attachment {}. Skipping.", key);
                 continue;
             }
 
@@ -161,6 +169,14 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             } catch (Exception exception) {
                 LOGGER.error("Failed to deserialize data attachment {}. Skipping.", key, exception);
             }
+        }
+    }
+
+    private static void logSkippedKey(String message, String key) {
+        if (REPORTED_SKIPPED_KEYS.add(key)) {
+            LOGGER.error(message + " (Further occurrences for this key will be logged at debug level.)", key);
+        } else {
+            LOGGER.debug(message, key);
         }
     }
 
