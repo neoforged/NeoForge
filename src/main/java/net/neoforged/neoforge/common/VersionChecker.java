@@ -32,6 +32,7 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforgespi.language.IModInfo;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -76,6 +77,7 @@ import org.slf4j.Logger;
 public class VersionChecker {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final int HTTP_TIMEOUT_SECS = Integer.getInteger("http.timeoutSecs", 15);
+    private static final int MAX_LOGGED_ERROR_BODY_LENGTH = 200;
     private static final Map<IModInfo, CheckResult> RESULTS = new ConcurrentHashMap<>();
 
     /// The status of a version check result.
@@ -161,6 +163,23 @@ public class VersionChecker {
         }
     }
 
+    @ApiStatus.Internal
+    @VisibleForTesting
+    public static void runVersionCheck(IModInfo mod, HttpClient client) {
+        new VersionCheckRunnable(mod, client).run();
+    }
+
+    private static String describeErrorBody(String body) {
+        String trimmed = body.strip();
+        if (trimmed.isEmpty()) {
+            return "";
+        }
+        if (trimmed.length() > MAX_LOGGED_ERROR_BODY_LENGTH) {
+            trimmed = trimmed.substring(0, MAX_LOGGED_ERROR_BODY_LENGTH) + "...";
+        }
+        return ": " + trimmed;
+    }
+
     private record VersionCheckRunnable(IModInfo mod, HttpClient client) implements Runnable {
         private String createUserAgent() {
             return "Java-http-client/" + System.getProperty("java.version") + ' ' // The default user agent
@@ -196,6 +215,12 @@ public class VersionChecker {
                 try (var stream = isGzipEncoded ? new GZIPInputStream(response.body()) : response.body();
                         var bufferedReader = new BufferedReader(new InputStreamReader(stream))) {
                     data = bufferedReader.lines().collect(Collectors.joining());
+                }
+
+                if (response.statusCode() != 200) {
+                    LOGGER.warn("[{}] Version check at {} failed with HTTP status {}{}", mod.getModId(), response.uri(), response.statusCode(), describeErrorBody(data));
+                    RESULTS.put(mod, new CheckResult(Status.FAILED, null, changes, null));
+                    return;
                 }
 
                 LOGGER.debug("[{}] Received version check data from {}", mod.getModId(), response.uri());
