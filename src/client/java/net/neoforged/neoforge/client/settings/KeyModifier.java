@@ -167,9 +167,14 @@ public enum KeyModifier {
 
         @Override
         public boolean isActive(@Nullable IKeyConflictContext conflictContext) {
+            return isActive(conflictContext, InputConstants.UNKNOWN);
+        }
+
+        @Override
+        public boolean isActive(@Nullable IKeyConflictContext conflictContext, InputConstants.Key key) {
             if (conflictContext != null && !conflictContext.conflicts(KeyConflictContext.IN_GAME)) {
                 for (KeyModifier keyModifier : MODIFIER_VALUES) {
-                    if (keyModifier.isActive(conflictContext)) {
+                    if (!keyModifier.matches(key) && keyModifier.isActive(conflictContext)) {
                         return false;
                     }
                 }
@@ -224,6 +229,21 @@ public enum KeyModifier {
     public abstract boolean matches(InputConstants.Key key);
 
     public abstract boolean isActive(@Nullable IKeyConflictContext conflictContext);
+
+    /**
+     * {@return whether this modifier is active for a key mapping bound to the given key}
+     * <p>
+     * Behaves like {@link #isActive(IKeyConflictContext)}, except that {@link #NONE} ignores the modifier that
+     * {@code key} itself belongs to. In the {@link KeyConflictContext#GUI GUI} context {@link #NONE} is only active
+     * while no modifier is held, so without this a GUI key mapping bound to a modifier key (for example Left Shift)
+     * would deactivate itself as soon as its own key was pressed.
+     *
+     * @param conflictContext the conflict context of the key mapping
+     * @param key             the key the key mapping is bound to
+     */
+    public boolean isActive(@Nullable IKeyConflictContext conflictContext, InputConstants.Key key) {
+        return isActive(conflictContext);
+    }
 
     public abstract Component getCombinedName(InputConstants.Key key, Supplier<Component> defaultLogic);
 
