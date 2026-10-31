@@ -115,7 +115,7 @@
          List<Identifier> unboundEntries = this.byKey
              .entrySet()
              .stream()
-@@ -295,11 +_,14 @@
+@@ -295,11 +_,16 @@
                  throw new IllegalStateException("Some intrusive holders were not registered: " + this.unregisteredIntrusiveHolders.values());
              }
  
@@ -129,6 +129,8 @@
 -            throw new IllegalStateException("Tags already present before freezing");
 +            // Neo: we freeze/unfreeze the registry to apply snapshots and tags need to be preserved in those cases
 +            // throw new IllegalStateException("Tags already present before freezing");
++            this.componentLookup = new DataComponentLookup<>(this.byId);
++            return this;
          }
  
          List<Identifier> unboundTags = this.frozenTags
