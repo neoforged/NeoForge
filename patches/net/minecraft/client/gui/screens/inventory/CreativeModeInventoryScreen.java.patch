@@ -168,6 +168,24 @@
                  break;
              }
          }
+@@ -702,6 +_,17 @@
+     }
+ 
+     @Override
++    protected void collectExtraScreenAreas(java.util.function.Consumer<net.minecraft.client.gui.navigation.ScreenRectangle> consumer) {
++        super.collectExtraScreenAreas(consumer);
++        this.effects.collectScreenAreas(consumer);
++        for (CreativeModeTab tab : this.currentPage.getVisibleTabs()) {
++            int x = this.leftPos + this.getTabX(tab);
++            int y = this.topPos - (this.currentPage.isTop(tab) ? 28 : -(this.imageHeight - 4));
++            consumer.accept(new net.minecraft.client.gui.navigation.ScreenRectangle(x, y, 26, 32));
++        }
++    }
++
++    @Override
+     public boolean showsActiveEffects() {
+         return this.effects.canSeeEffects();
+     }
 @@ -710,10 +_,10 @@
      public List<Component> getTooltipFromContainerItem(ItemStack itemStack) {
          boolean isCreativeSlot = this.hoveredSlot != null && this.hoveredSlot instanceof CreativeModeInventoryScreen.CustomCreativeSlot;

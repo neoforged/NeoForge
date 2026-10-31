@@ -1,0 +1,31 @@
+--- a/net/minecraft/client/gui/components/SubtitleOverlay.java
++++ b/net/minecraft/client/gui/components/SubtitleOverlay.java
+@@ -108,6 +_,28 @@
+         }
+     }
+ 
++    /// Neo: Collects the bounding area of the audible subtitle stack from the latest render pass.
++    public void collectScreenAreas(java.util.function.Consumer<net.minecraft.client.gui.navigation.ScreenRectangle> consumer) {
++        if (!this.minecraft.options.showSubtitles().get() || this.audibleSubtitles.isEmpty()) {
++            return;
++        }
++        int width = 0;
++        for (SubtitleOverlay.Subtitle subtitle : this.audibleSubtitles) {
++            width = Math.max(width, this.minecraft.font.width(subtitle.getText()));
++        }
++        width += this.minecraft.font.width("<") + this.minecraft.font.width(" ") + this.minecraft.font.width(">") + this.minecraft.font.width(" ");
++        int halfWidth = width / 2;
++        int guiWidth = this.minecraft.getWindow().getGuiScaledWidth();
++        int guiHeight = this.minecraft.getWindow().getGuiScaledHeight();
++        int subtitleCount = this.audibleSubtitles.size();
++        consumer.accept(new net.minecraft.client.gui.navigation.ScreenRectangle(
++            guiWidth - 2 * halfWidth - 3,
++            guiHeight - 40 - (subtitleCount - 1) * 10,
++            2 * halfWidth + 2,
++            subtitleCount * 10
++        ));
++    }
++
+     @Override
+     public void onPlaySound(SoundInstance sound, WeighedSoundEvents soundEvent, float range) {
+         if (soundEvent.getSubtitle() != null) {
