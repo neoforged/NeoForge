@@ -96,7 +96,7 @@
      public double getFluidHeight(TagKey<Fluid> fluid) {
          double height = 0.0;
  
-@@ -177,10 +_,85 @@
+@@ -177,10 +_,87 @@
          return height;
      }
  
@@ -114,7 +114,8 @@
 +
 +    public <E extends Entity> double getMaxFluidHeightMatching(E entity, net.neoforged.neoforge.fluids.InFluidPredicate<E> predicate) {
 +        double maxHeight = 0D;
-+        for (Tracker tracker : this.fluidTrackers) {
++        // Iterate a snapshot: the predicate may re-run fluid detection (e.g. via Entity#move) and mutate the tracker list
++        for (Tracker tracker : this.fluidTrackers.toArray(new Tracker[0])) {
 +            if (tracker.height > maxHeight && predicate.test(entity, tracker.fluidType.value().getFluidType(), tracker.height)) {
 +                maxHeight = tracker.height;
 +            }
@@ -169,7 +170,8 @@
 +    }
 +
 +    public <E extends Entity> boolean isInFluidMatching(E entity, net.neoforged.neoforge.fluids.InFluidPredicate<E> predicate) {
-+        for (Tracker tracker : this.fluidTrackers) {
++        // Iterate a snapshot: the predicate may re-run fluid detection (e.g. via Entity#move) and mutate the tracker list
++        for (Tracker tracker : this.fluidTrackers.toArray(new Tracker[0])) {
 +            if (tracker.height > 0D && predicate.test(entity, tracker.fluidType.value().getFluidType(), tracker.height)) {
 +                return true;
 +            }
@@ -182,7 +184,7 @@
      public boolean isEyeInFluid(TagKey<Fluid> fluid) {
          for (EntityFluidInteraction.Tracker tracker : this.fluidTrackers) {
              if (tracker.eyesInside && tracker.fluidType.is(fluid)) {
-@@ -191,10 +_,56 @@
+@@ -191,10 +_,57 @@
          return false;
      }
  
@@ -197,7 +199,8 @@
 +    }
 +
 +    public <E extends Entity> boolean isEyeInFluidMatching(E entity, net.neoforged.neoforge.fluids.InFluidPredicate<E> predicate) {
-+        for (Tracker tracker : this.fluidTrackers) {
++        // Iterate a snapshot: the predicate may re-run fluid detection (e.g. via Entity#move) and mutate the tracker list
++        for (Tracker tracker : this.fluidTrackers.toArray(new Tracker[0])) {
 +            if (tracker.eyesInside && predicate.test(entity, tracker.fluidType.value().getFluidType(), tracker.height)) {
 +                return true;
 +            }

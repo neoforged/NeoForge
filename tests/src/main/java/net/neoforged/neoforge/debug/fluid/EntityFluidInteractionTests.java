@@ -27,6 +27,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.animal.equine.SkeletonHorse;
@@ -106,6 +107,12 @@ public class EntityFluidInteractionTests {
             .canExtinguish(true)
             .supportsBoating(true)
             .isWaterLike(true)));
+
+    /// Syrup is a custom non-water fluid whose living movement hook moves the entity itself
+    /// and then lets vanilla movement continue. Moving the entity re-runs fluid detection
+    /// while the fluid trackers are being iterated by the movement hook dispatch.
+    private static final FluidFixture<SyrupFluidType> SYRUP = new FluidFixture<>("syrup", () -> new SyrupFluidType(FluidType.Properties.create()
+            .descriptionId("fluid_type.neotests_entity_fluid_interaction.syrup")));
 
     /// Steam is a water-like fluid which only pushes zombies.
     private static final FluidFixture<FluidType> STEAM = new FluidFixture<>("steam", () -> new SteamFluidType(FluidType.Properties.create()
@@ -253,6 +260,33 @@ public class EntityFluidInteractionTests {
                     honeyZombie.get().travel(Vec3.ZERO);
                     helper.assertTrue(honeyType.livingMovementCalls.get() > livingMovementCalls.get(), "Custom movement fluid should use the living movement hook despite eyes outside of fluid");
                     helper.assertTrue(honeyZombie.get().getDeltaMovement().y > 0.0D, "Custom movement fluid living movement should affect velocity despite eyes outside of fluid");
+                })
+                .thenSucceed();
+    }
+
+    @GameTest(timeoutTicks = 200)
+    @EmptyTemplate(value = "3x6x3", floor = true)
+    @TestHolder(description = "Tests a custom fluid living movement hook can move the entity while it leaves another fluid")
+    static void customFluidLivingMovementHookMovingEntity(final TestHelper helper) {
+        final BlockPos pos = new BlockPos(1, 2, 1);
+        helper.fillFluidColumn(WATER, pos);
+        // Spawn in the middle of the column so small vertical movement keeps the entity's block position inside the fluid
+        final Zombie zombie = helper.spawnZombieWithNoFreeWill(pos.above());
+        final SyrupFluidType syrupType = SYRUP.type();
+        final AtomicInteger livingMovementCalls = new AtomicInteger();
+
+        helper.startSequence()
+                .thenExecuteAfter(2, () -> helper.assertTrue(zombie.isInWater(), "Zombie should start in water"))
+                .thenExecute(() -> {
+                    helper.fillFluidColumn(SYRUP, pos);
+                    // Leaves a stale water tracker behind, which the next fluid update removes.
+                    // That update happens inside the movement hook dispatch, via Entity#move.
+                    zombie.baseTick();
+                    livingMovementCalls.set(syrupType.livingMovementCalls.get());
+                    zombie.travel(Vec3.ZERO);
+                    helper.assertTrue(syrupType.livingMovementCalls.get() > livingMovementCalls.get(), "Custom movement fluid should use the living movement hook");
+                    helper.assertTrue(zombie.isInFluidType(syrupType), "Zombie should be in the custom movement fluid");
+                    helper.assertFalse(zombie.isInWater(), "Zombie should no longer be in water");
                 })
                 .thenSucceed();
     }
@@ -1323,6 +1357,21 @@ public class EntityFluidInteractionTests {
             this.livingMovementCalls.incrementAndGet();
             entity.setDeltaMovement(0.0D, 0.125D, 0.0D);
             return true;
+        }
+    }
+
+    private static final class SyrupFluidType extends FluidType {
+        private final AtomicInteger livingMovementCalls = new AtomicInteger();
+
+        private SyrupFluidType(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public boolean move(LivingEntity entity, Vec3 movementVector, double gravity) {
+            this.livingMovementCalls.incrementAndGet();
+            entity.move(MoverType.SELF, entity.getDeltaMovement().scale(0.5D));
+            return false;
         }
     }
 
