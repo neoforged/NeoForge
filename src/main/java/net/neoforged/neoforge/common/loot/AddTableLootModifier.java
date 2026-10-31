@@ -5,10 +5,15 @@
 
 package net.neoforged.neoforge.common.loot;
 
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.MapLike;
+import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Optional;
+import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -29,7 +34,10 @@ import org.jetbrains.annotations.ApiStatus;
  * <pre>
  * {
  *   "type": "neoforge:add_table",
- *   "conditions": [], // conditions block to predicate target tables by
+ *   "condition": { // condition to predicate target tables by; combine several with "minecraft:all_of"
+ *     "type": "neoforge:loot_table_id",
+ *     "loot_table_id": "minecraft:chests/simple_dungeon"
+ *   },
  *   "table": "namespace:loot_table_id" // subtable to roll loot for to add to the target table(s)
  * }
  * </pre>
@@ -41,10 +49,42 @@ public class AddTableLootModifier extends LootModifier {
      * @see NeoForgeMod#ADD_TABLE_LOOT_MODIFIER_TYPE
      */
     @ApiStatus.Internal
-    public static final MapCodec<AddTableLootModifier> CODEC = RecordCodecBuilder.mapCodec(instance -> codecStart(instance)
+    public static final MapCodec<AddTableLootModifier> CODEC = rejectLegacyConditions(RecordCodecBuilder.mapCodec(instance -> codecStart(instance)
             .and(
                     ResourceKey.codec(Registries.LOOT_TABLE).fieldOf("table").forGetter(AddTableLootModifier::table))
-            .apply(instance, AddTableLootModifier::new));
+            .apply(instance, AddTableLootModifier::new)));
+
+    /**
+     * Loot modifiers used to take a {@code conditions} array, which is now a single {@code condition} object.
+     * A leftover {@code conditions} key would otherwise be ignored silently, leaving the modifier without any
+     * condition and therefore injecting the subtable into every loot table, so fail loudly instead.
+     */
+    private static <T> MapCodec<T> rejectLegacyConditions(MapCodec<T> codec) {
+        return new MapCodec<>() {
+            @Override
+            public <O> Stream<O> keys(DynamicOps<O> ops) {
+                return codec.keys(ops);
+            }
+
+            @Override
+            public <O> DataResult<T> decode(DynamicOps<O> ops, MapLike<O> input) {
+                if (input.get("conditions") != null) {
+                    return DataResult.error(() -> "Loot modifiers no longer take a 'conditions' array; use a single 'condition' object instead (combine several conditions with 'minecraft:all_of')");
+                }
+                return codec.decode(ops, input);
+            }
+
+            @Override
+            public <O> RecordBuilder<O> encode(T input, DynamicOps<O> ops, RecordBuilder<O> prefix) {
+                return codec.encode(input, ops, prefix);
+            }
+
+            @Override
+            public String toString() {
+                return codec.toString();
+            }
+        };
+    }
 
     private final ResourceKey<LootTable> table;
 
