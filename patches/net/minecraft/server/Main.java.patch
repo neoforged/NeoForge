@@ -7,7 +7,7 @@
 +            Path eulaFile = Paths.get("eula.txt");
 +            Eula eula = new Eula(eulaFile);
 +
-+            if (!eula.hasAgreedToEULA()) {
++            if (!options.has(initSettings) && !eula.hasAgreedToEULA()) {
 +                LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
 +                return;
 +            }
