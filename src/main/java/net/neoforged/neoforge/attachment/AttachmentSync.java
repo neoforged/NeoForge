@@ -265,10 +265,8 @@ public final class AttachmentSync {
         }
     }
 
-    /**
-     * Handles initial syncing of session attachments. Only needs to be called for login,
-     * since the client's session survives respawns and teleports.
-     */
+    /// Handles initial syncing of session attachments. Only needs to be called for login,
+    /// since the client's session survives respawns and teleports.
     public static void syncInitialSessionAttachments(ServerPlayer player) {
         var packet = syncInitialAttachments(player.level().getServer().getSessionData(), player);
         if (packet != null) {

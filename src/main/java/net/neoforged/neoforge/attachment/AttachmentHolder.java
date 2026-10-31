@@ -122,9 +122,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         serializeAttachments(tag, type -> true);
     }
 
-    /**
-     * Like {@link #serializeAttachments(ValueOutput)}, but only for types that match the filter.
-     */
+    /// Like [#serializeAttachments(ValueOutput)], but only for types that match the filter.
     final void serializeAttachments(ValueOutput tag, Predicate<AttachmentType<?>> filter) {
         if (attachments == null) return;
         for (var entry : attachments.entrySet()) {
@@ -154,9 +152,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         deserializeAttachments(input, type -> true);
     }
 
-    /**
-     * Like {@link #deserializeAttachments(ValueInput)}, but skips types that do not match the filter.
-     */
+    /// Like [#deserializeAttachments(ValueInput)], but skips types that do not match the filter.
     final void deserializeAttachments(ValueInput input, Predicate<AttachmentType<?>> filter) {
         for (var key : input.keySet()) {
             // Use tryParse to not discard valid attachment type keys, even if there is a malformed key.

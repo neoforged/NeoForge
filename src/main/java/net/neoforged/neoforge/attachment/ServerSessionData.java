@@ -19,9 +19,7 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.VisibleForTesting;
 
-/**
- * Session Data for a server. Saves through {@link MinecraftServer#getDataStorage()}.
- */
+/// Session Data for a server. Saves through [MinecraftServer#getDataStorage()].
 @ApiStatus.Internal
 public final class ServerSessionData extends SessionData {
     private static final Identifier ID = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "session_attachments");
@@ -36,9 +34,7 @@ public final class ServerSessionData extends SessionData {
         this.savedDataType = new SavedDataType<>(ID, level -> new Storage(), level -> codec);
     }
 
-    /**
-     * Creates the holder and loads it from the server's data storage, which then keeps it registered for saving.
-     */
+    /// Creates the holder and loads it from the server's data storage, which then keeps it registered for saving.
     public static ServerSessionData create(MinecraftServer server) {
         // This is called once during server startup, so creating a new instance and always returning it is fine.
         var data = new ServerSessionData(server);

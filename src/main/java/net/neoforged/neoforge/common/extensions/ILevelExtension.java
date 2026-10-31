@@ -61,13 +61,11 @@ public interface ILevelExtension {
         return null;
     }
 
-    /**
-     * {@return the session attachments of the server ({@link ServerLevel}) or connection (client level) this level belongs to}
-     *
-     * @throws UnsupportedOperationException if a session data is not available.
-     * @see SessionData
-     * @implNote ClientLevel overrides this to reach the ClientPacketListener's session data instead.
-     */
+    /// {@return the session attachments of the server ({@link ServerLevel}) or connection (client level) this level belongs to}
+    ///
+    /// @throws UnsupportedOperationException if a session data is not available.
+    /// @see SessionData
+    /// @implNote ClientLevel overrides this to reach the ClientPacketListener's session data instead.
     default SessionData getSessionData() {
         MinecraftServer server = self().getServer();
         if (server == null) {

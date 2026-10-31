@@ -32,12 +32,10 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
-/**
- * Session data for the client.
- * <p>
- * Persistent attachments that aren't synced are saved by the client using a per-(world/server/lan-world) path.
- * Synced attachments are server authoritative and are never saved on the client.
- */
+/// Session data for the client.
+///
+/// Persistent attachments that aren't synced are saved by the client using a per-(world/server/lan-world) path.
+/// Synced attachments are server authoritative and are never saved on the client.
 @ApiStatus.Internal
 public final class ClientSessionData extends SessionData {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -64,11 +62,9 @@ public final class ClientSessionData extends SessionData {
         return data;
     }
 
-    /**
-     * World file for the singleplayer host, game directory file keyed by server otherwise.
-     *
-     * @throws IllegalStateException If neither the integrated server nor the server data are provided.
-     */
+    /// World file for the singleplayer host, game directory file keyed by server otherwise.
+    ///
+    /// @throws IllegalStateException If neither the integrated server nor the server data are provided.
     public static Path resolveFile(Path gameDirectory, @Nullable IntegratedServer singleplayerServer, @Nullable ServerData serverData) {
         if (serverData != null) {
             return gameDirectory.resolve(MULTIPLAYER_DIR).resolve(storageKey(serverData) + ".dat");
@@ -79,11 +75,9 @@ public final class ClientSessionData extends SessionData {
         throw new IllegalStateException("Connection has neither a singleplayer world nor server data");
     }
 
-    /**
-     * Realms and LAN games have no stable address, so they are keyed by name instead.
-     * Keys do not survive renames or host IP changes, and a server transfer keeps the origin server's key.
-     * Keys longer than {@value #MAX_KEY_LENGTH} characters are clamped and suffixed with a hash of the original key.
-     */
+    /// Realms and LAN games have no stable address, so they are keyed by name instead.
+    /// Keys do not survive renames or host IP changes, and a server transfer keeps the origin server's key.
+    /// Keys longer than {@value #MAX_KEY_LENGTH} characters are clamped and suffixed with a hash of the original key.
     @SuppressWarnings("deprecation")
     public static String storageKey(ServerData serverData) {
         String key = switch (serverData.type()) {

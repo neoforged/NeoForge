@@ -65,16 +65,12 @@ public final class AttachmentInternals {
         event.getOutcome().copyAttachmentsFrom(event.getEntity(), true);
     }
 
-    /**
-     * Serializes attachments that have no sync handler; used for client-local session data.
-     */
+    /// Serializes attachments that have no sync handler; used for client-local session data.
     public static void serializeNonSyncedAttachments(AttachmentHolder holder, ValueOutput output) {
         holder.serializeAttachments(output, type -> type.syncHandler == null);
     }
 
-    /**
-     * Counterpart of {@link #serializeNonSyncedAttachments}; synced types in the input are ignored.
-     */
+    /// Counterpart of [#serializeNonSyncedAttachments]; synced types in the input are ignored.
     public static void deserializeNonSyncedAttachments(AttachmentHolder holder, ValueInput input) {
         holder.deserializeAttachments(input, type -> type.syncHandler == null);
     }
