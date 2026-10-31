@@ -9,6 +9,7 @@ import com.mojang.logging.LogUtils;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.storage.ValueInput;
@@ -118,20 +119,26 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
      * Writes the serializable attachments to a tag.
      */
     public final void serializeAttachments(ValueOutput tag) {
+        serializeAttachments(tag, type -> true);
+    }
+
+    /// Like [#serializeAttachments(ValueOutput)], but only for types that match the filter.
+    final void serializeAttachments(ValueOutput tag, Predicate<AttachmentType<?>> filter) {
         if (attachments == null) return;
         for (var entry : attachments.entrySet()) {
             var type = entry.getKey();
+            if (type.serializer == null || !filter.test(type)) {
+                continue;
+            }
             var key = NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type);
-            if (type.serializer != null) {
-                try {
-                    var serialized = tag.child(key.toString());
-                    boolean doSerialise = ((IAttachmentSerializer) type.serializer).write(entry.getValue(), serialized);
-                    if (!doSerialise) {
-                        tag.discard(key.toString());
-                    }
-                } catch (Exception exception) {
-                    LOGGER.error("Failed to serialize data attachment {}. Skipping.", key, exception);
+            try {
+                var serialized = tag.child(key.toString());
+                boolean doSerialise = ((IAttachmentSerializer) type.serializer).write(entry.getValue(), serialized);
+                if (!doSerialise) {
+                    tag.discard(key.toString());
                 }
+            } catch (Exception exception) {
+                LOGGER.error("Failed to serialize data attachment {}. Skipping.", key, exception);
             }
         }
     }
@@ -142,6 +149,11 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
      * <p>This does not trigger {@link IAttachmentHolder#syncData syncing} of the deserialized attachments.
      */
     protected final void deserializeAttachments(ValueInput input) {
+        deserializeAttachments(input, type -> true);
+    }
+
+    /// Like [#deserializeAttachments(ValueInput)], but skips types that do not match the filter.
+    final void deserializeAttachments(ValueInput input, Predicate<AttachmentType<?>> filter) {
         for (var key : input.keySet()) {
             // Use tryParse to not discard valid attachment type keys, even if there is a malformed key.
             Identifier keyLocation = Identifier.tryParse(key);
@@ -153,6 +165,9 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             var type = NeoForgeRegistries.ATTACHMENT_TYPES.getValue(keyLocation);
             if (type == null || type.serializer == null) {
                 LOGGER.error("Encountered unknown or non-serializable data attachment {}. Skipping.", key);
+                continue;
+            }
+            if (!filter.test(type)) {
                 continue;
             }
 

@@ -23,6 +23,9 @@
   "net/minecraft/client/gui/GuiGraphicsExtractor": [
     "net/neoforged/neoforge/client/extensions/GuiGraphicsExtractorExtension"
   ],
+  "net/minecraft/client/multiplayer/ClientPacketListener": [
+    "net/neoforged/neoforge/client/extensions/IClientPacketListenerExtension"
+  ],
   "net/minecraft/client/renderer/OrderedSubmitNodeCollector": [
     "net/neoforged/neoforge/client/extensions/OrderedSubmitNodeCollectorExtension"
   ],
@@ -142,6 +145,9 @@
   ],
   "net/minecraft/resources/ResourceKey": [
     "java/lang/Comparable<ResourceKey<?>>"
+  ],
+  "net/minecraft/server/MinecraftServer": [
+    "net/neoforged/neoforge/common/extensions/IMinecraftServerExtension"
   ],
   "net/minecraft/server/level/ServerChunkCache": [
     "net/neoforged/neoforge/common/extensions/IServerChunkCacheExtension"
