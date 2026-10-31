@@ -9,7 +9,7 @@
      private final Thread runningThread;
      private boolean closed;
  
-@@ -31,6 +_,19 @@
+@@ -31,6 +_,20 @@
          }
  
          this.packetsToBeHandled.add(new PacketProcessor.ListenerAndPacket<>(listener, packet));
@@ -17,14 +17,15 @@
 +
 +    /**
 +     * Neo: Enqueue a main thread task from a custom payload packet handler.
++     * Like vanilla packets, the task is dropped if the listener stops accepting messages before it runs.
 +     * Use via {@link net.neoforged.neoforge.network.handling.IPayloadContext#enqueueWork}
 +     */
 +    @org.jetbrains.annotations.ApiStatus.Internal
-+    public void scheduleIfPossible(Runnable task) {
++    public void scheduleIfPossible(PacketListener listener, Runnable task) {
 +        if (this.closed) {
 +            throw new RejectedExecutionException("Server already shutting down");
 +        } else {
-+            this.packetsToBeHandled.add(new net.neoforged.neoforge.network.handling.QueuedPacket.CustomPayload(task));
++            this.packetsToBeHandled.add(new net.neoforged.neoforge.network.handling.QueuedPacket.CustomPayload(listener, task));
 +        }
      }
  

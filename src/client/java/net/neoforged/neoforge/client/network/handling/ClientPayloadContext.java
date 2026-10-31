@@ -34,7 +34,7 @@ public record ClientPayloadContext(ClientCommonPacketListener listener, Identifi
             task.run();
             return CompletableFuture.completedFuture(null);
         }
-        return NetworkRegistry.guard(CompletableFuture.runAsync(task, processor::scheduleIfPossible), this.payloadId);
+        return NetworkRegistry.guard(CompletableFuture.runAsync(task, work -> processor.scheduleIfPossible(this.listener, work)), this.payloadId);
     }
 
     @Override
@@ -43,7 +43,7 @@ public record ClientPayloadContext(ClientCommonPacketListener listener, Identifi
         if (processor.isSameThread()) {
             return CompletableFuture.completedFuture(task.get());
         }
-        return NetworkRegistry.guard(CompletableFuture.supplyAsync(task, processor::scheduleIfPossible), this.payloadId);
+        return NetworkRegistry.guard(CompletableFuture.supplyAsync(task, work -> processor.scheduleIfPossible(this.listener, work)), this.payloadId);
     }
 
     @Override
