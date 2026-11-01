@@ -44,10 +44,10 @@ public interface IEntityExtension {
     Collection<ItemEntity> captureDrops(@Nullable Collection<ItemEntity> captureDrops);
 
     /**
-     * Returns a NBTTagCompound that can be used to store custom data for this entity.
+     * Returns a {@link CompoundTag} that can be used to store custom data for this entity.
      * It will be written, and read from disc, so it persists over world saves.
      *
-     * @return A NBTTagCompound
+     * @return A {@link CompoundTag}
      */
     CompoundTag getPersistentData();
 

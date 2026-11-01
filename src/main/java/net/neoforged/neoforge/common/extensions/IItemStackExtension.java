@@ -145,7 +145,7 @@ public interface IItemStackExtension extends ItemInstanceExtension {
 
     /**
      * Retrieves the normal 'lifespan' of this item when it is dropped on the ground
-     * as a EntityItem. This is in ticks, standard result is 6000, or 5 mins.
+     * as an {@link ItemEntity}. This is in ticks, standard result is 6000, or 5 mins.
      *
      * @param level The level the entity is in
      * @return The normal lifespan in ticks.
@@ -155,7 +155,7 @@ public interface IItemStackExtension extends ItemInstanceExtension {
     }
 
     /**
-     * Called by the default implemetation of EntityItem's onUpdate method, allowing
+     * Called by the default implementation of {@link ItemEntity#tick()}, allowing
      * for cleaner control over the update of the item without having to write a
      * subclass.
      *

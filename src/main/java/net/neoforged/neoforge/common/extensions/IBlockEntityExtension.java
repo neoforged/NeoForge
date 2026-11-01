@@ -24,8 +24,8 @@ public interface IBlockEntityExtension {
     }
 
     /**
-     * Called when you receive a TileEntityData packet for the location this
-     * TileEntity is currently in. On the client, the NetworkManager will always
+     * Called when you receive a {@link net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket}
+     * for the location this block entity is currently in. On the client, the {@link Connection} will always
      * be the remote server. On the server, it will be whomever is responsible for
      * sending the packet.
      *
