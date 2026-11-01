@@ -146,7 +146,6 @@ import net.neoforged.neoforge.fluids.crafting.display.FluidSlotDisplay;
 import net.neoforged.neoforge.fluids.crafting.display.FluidStackSlotDisplay;
 import net.neoforged.neoforge.fluids.crafting.display.FluidTagSlotDisplay;
 import net.neoforged.neoforge.network.ConfigSync;
-import net.neoforged.neoforge.network.DualStackUtils;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -593,7 +592,6 @@ public class NeoForgeMod {
         NeoForge.EVENT_BUS.addListener(this::onItemAttributeModifiers);
 
         UsernameCache.load();
-        DualStackUtils.initialise();
 
         modEventBus.addListener(EventPriority.HIGH, CapabilityHooks::markProxyableCapabilities);
         modEventBus.addListener(CapabilityHooks::registerVanillaProviders);
