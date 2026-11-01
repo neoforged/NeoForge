@@ -40,35 +40,60 @@
              );
              this.elementsRegistered = true;
          }
-@@ -99,7 +_,30 @@
+@@ -98,13 +_,54 @@
+             Decoder<T> elementDecoder, RegistryOps<JsonElement> ops, ResourceKey<T> elementKey, Resource thunk
          ) {
              try (Reader reader = thunk.openAsReader()) {
-                 JsonElement json = StrictJsonParser.parse(reader);
+-                JsonElement json = StrictJsonParser.parse(reader);
 -                return Either.left(elementDecoder.parse(ops, json).getOrThrow());
-+
-+                // Neo: Allow a condition to skip the entire element, in which case we return a special marker error to skip it in the loader. Look for uses of SKIPPED_ELEMENT_MARKER
-+                var conditionalDecoder = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.decodeOnly(elementDecoder));
-+                var candidate = conditionalDecoder.parse(ops, json).getOrThrow();
-+                if (candidate.isEmpty()) {
-+                    return Either.right(SKIPPED_CONDITIONAL_ELEMENT_MARKER);
-+                }
-+
-+                var elementCandidate = candidate.get();
-+                // For loot tables, we fire the appropriate LootTableLoadEvent first; if the event hook returns null, skip it
-+                if (elementKey.isFor(net.minecraft.core.registries.Registries.LOOT_TABLE) && elementCandidate instanceof net.minecraft.world.level.storage.loot.LootTable lootTable) {
-+                    lootTable.setLootTableId(elementKey.identifier());
-+                    var resultLootTable = net.neoforged.neoforge.event.EventHooks.loadLootTable(ops.lookupProvider::lookup, elementKey.identifier(), lootTable);
-+                    if (resultLootTable == null) {
-+                        return Either.right(SKIPPED_ELEMENT_MARKER);
-+                    }
-+                    // In case the loot table was freshly made and was not given its ID proeprly, set its ID
-+                    resultLootTable.setLootTableId(elementKey.identifier());
-+                    // The variable and type are known to be LootTable at this point
-+                    //noinspection unchecked
-+                    elementCandidate = (T) resultLootTable;
-+                }
-+
-+                return Either.left(elementCandidate);
++                return loadFromJson(elementDecoder, ops, elementKey, StrictJsonParser.parse(reader), thunk.sourcePackId());
              } catch (Exception e) {
                  return Either.right(
                      new IllegalStateException(String.format(Locale.ROOT, "Failed to parse %s from pack %s", elementKey.identifier(), thunk.sourcePackId()), e)
+                 );
+             }
++        }
++
++        /// Neo: Variant of [#loadFromResource(Decoder, RegistryOps, ResourceKey, Resource)] that deserializes an already parsed JSON
++        /// element. Used by registries that hand out their raw JSON for bulk modification before any deserialization takes place.
++        public static <T> Either<T, Exception> loadFromJson(
++            Decoder<T> elementDecoder, RegistryOps<JsonElement> ops, ResourceKey<T> elementKey, JsonElement json, String sourcePackId
++        ) {
++            try {
++                return decode(elementDecoder, ops, elementKey, json);
++            } catch (Exception e) {
++                return Either.right(
++                    new IllegalStateException(String.format(Locale.ROOT, "Failed to parse %s from pack %s", elementKey.identifier(), sourcePackId), e)
++                );
++            }
++        }
++
++        private static <T> Either<T, Exception> decode(
++            Decoder<T> elementDecoder, RegistryOps<JsonElement> ops, ResourceKey<T> elementKey, JsonElement json
++        ) {
++            // Neo: Allow a condition to skip the entire element, in which case we return a special marker error to skip it in the loader. Look for uses of SKIPPED_ELEMENT_MARKER
++            var conditionalDecoder = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.decodeOnly(elementDecoder));
++            var candidate = conditionalDecoder.parse(ops, json).getOrThrow();
++            if (candidate.isEmpty()) {
++                return Either.right(SKIPPED_CONDITIONAL_ELEMENT_MARKER);
++            }
++
++            var elementCandidate = candidate.get();
++            // For loot tables, we fire the appropriate LootTableLoadEvent first; if the event hook returns null, skip it
++            if (elementKey.isFor(net.minecraft.core.registries.Registries.LOOT_TABLE) && elementCandidate instanceof net.minecraft.world.level.storage.loot.LootTable lootTable) {
++                lootTable.setLootTableId(elementKey.identifier());
++                var resultLootTable = net.neoforged.neoforge.event.EventHooks.loadLootTable(ops.lookupProvider::lookup, elementKey.identifier(), lootTable);
++                if (resultLootTable == null) {
++                    return Either.right(SKIPPED_ELEMENT_MARKER);
++                }
++                // In case the loot table was freshly made and was not given its ID properly, set its ID
++                resultLootTable.setLootTableId(elementKey.identifier());
++                // The variable and type are known to be LootTable at this point
++                //noinspection unchecked
++                elementCandidate = (T) resultLootTable;
++            }
++
++            return Either.left(elementCandidate);
+         }
+ 
+         public static <T> Either<T, Exception> findAndLoadFromResource(
