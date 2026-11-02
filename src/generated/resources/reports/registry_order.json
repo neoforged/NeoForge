@@ -99,6 +99,7 @@
     "neoforge:biome_modifier_serializers",
     "neoforge:condition_codecs",
     "neoforge:entity_data_serializers",
+    "neoforge:extended_equipment_slot_type",
     "neoforge:fluid_ingredient_type",
     "neoforge:fluid_type",
     "neoforge:global_loot_modifier_serializers",
