@@ -1,19 +1,17 @@
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -291,9 +_,19 @@
+@@ -290,10 +_,17 @@
+     private final PacketProcessor packetProcessor;
      private final TimerQueue<MinecraftServer> scheduledEvents;
      private final ServerClockManager clockManager;
- 
 +    private static final com.google.gson.Gson STATUS_GSON = new com.google.gson.Gson();
-+
 +    /// Neo: cache the server status JSON in case a client spams requests
 +    @Nullable
 +    private String cachedServerStatus;
 +    private final Map<ResourceKey<Level>, long[]> perWorldTickTimes = Maps.newIdentityHashMap();
-+
 +    /// Neo: data attachments scoped to this server
 +    private final net.neoforged.neoforge.attachment.ServerSessionData sessionData;
-+
+ 
      public static <S extends MinecraftServer> S spin(Function<Thread, S> factory) {
          AtomicReference<S> serverReference = new AtomicReference<>();
 -        Thread thread = new Thread(() -> serverReference.get().runServer(), "Server thread");
@@ -237,24 +235,14 @@
          return configureRepositoryWithSelection(packRepository, selected, forcedFeatures, true);
      }
  
-@@ -1971,6 +_,10 @@
-         return this.worldData;
-     }
- 
-+    public MinecraftServer.ReloadableResources getServerResources() {
-+         return resources;
-+    }
-+
-     public RegistryAccess.Frozen registryAccess() {
-         return this.registries.compositeAccess();
-     }
-@@ -2049,6 +_,13 @@
+@@ -2049,6 +_,14 @@
          return true;
      }
  
 +    public void handleCustomClickAction(Identifier id, Optional<Tag> payload, @Nullable ServerPlayer player, GameProfile profile) {
-+        if (!net.neoforged.neoforge.common.CommonHooks.onCustomClickAction(player, profile, id, payload))
-+            handleCustomClickAction(id, payload);
++        if (!net.neoforged.neoforge.common.CommonHooks.onCustomClickAction(player, profile, id, payload)) {
++            this.handleCustomClickAction(id, payload);
++        }
 +    }
 +
 +    /// @deprecated Neo: Use [#handleCustomClickAction(Identifier, Optional, ServerPlayer, GameProfile)] instead
@@ -272,10 +260,15 @@
      }
  
      @Deprecated
-@@ -2202,6 +_,24 @@
+@@ -2202,6 +_,29 @@
  
      public ServerDebugSubscribers debugSubscribers() {
          return this.debugSubscribers;
++    }
++
++    /// Neo: {@return the current reloadable resources of this server}
++    public MinecraftServer.ReloadableResources getServerResources() {
++        return this.resources;
 +    }
 +
 +    @Override
