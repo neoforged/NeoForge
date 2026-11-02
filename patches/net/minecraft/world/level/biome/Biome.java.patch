@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/biome/Biome.java
 +++ b/net/minecraft/world/level/biome/Biome.java
-@@ -39,9 +_,9 @@
+@@ -41,9 +_,9 @@
  public final class Biome {
      public static final Codec<Biome> DIRECT_CODEC = RecordCodecBuilder.create(
          i -> i.group(
@@ -13,7 +13,7 @@
                  BiomeGenerationSettings.CODEC.forGetter(b -> b.generationSettings)
              )
              .apply(i, Biome::new)
-@@ -71,9 +_,12 @@
+@@ -73,9 +_,12 @@
      @Deprecated(forRemoval = true)
      public static final Noise BIOME_INFO_NOISE = new SimplexNoise(new WorldgenRandom(new LegacyRandomSource(2345L)), true);
      private static final int TEMPERATURE_CACHE_SIZE = 1024;
@@ -26,7 +26,7 @@
      private final BiomeSpecialEffects specialEffects;
      private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> {
          Long2FloatLinkedOpenHashMap map = new Long2FloatLinkedOpenHashMap(1024, 0.25F) {
-@@ -84,6 +_,8 @@
+@@ -86,6 +_,8 @@
          map.defaultReturnValue(Float.NaN);
          return map;
      });
@@ -35,7 +35,7 @@
  
      private Biome(
          Biome.ClimateSettings climateSettings,
-@@ -95,6 +_,7 @@
+@@ -97,6 +_,7 @@
          this.attributes = attributes;
          this.specialEffects = specialEffects;
          this.generationSettings = generationSettings;
@@ -43,7 +43,7 @@
      }
  
      public boolean hasPrecipitation() {
-@@ -196,7 +_,7 @@
+@@ -198,7 +_,7 @@
      }
  
      public BiomeGenerationSettings getGenerationSettings() {
@@ -52,12 +52,10 @@
      }
  
      public int getGrassColor(double x, double z) {
-@@ -249,6 +_,37 @@
- 
-     public int getWaterColor() {
+@@ -253,6 +_,37 @@
          return this.specialEffects.waterColor();
-+    }
-+
+     }
+ 
 +    /**
 +     * {@return Cache of original biome data and biome data modified by biome modifiers}
 +     * Modified biome data is set by server after datapacks and serverconfigs load.
@@ -87,6 +85,57 @@
 +     */
 +    public EnvironmentAttributeMap getModifiedEnvironmentAttributes() {
 +        return this.modifiableBiomeInfo().get().attributes();
++    }
++
+     public static class BiomeBuilder {
+         private boolean hasPrecipitation = true;
+         private @Nullable Float temperature;
+@@ -381,6 +_,8 @@
+         }
      }
  
-     public static class BiomeBuilder {
++    @net.neoforged.fml.common.asm.enumextension.NamedEnum
++    @net.neoforged.fml.common.asm.enumextension.NetworkedEnum(net.neoforged.fml.common.asm.enumextension.NetworkedEnum.NetworkCheck.CLIENTBOUND)
+     public enum TemperatureModifier implements StringRepresentable, IExtensibleEnum {
+         NONE("none") {
+             @Override
+@@ -406,12 +_,22 @@
+         };
+ 
+         private final String name;
++        private final TemperatureOverride delegate;
+         public static final Codec<Biome.TemperatureModifier> CODEC = StringRepresentable.fromEnum(Biome.TemperatureModifier::values);
+ 
+-        public abstract float modifyTemperature(final BlockPos pos, final float baseTemperature);
++        public float modifyTemperature(final BlockPos pos, final float baseTemperature) {
++            return delegate.modifyTemperature(pos, baseTemperature);
++        }
+ 
++        @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
+         TemperatureModifier(String name) {
+             this.name = name;
++            this.delegate = null;
++        }
++
++        TemperatureModifier(String name, TemperatureOverride delegate) {
++            this.name = name;
++            this.delegate = delegate;
+         }
+ 
+         public String getName() {
+@@ -421,6 +_,15 @@
+         @Override
+         public String getSerializedName() {
+             return this.name;
++        }
++
++        public static net.neoforged.fml.common.asm.enumextension.ExtensionInfo getExtensionInfo() {
++            return net.neoforged.fml.common.asm.enumextension.ExtensionInfo.nonExtended(Biome.TemperatureModifier.class);
++        }
++
++        @FunctionalInterface
++        public interface TemperatureOverride {
++            float modifyTemperature(BlockPos pos, float baseTemperature);
+         }
+     }
+ }

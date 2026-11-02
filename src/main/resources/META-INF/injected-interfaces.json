@@ -336,6 +336,9 @@
   "net/minecraft/world/item/component/FireworkExplosion$Shape": [
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ],
+  "net/minecraft/world/level/biome/Biome$TemperatureModifier": [
+    "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
+  ],
   "net/minecraft/world/level/biome/BiomeSpecialEffects$GrassColorModifier": [
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ],
