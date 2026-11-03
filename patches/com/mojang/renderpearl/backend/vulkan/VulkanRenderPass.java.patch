@@ -1,9 +1,10 @@
 --- a/com/mojang/renderpearl/backend/vulkan/VulkanRenderPass.java
 +++ b/com/mojang/renderpearl/backend/vulkan/VulkanRenderPass.java
-@@ -50,6 +_,7 @@
+@@ -50,6 +_,8 @@
      private final int outputWidth;
      private final int outputHeight;
      private final boolean hasDepth;
++    /// Neo: store whether this render pass uses a stencil-aware render pipeline
 +    private final boolean hasStencil;
      private final Supplier<String> label;
      protected int pushedDebugGroups = 0;
@@ -24,10 +25,11 @@
          this.label = label;
  
          try (MemoryStack stack = MemoryStack.stackPush()) {
-@@ -118,6 +_,10 @@
+@@ -118,6 +_,11 @@
              this.anyDescriptorDirty = true;
              this.uniforms.clear();
              this.uniforms.size(vulkanRenderPipeline.uniforms().size());
++            // Neo: bind the stencil-aware render pipeline
 +            if (this.hasStencil) {
 +                VK12.vkCmdBindPipeline(this.commandBuffer(), VK12.VK_PIPELINE_BIND_POINT_GRAPHICS, this.hasDepth ? this.pipeline.withDepthStencilPipeline() : this.pipeline.withStencilPipeline());
 +                return;

@@ -8,16 +8,17 @@
  
      public static SamplerCache getSamplerCache() {
          return samplerCache;
-@@ -103,6 +_,8 @@
+@@ -103,6 +_,9 @@
      }
  
      public static @Nullable CompiledRenderPipeline getCompiledPipelineNullable(RenderPipeline pipeline) {
++        // Neo: apply pipeline modifiers before resolving the compiled pipeline
 +        pipeline = PIPELINE_MODIFIERS.apply(pipeline);
 +
          if (currentPipelineCache != null) {
              CompiledRenderPipeline cachedPipeline = currentPipelineCache.get(pipeline);
              if (cachedPipeline != null) {
-@@ -491,5 +_,28 @@
+@@ -491,5 +_,29 @@
      }
  
      private record GpuAsyncTask(Runnable callback, GpuFence fence) {
@@ -41,6 +42,7 @@
 +        PIPELINE_MODIFIERS.renderWithModifier(modifier, renderTask);
 +    }
 +
++    /// Neo: ensure the pipeline modifier stack is empty at the end of the frame
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public static void ensurePipelineModifiersEmpty() {
 +        PIPELINE_MODIFIERS.ensureEmpty();

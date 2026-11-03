@@ -58,7 +58,7 @@
 -                                    List<TagEntry> unresolvedEntries = entries.stream().filter(e -> !e.verifyIfPresent(elementCheck, tagCheck)).toList();
 +                                    List<TagEntry> unresolvedEntries = java.util.stream.Stream.concat(entries.stream(), builder.getRemoveEntries())
 +                                               // Neo: Assume tags from other namespaces always exists
-+                                              .filter((e) -> e.getId().getNamespace().equals(modId) && !e.verifyIfPresent(elementCheck, tagCheck))
++                                              .filter(e -> e.getId().getNamespace().equals(this.modId) && !e.verifyIfPresent(elementCheck, tagCheck))
 +                                              .toList();
                                      if (!unresolvedEntries.isEmpty()) {
                                          throw new IllegalArgumentException(

@@ -1,9 +1,10 @@
 --- a/com/mojang/math/Transformation.java
 +++ b/com/mojang/math/Transformation.java
-@@ -38,6 +_,7 @@
+@@ -38,6 +_,8 @@
      private @Nullable Quaternionfc leftRotation;
      private @Nullable Vector3fc scale;
      private @Nullable Quaternionfc rightRotation;
++    /// Neo: stores the normal matrix extracted from the composed transformation matrix
 +    private org.joml.@Nullable Matrix3f normalTransform = null;
      public static final Transformation IDENTITY = Util.make(() -> {
          Transformation identity = new Transformation(new Matrix4f());

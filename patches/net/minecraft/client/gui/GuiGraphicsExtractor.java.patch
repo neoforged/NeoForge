@@ -1,9 +1,10 @@
 --- a/net/minecraft/client/gui/GuiGraphicsExtractor.java
 +++ b/net/minecraft/client/gui/GuiGraphicsExtractor.java
-@@ -102,6 +_,7 @@
+@@ -102,6 +_,8 @@
      private @Nullable Style hoveredTextStyle;
      private @Nullable Style clickableTextStyle;
      private @Nullable Renderable preeditOverlay;
++    /// Neo: holds the stack for which a tooltip is being built
 +    private ItemStack tooltipStack = ItemStack.EMPTY;
  
      private GuiGraphicsExtractor(Minecraft minecraft, Matrix3x2fStack pose, GuiRenderState guiRenderState, int mouseX, int mouseY) {

@@ -1,9 +1,10 @@
 --- a/net/minecraft/client/gui/components/Button.java
 +++ b/net/minecraft/client/gui/components/Button.java
-@@ -31,6 +_,11 @@
+@@ -31,6 +_,12 @@
          this.createNarration = createNarration;
      }
  
++    /// Neo: constructor overload for creating [Button] subclasses from custom [Button.Builder]s
 +    protected Button(Builder builder) {
 +        this(builder.x, builder.y, builder.width, builder.height, builder.message, builder.onPress, builder.createNarration);
 +        this.setTooltip(builder.tooltip); // Neo: apply tooltip from builder
@@ -12,23 +13,25 @@
      @Override
      public void onPress(InputWithModifiers input) {
          this.onPress.onPress(this);
-@@ -97,6 +_,10 @@
+@@ -97,6 +_,11 @@
              button.setTooltip(this.tooltip);
              return button;
          }
 +
++        /// Neo: overload for building custom [Button]s with subclasses of this builder
 +        public Button build(java.util.function.Function<Builder, Button> builder) {
 +            return builder.apply(this);
 +        }
      }
  
      public interface CreateNarration {
-@@ -110,6 +_,10 @@
+@@ -110,6 +_,11 @@
      public static class Plain extends Button {
          protected Plain(int x, int y, int width, int height, Component message, Button.OnPress onPress, Button.CreateNarration createNarration) {
              super(x, y, width, height, message, onPress, createNarration);
 +        }
 +
++        /// Neo: constructor overload for creating [Button] subclasses from custom [Button.Builder]s
 +        protected Plain(Builder builder) {
 +            super(builder);
          }

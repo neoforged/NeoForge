@@ -1,9 +1,10 @@
 --- a/com/mojang/renderpearl/backend/opengl/GlRenderPipeline.java
 +++ b/com/mojang/renderpearl/backend/opengl/GlRenderPipeline.java
-@@ -29,6 +_,19 @@
-     private final int srcAlpha;
+@@ -30,6 +_,20 @@
      private final int dstAlpha;
      private final int modeAlpha;
+     private boolean closed = false;
++    // Neo: store stencil test configuration
 +    private final boolean hasStencilTest;
 +    private final boolean hasPerFaceStencilTest;
 +    private final int stencilReferenceValue;
@@ -17,14 +18,15 @@
 +    private final int stencilBackFail;
 +    private final int stencilBackDepthFail;
 +    private final int stencilBackPass;
-     private boolean closed = false;
  
      GlRenderPipeline(GlDevice device, BackendRenderPipeline.CreateInfo createInfo, GlProgram program, VertexArray vertexArray) {
-@@ -88,6 +_,37 @@
+         this.device = device;
+@@ -88,6 +_,38 @@
              this.dstAlpha = 1280;
              this.modeAlpha = 1280;
          }
 +
++        // Neo: compute stencil test configuration
 +        var stencilTest = this.depthEnabled ? createInfo.depthStencilState().stencilTest() : null;
 +        if (stencilTest != null) {
 +            this.hasStencilTest = true;
@@ -58,11 +60,12 @@
      }
  
      @Override
-@@ -157,6 +_,22 @@
+@@ -157,6 +_,23 @@
          }
  
          GlStateManager._polygonMode(1032, this.polygonMode);
 +
++        // Neo: apply stencil test configuration
 +        if (this.hasStencilTest) {
 +            GlStateManager._enableStencilTest();
 +            if (this.hasPerFaceStencilTest) {

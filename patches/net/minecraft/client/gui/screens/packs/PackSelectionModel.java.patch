@@ -1,22 +1,25 @@
 --- a/net/minecraft/client/gui/screens/packs/PackSelectionModel.java
 +++ b/net/minecraft/client/gui/screens/packs/PackSelectionModel.java
-@@ -33,9 +_,9 @@
+@@ -33,9 +_,11 @@
          this.onListChanged = onListChanged;
          this.iconGetter = iconGetter;
          this.repository = repository;
 -        this.selected = Lists.newArrayList(repository.getSelectedPacks());
++        // Neo: exclude hidden packs from the pack lists
 +        this.selected = Lists.newArrayList(repository.getSelectedPacks().stream().filter(p -> !p.isHidden()).toList());
          Collections.reverse(this.selected);
 -        this.unselected = Lists.newArrayList(repository.getAvailablePacks());
++        // Neo: exclude hidden packs from the pack lists
 +        this.unselected = Lists.newArrayList(repository.getAvailablePacks().stream().filter(p -> !p.isHidden()).toList());
          this.unselected.removeAll(this.selected);
          this.output = output;
      }
-@@ -61,7 +_,7 @@
+@@ -61,7 +_,8 @@
          this.repository.reload();
          this.selected.retainAll(this.repository.getAvailablePacks());
          this.unselected.clear();
 -        this.unselected.addAll(this.repository.getAvailablePacks());
++        // Neo: exclude hidden packs from the pack lists
 +        this.unselected.addAll(this.repository.getAvailablePacks().stream().filter(p -> !p.isHidden()).toList());
          this.unselected.removeAll(this.selected);
      }

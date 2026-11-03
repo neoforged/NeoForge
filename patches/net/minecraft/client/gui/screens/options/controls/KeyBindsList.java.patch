@@ -1,10 +1,11 @@
 --- a/net/minecraft/client/gui/screens/options/controls/KeyBindsList.java
 +++ b/net/minecraft/client/gui/screens/options/controls/KeyBindsList.java
-@@ -39,7 +_,7 @@
+@@ -39,7 +_,8 @@
                  this.addEntry(new KeyBindsList.CategoryEntry(category));
              }
  
 -            Component name = Component.translatable(key.getName());
++            // Neo: defer display name creation to the KeyMapping
 +            Component name = key.getDisplayName();
              int width = minecraft.font.width(name);
              if (width > this.maxNameWidth) {
@@ -26,11 +27,11 @@
 +                    }
 +                });
              this.resetButton = Button.builder(RESET_BUTTON_TITLE, button -> {
-+                this.key.setToDefault();
++                key.setToDefault(); // Neo: reset to default, including the key modifier
                  key.setKey(key.getDefaultKey());
                  KeyBindsList.this.resetMappingAndUpdateButtons();
              }).bounds(0, 0, 50, 20).createNarration(defaultNarrationSupplier -> Component.translatable("narrator.controls.reset", name)).build();
-@@ -166,13 +_,13 @@
+@@ -166,13 +_,14 @@
              MutableComponent tooltip = Component.empty();
              if (!this.key.isUnbound()) {
                  for (KeyMapping otherKey : KeyBindsList.this.minecraft.options.keyMappings) {
@@ -42,6 +43,7 @@
  
                          this.hasCollision = true;
 -                        tooltip.append(Component.translatable(otherKey.getName()));
++                        // Neo: defer display name creation to the KeyMapping
 +                        tooltip.append(otherKey.getDisplayName());
                      }
                  }
