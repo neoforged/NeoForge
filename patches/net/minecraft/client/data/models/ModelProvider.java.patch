@@ -1,9 +1,10 @@
 --- a/net/minecraft/client/data/models/ModelProvider.java
 +++ b/net/minecraft/client/data/models/ModelProvider.java
-@@ -36,20 +_,59 @@
+@@ -36,20 +_,62 @@
      private final PackOutput.PathProvider blockStatePathProvider;
      private final PackOutput.PathProvider itemInfoPathProvider;
      private final PackOutput.PathProvider modelPathProvider;
++    /// Neo: holds the mod ID "owning" this provider
 +    public final String modId;
  
 +    /// @deprecated Neo: Use [#ModelProvider(PackOutput, String)] instead
@@ -35,7 +36,7 @@
 +    ///
 +    /// @see #getKnownItems()
 +    protected java.util.stream.Stream<? extends net.minecraft.core.Holder<Block>> getKnownBlocks() {
-+        return BuiltInRegistries.BLOCK.listElements().filter(holder -> holder.key().identifier().getNamespace().equals(modId));
++        return BuiltInRegistries.BLOCK.listElements().filter(holder -> holder.key().identifier().getNamespace().equals(this.modId));
 +    }
 +
 +    /// Neo: Returns a [Stream][java.util.stream.Stream] containing all [items][Item] which must have their models/client items generated
@@ -48,32 +49,35 @@
 +    ///
 +    /// @see #getKnownBlocks()
 +    protected java.util.stream.Stream<? extends net.minecraft.core.Holder<Item>> getKnownItems() {
-+        return BuiltInRegistries.ITEM.listElements().filter(holder -> holder.key().identifier().getNamespace().equals(modId));
++        return BuiltInRegistries.ITEM.listElements().filter(holder -> holder.key().identifier().getNamespace().equals(this.modId));
      }
  
      @Override
      public CompletableFuture<?> run(CachedOutput cache) {
 -        ModelProvider.ItemInfoCollector itemModels = new ModelProvider.ItemInfoCollector();
 -        ModelProvider.BlockStateGeneratorCollector blockStateGenerators = new ModelProvider.BlockStateGeneratorCollector();
++        // Neo: allow controlling which blocks and items this provider is expected to generate models for
 +        ModelProvider.ItemInfoCollector itemModels = new ModelProvider.ItemInfoCollector(this::getKnownItems);
 +        ModelProvider.BlockStateGeneratorCollector blockStateGenerators = new ModelProvider.BlockStateGeneratorCollector(this::getKnownBlocks);
          ModelProvider.SimpleModelCollector simpleModels = new ModelProvider.SimpleModelCollector();
 -        new BlockModelGenerators(blockStateGenerators, itemModels, simpleModels).run();
 -        new ItemModelGenerators(itemModels, simpleModels).run();
-+        registerModels(new BlockModelGenerators(blockStateGenerators, itemModels, simpleModels), new ItemModelGenerators(itemModels, simpleModels));
++        // Neo: make ModelProvider subclassable
++        this.registerModels(new BlockModelGenerators(blockStateGenerators, itemModels, simpleModels), new ItemModelGenerators(itemModels, simpleModels));
          blockStateGenerators.validate();
          itemModels.finalizeAndValidate();
          return CompletableFuture.allOf(
-@@ -61,11 +_,22 @@
+@@ -61,11 +_,23 @@
  
      @Override
      public String getName() {
 -        return "Model Definitions";
-+        return "Model Definitions - " + modId;
++        return "Model Definitions - " + this.modId;
      }
  
      private static class BlockStateGeneratorCollector implements Consumer<BlockModelDefinitionGenerator> {
          private final Map<Block, BlockModelDefinitionGenerator> generators = new HashMap<>();
++        /// Neo: supplier of the blocks this provider is expected to generate models for
 +        private final Supplier<java.util.stream.Stream<? extends net.minecraft.core.Holder<Block>>> knownBlocks;
 +
 +        public BlockStateGeneratorCollector(Supplier<java.util.stream.Stream<? extends net.minecraft.core.Holder<Block>>> knownBlocks) {
@@ -88,21 +92,24 @@
  
          public void accept(BlockModelDefinitionGenerator generator) {
              Block block = generator.block();
-@@ -76,8 +_,7 @@
+@@ -76,8 +_,8 @@
          }
  
          public void validate() {
 -            List<Identifier> missingDefinitions = BuiltInRegistries.BLOCK
 -                .listElements()
-+            List<Identifier> missingDefinitions = knownBlocks.get()
++            // Neo: allow controlling which blocks this provider is expected to generate models for
++            List<Identifier> missingDefinitions = this.knownBlocks.get()
                  .filter(e -> !this.generators.containsKey(e.value()))
                  .map(e -> e.key().identifier())
                  .toList();
-@@ -96,6 +_,18 @@
+@@ -96,6 +_,20 @@
      private static class ItemInfoCollector implements ItemModelOutput {
          private final Map<Item, ClientItem> itemInfos = new HashMap<>();
          private final Map<Item, Item> copies = new HashMap<>();
++        /// Neo: supplier of the items this provider is expected to generate models for
 +        private final Supplier<java.util.stream.Stream<? extends net.minecraft.core.Holder<Item>>> knownItems;
++        /// Neo: holds arbitrarily named client items
 +        private final Map<Identifier, ClientItem> idItemInfos = new HashMap<>();
 +
 +        public ItemInfoCollector(Supplier<java.util.stream.Stream<? extends net.minecraft.core.Holder<Item>>> knownItems) {
@@ -117,10 +124,12 @@
  
          @Override
          public void accept(Item item, ItemModel.Unbaked model, ClientItem.Properties properties) {
-@@ -110,12 +_,20 @@
+@@ -109,13 +_,23 @@
+             }
          }
  
-         @Override
++        /// Neo: Allow generating arbitrarily named client item files.
++        @Override
 +        public void register(Identifier identifier, ClientItem clientItem) {
 +            ClientItem existing = this.idItemInfos.putIfAbsent(identifier, clientItem);
 +            if (existing != null) {
@@ -128,32 +137,35 @@
 +            }
 +        }
 +
-+        @Override
+         @Override
          public void copy(Item donor, Item acceptor) {
              this.copies.put(acceptor, donor);
          }
  
          public void finalizeAndValidate() {
 -            BuiltInRegistries.ITEM.forEach(item -> {
-+            knownItems.get().map(net.minecraft.core.Holder::value).forEach(item -> {
++            // Neo: allow controlling which items this provider is expected to generate models for
++            this.knownItems.get().map(net.minecraft.core.Holder::value).forEach(item -> {
                  if (!this.copies.containsKey(item)) {
                      if (item instanceof BlockItem blockItem && !this.itemInfos.containsKey(blockItem)) {
                          Identifier targetModel = ModelLocationUtils.getModelLocation(blockItem.getBlock());
-@@ -131,8 +_,7 @@
+@@ -131,8 +_,8 @@
  
                  this.register(acceptor, donorInfo);
              });
 -            List<Identifier> missingDefinitions = BuiltInRegistries.ITEM
 -                .listElements()
-+            List<Identifier> missingDefinitions = knownItems.get()
++            // Neo: allow controlling which items this provider is expected to generate models for
++            List<Identifier> missingDefinitions = this.knownItems.get()
                  .filter(e -> !this.itemInfos.containsKey(e.value()))
                  .map(e -> e.key().identifier())
                  .toList();
-@@ -142,7 +_,9 @@
+@@ -142,7 +_,10 @@
          }
  
          public CompletableFuture<?> save(CachedOutput cache, PackOutput.PathProvider pathProvider) {
 -            return DataProvider.saveAll(cache, ClientItem.CODEC, item -> pathProvider.json(item.builtInRegistryHolder().key().identifier()), this.itemInfos);
++            // Neo: save both item-attached and arbitrarily named client item files
 +            return CompletableFuture.allOf(
 +                    DataProvider.saveAll(cache, ClientItem.CODEC, item -> pathProvider.json(item.builtInRegistryHolder().key().identifier()), this.itemInfos),
 +                    DataProvider.saveAll(cache, ClientItem.CODEC, pathProvider::json, this.idItemInfos));

@@ -21,15 +21,16 @@
  
      public Hud(Minecraft minecraft) {
          this.minecraft = minecraft;
-@@ -201,6 +_,7 @@
+@@ -201,6 +_,8 @@
              () -> new JumpableVehicleBar(minecraft)
          );
          this.resetTitleTimes();
++        // Neo: register vanilla HUD elements
 +        this.registerVanillaLayers();
      }
  
      public void registerReloadListeners(ReloadableResourceManager resourceManager) {
-@@ -224,28 +_,48 @@
+@@ -224,28 +_,49 @@
      public void extractRenderState(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
          this.minecraft.gameRenderer.gameRenderState().guiRenderState.isHudHidden = this.isHidden;
          if (!(this.minecraft.gui.screen() instanceof LevelLoadingScreen)) {
@@ -52,11 +53,12 @@
 -                this.extractTabList(graphics, deltaTracker);
 +            this.leftHeight = 39;
 +            this.rightHeight = 39;
-+            updateContextualBarRenderer();
++            this.updateContextualBarRenderer();
 +            this.layerManager.render(graphics, deltaTracker);
 +        }
 +    }
 +
++    /// Neo: register vanilla HUD elements
 +    private void registerVanillaLayers() {
 +        java.util.function.BooleanSupplier hudVisible = () -> !this.isHidden;
 +        java.util.function.BooleanSupplier survivalVisible = () -> this.minecraft.gameMode.canHurtPlayer() && hudVisible.getAsBoolean();

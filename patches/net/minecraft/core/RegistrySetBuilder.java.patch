@@ -112,7 +112,7 @@
 +        }
 +
 +        public net.neoforged.neoforge.common.data.RegistriesWithConditions patchesWithConditions() {
-+            return new net.neoforged.neoforge.common.data.RegistriesWithConditions(patches, conditionsByRegistry);
++            return new net.neoforged.neoforge.common.data.RegistriesWithConditions(this.patches, this.conditionsByRegistry);
 +        }
      }
  

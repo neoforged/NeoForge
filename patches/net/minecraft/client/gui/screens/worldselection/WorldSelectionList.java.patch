@@ -8,11 +8,12 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final Component FROM_NEWER_TOOLTIP_1 = Component.translatable("selectWorld.tooltip.fromNewerVersion1").withStyle(ChatFormatting.RED);
      private static final Component FROM_NEWER_TOOLTIP_2 = Component.translatable("selectWorld.tooltip.fromNewerVersion2").withStyle(ChatFormatting.RED);
-@@ -506,6 +_,7 @@
+@@ -506,6 +_,8 @@
              this.infoText.setPosition(textX, this.getContentY() + 9 + 9 + 3);
              this.infoText.extractRenderState(graphics, mouseX, mouseY, a);
              graphics.blit(RenderPipelines.GUI_TEXTURED, this.icon.textureLocation(), this.getContentX(), this.getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);
-+            renderExperimentalWarning(graphics, mouseX, mouseY, hovered);
++            // Neo: render icon on list entry indication experimental state
++            this.renderExperimentalWarning(graphics, mouseX, mouseY, hovered);
              if (this.list.entryType == WorldSelectionList.EntryType.SINGLEPLAYER && hovered) {
                  graphics.fill(this.getContentX(), this.getContentY(), this.getContentX() + 32, this.getContentY() + 32, -1601138544);
                  int relX = mouseX - this.getContentX();

@@ -1,12 +1,14 @@
 --- a/com/mojang/renderpearl/backend/vulkan/VulkanCommandEncoder.java
 +++ b/com/mojang/renderpearl/backend/vulkan/VulkanCommandEncoder.java
-@@ -319,12 +_,24 @@
+@@ -319,12 +_,26 @@
                      depthAttachmentInfo.loadOp(0);
                  }
  
++                // Neo: only configure the depth attachment info if the incoming depth attachment actually has a depth aspect
 +                if (depthAttachment.textureView().texture().getFormat().hasDepthAspect())
                  renderingInfo.pDepthAttachment(depthAttachmentInfo);
 +
++                // Neo: configure stencil attachment if applicable
 +                if (vulkanDepthAttachment.texture().getFormat().hasStencilAspect()) {
 +                    VkRenderingAttachmentInfo stencilAttachmentInfo = VkRenderingAttachmentInfo.calloc(stack).sType$Default();
 +                    stencilAttachmentInfo.imageView(vulkanDepthAttachment.vkImageView());

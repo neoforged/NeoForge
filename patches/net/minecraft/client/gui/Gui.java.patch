@@ -65,7 +65,7 @@
          return nextStep;
      }
  
-@@ -474,5 +_,48 @@
+@@ -474,5 +_,50 @@
                          }
                      )
              );
@@ -102,11 +102,13 @@
 +        }
 +    }
 +
++    /// Neo: resize all screens in the layer stack
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public void resizeScreenLayers(int width, int height) {
 +        this.screenLayers.forEach(screen -> screen.resize(width, height));
 +    }
 +
++    /// Neo: Close the currently active screen, if any, and replace it with the next screen in the layer stack
 +    private void popScreenLayerInternal() {
 +        if (this.screen != null) {
 +            this.screen.removed();

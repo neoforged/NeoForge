@@ -5,7 +5,7 @@
          }
  
 -        int numberOfButtons = 3;
-+        int numberOfButtons = 4;
++        int numberOfButtons = 4; // Neo: account for mods button
          int currentButton = 0;
 +        this.addRenderableWidget(net.neoforged.neoforge.client.gui.widget.ModsButton.create(this)).setPosition(getHorizontalPosition(++currentButton, numberOfButtons, Button.DEFAULT_HEIGHT), topPos + spacing);
          topPos += 24;

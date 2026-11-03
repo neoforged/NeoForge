@@ -1,9 +1,10 @@
 --- a/net/minecraft/client/Camera.java
 +++ b/net/minecraft/client/Camera.java
-@@ -57,6 +_,7 @@
+@@ -57,6 +_,8 @@
      private final Vector3f left = new Vector3f(LEFT);
      private float xRot;
      private float yRot;
++    /// Neo: holds the roll component of the camera rotation
 +    private float roll;
      private final Quaternionf rotation = new Quaternionf();
      private boolean detached;
@@ -38,11 +39,12 @@
              this.setPosition(
                  Mth.lerp(partialTicks, this.entity.xo, this.entity.getX()),
                  Mth.lerp(partialTicks, this.entity.yo, this.entity.getY()) + Mth.lerp(partialTicks, this.eyeHeightOld, this.eyeHeight),
-@@ -273,7 +_,7 @@
+@@ -273,7 +_,8 @@
          this.detached = !this.minecraft.options.getCameraType().isFirstPerson();
          if (this.detached) {
              if (this.minecraft.options.getCameraType().isMirrored()) {
 -                this.setRotation(this.yRot + 180.0F, -this.xRot);
++                // Neo: add support for roll
 +                this.setRotation(this.yRot + 180.0F, -this.xRot, -this.roll);
              }
  
@@ -56,7 +58,7 @@
          } else if (this.entity instanceof LivingEntity && ((LivingEntity)this.entity).isSleeping()) {
              Direction bedOrientation = ((LivingEntity)this.entity).getBedOrientation();
              this.setRotation(bedOrientation != null ? bedOrientation.toYRot() - 180.0F : 0.0F, 0.0F);
-@@ -340,10 +_,17 @@
+@@ -340,10 +_,18 @@
          this.setPosition(new Vec3(this.position.x + offset.x, this.position.y + offset.y, this.position.z + offset.z));
      }
  
@@ -66,6 +68,7 @@
 +        this.setRotation(yRot, xRot, 0F);
 +    }
 +
++    /// Neo: add support for roll
 +    protected void setRotation(float yRot, float xRot, float roll) {
          this.xRot = xRot;
          this.yRot = yRot;
@@ -75,16 +78,18 @@
          FORWARDS.rotate(this.rotation, this.forwards);
          UP.rotate(this.rotation, this.up);
          LEFT.rotate(this.rotation, this.left);
-@@ -503,6 +_,17 @@
+@@ -503,6 +_,19 @@
  
      public void disablePanoramicMode() {
          this.isPanoramicMode = false;
 +    }
 +
++    /// Neo: {@return the roll component of the camera rotation}
 +    public float getRoll() {
 +        return this.roll;
 +    }
 +
++    /// Neo: {@return the blockstate of the block the camera is in}
 +    public BlockState getBlockAtCamera() {
 +        if (!this.initialized) {
 +            return Blocks.AIR.defaultBlockState();

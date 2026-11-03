@@ -5,9 +5,9 @@
      public abstract int createFrameBufferObject();
  
 -    public abstract void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot);
++    /// Neo: add support for binding a stencil buffer independent of the depth buffer
 +    public abstract void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot, int stencil, int stencilMipLevel);
 +
-+    /// Neo: add support for binding a stencil buffer independent of the depth buffer
 +    public void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot) {
 +        this.bindFrameBufferTextures(fbo, color, colorMipLevels, depth, depthMipLevel, bindSlot, 0, 0);
 +    }
@@ -19,7 +19,7 @@
  
      public void bindFrameBufferTextures(int fbo, int color, int depth, int mipLevel, int bindSlot) {
          this.bindFrameBufferTextures(fbo, new int[]{color}, new int[]{mipLevel}, depth, mipLevel, bindSlot);
-@@ -102,12 +_,13 @@
+@@ -102,12 +_,14 @@
          }
  
          @Override
@@ -30,6 +30,7 @@
              }
  
              ARBDirectStateAccess.glNamedFramebufferTexture(fbo, 36096, depth, depthMipLevel);
++            // Neo: bind provided stencil buffer at the provided mip level
 +            ARBDirectStateAccess.glNamedFramebufferTexture(fbo, GL33C.GL_STENCIL_ATTACHMENT, stencil, stencilMipLevel);
              if (bindSlot != 0) {
                  GlStateManager._glBindFramebuffer(bindSlot, fbo);
@@ -43,10 +44,11 @@
              int tempBindSlot = bindSlot == 0 ? 36009 : bindSlot;
              int oldFbo = GlStateManager.getFrameBuffer(tempBindSlot);
              GlStateManager._glBindFramebuffer(tempBindSlot, fbo);
-@@ -227,6 +_,7 @@
+@@ -227,6 +_,8 @@
              }
  
              GlStateManager._glFramebufferTexture2D(tempBindSlot, 36096, 3553, depth, depthMipLevel);
++            // Neo: bind provided stencil buffer at the provided mip level
 +            GlStateManager._glFramebufferTexture2D(tempBindSlot, GL33C.GL_STENCIL_ATTACHMENT, 3553, stencil, stencilMipLevel);
              if (bindSlot == 0) {
                  GlStateManager._glBindFramebuffer(tempBindSlot, oldFbo);
