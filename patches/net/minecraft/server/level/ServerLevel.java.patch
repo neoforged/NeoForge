@@ -217,21 +217,23 @@
          this.gameEventDispatcher.post(gameEvent, position, context);
      }
  
-@@ -1155,6 +_,7 @@
+@@ -1160,11 +_,19 @@
  
      @Override
-     public void updateNeighborsAt(BlockPos pos, Block sourceBlock) {
-+        net.neoforged.neoforge.event.EventHooks.onNeighborNotify(this, pos, this.getBlockState(pos), java.util.EnumSet.allOf(Direction.class), false).isCanceled();
-         this.updateNeighborsAt(pos, sourceBlock, ExperimentalRedstoneUtils.initialOrientation(this, null, null));
+     public void updateNeighborsAt(BlockPos pos, Block sourceBlock, @Nullable Orientation orientation) {
++        if (net.neoforged.neoforge.event.EventHooks.onNeighborNotify(this, pos, this.getBlockState(pos), java.util.EnumSet.allOf(Direction.class), false).isCanceled()) {
++            return;
++        }
+         this.neighborUpdater.updateNeighborsAtExceptFromFacing(pos, sourceBlock, null, orientation);
      }
- 
-@@ -1165,6 +_,9 @@
  
      @Override
      public void updateNeighborsAtExceptFromFacing(BlockPos pos, Block blockObject, Direction skipDirection, @Nullable Orientation orientation) {
 +        java.util.EnumSet<Direction> directions = java.util.EnumSet.allOf(Direction.class);
 +        directions.remove(skipDirection);
-+        if (!net.neoforged.neoforge.event.EventHooks.onNeighborNotify(this, pos, this.getBlockState(pos), directions, false).isCanceled())
++        if (net.neoforged.neoforge.event.EventHooks.onNeighborNotify(this, pos, this.getBlockState(pos), directions, false).isCanceled()) {
++            return;
++        }
          this.neighborUpdater.updateNeighborsAtExceptFromFacing(pos, blockObject, skipDirection, orientation);
      }
  
