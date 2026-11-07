@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
-@@ -69,15 +_,26 @@
+@@ -69,15 +_,27 @@
          this.cameraPos = cameraPos;
      }
  
@@ -8,7 +8,7 @@
      public <E extends BlockEntity, S extends BlockEntityRenderState> @Nullable S tryExtractRenderState(
          E blockEntity, float partialTicks, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress, boolean isGloballyRendered
      ) {
-+        return tryExtractRenderState(blockEntity, partialTicks, breakProgress, isGloballyRendered, null);
++        return this.tryExtractRenderState(blockEntity, partialTicks, breakProgress, isGloballyRendered, null);
 +    }
 +
 +    public <E extends BlockEntity, S extends BlockEntityRenderState> @Nullable S tryExtractRenderState(
@@ -23,6 +23,7 @@
 +            return null;
 +        }
 +
++        // Neo: check the BER is in the camera frustum, if available
 +        if (frustum != null && !frustum.isVisible(renderer.getRenderBoundingBox(blockEntity))) {
              return null;
          }

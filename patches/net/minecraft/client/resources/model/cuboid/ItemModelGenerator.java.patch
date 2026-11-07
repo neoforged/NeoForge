@@ -46,7 +46,7 @@
 +    }
 +
 +    private static void bakeExtrudedSprite(
-+            QuadCollection.Builder builder, ModelBaker.Interner interner, ModelState modelState, BakedQuad.MaterialInfo materialInfo, net.neoforged.neoforge.client.model.ExtraFaceData faceData
++        QuadCollection.Builder builder, ModelBaker.Interner interner, ModelState modelState, BakedQuad.MaterialInfo materialInfo, net.neoforged.neoforge.client.model.ExtraFaceData faceData
 +    ) {
          Vector3f from = new Vector3f(0.0F, 0.0F, 7.5F);
          Vector3f to = new Vector3f(16.0F, 16.0F, 8.5F);

@@ -1,24 +1,25 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -507,18 +_,21 @@
+@@ -507,18 +_,22 @@
  
                  if (fail && level.noCollision(vehicle, oldAABB) || this.isEntityCollidingWithAnythingNew(level, vehicle, oldAABB, targetX, targetY, targetZ)) {
                      vehicle.absSnapTo(oldX, oldY, oldZ, targetYRot, targetXRot);
-+                    resyncPlayerWithVehicle(vehicle); // Neo - Resync player position on vehicle moving
++                    this.resyncPlayerWithVehicle(vehicle); // Neo - Resync player position on vehicle moving
                      this.send(ClientboundMoveVehiclePacket.fromEntity(vehicle));
                      vehicle.removeLatestMovementRecording();
                      return;
                  }
  
                  vehicle.absSnapTo(targetX, targetY, targetZ, targetYRot, targetXRot);
-+                resyncPlayerWithVehicle(vehicle); // Neo - Resync player position on vehicle moving
++                this.resyncPlayerWithVehicle(vehicle); // Neo - Resync player position on vehicle moving
                  this.player.level().getChunkSource().move(this.player);
                  Vec3 clientDeltaMovement = new Vec3(vehicle.getX() - oldX, vehicle.getY() - oldY, vehicle.getZ() - oldZ);
                  this.handlePlayerKnownMovement(clientDeltaMovement);
                  vehicle.setOnGroundWithMovement(packet.onGround(), clientDeltaMovement);
                  vehicle.doCheckFallDamage(clientDeltaMovement.x, clientDeltaMovement.y, clientDeltaMovement.z, packet.onGround());
                  this.player.checkMovementStatistics(clientDeltaMovement.x, clientDeltaMovement.y, clientDeltaMovement.z);
-+                this.player.checkRidingStatistics(clientDeltaMovement.x, clientDeltaMovement.y, clientDeltaMovement.z); // Neo: check riding stats too as vanilla checks them in rideTick based on the assumption that Entity#rideTick will move the entity, which we break
++                // Neo: check riding stats too as vanilla checks them in rideTick based on the assumption that Entity#rideTick will move the entity, which we break
++                this.player.checkRidingStatistics(clientDeltaMovement.x, clientDeltaMovement.y, clientDeltaMovement.z);
                  this.clientVehicleIsFloating = oyDist >= -0.03125
                      && !vehicleRestsOnSomething
                      && !this.server.allowFlight()
@@ -64,7 +65,7 @@
                          && !this.player.hasEffect(MobEffects.LEVITATION)
                          && !isFallFlying
                          && !isAutoSpinAttack
-@@ -1355,9 +_,10 @@
+@@ -1355,9 +_,12 @@
                      }
                  case SWAP_ITEM_WITH_OFFHAND:
                      if (!this.player.isSpectator()) {
@@ -72,7 +73,9 @@
 -                        this.player.setItemInHand(InteractionHand.OFF_HAND, this.player.getItemInHand(InteractionHand.MAIN_HAND));
 -                        this.player.setItemInHand(InteractionHand.MAIN_HAND, swap);
 +                        var event = net.neoforged.neoforge.common.CommonHooks.onLivingSwapHandItems(this.player);
-+                        if (event.isCanceled()) return;
++                        if (event.isCanceled()) {
++                            return;
++                        }
 +                        this.player.setItemInHand(InteractionHand.OFF_HAND, event.getItemSwappedToOffHand());
 +                        this.player.setItemInHand(InteractionHand.MAIN_HAND, event.getItemSwappedToMainHand());
                          this.player.stopUsingItem();
@@ -83,8 +86,8 @@
      public void handleSetCarriedItem(ServerboundSetCarriedItemPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
 +
-+        if (this.player.getInventory().getSelectedSlot() != packet.getSlot()) {
-+            if (net.neoforged.neoforge.event.EventHooks.onSwitchHotbarSlotPre(this.player, this.player.getInventory().getSelectedSlot(), packet.getSlot())) return;
++        if (net.neoforged.neoforge.event.EventHooks.onSwitchHotbarSlotPre(this.player, this.player.getInventory().getSelectedSlot(), packet.getSlot())) {
++            return;
 +        }
 +
          if (packet.getSlot() >= 0 && packet.getSlot() < Inventory.getSelectionSize()) {
@@ -103,14 +106,17 @@
          } else {
              LOGGER.warn("{} tried to set an invalid carried item", this.player.getPlainTextName());
          }
-@@ -1575,8 +_,9 @@
+@@ -1575,8 +_,12 @@
                  }
  
                  CompletableFuture<FilteredText> filteredFuture = this.filterTextPacket(signedMessage.signedContent());
 -                Component decorated = this.server.getChatDecorator().decorate(this.player, signedMessage.decoratedContent());
 +                Component decorated = net.neoforged.neoforge.common.CommonHooks.getServerChatSubmittedDecorator().decorate(this.player, signedMessage.decoratedContent());
                  this.chatMessageChain.append(filteredFuture, filtered -> {
-+                    if (decorated == null) return; // Forge: ServerChatEvent was canceled if this is null.
++                    if (decorated == null) {
++                        // Neo: ServerChatEvent was canceled if this is null.
++                        return;
++                    }
                      PlayerChatMessage filteredMessage = signedMessage.withUnsignedContent(decorated).filter(filtered.mask());
                      this.broadcastChatMessage(filteredMessage);
                  });

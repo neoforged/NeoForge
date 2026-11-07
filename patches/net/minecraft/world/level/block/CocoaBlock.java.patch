@@ -14,12 +14,14 @@
              }
          }
      }
-@@ -54,6 +_,8 @@
+@@ -54,6 +_,10 @@
      @Override
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
          BlockState relativeState = level.getBlockState(pos.relative(state.getValue(FACING)));
 +        var soilDecision = relativeState.canSustainPlant(level, pos.relative(state.getValue(FACING)), state.getValue(FACING).getOpposite(), state);
-+        if (!soilDecision.isDefault()) return soilDecision.isTrue();
++        if (!soilDecision.isDefault()) {
++            return soilDecision.isTrue();
++        }
          return relativeState.is(BlockTags.SUPPORTS_COCOA);
      }
  

@@ -9,11 +9,12 @@
                          if (nearest == 0.0) {
                              hovered = entity;
                              hoveredPos = location;
-@@ -261,8 +_,13 @@
+@@ -261,8 +_,14 @@
          }
      }
  
-+    @Deprecated // Forge: Use the version below that takes in a Predicate<Item> instead of an Item
++    /// @deprecated Neo: use [#getWeaponHoldingHand(LivingEntity, Predicate)] instead
++    @Deprecated
      public static InteractionHand getWeaponHoldingHand(LivingEntity mob, Item weaponItem) {
          return mob.getMainHandItem().is(weaponItem) ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
 +    }

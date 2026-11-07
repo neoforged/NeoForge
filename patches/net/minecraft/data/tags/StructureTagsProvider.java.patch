@@ -1,14 +1,15 @@
 --- a/net/minecraft/data/tags/StructureTagsProvider.java
 +++ b/net/minecraft/data/tags/StructureTagsProvider.java
-@@ -9,8 +_,13 @@
+@@ -9,8 +_,14 @@
  import net.minecraft.world.level.levelgen.structure.Structure;
  
  public class StructureTagsProvider extends TagsProvider<Structure> {
-+    /** @deprecated Forge: Use the {@linkplain #StructureTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
++    /// @deprecated Neo: Use the [mod id variant][#StructureTagsProvider(PackOutput, CompletableFuture, String)]
 +    @Deprecated
      public StructureTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
          super(output, Registries.STRUCTURE, lookupProvider);
 +    }
++
 +    public StructureTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
 +        super(output, Registries.STRUCTURE, lookupProvider, modId);
      }

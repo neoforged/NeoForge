@@ -1,9 +1,9 @@
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -82,6 +_,41 @@
-         this.getItems().set(slot, itemStack);
-         itemStack.limitSize(this.getMaxStackSize(itemStack));
-     }
+@@ -38,6 +_,17 @@
+     private int cooldownTime = -1;
+     private long tickedGameTime;
+     private Direction facing;
 +    // Neo: Make the hopper cooldown time transactional (it may change when items are inserted)
 +    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Integer> cooldownTimeJournal = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<>() {
 +        @Override
@@ -15,12 +15,20 @@
 +            cooldownTime = snapshot;
 +        }
 +    };
-+
+ 
+     public HopperBlockEntity(BlockPos worldPosition, BlockState blockState) {
+         super(BlockEntityTypes.HOPPER, worldPosition, blockState);
+@@ -83,6 +_,32 @@
+         itemStack.limitSize(this.getMaxStackSize(itemStack));
+     }
+ 
 +    // Neo: Checks if the hopper was empty just before the insertion of `amountChange` at index `slot`.
 +    private boolean wasEmpty(int slot, int amountChange) {
-+        if (items.get(slot).getCount() != amountChange) return false;
-+        for (int i = 0; i < items.size(); ++i) {
-+            if (i != slot && !items.get(i).isEmpty()) {
++        if (this.items.get(slot).getCount() != amountChange) {
++            return false;
++        }
++        for (int i = 0; i < this.items.size(); ++i) {
++            if (i != slot && !this.items.get(i).isEmpty()) {
 +                return false;
 +            }
 +        }
@@ -30,18 +38,19 @@
 +    @Override
 +    public void onTransfer(int slot, int amountChange, net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
 +        // If we just went from empty to something in the hopper, reset the cooldown.
-+        if (amountChange > 0 && !isOnCustomCooldown() && wasEmpty(slot, amountChange)) {
-+            cooldownTimeJournal.updateSnapshots(transaction);
++        if (amountChange > 0 && !this.isOnCustomCooldown() && this.wasEmpty(slot, amountChange)) {
++            this.cooldownTimeJournal.updateSnapshots(transaction);
 +            // This cooldown is always set to 8 in vanilla with one exception:
 +            // Hopper -> Hopper transfer sets this cooldown to 7 when this hopper
 +            // has not been updated as recently as the one pushing items into it.
 +            // Hopper <-> hopper interactions don't use transactions so we don't need to worry about that.
-+            setCooldown(MOVE_ITEM_SPEED);
++            this.setCooldown(MOVE_ITEM_SPEED);
 +        }
 +    }
- 
++
      @Override
      public void setBlockState(BlockState blockState) {
+         super.setBlockState(blockState);
 @@ -139,11 +_,13 @@
      }
  
@@ -92,7 +101,7 @@
          return level.getEntitiesOfClass(ItemEntity.class, aabb, EntitySelector.ENTITY_STILL_ALIVE);
      }
  
-+    /** @deprecated Use IItemHandler capability instead. To preserve Container-specific interactions, use {@link #getContainerOrHandlerAt} and handle both cases. */
++    /// @deprecated Use [net.neoforged.neoforge.capabilities.Capabilities.Item#BLOCK] instead. To preserve Container-specific interactions, use [#getContainerOrHandlerAt] and handle both cases.
 +    @Deprecated
      public static @Nullable Container getContainerAt(Level level, BlockPos pos) {
          return getContainerAt(level, pos, level.getBlockState(pos), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);

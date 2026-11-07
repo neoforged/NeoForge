@@ -19,7 +19,7 @@
          this.resetButton = Button.builder(Component.translatable("controls.resetAll"), button -> {
              for (KeyMapping key : this.options.keyMappings) {
 -                key.setKey(key.getDefaultKey());
-+                key.setToDefault();
++                key.setToDefault(); // Neo: reset to default, including the key modifier
              }
  
              this.keyBindsList.resetMappingAndUpdateButtons();

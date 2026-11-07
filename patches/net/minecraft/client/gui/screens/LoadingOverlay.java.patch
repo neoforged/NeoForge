@@ -4,7 +4,7 @@
      @Override
      public void tick() {
          if (this.fadeOutStart == -1L && this.reload.isDone() && this.isReadyToFadeOut()) {
-+            this.fadeOutStart = Util.getMillis(); // Neo: Moved up to guard against inf loops caused by callback
++            this.fadeOutStart = Util.getMillis(); // Neo: Moved up to guard against infinite loops caused by callback
              try {
                  this.reload.checkExceptions();
                  this.onFinish.accept(Optional.empty());

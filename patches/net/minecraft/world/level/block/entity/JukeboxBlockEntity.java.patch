@@ -1,9 +1,9 @@
 --- a/net/minecraft/world/level/block/entity/JukeboxBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/JukeboxBlockEntity.java
-@@ -109,9 +_,34 @@
-         return retrievedItem;
-     }
- 
+@@ -24,6 +_,13 @@
+     public static final String TICKS_SINCE_SONG_STARTED_TAG_ID = "ticks_since_song_started";
+     private ItemStack item = ItemStack.EMPTY;
+     private final JukeboxSongPlayer jukeboxSongPlayer = new JukeboxSongPlayer(this::onSongChanged, this.getBlockPos());
 +    // Neo: Support deferring non-transactional notification and song player update until the end of a transaction
 +    private final net.neoforged.neoforge.transfer.transaction.RootCommitJournal itemChangedJournal =
 +            new net.neoforged.neoforge.transfer.transaction.RootCommitJournal(() -> {
@@ -11,9 +11,15 @@
 +                    itemChanged();
 +                }
 +            });
-+    @Override
+ 
+     public JukeboxBlockEntity(BlockPos worldPosition, BlockState blockState) {
+         super(BlockEntityTypes.JUKEBOX, worldPosition, blockState);
+@@ -110,8 +_,28 @@
+     }
+ 
+     @Override
 +    public void onTransfer(int slot, int amountChange, net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
-+        itemChangedJournal.updateSnapshots(transaction);
++        this.itemChangedJournal.updateSnapshots(transaction);
 +    }
 +
 +    @Override
@@ -22,15 +28,17 @@
 +            if (insideTransaction) {
 +                this.item = stack;
 +            } else {
-+                setTheItem(stack);
++                this.setTheItem(stack);
 +            }
 +        }
 +    }
-     @Override
++
++    @Override
      public void setTheItem(ItemStack itemStack) {
          this.item = itemStack;
-+        itemChanged();
++        this.itemChanged();
 +    }
++
 +    private void itemChanged() {
          boolean itemWasInserted = !this.item.isEmpty();
          Optional<Holder<JukeboxSong>> maybeSong = JukeboxSong.fromStack(this.item);

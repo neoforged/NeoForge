@@ -5,7 +5,7 @@
  
                  if (this.tickCount % 10 == 0) {
 -                    this.level().playLocalSound(this, stateBelow.getSoundType().getHitSound(), this.getSoundSource(), 0.5F, 0.5F);
-+                    this.level().playLocalSound(this, stateBelow.getSoundType(level(), head.below(), this).getHitSound(), this.getSoundSource(), 0.5F, 0.5F);
++                    this.level().playLocalSound(this, stateBelow.getSoundType(this.level(), head.below(), this).getHitSound(), this.getSoundSource(), 0.5F, 0.5F);
                  }
              }
          }

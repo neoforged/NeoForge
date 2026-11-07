@@ -1,20 +1,23 @@
 --- a/net/minecraft/client/resources/model/ModelManager.java
 +++ b/net/minecraft/client/resources/model/ModelManager.java
-@@ -70,6 +_,9 @@
+@@ -70,6 +_,11 @@
      private @Nullable BlockModelSet blockModelSet;
      private @Nullable FluidStateModelSet fluidStateModelSet;
      private Object2IntMap<BlockState> modelGroups = Object2IntMaps.emptyMap();
++    /// Neo: retain the model bakery for use in dynamic baking outside the resource reload
 +    private final java.util.concurrent.atomic.AtomicReference<ModelBakery> modelBakery = new java.util.concurrent.atomic.AtomicReference<>(null);
-+    private net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels bakedStandaloneModels;
++    private net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels bakedStandaloneModels = net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels.EMPTY;
++    /// Neo: store IDs of logged missing item models
 +    private Set<Identifier> reportedMissingItemModels = new java.util.HashSet<>();
  
      public ModelManager(BlockColors blockColors, AtlasManager atlasManager, PlayerSkinRenderCache playerSkinRenderCache) {
          this.blockColors = blockColors;
-@@ -78,7 +_,14 @@
+@@ -78,7 +_,15 @@
      }
  
      public ItemModel getItemModel(Identifier id) {
 -        return this.bakedItemStackModels.getOrDefault(id, this.missingModels.item());
++        // Neo: log missing item models
 +        ItemModel model = this.bakedItemStackModels.get(id);
 +        if (model == null) {
 +            if (this.reportedMissingItemModels.add(id)) {
@@ -57,7 +60,7 @@
              )
              .thenComposeAsync(
                  var11x -> {
-@@ -155,8 +_,11 @@
+@@ -155,8 +_,12 @@
                          itemStackModels.join().contents(),
                          resolvedModels.models(),
                          resolvedModels.missing()
@@ -65,6 +68,7 @@
 +                        pendingAnimations
                      );
 -                    return loadModels(blockAtlasSprites, itemAtlasSprites, bakery, blockModels.join(), groups, entityModelSet.join(), taskExecutor);
++                    // Neo: capture model bakery
 +                    this.modelBakery.set(bakery);
 +                    return loadModels(blockAtlasSprites, itemAtlasSprites, bakery, blockModels.join(), groups, entityModelSet.join(), taskExecutor, pendingAnimations);
                  },
@@ -150,22 +154,24 @@
                  materialBaker.logMissingTextures();
                  Map<BlockState, BlockStateModel> modelByStateCache = createBlockStateToModelDispatch(
                      bakingResult.blockStateModels(), bakingResult.missingModels().block()
-@@ -262,6 +_,9 @@
+@@ -262,6 +_,10 @@
          this.blockModelSet = new BlockModelSet(this.blockStateModelSet, preparations.blockModels, this.blockColors);
          this.fluidStateModelSet = new FluidStateModelSet(preparations.fluidModels, this.missingModels.fluid());
          this.entityModelSet = preparations.entityModelSet;
 +        this.bakedStandaloneModels = bakedModels.standaloneModels();
 +        net.neoforged.neoforge.client.ClientHooks.onModelBake(this, bakedModels, this.modelBakery.get());
++        // Neo: reset storage of logged missing item model IDs
 +        this.reportedMissingItemModels = new java.util.HashSet<>();
      }
  
      public boolean requiresRender(BlockState oldState, BlockState newState) {
-@@ -284,6 +_,20 @@
+@@ -284,6 +_,21 @@
  
      public Supplier<EntityModelSet> entityModels() {
          return () -> this.entityModelSet;
 +    }
 +
++    /// Neo: {@return the model bakery from the last resource reload}
 +    public ModelBakery getModelBakery() {
 +        return this.modelBakery.get();
 +    }

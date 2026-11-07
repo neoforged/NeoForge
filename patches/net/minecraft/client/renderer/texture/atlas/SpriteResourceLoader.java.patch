@@ -19,10 +19,10 @@
      }
  
 -    @Nullable SpriteContents loadSprite(Identifier spriteLocation, Resource resource);
-+    default SpriteContents loadSprite(Identifier p_295581_, Resource resource) {
-+        return loadSprite(p_295581_, resource, SpriteContents::new);
++    default @Nullable SpriteContents loadSprite(Identifier spriteLocation, Resource resource) {
++        return this.loadSprite(spriteLocation, resource, SpriteContents::new);
 +    }
 +
-+    @Nullable
-+    SpriteContents loadSprite(Identifier id, Resource resource, net.neoforged.neoforge.client.textures.SpriteContentsConstructor constructor);
++    /// Neo: add support for custom [SpriteContents] implementations
++    @Nullable SpriteContents loadSprite(Identifier spriteLocation, Resource resource, net.neoforged.neoforge.client.textures.SpriteContentsConstructor constructor);
  }

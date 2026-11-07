@@ -4,6 +4,6 @@
      public float hurtDir;
      public float backwardsInterpolatedWalkDistance;
      public float bob;
-+    // Neo: Prevent screen shake if the damage type is marked as "forge:no_flinch"
++    /// Neo: Prevent screen shake if the damage type is tagged as [`neoforge:no_flinch`][net.neoforged.neoforge.common.Tags.DamageTypes#NO_FLINCH]
 +    public boolean preventFlinch;
  }

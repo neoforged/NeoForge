@@ -11,11 +11,12 @@
      public static final int WORLD_RESOLUTION = 16;
      public static final int MAX_CHAT_LENGTH = 256;
      public static final int MAX_USER_INPUT_COMMAND_LENGTH = 32500;
-@@ -219,6 +_,7 @@
+@@ -219,6 +_,8 @@
      }
  
      static {
-+        if (System.getProperty("io.netty.leakDetection.level") == null) // Forge: allow level to be manually specified
++        // Neo: allow level to be manually specified
++        if (System.getProperty("io.netty.leakDetection.level") == null)
          ResourceLeakDetector.setLevel(NETTY_LEAK_DETECTION);
          CommandSyntaxException.ENABLE_COMMAND_STACK_TRACES = COMMAND_STACK_TRACES;
          CommandSyntaxException.BUILT_IN_EXCEPTIONS = new BrigadierExceptions();

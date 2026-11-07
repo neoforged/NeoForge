@@ -7,7 +7,7 @@
 +    /// @deprecated Neo: use [#compile(SectionPos, RenderSectionRegion, VertexSorting, SectionBufferBuilderPack, java.util.List)] instead
 +    @Deprecated
      public SectionCompiler.Results compile(SectionPos sectionPos, RenderSectionRegion region, VertexSorting vertexSorting, SectionBufferBuilderPack builders) {
-+        return compile(sectionPos, region, vertexSorting, builders, List.of());
++        return this.compile(sectionPos, region, vertexSorting, builders, List.of());
 +    }
 +
 +    public SectionCompiler.Results compile(SectionPos sectionPos, RenderSectionRegion region, VertexSorting vertexSorting, SectionBufferBuilderPack builders, List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers) {

@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
+@@ -95,6 +_,8 @@
+     private final LevelChunkTicks<Block> blockTicks;
+     private final LevelChunkTicks<Fluid> fluidTicks;
+     private LevelChunk.UnsavedListener unsavedListener = chunkPos -> {};
++    /// Neo: Threadsafe lighting system for [BlockEntity]s that change lighting based on dynamic data changing.
++    private final net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager auxLightManager = new net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager(this);
+ 
+     public LevelChunk(Level level, ChunkPos pos) {
+         this(level, pos, UpgradeData.EMPTY, new LevelChunkTicks<>(), new LevelChunkTicks<>(), 0L, null, null, null);
 @@ -155,6 +_,7 @@
          this.setAllStarts(protoChunk.getAllStarts());
          this.setAllReferences(protoChunk.getAllReferences());
@@ -59,7 +68,7 @@
              BlockEntity previousEntry = this.blockEntities.put(pos.immutable(), blockEntity);
              if (previousEntry != null && previousEntry != blockEntity) {
                  previousEntry.setRemoved();
-+                auxLightManager.removeLightAt(pos);
++                this.auxLightManager.removeLightAt(pos);
              }
          }
      }
@@ -82,7 +91,7 @@
                  }
  
                  removeThis.setRemoved();
-+                auxLightManager.removeLightAt(pos);
++                this.auxLightManager.removeLightAt(pos);
              }
          }
  
@@ -111,21 +120,18 @@
          this.blockEntities.values().forEach(blockEntity -> {
              if (this.level instanceof ServerLevel serverLevel) {
                  this.addGameEventListener(blockEntity, serverLevel);
-@@ -724,6 +_,19 @@
+@@ -724,6 +_,16 @@
          return new LevelChunk.BoundTickingBlockEntity<>(blockEntity, ticker);
      }
  
-+    // Neo: Threadsafe lighting system for BlockEntities that change lighting based on dynamic data changing.
-+    private final net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager auxLightManager = new net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager(this);
-+
 +    @Override
 +    public net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager getAuxLightManager(ChunkPos pos) {
-+        return auxLightManager;
++        return this.auxLightManager;
 +    }
 +
 +    @Override
 +    public final void syncData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
-+        net.neoforged.neoforge.attachment.AttachmentSync.syncChunkUpdate(this, getAttachmentHolder(), type);
++        net.neoforged.neoforge.attachment.AttachmentSync.syncChunkUpdate(this, this.getAttachmentHolder(), type);
 +    }
 +
      private class BoundTickingBlockEntity<T extends BlockEntity> implements TickingBlockEntity {
@@ -135,7 +141,7 @@
                  if (LevelChunk.this.isTicking(pos)) {
                      try {
                          ProfilerFiller profiler = Profiler.get();
-+                        net.neoforged.neoforge.server.timings.TimeTracker.BLOCK_ENTITY_UPDATE.trackStart(blockEntity);
++                        net.neoforged.neoforge.server.timings.TimeTracker.BLOCK_ENTITY_UPDATE.trackStart(this.blockEntity);
                          profiler.push(this::getType);
                          BlockState blockState = LevelChunk.this.getBlockState(pos);
                          if (this.blockEntity.getType().isValid(blockState)) {
@@ -145,12 +151,12 @@
                          this.blockEntity.fillCrashReportCategory(category);
 +                        if (net.neoforged.neoforge.common.config.NeoForgeSyncedConfig.INSTANCE.removeErroringBlockEntities.get()) {
 +                            LOGGER.error("{}", report.getFriendlyReport(net.minecraft.ReportType.CRASH));
-+                            blockEntity.setRemoved();
-+                            LevelChunk.this.removeBlockEntity(blockEntity.getBlockPos());
++                            this.blockEntity.setRemoved();
++                            LevelChunk.this.removeBlockEntity(this.blockEntity.getBlockPos());
 +                        } else
                          throw new ReportedException(report);
 +                    } finally {
-+                        net.neoforged.neoforge.server.timings.TimeTracker.BLOCK_ENTITY_UPDATE.trackEnd(blockEntity);
++                        net.neoforged.neoforge.server.timings.TimeTracker.BLOCK_ENTITY_UPDATE.trackEnd(this.blockEntity);
                      }
                  }
              }

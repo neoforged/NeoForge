@@ -1,26 +1,25 @@
 --- a/net/minecraft/data/tags/TagsProvider.java
 +++ b/net/minecraft/data/tags/TagsProvider.java
-@@ -31,26 +_,49 @@
+@@ -31,26 +_,46 @@
      private final CompletableFuture<TagsProvider.TagLookup<T>> parentProvider;
      protected final ResourceKey<? extends Registry<T>> registryKey;
      protected final Map<Identifier, TagBuilder> builders = Maps.newLinkedHashMap();
 +    protected final String modId;
  
-+    /**
-+     * @deprecated Forge: Use the {@linkplain #TagsProvider(PackOutput, ResourceKey, CompletableFuture, String) mod id variant}
-+     */
++    /// @deprecated Neo: Use the [mod id variant][#TagsProvider(PackOutput, ResourceKey, CompletableFuture, String)]
 +    @Deprecated
      protected TagsProvider(PackOutput output, ResourceKey<? extends Registry<T>> registryKey, CompletableFuture<HolderLookup.Provider> lookupProvider) {
 -        this(output, registryKey, lookupProvider, CompletableFuture.completedFuture(TagsProvider.TagLookup.empty()));
+-    }
+-
 +        this(output, registryKey, lookupProvider, "vanilla");
 +    }
++
 +    protected TagsProvider(PackOutput output, ResourceKey<? extends Registry<T>> registryKey, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
 +        this(output, registryKey, lookupProvider, CompletableFuture.completedFuture(TagsProvider.TagLookup.empty()), modId);
-     }
- 
-+    /**
-+     * @deprecated Forge: Use the {@linkplain #TagsProvider(PackOutput, ResourceKey, CompletableFuture, CompletableFuture, String) mod id variant}
-+     */
++    }
++
++    /// @deprecated Neo: Use the [mod id variant][#TagsProvider(PackOutput, ResourceKey, CompletableFuture, CompletableFuture, String)]
 +    @Deprecated
      protected TagsProvider(
          PackOutput output,
@@ -39,7 +38,7 @@
 +        this.modId = modId;
 +    }
 +
-+    // Forge: Allow customizing the path for a given tag or returning null
++    /// Neo: allow customizing the path for a given tag or returning null
 +    @org.jspecify.annotations.Nullable
 +    protected Path getPath(Identifier id) {
 +        return this.pathProvider.json(id);
@@ -59,19 +58,22 @@
 -                                    List<TagEntry> unresolvedEntries = entries.stream().filter(e -> !e.verifyIfPresent(elementCheck, tagCheck)).toList();
 +                                    List<TagEntry> unresolvedEntries = java.util.stream.Stream.concat(entries.stream(), builder.getRemoveEntries())
 +                                               // Neo: Assume tags from other namespaces always exists
-+                                              .filter((e) -> e.getId().getNamespace().equals(modId) && !e.verifyIfPresent(elementCheck, tagCheck))
++                                              .filter(e -> e.getId().getNamespace().equals(this.modId) && !e.verifyIfPresent(elementCheck, tagCheck))
 +                                              .toList();
                                      if (!unresolvedEntries.isEmpty()) {
                                          throw new IllegalArgumentException(
                                              String.format(
-@@ -92,8 +_,10 @@
+@@ -92,8 +_,13 @@
                                          );
                                      }
  
 -                                    Path path = this.pathProvider.json(id);
 -                                    return DataProvider.saveStable(cache, c.contents, TagFile.CODEC, new TagFile(entries, builder.shouldReplace()), path);
 +                                    Path path = this.getPath(id);
-+                                    if (path == null) return CompletableFuture.completedFuture(null); // Neo: Allow running this data provider without writing it. Recipe provider needs valid tags.
++                                    if (path == null) {
++                                        // Neo: Allow running this data provider without writing it.
++                                        return CompletableFuture.completedFuture(null);
++                                    }
 +                                    var removed = builder.getRemoveEntries().toList();
 +                                    return DataProvider.saveStable(cache, c.contents, TagFile.CODEC, new TagFile(entries, builder.shouldReplace(), removed), path);
                                  }

@@ -1,17 +1,20 @@
 --- a/net/minecraft/world/level/block/CropBlock.java
 +++ b/net/minecraft/world/level/block/CropBlock.java
-@@ -70,12 +_,14 @@
+@@ -70,12 +_,17 @@
  
      @Override
      protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-+        if (!level.isAreaLoaded(pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
++        // Neo: prevent loading unloaded chunks when checking neighbor's light
++        if (!level.isAreaLoaded(pos, 1)) {
++            return;
++        }
          if (level.getRawBrightness(pos, 0) >= 9) {
              int age = this.getAge(state);
              if (age < this.getMaxAge()) {
 -                float growthSpeed = getGrowthSpeed(this, level, pos);
 -                if (random.nextInt((int)(25.0F / growthSpeed) + 1) == 0) {
-+                float f = getGrowthSpeed(state, level, pos);
-+                if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, random.nextInt((int)(25.0F / f) + 1) == 0)) {
++                float growthSpeed = getGrowthSpeed(state, level, pos);
++                if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, random.nextInt((int) (25.0F / growthSpeed) + 1) == 0)) {
                      level.setBlock(pos, this.getStateForAge(age + 1), 2);
 +                    net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(level, pos, state);
                  }
@@ -40,12 +43,14 @@
                          blockSpeed = 3.0F;
                      }
                  }
-@@ -136,6 +_,8 @@
+@@ -136,6 +_,10 @@
  
      @Override
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
 +        var soilDecision = level.getBlockState(pos.below()).canSustainPlant(level, pos.below(), net.minecraft.core.Direction.UP, state);
-+        if (!soilDecision.isDefault()) return soilDecision.isTrue();
++        if (!soilDecision.isDefault()) {
++            return soilDecision.isTrue();
++        }
          return hasSufficientLight(level, pos) && super.canSurvive(state, level, pos);
      }
  

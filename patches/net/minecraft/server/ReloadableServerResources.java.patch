@@ -27,7 +27,7 @@
          return List.of(this.functionLibrary);
      }
  
-+    /// {@return the reload listener registered with the provided key}
++    /// Neo: {@return the reload listener registered with the provided key}
 +    @SuppressWarnings("unchecked")
 +    public <T extends PreparableReloadListener> T getListener(net.neoforged.neoforge.resource.ListenerKey<T> key) {
 +        PreparableReloadListener listener = this.retainedListeners.get(key);
@@ -37,7 +37,7 @@
 +        return (T) listener;
 +    }
 +
-+    /// Exposes the current condition context for usage in other reload listeners.
++    /// Neo: Exposes the current condition context for usage in other reload listeners.
 +    ///
 +    /// This is not useful outside the reloading stage.
 +    /// @return The condition context for the currently active reload.
@@ -45,7 +45,7 @@
 +        return this.context;
 +    }
 +
-+    /// {@return the lookup provider access for the currently active reload}
++    /// Neo: {@return the lookup provider access for the currently active reload}
 +    public net.minecraft.core.HolderLookup.Provider getRegistryLookup() {
 +        return this.loadingContext;
 +    }

@@ -1,14 +1,15 @@
 --- a/net/minecraft/data/tags/PaintingVariantTagsProvider.java
 +++ b/net/minecraft/data/tags/PaintingVariantTagsProvider.java
-@@ -9,8 +_,13 @@
+@@ -9,8 +_,14 @@
  import net.minecraft.world.entity.decoration.painting.PaintingVariants;
  
  public class PaintingVariantTagsProvider extends TagsProvider<PaintingVariant> {
-+    /** @deprecated Forge: Use the {@linkplain #PaintingVariantTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
++    /// @deprecated Neo: Use the [mod id variant][#PaintingVariantTagsProvider(PackOutput, CompletableFuture, String)]
 +    @Deprecated
      public PaintingVariantTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
          super(output, Registries.PAINTING_VARIANT, lookupProvider);
 +    }
++
 +    public PaintingVariantTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
 +        super(output, Registries.PAINTING_VARIANT, lookupProvider, modId);
      }

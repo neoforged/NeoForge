@@ -4,7 +4,7 @@
  
      @Override
      public boolean emptyContents(@Nullable LivingEntity user, Level level, BlockPos pos, @Nullable BlockHitResult hitResult) {
-+        return emptyContents(user, level, pos, hitResult, null);
++        return this.emptyContents(user, level, pos, hitResult, null);
 +    }
 +
 +    // Neo: Override our patched in overload from upstream allowing mobs to be placed with empty fludis

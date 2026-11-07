@@ -1,54 +1,57 @@
 --- a/net/minecraft/client/model/HumanoidModel.java
 +++ b/net/minecraft/client/model/HumanoidModel.java
-@@ -380,6 +_,9 @@
+@@ -380,6 +_,10 @@
                  break;
              case SPEAR:
                  SpearAnimations.thirdPersonHandUse(this.rightArm, this.head, HumanoidArm.RIGHT, state.getUseItemStackForArm(HumanoidArm.RIGHT), state);
 +                break;
 +            default:
++                // Neo: apply transforms for custom arm poses
 +                state.rightArmPose.applyTransform(this, state, net.minecraft.world.entity.HumanoidArm.RIGHT);
          }
      }
  
-@@ -425,6 +_,9 @@
+@@ -425,6 +_,10 @@
                  break;
              case SPEAR:
                  SpearAnimations.thirdPersonHandUse(this.leftArm, this.head, HumanoidArm.LEFT, state.getUseItemStackForArm(HumanoidArm.LEFT), state);
 +                break;
 +            default:
++                // Neo: apply transforms for custom arm poses
 +                state.leftArmPose.applyTransform(this, state, net.minecraft.world.entity.HumanoidArm.LEFT);
          }
      }
  
-@@ -509,9 +_,20 @@
+@@ -509,9 +_,19 @@
          private final boolean twoHanded;
          private final boolean affectsOffhandPose;
  
-+        private final net.neoforged.neoforge.client.@org.jspecify.annotations.Nullable IArmPoseTransformer forgeArmPose;
++        private final net.neoforged.neoforge.client.@org.jspecify.annotations.Nullable IArmPoseTransformer armPoseTransformer;
 +
 +        @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
          ArmPose(boolean twoHanded, boolean affectsOffhandPose) {
              this.twoHanded = twoHanded;
              this.affectsOffhandPose = affectsOffhandPose;
-+            this.forgeArmPose = null;
++            this.armPoseTransformer = null;
 +        }
 +
-+        private ArmPose(boolean twoHanded, boolean affectsOffhandPose, net.neoforged.neoforge.client.IArmPoseTransformer forgeArmPose) {
++        ArmPose(boolean twoHanded, boolean affectsOffhandPose, net.neoforged.neoforge.client.IArmPoseTransformer armPoseTransformer) {
 +            this.twoHanded = twoHanded;
 +            this.affectsOffhandPose = affectsOffhandPose;
-+            com.google.common.base.Preconditions.checkNotNull(forgeArmPose, "Cannot create new ArmPose with null transformer!");
-+            this.forgeArmPose = forgeArmPose;
++            this.armPoseTransformer = java.util.Objects.requireNonNull(armPoseTransformer, "Cannot create new ArmPose with null transformer!");
          }
  
          public boolean isTwoHanded() {
-@@ -520,6 +_,14 @@
+@@ -520,6 +_,16 @@
  
          public boolean affectsOffhandPose() {
              return this.affectsOffhandPose;
 +        }
 +
 +        public <T extends HumanoidRenderState> void applyTransform(HumanoidModel<T> model, T entity, net.minecraft.world.entity.HumanoidArm arm) {
-+            if (this.forgeArmPose != null) this.forgeArmPose.applyTransform(model, entity, arm);
++            if (this.armPoseTransformer != null) {
++                this.armPoseTransformer.applyTransform(model, entity, arm);
++            }
 +        }
 +
 +        public static net.neoforged.fml.common.asm.enumextension.ExtensionInfo getExtensionInfo() {

@@ -33,7 +33,7 @@
              if (this.isEntityVisible(entity, frustum, camX, camY, camZ, entityPartialTicks, chunkFadeDuration)
                  && (entity != camera.entity() || camera.isDetached() || camera.entity() instanceof LivingEntity && ((LivingEntity)camera.entity()).isSleeping())
 -                && (!(entity instanceof LocalPlayer) || camera.entity() == entity)) {
-+                && (!(entity instanceof LocalPlayer) || camera.entity() == entity || (entity == minecraft.player && !minecraft.player.isSpectator()))) { // Neo: render local player entity when it is not the camera entity
++                && (!(entity instanceof LocalPlayer) || camera.entity() == entity || (entity == this.minecraft.player && !this.minecraft.player.isSpectator()))) { // Neo: render local player entity when it is not the camera entity
                  if (entity.tickCount == 0) {
                      entity.xOld = entity.getX();
                      entity.yOld = entity.getY();
@@ -45,29 +45,32 @@
          Vec3 cameraPos = camera.position();
          double camX = cameraPos.x();
          double camY = cameraPos.y();
-@@ -329,7 +_,7 @@
+@@ -329,7 +_,8 @@
  
                      BlockEntityRenderState state = this.levelRenderer
                          .blockEntityRenderDispatcher()
 -                        .tryExtractRenderState(blockEntity, deltaPartialTick, breakProgress, false);
++                        // Neo: frustum-cull blockentity renderers
 +                        .tryExtractRenderState(blockEntity, deltaPartialTick, breakProgress, false, cullFrustum);
                      if (state != null) {
                          levelRenderState.blockEntityRenderStates.add(state);
                      }
-@@ -346,7 +_,7 @@
+@@ -346,7 +_,8 @@
              } else {
                  BlockEntityRenderState state = this.levelRenderer
                      .blockEntityRenderDispatcher()
 -                    .tryExtractRenderState(blockEntity, deltaPartialTick, null, true);
++                    // Neo: frustum-cull blockentity renderers
 +                    .tryExtractRenderState(blockEntity, deltaPartialTick, null, true, cullFrustum);
                  if (state != null) {
                      levelRenderState.blockEntityRenderStates.add(state);
                  }
-@@ -381,19 +_,23 @@
+@@ -381,19 +_,24 @@
                  BlockState state = this.level.getBlockState(pos);
                  if (!state.isAir() && this.level.getWorldBorder().isWithinBounds(pos)) {
                      BlockStateModel blockStateModel = this.minecraft.getModelManager().getBlockStateModelSet().get(state);
 -                    boolean isBlockTranslucent = blockStateModel.hasMaterialFlag(1);
++                    // Neo: query level-aware material flag getter
 +                    boolean isBlockTranslucent = blockStateModel.hasMaterialFlag(this.level, pos, state, 1);
                      boolean highContrast = this.minecraft.options.highContrastBlockOutline().get();
                      CollisionContext context = CollisionContext.of(camera.entity());
@@ -97,7 +100,7 @@
 -                    BlockState viewBlockingState = getViewBlockingState(player, camera.getCullFrustum());
 -                    if (viewBlockingState != null) {
 +                    var stateAndPos = getViewBlockingStateAndPos(player, camera.getCullFrustum());
-+                    if (stateAndPos != null && !net.neoforged.neoforge.client.ClientHooks.extractBlockScreenEffect(player, state,stateAndPos.getRight(), stateAndPos.getLeft(), camera, worldPartialTicks, playerPartialTick)) {
++                    if (stateAndPos != null && !net.neoforged.neoforge.client.ClientHooks.extractBlockScreenEffect(player, state, stateAndPos.getRight(), stateAndPos.getLeft(), camera, worldPartialTicks, playerPartialTick)) {
 +                        BlockState viewBlockingState = stateAndPos.getLeft();
                          TextureAtlasSprite sprite = this.minecraft.getModelManager().getBlockStateModelSet().getParticleMaterial(viewBlockingState).sprite();
                          state.blockOverlay = new PlayerRenderState.BlockOverlay(
@@ -149,12 +152,13 @@
              }
          }
  
-@@ -605,6 +_,13 @@
+@@ -605,6 +_,14 @@
          }
  
          return rendered;
 +    }
 +
++    /// Neo: iterates over all block entities in visible chunk sections and all "global" block entities in loaded chunks
 +    public void iterateVisibleBlockEntities(java.util.function.Consumer<BlockEntity> blockEntityConsumer) {
 +        for (var chunkInfo : this.levelRenderer.visibleSections()) {
 +            chunkInfo.getSectionMesh().getRenderableBlockEntities().forEach(blockEntityConsumer);

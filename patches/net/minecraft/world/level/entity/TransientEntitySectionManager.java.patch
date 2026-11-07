@@ -23,11 +23,13 @@
                  this.currentSection = newSection;
                  this.currentSectionKey = newSectionPos;
                  TransientEntitySectionManager.this.callbacks.onSectionChange(this.entity);
-@@ -117,6 +_,7 @@
+@@ -116,6 +_,9 @@
+                     } else if (!wasTicking && isTicking) {
                          TransientEntitySectionManager.this.callbacks.onTickingStart(this.entity);
                      }
++                }
++                if (this.realEntity != null) {
++                    net.neoforged.neoforge.common.CommonHooks.onEntityEnterSection(this.realEntity, oldSectionKey, newSectionPos);
                  }
-+                if (this.realEntity != null) net.neoforged.neoforge.common.CommonHooks.onEntityEnterSection(this.realEntity, oldSectionKey, newSectionPos);
              }
          }
- 

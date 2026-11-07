@@ -5,7 +5,7 @@
      protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
          if (!oldState.is(state.getBlock())) {
 -            if (level.hasNeighborSignal(pos) && prime(level, pos)) {
-+            if (level.hasNeighborSignal(pos) && onCaughtFire(state, level, pos, null, null, ItemStack.EMPTY)) {
++            if (level.hasNeighborSignal(pos) && this.onCaughtFire(state, level, pos, null, null, ItemStack.EMPTY)) {
                  level.removeBlock(pos, false);
              }
          }
@@ -14,7 +14,7 @@
      @Override
      protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, @Nullable Orientation orientation, boolean movedByPiston) {
 -        if (level.hasNeighborSignal(pos) && prime(level, pos)) {
-+        if (level.hasNeighborSignal(pos) && onCaughtFire(state, level, pos, null, null, ItemStack.EMPTY)) {
++        if (level.hasNeighborSignal(pos) && this.onCaughtFire(state, level, pos, null, null, ItemStack.EMPTY)) {
              level.removeBlock(pos, false);
          }
      }
@@ -23,7 +23,7 @@
      public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
          if (!level.isClientSide() && !player.getAbilities().instabuild && state.getValue(UNSTABLE)) {
 -            prime(level, pos);
-+            onCaughtFire(state, level, pos, null, null, ItemStack.EMPTY);
++            this.onCaughtFire(state, level, pos, null, null, ItemStack.EMPTY);
          }
  
          return super.playerWillDestroy(level, pos, state, player);
@@ -47,7 +47,7 @@
          }
  
 -        if (prime(level, pos, player, itemStack)) {
-+        if (onCaughtFire(state, level, pos, hitResult.getDirection(), player, itemStack)) {
++        if (this.onCaughtFire(state, level, pos, hitResult.getDirection(), player, itemStack)) {
              level.setBlock(pos, Blocks.AIR.defaultBlockState(), 11);
              Item item = itemStack.getItem();
              if (itemStack.is(Items.FLINT_AND_STEEL)) {
@@ -56,7 +56,7 @@
              if (projectile.isOnFire()
                  && projectile.mayInteract(serverLevel, pos)
 -                && prime(
-+                && onCaughtFire(
++                && this.onCaughtFire(
 +                    state,
                      level,
                      pos,

@@ -11,32 +11,30 @@
  ) {
      private static final Codec<List<SavedTick<Block>>> BLOCK_TICKS_CODEC = SavedTick.codec(BuiltInRegistries.BLOCK.byNameCodec()).listOf();
      private static final Codec<List<SavedTick<Fluid>>> FLUID_TICKS_CODEC = SavedTick.codec(BuiltInRegistries.FLUID.byNameCodec()).listOf();
-@@ -106,6 +_,32 @@
+@@ -106,6 +_,30 @@
      public static final String BLOCK_LIGHT_TAG = "BlockLight";
      public static final String SKY_LIGHT_TAG = "SkyLight";
  
-+    /**
-+     * @deprecated Neo: use constructor with additional data instead
-+     */
++    /// @deprecated Neo: use constructor with additional data instead
 +    @Deprecated
 +    SerializableChunkData(
-+            PalettedContainerFactory containerFactory,
-+            ChunkPos chunkPos,
-+            int minSectionY,
-+            long lastUpdateTime,
-+            long inhabitedTime,
-+            ChunkStatus chunkStatus,
-+            BlendingData.@Nullable Packed blendingData,
-+            @Nullable BelowZeroRetrogen belowZeroRetrogen,
-+            UpgradeData upgradeData,
-+            Map<Heightmap.Types, long[]> heightmaps,
-+            ChunkAccess.PackedTicks packedTicks,
-+            ShortList[] postProcessingSections,
-+            boolean lightCorrect,
-+            List<SerializableChunkData.SectionData> sectionData,
-+            List<CompoundTag> entities,
-+            List<CompoundTag> blockEntities,
-+            CompoundTag structureData
++        PalettedContainerFactory containerFactory,
++        ChunkPos chunkPos,
++        int minSectionY,
++        long lastUpdateTime,
++        long inhabitedTime,
++        ChunkStatus chunkStatus,
++        BlendingData.@Nullable Packed blendingData,
++        @Nullable BelowZeroRetrogen belowZeroRetrogen,
++        UpgradeData upgradeData,
++        Map<Heightmap.Types, long[]> heightmaps,
++        ChunkAccess.PackedTicks packedTicks,
++        ShortList[] postProcessingSections,
++        boolean lightCorrect,
++        List<SerializableChunkData.SectionData> sectionData,
++        List<CompoundTag> entities,
++        List<CompoundTag> blockEntities,
++        CompoundTag structureData
 +    ) {
 +        this(containerFactory, chunkPos, minSectionY, lastUpdateTime, inhabitedTime, chunkStatus, blendingData, belowZeroRetrogen, upgradeData, heightmaps, packedTicks, postProcessingSections, lightCorrect, sectionData, entities, blockEntities, structureData, null, null);
 +    }
@@ -121,11 +119,11 @@
          tag.put("Heightmaps", heightmapsTag);
          tag.put("structures", this.structureData);
 +
-+        if (attachmentData != null) {
-+            tag.put(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY, attachmentData);
++        if (this.attachmentData != null) {
++            tag.put(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY, this.attachmentData);
 +        }
-+        if (auxLightData != null) {
-+            tag.put(net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager.LIGHT_NBT_KEY, auxLightData);
++        if (this.auxLightData != null) {
++            tag.put(net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager.LIGHT_NBT_KEY, this.auxLightData);
 +        }
 +
          return tag;
