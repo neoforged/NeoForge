@@ -18,22 +18,23 @@
      }
  
      @Override
-@@ -160,7 +_,7 @@
+@@ -160,7 +_,8 @@
  
          this.connection
              .setupInboundProtocol(
 -                GameProtocols.CLIENTBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registries)),
++                // Neo: attach connection type to RegistryFriendlyByteBuf
 +                GameProtocols.CLIENTBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registries, this.connectionType)),
                  new ClientPacketListener(
                      this.minecraft,
                      this.connection,
-@@ -178,13 +_,21 @@
+@@ -178,13 +_,22 @@
                          this.customReportDetails,
                          this.serverLinks(),
                          this.seenPlayers,
 -                        this.seenInsecureChatWarning
 +                        this.seenInsecureChatWarning,
-+                        this.connectionType
++                        this.connectionType // Neo: retain connection type across protocol changes
                      )
                  )
              );
@@ -47,6 +48,7 @@
          this.connection.send(ServerboundFinishConfigurationPacket.INSTANCE);
          this.connection
 -            .setupOutboundProtocol(GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registries), new GameProtocols.Context() {
++            // Neo: retain connection type across protocol changes
 +            .setupOutboundProtocol(GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registries, this.connectionType), new GameProtocols.Context() {
                  @Override
                  public boolean hasInfiniteMaterials() {

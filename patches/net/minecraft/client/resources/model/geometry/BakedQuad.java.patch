@@ -24,7 +24,7 @@
      public @interface MaterialFlags {
      }
  
-+    /// @param ambientOcclusion `false` to force-disable AO for this quad or `true` to use the behavior dictated by
++    /// @param ambientOcclusion Neo: `false` to force-disable AO for this quad or `true` to use the behavior dictated by
 +    ///                         [net.neoforged.neoforge.client.extensions.BlockStateModelPartExtension#ambientOcclusion].
      public record MaterialInfo(
          TextureAtlasSprite sprite,

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
-@@ -69,15 +_,26 @@
+@@ -69,15 +_,27 @@
          this.cameraPos = cameraPos;
      }
  
@@ -23,6 +23,7 @@
 +            return null;
 +        }
 +
++        // Neo: check the BER is in the camera frustum, if available
 +        if (frustum != null && !frustum.isVisible(renderer.getRenderBoundingBox(blockEntity))) {
              return null;
          }

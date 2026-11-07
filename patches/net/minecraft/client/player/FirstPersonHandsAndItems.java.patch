@@ -23,11 +23,12 @@
              this.mainHandHeight = this.mainHandHeight + Mth.clamp(mainHandTargetHeight - this.mainHandHeight, -0.4F, 0.4F);
              this.offHandHeight = this.offHandHeight + Mth.clamp(offHandTargetHeight - this.offHandHeight, -0.4F, 0.4F);
          }
-@@ -122,7 +_,7 @@
+@@ -122,7 +_,8 @@
  
      private boolean extractMapRenderState(LocalPlayer player, ItemStack itemStack, MapRenderState state) {
          MapId mapId = itemStack.get(DataComponents.MAP_ID);
 -        MapItemSavedData mapData = mapId == null ? null : MapItem.getSavedData(mapId, player.level());
++        // Neo: give items control over the source of the map data
 +        MapItemSavedData mapData = mapId == null ? null : MapItem.getSavedData(itemStack, player.level());
          if (mapId != null && mapData != null) {
              player.minecraft.getMapRenderer().extractRenderState(mapId, mapData, state);

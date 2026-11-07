@@ -24,12 +24,13 @@
          this.finalizeGizmoCollection();
          this.finalizedGizmos.standardPrimitives().submit(submitNodeCollector, levelRenderState.cameraRenderState, false);
          this.finalizedGizmos.alwaysOnTopPrimitives().submit(submitNodeCollector, levelRenderState.cameraRenderState, true);
-@@ -376,7 +_,14 @@
+@@ -376,7 +_,15 @@
              if (state.skybox != DimensionType.Skybox.NONE) {
                  FramePass pass = frame.addPass("sky");
                  this.targets.main = pass.readsAndWrites(this.targets.main);
 -                pass.executes(() -> this.skyRenderer.render(skyFog, state));
 +                pass.executes(() -> {
++                    // Neo: defer to custom skybox renderer if present
 +                    if (this.levelRenderState.customSkyboxRenderer == null || !this.levelRenderState.customSkyboxRenderer.renderSky(levelRenderState, state, cameraState.viewRotationMatrix, skyFog)) {
 +                        this.skyRenderer.render(skyFog, state);
 +                    }
@@ -63,10 +64,11 @@
          profiler.pop();
      }
  
-@@ -528,6 +_,17 @@
+@@ -528,6 +_,18 @@
          CloudStatus cloudStatus = this.optionsRenderState.cloudStatus;
          boolean shouldRenderClouds = cloudStatus != CloudStatus.OFF && ARGB.alpha(this.levelRenderState.cloudColor) > 0;
          if (shouldRenderClouds) {
++            // Neo: let custom cloud renderer prepare, if present
 +            if (this.levelRenderState.customCloudsRenderer != null) {
 +                this.levelRenderState.customCloudsRenderer.prepare(
 +                    this.levelRenderState,
@@ -81,10 +83,11 @@
              this.cloudRenderer
                  .prepare(
                      this.levelRenderState.cloudColor,
-@@ -545,6 +_,10 @@
+@@ -545,6 +_,11 @@
          this.worldBorderRenderer
              .prepare(this.levelRenderState.worldBorderRenderState, cameraState.pos, renderDistance, this.levelRenderState.cameraRenderState.depthFar);
          this.weatherEffectRenderer.prepare(cameraState.pos, this.levelRenderState.weatherRenderState);
++        // Neo: let custom weather renderer prepare, if present
 +        if (this.levelRenderState.customWeatherEffectRenderer != null) {
 +            this.levelRenderState.customWeatherEffectRenderer.prepare(this.levelRenderState, this.levelRenderState.weatherRenderState, cameraState.pos);
 +        }
@@ -92,10 +95,11 @@
          RenderSystem.resizeAllAutoStorageIndexBuffers();
      }
  
-@@ -598,7 +_,10 @@
+@@ -598,7 +_,11 @@
              try (RenderPass renderPass = OitRenderPassProvider.createRenderPass(stage, () -> "Features, World Border, Weather", params)) {
                  featureFrame.executeOit(stage, renderPass);
                  this.worldBorderRenderer.renderOit(this.levelRenderState.worldBorderRenderState, cameraState.pos, renderDistance, stage, renderPass);
++                // Neo: defer to custom weather renderer, if present
 +                if (this.levelRenderState.customWeatherEffectRenderer == null || !this.levelRenderState.customWeatherEffectRenderer.renderSnowAndRainOit(this.levelRenderState, this.levelRenderState.weatherRenderState, this.levelRenderState.cameraRenderState.pos, stage, renderPass))
                  this.weatherEffectRenderer.renderOit(stage, this.levelRenderState.weatherRenderState, renderPass);
 +
@@ -103,16 +107,16 @@
              }
  
              if (stage == OitStage.DEPTH_BOUNDS) {
-@@ -607,7 +_,7 @@
-                 terrainParams.setDepthBoundsTargetView(depthBoundsCulledTargetView);
+@@ -608,6 +_,8 @@
              }
  
--            if (shouldRenderClouds) {
-+            if (shouldRenderClouds && (this.levelRenderState.customCloudsRenderer == null || !this.levelRenderState.customCloudsRenderer.renderCloudsOit(this.levelRenderState, cloudStatus, this.levelRenderState.cameraRenderState.viewRotationMatrix, stage, mainDepthTextureView, params))) {
+             if (shouldRenderClouds) {
++                // Neo: defer to custom cloud renderer, if present
++                if (this.levelRenderState.customCloudsRenderer == null || !this.levelRenderState.customCloudsRenderer.renderCloudsOit(this.levelRenderState, cloudStatus, this.levelRenderState.cameraRenderState.viewRotationMatrix, stage, mainDepthTextureView, params))
                  this.cloudRenderer.renderOit(cloudStatus, stage, mainDepthTextureView, cloudParams);
              }
  
-@@ -684,20 +_,31 @@
+@@ -684,20 +_,34 @@
          int renderDistance = this.optionsRenderState.renderDistance * 16;
          profiler.push("renderTranslucentFeatures");
          featureFrame.executeTranslucent(renderPass);
@@ -128,15 +132,17 @@
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentBlocks(this, this.levelRenderState, null, this.levelRenderState.cameraRenderState.viewRotationMatrix, this.visibleSections, renderPass));
          profiler.pop();
          featureFrame.executeTranslucentAfterTerrain(renderPass);
--        if (shouldRenderClouds) {
 +        profiler.push("neoforge_render_after_translucent_particles");
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentParticles(this, this.levelRenderState, null, this.levelRenderState.cameraRenderState.viewRotationMatrix, this.visibleSections, renderPass));
 +        profiler.pop();
-+        if (shouldRenderClouds && (this.levelRenderState.customCloudsRenderer == null || !this.levelRenderState.customCloudsRenderer.renderClouds(this.levelRenderState, cloudStatus, this.levelRenderState.cameraRenderState.viewRotationMatrix, renderPass))) {
+         if (shouldRenderClouds) {
++            // Neo: defer to custom cloud renderer, if present
++            if (this.levelRenderState.customCloudsRenderer == null || !this.levelRenderState.customCloudsRenderer.renderClouds(this.levelRenderState, cloudStatus, this.levelRenderState.cameraRenderState.viewRotationMatrix, renderPass))
              this.cloudRenderer.render(cloudStatus, renderPass);
          }
  
          Vec3 cameraPos = this.levelRenderState.cameraRenderState.pos;
++        // Neo: defer to custom weather renderer, if present
 +        if (this.levelRenderState.customWeatherEffectRenderer == null || !this.levelRenderState.customWeatherEffectRenderer.renderSnowAndRain(this.levelRenderState, this.levelRenderState.weatherRenderState, this.levelRenderState.cameraRenderState.pos, renderPass))
          this.weatherEffectRenderer.render(this.levelRenderState.weatherRenderState, renderPass);
 +        profiler.push("neoforge_render_after_weather");
@@ -145,28 +151,33 @@
          this.worldBorderRenderer.render(this.levelRenderState.worldBorderRenderState, renderPass, cameraPos, renderDistance);
      }
  
-@@ -974,10 +_,10 @@
+@@ -974,10 +_,12 @@
              SectionRenderDispatcher.RenderSection section = this.viewArea.getRenderSection(state.sectionNode());
              if (rebuildSync) {
                  profiler.push("compileSectionSynchronously");
 -                section.compileSync(state.region());
++                // Neo: pass additional section geometry renderers to the section compile task
 +                section.compileSync(state.region(), state.additionalRenderers());
                  profiler.pop();
              } else {
 -                section.compileAsync(state.region());
++                // Neo: pass additional section geometry renderers to the section compile task
 +                section.compileAsync(state.region(), state.additionalRenderers());
              }
          }
  
-@@ -1035,7 +_,7 @@
+@@ -1035,8 +_,9 @@
                      poseStack.translate(state.blockState().getOffset(pos));
                      BlockStateModel model = this.modelManager.getBlockStateModelSet().get(state.blockState());
                      random.setSeed(state.blockState().getSeed(pos));
 -                    model.collectParts(random, parts);
+-                    submitNodeCollector.submitBreakingBlockModel(poseStack, List.copyOf(parts), state.progress(), model.hasMaterialFlag(1));
++                    // Neo: query level-aware part collection and material flag methods
 +                    model.collectParts(net.minecraft.client.renderer.block.BlockAndTintGetter.EMPTY, BlockPos.ZERO, state.blockState(), random, parts);
-                     submitNodeCollector.submitBreakingBlockModel(poseStack, List.copyOf(parts), state.progress(), model.hasMaterialFlag(1));
++                    submitNodeCollector.submitBreakingBlockModel(poseStack, List.copyOf(parts), state.progress(), model.hasMaterialFlag(net.minecraft.client.renderer.block.BlockAndTintGetter.EMPTY, BlockPos.ZERO, state.blockState(), 1));
                      parts.clear();
                      poseStack.popPose();
+                 }
 @@ -1071,6 +_,13 @@
      private void submitBlockOutline(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, LevelRenderState levelRenderState) {
          BlockOutlineRenderState state = levelRenderState.blockOutlineRenderState;

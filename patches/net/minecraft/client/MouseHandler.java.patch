@@ -114,16 +114,18 @@
              double dx = this.smoothTurnX.getNewDeltaValue(this.accumulatedDX * sens, mousea * sens);
              double dy = this.smoothTurnY.getNewDeltaValue(this.accumulatedDY * sens, mousea * sens);
              xo = dx;
-@@ -369,6 +_,14 @@
+@@ -369,6 +_,16 @@
  
      public double ypos() {
          return this.ypos;
 +    }
 +
++    /// Neo: {@return the accumulated mouse movement along the X axis}
 +    public double getXVelocity() {
 +        return this.accumulatedDX;
 +    }
 +
++    /// Neo: {@return the accumulated mouse movement along the Y axis}
 +    public double getYVelocity() {
 +        return this.accumulatedDY;
      }

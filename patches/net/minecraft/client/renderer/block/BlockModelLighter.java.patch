@@ -1,9 +1,10 @@
 --- a/net/minecraft/client/renderer/block/BlockModelLighter.java
 +++ b/net/minecraft/client/renderer/block/BlockModelLighter.java
-@@ -30,6 +_,8 @@
+@@ -30,6 +_,9 @@
          this.cache = CACHE.get();
      }
  
++    /// Neo: reset the lighter's internal state to prepare for the next block
 +    public void reset() {}
 +
      public int getLightCoords(BlockState state, BlockAndTintGetter level, BlockPos relativePos) {

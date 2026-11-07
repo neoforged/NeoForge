@@ -1,18 +1,20 @@
 --- a/net/minecraft/client/Options.java
 +++ b/net/minecraft/client/Options.java
-@@ -1119,7 +_,7 @@
+@@ -1119,7 +_,8 @@
          this.incompatibleResourcePacks.clear();
  
          for (Pack entry : packRepository.getSelectedPacks()) {
 -            if (!entry.isFixedPosition()) {
++            // Neo: exclude hidden packs from the pack list
 +            if (!entry.isFixedPosition() && !entry.isHidden()) {
                  this.resourcePacks.add(entry.getId());
                  if (!entry.getCompatibility().isCompatible()) {
                      this.incompatibleResourcePacks.add(entry.getId());
-@@ -1510,6 +_,7 @@
+@@ -1510,6 +_,8 @@
      }
  
      public Options(Minecraft minecraft, File workingDirectory) {
++        // Neo: configure the conflict context for vanilla keys
 +        this.configureDefaultConflictContexts();
          this.minecraft = minecraft;
          this.optionsFile = new File(workingDirectory, "options.txt");
@@ -44,12 +46,13 @@
                  } catch (IllegalArgumentException e) {
                      LOGGER.warn("Invalid keyMapping {} = {}, unbinding", keyMapping.getName(), newValue, e);
                      keyMapping.setKey(InputConstants.UNKNOWN);
-@@ -1967,6 +_,23 @@
+@@ -1967,6 +_,24 @@
          }
  
          repository.setSelected(selected);
 +    }
 +
++    /// Neo: configure the conflict context for vanilla keys
 +    private void configureDefaultConflictContexts() {
 +        var inGame = net.neoforged.neoforge.client.settings.KeyConflictContext.IN_GAME;
 +        this.keyUp.setKeyConflictContext(inGame);

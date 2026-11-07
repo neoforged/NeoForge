@@ -71,11 +71,12 @@
              }
  
              @Override
-@@ -432,7 +_,7 @@
+@@ -432,7 +_,8 @@
                  SectionCompiler.Results results;
                  try (Zone ignored = Profiler.get().zone("Compile Section")) {
                      results = SectionRenderDispatcher.this.sectionCompiler
 -                        .compile(sectionPos, this.region, RenderSection.this.createVertexSorting(sectionPos, cameraPos), buffers);
++                        // Neo: pass additional section geometry renderers to the section compiler
 +                        .compile(sectionPos, this.region, RenderSection.this.createVertexSorting(sectionPos, cameraPos), buffers, this.additionalRenderers);
                  }
  

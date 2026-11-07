@@ -9,10 +9,11 @@
      }
  
      public static boolean toggleFog() {
-@@ -167,9 +_,11 @@
+@@ -167,9 +_,12 @@
          FogData fog = new FogData();
          this.computeFogColor(camera, partialTickTime, level, renderDistanceInChunks, darkenWorldAmount, fog.color);
  
++        // Neo: capture chosen fog environment for fog setup event
 +        FogEnvironment chosenEnvironment = null;
          for (FogEnvironment fogEnvironment : FOG_ENVIRONMENTS) {
              if (fogEnvironment.isApplicable(fogType, entity)) {

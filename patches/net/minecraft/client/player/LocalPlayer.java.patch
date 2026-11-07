@@ -26,11 +26,12 @@
          this.minecraft.getTutorial().onInput(this.input);
          boolean wasAutoJump = false;
          if (this.autoJumpTime > 0) {
-@@ -847,7 +_,7 @@
+@@ -847,7 +_,8 @@
          }
  
          boolean justToggledCreativeFlight = false;
 -        if (abilities.mayfly) {
++        // Neo: check creative flight attribute
 +        if (this.mayFly()) {
              if (this.minecraft.gameMode.isSpectator()) {
                  if (!abilities.flying) {

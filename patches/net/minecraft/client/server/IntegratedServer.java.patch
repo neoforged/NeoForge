@@ -14,10 +14,11 @@
          return true;
      }
  
-@@ -397,6 +_,9 @@
+@@ -397,6 +_,10 @@
  
      @Override
      public void halt(boolean wait) {
++        // Neo: guard against repeated halt calls
 +        if (!this.isRunning()) {
 +            return;
 +        }

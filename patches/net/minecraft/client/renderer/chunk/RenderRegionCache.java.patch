@@ -1,10 +1,11 @@
 --- a/net/minecraft/client/renderer/chunk/RenderRegionCache.java
 +++ b/net/minecraft/client/renderer/chunk/RenderRegionCache.java
-@@ -34,7 +_,8 @@
+@@ -34,7 +_,9 @@
              }
          }
  
 -        return new RenderSectionRegion(level, minSectionX, minSectionY, minSectionZ, regionSections);
++        // Neo: store snapshot of model data in the section region
 +        var modelDataManager = level.getModelDataManager().snapshotSectionRegion(minSectionX, minSectionY, minSectionZ, maxSectionX, maxSectionY, maxSectionZ);
 +        return new RenderSectionRegion(level, minSectionX, minSectionY, minSectionZ, regionSections, modelDataManager);
      }

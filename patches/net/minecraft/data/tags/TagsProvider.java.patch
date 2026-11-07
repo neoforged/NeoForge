@@ -38,7 +38,7 @@
 +        this.modId = modId;
 +    }
 +
-+    // Neo: Allow customizing the path for a given tag or returning null
++    /// Neo: allow customizing the path for a given tag or returning null
 +    @org.jspecify.annotations.Nullable
 +    protected Path getPath(Identifier id) {
 +        return this.pathProvider.json(id);

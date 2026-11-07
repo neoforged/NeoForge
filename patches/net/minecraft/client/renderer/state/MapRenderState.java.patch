@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/state/MapRenderState.java
 +++ b/net/minecraft/client/renderer/state/MapRenderState.java
-@@ -10,11 +_,12 @@
+@@ -10,11 +_,13 @@
  import org.jspecify.annotations.Nullable;
  
  @OnlyIn(Dist.CLIENT)
@@ -11,6 +11,7 @@
  
 -    public static class MapDecorationRenderState {
 +    public static class MapDecorationRenderState extends net.neoforged.neoforge.client.renderstate.BaseRenderState {
++        /// Neo: stores the decoration type for custom decoration renderers
 +        public net.minecraft.core.Holder<net.minecraft.world.level.saveddata.maps.MapDecorationType> type;
          public @Nullable TextureAtlasSprite atlasSprite;
          public byte x;

@@ -25,7 +25,7 @@
          this.clearCacheSlots();
          this.level = null;
          this.levelLoadTracker = null;
-@@ -534,12 +_,13 @@
+@@ -534,6 +_,7 @@
          this.debugSubscriber.clear();
          this.minecraft.levelExtractor.debugRenderer.refreshRendererList();
          this.minecraft.player.resetPos();
@@ -33,28 +33,22 @@
          this.minecraft.player.setId(packet.playerId());
          this.level.addEntity(this.minecraft.player);
          this.minecraft.player.input = new KeyboardInput(this.minecraft.options);
-         this.minecraft.gameMode.adjustPlayer(this.minecraft.player);
-         this.minecraft.setCameraEntity(this.minecraft.player);
--        this.startWaitingForNewLevel(this.minecraft.player, this.level, LevelLoadingScreen.Reason.OTHER);
-+        this.startWaitingForNewLevel(this.minecraft.player, this.level, LevelLoadingScreen.Reason.OTHER, null, null);
-         this.minecraft.player.setReducedDebugInfo(packet.reducedDebugInfo());
-         this.minecraft.player.setShowDeathScreen(packet.showDeathScreen());
-         this.minecraft.player.setDoLimitedCrafting(packet.doLimitedCrafting());
 @@ -955,7 +_,8 @@
                          this.customReportDetails,
                          this.serverLinks(),
                          this.seenPlayers,
 -                        this.seenInsecureChatWarning
 +                        this.seenInsecureChatWarning,
-+                        this.connectionType
++                        this.connectionType // Neo: retain connection type across protocol changes
                      )
                  )
              );
-@@ -1304,7 +_,7 @@
+@@ -1304,7 +_,8 @@
          }
  
          this.setClientLoaded(false);
 -        this.startWaitingForNewLevel(newPlayer, this.level, levelLoadingReason);
++        // Neo: add support for custom transition screens based on the origin and/or target dimension
 +        this.startWaitingForNewLevel(newPlayer, this.level, levelLoadingReason, oldPlayer.isDeadOrDying() ? null : dimensionKey, oldPlayer.isDeadOrDying() ? null : oldDimensionKey);
          newPlayer.setId(oldPlayer.getId());
          this.minecraft.player = newPlayer;
@@ -67,11 +61,12 @@
          this.level.addEntity(newPlayer);
          newPlayer.input = new KeyboardInput(this.minecraft.options);
          this.minecraft.gameMode.adjustPlayer(newPlayer);
-@@ -1488,7 +_,7 @@
+@@ -1488,7 +_,8 @@
              ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(blockEntity.problemPath(), LOGGER);
  
              try {
 -                blockEntity.loadWithComponents(TagValueInput.create(reporter, this.registryAccess, packet.getTag()));
++                // Neo: give the BE control over network packet deserialization
 +                blockEntity.onDataPacket(connection, TagValueInput.create(reporter, this.registryAccess, packet.getTag()));
              } catch (Throwable t$) {
                  try {
@@ -120,13 +115,14 @@
      }
  
      @Override
-@@ -1835,8 +_,11 @@
+@@ -1835,8 +_,12 @@
              pendingTags.forEach(Registry.PendingTags::apply);
          }
  
 -        List<ItemStack> searchItems = List.copyOf(CreativeModeTabs.searchTab().getDisplayItems());
 -        this.searchTrees.updateCreativeTags(searchItems);
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent.ClientPacketReceived(this.registryAccess, this.connection.isMemoryConnection()));
++        // Neo: add support for search bars in "standard" creative tabs
 +        CreativeModeTabs.allTabs().stream().filter(net.minecraft.world.item.CreativeModeTab::hasSearchBar).forEach(tab -> {
 +            List<ItemStack> stacks = List.copyOf(tab.getDisplayItems());
 +            this.searchTrees.updateCreativeTags(stacks, net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getTagSearchKey(tab));
@@ -145,10 +141,11 @@
          Instant timeStamp = Instant.now();
          long salt = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastSeenUpdate = this.lastSeenMessages.generateAndApplyUpdate();
-@@ -2671,6 +_,9 @@
+@@ -2671,6 +_,10 @@
      }
  
      public void sendCommand(String command) {
++        // Neo: Dispatch client commands for chat inputs.
 +        if (net.neoforged.neoforge.client.ClientCommandHandler.runCommand(command)) {
 +            return;
 +        }
@@ -166,10 +163,11 @@
          switch (this.verifyCommand(command)) {
              case NO_ISSUES:
                  this.send(new ServerboundChatCommandPacket(command));
-@@ -2793,6 +_,7 @@
+@@ -2793,6 +_,8 @@
          }
  
          this.telemetryManager.tick();
++        // Neo: tick client-side session data attachments
 +        this.sessionData.tick();
          if (this.levelLoadTracker != null) {
              this.levelLoadTracker.tickClientLoad();
