@@ -23,11 +23,11 @@
 +    public int getLabelTextColor() {
 +        if (this.labelTextColor != null) {
 +            return this.labelTextColor;
-+        }
-+        if (this.active) {
++        } else if (this.active) {
 +            return net.minecraft.util.CommonColors.WHITE;
++        } else {
++            return net.minecraft.util.CommonColors.LIGHT_GRAY;
 +        }
-+        return net.minecraft.util.CommonColors.LIGHT_GRAY;
 +    }
 +
 +    /// Neo: Sets the label text color for this widget based on the given ARGB value, or `null` to reset it to the default colors.

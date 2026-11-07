@@ -147,7 +147,7 @@
                                          new TerrainParticle(
                                              this, pos.getX() + x, pos.getY() + y, pos.getZ() + z, relX - 0.5, relY - 0.5, relZ - 0.5, blockState, pos
 -                                        )
-+                                        ).updateSprite(blockState, pos)
++                                        ).updateSprite(blockState, pos) // Neo: update particle sprite with level-awareness
                                      );
                              }
                          }
@@ -165,11 +165,12 @@
                  this.addBreakingParticles(pos, direction, blockState);
              }
          }
-@@ -1098,7 +_,7 @@
+@@ -1098,7 +_,8 @@
              xp = x + shape.maxX + 0.1F;
          }
  
 -        this.minecraft.particleEngine.add(new TerrainParticle(this, xp, yp, zp, 0.0, 0.0, 0.0, blockState, pos).setPower(0.2F).scale(0.6F));
++        // Neo: update particle sprite with level awareness
 +        this.minecraft.particleEngine.add(new TerrainParticle(this, xp, yp, zp, 0.0, 0.0, 0.0, blockState, pos).updateSprite(blockState, pos).setPower(0.2F).scale(0.6F));
      }
  
@@ -182,20 +183,22 @@
              this.difficulty = difficulty;
          }
  
-@@ -1263,6 +_,9 @@
+@@ -1263,6 +_,10 @@
                      ClientLevel.this.dragonParts.addAll(Arrays.asList(dragon.getSubEntities()));
                      break;
                  default:
++                    // Neo: handle non-dragon multipart entities
 +                    if (entity.isMultipartEntity()) {
 +                        ClientLevel.this.dragonParts.addAll(Arrays.asList(entity.getParts()));
 +                    }
              }
          }
  
-@@ -1276,10 +_,31 @@
+@@ -1276,10 +_,32 @@
                      ClientLevel.this.dragonParts.removeAll(Arrays.asList(dragon.getSubEntities()));
                      break;
                  default:
++                    // Neo: handle non-dragon multipart entities
 +                    if (entity.isMultipartEntity()) {
 +                        ClientLevel.this.dragonParts.removeAll(Arrays.asList(entity.getParts()));
 +                    }

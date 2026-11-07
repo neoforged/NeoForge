@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/dispatch/BlockStateModelDispatcher.java
 +++ b/net/minecraft/client/renderer/block/dispatch/BlockStateModelDispatcher.java
-@@ -27,9 +_,10 @@
+@@ -27,9 +_,11 @@
  @OnlyIn(Dist.CLIENT)
  public record BlockStateModelDispatcher(
      Optional<BlockStateModelDispatcher.SimpleModelSelectors> simpleModels, Optional<BlockStateModelDispatcher.MultiPartDefinition> multiPart
@@ -8,6 +8,7 @@
  ) {
      private static final Logger LOGGER = LogUtils.getLogger();
 -    public static final Codec<BlockStateModelDispatcher> CODEC = RecordCodecBuilder.<BlockStateModelDispatcher>create(
++    /// Neo: holds the vanilla codec as a MapCodec for use in the definition dispatch codec and in custom definitions
 +    public static final com.mojang.serialization.MapCodec<BlockStateModelDispatcher> VANILLA_CODEC = RecordCodecBuilder.<BlockStateModelDispatcher>mapCodec(
              i -> i.group(
                      BlockStateModelDispatcher.SimpleModelSelectors.CODEC.optionalFieldOf("variants").forGetter(BlockStateModelDispatcher::simpleModels),

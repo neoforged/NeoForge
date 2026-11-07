@@ -1,10 +1,11 @@
 --- a/net/minecraft/client/renderer/block/FluidStateModelSet.java
 +++ b/net/minecraft/client/renderer/block/FluidStateModelSet.java
-@@ -17,7 +_,7 @@
+@@ -17,7 +_,8 @@
          new Material(Identifier.withDefaultNamespace("block/water_still")),
          new Material(Identifier.withDefaultNamespace("block/water_flow")),
          new Material(Identifier.withDefaultNamespace("block/water_overlay")),
 -        BlockTintSources.water()
++        // Neo: replace tint source with one supporting fluidstates and fluidstacks
 +        net.neoforged.neoforge.client.fluid.FluidTintSources.water()
      );
      private static final FluidModel.Unbaked LAVA_MODEL = new FluidModel.Unbaked(

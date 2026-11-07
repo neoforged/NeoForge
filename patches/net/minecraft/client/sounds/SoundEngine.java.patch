@@ -32,7 +32,7 @@
          if (!instance.canPlaySound()) {
              return SoundEngine.PlayResult.NOT_STARTED;
          }
-@@ -451,11 +_,13 @@
+@@ -451,11 +_,14 @@
                      this.soundBuffers.getCompleteBuffer(sound.getPath()).thenAccept(soundBuffer -> handle.execute(channel -> {
                          channel.attachStaticBuffer(soundBuffer);
                          channel.play();
@@ -40,6 +40,7 @@
                      }));
                  } else {
 -                    this.soundBuffers.getStream(sound.getPath(), isLooping).thenAccept(stream -> handle.execute(channel -> {
++                    // Neo: allow the SoundInstance to change the source of the audio stream
 +                    instance.getStream(this.soundBuffers, sound, isLooping).thenAccept(stream -> handle.execute(channel -> {
                          channel.attachBufferStream(stream);
                          channel.play();

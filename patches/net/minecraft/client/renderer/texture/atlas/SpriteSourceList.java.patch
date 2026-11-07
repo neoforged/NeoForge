@@ -14,11 +14,12 @@
          final Map<Identifier, SpriteSource.DiscardableLoader> sprites = new HashMap<>();
          SpriteSource.Output output = new SpriteSource.Output() {
              @Override
-@@ -58,7 +_,7 @@
+@@ -58,7 +_,8 @@
                  }
              }
          };
 -        this.sources.forEach(s -> s.run(resourceManager, output));
++        // Neo: pass additional metadata types to the sprite sources
 +        this.sources.forEach(s -> s.run(resourceManager, output, additionalMetadata));
          Builder<SpriteSource.Loader> result = ImmutableList.builder();
          result.add(loader -> MissingTextureAtlasSprite.create());

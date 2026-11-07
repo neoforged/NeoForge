@@ -1,10 +1,11 @@
 --- a/net/minecraft/client/resources/model/UnbakedModel.java
 +++ b/net/minecraft/client/resources/model/UnbakedModel.java
-@@ -61,5 +_,9 @@
+@@ -61,5 +_,10 @@
          public boolean lightLikeBlock() {
              return this == SIDE;
          }
 +
++        /// Neo: {@return the serialized name of this lighting type}
 +        public String getSerializedName() {
 +            return this.name;
 +        }

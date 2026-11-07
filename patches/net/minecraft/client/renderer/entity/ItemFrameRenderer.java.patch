@@ -16,11 +16,12 @@
  
          poseStack.popPose();
      }
-@@ -130,7 +_,7 @@
+@@ -130,7 +_,8 @@
          if (!itemStack.isEmpty()) {
              MapId framedMapId = entity.getFramedMapId(itemStack);
              if (framedMapId != null) {
 -                MapItemSavedData mapData = entity.level().getMapData(framedMapId);
++                // Neo: give items control over the source of the map data
 +                MapItemSavedData mapData = net.minecraft.world.item.MapItem.getSavedData(itemStack, entity.level());
                  if (mapData != null) {
                      this.mapRenderer.extractRenderState(framedMapId, mapData, state.mapRenderState);

@@ -1,21 +1,23 @@
 --- a/net/minecraft/client/model/HumanoidModel.java
 +++ b/net/minecraft/client/model/HumanoidModel.java
-@@ -380,6 +_,9 @@
+@@ -380,6 +_,10 @@
                  break;
              case SPEAR:
                  SpearAnimations.thirdPersonHandUse(this.rightArm, this.head, HumanoidArm.RIGHT, state.getUseItemStackForArm(HumanoidArm.RIGHT), state);
 +                break;
 +            default:
++                // Neo: apply transforms for custom arm poses
 +                state.rightArmPose.applyTransform(this, state, net.minecraft.world.entity.HumanoidArm.RIGHT);
          }
      }
  
-@@ -425,6 +_,9 @@
+@@ -425,6 +_,10 @@
                  break;
              case SPEAR:
                  SpearAnimations.thirdPersonHandUse(this.leftArm, this.head, HumanoidArm.LEFT, state.getUseItemStackForArm(HumanoidArm.LEFT), state);
 +                break;
 +            default:
++                // Neo: apply transforms for custom arm poses
 +                state.leftArmPose.applyTransform(this, state, net.minecraft.world.entity.HumanoidArm.LEFT);
          }
      }

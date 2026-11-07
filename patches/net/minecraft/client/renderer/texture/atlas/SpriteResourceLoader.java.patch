@@ -9,7 +9,7 @@
              Optional<AnimationMetadataSection> animationInfo;
              Optional<TextureMetadataSection> textureInfo;
              List<MetadataSectionType.WithValue<?>> additionalMetadata;
-@@ -68,9 +_,13 @@
+@@ -68,9 +_,14 @@
                  frameSize = new FrameSize(image.getWidth(), image.getHeight());
              }
  
@@ -23,5 +23,6 @@
 +        return this.loadSprite(spriteLocation, resource, SpriteContents::new);
 +    }
 +
++    /// Neo: add support for custom [SpriteContents] implementations
 +    @Nullable SpriteContents loadSprite(Identifier spriteLocation, Resource resource, net.neoforged.neoforge.client.textures.SpriteContentsConstructor constructor);
  }

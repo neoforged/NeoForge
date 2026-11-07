@@ -1,21 +1,24 @@
 --- a/net/minecraft/client/renderer/block/ModelBlockRenderer.java
 +++ b/net/minecraft/client/renderer/block/ModelBlockRenderer.java
-@@ -39,7 +_,7 @@
+@@ -39,7 +_,8 @@
      private final IntList computedTintValues = new IntArrayList();
  
      public ModelBlockRenderer(boolean ambientOcclusion, boolean cull, BlockColors blockColors) {
 -        this.lighter = new BlockModelLighter();
++        // Neo: replace lighter with enhanced implementation depending on config
 +        this.lighter = net.neoforged.neoforge.client.model.ao.EnhancedBlockModelLighter.newInstance();
          this.ambientOcclusion = ambientOcclusion;
          this.cull = cull;
          this.blockColors = blockColors;
-@@ -53,11 +_,18 @@
+@@ -53,11 +_,20 @@
          BlockQuadOutput output, float x, float y, float z, BlockAndTintGetter level, BlockPos pos, BlockState blockState, BlockStateModel model, long seed
      ) {
          this.random.setSeed(seed);
 -        model.collectParts(this.random, this.parts);
++        // Neo: use level-aware part collection
 +        model.collectParts(level, pos, blockState, this.random, this.parts);
          if (!this.parts.isEmpty()) {
++            // Neo: reset internal state of the lighter
 +            this.lighter.reset();
              try {
                  Vec3 offset = blockState.getOffset(pos);

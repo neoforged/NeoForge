@@ -1,9 +1,10 @@
 --- a/net/minecraft/client/renderer/entity/state/ItemClusterRenderState.java
 +++ b/net/minecraft/client/renderer/entity/state/ItemClusterRenderState.java
-@@ -14,6 +_,7 @@
+@@ -14,6 +_,8 @@
      public final ItemStackRenderState item = new ItemStackRenderState();
      public int count;
      public int seed;
++    /// Neo: indicates whether the item model "instances" should be spread apart
 +    public boolean shouldSpread;
  
      public void extractItemGroupRenderState(Entity entity, ItemStack stack, ItemModelResolver itemModelResolver) {

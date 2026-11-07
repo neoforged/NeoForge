@@ -9,11 +9,12 @@
          state.extractItemGroupRenderState(entity, entity.getItem(), this.itemModelResolver);
      }
  
-@@ -46,7 +_,7 @@
+@@ -46,7 +_,8 @@
              poseStack.pushPose();
              AABB boundingBox = state.item.getModelBoundingBox();
              float minOffsetY = -((float)boundingBox.minY) + 0.0625F;
 -            float bob = Mth.sin(state.ageInTicks / 10.0F + state.bobOffset) * 0.1F + 0.1F;
++            // Neo: let the item determine whether the item entity should bob up and down
 +            float bob = state.shouldBob ? Mth.sin(state.ageInTicks / 10.0F + state.bobOffset) * 0.1F + 0.1F : 0;
              poseStack.translate(0.0F, bob + minOffsetY, 0.0F);
              float spin = ItemEntity.getSpin(state.ageInTicks, state.bobOffset);
@@ -22,7 +23,7 @@
                      float xo = (random.nextFloat() * 2.0F - 1.0F) * 0.15F;
                      float yo = (random.nextFloat() * 2.0F - 1.0F) * 0.15F;
                      float zo = (random.nextFloat() * 2.0F - 1.0F) * 0.15F;
-+                    if (state.shouldSpread)
++                    if (state.shouldSpread) // Neo: let the item determine whether the model "instances" should be spread apart
                      poseStack.translate(xo, yo, zo);
                      item.submit(poseStack, submitNodeCollector, lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
                      poseStack.popPose();
@@ -30,7 +31,7 @@
                      poseStack.pushPose();
                      float xo = (random.nextFloat() * 2.0F - 1.0F) * 0.15F * 0.5F;
                      float yo = (random.nextFloat() * 2.0F - 1.0F) * 0.15F * 0.5F;
-+                    if (state.shouldSpread)
++                    if (state.shouldSpread) // Neo: let the item determine whether the model "instances" should be spread apart
                      poseStack.translate(xo, yo, 0.0F);
                      item.submit(poseStack, submitNodeCollector, lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
                      poseStack.popPose();

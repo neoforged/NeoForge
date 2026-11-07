@@ -1,12 +1,11 @@
 --- a/net/minecraft/client/gui/screens/TitleScreen.java
 +++ b/net/minecraft/client/gui/screens/TitleScreen.java
-@@ -120,8 +_,9 @@
-             topPos = this.createNormalMenuOptions(topPos, 24);
-         }
+@@ -122,6 +_,9 @@
  
--        int numberOfButtons = 3;
-+        int numberOfButtons = 4; // Neo: account for mods button
+         int numberOfButtons = 3;
          int currentButton = 0;
++        // Neo: account for mods button
++        numberOfButtons++;
 +        this.addRenderableWidget(net.neoforged.neoforge.client.gui.widget.ModsButton.create(this)).setPosition(getHorizontalPosition(++currentButton, numberOfButtons, Button.DEFAULT_HEIGHT), topPos + spacing);
          topPos += 24;
          this.friends = this.addRenderableWidget(
