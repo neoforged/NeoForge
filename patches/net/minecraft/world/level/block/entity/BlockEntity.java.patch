@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -40,9 +_,13 @@
+@@ -40,9 +_,11 @@
  
  import net.neoforged.neoforge.common.extensions.IBlockEntityExtension;
  
@@ -8,9 +8,7 @@
 +public abstract class BlockEntity extends net.neoforged.neoforge.attachment.AttachmentHolder implements DebugValueSource, TypedInstance<BlockEntityType<?>>, IBlockEntityExtension {
      private static final Codec<BlockEntityType<?>> TYPE_CODEC = BuiltInRegistries.BLOCK_ENTITY_TYPE.byNameCodec();
      private static final Logger LOGGER = LogUtils.getLogger();
-+    /**
-+     * @deprecated Neo: use {@link #getType()}
-+     */
++    /// @deprecated  Neo: Field accesses are redirected to [#getType()] with a coremod.
 +    @Deprecated
      private final BlockEntityType<?> type;
      protected @Nullable Level level;
@@ -27,15 +25,6 @@
      public BlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState) {
          this.type = type;
          this.worldPosition = worldPosition.immutable();
-@@ -64,7 +_,7 @@
-     }
- 
-     public boolean isValidBlockState(BlockState blockState) {
--        return this.type.isValid(blockState);
-+        return this.getType().isValid(blockState); // Neo: use getter so correct type is checked for modded subclasses
-     }
- 
-     public static BlockPos getPosFromTag(ChunkPos base, CompoundTag entityTag) {
 @@ -95,6 +_,8 @@
      }
  
@@ -72,10 +61,13 @@
      }
  
      public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-@@ -262,8 +_,51 @@
-     }
+@@ -259,6 +_,48 @@
  
-     @Override
+     public BlockEntityType<?> getType() {
+         return this.type;
++    }
++
++    @Override
 +    public CompoundTag getPersistentData() {
 +        if (this.customPersistentData == null)
 +            this.customPersistentData = new CompoundTag();
@@ -115,13 +107,6 @@
 +        var ret = attachmentTypesToSync;
 +        attachmentTypesToSync = null;
 +        return ret;
-+    }
-+
-+    @Override
-     public Holder<BlockEntityType<?>> typeHolder() {
--        return this.type.builtInRegistryHolder();
-+        // Neo: Use the getter to allow easier overriding in mods
-+        return this.getType().builtInRegistryHolder();
      }
  
-     @Deprecated
+     @Override

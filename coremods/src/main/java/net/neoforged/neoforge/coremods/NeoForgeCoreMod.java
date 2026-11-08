@@ -19,6 +19,10 @@ public class NeoForgeCoreMod implements ClassProcessorProvider {
                 "settings", "getModifiedStructureSettings")));
         collector.add(new ReplaceFieldWithGetterAccess("net.minecraft.world.level.block.FlowerPotBlock", Map.of(
                 "potted", "getPotted")));
+        collector.add(new ReplaceFieldWithGetterAccess("net.minecraft.world.entity.Entity", Map.of(
+              "type", "getType")));
+        collector.add(new ReplaceFieldWithGetterAccess("net.minecraft.world.level.block.entity.BlockEntity", Map.of(
+              "type", "getType")));
 
         collector.add(new MethodRedirector());
     }

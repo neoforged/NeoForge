@@ -12,7 +12,7 @@
      private static final double MAX_MOVEMENT_RESETTING_TRACE_DISTANCE = 8.0;
      private static final Set<TagKey<Fluid>> FLUIDS_WITH_CURRENT = Set.of(FluidTags.WATER, FluidTags.LAVA);
      private static double viewScale = 1.0;
-+    /** @deprecated Neo: Use the getter to allow overriding in mods */
++    /// @deprecated  Neo: Field accesses are redirected to [#getType()] with a coremod.
 +    @Deprecated
      private final EntityType<?> type;
      private boolean requiresPrecisePosition;
@@ -28,16 +28,6 @@
      }
  
      public boolean isColliding(BlockPos pos, BlockState state) {
-@@ -374,7 +_,8 @@
- 
-     @Override
-     public Holder<EntityType<?>> typeHolder() {
--        return this.type.builtInRegistryHolder();
-+        // Neo: Use the getter to allow easier overriding in mods
-+        return this.getType().builtInRegistryHolder();
-     }
- 
-     public boolean getRequiresPrecisePosition() {
 @@ -549,7 +_,7 @@
  
          this.wasInPowderSnow = this.isInPowderSnow;
@@ -287,16 +277,6 @@
          if (this.isPassenger()) {
              this.getVehicle().positionRider(this);
          }
-@@ -2486,7 +_,8 @@
-             return false;
-         }
- 
--        if (!this.level().isClientSide() && !entityToRide.type.canSerialize()) {
-+        // Neo: Use the getter to allow easier overriding in mods
-+        if (!this.level().isClientSide() && !entityToRide.getType().canSerialize()) {
-             return false;
-         }
- 
 @@ -2496,6 +_,7 @@
              }
          }
@@ -340,15 +320,6 @@
      }
  
      public void onAboveBubbleColumn(boolean dragDown, BlockPos pos) {
-@@ -3049,7 +_,7 @@
-     }
- 
-     protected Component getTypeName() {
--        return this.type.getDescription();
-+        return this.getType().getDescription(); // Forge: Use getter to allow overriding by mods
-     }
- 
-     public boolean is(Entity other) {
 @@ -3104,10 +_,11 @@
      }
  
@@ -370,16 +341,6 @@
          if (this.level() instanceof ServerLevel serverLevel && !this.isRemoved()) {
              ServerLevel newLevel = transition.newLevel();
              boolean otherDimension = newLevel.dimension() != serverLevel.dimension();
-@@ -3251,7 +_,8 @@
-             }
-         }
- 
--        if (!this.type.hasUpdateInterval() || this.getMoveSimulationType() == MoveSimulationType.SERVER_AND_CLIENT) {
-+        // Neo: Use the getter to allow easier overriding in mods
-+        if (!this.getType().hasUpdateInterval() || this.getMoveSimulationType() == MoveSimulationType.SERVER_AND_CLIENT) {
-             serverLevel.getChunkSource()
-                 .sendToTrackingPlayersFiltered(
-                     this,
 @@ -3378,6 +_,7 @@
          return this.stringUUID;
      }
@@ -414,16 +375,6 @@
      public double getFluidJumpThreshold() {
          return this.getEyeHeight() < 0.4 ? 0.0 : 0.4;
      }
-@@ -3807,7 +_,8 @@
-     }
- 
-     public EntityDimensions getDimensions(Pose pose) {
--        return this.type.getDimensions();
-+        // Neo: Use the getter to allow easier overriding in mods
-+        return this.getType().getDimensions();
-     }
- 
-     public final EntityAttachments getAttachments() {
 @@ -3941,6 +_,10 @@
                  }
              }
@@ -529,16 +480,6 @@
      public boolean isFlyingVehicle() {
          return false;
      }
-@@ -4145,7 +_,8 @@
-     }
- 
-     public Optional<ResourceKey<LootTable>> getLootTable() {
--        return this.type.getDefaultLootTable();
-+        // Neo: Use the getter to allow easier overriding in mods
-+        return this.getType().getDefaultLootTable();
-     }
- 
-     protected void applyImplicitComponents(DataComponentGetter components) {
 @@ -4219,6 +_,11 @@
  
      public int getInvulnerableTime() {
