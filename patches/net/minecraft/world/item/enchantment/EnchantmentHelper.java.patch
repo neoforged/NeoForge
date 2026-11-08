@@ -44,30 +44,22 @@
              if (itemEnchantments != null && !itemEnchantments.isEmpty()) {
                  EnchantedItemInUse itemInUse = new EnchantedItemInUse(piece, slot, owner);
  
-@@ -324,7 +_,13 @@
+@@ -324,6 +_,15 @@
          return Math.max(0, modifiedDurability.intValue());
      }
  
-+    /// @deprecated Neo: Use [#processEquipmentDropChance(ServerLevel,LivingEntity,DamageSource,float,EquipmentSlot)] for slot context.
-+    @Deprecated
-     public static float processEquipmentDropChance(ServerLevel serverLevel, LivingEntity entity, DamageSource killingBlow, float chance) {
-+        return processEquipmentDropChance(serverLevel, entity, killingBlow, chance, null);
++    /// @deprecated Neo: Use [#processEquipmentDropChance(ServerLevel,LivingEntity,DamageSource,float)] and [net.neoforged.neoforge.event.entity.living.GetEquipmentDropChanceEvent] to pass the proper entity.
++    @Deprecated(forRemoval = true)
++    public static float processEquipmentDropChance(ServerLevel serverLevel, LivingEntity entity, DamageSource killingBlow, float originalChance, @Nullable EquipmentSlot slot) {
++        float chance = processEquipmentDropChance(serverLevel, entity, killingBlow, originalChance);
++        MutableFloat modifiedChance = new MutableFloat(chance);
++        net.neoforged.neoforge.event.EventHooks.onEquipmentDropChance(serverLevel, entity, killingBlow, modifiedChance, originalChance, slot);
++        return modifiedChance.floatValue();
 +    }
 +
-+    public static float processEquipmentDropChance(ServerLevel serverLevel, LivingEntity entity, DamageSource killingBlow, float chance, @Nullable EquipmentSlot slot) {
+     public static float processEquipmentDropChance(ServerLevel serverLevel, LivingEntity entity, DamageSource killingBlow, float chance) {
          MutableFloat modifiedChance = new MutableFloat(chance);
          RandomSource random = entity.getRandom();
-         runIterationOnEquipment(
-@@ -364,6 +_,9 @@
-             );
-         }
- 
-+        // Neo: allow mods to modify the drop chance for equipment with the relevant context
-+        net.neoforged.neoforge.event.EventHooks.onEquipmentDropChance(serverLevel, entity, killingBlow, modifiedChance, chance, slot);
-+
-         return modifiedChance.floatValue();
-     }
- 
 @@ -419,6 +_,12 @@
      public static boolean hasTag(ItemStack item, TagKey<Enchantment> tag) {
          ItemEnchantments enchantments = item.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -1221,15 +1222,9 @@ public class EventHooks {
         return enchLevel;
     }
 
-    /// Called from [#processEquipmentDropChance(ServerLevel,LivingEntity,DamageSource,float,EquipmentSlot)] to allow changing the slot chance.
-    ///
-    /// @param level          Level instance
-    /// @param entity         Entity dropping equipment
-    /// @param killingBlow    Damage source used to kill the entity
-    /// @param chance         Mutable chance to modify in the event
-    /// @param originalChance Chance before enchantments ran
-    /// @param slot           Slot containing the item to drop
+    /// @deprecated use [NeoForge#EVENT_BUS] directly to post the event to handle the multiple returns.
+    @Deprecated(forRemoval = true)
     public static void onEquipmentDropChance(ServerLevel level, LivingEntity entity, DamageSource killingBlow, MutableFloat chance, float originalChance, @Nullable EquipmentSlot slot) {
-        NeoForge.EVENT_BUS.post(new GetEquipmentDropChanceEvent(level, entity, killingBlow, chance, originalChance, slot));
+        chance.setValue(NeoForge.EVENT_BUS.post(new GetEquipmentDropChanceEvent(level, entity, killingBlow, chance.floatValue(), originalChance, Objects.requireNonNullElse(slot, EquipmentSlot.BODY), entity instanceof Player, originalChance > 1)).getChance());
     }
 }
