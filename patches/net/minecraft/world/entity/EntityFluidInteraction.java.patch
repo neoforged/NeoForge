@@ -103,7 +103,7 @@
      public double getFluidHeight(TagKey<Fluid> fluid) {
          double height = 0.0;
  
-@@ -177,10 +_,92 @@
+@@ -177,10 +_,94 @@
          return height;
      }
  
@@ -121,8 +121,9 @@
 +
 +    public <E extends Entity> double getMaxFluidHeightMatching(E entity, net.neoforged.neoforge.fluids.InFluidPredicate<E> predicate) {
 +        this.removeFluidTrackers = false;
++        int fluidCount = this.fluidTrackers.size();
 +        double maxHeight = 0D;
-+        for (int i = 0; i < this.fluidTrackers.size(); ++i) {
++        for (int i = 0; i < fluidCount; ++i) {
 +            Tracker tracker = this.fluidTrackers.get(i);
 +            if (tracker.height > maxHeight && predicate.test(entity, tracker.fluidType.value().getFluidType(), tracker.height)) {
 +                maxHeight = tracker.height;
@@ -180,7 +181,8 @@
 +
 +    public <E extends Entity> boolean isInFluidMatching(E entity, net.neoforged.neoforge.fluids.InFluidPredicate<E> predicate) {
 +        this.removeFluidTrackers = false;
-+        for (int i = 0; i < this.fluidTrackers.size(); ++i) {
++        int fluidCount = this.fluidTrackers.size();
++        for (int i = 0; i < fluidCount; ++i) {
 +            Tracker tracker = this.fluidTrackers.get(i);
 +            if (tracker.height > 0D && predicate.test(entity, tracker.fluidType.value().getFluidType(), tracker.height)) {
 +                this.removeFluidTrackers = true;
@@ -196,7 +198,7 @@
      public boolean isEyeInFluid(TagKey<Fluid> fluid) {
          for (EntityFluidInteraction.Tracker tracker : this.fluidTrackers) {
              if (tracker.eyesInside && tracker.fluidType.is(fluid)) {
-@@ -191,10 +_,60 @@
+@@ -191,10 +_,61 @@
          return false;
      }
  
@@ -212,7 +214,8 @@
 +
 +    public <E extends Entity> boolean isEyeInFluidMatching(E entity, net.neoforged.neoforge.fluids.InFluidPredicate<E> predicate) {
 +        this.removeFluidTrackers = false;
-+        for (int i = 0; i < this.fluidTrackers.size(); ++i) {
++        int fluidCount = this.fluidTrackers.size();
++        for (int i = 0; i < fluidCount; ++i) {
 +            Tracker tracker = this.fluidTrackers.get(i);
 +            if (tracker.eyesInside && predicate.test(entity, tracker.fluidType.value().getFluidType(), tracker.height)) {
 +                this.removeFluidTrackers = true;
