@@ -1,14 +1,16 @@
 --- a/net/minecraft/network/ConnectionProtocol.java
 +++ b/net/minecraft/network/ConnectionProtocol.java
-@@ -16,4 +_,12 @@
+@@ -16,4 +_,14 @@
      public String id() {
          return this.id;
      }
 +
++    /// Neo: {@return whether this is the play protocol}
 +    public boolean isPlay() {
 +        return this == PLAY;
 +    }
 +
++    /// Neo: {@return whether this is the configuration protocol}
 +    public boolean isConfiguration() {
 +        return this == CONFIGURATION;
 +    }

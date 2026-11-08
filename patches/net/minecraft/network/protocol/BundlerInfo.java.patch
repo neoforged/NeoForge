@@ -12,7 +12,7 @@
 +                        return;
 +                    }
 +                    if (packets.size() == 1) {
-+                        packetSender.accept(packets.get(0));
++                        packetSender.accept(packets.getFirst());
 +                        return;
 +                    }
 +                    packetSender.accept(delimiterPacket);
@@ -42,7 +42,7 @@
 +    /// @param context      The network context.
 +    /// @implNote This implementation should filter out packets which are not sendable on the current context, however to preserve compatibility the default implementation does not do this.
 +    default void unbundlePacket(Packet<?> bundlePacket, Consumer<Packet<?>> packetSender, io.netty.channel.ChannelHandlerContext context) {
-+        unbundlePacket(bundlePacket, packetSender);
++        this.unbundlePacket(bundlePacket, packetSender);
 +    }
  
      BundlerInfo.@Nullable Bundler startPacketBundling(Packet<?> packet);

@@ -1,10 +1,11 @@
 --- a/net/minecraft/network/FriendlyByteBuf.java
 +++ b/net/minecraft/network/FriendlyByteBuf.java
-@@ -1484,4 +_,9 @@
+@@ -1484,4 +_,10 @@
      public boolean release(int decrement) {
          return this.source.release(decrement);
      }
 +
++    /// Neo: {@return the underlaying "raw" byte buf}
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public ByteBuf getSource() {
 +        return this.source;

@@ -1,11 +1,12 @@
 --- a/net/minecraft/core/component/DataComponentMap.java
 +++ b/net/minecraft/core/component/DataComponentMap.java
-@@ -127,6 +_,12 @@
+@@ -127,6 +_,13 @@
          private Builder() {
          }
  
-+        @SuppressWarnings("unchecked")
++        /// Neo: allow reading builder contents
 +        @Override
++        @SuppressWarnings("unchecked")
 +        public @Nullable <T> T get(DataComponentType<? extends T> type) {
 +            return (T) this.map.get(type);
 +        }

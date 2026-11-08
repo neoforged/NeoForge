@@ -38,7 +38,7 @@
              }
  
              @Override
-@@ -122,11 +_,25 @@
+@@ -122,11 +_,26 @@
              public <S> Stream<Holder.Reference<S>> listContextElements(ResourceKey<? extends Registry<? extends S>> key) {
                  return recipeOutput.listContextElements(key);
              }
@@ -48,6 +48,7 @@
          this.trimPatterns = recipeOutput.lookup(Registries.TRIM_PATTERN);
      }
  
++    /// Neo: {@return a multi-registry bootstrap running the recipe provider created by the given factory}
 +    public static net.minecraft.core.registries.MultiRegistryBootstrap asBootstrap(java.util.function.BiFunction<BootstrapContext<Recipe<?>>, BootstrapContext<Advancement>, ? extends RecipeProvider> providerFactory) {
 +        return new net.minecraft.core.registries.MultiRegistryBootstrap() {
 +            @Override
@@ -75,12 +76,13 @@
              .forEach(
                  (block, waxedBlock) -> {
                      if (waxedBlock.requiredFeatures().isSubsetOf(flagSet)) {
-@@ -887,6 +_,10 @@
+@@ -887,6 +_,11 @@
  
      protected Ingredient tag(TagKey<Item> id) {
          return Ingredient.of(this.items.getOrThrow(id));
 +    }
 +
++    /// Neo: {@return a builder for a shaped recipe of the given category, producing the given stack template}
 +    protected ShapedRecipeBuilder shaped(RecipeCategory category, ItemStackTemplate stack) {
 +        return ShapedRecipeBuilder.shaped(this.items, category, stack);
      }

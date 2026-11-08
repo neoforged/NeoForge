@@ -1,12 +1,13 @@
 --- a/net/minecraft/core/component/predicates/EnchantmentsPredicate.java
 +++ b/net/minecraft/core/component/predicates/EnchantmentsPredicate.java
-@@ -53,6 +_,17 @@
+@@ -53,6 +_,18 @@
          public DataComponentType<ItemEnchantments> componentType() {
              return DataComponents.ENCHANTMENTS;
          }
 +
 +        @Override
 +        public boolean matches(net.minecraft.core.component.DataComponentGetter getter) {
++            // Neo: take non-datacomponent enchantments into account if the incoming getter is an itemstack
 +            if (getter instanceof net.minecraft.world.item.ItemStack stack) {
 +                var lookup = net.neoforged.neoforge.common.CommonHooks.resolveLookup(net.minecraft.core.registries.Registries.ENCHANTMENT);
 +                if (lookup != null) {

@@ -1,10 +1,11 @@
 --- a/net/minecraft/network/PacketEncoder.java
 +++ b/net/minecraft/network/PacketEncoder.java
-@@ -46,4 +_,8 @@
+@@ -46,4 +_,9 @@
              ProtocolSwapHandler.handleOutboundTerminalPacket(ctx, packet);
          }
      }
 +
++    /// Neo: {@return the protocol info used by this encoder}
 +    public ProtocolInfo<T> getProtocolInfo() {
 +        return this.protocolInfo;
 +    }

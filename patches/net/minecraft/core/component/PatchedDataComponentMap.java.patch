@@ -8,10 +8,11 @@
          this.ensureMapOwnership();
          T defaultValue = this.prototype.get(type);
          Object lastValue;
-@@ -199,6 +_,10 @@
+@@ -199,6 +_,11 @@
          return size;
      }
  
++    /// Neo: {@return whether the patch backing this component map is empty}
 +    public boolean isPatchEmpty() {
 +        return this.patch.isEmpty();
 +    }
@@ -23,7 +24,7 @@
          return this.patch.isEmpty() ? this.prototype : this.copy();
      }
  
-+    /// Neo: {@return true if the contained patch equals the given patch}
++    /// Neo: {@return whether the contained patch equals the given patch}
 +    public boolean patchEquals(DataComponentPatch patch) {
 +        return this.patch.equals(patch.map);
 +    }
@@ -31,7 +32,7 @@
      @Override
      public boolean equals(Object obj) {
          return this == obj
-@@ -226,7 +_,30 @@
+@@ -226,7 +_,31 @@
  
      @Override
      public int hashCode() {
@@ -39,6 +40,7 @@
 +        return this.prototype.hashCode() + hashPatch(this.patch) * 31;
 +    }
 +
++    /// Neo: compute the hash of the given patch with the identity hash code of the component types
 +    private static int hashPatch(Reference2ObjectMap<DataComponentType<?>, Object> patch) {
 +        return hashPatch(patch, System::identityHashCode);
 +    }

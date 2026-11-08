@@ -1,9 +1,10 @@
 --- a/net/minecraft/nbt/CompoundTag.java
 +++ b/net/minecraft/nbt/CompoundTag.java
-@@ -48,13 +_,19 @@
+@@ -48,13 +_,20 @@
              }
          }
  
++        /// Neo: read the tag type and account the bytes occupied by it
 +        private static byte readNamedTagType(DataInput input, NbtAccounter accounter) throws IOException {
 +            accounter.accountBytes(2);
 +            return input.readByte();
@@ -38,10 +39,11 @@
      @Override
      public void write(DataOutput output) throws IOException {
          for (String key : this.tags.keySet()) {
-@@ -221,6 +_,9 @@
+@@ -221,6 +_,10 @@
      }
  
      public @Nullable Tag put(String name, Tag tag) {
++        // Neo: guard against null tags to avoid hard to diagnose issues later on
 +        if (tag == null) {
 +            throw new IllegalArgumentException("Invalid null NBT value with key " + name);
 +        }

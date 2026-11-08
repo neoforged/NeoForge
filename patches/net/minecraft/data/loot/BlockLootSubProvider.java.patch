@@ -1,9 +1,10 @@
 --- a/net/minecraft/data/loot/BlockLootSubProvider.java
 +++ b/net/minecraft/data/loot/BlockLootSubProvider.java
-@@ -703,12 +_,16 @@
+@@ -703,12 +_,18 @@
  
      protected abstract void generate();
  
++    /// Neo: {@return the blocks for which this sub provider is expected to generate loot tables}
 +    protected Iterable<Block> getKnownBlocks() {
 +        return BuiltInRegistries.BLOCK;
 +    }
@@ -14,6 +15,7 @@
          Set<ResourceKey<LootTable>> seen = new HashSet<>();
  
 -        for (Block block : BuiltInRegistries.BLOCK) {
++        // Neo: allow subclasses to control for which blocks loot tables are generated
 +        for (Block block : this.getKnownBlocks()) {
              if (block.isEnabled(this.enabledFeatures)) {
                  block.getLootTable()

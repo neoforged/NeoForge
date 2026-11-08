@@ -1,29 +1,32 @@
 --- a/net/minecraft/core/dispenser/MinecartDispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/MinecartDispenseItemBehavior.java
-@@ -34,7 +_,7 @@
+@@ -34,7 +_,8 @@
          BlockState blockFront = level.getBlockState(front);
          double yOffset;
          if (blockFront.is(BlockTags.RAILS)) {
 -            if (getRailShape(blockFront).isSlope()) {
++            // Neo: add level context to shape lookup
 +            if (getRailShape(blockFront, level, front).isSlope()) {
                  yOffset = 0.6;
              } else {
                  yOffset = 0.1;
-@@ -49,7 +_,7 @@
+@@ -49,7 +_,8 @@
                  return this.defaultDispenseItemBehavior.dispense(source, dispensed);
              }
  
 -            if (direction != Direction.DOWN && getRailShape(blockBelow).isSlope()) {
++            // Neo: add level context to shape lookup
 +            if (direction != Direction.DOWN && getRailShape(blockBelow, level, front.below()).isSlope()) {
                  yOffset = -0.4;
              } else {
                  yOffset = -0.9;
-@@ -68,8 +_,8 @@
+@@ -68,8 +_,9 @@
          return dispensed;
      }
  
 -    private static RailShape getRailShape(BlockState blockFront) {
 -        return blockFront.getBlock() instanceof BaseRailBlock railBlock ? blockFront.getValue(railBlock.getShapeProperty()) : RailShape.NORTH_SOUTH;
++    // Neo: add level context to shape lookup
 +    private static RailShape getRailShape(BlockState blockFront, ServerLevel level, BlockPos pos) {
 +        return blockFront.getBlock() instanceof BaseRailBlock railBlock ? railBlock.getRailDirection(blockFront, level, pos, null) : RailShape.NORTH_SOUTH;
      }

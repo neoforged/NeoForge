@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/registries/RegistriesDatapackGenerator.java
 +++ b/net/minecraft/data/registries/RegistriesDatapackGenerator.java
-@@ -16,23 +_,37 @@
+@@ -16,23 +_,38 @@
  import net.minecraft.resources.RegistryDataLoader;
  import net.minecraft.resources.ResourceKey;
  
@@ -11,6 +11,7 @@
      private final String name;
      private final Collection<RegistryDataLoader.RegistryData<?>> registryData;
      private final CompletableFuture<HolderLookup.Provider> registries;
++    /// Neo: predicate for filtering for which namespaces registry objects are serialized
 +    private final java.util.function.Predicate<String> namespacePredicate;
 +    private final CompletableFuture<net.neoforged.neoforge.common.data.RegistriesWithConditions> registriesWithConditions;
  

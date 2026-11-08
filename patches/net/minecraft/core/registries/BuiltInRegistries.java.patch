@@ -1,9 +1,10 @@
 --- a/net/minecraft/core/registries/BuiltInRegistries.java
 +++ b/net/minecraft/core/registries/BuiltInRegistries.java
-@@ -442,6 +_,10 @@
+@@ -442,6 +_,11 @@
          ((MappedRegistry)registry).bindAllTagsToEmpty();
      }
  
++    /// Neo: {@return an unmodifiable view of the (intended) registration order of vanilla registries}
 +    public static java.util.Set<Identifier> getVanillaRegistrationOrder() {
 +        return java.util.Collections.unmodifiableSet(LOADERS.keySet());
 +    }

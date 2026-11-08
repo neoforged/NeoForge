@@ -4,7 +4,7 @@
  
          LivingEntity target = entities.getFirst();
          EquipmentSlot slot = target.getEquipmentSlotForItem(dispensed);
-+        // Neo: Respect IItemExtension#canEquip in dispenseArmor
++        // Neo: Respect IItemExtension#canEquip in dispenseEquipment()
 +        if (!dispensed.canEquip(slot, target)) {
 +            return false;
 +        }

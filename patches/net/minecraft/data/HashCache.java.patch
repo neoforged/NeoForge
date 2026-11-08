@@ -1,17 +1,19 @@
 --- a/net/minecraft/data/HashCache.java
 +++ b/net/minecraft/data/HashCache.java
-@@ -39,6 +_,7 @@
+@@ -39,6 +_,8 @@
      private final Path cacheDir;
      private final String versionId;
      private final Map<String, HashCache.ProviderCache> caches;
++    /// Neo: stores the caches loaded from disk
 +    private final Map<String, HashCache.ProviderCache> originalCaches;
      private final Set<String> cachesToWrite = new HashSet<>();
      private final Set<Path> cachePaths = new HashSet<>();
      private final int initialCount;
-@@ -65,6 +_,7 @@
+@@ -65,6 +_,8 @@
          }
  
          this.caches = loadedCaches;
++        // Neo: retain the caches loaded from disk to compare to after provider execution
 +        this.originalCaches = Map.copyOf(this.caches);
          this.initialCount = initialCount;
      }

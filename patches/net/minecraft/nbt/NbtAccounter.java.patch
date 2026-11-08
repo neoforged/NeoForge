@@ -4,7 +4,7 @@
          this.depth--;
      }
  
-+    /// UTF8 is not a simple encoding system, each character can be either
++    /// Neo: UTF8 is not a simple encoding system, each character can be either
 +    /// 1, 2, or 3 bytes depending on where its numerical value falls.
 +    /// We have to count up each character individually to see the true
 +    /// length of the data.

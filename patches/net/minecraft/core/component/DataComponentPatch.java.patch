@@ -1,14 +1,15 @@
 --- a/net/minecraft/core/component/DataComponentPatch.java
 +++ b/net/minecraft/core/component/DataComponentPatch.java
-@@ -143,6 +_,23 @@
+@@ -143,6 +_,25 @@
          return new DataComponentPatch.Builder();
      }
  
++    /// Neo: {@return whether the given component type is modified by this patch}
 +    public boolean isPatched(DataComponentType<?> type) {
 +        return this.map.containsKey(type);
 +    }
 +
-+    /// {@return the patch stored for the given component type, null if no patch is stored}
++    /// Neo: {@return the patch stored for the given component type, null if no patch is stored}
 +    public <T> @Nullable T getPatch(DataComponentType<? extends T> type) {
 +        Object value = this.map.get(type);
 +        if (value == null) {
@@ -17,6 +18,7 @@
 +        return (T) Removed.removedToNull(value);
 +    }
 +
++    /// Neo: {@return the component types modified by this patch}
 +    public Set<DataComponentType<?>> keySet() {
 +        return this.map.keySet();
 +    }
