@@ -72,13 +72,10 @@
      }
  
      public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-@@ -259,6 +_,48 @@
+@@ -262,8 +_,51 @@
+     }
  
-     public BlockEntityType<?> getType() {
-         return this.type;
-+    }
-+
-+    @Override
+     @Override
 +    public CompoundTag getPersistentData() {
 +        if (this.customPersistentData == null)
 +            this.customPersistentData = new CompoundTag();
@@ -118,6 +115,13 @@
 +        var ret = attachmentTypesToSync;
 +        attachmentTypesToSync = null;
 +        return ret;
++    }
++
++    @Override
+     public Holder<BlockEntityType<?>> typeHolder() {
+-        return this.type.builtInRegistryHolder();
++        // Neo: Use the getter to allow easier overriding in mods
++        return this.getType().builtInRegistryHolder();
      }
  
-     @Override
+     @Deprecated
