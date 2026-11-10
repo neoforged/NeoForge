@@ -17,6 +17,8 @@ import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.PotionIngredient;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
@@ -170,8 +172,26 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
             container.setItem(index, item, true);
         }
 
+        /**
+         * Special cases because vanilla checks the current stack in the following functions (which it shouldn't):
+         * <ul>
+         * <li>{@link AbstractFurnaceBlockEntity#canPlaceItem(int, ItemStack)}.</li>
+         * <li>{@link BrewingStandBlockEntity#canPlaceItem(int, ItemStack)}.</li>
+         * </ul>
+         *
+         * <p>Should these extra checks cause performance issues, we can switch to subclasses.
+         */
         @Override
         protected boolean isValid(ItemResource resource) {
+            if (index == /* AbstractFurnaceBlockEntity.SLOT_FUEL */ 1 && resource.is(Items.BUCKET) && container instanceof AbstractFurnaceBlockEntity) {
+                return true;
+            }
+
+            if (index < 3 && container instanceof BrewingStandBlockEntity brewingStand) {
+                Level level = brewingStand.getLevel();
+                return level != null && PotionIngredient.isPotionInput(resource.toStack(), level.recipeAccess());
+            }
+
             return container.canPlaceItem(index, resource.toStack());
         }
 
