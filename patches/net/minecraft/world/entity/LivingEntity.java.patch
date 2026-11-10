@@ -189,16 +189,17 @@
          float health = this.getHealth();
          if (health > 0.0F) {
              this.setHealth(health + heal);
-@@ -1190,11 +_,18 @@
+@@ -1189,12 +_,19 @@
+         if (source.is(DamageTypeTags.IS_FIRE) && this.hasEffect(MobEffects.FIRE_RESISTANCE)) {
              return false;
          }
- 
++        if (damage < 0.0F) damage = 0.0F; // Neo: Avoid negative base damage due to entity-specific damage calculations like rolled-up Armadillos
 +        this.damageContainers.push(new net.neoforged.neoforge.common.damagesource.DamageContainer(source, damage));
 +        if (net.neoforged.neoforge.common.CommonHooks.onEntityIncomingDamage(this, this.damageContainers.peek())) {
 +            this.damageContainers.pop();
 +            return false;
 +        }
-+
+ 
          if (this.isSleeping()) {
              this.stopSleeping();
          }
