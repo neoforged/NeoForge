@@ -1,14 +1,11 @@
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -290,10 +_,17 @@
+@@ -290,10 +_,14 @@
      private final PacketProcessor packetProcessor;
      private final TimerQueue<MinecraftServer> scheduledEvents;
      private final ServerClockManager clockManager;
-+    private static final com.google.gson.Gson STATUS_GSON = new com.google.gson.Gson();
-+    /// Neo: cache the server status JSON in case a client spams requests
-+    @Nullable
-+    private String cachedServerStatus;
-+    private final Map<ResourceKey<Level>, long[]> perWorldTickTimes = Maps.newIdentityHashMap();
++    /// Neo: stores how much time each dimension took per tick over the last 100 ticks
++    private final Map<ResourceKey<Level>, long[]> perDimensionTickTimes = Maps.newIdentityHashMap();
 +    /// Neo: data attachments scoped to this server
 +    private final net.neoforged.neoforge.attachment.ServerSessionData sessionData;
  
@@ -70,7 +67,7 @@
                  } catch (IOException e) {
                      LOGGER.error("Exception closing the level", e);
                  }
-@@ -707,9 +_,11 @@
+@@ -707,6 +_,7 @@
                  throw new IllegalStateException("Failed to initialize server");
              }
  
@@ -78,10 +75,6 @@
              this.nextTickTimeNanos = Util.getNanos();
              this.statusIcon = this.loadStatusIcon().orElse(null);
              this.status = this.buildServerStatus();
-+            this.resetStatusCache(status);
- 
-             while (this.running) {
-                 long thisTickNanos;
 @@ -763,6 +_,9 @@
                  this.isReady = true;
                  JvmProfiler.INSTANCE.onServerTick(this.smoothedTickTimeMillis);
@@ -109,7 +102,7 @@
                  this.onServerExit();
              }
          }
-@@ -963,11 +_,13 @@
+@@ -963,6 +_,7 @@
          }
  
          this.tickCount++;
@@ -117,12 +110,6 @@
          this.tickRateManager.tick();
          this.tickChildren(haveTime);
          if (nano - this.lastServerStatus >= STATUS_EXPIRE_TIME_NANOS) {
-             this.lastServerStatus = nano;
-             this.status = this.buildServerStatus();
-+            this.resetStatusCache(status);
-         }
- 
-         this.ticksUntilAutosave--;
 @@ -985,6 +_,7 @@
          this.smoothedTickTimeMillis = this.smoothedTickTimeMillis * 0.8F + (float)tickTime / (float)TimeUtil.NANOSECONDS_PER_MILLISECOND * 0.19999999F;
          this.logTickMethodTime(nano);
@@ -141,10 +128,11 @@
          );
      }
  
-@@ -1092,8 +_,10 @@
+@@ -1092,8 +_,11 @@
          this.updateEffectiveRespawnData();
  
          for (ServerLevel level : this.getAllLevels()) {
++            // Neo: capture dimension tick start time for per-dimension tick time measurement
 +            long tickStart = Util.getNanos();
              profiler.push(() -> level + " " + level.dimension().identifier());
              profiler.push("tick");
@@ -152,7 +140,7 @@
  
              try {
                  level.tick(haveTime);
-@@ -1102,9 +_,11 @@
+@@ -1102,9 +_,12 @@
                  level.fillReportDetails(report);
                  throw new ReportedException(report);
              }
@@ -160,7 +148,8 @@
  
              profiler.pop();
              profiler.pop();
-+            this.perWorldTickTimes.computeIfAbsent(level.dimension(), _ -> new long[100])[this.tickCount % 100] = Util.getNanos() - tickStart;
++            // Neo: store the time this dimension took to tick
++            this.perDimensionTickTimes.computeIfAbsent(level.dimension(), _ -> new long[100])[this.tickCount % 100] = Util.getNanos() - tickStart;
          }
  
          profiler.popPush("connection");
@@ -260,7 +249,7 @@
      }
  
      @Deprecated
-@@ -2202,6 +_,29 @@
+@@ -2202,6 +_,27 @@
  
      public ServerDebugSubscribers debugSubscribers() {
          return this.debugSubscribers;
@@ -276,17 +265,15 @@
 +        return this.sessionData;
 +    }
 +
-+    public long @Nullable[] getTickTime(ResourceKey<Level> dim) {
-+        return this.perWorldTickTimes.get(dim);
++    /// Neo: {@return the tick time of the given dimension over the last 100 ticks}
++    public long @Nullable[] getTickTime(ResourceKey<Level> dimension) {
++        return this.perDimensionTickTimes.get(dimension);
 +    }
 +
-+    private void resetStatusCache(ServerStatus status) {
-+        this.cachedServerStatus = STATUS_GSON.toJson(ServerStatus.CODEC.encodeStart(com.mojang.serialization.JsonOps.INSTANCE, status)
-+                .result().orElseThrow());
-+    }
-+
++    /// @deprecated Neo: cached status is non-functional
++    @Deprecated(forRemoval = true)
 +    public @Nullable String getStatusJson() {
-+        return this.cachedServerStatus;
++        return null;
      }
  
      public enum MultiplayerScope {

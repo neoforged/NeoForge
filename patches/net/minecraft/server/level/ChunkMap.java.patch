@@ -60,11 +60,12 @@
                      output.add(chunk);
                  }
              }
-@@ -1137,7 +_,7 @@
+@@ -1137,7 +_,8 @@
      }
  
      protected void addEntity(Entity entity) {
 -        if (!(entity instanceof EnderDragonPart)) {
++        // Neo: add support for non-dragon multipart entities
 +        if (!(entity instanceof net.neoforged.neoforge.entity.PartEntity)) {
              EntityType<?> type = entity.getType();
              int range = type.clientTrackingRange() * 16;

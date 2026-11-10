@@ -1,11 +1,12 @@
 --- a/net/minecraft/util/Util.java
 +++ b/net/minecraft/util/Util.java
-@@ -318,8 +_,8 @@
+@@ -318,8 +_,9 @@
                  .getSchema(DataFixUtils.makeKey(SharedConstants.getCurrentVersion().dataVersion().version()))
                  .getChoiceType(reference, name);
          } catch (IllegalArgumentException e) {
 -            LOGGER.error("No data fixer registered for {}", name);
 -            if (SharedConstants.IS_RUNNING_IN_IDE) {
++            // Neo: silence datafixer errors for modded entity types
 +            LOGGER.debug("No data fixer registered for {}", name);
 +            if (SharedConstants.IS_RUNNING_IN_IDE && false) {
                  throw e;

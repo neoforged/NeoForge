@@ -5,7 +5,7 @@
          return manager.listResourceStacks(this.prefix, this.extensionSelector());
      }
 +
-+    /// List all resources under the given namespace which match this converter
++    /// Neo: List all resources under the given namespace which match this converter
 +    ///
 +    /// @param manager   The resource manager to collect the resources from
 +    /// @param namespace The namespace to search under
@@ -14,7 +14,7 @@
 +        return manager.listResources(this.prefix, path -> path.getNamespace().equals(namespace) && this.extensionMatches(path));
 +    }
 +
-+    /// List all resource stacks under the given namespace which match this converter
++    /// Neo: List all resource stacks under the given namespace which match this converter
 +    ///
 +    /// @param manager   The resource manager to collect the resources from
 +    /// @param namespace The namespace to search under

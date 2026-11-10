@@ -1,17 +1,19 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -507,18 +_,22 @@
+@@ -507,18 +_,24 @@
  
                  if (fail && level.noCollision(vehicle, oldAABB) || this.isEntityCollidingWithAnythingNew(level, vehicle, oldAABB, targetX, targetY, targetZ)) {
                      vehicle.absSnapTo(oldX, oldY, oldZ, targetYRot, targetXRot);
-+                    this.resyncPlayerWithVehicle(vehicle); // Neo - Resync player position on vehicle moving
++                    // Neo: resync player position on vehicle moving
++                    this.resyncPlayerWithVehicle(vehicle);
                      this.send(ClientboundMoveVehiclePacket.fromEntity(vehicle));
                      vehicle.removeLatestMovementRecording();
                      return;
                  }
  
                  vehicle.absSnapTo(targetX, targetY, targetZ, targetYRot, targetXRot);
-+                this.resyncPlayerWithVehicle(vehicle); // Neo - Resync player position on vehicle moving
++                // Neo: resync player position on vehicle moving
++                this.resyncPlayerWithVehicle(vehicle);
                  this.player.level().getChunkSource().move(this.player);
                  Vec3 clientDeltaMovement = new Vec3(vehicle.getX() - oldX, vehicle.getY() - oldY, vehicle.getZ() - oldZ);
                  this.handlePlayerKnownMovement(clientDeltaMovement);
@@ -23,10 +25,11 @@
                  this.clientVehicleIsFloating = oyDist >= -0.03125
                      && !vehicleRestsOnSomething
                      && !this.server.allowFlight()
-@@ -540,6 +_,23 @@
+@@ -540,6 +_,24 @@
          }
      }
  
++    /// Neo: resync the player with the given vehicle
 +    private void resyncPlayerWithVehicle(Entity vehicle) {
 +        Vec3 oldPos = this.player.position();
 +        float yRot = this.player.getYRot();
@@ -47,12 +50,13 @@
      private boolean noBlocksAround(Entity entity) {
          AABB box = entity.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0);
          return entity.level().findBlocksIn(box).filterState(BlockBehaviour.BlockStateBase::isAir).allMatched();
-@@ -716,7 +_,7 @@
+@@ -716,7 +_,8 @@
              if (level.isLoaded(pos)) {
                  BlockState blockState = level.getBlockState(pos);
                  boolean includeData = this.player.hasInfiniteMaterials() && packet.includeData();
 -                ItemStack itemStack = blockState.getCloneItemStack(level, pos, includeData);
-+                ItemStack itemStack = blockState.getCloneItemStack(pos, level, includeData, player);
++                // Neo: add player context
++                ItemStack itemStack = blockState.getCloneItemStack(pos, level, includeData, this.player);
                  if (!itemStack.isEmpty()) {
                      if (includeData) {
                          addBlockDataToItem(blockState, level, pos, itemStack);
@@ -61,7 +65,7 @@
                          && !this.player.isSpectator()
                          && !this.server.allowFlight()
 -                        && !this.player.getAbilities().mayfly
-+                        && !this.player.mayFly()
++                        && !this.player.mayFly() // Neo: check creative flight attribute
                          && !this.player.hasEffect(MobEffects.LEVITATION)
                          && !isFallFlying
                          && !isAutoSpinAttack
@@ -120,11 +124,12 @@
                      PlayerChatMessage filteredMessage = signedMessage.withUnsignedContent(decorated).filter(filtered.mask());
                      this.broadcastChatMessage(filteredMessage);
                  });
-@@ -2140,14 +_,16 @@
+@@ -2140,14 +_,17 @@
      @Override
      public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
 -        this.player.getAbilities().flying = packet.isFlying() && this.player.getAbilities().mayfly;
++        // Neo: check creative flight attribute
 +        this.player.getAbilities().flying = packet.isFlying() && this.player.mayFly();
      }
  
@@ -138,11 +143,12 @@
          if (this.player.isModelPartShown(PlayerModelPart.HAT) != wasHatShown) {
              this.server.getPlayerList().broadcastAll(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_HAT, this.player));
          }
-@@ -2224,7 +_,7 @@
+@@ -2224,7 +_,8 @@
          this.connection
              .setupInboundProtocol(
                  ConfigurationProtocols.SERVERBOUND,
 -                new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation()))
++                // Neo: retain connection type over protocol changes
 +                new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation(), this.connectionType))
              );
      }

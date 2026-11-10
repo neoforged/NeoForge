@@ -10,7 +10,7 @@
 +        for (int i = 0; i <= 2; ++i) {
 +            stack.push(AdvancementVisibilityEvaluator.VisibilityRule.NO_CHANGE);
 +        }
-+        return evaluateVisibility(advancement.root(), stack, test, (adv, visible) -> {});
++        return evaluateVisibility(advancement.root(), stack, test, (_, _) -> {});
 +    }
 +
      @FunctionalInterface

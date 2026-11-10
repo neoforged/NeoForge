@@ -1,10 +1,11 @@
 --- a/net/minecraft/util/ExtraCodecs.java
 +++ b/net/minecraft/util/ExtraCodecs.java
-@@ -483,7 +_,7 @@
+@@ -483,7 +_,8 @@
  
      public static <T> Codec<HolderSet<T>> nonEmptyHolderSet(Codec<HolderSet<T>> listCodec) {
          return listCodec.validate(
 -            list -> list.unwrap().right().filter(List::isEmpty).isPresent() ? DataResult.error(() -> "List must have contents") : DataResult.success(list)
++            // Neo: only test holdersets which are resolvable before tags are loaded
 +            list -> list.isImmediatelyResolvable() && list.unwrap().right().filter(List::isEmpty).isPresent() ? DataResult.error(() -> "List must have contents") : DataResult.success(list)
          );
      }

@@ -1,9 +1,10 @@
 --- a/net/minecraft/resources/RegistryOps.java
 +++ b/net/minecraft/resources/RegistryOps.java
-@@ -34,6 +_,11 @@
+@@ -34,6 +_,12 @@
          this.lookupProvider = lookupProvider;
      }
  
++    /// Neo: add copy constructor for wrapping an incoming [RegistryOps] in a custom subclass
 +    protected RegistryOps(RegistryOps<T> other) {
 +        super(other);
 +        this.lookupProvider = other.lookupProvider;
@@ -38,18 +39,19 @@
      public static <E, O> RecordCodecBuilder<O, Holder.Reference<E>> retrieveElement(ResourceKey<E> key) {
          ResourceKey<? extends Registry<E>> registryKey = ResourceKey.createRegistryKey(key.registry());
          return ExtraCodecs.retrieveContext(
-@@ -99,6 +_,11 @@
+@@ -98,6 +_,12 @@
+             return (Optional<HolderGetter<E>>)this.lookups.computeIfAbsent(registryKey, this.lookupProvider::lookup);
          }
  
-         @Override
++        /// Neo: Returns the registry backing the [HolderGetter] returned by [#lookup(ResourceKey)], if available.
++        @Override
 +        public <E> Optional<HolderLookup<E>> fullLookup(ResourceKey<? extends Registry<? extends E>> registryKey) {
 +            return (Optional<HolderLookup<E>>)this.lookups.computeIfAbsent(registryKey, this.lookupProvider::lookup);
 +        }
 +
-+        @Override
+         @Override
          public boolean equals(Object obj) {
              return this == obj ? true : obj instanceof RegistryOps.HolderLookupAdapter adapter && this.lookupProvider.equals(adapter.lookupProvider);
-         }
 @@ -111,5 +_,12 @@
  
      public interface RegistryInfoLookup {

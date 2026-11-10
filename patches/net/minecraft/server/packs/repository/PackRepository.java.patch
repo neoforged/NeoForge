@@ -41,30 +41,33 @@
              }
          }
  
-@@ -96,7 +_,7 @@
+@@ -96,7 +_,8 @@
      }
  
      public Collection<String> getAvailableIds() {
 -        return this.available.keySet();
++        // Neo: exclude hidden packs
 +        return this.available.values().stream().filter(p -> !p.isHidden()).map(Pack::getId).collect(ImmutableSet.toImmutableSet());
      }
  
      public Collection<Pack> getAvailablePacks() {
-@@ -104,7 +_,7 @@
+@@ -104,7 +_,8 @@
      }
  
      public Collection<String> getSelectedIds() {
 -        return this.selected.stream().map(Pack::getId).collect(ImmutableSet.toImmutableSet());
++        // Neo: exclude hidden packs
 +        return this.selected.stream().filter(p -> !p.isHidden()).map(Pack::getId).collect(ImmutableSet.toImmutableSet());
      }
  
      public FeatureFlagSet getRequestedFeatureFlags() {
-@@ -125,5 +_,9 @@
+@@ -125,5 +_,10 @@
  
      public List<PackResources> openAllSelected() {
          return this.selected.stream().flatMap(Pack::open).collect(ImmutableList.toImmutableList());
 +    }
 +
++    /// Neo: add the given source to this repository
 +    public synchronized void addPackFinder(RepositorySource packFinder) {
 +        this.sources.add(packFinder);
      }

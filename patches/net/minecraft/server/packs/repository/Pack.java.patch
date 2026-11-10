@@ -20,22 +20,23 @@
  
      public static @Nullable Pack readMetaAndCreate(
          PackLocationInfo location, Pack.ResourcesSupplier resources, PackType packType, PackSelectionConfig selectionConfig
-@@ -36,6 +_,34 @@
+@@ -36,6 +_,35 @@
      }
  
      public Pack(PackLocationInfo location, Pack.ResourcesSupplier resources, Pack.Metadata metadata, PackSelectionConfig selectionConfig) {
 +        this(location, resources, metadata, selectionConfig, List.of());
 +    }
 +
++    /// Neo: internal constructor for handling hidden packs
 +    private Pack(PackLocationInfo location, Pack.ResourcesSupplier resources, Pack.Metadata metadata, PackSelectionConfig selectionConfig, List<Pack> children) {
 +        List<Pack> flattenedChildren = new java.util.ArrayList<>();
 +        List<Pack> remainingChildren = children;
-+        // recursively flatten children
++        // Neo: recursively flatten children
 +        while (!remainingChildren.isEmpty()) {
 +            List<Pack> oldChildren = remainingChildren;
 +            remainingChildren = new java.util.ArrayList<>();
 +            for (Pack child : oldChildren) {
-+                // Adapts the child pack with the following changes:
++                // Neo: adapts the child pack with the following changes:
 +                // - Must be hidden
 +                // - Must have no children
 +                // - Has a pack source of CHILD_SOURCE, which is not automatically added
@@ -72,18 +73,21 @@
              }
          } catch (Exception e) {
              LOGGER.warn("Failed to read pack {} metadata", location.id(), e);
-@@ -127,6 +_,34 @@
+@@ -127,6 +_,37 @@
          return this.location.source();
      }
  
++    /// Neo: {@return whether this pack is hidden}
 +    public boolean isHidden() {
 +        return this.hidden;
 +    }
 +
++    /// Neo: {@return the child packs of this pack}
 +    public List<Pack> getChildren() {
 +        return this.children;
 +    }
 +
++    /// Neo: {@return a stream of this pack and its children}
 +    public java.util.stream.Stream<Pack> streamSelfAndChildren() {
 +        return java.util.stream.Stream.concat(java.util.stream.Stream.of(this), this.children.stream());
 +    }

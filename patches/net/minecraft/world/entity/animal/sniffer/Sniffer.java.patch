@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/entity/animal/sniffer/Sniffer.java
 +++ b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
-@@ -306,7 +_,7 @@
+@@ -306,7 +_,8 @@
                  }
  
                  if (this.tickCount % 10 == 0) {
 -                    this.level().playLocalSound(this, stateBelow.getSoundType().getHitSound(), this.getSoundSource(), 0.5F, 0.5F);
++                    // Neo: use level-sensitive sound type getter
 +                    this.level().playLocalSound(this, stateBelow.getSoundType(this.level(), head.below(), this).getHitSound(), this.getSoundSource(), 0.5F, 0.5F);
                  }
              }

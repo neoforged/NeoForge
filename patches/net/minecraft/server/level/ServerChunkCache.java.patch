@@ -1,10 +1,11 @@
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -99,7 +_,7 @@
+@@ -99,7 +_,8 @@
              LOGGER.error("Failed to create dimension data storage directory", e);
          }
  
 -        this.savedDataStorage = new SavedDataStorage(dataFolder, fixerUpper, level.registryAccess());
++        // Neo: add level context to saved data
 +        this.savedDataStorage = new SavedDataStorage(level, dataFolder, fixerUpper, level.registryAccess());
          this.ticketStorage = this.savedDataStorage.computeIfAbsent(TicketStorage.TYPE);
          this.chunkMap = new ChunkMap(

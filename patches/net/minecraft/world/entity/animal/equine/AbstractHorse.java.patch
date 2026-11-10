@@ -1,13 +1,15 @@
 --- a/net/minecraft/world/entity/animal/equine/AbstractHorse.java
 +++ b/net/minecraft/world/entity/animal/equine/AbstractHorse.java
-@@ -343,9 +_,9 @@
+@@ -343,9 +_,11 @@
      protected void playStepSound(BlockPos pos, BlockState blockState) {
          if (!blockState.liquid()) {
              BlockState aboveState = this.level().getBlockState(pos.above());
 -            SoundType soundType = blockState.getSoundType();
++            // Neo: use level-sensitive sound type getter
 +            SoundType soundType = blockState.getSoundType(this.level(), pos, this);
              if (aboveState.is(Blocks.SNOW)) {
 -                soundType = aboveState.getSoundType();
++                // Neo: use level-sensitive sound type getter
 +                soundType = aboveState.getSoundType(this.level(), pos, this);
              }
  
@@ -20,15 +22,15 @@
          if (input.z > 0.0) {
              float sin = Mth.sin(this.getYRot() * (float) (Math.PI / 180.0));
              float cos = Mth.cos(this.getYRot() * (float) (Math.PI / 180.0));
-@@ -1023,6 +_,11 @@
+@@ -1041,6 +_,11 @@
  
-         this.randomizeAttributes(level.getRandom());
-         return super.finalizeSpawn(level, difficulty, spawnReason, groupData);
+     public int getInventoryColumns() {
+         return 0;
 +    }
 +
-+    // Neo: Inventory getter
++    /// Neo: {@return the horse inventory}
 +    public net.minecraft.world.Container getInventory() {
 +        return this.inventory;
      }
  
-     public boolean hasInventoryChanged(Container oldInventory) {
+     private class MountPanicGoal extends PanicGoal {

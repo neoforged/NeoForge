@@ -45,13 +45,11 @@
      public static MinecraftApi of(NotificationManager notificationManager) {
          JsonRpcLogger jsonrpcLogger = new JsonRpcLogger();
          MinecraftAllowListServiceImpl allowListService = new MinecraftAllowListServiceImpl(notificationManager, jsonrpcLogger);
-@@ -99,7 +_,8 @@
-             operatorListService,
+@@ -100,6 +_,7 @@
              serverSettingsService,
              serverStateService,
--            executorService
-+            executorService,
-+            jsonrpcLogger
+             executorService
++            , jsonrpcLogger // Neo: capture logger
          );
      }
  }

@@ -1,12 +1,13 @@
 --- a/net/minecraft/server/packs/AbstractPackMetadataResources.java
 +++ b/net/minecraft/server/packs/AbstractPackMetadataResources.java
-@@ -39,4 +_,9 @@
+@@ -39,4 +_,10 @@
      public PackLocationInfo location() {
          return this.location;
      }
 +
 +    @Override
 +    public String toString() {
++        // Neo: print pack type and ID
 +        return String.format(java.util.Locale.ROOT, "%s: %s", this.getClass().getName(), this.location.id());
 +    }
  }

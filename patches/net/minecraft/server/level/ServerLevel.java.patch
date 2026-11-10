@@ -78,11 +78,12 @@
          if (isActive) {
              this.resetEmptyTime();
          }
-@@ -448,7 +_,9 @@
+@@ -448,7 +_,10 @@
                                      }
  
                                      profiler.push("tick");
 -                                    this.guardEntityTick(this::tickNonPassenger, entity);
++                                    // Neo: only tick non-removed, non-part entity
 +                                    if (!entity.isRemoved() && !(entity instanceof net.neoforged.neoforge.entity.PartEntity)) {
 +                                        this.guardEntityTick(this::tickNonPassenger, entity);
 +                                    }
@@ -209,11 +210,13 @@
          this.server
              .getPlayerList()
              .broadcast(
-@@ -1117,6 +_,7 @@
+@@ -1117,6 +_,9 @@
  
      @Override
      public void gameEvent(Holder<GameEvent> gameEvent, Vec3 position, GameEvent.Context context) {
-+        if (net.neoforged.neoforge.common.CommonHooks.onVanillaGameEvent(this, gameEvent, position, context))
++        if (!net.neoforged.neoforge.common.CommonHooks.onVanillaGameEvent(this, gameEvent, position, context)) {
++            return;
++        }
          this.gameEventDispatcher.post(gameEvent, position, context);
      }
  
@@ -272,28 +275,30 @@
      @Override
      public long getSeed() {
 -        return this.server.getWorldGenSettings().options().seed();
-+        // NeoForge: use seed override if present, otherwise default to vanilla global seed
++        // Neo: use seed override if present, otherwise default to vanilla global seed
 +        return this.getSeedOverride().orElseGet(() -> this.server.getWorldGenSettings().options().seed());
      }
  
      public @Nullable EnderDragonFight getDragonFight() {
-@@ -2011,8 +_,8 @@
+@@ -2011,8 +_,9 @@
                  ServerLevel.this.navigatingMobs.add(mob);
              }
  
 -            if (entity instanceof EnderDragon dragon) {
 -                for (EnderDragonPart subEntity : dragon.getSubEntities()) {
++            // Neo: support non-dragon multipart entities
 +            if (entity.isMultipartEntity()) {
 +                for (net.neoforged.neoforge.entity.PartEntity<?> subEntity : entity.getParts()) {
                      ServerLevel.this.dragonParts.put(subEntity.getId(), subEntity);
                  }
              }
-@@ -2039,18 +_,55 @@
+@@ -2039,18 +_,56 @@
                  ServerLevel.this.navigatingMobs.remove(mob);
              }
  
 -            if (entity instanceof EnderDragon dragon) {
 -                for (EnderDragonPart subEntity : dragon.getSubEntities()) {
++            // Neo: support non-dragon multipart entities
 +            if (entity.isMultipartEntity()) {
 +                for (net.neoforged.neoforge.entity.PartEntity<?> subEntity : entity.getParts()) {
                      ServerLevel.this.dragonParts.remove(subEntity.getId());

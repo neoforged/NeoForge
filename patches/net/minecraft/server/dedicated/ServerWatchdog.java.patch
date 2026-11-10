@@ -15,13 +15,14 @@
                  this.server.fillSystemReport(report.getSystemReport());
                  CrashReportCategory serverStats = report.addCategory("Performance stats");
                  serverStats.setDetail("Random tick rate", () -> this.server.getGameRules().getAsString(GameRules.RANDOM_TICK_SPEED));
-@@ -77,10 +_,14 @@
+@@ -77,10 +_,15 @@
      }
  
      public static CrashReport createWatchdogCrashReport(String message, long mainThreadId) {
 +        return createWatchdogCrashReport(message, mainThreadId, "Watchdog");
 +    }
 +
++    /// Neo: add additional context
 +    public static CrashReport createWatchdogCrashReport(String message, long mainThreadId, String messageSource) {
          ThreadInfo[] threadInfos = Util.dumpThreadInfo();
          Arrays.sort(threadInfos, THREAD_INFO_COMPARATOR);

@@ -4,7 +4,7 @@
      private final Path dataFolder;
      private CompletableFuture<?> pendingWriteFuture = CompletableFuture.completedFuture(null);
      private boolean closed;
-+    // Neo: Needed to make level context available to modded saved data
++    /// Neo: Needed to make level context available to modded saved data
 +    private final net.minecraft.server.level.@org.jspecify.annotations.Nullable ServerLevel level;
  
 +    /// @deprecated Neo: Use [#SavedDataStorage(net.minecraft.server.level.ServerLevel, Path, DataFixer, HolderLookup.Provider)] instead

@@ -1,7 +1,7 @@
 --- a/net/minecraft/tags/TagEntry.java
 +++ b/net/minecraft/tags/TagEntry.java
-@@ -40,6 +_,13 @@
-         return new ExtraCodecs.TagOrElementLocation(this.id, this.tag);
+@@ -107,6 +_,28 @@
+         return result.toString();
      }
  
 +    /// Neo: {@return a copy of this entry with the required flag set to the given parameter}
@@ -11,26 +11,21 @@
 +        return new TagEntry(this.id, this.tag, required);
 +    }
 +
-     public static TagEntry element(Identifier id) {
-         return new TagEntry(id, false, true);
-     }
-@@ -105,6 +_,19 @@
-         }
- 
-         return result.toString();
-+    }
-+
-+    // Neo: Used in datagen
++    /// Neo: {@return the ID of the tag or element referenced by this entry}
 +    public Identifier getId() {
 +        return this.id;
 +    }
 +
++    /// Neo: {@return whether this tag entry is required}
 +    public boolean isRequired() {
 +        return this.required;
 +    }
 +
++    /// Neo: {@return `true` if this entry is contains a tag or `false` if it's contains an element}
 +    public boolean isTag() {
 +        return this.tag;
-     }
- 
++    }
++
      public interface Lookup<T> {
+         @Nullable T element(Identifier key, boolean required);
+ 

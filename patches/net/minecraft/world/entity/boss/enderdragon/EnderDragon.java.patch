@@ -1,9 +1,10 @@
 --- a/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
 +++ b/net/minecraft/world/entity/boss/enderdragon/EnderDragon.java
-@@ -87,6 +_,7 @@
+@@ -87,6 +_,8 @@
      private final Node[] nodes = new Node[24];
      private final int[] nodeAdjacency = new int[24];
      private final BinaryHeap openSet = new BinaryHeap();
++    /// Neo: indefinitely holds the last attacking player for LivingExperienceDropEvent
 +    private net.minecraft.world.entity.@Nullable EntityReference<Player> unlimitedLastHurtByPlayer = null;
  
      public EnderDragon(EntityType<? extends EnderDragon> type, Level level) {
@@ -12,7 +13,7 @@
  
      @Override
      public void aiStep() {
-+        // lastHurtByPlayer is cleared after 100 ticks, capture it indefinitely in unlimitedLastHurtByPlayer for LivingExperienceDropEvent
++        // Neo: lastHurtByPlayer is cleared after 100 ticks, capture it indefinitely in unlimitedLastHurtByPlayer for LivingExperienceDropEvent
 +        if (this.lastHurtByPlayer != null) {
 +            this.unlimitedLastHurtByPlayer = lastHurtByPlayer;
 +        }
@@ -55,20 +56,21 @@
              }
  
              if (this.dragonFight != null) {
-@@ -865,6 +_,16 @@
+@@ -890,5 +_,17 @@
      @Override
-     public boolean canUsePortal(boolean ignorePassenger) {
-         return false;
+     public MoveSimulationType getMoveSimulationType() {
+         return this.isDeadOrDying() ? MoveSimulationType.SERVER_AND_CLIENT : super.getMoveSimulationType();
 +    }
 +
++    /// Neo: {@return that this is a multipart entity}
 +    @Override
 +    public boolean isMultipartEntity() {
 +        return true;
 +    }
 +
++    /// Neo: {@return the part entities}
 +    @Override
 +    public net.neoforged.neoforge.entity.PartEntity<?>[] getParts() {
 +        return this.subEntities;
      }
- 
-     @Override
+ }

@@ -1,9 +1,10 @@
 --- a/net/minecraft/resources/ResourceKey.java
 +++ b/net/minecraft/resources/ResourceKey.java
-@@ -75,6 +_,15 @@
+@@ -75,6 +_,16 @@
          return createRegistryKey(this.registryName);
      }
  
++    /// Neo: make resource keys comparable
 +    @Override
 +    public int compareTo(ResourceKey<?> o) {
 +        int ret = this.registry().compareTo(o.registry());

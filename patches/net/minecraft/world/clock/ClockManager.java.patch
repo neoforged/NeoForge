@@ -1,9 +1,10 @@
 --- a/net/minecraft/world/clock/ClockManager.java
 +++ b/net/minecraft/world/clock/ClockManager.java
-@@ -4,4 +_,6 @@
+@@ -4,4 +_,7 @@
  
  public interface ClockManager {
      ClockInstance getInstance(Holder<WorldClock> definition);
 +
++    /// Neo: set the rate of the given clock
 +    default void setRate(Holder<WorldClock> definition, float rate) {}
  }

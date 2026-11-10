@@ -1,11 +1,12 @@
 --- a/net/minecraft/world/entity/ai/behavior/WorkAtComposter.java
 +++ b/net/minecraft/world/entity/ai/behavior/WorkAtComposter.java
-@@ -40,18 +_,18 @@
+@@ -40,18 +_,19 @@
  
          int totalItemsToUse = 20;
          int minStackSize = 10;
 -        int[] itemsSeenSoFar = new int[COMPOSTABLE_ITEMS.size()];
-+        it.unimi.dsi.fastutil.objects.Reference2IntMap<Item> amounts = new it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap<>(COMPOSTABLE_ITEMS.size() * 2); // Neo: let's assume that there's roughly twice more villager compostables than in vanilla
++        // Neo: let's assume that there's roughly twice as many villager compostables as in vanilla
++        it.unimi.dsi.fastutil.objects.Reference2IntMap<Item> amounts = new it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap<>(COMPOSTABLE_ITEMS.size() * 2);
          SimpleContainer inventory = body.getInventory();
          int containerSize = inventory.getContainerSize();
          BlockState tempState = blockState;

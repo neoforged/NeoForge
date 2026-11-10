@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/packs/resources/SimpleJsonResourceReloadListener.java
 +++ b/net/minecraft/server/packs/resources/SimpleJsonResourceReloadListener.java
-@@ -36,13 +_,21 @@
+@@ -36,13 +_,22 @@
      protected Map<Identifier, T> prepare(ResourceManager manager, ProfilerFiller profiler) {
          Map<Identifier, T> result = new HashMap<>();
  
@@ -9,6 +9,7 @@
 +        return scanDirectory(manager, this.lister, conditionalOps, this.codec, result);
 +    }
 +
++    /// Neo: extract directory scanning from [#prepare] for use by reload listeners which don't extend this class
 +    public static <T> Map<Identifier, T> scanDirectory(ResourceManager manager, FileToIdConverter lister, DynamicOps<JsonElement> ops, Codec<T> codec, Map<Identifier, T> result) {
 +        var conditionalCodec = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(codec);
 +        for (Entry<Identifier, Resource> entry : lister.listMatchingResources(manager).entrySet()) {
@@ -26,13 +27,14 @@
                          throw new IllegalStateException("Duplicate data file ignored with ID " + id);
                      }
                  }).ifError(error -> LOGGER.error("Couldn't parse data file '{}' from '{}': {}", id, location, error));
-@@ -52,5 +_,9 @@
+@@ -52,5 +_,10 @@
          }
  
          return result;
 +    }
 +
-+    protected Identifier getPreparedPath(Identifier rl) {
-+        return this.lister.idToFile(rl);
++    /// Neo: {@return the file path of the given ID}
++    protected Identifier getPreparedPath(Identifier id) {
++        return this.lister.idToFile(id);
      }
  }

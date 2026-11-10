@@ -1,12 +1,14 @@
 --- a/net/minecraft/world/entity/EntityEquipment.java
 +++ b/net/minecraft/world/entity/EntityEquipment.java
-@@ -64,6 +_,9 @@
+@@ -64,6 +_,11 @@
          for (ItemStack item : this.items.values()) {
              ItemEntity drop = dropper.createItemStackToDrop(item, true, false);
              if (drop != null) {
++                // Neo: capture drops if requested
 +                if (dropper.captureDrops() != null) {
 +                    dropper.captureDrops().add(drop);
-+                } else
++                    continue;
++                }
                  dropper.level().addFreshEntity(drop);
              }
          }

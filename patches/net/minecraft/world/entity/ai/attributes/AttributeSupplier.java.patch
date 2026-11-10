@@ -1,25 +1,30 @@
 --- a/net/minecraft/world/entity/ai/attributes/AttributeSupplier.java
 +++ b/net/minecraft/world/entity/ai/attributes/AttributeSupplier.java
-@@ -65,8 +_,24 @@
+@@ -65,8 +_,29 @@
      }
  
      public static class Builder {
 -        private final ImmutableMap.Builder<Holder<Attribute>, AttributeInstance> builder = ImmutableMap.builder();
++        // Neo: switch to plain map to support presence checks and combining
 +        private final Map<Holder<Attribute>, AttributeInstance> builder = new java.util.HashMap<>();
          private boolean instanceFrozen;
++        /// Neo: holds the builder which were combined with this builder
 +        private final java.util.List<AttributeSupplier.Builder> others = new java.util.ArrayList<>();
 +
 +        public Builder() {}
 +
++        /// Neo: create a builder from an existing attribute supplier
 +        public Builder(AttributeSupplier attributeMap) {
 +            this.builder.putAll(attributeMap.instances);
 +        }
 +
++        /// Neo: combine this builder with the given one
 +        public void combine(Builder other) {
 +            this.builder.putAll(other.builder);
 +            this.others.add(other);
 +        }
 +
++        /// Neo: {@return whether this builder has the given attribute}
 +        public boolean hasAttribute(Holder<Attribute> attribute) {
 +            return this.builder.containsKey(attribute);
 +        }

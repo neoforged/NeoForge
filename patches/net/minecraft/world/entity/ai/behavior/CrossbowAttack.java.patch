@@ -1,28 +1,31 @@
 --- a/net/minecraft/world/entity/ai/behavior/CrossbowAttack.java
 +++ b/net/minecraft/world/entity/ai/behavior/CrossbowAttack.java
-@@ -25,7 +_,7 @@
+@@ -25,7 +_,8 @@
  
      protected boolean checkExtraStartConditions(ServerLevel level, E body) {
          LivingEntity attackTarget = getAttackTarget(body);
 -        return body.isHolding(Items.CROSSBOW) && BehaviorUtils.canSee(body, attackTarget) && BehaviorUtils.isWithinAttackRange(body, attackTarget, 0);
++        // Neo: add support for modded crossbows
 +        return body.isHolding(is -> is.getItem() instanceof CrossbowItem) && BehaviorUtils.canSee(body, attackTarget) && BehaviorUtils.isWithinAttackRange(body, attackTarget, 0);
      }
  
      protected boolean canStillUse(ServerLevel level, E body, long timestamp) {
-@@ -43,7 +_,7 @@
+@@ -43,7 +_,8 @@
              body.stopUsingItem();
          }
  
 -        if (body.isHolding(Items.CROSSBOW)) {
++        // Neo: add support for modded crossbows
 +        if (body.isHolding(is -> is.getItem() instanceof CrossbowItem)) {
              body.setChargingCrossbow(false);
              body.getUseItem().set(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.EMPTY);
          }
-@@ -51,7 +_,7 @@
+@@ -51,7 +_,8 @@
  
      private void crossbowAttack(E body, LivingEntity target) {
          if (this.crossbowState == CrossbowAttack.CrossbowState.UNCHARGED) {
 -            body.startUsingItem(ProjectileUtil.getWeaponHoldingHand(body, Items.CROSSBOW));
++            // Neo: add support for modded crossbows
 +            body.startUsingItem(ProjectileUtil.getWeaponHoldingHand(body, item -> item instanceof CrossbowItem));
              this.crossbowState = CrossbowAttack.CrossbowState.CHARGING;
              body.setChargingCrossbow(true);

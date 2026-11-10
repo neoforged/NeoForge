@@ -1,18 +1,20 @@
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -130,6 +_,7 @@
+@@ -130,6 +_,8 @@
      private int viewDistance;
      private int simulationDistance;
      private int sendAllPlayerInfoIn;
++    /// Neo: holds an unmodifiable view of the players
 +    private final List<ServerPlayer> playersView = java.util.Collections.unmodifiableList(this.players);
  
      public PlayerList(
          MinecraftServer server, LayeredRegistryAccess<RegistryLayer> registries, PlayerDataStorage playerIo, NotificationService notificationService
-@@ -163,7 +_,7 @@
+@@ -163,7 +_,8 @@
          LevelData levelData = level.getLevelData();
          ServerGamePacketListenerImpl playerConnection = new ServerGamePacketListenerImpl(this.server, connection, player, cookie);
          connection.setupInboundProtocol(
 -            GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess()), playerConnection), playerConnection
++            // Neo: retain connection type over protocol switches
 +            GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess(), playerConnection.getConnectionType()), playerConnection), playerConnection
          );
          playerConnection.suspendFlushing();
@@ -41,10 +43,11 @@
      }
  
      protected void updateEntireScoreboard(ServerScoreboard scoreboard, ServerPlayer player) {
-@@ -293,6 +_,9 @@
+@@ -293,6 +_,10 @@
      }
  
      protected void save(ServerPlayer player) {
++        // Neo: don't save if the player is disconnected early during join
 +        if (player.connection == null) {
 +            return;
 +        }
@@ -131,12 +134,13 @@
          UUID uuid = player.getUUID();
          PlayerAdvancements result = this.advancements.get(uuid);
          if (result == null) {
-@@ -821,7 +_,7 @@
+@@ -821,7 +_,8 @@
      }
  
      public List<ServerPlayer> getPlayers() {
 -        return this.players;
-+        return this.playersView; // Neo: Return an unmodifiable view, we don't want people removing things without us knowing.
++        // Neo: Return an unmodifiable view, we don't want people removing things without us knowing.
++        return this.playersView;
      }
  
      public Map<UUID, ServerPlayer> getPlayersByUUID() {
@@ -148,7 +152,7 @@
          this.broadcastAll(new ClientboundUpdateTagsPacket(TagNetworkSerialization.serializeTagsToNetwork(this.registries)));
          RecipeManager recipeManager = this.server.getRecipeManager();
          ClientboundUpdateRecipesPacket recipes = new ClientboundUpdateRecipesPacket(
-@@ -860,6 +_,11 @@
+@@ -860,6 +_,12 @@
          for (ServerPlayer player : this.players) {
              player.connection.send(recipes);
              player.getRecipeBook().sendInitialRecipeBook(player);
@@ -156,6 +160,7 @@
          }
 +    }
 +
++    /// Neo: {@return the player data storage}
 +    public PlayerDataStorage getPlayerIo() {
 +        return this.playerIo;
      }

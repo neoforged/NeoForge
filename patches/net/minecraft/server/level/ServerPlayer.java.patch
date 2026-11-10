@@ -11,11 +11,12 @@
              ServerPlayer.this.connection.send(new ClientboundContainerSetDataPacket(container.containerId, id, value));
          }
  
-@@ -367,10 +_,23 @@
+@@ -367,10 +_,26 @@
          public void sendSystemMessage(Component message) {
              ServerPlayer.this.sendSystemMessage(message);
          }
 +
++        /// Neo: {@return the game profile of the player owning this command source}
 +        @Override
 +        public Optional<GameProfile> getGameProfile() {
 +            return Optional.of(ServerPlayer.this.getGameProfile());
@@ -24,11 +25,13 @@
      private Set<DebugSubscription<?>> requestedDebugSubscriptions = Set.of();
      private int containerCounter;
      public boolean wonGame;
-+    // Neo: Used to track partial TIME_SINCE_REST increases for dimensions in which clocks move at different speeds. No need to persist, at most Phantoms will spawn one tick too early for each save/load cycle.
++    /// Neo: Used to track partial TIME_SINCE_REST increases for dimensions in which clocks move at different speeds. No need to persist, at most Phantoms will spawn one tick too early for each save/load cycle.
 +    private float partialTimeSinceRestTick;
++    /// Neo: holds the player list header shown to this player
 +    private Component tabListHeader = Component.empty();
++    /// Neo: holds the player list footer shown to this player
 +    private Component tabListFooter = Component.empty();
-+    // We need this as tabListDisplayName may be null even if the event was fired.
++    /// Neo: we need this as tabListDisplayName may be null even if the event was fired.
 +    private boolean hasTabListName = false;
 +    @Nullable
 +    private Component tabListDisplayName = null;
@@ -48,9 +51,9 @@
 +                    } else {
 +                        float speed = level().clockManager().getInstance(defaultClock.get()).rate();
 +                        int fullTicks = (int) speed;
-+                        partialTimeSinceRestTick += speed;
-+                        if (partialTimeSinceRestTick >= 1) {
-+                            partialTimeSinceRestTick = 0;
++                        this.partialTimeSinceRestTick += speed;
++                        if (this.partialTimeSinceRestTick >= 1) {
++                            this.partialTimeSinceRestTick = 0;
 +                            fullTicks++;
 +                        }
 +
@@ -59,14 +62,15 @@
 +                        }
 +                    }
 +                } else {
-+                    partialTimeSinceRestTick = 0;
++                    this.partialTimeSinceRestTick = 0;
                  }
              }
  
-@@ -730,6 +_,11 @@
+@@ -730,6 +_,12 @@
                  this.connection.send(new ClientboundSetExperiencePacket(this.experienceProgress, this.totalExperience, this.experienceLevel));
              }
  
++            // Neo: disable creative flight if it's no longer allowed by Abilities#mayfly or the attribute
 +            if (this.getAbilities().flying && !this.mayFly()) {
 +                this.getAbilities().flying = false;
 +                this.onUpdateAbilities();
@@ -75,11 +79,12 @@
              if (this.tickCount % 20 == 0) {
                  CriteriaTriggers.LOCATION.trigger(this);
              }
-@@ -743,7 +_,7 @@
+@@ -743,7 +_,8 @@
  
      private void synchronizeSpecialItemUpdates(ItemStack itemStack) {
          MapId mapId = itemStack.get(DataComponents.MAP_ID);
 -        MapItemSavedData data = MapItem.getSavedData(mapId, this.level());
++        // Neo: give items control over the source of the map data
 +        MapItemSavedData data = MapItem.getSavedData(itemStack, this.level());
          if (data != null) {
              Packet<?> packet = data.getUpdatePacket(mapId, this);
@@ -188,7 +193,7 @@
      }
  
      @Override
-@@ -1384,12 +_,21 @@
+@@ -1384,11 +_,20 @@
  
      @Override
      public OptionalInt openMenu(@Nullable MenuProvider provider) {
@@ -202,37 +207,34 @@
          }
  
          if (this.containerMenu != this.inventoryMenu) {
-+            if (provider.shouldTriggerClientSideContainerClosingOnOpen()) {
-             this.closeContainer();
-+            } else {
++            // Neo: allow replacing the open menu/screen without re-centering the cursor
++            if (!provider.shouldTriggerClientSideContainerClosingOnOpen()) {
 +                this.doCloseContainer();
-+            }
++            } else
+             this.closeContainer();
          }
  
-         this.nextContainerCounter();
-@@ -1401,9 +_,31 @@
+@@ -1401,9 +_,29 @@
  
              return OptionalInt.empty();
          } else {
 +            // Neo: Support sending additional arbitrary data to menu factories on the client-side
-+            var extraData = net.neoforged.neoforge.common.util.FriendlyByteBufUtil.writeCustomData(
++            byte[] extraData = net.neoforged.neoforge.common.util.FriendlyByteBufUtil.writeCustomData(
 +                    buffer -> {
 +                        provider.writeClientSideData(this, menu, buffer);
 +                        if (extraDataWriter != null) {
 +                            extraDataWriter.accept(buffer);
 +                        }
 +                    },
-+                    registryAccess()
++                    this.registryAccess()
 +            );
 +            if (extraData.length != 0) {
-+                this.connection.send(
-+                        new net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload(
-+                                menu.containerId,
-+                                menu.getType(),
-+                                provider.getDisplayName(),
-+                                extraData
-+                        )
-+                );
++                this.connection.send(new net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload(
++                        menu.containerId,
++                        menu.getType(),
++                        provider.getDisplayName(),
++                        extraData
++                ));
 +            } else {
              this.connection.send(new ClientboundOpenScreenPacket(menu.containerId, menu.getType(), provider.getDisplayName()));
 +            }
@@ -266,13 +268,12 @@
          this.containerMenu = this.inventoryMenu;
      }
  
-@@ -1682,6 +_,16 @@
+@@ -1682,6 +_,15 @@
          this.setShoulderEntityRight(oldPlayer.getShoulderEntityRight());
          this.setLastDeathLocation(oldPlayer.getLastDeathLocation());
          this.waypointIcon().copyFrom(oldPlayer.waypointIcon());
 +
-+        //Copy over a section of the Entity Data from the old player.
-+        //Allows mods to specify data that persists after players respawn.
++        // Neo: Copy over a section of the Entity Data from the old player. Allows mods to specify data that persists after players respawn.
 +        var old = oldPlayer.getPersistentData();
 +        if (old.contains(PERSISTED_NBT_TAG)) {
 +            this.getPersistentData().put(PERSISTED_NBT_TAG, old.get(PERSISTED_NBT_TAG));
@@ -327,38 +328,65 @@
          if (showMessage && respawnConfig != null && !respawnConfig.isSamePosition(this.respawnConfig)) {
              this.sendSystemMessage(SPAWN_SET_MESSAGE);
          }
-@@ -2048,6 +_,57 @@
-         return entity;
+@@ -2062,6 +_,9 @@
      }
  
-+    /// {@return the language last reported by the player as their local language or `en_us` if the value is unknown}
+     private GameType calculateGameModeForNewPlayer(@Nullable GameType loadedGameType) {
++        if (this.isFakePlayer()) {
++            return GameType.SURVIVAL; // Neo: Always default fake players to survival
++        }
+         GameType forcedGameType = this.server.getForcedGameType();
+         if (forcedGameType == null
+             || !(this.server instanceof DedicatedServer) && this.server.getProfilePermissions(this.nameAndId()).hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
+@@ -2099,6 +_,11 @@
+ 
+     public void drop(boolean all) {
+         Inventory inventory = this.getInventory();
++        ItemStack selected = inventory.getSelectedItem();
++        // Neo: let the item control whether it can be dropped
++        if (selected.isEmpty() || !selected.onDroppedByPlayer(this)) {
++            return;
++        }
+         ItemStack removed = inventory.removeFromSelected(all);
+         this.containerMenu
+             .findSlot(inventory, inventory.getSelectedSlot())
+@@ -2310,6 +_,59 @@
+     public void swingAndResetAttackStrength(InteractionHand hand, SwingAnimation animation, boolean sendToSwingingEntity) {
+         if (this.swing(hand, animation, sendToSwingingEntity)) {
+             this.resetAttackStrengthTicker();
++        }
++    }
++
++    /// Neo: {@return the language last reported by the player as their local language or `en_us` if the value is unknown}
 +    public String getLanguage() {
 +        return this.language;
 +    }
 +
++    /// Neo: {@return the header shown in this player's tab list}
 +    public Component getTabListHeader() {
 +        return this.tabListHeader;
 +    }
 +
++    /// Neo: {@return the footer shown in this player's tab list}
 +    public Component getTabListFooter() {
 +        return this.tabListFooter;
 +    }
 +
-+    /// Set the tab list header while preserving the footer.
++    /// Neo: set the tab list header while preserving the footer.
 +    ///
 +    /// @param header the new header, or [Component#empty()] to clear
 +    public void setTabListHeader(Component header) {
 +        this.setTabListHeaderFooter(header, this.tabListFooter);
 +    }
 +
-+    /// Set the tab list footer while preserving the header.
++    /// Neo: set the tab list footer while preserving the header.
 +    ///
 +    /// @param footer the new footer, or [Component#empty()] to clear
 +    public void setTabListFooter(Component footer) {
 +        this.setTabListHeaderFooter(this.tabListHeader, footer);
 +    }
 +
-+    /// Set the tab list header and footer at once.
++    /// Neo: set the tab list header and footer at once.
 +    ///
 +    /// @param header the new header, or [Component#empty()] to clear
 +    /// @param footer the new footer, or [Component#empty()] to clear
@@ -373,36 +401,12 @@
 +        this.connection.send(new net.minecraft.network.protocol.game.ClientboundTabListPacket(header, footer));
 +    }
 +
-+    /// Force the name displayed in the tab list to refresh, by firing [net.neoforged.neoforge.event.entity.player.PlayerEvent.TabListNameFormat].
++    /// Neo: force the name displayed in the tab list to refresh, by firing [net.neoforged.neoforge.event.entity.player.PlayerEvent.TabListNameFormat].
 +    public void refreshTabListName() {
 +        Component oldName = this.tabListDisplayName;
 +        this.tabListDisplayName = net.neoforged.neoforge.event.EventHooks.getPlayerTabListDisplayName(this);
 +        if (!java.util.Objects.equals(oldName, this.tabListDisplayName)) {
 +            this.server.getPlayerList().broadcastAll(new net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket(net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME, this));
-+        }
-+    }
-+
-     public TextFilter getTextFilter() {
-         return this.textFilter;
-     }
-@@ -2062,6 +_,9 @@
+         }
      }
  
-     private GameType calculateGameModeForNewPlayer(@Nullable GameType loadedGameType) {
-+        if (this.isFakePlayer()) {
-+            return GameType.SURVIVAL; // Neo: Always default fake players to survival
-+        }
-         GameType forcedGameType = this.server.getForcedGameType();
-         if (forcedGameType == null
-             || !(this.server instanceof DedicatedServer) && this.server.getProfilePermissions(this.nameAndId()).hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
-@@ -2099,6 +_,10 @@
- 
-     public void drop(boolean all) {
-         Inventory inventory = this.getInventory();
-+        ItemStack selected = inventory.getSelectedItem();
-+        if (selected.isEmpty() || !selected.onDroppedByPlayer(this)) {
-+            return;
-+        }
-         ItemStack removed = inventory.removeFromSelected(all);
-         this.containerMenu
-             .findSlot(inventory, inventory.getSelectedSlot())
