@@ -176,8 +176,8 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
         ///
         /// Special cases because vanilla checks the current stack in the following functions (which it shouldn't):
         ///
-        ///  - [AbstractFurnaceBlockEntity#canPlaceItem(int, ItemStack)].
-        ///  - [BrewingStandBlockEntity#canPlaceItem(int, ItemStack)].
+        /// - [AbstractFurnaceBlockEntity#canPlaceItem(int, ItemStack)].
+        /// - [BrewingStandBlockEntity#canPlaceItem(int, ItemStack)].
         @Override
         protected boolean isValid(ItemResource resource) {
             if (index == /* AbstractFurnaceBlockEntity.SLOT_FUEL */ 1 && resource.is(Items.BUCKET) && container instanceof AbstractFurnaceBlockEntity) {
@@ -197,8 +197,8 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
         ///
         /// Special cases because vanilla checks the current stack in the following functions (which it shouldn't):
         ///
-        ///  - [AbstractFurnaceBlockEntity#canPlaceItem(int, ItemStack)].
-        ///  - [BrewingStandBlockEntity#canPlaceItem(int, ItemStack)].
+        /// - [AbstractFurnaceBlockEntity#canPlaceItem(int, ItemStack)].
+        /// - [BrewingStandBlockEntity#canPlaceItem(int, ItemStack)].
         @Override
         protected int getCapacity(ItemResource resource) {
             // Special case to limit buckets to 1 in furnace fuel inputs.
