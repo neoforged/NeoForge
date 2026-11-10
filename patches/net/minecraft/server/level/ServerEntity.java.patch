@@ -1,8 +1,11 @@
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
-@@ -105,7 +_,8 @@
+@@ -103,9 +_,10 @@
+ 
+         if (this.entity instanceof ItemFrame frame && this.tickCount % 10 == 0) {
              ItemStack itemStack = frame.getItem();
-             if (itemStack.getItem() instanceof MapItem) {
+-            if (itemStack.getItem() instanceof MapItem) {
++            if (true) { // Neo: allow any item to provide map data
                  MapId id = itemStack.get(DataComponents.MAP_ID);
 -                MapItemSavedData data = MapItem.getSavedData(id, this.level);
 +                // Neo: give items control over the source of the map data
