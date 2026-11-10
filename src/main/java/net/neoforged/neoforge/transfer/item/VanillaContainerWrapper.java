@@ -172,21 +172,19 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
             container.setItem(index, item, true);
         }
 
-        /**
-         * Special cases because vanilla checks the current stack in the following functions (which it shouldn't):
-         * <ul>
-         * <li>{@link AbstractFurnaceBlockEntity#canPlaceItem(int, ItemStack)}.</li>
-         * <li>{@link BrewingStandBlockEntity#canPlaceItem(int, ItemStack)}.</li>
-         * </ul>
-         *
-         * <p>Should these extra checks cause performance issues, we can switch to subclasses.
-         */
+        /// {@inheritDoc}
+        ///
+        /// Special cases because vanilla checks the current stack in the following functions (which it shouldn't):
+        ///
+        ///  - [AbstractFurnaceBlockEntity#canPlaceItem(int, ItemStack)].
+        ///  - [BrewingStandBlockEntity#canPlaceItem(int, ItemStack)].
         @Override
         protected boolean isValid(ItemResource resource) {
             if (index == /* AbstractFurnaceBlockEntity.SLOT_FUEL */ 1 && resource.is(Items.BUCKET) && container instanceof AbstractFurnaceBlockEntity) {
                 return true;
             }
 
+            // Special case bottle slots in brewing stands.
             if (index < 3 && container instanceof BrewingStandBlockEntity brewingStand) {
                 Level level = brewingStand.getLevel();
                 return level != null && PotionIngredient.isPotionInput(resource.toStack(), level.recipeAccess());
@@ -195,15 +193,12 @@ public class VanillaContainerWrapper implements ResourceHandler<ItemResource> {
             return container.canPlaceItem(index, resource.toStack());
         }
 
-        /**
-         * Special cases because vanilla checks the current stack in the following functions (which it shouldn't):
-         * <ul>
-         * <li>{@link AbstractFurnaceBlockEntity#canPlaceItem(int, ItemStack)}.</li>
-         * <li>{@link BrewingStandBlockEntity#canPlaceItem(int, ItemStack)}.</li>
-         * </ul>
-         *
-         * <p>Should these extra checks cause performance issues, we can switch to subclasses.
-         */
+        /// {@inheritDoc}
+        ///
+        /// Special cases because vanilla checks the current stack in the following functions (which it shouldn't):
+        ///
+        ///  - [AbstractFurnaceBlockEntity#canPlaceItem(int, ItemStack)].
+        ///  - [BrewingStandBlockEntity#canPlaceItem(int, ItemStack)].
         @Override
         protected int getCapacity(ItemResource resource) {
             // Special case to limit buckets to 1 in furnace fuel inputs.
