@@ -193,9 +193,9 @@
          if (source.is(DamageTypeTags.IS_FIRE) && this.hasEffect(MobEffects.FIRE_RESISTANCE)) {
              return false;
          }
-+        // Neo: Avoid negative base damage due to entity-specific damage calculations like rolled-up Armadillos
++        // Neo: Avoid negative base damage being passed through due to entity-specific damage calculations like rolled-up Armadillos
 +        if (damage < 0.0F) {
-+            damage = 0.0F;
++            return false;
 +        }
 +        this.damageContainers.push(new net.neoforged.neoforge.common.damagesource.DamageContainer(source, damage));
 +        if (net.neoforged.neoforge.common.CommonHooks.onEntityIncomingDamage(this, this.damageContainers.peek())) {
