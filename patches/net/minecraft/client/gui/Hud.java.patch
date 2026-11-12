@@ -96,6 +96,20 @@
      }
  
      private void extractBossOverlay(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+@@ -272,6 +_,13 @@
+         }
+     }
+ 
++    /// Neo: Collects the areas of subtitles that are currently visible alongside screens.
++    public void collectSubtitleAreas(java.util.function.Consumer<net.minecraft.client.gui.navigation.ScreenRectangle> consumer) {
++        if (!this.isHidden || this.minecraft.gui.screen() != null && this.minecraft.gui.screen().isInGameUi()) {
++            this.subtitleOverlay.collectScreenAreas(consumer);
++        }
++    }
++
+     private void extractCameraOverlays(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+         if (this.minecraft.options.vignette().get()) {
+             this.extractVignette(graphics, this.minecraft.getCameraEntity());
 @@ -289,8 +_,12 @@
                  for (EquipmentSlot slot : EquipmentSlot.values()) {
                      ItemStack item = player.getItemBySlot(slot);

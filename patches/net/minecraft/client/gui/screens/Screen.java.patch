@@ -1,5 +1,59 @@
 --- a/net/minecraft/client/gui/screens/Screen.java
 +++ b/net/minecraft/client/gui/screens/Screen.java
+@@ -81,6 +_,7 @@
+     private @Nullable NarratableEntry lastNarratable;
+     private NarrationTrigger nextNarrationTriggeredBy = NarrationTrigger.SYSTEM;
+     protected final Executor screenExecutor;
++    private final List<net.neoforged.neoforge.client.gui.ScreenAreaProvider> screenAreaProviders = Lists.newArrayList();
+ 
+     protected Screen(Component title) {
+         this(Minecraft.getInstance(), Minecraft.getInstance().font, title);
+@@ -101,6 +_,45 @@
+         return this.title;
+     }
+ 
++    /// Neo: {@return the primary content area of this screen}
++    public ScreenRectangle getPrimaryScreenArea() {
++        return new ScreenRectangle(0, 0, this.width, this.height);
++    }
++
++    /// Neo: Collects additional areas occupied by this screen and UI rendered alongside it.
++    /// Screen-visible HUD areas are included for every screen so that selective queries do not miss them.
++    protected void collectExtraScreenAreas(java.util.function.Consumer<ScreenRectangle> consumer) {
++        net.neoforged.neoforge.client.ClientHooks.collectSpecialScreenAreas(this.minecraft, consumer);
++    }
++
++    /// Neo: Collects the areas occupied by this screen using the given query parameters.
++    /// All areas use GUI-scaled absolute screen coordinates.
++    /// Subtitles reflect the most recent render pass and are not available before the first render.
++    ///
++    /// @param consumer       accepts the occupied areas
++    /// @param includePrimary whether to include the primary content area
++    /// @param requesterId    the id of the UI requesting the areas, or `null` if it has no id
++    public final void getScreenAreas(java.util.function.Consumer<ScreenRectangle> consumer, boolean includePrimary, @Nullable Identifier requesterId) {
++        if (includePrimary) {
++            consumer.accept(this.getPrimaryScreenArea());
++        }
++        this.collectExtraScreenAreas(consumer);
++        for (var provider : this.screenAreaProviders) {
++            provider.collectAreas(includePrimary, requesterId, consumer);
++        }
++    }
++
++    /// Neo: Collects all areas occupied by this screen.
++    public final void getScreenAreas(java.util.function.Consumer<ScreenRectangle> consumer) {
++        this.getScreenAreas(consumer, true, null);
++    }
++
++    /// Neo: Adds a provider during ScreenEvent.Init. Providers are re-registered whenever widgets are rebuilt.
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public final void addScreenAreaProvider(net.neoforged.neoforge.client.gui.ScreenAreaProvider provider) {
++        this.screenAreaProviders.add(java.util.Objects.requireNonNull(provider));
++    }
++
+     public Component getNarrationMessage() {
+         return this.getTitle();
+     }
 @@ -108,8 +_,12 @@
      public final void extractRenderStateWithTooltipAndSubtitles(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
          graphics.nextStratum();
@@ -22,7 +76,12 @@
      }
  
      protected <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T widget) {
-@@ -245,9 +_,9 @@
+@@ -241,13 +_,14 @@
+         this.renderables.clear();
+         this.children.clear();
+         this.narratables.clear();
++        this.screenAreaProviders.clear();
+     }
  
      public static List<Component> getTooltipFromItem(Minecraft minecraft, ItemStack itemStack) {
          return itemStack.getTooltipLines(

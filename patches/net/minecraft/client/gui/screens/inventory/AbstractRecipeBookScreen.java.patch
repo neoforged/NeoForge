@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/inventory/AbstractRecipeBookScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/AbstractRecipeBookScreen.java
-@@ -63,6 +_,7 @@
+@@ -63,10 +_,17 @@
  
          graphics.nextStratum();
          this.recipeBookComponent.extractRenderState(graphics, mouseX, mouseY, a);
@@ -8,3 +8,13 @@
          graphics.nextStratum();
          this.extractCarriedItem(graphics, mouseX, mouseY);
          this.extractTooltip(graphics, mouseX, mouseY);
+         this.recipeBookComponent.extractTooltip(graphics, mouseX, mouseY, this.hoveredSlot);
++    }
++
++    @Override
++    protected void collectExtraScreenAreas(java.util.function.Consumer<net.minecraft.client.gui.navigation.ScreenRectangle> consumer) {
++        super.collectExtraScreenAreas(consumer);
++        this.recipeBookComponent.collectScreenAreas(consumer);
+     }
+ 
+     @Override

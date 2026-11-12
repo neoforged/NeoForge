@@ -33,10 +33,37 @@
              graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Hud.getMobEffectSprite(effect.getEffect()), x0 + 7, y0 + 7, 18, 18);
              y0 += yStep;
          }
-@@ -85,9 +_,15 @@
+@@ -85,9 +_,42 @@
          return textureWidth;
      }
  
++    /// Neo: Collects the areas of the currently visible effect backgrounds.
++    public void collectScreenAreas(java.util.function.Consumer<net.minecraft.client.gui.navigation.ScreenRectangle> consumer) {
++        int xo = this.screen.leftPos + this.screen.imageWidth + 2;
++        int availableWidth = this.screen.width - xo;
++        Collection<MobEffectInstance> activeEffects = this.minecraft.player.getActiveEffects();
++        if (activeEffects.isEmpty() || availableWidth < 32) {
++            return;
++        }
++        var event = net.neoforged.neoforge.client.ClientHooks.onScreenPotionSize(screen, availableWidth, availableWidth < 120, xo);
++        if (event.isCanceled()) {
++            return;
++        }
++        int maxWidth = event.isCompact() ? 32 : availableWidth - 7;
++        xo = event.getHorizontalOffset();
++        activeEffects = activeEffects.stream().filter(net.neoforged.neoforge.client.ClientHooks::shouldRenderEffect).sorted().collect(java.util.stream.Collectors.toList());
++        int yStep = activeEffects.size() > 5 ? 132 / (activeEffects.size() - 1) : 33;
++        int y = this.screen.topPos;
++        Font font = this.screen.getFont();
++        for (MobEffectInstance effect : activeEffects) {
++            Component effectText = this.getEffectName(effect);
++            Component duration = MobEffectUtil.formatDuration(effect, 1.0F, this.minecraft.level.tickRateManager().tickrate());
++            int width = Math.min(maxWidth, Math.max(32 + font.width(effectText) + 7, 32 + font.width(duration) + 7));
++            consumer.accept(new net.minecraft.client.gui.navigation.ScreenRectangle(xo, y, width, 32));
++            y += yStep;
++        }
++    }
++
 +    // Neo: Call the method that takes the effect instance for which the text is being rendered
      private void extractText(
          GuiGraphicsExtractor graphics, Component effectText, Component duration, Font font, int x0, int y0, int textureWidth, int yStep, int mouseX, int mouseY
