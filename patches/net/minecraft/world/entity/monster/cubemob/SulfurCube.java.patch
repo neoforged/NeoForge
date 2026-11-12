@@ -9,12 +9,3 @@
              if (immersion > 0.0) {
                  this.setDeltaMovement(this.getDeltaMovement().add(0.0, Math.min(1.0, immersion) * 0.04F, 0.0));
              }
-@@ -224,7 +_,7 @@
-     }
- 
-     public static boolean checkSulfurCubeSpawnRules(
--        EntityType<SulfurCube> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
-+        EntityType<? extends SulfurCube> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
-     ) {
-         return true;
-     }

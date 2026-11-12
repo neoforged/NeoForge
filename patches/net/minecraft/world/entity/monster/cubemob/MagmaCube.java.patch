@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/entity/monster/cubemob/MagmaCube.java
 +++ b/net/minecraft/world/entity/monster/cubemob/MagmaCube.java
-@@ -51,7 +_,7 @@
-     }
- 
-     public static boolean checkMagmaCubeSpawnRules(
--        EntityType<MagmaCube> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
-+        EntityType<? extends MagmaCube> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
-     ) {
-         return level.getDifficulty() != Difficulty.PEACEFUL;
-     }
 @@ -96,17 +_,28 @@
          float sizeJumpBoostPower = this.getSize() * 0.1F;
          this.setDeltaMovement(movement.x, this.getJumpPower() + sizeJumpBoostPower, movement.z);
