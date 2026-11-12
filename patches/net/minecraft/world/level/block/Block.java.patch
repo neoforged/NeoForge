@@ -25,7 +25,7 @@
          this.stateDefinition = builder.create(Block::defaultBlockState, BlockState::new);
          this.registerDefaultState(this.stateDefinition.any());
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
-+        // Neo: disable class name check
++        // Neo: disable block class name check
 +        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
              String className = this.getClass().getSimpleName();
              if (!className.endsWith("Block")) {

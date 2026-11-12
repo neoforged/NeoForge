@@ -4,7 +4,7 @@
  
      @Override
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
-+        // Neo: let the block decide whether it can sustain this block
++        // Neo: let the block decide whether it can sustain this plant
 +        var soilDecision = level.getBlockState(pos.below()).canSustainPlant(level, pos.below(), net.minecraft.core.Direction.UP, state);
 +        if (!soilDecision.isDefault()) {
 +            return soilDecision.isTrue();

@@ -5,7 +5,7 @@
  
          BlockState belowState = context.getLevel().getBlockState(context.getClickedPos().below());
 -        if (belowState.is(BlockTags.SUPPORTS_BAMBOO)) {
-+        // Neo: let the block decide whether it can sustain this block
++        // Neo: let the block decide whether it can sustain this plant
 +        var soilDecision = belowState.canSustainPlant(context.getLevel(), context.getClickedPos().below(), net.minecraft.core.Direction.UP, this.defaultBlockState());
 +        if (soilDecision.isDefault() ? belowState.is(BlockTags.SUPPORTS_BAMBOO) : soilDecision.isTrue()) {
              if (belowState.is(Blocks.BAMBOO_SAPLING)) {
@@ -29,7 +29,7 @@
  
      @Override
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
-+        // Neo: let the block decide whether it can sustain this block
++        // Neo: let the block decide whether it can sustain this plant
 +        var soilDecision = level.getBlockState(pos.below()).canSustainPlant(level, pos.below(), Direction.UP, state);
 +        if (!soilDecision.isDefault()) {
 +            return soilDecision.isTrue();

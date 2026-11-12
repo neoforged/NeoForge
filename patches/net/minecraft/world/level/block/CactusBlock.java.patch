@@ -33,7 +33,7 @@
          }
  
          BlockState belowState = level.getBlockState(pos.below());
-+        // Neo: let the block decide whether it can sustain this block
++        // Neo: let the block decide whether it can sustain this plant
 +        var soilDecision = belowState.canSustainPlant(level, pos.below(), Direction.UP, state);
 +        if (!soilDecision.isDefault()) {
 +            return soilDecision.isTrue();

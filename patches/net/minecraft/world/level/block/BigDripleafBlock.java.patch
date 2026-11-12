@@ -4,7 +4,7 @@
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
          BlockPos belowPos = pos.below();
          BlockState belowState = level.getBlockState(belowPos);
-+        // Neo: let the block decide whether it can sustain this block
++        // Neo: let the block decide whether it can sustain this plant
 +        var soilDecision = belowState.canSustainPlant(level, belowPos, Direction.UP, state);
 +        if (!soilDecision.isDefault()) {
 +            return soilDecision.isTrue();

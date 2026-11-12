@@ -4,7 +4,7 @@
  
      @Override
      public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
-+        // Neo: enable standard entity interactions on container minecarts
++        // Neo: enable standard entity interactions on command block minecarts
 +        InteractionResult result = super.interact(player, hand, location);
 +        if (result.consumesAction()) {
 +            return result;
