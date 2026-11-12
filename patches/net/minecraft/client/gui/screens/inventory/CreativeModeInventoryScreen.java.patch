@@ -60,9 +60,9 @@
 +                this.currentPage = this.pages.getFirst();
 +            }
 +            if (this.pages.size() > 1) {
-+                this.addRenderableWidget(net.minecraft.client.gui.components.Button.builder(Component.literal("<"), _ -> this.setCurrentPage(this.pages.get(Math.max(this.pages.indexOf(this.currentPage) - 1, 0))))
++                this.addRenderableWidget(net.minecraft.client.gui.components.Button.builder(net.neoforged.neoforge.client.ClientHooks.getPageButtonComponent(true), _ -> this.setCurrentPage(this.pages.get(Math.max(this.pages.indexOf(this.currentPage) - 1, 0))))
 +                        .pos(this.leftPos,  this.topPos - 50).size(20, 20).build());
-+                this.addRenderableWidget(net.minecraft.client.gui.components.Button.builder(Component.literal(">"), _ -> this.setCurrentPage(this.pages.get(Math.min(this.pages.indexOf(this.currentPage) + 1, this.pages.size() - 1))))
++                this.addRenderableWidget(net.minecraft.client.gui.components.Button.builder(net.neoforged.neoforge.client.ClientHooks.getPageButtonComponent(false), _ -> this.setCurrentPage(this.pages.get(Math.min(this.pages.indexOf(this.currentPage) + 1, this.pages.size() - 1))))
 +                        .pos(this.leftPos + this.imageWidth - 20, this.topPos - 50).size(20, 20).build());
 +            }
 +            this.currentPage = this.pages.stream().filter(page -> page.getVisibleTabs().contains(selectedTab)).findFirst().orElse(this.currentPage);
