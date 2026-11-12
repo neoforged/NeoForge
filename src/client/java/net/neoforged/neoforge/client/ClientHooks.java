@@ -370,11 +370,10 @@ public class ClientHooks {
         return e.getMusic();
     }
 
-    /**
-     * Returns an arrow for a page button, accounting for bidirectional text mirroring in the current language.
-     *
-     * @param left whether the arrow should point left on screen
-     */
+    /// {@return an arrow component for a page button}
+    /// This accounts for bidirectional text mirroring in the current language.
+    ///
+    /// @param left whether the arrow should point left on screen
     public static Component getPageButtonComponent(boolean left) {
         return Component.literal(left != Language.getInstance().isDefaultRightToLeft() ? "<" : ">");
     }
