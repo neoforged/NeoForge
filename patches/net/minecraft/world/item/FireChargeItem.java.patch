@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/item/FireChargeItem.java
 +++ b/net/minecraft/world/item/FireChargeItem.java
-@@ -32,7 +_,8 @@
+@@ -32,7 +_,9 @@
          BlockPos pos = context.getClickedPos();
          BlockState blockState = level.getBlockState(pos);
          boolean used = false;
 -        if (!CampfireBlock.canLight(blockState) && !CandleBlock.canLight(blockState) && !CandleCakeBlock.canLight(blockState)) {
++        // Neo: let the block control how it is modified by this item
 +        BlockState modifiedState = blockState.getToolModifiedState(context, net.neoforged.neoforge.common.ItemAbilities.FIRESTARTER_LIGHT, false);
 +        if (modifiedState == null) {
              pos = pos.relative(context.getClickedFace());

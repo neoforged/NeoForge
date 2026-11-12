@@ -1,21 +1,26 @@
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
-@@ -126,6 +_,7 @@
+@@ -126,6 +_,8 @@
  import net.neoforged.neoforge.common.extensions.IPlayerExtension;
  
  public abstract class Player extends Avatar implements ContainerUser, IPlayerExtension {
++    /// Neo: NBT key for data in [#getPersistentData()] which should be persisted across respawns
 +    public static final String PERSISTED_NBT_TAG = "PlayerPersisted";
      public static final int MAX_HEALTH = 20;
      public static final int SLEEP_DURATION = 100;
      public static final int WAKE_UP_DURATION = 10;
-@@ -174,6 +_,12 @@
+@@ -174,6 +_,16 @@
      protected final List<Identifier> postEffects = new ArrayList<>();
      public @Nullable FishingHook fishing;
      protected float hurtDir;
++    /// Neo: holds prefixes prepended to the player's display name
 +    private final java.util.Collection<MutableComponent> prefixes = new java.util.LinkedList<>();
++    /// Neo: holds suffixes appended to the player's display name
 +    private final java.util.Collection<MutableComponent> suffixes = new java.util.LinkedList<>();
++    /// Neo: holds the display name of this player without the prefixes and suffixes
 +    @Nullable
 +    private Component displayName = null;
++    /// Neo: holds the pose this player is forced into
 +    @Nullable
 +    private Pose forcedPose = null;
  
@@ -72,10 +77,11 @@
          return this.wasUnderwater;
      }
  
-@@ -345,6 +_,10 @@
+@@ -345,6 +_,11 @@
      }
  
      protected void updatePlayerPose() {
++        // Neo: apply forced pose if set
 +        if (this.forcedPose != null) {
 +            this.setPose(this.forcedPose);
 +            return;
@@ -116,7 +122,7 @@
              speed *= (float)this.getAttribute(Attributes.SUBMERGED_MINING_SPEED).getValue();
          }
  
-@@ -607,13 +_,20 @@
+@@ -607,9 +_,16 @@
              speed /= 5.0F;
          }
  
@@ -124,25 +130,21 @@
          return speed;
      }
  
++    public boolean hasCorrectToolForDrops(BlockState state, Level level, BlockPos pos) {
++        return net.neoforged.neoforge.event.EventHooks.doPlayerHarvestCheck(this, state, level, pos);
++    }
++
 +    /// @deprecated Neo: use [#hasCorrectToolForDrops(BlockState, Level, BlockPos)] instead
 +    @Deprecated
      public boolean hasCorrectToolForDrops(BlockState state) {
          return !state.requiresCorrectToolForDrops() || this.inventory.getSelectedItem().isCorrectToolForDrops(state);
      }
- 
-+    public boolean hasCorrectToolForDrops(BlockState state, Level level, BlockPos pos) {
-+        return net.neoforged.neoforge.event.EventHooks.doPlayerHarvestCheck(this, state, level, pos);
-+    }
-+
-     @Override
-     protected void readAdditionalSaveData(ValueInput input) {
-         super.readAdditionalSaveData(input);
 @@ -686,6 +_,8 @@
          }
  
          this.removeEntitiesOnShoulder();
 +        damage = Math.max(0.0F, source.type().scaling().getScalingFunction().scaleDamage(source, this, damage, this.level().getDifficulty()));
-+        if (false)
++        if (false) // Neo: scaling is handled by the damage type's scaling function
          if (source.scalesWithDifficulty()) {
              if (level.getDifficulty() == Difficulty.PEACEFUL) {
                  damage = 0.0F;
@@ -295,17 +297,19 @@
              }
          }
  
-@@ -1065,11 +_,12 @@
+@@ -1065,11 +_,14 @@
  
      private void itemAttackInteraction(Entity entity, ItemStack attackingItemStack, DamageSource damageSource, boolean applyToTarget) {
          Entity hurtTarget = entity;
 -        if (entity instanceof EnderDragonPart enderDragonPart) {
 -            hurtTarget = enderDragonPart.parentMob;
++        // Neo: widen check to support non-dragon multipart entities
 +        if (entity instanceof net.neoforged.neoforge.entity.PartEntity<?> partEntity) {
 +            hurtTarget = partEntity.getParent();
          }
  
          boolean itemHurtEnemy = false;
++        // Neo: retain copy of the stack for PlayerDestroyItemEvent
 +        ItemStack copy = attackingItemStack.copy();
          if (this.level() instanceof ServerLevel serverLevel) {
              if (hurtTarget instanceof LivingEntity livingTarget) {
@@ -318,7 +322,7 @@
                  if (attackingItemStack == this.getMainHandItem()) {
                      this.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
                  } else {
-@@ -1131,17 +_,24 @@
+@@ -1131,17 +_,25 @@
          return 1.0F;
      }
  
@@ -334,7 +338,8 @@
              float var12 = 1.0F + (float)this.getAttributeValue(Attributes.SWEEPING_DAMAGE_RATIO) * baseDamage;
  
 -            for (LivingEntity nearby : this.level().getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(1.0, 0.25, 1.0))) {
-+            double entityReachSq = Mth.square(this.entityInteractionRange()); // Use entity reach instead of constant 9.0. Vanilla uses bottom center-to-center checks here, so don't update this to use canReach, since it uses closest-corner checks.
++            // Neo: use entity reach instead of constant 9.0. Vanilla uses bottom center-to-center checks here, so don't update this to use canReach, since it uses closest-corner checks.
++            double entityReachSq = Mth.square(this.entityInteractionRange());
 +            for (LivingEntity nearby : this.level().getEntitiesOfClass(LivingEntity.class, sweepHitBox)) {
                  if (nearby != this
                      && nearby != entity
@@ -353,21 +358,23 @@
          super.stopSleeping();
          if (this.level() instanceof ServerLevel && updateLevelList) {
              ((ServerLevel)this.level()).updateSleepingPlayerList();
-@@ -1413,7 +_,8 @@
+@@ -1413,7 +_,9 @@
  
      @Override
      public boolean causeFallDamage(double fallDistance, float damageModifier, DamageSource damageSource) {
 -        if (this.abilities.mayfly) {
++        // Neo: check creative flight attribute
 +        if (this.mayFly()) {
 +            net.neoforged.neoforge.event.EventHooks.onPlayerFall(this, damageModifier, damageModifier);
              return false;
          }
  
-@@ -1448,13 +_,13 @@
+@@ -1448,13 +_,15 @@
      protected void playStepSound(BlockPos onPos, BlockState onState) {
          if (this.isInWater()) {
              this.waterSwimSound();
 -            this.playMuffledStepSound(onState);
++            // Neo: add position context
 +            this.playMuffledStepSound(onState, onPos);
          } else {
              BlockPos primaryStepSoundPos = this.getPrimaryStepSoundBlockPos(onPos);
@@ -375,6 +382,7 @@
                  BlockState primaryStepState = this.level().getBlockState(primaryStepSoundPos);
                  if (primaryStepState.is(BlockTags.COMBINATION_STEP_SOUND_BLOCKS)) {
 -                    this.playCombinationStepSounds(primaryStepState, onState);
++                    // Neo: add position context
 +                    this.playCombinationStepSounds(primaryStepState, onState, primaryStepSoundPos, onPos);
                  } else {
                      super.playStepSound(primaryStepSoundPos, primaryStepState);
@@ -383,7 +391,7 @@
      }
  
      public void giveExperiencePoints(int i) {
-+        net.neoforged.neoforge.event.entity.player.PlayerXpEvent.XpChange event = new net.neoforged.neoforge.event.entity.player.PlayerXpEvent.XpChange(this, i);
++        var event = new net.neoforged.neoforge.event.entity.player.PlayerXpEvent.XpChange(this, i);
 +        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) {
 +            return;
 +        }
@@ -392,11 +400,12 @@
          this.increaseScore(i);
          this.experienceProgress = this.experienceProgress + (float)i / this.getXpNeededForNextLevel();
          this.totalExperience = Mth.clamp(this.totalExperience + i, 0, Integer.MAX_VALUE);
-@@ -1512,7 +_,7 @@
+@@ -1512,7 +_,8 @@
      }
  
      public void onEnchantmentPerformed(ItemStack itemStack, int enchantmentCost) {
 -        this.experienceLevel -= enchantmentCost;
++        // Neo: defer to giveExperienceLevel() for event dispatch
 +        this.giveExperienceLevels(-enchantmentCost);
          if (this.experienceLevel < 0) {
              this.experienceLevel = 0;
@@ -405,7 +414,7 @@
      }
  
      public void giveExperienceLevels(int amount) {
-+        net.neoforged.neoforge.event.entity.player.PlayerXpEvent.LevelChange event = new net.neoforged.neoforge.event.entity.player.PlayerXpEvent.LevelChange(this, amount);
++        var event = new net.neoforged.neoforge.event.entity.player.PlayerXpEvent.LevelChange(this, amount);
 +        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) {
 +            return;
 +        }
@@ -414,16 +423,17 @@
          this.experienceLevel = IntMath.saturatedAdd(this.experienceLevel, amount);
          if (this.experienceLevel < 0) {
              this.experienceLevel = 0;
-@@ -1554,7 +_,7 @@
+@@ -1554,7 +_,8 @@
      }
  
      protected boolean hasEnoughFoodToDoExhaustiveManoeuvres() {
 -        return this.getFoodData().hasEnoughFood() || this.getAbilities().mayfly;
++        // Neo: check creative flight attribute
 +        return this.getFoodData().hasEnoughFood() || this.mayFly();
      }
  
      public FoodData getFoodData() {
-@@ -1657,7 +_,13 @@
+@@ -1657,7 +_,14 @@
  
      @Override
      public Component getDisplayName() {
@@ -431,6 +441,7 @@
 +        if (this.displayName == null) {
 +            this.displayName = net.neoforged.neoforge.event.EventHooks.getPlayerDisplayName(this, this.getName());
 +        }
++        // Neo: apply prefixes and suffixes
 +        MutableComponent result = Component.literal("");
 +        result = this.prefixes.stream().reduce(result, MutableComponent::append);
 +        result = result.append(PlayerTeam.formatNameForTeam(this.getTeam(), this.displayName));
@@ -438,11 +449,12 @@
          return this.decorateDisplayNameComponent(result);
      }
  
-@@ -1839,22 +_,22 @@
+@@ -1839,22 +_,24 @@
              return ItemStack.EMPTY;
          }
  
 -        Predicate<ItemStack> supportedProjectiles = ((ProjectileWeaponItem)heldWeapon.getItem()).getSupportedHeldProjectiles();
++        // Neo: allow modded weapons to provide a stack-sensitive predicate
 +        Predicate<ItemStack> supportedProjectiles = ((ProjectileWeaponItem)heldWeapon.getItem()).getSupportedHeldProjectiles(heldWeapon);
          ItemStack heldProjectile = ProjectileWeaponItem.getHeldProjectile(this, supportedProjectiles);
          if (!heldProjectile.isEmpty()) {
@@ -451,6 +463,7 @@
          }
  
 -        supportedProjectiles = ((ProjectileWeaponItem)heldWeapon.getItem()).getAllSupportedProjectiles();
++        // Neo: allow modded weapons to provide a stack-sensitive predicate
 +        supportedProjectiles = ((ProjectileWeaponItem)heldWeapon.getItem()).getAllSupportedProjectiles(heldWeapon);
  
          for (int i = 0; i < this.inventory.getContainerSize(); i++) {

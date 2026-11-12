@@ -10,10 +10,11 @@
  public enum Rarity implements StringRepresentable, IExtensibleEnum {
      COMMON(0, "common", ChatFormatting.WHITE),
      UNCOMMON(1, "uncommon", ChatFormatting.YELLOW),
-@@ -23,19 +_,38 @@
+@@ -23,19 +_,40 @@
      private final int id;
      private final String name;
      private final ChatFormatting color;
++    /// Neo: holds the style modifier to apply to the item's name
 +    private final java.util.function.UnaryOperator<net.minecraft.network.chat.Style> styleModifier;
  
      Rarity(int id, String name, ChatFormatting color) {
@@ -25,6 +26,7 @@
 +        this.styleModifier = style -> style.withColor(color);
 +    }
 +
++    /// Neo: constructor for modded rarities with special style modifiers
 +    Rarity(int id, String name, java.util.function.UnaryOperator<net.minecraft.network.chat.Style> styleModifier) {
 +        this.id = id;
 +        this.name = name;

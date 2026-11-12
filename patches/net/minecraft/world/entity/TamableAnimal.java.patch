@@ -4,8 +4,8 @@
          this.usePlayerItem(player, hand, itemStack);
          this.heal(foodProperties != null ? healingFactor * foodProperties.nutrition() : defaultHeal);
          this.playEatingSound();
-+        this.usePlayerItem(player, hand, itemStack);
-+        this.gameEvent(net.minecraft.world.level.gameevent.GameEvent.EAT); // Neo: add EAT game event
++        // Neo: dispatch EAT game event
++        this.gameEvent(net.minecraft.world.level.gameevent.GameEvent.EAT);
      }
  
      public boolean isInSittingPose() {

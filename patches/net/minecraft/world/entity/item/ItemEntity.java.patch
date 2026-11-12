@@ -9,26 +9,29 @@
  
      public ItemEntity(EntityType<? extends ItemEntity> type, Level level) {
          super(type, level);
-@@ -64,6 +_,7 @@
+@@ -64,6 +_,8 @@
          this.setPos(x, y, z);
          this.setItem(itemStack);
          this.setDeltaMovement(this.random.nextDouble() * 0.2 - 0.1, 0.2, this.random.nextDouble() * 0.2 - 0.1);
++        // Neo: let the item decide the lifespan of the entity
 +        this.lifespan = (itemStack.getItem() == null ? LIFETIME : itemStack.getEntityLifespan(level));
      }
  
      public ItemEntity(Level level, double x, double y, double z, ItemStack itemStack, double deltaX, double deltaY, double deltaZ) {
-@@ -71,6 +_,7 @@
+@@ -71,6 +_,8 @@
          this.setPos(x, y, z);
          this.setItem(itemStack);
          this.setDeltaMovement(deltaX, deltaY, deltaZ);
++        // Neo: let the item decide the lifespan of the entity
 +        this.lifespan = (itemStack.getItem() == null ? LIFETIME : itemStack.getEntityLifespan(level));
      }
  
      @Override
-@@ -108,6 +_,9 @@
+@@ -108,6 +_,10 @@
  
      @Override
      public void tick() {
++        // Neo: let the item handle entity ticking
 +        if (this.getItem().onEntityItemUpdate(this)) {
 +            return;
 +        }
@@ -46,26 +49,28 @@
              if (this.isInWater() && this.getFluidHeight(FluidTags.WATER) > 0.1F) {
                  this.setUnderwaterMovement();
              } else if (this.isInLava() && this.getFluidHeight(FluidTags.LAVA) > 0.1F) {
-@@ -145,7 +_,8 @@
+@@ -145,7 +_,9 @@
                  float airDrag = this.getAirDrag();
                  float groundFriction = airDrag;
                  if (this.onGround()) {
 -                    groundFriction *= this.level().getBlockState(this.getBlockPosBelowThatAffectsMyMovement()).getBlock().getFriction();
 +                    BlockPos groundPos = getBlockPosBelowThatAffectsMyMovement();
++                    // Neo: use level-sensitive friction getter
 +                    groundFriction *= this.level().getBlockState(groundPos).getFriction(level(), groundPos, this);
                  }
  
                  this.setDeltaMovement(this.getDeltaMovement().multiply(groundFriction, airDrag, groundFriction));
-@@ -177,7 +_,15 @@
+@@ -177,7 +_,16 @@
                  }
              }
  
 -            if (!this.level().isClientSide() && this.age >= 6000) {
 +            ItemStack item = this.getItem();
-+            if (!this.level().isClientSide() && this.age >= lifespan) {
-+                // Clamping to MAX_VALUE -1 as age is a Short and going above that would produce an infinite lifespan implicitly (accidentally)
-+                this.lifespan = Mth.clamp(lifespan + net.neoforged.neoforge.event.EventHooks.onItemExpire(this), 0, Short.MAX_VALUE - 1);
-+                if (this.age >= lifespan) {
++            // Neo: use item-controlled lifespan
++            if (!this.level().isClientSide() && this.age >= this.lifespan) {
++                // Neo: clamping to MAX_VALUE -1 as age is a Short and going above that would produce an infinite lifespan implicitly (accidentally)
++                this.lifespan = Mth.clamp(this.lifespan + net.neoforged.neoforge.event.EventHooks.onItemExpire(this), 0, Short.MAX_VALUE - 1);
++                if (this.age >= this.lifespan) {
 +                    this.discard();
 +                }
 +            }
@@ -73,27 +78,30 @@
                  this.discard();
              }
          }
-@@ -292,7 +_,7 @@
+@@ -292,7 +_,8 @@
          this.health = (int)(this.health - damage);
          this.gameEvent(GameEvent.ENTITY_DAMAGE, source.getEntity());
          if (this.health <= 0) {
 -            this.getItem().onDestroyed(this);
++            // Neo: add damage source context to item destruction callback
 +            this.getItem().onDestroyed(this, source);
              this.discard();
          }
  
-@@ -309,6 +_,7 @@
+@@ -309,6 +_,8 @@
          output.putShort("Health", (short)this.health);
          output.putShort("Age", (short)this.age);
          output.putShort("PickupDelay", (short)this.pickupDelay);
++        // Neo: store item-controlled lifespan
 +        output.putInt("Lifespan", this.lifespan);
          EntityReference.store(this.thrower, output, "Thrower");
          output.storeNullable("Owner", UUIDUtil.CODEC, this.target);
          if (!this.getItem().isEmpty()) {
-@@ -321,6 +_,7 @@
+@@ -321,6 +_,8 @@
          this.health = input.getShortOr("Health", (short)5);
          this.age = input.getShortOr("Age", (short)0);
          this.pickupDelay = input.getShortOr("PickupDelay", (short)0);
++        // Neo: read item-controlled lifespan, if present
 +        this.lifespan = input.getIntOr("Lifespan", ItemEntity.LIFETIME);
          this.target = input.read("Owner", UUIDUtil.CODEC).orElse(null);
          this.thrower = EntityReference.read(input, "Thrower");
@@ -136,12 +144,13 @@
      public void setThrower(Entity thrower) {
          this.thrower = EntityReference.of(thrower);
      }
-@@ -419,7 +_,7 @@
+@@ -419,7 +_,8 @@
  
      public void makeFakeItem() {
          this.setNeverPickUp();
 -        this.age = 5999;
-+        this.age = getItem().getEntityLifespan(this.level()) - 1;
++        // Neo: set age based on item-controlled lifespan
++        this.age = this.getItem().getEntityLifespan(this.level()) - 1;
      }
  
      public static float getSpin(float ageInTicks, float bobOffset) {

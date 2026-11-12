@@ -1,9 +1,10 @@
 --- a/net/minecraft/world/level/block/BigDripleafBlock.java
 +++ b/net/minecraft/world/level/block/BigDripleafBlock.java
-@@ -132,6 +_,10 @@
+@@ -132,6 +_,11 @@
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
          BlockPos belowPos = pos.below();
          BlockState belowState = level.getBlockState(belowPos);
++        // Neo: let the block decide whether it can sustain this block
 +        var soilDecision = belowState.canSustainPlant(level, belowPos, Direction.UP, state);
 +        if (!soilDecision.isDefault()) {
 +            return soilDecision.isTrue();

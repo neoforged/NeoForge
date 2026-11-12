@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/MapItem.java
 +++ b/net/minecraft/world/item/MapItem.java
-@@ -58,6 +_,14 @@
+@@ -58,6 +_,15 @@
      }
  
      public static @Nullable MapItemSavedData getSavedData(ItemStack itemStack, Level level) {
@@ -11,6 +11,7 @@
 +        return null;
 +    }
 +
++    /// Neo: {@return the map data referenced by the given stack}
 +    protected @Nullable MapItemSavedData getCustomMapData(ItemStack itemStack, Level level) {
          MapId id = itemStack.get(DataComponents.MAP_ID);
          return getSavedData(id, level);

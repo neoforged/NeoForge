@@ -29,10 +29,11 @@
          }
      }
  
-@@ -112,6 +_,10 @@
+@@ -112,6 +_,11 @@
          }
  
          BlockState belowState = level.getBlockState(pos.below());
++        // Neo: let the block decide whether it can sustain this block
 +        var soilDecision = belowState.canSustainPlant(level, pos.below(), Direction.UP, state);
 +        if (!soilDecision.isDefault()) {
 +            return soilDecision.isTrue();

@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/item/FlintAndSteelItem.java
 +++ b/net/minecraft/world/item/FlintAndSteelItem.java
-@@ -28,7 +_,8 @@
+@@ -28,7 +_,9 @@
          Level level = context.getLevel();
          BlockPos pos = context.getClickedPos();
          BlockState state = level.getBlockState(pos);
 -        if (!CampfireBlock.canLight(state) && !CandleBlock.canLight(state) && !CandleCakeBlock.canLight(state)) {
++        // Neo: let the block control how it is modified by this item
 +        BlockState modifiedState = state.getToolModifiedState(context, net.neoforged.neoforge.common.ItemAbilities.FIRESTARTER_LIGHT, false);
 +        if (modifiedState == null) {
              BlockPos relativePos = pos.relative(context.getClickedFace());

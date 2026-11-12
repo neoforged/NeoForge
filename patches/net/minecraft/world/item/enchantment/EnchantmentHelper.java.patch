@@ -11,7 +11,7 @@
 +        return piece.getEnchantmentLevel(enchantment);
 +    }
 +
-+    /// Neo: Gets the level of an enchantment from NBT. Use [ItemStack#getEnchantmentLevel(Holder)] for gameplay logic.
++    /// Neo: returns the level of an enchantment from NBT. Use [ItemStack#getEnchantmentLevel(Holder)] for gameplay logic.
 +    public static int getTagEnchantmentLevel(Holder<Enchantment> enchantment, ItemInstance piece) {
          ItemEnchantments enchantments = piece.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
          return enchantments.getLevel(enchantment);

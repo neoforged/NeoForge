@@ -1,10 +1,11 @@
 --- a/net/minecraft/client/renderer/blockentity/TrialSpawnerRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/TrialSpawnerRenderer.java
-@@ -64,4 +_,10 @@
+@@ -64,4 +_,11 @@
              SpawnerRenderer.submitEntityInSpawner(poseStack, submitNodeCollector, state.displayEntity, this.entityRenderer, state.spin, state.scale, camera);
          }
      }
 +
++    /// Neo: {@return the render bounding box of this BER for frustum culling}
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(TrialSpawnerBlockEntity blockEntity) {
 +        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();

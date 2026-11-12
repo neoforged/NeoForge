@@ -35,11 +35,12 @@
      public static ItemStack getHeldProjectile(LivingEntity entity, Predicate<ItemStack> valid) {
          if (valid.test(entity.getItemInHand(InteractionHand.OFF_HAND))) {
              return entity.getItemInHand(InteractionHand.OFF_HAND);
-@@ -97,7 +_,7 @@
+@@ -97,7 +_,8 @@
              arrow.setCritArrow(true);
          }
  
 -        return arrow;
++        // Neo: allow modded weapons to provide custom projectile entities
 +        return this.customArrow(arrow, projectile, weapon);
      }
  
@@ -54,12 +55,13 @@
              ? EnchantmentHelper.processAmmoUse(serverLevel, weapon, projectile, 1)
              : 0;
          if (ammoToUse > projectile.getCount()) {
-@@ -139,5 +_,19 @@
+@@ -139,5 +_,20 @@
          }
  
          return used;
 +    }
 +
++    /// Neo: {@return the arrow entity to spawn}
 +    public AbstractArrow customArrow(AbstractArrow arrow, ItemStack projectileStack, ItemStack weaponStack) {
 +        return arrow;
 +    }

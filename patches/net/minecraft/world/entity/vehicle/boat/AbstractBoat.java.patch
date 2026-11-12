@@ -9,11 +9,12 @@
                          blockHeight = Math.max(blockHeight, fluidState.getHeight(this.level(), pos));
                      }
  
-@@ -484,7 +_,7 @@
+@@ -484,7 +_,8 @@
                              BlockState blockState = this.level().getBlockState(blockPos);
                              if (!(blockState.getBlock() instanceof LilyPadBlock)
                                  && Shapes.joinIsNotEmpty(blockState.getCollisionShape(this.level(), blockPos).move(blockPos), boatShape, BooleanOp.AND)) {
 -                                friction += blockState.getBlock().getFriction();
++                                // Neo: use level-sensitive friction getter
 +                                friction += blockState.getFriction(this.level(), blockPos, this);
                                  count++;
                              }

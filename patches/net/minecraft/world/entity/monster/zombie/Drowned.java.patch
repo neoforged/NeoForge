@@ -1,8 +1,10 @@
 --- a/net/minecraft/world/entity/monster/zombie/Drowned.java
 +++ b/net/minecraft/world/entity/monster/zombie/Drowned.java
-@@ -137,7 +_,7 @@
+@@ -136,8 +_,9 @@
+         return groupData;
      }
  
++    // Neo: widen generic to support subclasses
      public static boolean checkDrownedSpawnRules(
 -        EntityType<Drowned> type, ServerLevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
 +        EntityType<? extends Drowned> type, ServerLevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random

@@ -43,11 +43,12 @@
      }
  
      public boolean hasPrecipitation() {
-@@ -196,7 +_,7 @@
+@@ -196,7 +_,8 @@
      }
  
      public BiomeGenerationSettings getGenerationSettings() {
 -        return this.generationSettings;
++        // Neo: defer to modifiable biome info
 +        return this.modifiableBiomeInfo().get().generationSettings();
      }
  

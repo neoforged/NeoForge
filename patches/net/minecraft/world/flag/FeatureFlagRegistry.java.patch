@@ -1,17 +1,20 @@
 --- a/net/minecraft/world/flag/FeatureFlagRegistry.java
 +++ b/net/minecraft/world/flag/FeatureFlagRegistry.java
-@@ -75,6 +_,18 @@
+@@ -75,6 +_,21 @@
          }, set -> List.copyOf(this.toNames(set)));
      }
  
++    /// Neo: {@return the feature flag with the given name}
 +    public FeatureFlag getFlag(Identifier name) {
 +        return com.google.common.base.Preconditions.checkNotNull(this.names.get(name), "Flag %s was not registered", name);
 +    }
 +
++    /// Neo: {@return all feature flags}
 +    public Map<Identifier, FeatureFlag> getAllFlags() {
 +        return this.names;
 +    }
 +
++    /// Neo: {@return whether this registry contains any modded feature flags}
 +    public boolean hasAnyModdedFlags() {
 +        return this.names.values().stream().anyMatch(FeatureFlag::isModded);
 +    }
@@ -19,7 +22,7 @@
      public static class Builder {
          private final FeatureFlagUniverse universe;
          private int id;
-@@ -88,11 +_,18 @@
+@@ -88,11 +_,20 @@
              return this.create(Identifier.withDefaultNamespace(name));
          }
  
@@ -31,10 +34,12 @@
 +        }
 +
 +        public FeatureFlag create(Identifier name, boolean modded) {
++            // Neo: disable ID limit
 +            if (this.id >= 64 && false) {
                  throw new IllegalStateException("Too many feature flags");
              } else {
 -                FeatureFlag result = new FeatureFlag(this.universe, this.id++);
++                // Neo: compute bit and mask index from unlimited ID
 +                FeatureFlag result = new FeatureFlag(this.universe, this.id % FeatureFlagSet.MAX_CONTAINER_SIZE, this.id / FeatureFlagSet.MAX_CONTAINER_SIZE, modded);
 +                this.id++;
                  FeatureFlag previous = this.flags.put(name, result);

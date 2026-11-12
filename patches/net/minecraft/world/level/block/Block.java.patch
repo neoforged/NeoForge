@@ -9,28 +9,28 @@
      private static final LoadingCache<VoxelShape, Boolean> SHAPE_FULL_BLOCK_CACHE = CacheBuilder.newBuilder()
          .maximumSize(512L)
          .weakKeys()
-@@ -119,6 +_,11 @@
+@@ -119,6 +_,10 @@
          map.defaultReturnValue((byte)127);
          return map;
      });
 +    /// Neo: Short-lived holder of dropped item entities. Used mainly for Neo hooks and event logic.
-+    ///
 +    /// When not null, records all item entities from [#popResource(Level, Supplier, ItemStack)] instead of adding them to the world.
 +    @Nullable
 +    private static List<ItemEntity> capturedDrops = null;
  
      public static int getId(@Nullable BlockState blockState) {
          if (blockState == null) {
-@@ -230,7 +_,7 @@
+@@ -230,7 +_,8 @@
          this.createBlockStateDefinition(builder);
          this.stateDefinition = builder.create(Block::defaultBlockState, BlockState::new);
          this.registerDefaultState(this.stateDefinition.any());
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
++        // Neo: disable class name check
 +        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
              String className = this.getClass().getSimpleName();
              if (!className.endsWith("Block")) {
                  LOGGER.error("Block classes should end with Block and {} doesn't.", className);
-@@ -285,7 +_,13 @@
+@@ -285,7 +_,14 @@
          }
      }
  
@@ -40,14 +40,16 @@
 +        return shouldRenderFace(net.minecraft.world.level.EmptyBlockGetter.INSTANCE, BlockPos.ZERO, state, neighborState, direction);
 +    }
 +
++    /// Neo: overload of [#shouldRenderFace(BlockState, BlockState, Direction)] with level context
 +    public static boolean shouldRenderFace(BlockGetter level, BlockPos pos, BlockState state, BlockState neighborState, Direction direction) {
          VoxelShape occluder = neighborState.getFaceOcclusionShape(direction.getOpposite());
          if (occluder == Shapes.block()) {
              return false;
-@@ -295,6 +_,10 @@
+@@ -295,6 +_,11 @@
              return false;
          }
  
++        // Neo: let the occluding block indicate that it occludes this block
 +        if (neighborState.hidesNeighborFace(level, pos.relative(direction), state, direction.getOpposite()) && state.supportsExternalFaceHiding()) {
 +            return false;
 +        }
@@ -87,26 +89,27 @@
          }
      }
  
-@@ -412,19 +_,26 @@
+@@ -412,19 +_,28 @@
      }
  
      private static void popResource(Level level, Supplier<ItemEntity> entityFactory, ItemStack itemStack) {
 -        if (level instanceof ServerLevel serverLevel && !itemStack.isEmpty() && serverLevel.getGameRules().get(GameRules.BLOCK_DROPS)) {
++        // Neo: don't drop items while restoring block snapshots
 +        if (level instanceof ServerLevel serverLevel && !itemStack.isEmpty() && serverLevel.getGameRules().get(GameRules.BLOCK_DROPS) && !level.restoringBlockSnapshots) {
              ItemEntity entity = entityFactory.get();
              entity.setDefaultPickUpDelay();
--            level.addFreshEntity(entity);
 +            // Neo: Add drops to the captured list if capturing is enabled.
 +            if (capturedDrops != null) {
 +                capturedDrops.add(entity);
-+            } else {
-+                level.addFreshEntity(entity);
++                return;
 +            }
+             level.addFreshEntity(entity);
          }
      }
  
      public void popExperience(ServerLevel level, BlockPos pos, int amount) {
 -        if (level.getGameRules().get(GameRules.BLOCK_DROPS)) {
++        // Neo: don't drop XP while restoring block snapshots
 +        if (level.getGameRules().get(GameRules.BLOCK_DROPS) && !level.restoringBlockSnapshots) {
              ExperienceOrb.award(level, Vec3.atCenterOf(pos), amount);
          }

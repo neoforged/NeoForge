@@ -1,21 +1,23 @@
 --- a/net/minecraft/world/item/BucketItem.java
 +++ b/net/minecraft/world/item/BucketItem.java
-@@ -58,8 +_,8 @@
+@@ -58,8 +_,9 @@
          BlockPos directionOffsetPos = pos.relative(direction);
          if (level.mayInteract(player, pos) && player.mayUseItemAt(directionOffsetPos, direction, itemStack)) {
              BlockState clicked = level.getBlockState(pos);
 -            BlockPos placePos = clicked.getBlock() instanceof LiquidBlockContainer && this.content == Fluids.WATER ? pos : directionOffsetPos;
 -            if (this.emptyContents(player, level, placePos, hitResult)) {
++            // Neo: let custom buckets decide whether the targeted block can contain the contained fluid
 +            BlockPos placePos = this.canBlockContainFluid(player, level, pos, clicked) ? pos : directionOffsetPos;
 +            if (this.emptyContents(player, level, placePos, hitResult, itemStack)) {
                  this.checkExtraContent(player, level, itemStack, placePos);
                  if (player instanceof ServerPlayer serverPlayer && this.content != Fluids.EMPTY) {
                      CriteriaTriggers.PLACED_BLOCK.trigger(serverPlayer, placePos, itemStack);
-@@ -75,7 +_,7 @@
+@@ -75,7 +_,8 @@
                          ItemStack taken = bucketPickupBlock.pickupBlock(player, level, pos, blockState);
                          if (!taken.isEmpty()) {
                              player.awardStat(Stats.ITEM_USED.get(this));
 -                            bucketPickupBlock.getPickupSound().ifPresent(soundEvent -> player.playSound(soundEvent, 1.0F, 1.0F));
++                            // Neo: use state-sensitive pickup sound getter
 +                            bucketPickupBlock.getPickupSound(blockState).ifPresent(soundEvent -> player.playSound(soundEvent, 1.0F, 1.0F));
                              level.gameEvent(player, GameEvent.FLUID_PICKUP, pos);
                              ItemStack result = ItemUtils.createFilledResult(itemStack, player, taken);
@@ -36,7 +38,7 @@
          if (!(this.content instanceof FlowingFluid flowingFluid)) {
              return false;
          } else {
-@@ -117,8 +_,15 @@
+@@ -117,8 +_,16 @@
              boolean shiftKeyDown = user != null && user.isShiftKeyDown();
              boolean placeLiquid = mayReplace
                  || block instanceof LiquidBlockContainer container && container.canPlaceLiquid(user, level, pos, blockState, this.content);
@@ -44,6 +46,7 @@
 +            var containedFluidStack = containerItem != null ? net.neoforged.neoforge.transfer.fluid.FluidUtil.getFirstStackContained(containerItem) : net.neoforged.neoforge.fluids.FluidStack.EMPTY;
              boolean canPlaceFluidInsideBlock = blockState.isAir() || placeLiquid && (!shiftKeyDown || hitResult == null);
              if (canPlaceFluidInsideBlock) {
++                // Neo: let the fluid type decide whether it is vaporized on placement
 +                if (!containedFluidStack.isEmpty() && this.content.getFluidType().isVaporizedOnPlacement(level, pos, containedFluidStack)) {
 +                    this.content.getFluidType().onVaporize(user, level, pos, containedFluidStack);
 +                    return true;
@@ -57,32 +60,33 @@
  
                      return true;
 -                } else if (block instanceof LiquidBlockContainer container && this.content == Fluids.WATER) {
-+                } else if (block instanceof LiquidBlockContainer container && container.canPlaceLiquid(user, level, pos, blockState, this.content)) {
++                } else if (block instanceof LiquidBlockContainer container && container.canPlaceLiquid(user, level, pos, blockState, this.content)) { // Neo: let the block decide whether the fluid can be placed in it
                      container.placeLiquid(level, pos, blockState, flowingFluid.getSource(false));
                      this.playEmptySound(user, level, pos);
                      return true;
-@@ -149,15 +_,22 @@
+@@ -149,13 +_,23 @@
                      return true;
                  }
              } else {
 -                return hitResult != null && this.emptyContents(user, level, hitResult.getBlockPos().relative(hitResult.getDirection()), null);
++                // Neo: use stack-sensitive method
 +                return hitResult != null && this.emptyContents(user, level, hitResult.getBlockPos().relative(hitResult.getDirection()), null, containerItem);
              }
          }
++    }
++
++    /// Neo: {@return whether the contained fluid can be placed in the clicked block}
++    protected boolean canBlockContainFluid(@Nullable Player player, Level level, BlockPos pos, BlockState clicked) {
++        return clicked.getBlock() instanceof LiquidBlockContainer container && container.canPlaceLiquid(player, level, pos, clicked, this.content);
      }
  
      protected void playEmptySound(@Nullable LivingEntity user, LevelAccessor level, BlockPos pos) {
 -        SoundEvent soundEvent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
++        // Neo: let the fluid type control its bucket emptying sound
 +        SoundEvent soundEvent = this.content.getFluidType().getSound(user, level, pos, net.neoforged.neoforge.common.SoundActions.BUCKET_EMPTY);
 +        if (soundEvent == null) {
 +            soundEvent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
 +        }
          level.playSound(user, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
          level.gameEvent(user, GameEvent.FLUID_PLACE, pos);
-+    }
-+
-+    protected boolean canBlockContainFluid(@Nullable Player player, Level level, BlockPos pos, BlockState clicked) {
-+        return clicked.getBlock() instanceof LiquidBlockContainer container && container.canPlaceLiquid(player, level, pos, clicked, this.content);
      }
- 
-     public Fluid getContent() {

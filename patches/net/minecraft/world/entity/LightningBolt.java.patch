@@ -1,28 +1,14 @@
 --- a/net/minecraft/world/entity/LightningBolt.java
 +++ b/net/minecraft/world/entity/LightningBolt.java
-@@ -39,6 +_,7 @@
+@@ -39,6 +_,8 @@
      private @Nullable ServerPlayer cause;
      private final Set<Entity> hitEntities = Sets.newHashSet();
      private int blocksSetOnFire;
++    /// Neo: holds the damage inflicted by this lightning bolt
 +    private float damage = 5.0F;
  
      public LightningBolt(EntityType<? extends LightningBolt> type, Level level) {
          super(type, level);
-@@ -72,6 +_,14 @@
-         }
-     }
- 
-+    public void setDamage(float damage) {
-+        this.damage = damage;
-+    }
-+
-+    public float getDamage() {
-+        return this.damage;
-+    }
-+
-     @Override
-     public void tick() {
-         super.tick();
 @@ -152,6 +_,9 @@
                      );
  
@@ -33,3 +19,19 @@
                      entity.thunderHit((ServerLevel)this.level(), this);
                  }
  
+@@ -265,5 +_,15 @@
+     @Override
+     public final boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+         return false;
++    }
++
++    /// Neo: set the damage inflicted by this lightning bolt
++    public void setDamage(float damage) {
++        this.damage = damage;
++    }
++
++    /// Neo: {@return the damage inflicted by this lighting bolt}
++    public float getDamage() {
++        return this.damage;
+     }
+ }

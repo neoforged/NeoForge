@@ -1,11 +1,13 @@
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -145,6 +_,11 @@
+@@ -145,6 +_,13 @@
      private Leashable.@Nullable LeashData leashData;
      private BlockPos homePosition = BlockPos.ZERO;
      private int homeRadius = -1;
++    /// Neo: holds the spawn reason of this mob
 +    @Nullable
 +    private EntitySpawnReason spawnType;
++    /// Neo: indicates whether the spawn of this mob was canceled in [net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent]
 +    private boolean spawnCancelled = false;
 +    /// Neo: Prevent immediate spawning from conversions to capture conversion results for events
 +    protected boolean preventConversionSpawns = false;
@@ -124,7 +126,7 @@
  
          params.type().convert(this, newMob, params);
          afterConversion.finalizeConversion(newMob);
-+        if (!preventConversionSpawns)
++        if (!this.preventConversionSpawns)
          if (this.level() instanceof ServerLevel serverLevel) {
              serverLevel.addFreshEntity(newMob);
          }

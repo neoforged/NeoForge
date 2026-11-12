@@ -9,18 +9,16 @@
                          if (nearest == 0.0) {
                              hovered = entity;
                              hoveredPos = location;
-@@ -261,8 +_,14 @@
+@@ -261,6 +_,12 @@
          }
      }
  
++    public static InteractionHand getWeaponHoldingHand(LivingEntity livingEntity, Predicate<Item> itemPredicate) {
++        return itemPredicate.test(livingEntity.getMainHandItem().getItem()) ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
++    }
++
 +    /// @deprecated Neo: use [#getWeaponHoldingHand(LivingEntity, Predicate)] instead
 +    @Deprecated
      public static InteractionHand getWeaponHoldingHand(LivingEntity mob, Item weaponItem) {
          return mob.getMainHandItem().is(weaponItem) ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
-+    }
-+
-+    public static InteractionHand getWeaponHoldingHand(LivingEntity livingEntity, Predicate<Item> itemPredicate) {
-+        return itemPredicate.test(livingEntity.getMainHandItem().getItem()) ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
      }
- 
-     public static AbstractArrow getMobArrow(LivingEntity mob, ItemStack projectile, float power, @Nullable ItemStack firedFromWeapon) {

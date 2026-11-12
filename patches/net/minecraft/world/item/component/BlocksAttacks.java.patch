@@ -1,12 +1,14 @@
 --- a/net/minecraft/world/item/component/BlocksAttacks.java
 +++ b/net/minecraft/world/item/component/BlocksAttacks.java
-@@ -110,14 +_,23 @@
+@@ -110,14 +_,26 @@
      }
  
      public void hurtBlockingItem(Level level, ItemStack item, LivingEntity user, InteractionHand hand, float damage) {
 +        this.hurtBlockingItem(level, item, user, hand, damage, -1);
 +    }
 +
++    /// Neo: overload of [#hurtBlockingItem(Level, ItemStack, LivingEntity, InteractionHand, float)] which allows the caller to provide
++    /// a fixed damage amount to use instead of the damage function specified by this component
 +    public void hurtBlockingItem(Level level, ItemStack item, LivingEntity user, InteractionHand hand, float damage, int fixedDamage) {
          if (user instanceof Player player) {
              if (!level.isClientSide()) {
@@ -22,7 +24,8 @@
 +                item.hurtAndBreak(itemDamage, serverLevel, user, it -> {
 +                    user.onEquippedItemBroken(it, hand.asEquipmentSlot());
 +                    net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(player, original, hand);
-+                    player.stopUsingItem(); // Neo: Fix MC-168573 ("After breaking a shield, the player's off-hand can't finish using some items")
++                    // Neo: Fix MC-168573 ("After breaking a shield, the player's off-hand can't finish using some items")
++                    player.stopUsingItem();
 +                });
              }
          }

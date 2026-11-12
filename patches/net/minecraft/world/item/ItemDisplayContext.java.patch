@@ -10,11 +10,13 @@
  public enum ItemDisplayContext implements StringRepresentable, IExtensibleEnum {
      NONE(0, "none"),
      THIRD_PERSON_LEFT_HAND(1, "thirdperson_lefthand"),
-@@ -23,10 +_,22 @@
+@@ -23,10 +_,25 @@
      public static final IntFunction<ItemDisplayContext> BY_ID = ByIdMap.continuous(ItemDisplayContext::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
      private final byte id;
      private final String name;
++    /// Neo: indicates whether this is a modded display context
 +    private final boolean isModded;
++    /// Neo: holds a supplier for the context to fall back to if this context is not specified
 +    private final java.util.function.Supplier<@org.jspecify.annotations.Nullable ItemDisplayContext> fallback;
  
 +    @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
@@ -25,6 +27,7 @@
 +        this.fallback = () -> null;
 +    }
 +
++    /// Neo: constructor for modded display contexts
 +    ItemDisplayContext(int id, String name, @org.jspecify.annotations.Nullable String fallbackName) {
 +        this.id = (byte)id;
 +        this.name = name;
@@ -33,23 +36,27 @@
      }
  
      @Override
-@@ -39,10 +_,23 @@
+@@ -39,10 +_,27 @@
      }
  
      public boolean firstPerson() {
 -        return this == FIRST_PERSON_LEFT_HAND || this == FIRST_PERSON_RIGHT_HAND;
++        // Neo: also check whether the fallback is a first-person context
 +        return this == FIRST_PERSON_LEFT_HAND || this == FIRST_PERSON_RIGHT_HAND || net.minecraft.Optionull.mapOrDefault(fallback(), ItemDisplayContext::firstPerson, false);
      }
  
      public boolean leftHand() {
 -        return this == FIRST_PERSON_LEFT_HAND || this == THIRD_PERSON_LEFT_HAND;
++        // Neo: also check whether the fallback is a left-hand context
 +        return this == FIRST_PERSON_LEFT_HAND || this == THIRD_PERSON_LEFT_HAND || net.minecraft.Optionull.mapOrDefault(fallback(), ItemDisplayContext::leftHand, false);
 +    }
 +
++    /// Neo: {@return whether this is a modded display context}
 +    public boolean isModded() {
 +        return this.isModded;
 +    }
 +
++    /// Neo: {@return the context to fall back to if this context is not specified}
 +    @org.jspecify.annotations.Nullable
 +    public ItemDisplayContext fallback() {
 +        return this.fallback.get();

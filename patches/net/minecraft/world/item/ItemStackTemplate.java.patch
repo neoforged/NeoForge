@@ -4,22 +4,22 @@
          this(item.builtInRegistryHolder(), 1, patch);
      }
  
-+    // Neo: Provide full set of overloads
++    /// Neo: overload of [#ItemStackTemplate(Holder, int, DataComponentPatch)] taking an [Item]
 +    public ItemStackTemplate(Item item, int count, DataComponentPatch patch) {
 +        this(item.builtInRegistryHolder(), count, patch);
 +    }
 +
-+    // Neo: Easier integration with DeferredItem
++    /// Neo: overload of [#ItemStackTemplate(Item)] taking a holder
 +    public ItemStackTemplate(Holder<Item> item) {
 +        this(item, 1, DataComponentPatch.EMPTY);
 +    }
 +
-+    // Neo: Easier integration with DeferredItem
++    /// Neo: overload of [#ItemStackTemplate(Item, int)] taking a holder
 +    public ItemStackTemplate(Holder<Item> item, int count) {
 +        this(item, count, DataComponentPatch.EMPTY);
 +    }
 +
-+    // Neo: Easier integration with DeferredItem
++    /// Neo: overload of [#ItemStackTemplate(Item, DataComponentPatch)] taking a holder
 +    public ItemStackTemplate(Holder<Item> item, DataComponentPatch patch) {
 +        this(item, 1, patch);
 +    }

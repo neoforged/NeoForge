@@ -1,11 +1,12 @@
 --- a/net/minecraft/world/entity/Leashable.java
 +++ b/net/minecraft/world/entity/Leashable.java
-@@ -188,7 +_,8 @@
+@@ -188,7 +_,9 @@
  
      static <E extends Entity & Leashable> float angularFriction(E entity) {
          if (entity.onGround()) {
 -            return entity.level().getBlockState(entity.getBlockPosBelowThatAffectsMyMovement()).getBlock().getFriction() * 0.91F;
 +            var groundPos = entity.getBlockPosBelowThatAffectsMyMovement();
++            // Neo: use level-sensitive friction getter
 +            return entity.level().getBlockState(groundPos).getFriction(entity.level(), groundPos, entity) * 0.91F;
          } else {
              return entity.isInLiquid() ? 0.8F : 0.91F;

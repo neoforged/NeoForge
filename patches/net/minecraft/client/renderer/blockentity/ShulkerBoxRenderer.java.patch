@@ -1,9 +1,10 @@
 --- a/net/minecraft/client/renderer/blockentity/ShulkerBoxRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/ShulkerBoxRenderer.java
-@@ -139,6 +_,12 @@
+@@ -139,6 +_,13 @@
          this.model.root().getExtentsForGui(poseStack, output);
      }
  
++    /// Neo: {@return the render bounding box of this BER for frustum culling}
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(ShulkerBoxBlockEntity blockEntity) {
 +        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();

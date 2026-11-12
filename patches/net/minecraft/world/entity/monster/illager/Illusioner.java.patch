@@ -1,13 +1,15 @@
 --- a/net/minecraft/world/entity/monster/illager/Illusioner.java
 +++ b/net/minecraft/world/entity/monster/illager/Illusioner.java
-@@ -174,9 +_,12 @@
+@@ -174,9 +_,14 @@
  
      @Override
      public void performRangedAttack(LivingEntity target, float power) {
 -        ItemStack bowItem = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, Items.BOW));
++        // Neo: add support for modded bows
 +        ItemStack bowItem = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof net.minecraft.world.item.BowItem));
          ItemStack projectile = this.getProjectile(bowItem);
          AbstractArrow arrow = ProjectileUtil.getMobArrow(this, projectile, power, bowItem);
++        // Neo: allow modded bows to provide custom projectile entities
 +        if (bowItem.getItem() instanceof net.minecraft.world.item.BowItem bowItemItem) {
 +            arrow = bowItemItem.customArrow(arrow, projectile, bowItem);
 +        }

@@ -1,55 +1,48 @@
 --- a/net/minecraft/world/item/DyeColor.java
 +++ b/net/minecraft/world/item/DyeColor.java
-@@ -59,6 +_,8 @@
-     private final MapColor terracottaColor;
+@@ -60,8 +_,14 @@
      private final int textureDiffuseColor;
      private final int fireworkColor;
-+    private final net.minecraft.tags.TagKey<Item> dyesTag;
-+    private final net.minecraft.tags.TagKey<Item> dyedTag;
      private final int textColor;
++    /// Neo: holds a tag of dye items of this color
++    private final net.minecraft.tags.TagKey<Item> dyesTag;
++    /// Neo: holds a tag of items dyed with this color
++    private final net.minecraft.tags.TagKey<Item> dyedTag;
  
      DyeColor(int id, String name, int textureDiffuseColor, MapColor mapColor, MapColor terracottaColor, int fireworkColor, int textColor) {
-@@ -67,6 +_,8 @@
-         this.mapColor = mapColor;
-         this.terracottaColor = terracottaColor;
-         this.textColor = ARGB.opaque(textColor);
 +        this.dyesTag = net.minecraft.tags.ItemTags.create(net.minecraft.resources.Identifier.fromNamespaceAndPath("c", "dyes/" + name));
 +        this.dyedTag = net.minecraft.tags.ItemTags.create(net.minecraft.resources.Identifier.fromNamespaceAndPath("c", "dyed/" + name));
-         this.textureDiffuseColor = ARGB.opaque(textureDiffuseColor);
-         this.fireworkColor = fireworkColor;
-     }
-@@ -121,6 +_,35 @@
+         this.id = id;
+         this.name = name;
+         this.mapColor = mapColor;
+@@ -121,6 +_,31 @@
      @Override
      public String getSerializedName() {
          return this.name;
 +    }
 +
-+    /// Neo: Gets the tag key representing the set of items which provide this dye color.
-+    /// @return A [net.minecraft.tags.TagKey<Item>] representing the set of items which provide this dye color.
++    /// Neo: {@return the tag of items which provide this dye color}
 +    public net.minecraft.tags.TagKey<Item> getTag() {
 +        return this.dyesTag;
 +    }
 +
-+    /// Neo: Gets the tag key representing the set of items which are dyed with this color.
-+    /// @return A [net.minecraft.tags.TagKey<Item>] representing the set of items which are dyed with this color.
++    /// Neo: {@return the tag of items which are dyed with this color}
 +    public net.minecraft.tags.TagKey<Item> getDyedTag() {
 +        return this.dyedTag;
 +    }
 +
++    /// Neo: {@return the color provided by the given stack}
 +    @Nullable
 +    public static DyeColor getColor(ItemStack stack) {
 +        DyeColor dyeColor = stack.get(DataComponents.DYE);
 +        if (dyeColor != null) {
 +            return dyeColor;
 +        }
-+
-+        for (int x = 0; x < BLACK.getId(); x++) {
-+            DyeColor color = byId(x);
++        for (DyeColor color : VALUES) {
 +            if (stack.is(color.getTag())) {
 +                return color;
 +            }
 +        }
-+
 +        return null;
      }
  

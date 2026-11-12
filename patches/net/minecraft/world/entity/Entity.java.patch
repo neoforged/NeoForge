@@ -17,7 +17,7 @@
      private final EntityType<?> type;
      private boolean requiresPrecisePosition;
      private int id = 0;
-@@ -307,6 +_,16 @@
+@@ -307,6 +_,15 @@
      protected final InsideBlockEffectApplier.StepBasedCollector insideEffectCollector = new InsideBlockEffectApplier.StepBasedCollector();
      protected final InterpolationHandler interpolationHandler;
      private CustomData customData = CustomData.EMPTY;
@@ -27,9 +27,8 @@
 +    private java.util.@Nullable Collection<ItemEntity> captureDrops = null;
 +    /// Neo: injected ability to store arbitrary NBT onto entities in ways that allow inter-mod compat without compile-time dependencies
 +    private net.minecraft.nbt.@Nullable CompoundTag persistentData;
-+    /// Neo: internal use for keeping track of entities that are tracked by a level, to
-+    /// allow guarantees that entity position changes will force a chunk load, avoiding
-+    /// potential issues with entity desyncing and bad chunk data.
++    /// Neo: internal use for keeping track of entities that are tracked by a level, to allow guarantees that entity position changes will
++    /// force a chunk load, avoiding potential issues with entity desyncing and bad chunk data.
 +    private boolean isAddedToLevel;
  
      public Entity(EntityType<?> type, Level level) {
@@ -337,11 +336,12 @@
      }
  
      public void setSwimming(boolean swimming) {
-@@ -2920,7 +_,7 @@
+@@ -2920,7 +_,8 @@
              this.igniteForSeconds(8.0F);
          }
  
 -        this.hurtServer(level, this.damageSources().lightningBolt(), 5.0F);
++        // Neo: let the lighting bolt control how much damage it inflicts
 +        this.hurtServer(level, this.damageSources().lightningBolt(), lightningBolt.getDamage());
      }
  

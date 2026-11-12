@@ -1,16 +1,17 @@
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -216,7 +_,8 @@
+@@ -216,14 +_,18 @@
      public static final float ELYTRA_VERTICAL_AIR_DRAG = 0.98F;
      public static final float BASE_SWIM_SPEED = 0.02F;
      private int currentImpulseContextResetGraceTime = 0;
 -    public static final Predicate<LivingEntity> PLAYER_NOT_WEARING_DISGUISE_ITEM = livingEntity -> {
-+    // Neo: Support IItemExtension#isGazeDisguise
++    /// Neo: extended version of [#PLAYER_NOT_WEARING_DISGUISE_ITEM] with support for [net.neoforged.neoforge.common.extensions.IItemExtension#isGazeDisguise]
 +    public static final java.util.function.BiPredicate<LivingEntity, @org.jspecify.annotations.Nullable LivingEntity> PLAYER_NOT_WEARING_DISGUISE_ITEM_FOR_TARGET = (livingEntity, target) -> {
          if (livingEntity instanceof Player player) {
              ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
-             return !helmet.is(ItemTags.GAZE_DISGUISE_EQUIPMENT);
-@@ -224,6 +_,9 @@
+-            return !helmet.is(ItemTags.GAZE_DISGUISE_EQUIPMENT);
++            return !helmet.isGazeDisguise(player, target);
+         } else {
              return true;
          }
      };
@@ -25,10 +26,10 @@
      private Waypoint.Icon locatorBarIcon = new Waypoint.Icon();
      public @Nullable Vec3 currentImpulseImpactPos;
 +    /// Neo: This field stores information about damage dealt to this entity.
-+    /// a new [net.neoforged.neoforge.common.damagesource.DamageContainer] is instantiated
-+    /// via [#hurt(DamageSource, float)] after invulnerability checks, and is removed from
++    /// A new [net.neoforged.neoforge.common.damagesource.DamageContainer] is instantiated
++    /// via [#hurtServer(ServerLevel, DamageSource, float)] after invulnerability checks, and is removed from
 +    /// the stack before the method's return.
-+    protected java.util.@Nullable Stack<net.neoforged.neoforge.common.damagesource.DamageContainer> damageContainers = new java.util.Stack<>();
++    protected java.util.Stack<net.neoforged.neoforge.common.damagesource.DamageContainer> damageContainers = new java.util.Stack<>();
  
      protected LivingEntity(EntityType<? extends LivingEntity> type, Level level) {
          super(type, level);
@@ -41,12 +42,15 @@
              .add(Attributes.BELOW_NAME_DISTANCE);
      }
  
-@@ -386,7 +_,8 @@
+@@ -386,7 +_,11 @@
  
                  double scale = Math.min(0.2F + power / 15.0, 2.5);
                  int particles = (int)(150.0 * scale);
 -                level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, onState), x, y, z, particles, 0.0, 0.0, 0.0, 0.15F);
-+                if (!onState.addLandingEffects(level, pos, onState, this, particles))
++                // Neo: let the block control how particles are spawned when an entity falls onto it
++                if (onState.addLandingEffects(level, pos, onState, this, particles)) {
++                    return;
++                }
 +                level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, onState, pos), x, y, z, particles, 0.0, 0.0, 0.0, 0.15F);
              }
          }
@@ -70,19 +74,17 @@
              if (this.isEyeInFluid(FluidTags.WATER)
                  && !level.getBlockState(BlockPos.containing(this.getX(), this.getEyeY(), this.getZ())).is(Blocks.BUBBLE_COLUMN)) {
                  boolean canDrownInWater = !this.canBreatheUnderwater()
-@@ -794,7 +_,11 @@
+@@ -794,6 +_,10 @@
  
          ItemEntity entity = this.createItemStackToDrop(itemStack, false, thrownFromHand);
          if (entity != null) {
--            this.level().addFreshEntity(entity);
++            // Neo: capture drops if requested
 +            if (this.captureDrops() != null) {
 +                this.captureDrops().add(entity);
-+            } else {
-+                this.level().addFreshEntity(entity);
-+            }
++            } else
+             this.level().addFreshEntity(entity);
          }
  
-         return entity;
 @@ -852,6 +_,9 @@
                      Holder<MobEffect> mobEffect = iterator.next();
                      MobEffectInstance effect = this.activeEffects.get(mobEffect);
@@ -113,24 +115,23 @@
          return Mth.clamp(visibilityPercent, 0.0, 10.0);
      }
  
-@@ -980,9 +_,14 @@
+@@ -980,8 +_,14 @@
              return false;
          }
  
 -        Map<Holder<MobEffect>, MobEffectInstance> copy = Maps.newHashMap(this.activeEffects);
 -        this.activeEffects.clear();
--        this.onEffectsRemoved(copy.values());
-+        Map<Holder<MobEffect>, MobEffectInstance> map = new java.util.HashMap<>(this.activeEffects.size());
++        // Neo: build copy one-by-one to allow interception by event handlers
++        Map<Holder<MobEffect>, MobEffectInstance> copy = new java.util.HashMap<>(this.activeEffects.size());
 +        for (Map.Entry<Holder<MobEffect>, MobEffectInstance> entry : this.activeEffects.entrySet()) {
 +            if (!net.neoforged.neoforge.event.EventHooks.onEffectRemoved(this, entry.getValue())) {
-+                map.put(entry.getKey(), entry.getValue());
++                copy.put(entry.getKey(), entry.getValue());
 +            }
 +        }
-+        map.keySet().forEach(this.activeEffects::remove);
-+        this.onEffectsRemoved(map.values());
++        copy.keySet().forEach(this.activeEffects::remove);
+         this.onEffectsRemoved(copy.values());
          return true;
      }
- 
 @@ -1012,12 +_,13 @@
      }
  
@@ -211,7 +212,7 @@
          if (Float.isNaN(damage) || Float.isInfinite(damage)) {
              damage = Float.MAX_VALUE;
          }
-+        this.damageContainers.peek().setNewDamage(damage); // Update container with vanilla changes
++        this.damageContainers.peek().setNewDamage(damage); // Neo: Update container with vanilla changes
  
 -        boolean tookFullDamage = true;
 +        boolean performSideEffects = true; // Neo: Rename local variable to be more clear on its behavior
@@ -222,7 +223,7 @@
                  return false;
              }
 +
-+            // If we are going to do damage despite invulnerability (due to the damage being higher than prior), we need to setup the container differently.
++            // Neo: If we are going to do damage despite invulnerability (due to the damage being higher than prior), we need to setup the container differently.
 +            this.damageContainers.peek().setShouldCauseSideEffects(false);
 +            this.damageContainers.peek().setPostAttackInvulnerabilityTicks(this.damageCooldownTime);
 +            this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.INVULNERABILITY, this.lastHurt);
@@ -230,7 +231,7 @@
              this.actuallyHurt(level, source, damage - this.lastHurt);
 -            this.lastHurt = damage;
 -            tookFullDamage = false;
-+            // lastHurt, in both blocks, needs to always be set to the value of `damage` since it is pre-reduction. Using a post reduction value invalidates iframes.
++            // Neo: lastHurt, in both blocks, needs to always be set to the value of `damage` since it is pre-reduction. Using a post reduction value invalidates iframes.
 +            // Since we're in the "damage while invuln is active" block, we need to make sure we don't reduce the lastHurt amount.
 +            this.lastHurt = java.lang.Math.max(this.lastHurt, damage);
 +            this.damageCooldownTime = this.damageContainers.peek().getPostAttackInvulnerabilityTicks();
@@ -280,11 +281,12 @@
          return success;
      }
  
-@@ -1321,7 +_,7 @@
+@@ -1321,7 +_,8 @@
          }
  
          BlocksAttacks blocksAttacks = blockingWith.get(DataComponents.BLOCKS_ATTACKS);
 -        if (blocksAttacks != null && !blocksAttacks.bypassedBy().map(t -> t.contains(source.typeHolder())).orElse(false)) {
++        // Neo: move blocking checks into event dispatch
 +        if (blocksAttacks != null) {
              if (source.getDirectEntity() instanceof AbstractArrow abstractArrow && abstractArrow.getPierceLevel() > 0) {
                  return 0.0F;
@@ -390,7 +392,7 @@
          power *= 1.0 - this.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
          if (!(power <= 0.0)) {
              this.needsSync = true;
-@@ -1719,15 +_,12 @@
+@@ -1719,11 +_,10 @@
              BlockState state = this.getInBlockState();
              if (this.isFallFlying() && state.is(BlockTags.CAN_GLIDE_THROUGH)) {
                  return false;
@@ -399,19 +401,13 @@
 -                return true;
 -            } else if (state.getBlock() instanceof TrapDoorBlock && this.trapdoorUsableAsLadder(ladderCheckPos, state)) {
 -                this.lastClimbablePos = Optional.of(ladderCheckPos);
--                return true;
--            } else {
--                return false;
--            }
 +            }
-+            Optional<BlockPos> ladderPos = net.neoforged.neoforge.common.CommonHooks.isLivingOnLadder(state, level(), ladderCheckPos, this);
++            Optional<BlockPos> ladderPos = net.neoforged.neoforge.common.CommonHooks.isLivingOnLadder(state, this.level(), ladderCheckPos, this);
 +            if (ladderPos.isPresent()) {
 +                this.lastClimbablePos = ladderPos;
-+            }
-+            return ladderPos.isPresent();
-         }
-     }
- 
+                 return true;
+             } else {
+                 return false;
 @@ -1788,6 +_,13 @@
              effectiveFallDistance = fallDistance;
          }
@@ -426,7 +422,7 @@
          boolean damaged = super.causeFallDamage(effectiveFallDistance, damageModifier, damageSource);
          int dmg = this.calculateFallDamage(effectiveFallDistance, damageModifier);
          if (dmg > 0) {
-@@ -1851,10 +_,10 @@
+@@ -1851,10 +_,11 @@
              int xx = Mth.floor(this.getX());
              int yy = Mth.floor(this.getY() - 0.2F);
              int zz = Mth.floor(this.getZ());
@@ -436,6 +432,7 @@
              if (!state.isAir()) {
 -                SoundType soundType = state.getSoundType();
 -                this.playSound(soundType.getFallSound(), soundType.getVolume() * 0.5F, soundType.getPitch() * 0.75F);
++                // Neo: let the block control the fall sound
 +                state.playFallSound(this.level(), pos, this);
              }
          }
@@ -513,11 +510,12 @@
          }
      }
  
-@@ -2017,6 +_,10 @@
+@@ -2017,6 +_,11 @@
      }
  
      public boolean swing(InteractionHand hand, SwingAnimation animation, boolean sendToSwingingEntity) {
 +        ItemStack stack = this.getItemInHand(hand);
++        // Neo: let the item handle the swing animation
 +        if (!stack.isEmpty() && stack.onEntitySwing(this, hand)) {
 +            return true;
 +        }
@@ -589,11 +587,12 @@
      }
  
      protected void travelFlying(Vec3 input, float speed) {
-@@ -2440,7 +_,7 @@
+@@ -2440,7 +_,8 @@
          BlockPos posBelow = this.getBlockPosBelowThatAffectsMyMovement();
          float blockFriction = this.onGround()
              ? computeModifiedFriction(
 -                this.level().getBlockState(posBelow).getBlock().getFriction(), (float)this.getAttributeValue(Attributes.FRICTION_MODIFIER)
++                // Neo: use level-sensitive friction getter
 +                this.level().getBlockState(posBelow).getFriction(this.level(), posBelow, this), (float)this.getAttributeValue(Attributes.FRICTION_MODIFIER)
              )
              : 1.0F;
@@ -618,11 +617,12 @@
          this.moveRelative(speed, input);
          this.move(MoverType.SELF, this.getDeltaMovement());
          Vec3 movement = this.getDeltaMovement();
-@@ -2682,7 +_,7 @@
+@@ -2682,7 +_,8 @@
              double xd = Mth.clamp(delta.x, -0.15F, 0.15F);
              double zd = Mth.clamp(delta.z, -0.15F, 0.15F);
              double yd = Math.max(delta.y, -0.15F);
 -            if (yd < 0.0 && !this.getInBlockState().is(Blocks.SCAFFOLDING) && this.isSuppressingSlidingDownLadder() && this instanceof Player) {
++            // Neo: add support for modded scaffolding
 +            if (yd < 0.0D && !this.getInBlockState().isScaffolding(this) && this.isSuppressingSlidingDownLadder() && this instanceof Player) {
                  yd = 0.0;
              }
@@ -666,7 +666,7 @@
              }
          } else {
              this.noJumpDelay = 0;
-@@ -3171,8 +_,11 @@
+@@ -3171,8 +_,12 @@
                  int freeFallInterval = checkFallFlyTicks / 10;
                  if (freeFallInterval % 2 == 0) {
                      List<EquipmentSlot> slotsWithGliders = EquipmentSlot.VALUES.stream().filter(slot -> canGlideUsing(this.getItemBySlot(slot), slot)).toList();
@@ -674,6 +674,7 @@
 +                    if (!slotsWithGliders.isEmpty()) {
                      EquipmentSlot slotToDamage = Util.getRandom(slotsWithGliders, this.random);
 -                    this.getItemBySlot(slotToDamage).hurtAndBreak(1, this, slotToDamage);
++                    // Neo: let the item handle glider damage
 +                    this.getItemBySlot(slotToDamage).onGlideDamage(this, slotToDamage);
 +                    }
                  }
@@ -746,7 +747,7 @@
                  if (!this.useItem.isEmpty() && this.isUsingItem()) {
 -                    ItemStack result = this.useItem.finishUsingItem(this.level(), this);
 +                    ItemStack copy = this.useItem.copy();
-+                    ItemStack result = net.neoforged.neoforge.event.EventHooks.onItemUseFinish(this, copy, getUseItemRemainingTicks(), this.useItem.finishUsingItem(this.level(), this));
++                    ItemStack result = net.neoforged.neoforge.event.EventHooks.onItemUseFinish(this, copy, this.getUseItemRemainingTicks(), this.useItem.finishUsingItem(this.level(), this));
                      if (result != this.useItem) {
                          this.setItemInHand(hand, result);
                      }
@@ -758,36 +759,36 @@
 +            ItemStack copy = this instanceof Player ? useItem.copy() : null;
              this.useItem.releaseUsing(this.level(), this, this.getUseItemRemainingTicks());
 +            if (copy != null && useItem.isEmpty()) {
-+                net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem((Player) this, copy, getUsedItemHand());
++                net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem((Player) this, copy, this.getUsedItemHand());
 +            }
 +            }
              if (this.useItem.useOnRelease()) {
                  this.updatingUsingItem();
              }
-@@ -3595,6 +_,9 @@
+@@ -3595,6 +_,10 @@
      }
  
      public void stopUsingItem() {
++        // Neo: invoke callback when the entity stops using the item
 +        if (this.isUsingItem() && !this.useItem.isEmpty()) {
-+            this.useItem.onStopUsing(this, useItemRemaining);
++            this.useItem.onStopUsing(this, this.useItemRemaining);
 +        }
          if (!this.level().isClientSide()) {
              boolean wasUsingItem = this.isUsingItem();
              this.recentKineticEnemies = null;
-@@ -3649,7 +_,17 @@
-         return this.randomTeleport(xx, yy, zz, showParticles, state -> state.is(avoidanceTag));
+@@ -3650,6 +_,16 @@
      }
  
-+    // Neo: Add overload with the consumed item causing the random teleport
-+    public boolean randomTeleport(double xx, double yy, double zz, boolean showParticles, TagKey<Block> avoidanceTag, ItemStack consumedStack) {
-+        return this.randomTeleport(xx, yy, zz, showParticles, state -> state.is(avoidanceTag), consumedStack);
-+    }
-+
      public boolean randomTeleport(double xx, double yy, double zz, boolean showParticles, Predicate<BlockState> isInvalidPosition) {
 +        return this.randomTeleport(xx, yy, zz, showParticles, isInvalidPosition, ItemStack.EMPTY);
 +    }
 +
-+    // Neo: Add overload with the consumed item causing the random teleport
++    /// Neo: overload of [#randomTeleport(double, double, double, boolean, TagKey)] providing the consumed item causing the random teleport
++    public boolean randomTeleport(double xx, double yy, double zz, boolean showParticles, TagKey<Block> avoidanceTag, ItemStack consumedStack) {
++        return this.randomTeleport(xx, yy, zz, showParticles, state -> state.is(avoidanceTag), consumedStack);
++    }
++
++    /// Neo: overload of [#randomTeleport(double, double, double, boolean, Predicate)] providing the consumed item causing the random teleport
 +    public boolean randomTeleport(double xx, double yy, double zz, boolean showParticles, Predicate<BlockState> isInvalidPosition, ItemStack consumedStack) {
          double y = yy;
          Level level = this.level();
@@ -809,7 +810,7 @@
 +        return checkPositionAndTeleport(xx, y, zz, showParticles, isInvalidPosition, state, level, ItemStack.EMPTY);
 +    }
 +
-+    // Neo: Add overload with the consumed item causing the random teleport
++    /// Neo: overload of [#checkPositionAndTeleport(double, double, double, boolean, Predicate, BlockState, Level)] providing the consumed item causing the random teleport
 +    private boolean checkPositionAndTeleport(
 +        double xx, double y, double zz, boolean showParticles, Predicate<BlockState> isInvalidPosition, BlockState state, Level level, ItemStack consumedStack
 +    ) {

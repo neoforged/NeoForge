@@ -1,10 +1,11 @@
 --- a/net/minecraft/client/renderer/blockentity/TheEndGatewayRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/TheEndGatewayRenderer.java
-@@ -59,4 +_,9 @@
+@@ -59,4 +_,10 @@
      public int getViewDistance() {
          return 256;
      }
 +
++    /// Neo: {@return the render bounding box of this BER for frustum culling}
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(TheEndGatewayBlockEntity blockEntity) {
 +        return blockEntity.isSpawning() || blockEntity.isCoolingDown() ? net.minecraft.world.phys.AABB.INFINITE : super.getRenderBoundingBox(blockEntity);

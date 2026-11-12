@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/level/block/Blocks.java
 +++ b/net/minecraft/world/level/block/Blocks.java
-@@ -802,7 +_,7 @@
+@@ -802,7 +_,8 @@
              .pushReaction(PushReaction.POPPED)
      );
      public static final Block POWERED_RAIL = register(
 -        BlockItemIds.POWERED_RAIL, PoweredRailBlock::new, BlockBehaviour.Properties.of().noCollision().strength(0.7F).sound(SoundType.METAL)
++        // Neo: add parameter indicating that this is a powered rail
 +        BlockItemIds.POWERED_RAIL, properties -> new PoweredRailBlock(properties, true), BlockBehaviour.Properties.of().noCollision().strength(0.7F).sound(SoundType.METAL)
      );
      public static final Block DETECTOR_RAIL = register(

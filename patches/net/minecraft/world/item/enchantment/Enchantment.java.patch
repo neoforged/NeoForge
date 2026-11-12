@@ -61,7 +61,7 @@
              return this;
          }
  
-+        /// Allows specifying an operator that can customize the default [Component] created by [#build(Identifier)].
++        /// Neo: specify an operator that can customize the default [Component] created by [#build(Identifier)].
 +        ///
 +        /// @return this builder
 +        public Enchantment.Builder withCustomName(java.util.function.UnaryOperator<MutableComponent> nameFactory) {

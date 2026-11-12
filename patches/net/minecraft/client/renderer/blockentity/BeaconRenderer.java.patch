@@ -1,10 +1,11 @@
 --- a/net/minecraft/client/renderer/blockentity/BeaconRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/BeaconRenderer.java
-@@ -197,4 +_,10 @@
+@@ -197,4 +_,11 @@
      public boolean shouldRender(T blockEntity, Vec3 cameraPosition) {
          return Vec3.atCenterOf(blockEntity.getBlockPos()).multiply(1.0, 0.0, 1.0).closerThan(cameraPosition.multiply(1.0, 0.0, 1.0), this.getViewDistance());
      }
 +
++    /// Neo: {@return the render bounding box of this BER for frustum culling}
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(T blockEntity) {
 +        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();

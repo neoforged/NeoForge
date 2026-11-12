@@ -1,8 +1,10 @@
 --- a/net/minecraft/world/entity/monster/cubemob/MagmaCube.java
 +++ b/net/minecraft/world/entity/monster/cubemob/MagmaCube.java
-@@ -51,7 +_,7 @@
+@@ -50,8 +_,9 @@
+         return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.2F);
      }
  
++    // Neo: widen generic to support subclasses
      public static boolean checkMagmaCubeSpawnRules(
 -        EntityType<MagmaCube> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
 +        EntityType<? extends MagmaCube> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random

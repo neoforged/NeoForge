@@ -1,9 +1,10 @@
 --- a/net/minecraft/world/level/block/BambooSaplingBlock.java
 +++ b/net/minecraft/world/level/block/BambooSaplingBlock.java
-@@ -38,6 +_,10 @@
+@@ -38,6 +_,11 @@
  
      @Override
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
++        // Neo: let the block decide whether it can sustain this block
 +        var soilDecision = level.getBlockState(pos.below()).canSustainPlant(level, pos.below(), net.minecraft.core.Direction.UP, state);
 +        if (!soilDecision.isDefault()) {
 +            return soilDecision.isTrue();

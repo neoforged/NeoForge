@@ -1,20 +1,9 @@
 --- a/net/minecraft/world/item/crafting/RecipeMap.java
 +++ b/net/minecraft/world/item/crafting/RecipeMap.java
-@@ -14,7 +_,7 @@
- 
- public class RecipeMap {
-     public static final RecipeMap EMPTY = new RecipeMap(ImmutableMultimap.of(), Map.of());
--    private final Multimap<RecipeType<?>, RecipeHolder<?>> byType;
-+    private Multimap<RecipeType<?>, RecipeHolder<?>> byType;
-     private final Map<ResourceKey<Recipe<?>>, RecipeHolder<?>> byKey;
- 
-     private RecipeMap(Multimap<RecipeType<?>, RecipeHolder<?>> byType, Map<ResourceKey<Recipe<?>>, RecipeHolder<?>> byKey) {
-@@ -31,6 +_,36 @@
-             byKey.put(recipe.key(), legacyRecipeHolder);
-         });
+@@ -33,6 +_,36 @@
          return new RecipeMap(byType.build(), byKey.build());
-+    }
-+
+     }
+ 
 +    /// Neo: add factory method for RecipeMap holding recipes synced to the client
 +    public static RecipeMap createClient(java.util.List<RecipeHolder<?>> recipes) {
 +        Builder<RecipeType<?>, RecipeHolder<?>> byType = ImmutableMultimap.builder();
@@ -43,6 +32,8 @@
 +        }
 +
 +        this.byType = ImmutableMultimap.copyOf(finalBuilder);
-     }
- 
++    }
++
      public <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeHolder<T>> byType(RecipeType<T> type) {
+         return (Collection<RecipeHolder<T>>)(Collection<?>)this.byType.get(type);
+     }

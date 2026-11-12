@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/item/BoneMealItem.java
 +++ b/net/minecraft/world/item/BoneMealItem.java
-@@ -38,7 +_,7 @@
+@@ -38,7 +_,8 @@
          BlockPos pos = context.getClickedPos();
          BlockPos relative = pos.relative(context.getClickedFace());
          ItemStack boneMealStack = context.getItemInHand();
 -        if (growCrop(boneMealStack, level, pos)) {
++        // Neo: use helper with additional context
 +        if (applyBonemeal(boneMealStack, level, pos, context.getPlayer())) {
              if (!level.isClientSide()) {
                  boneMealStack.causeUseVibration(context.getPlayer(), GameEvent.ITEM_INTERACT_FINISH);
