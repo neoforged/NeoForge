@@ -1,11 +1,12 @@
 --- a/net/minecraft/world/entity/EntityFluidInteraction.java
 +++ b/net/minecraft/world/entity/EntityFluidInteraction.java
-@@ -26,17 +_,22 @@
+@@ -26,17 +_,28 @@
  
  public class EntityFluidInteraction {
      private final List<EntityFluidInteraction.Tracker> fluidTrackers = new ArrayList<>();
 -    private final Reference2ObjectMap<TagKey<Fluid>, EntityFluidInteraction.CurrentAccumulator> currentAccumulators = new Reference2ObjectArrayMap<>();
 +    private final Reference2ObjectMap<net.neoforged.neoforge.fluids.FluidType, EntityFluidInteraction.CurrentAccumulator> currentAccumulators = new Reference2ObjectArrayMap<>();
++    private boolean removeFluidTrackers = true;
  
      public EntityFluidInteraction(Set<TagKey<Fluid>> fluidsWithCurrent) {
          for (TagKey<Fluid> fluid : fluidsWithCurrent) {
@@ -16,13 +17,19 @@
      }
  
      public boolean update(Entity entity, boolean ignoreCurrent) {
+-        this.fluidTrackers.removeIf(EntityFluidInteraction.Tracker::reset);
+-        this.currentAccumulators.values().forEach(EntityFluidInteraction.CurrentAccumulator::reset);
 +        return this.update(entity, _ -> !ignoreCurrent);
 +    }
 +
 +    public boolean update(Entity entity, java.util.function.Predicate<net.neoforged.neoforge.fluids.FluidType> typePushPredicate) {
-         this.fluidTrackers.removeIf(EntityFluidInteraction.Tracker::reset);
--        this.currentAccumulators.values().forEach(EntityFluidInteraction.CurrentAccumulator::reset);
-+        this.currentAccumulators.values().removeIf(EntityFluidInteraction.CurrentAccumulator::resetAndCheckUnused);
++        if (this.removeFluidTrackers) {
++            this.fluidTrackers.removeIf(EntityFluidInteraction.Tracker::reset);
++            this.currentAccumulators.values().removeIf(EntityFluidInteraction.CurrentAccumulator::resetAndCheckUnused);
++        } else {
++            this.fluidTrackers.forEach(EntityFluidInteraction.Tracker::reset);
++            this.currentAccumulators.values().forEach(EntityFluidInteraction.CurrentAccumulator::resetAndCheckUnused);
++        }
          AABB box = entity.getFluidInteractionBox();
          if (box == null) {
              return false;
@@ -96,7 +103,7 @@
      public double getFluidHeight(TagKey<Fluid> fluid) {
          double height = 0.0;
  
-@@ -177,10 +_,85 @@
+@@ -177,10 +_,94 @@
          return height;
      }
  
@@ -113,12 +120,16 @@
 +    }
 +
 +    public <E extends Entity> double getMaxFluidHeightMatching(E entity, net.neoforged.neoforge.fluids.InFluidPredicate<E> predicate) {
++        this.removeFluidTrackers = false;
++        int fluidCount = this.fluidTrackers.size();
 +        double maxHeight = 0D;
-+        for (Tracker tracker : this.fluidTrackers) {
++        for (int i = 0; i < fluidCount; ++i) {
++            Tracker tracker = this.fluidTrackers.get(i);
 +            if (tracker.height > maxHeight && predicate.test(entity, tracker.fluidType.value().getFluidType(), tracker.height)) {
 +                maxHeight = tracker.height;
 +            }
 +        }
++        this.removeFluidTrackers = true;
 +        return maxHeight;
 +    }
 +
@@ -169,11 +180,16 @@
 +    }
 +
 +    public <E extends Entity> boolean isInFluidMatching(E entity, net.neoforged.neoforge.fluids.InFluidPredicate<E> predicate) {
-+        for (Tracker tracker : this.fluidTrackers) {
++        this.removeFluidTrackers = false;
++        int fluidCount = this.fluidTrackers.size();
++        for (int i = 0; i < fluidCount; ++i) {
++            Tracker tracker = this.fluidTrackers.get(i);
 +            if (tracker.height > 0D && predicate.test(entity, tracker.fluidType.value().getFluidType(), tracker.height)) {
++                this.removeFluidTrackers = true;
 +                return true;
 +            }
 +        }
++        this.removeFluidTrackers = true;
 +        return false;
 +    }
 +
@@ -182,7 +198,7 @@
      public boolean isEyeInFluid(TagKey<Fluid> fluid) {
          for (EntityFluidInteraction.Tracker tracker : this.fluidTrackers) {
              if (tracker.eyesInside && tracker.fluidType.is(fluid)) {
-@@ -191,10 +_,56 @@
+@@ -191,10 +_,61 @@
          return false;
      }
  
@@ -197,11 +213,16 @@
 +    }
 +
 +    public <E extends Entity> boolean isEyeInFluidMatching(E entity, net.neoforged.neoforge.fluids.InFluidPredicate<E> predicate) {
-+        for (Tracker tracker : this.fluidTrackers) {
++        this.removeFluidTrackers = false;
++        int fluidCount = this.fluidTrackers.size();
++        for (int i = 0; i < fluidCount; ++i) {
++            Tracker tracker = this.fluidTrackers.get(i);
 +            if (tracker.eyesInside && predicate.test(entity, tracker.fluidType.value().getFluidType(), tracker.height)) {
++                this.removeFluidTrackers = true;
 +                return true;
 +            }
 +        }
++        this.removeFluidTrackers = true;
 +        return false;
 +    }
 +
