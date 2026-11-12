@@ -1,11 +1,30 @@
 --- a/net/minecraft/world/level/storage/loot/entries/NestedLootTable.java
 +++ b/net/minecraft/world/level/storage/loot/entries/NestedLootTable.java
-@@ -77,4 +_,8 @@
+@@ -43,7 +_,7 @@
+             output.accept(new UniformContainerBase.EntryBase() {
+                 @Override
+                 public void createItemStack(Consumer<ItemStack> output, LootContext context) {
+-                    table.value().getRandomItemsRaw(context, output);
++                    table.value().getRandomItems(context, output); // Neo: allow GLMs to run on nested loot tables
+                 }
+             });
+         }
+@@ -56,7 +_,7 @@
+         output.accept(new UniformContainerBase.EntryBase() {
+             @Override
+             public void createItemStack(Consumer<ItemStack> output, LootContext context) {
+-                NestedLootTable.this.value.forEach(t -> t.value().getRandomItemsRaw(context, output));
++                NestedLootTable.this.value.forEach(t -> t.value().getRandomItems(context, output)); // Neo: allow GLMs to run on nested loot tables
+             }
+         });
+         return true;
+@@ -76,5 +_,9 @@
+ 
      public static UniformContainerBase.Builder<?> inlineLootTable(LootTable table) {
          return lootTableReference(Holder.direct(table));
-     }
++    }
 +
 +    public static UniformContainerBase.Builder<?> tableSet(HolderSet<LootTable> tables) {
 +        return simpleBuilder((wheight, quality, conditions, functions) -> new NestedLootTable(tables, false, wheight, quality, conditions, functions));
-+    }
+     }
  }
