@@ -406,8 +406,12 @@ public class LivingEntityEventTests {
     static void equipmentDropChanceEvent(final DynamicTest test) {
         // collected drops between event calls
         List<ItemStack> drops = new ArrayList<>();
-        // event listener: make the equipment drop chance 0% when holding an anvil in the offhand
         test.eventListeners().forge().addListener((GetEquipmentDropChanceEvent event) -> {
+            // allow dropping without a player kill if the monster is holding a bucket - though don't drop the bucket
+            if (event.getEntity().getOffhandItem().is(Items.BUCKET)) {
+                event.setCanDrop(true);
+            }
+            // event listener: make the equipment drop chance 0% when holding an anvil in the offhand
             if (event.getKillingBlow().getEntity() instanceof LivingEntity living && living.getOffhandItem().is(Items.ANVIL)) {
                 event.setChance(0);
             }
@@ -454,7 +458,30 @@ public class LivingEntityEventTests {
             zombie.setLastHurtByPlayer(player, 100);
             zombie.die(damageSource);
             zombie.remove(RemovalReason.KILLED);
-            helper.assertTrue(drops.isEmpty(), "Received unexpected drop, event should have prevented it: " + drops);
+            helper.assertTrue(drops.isEmpty(), "Received unexpected drop, attacker properties in event should have prevented it: " + drops);
+            drops.clear();
+
+            // zombie - killing with no player means no drops
+            zombie = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, 2, 1, 1);
+            zombie.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.TURTLE_HELMET));
+            zombie.setDropChance(EquipmentSlot.HEAD, 1.0f);
+            zombie.die(level.damageSources().cactus());
+            zombie.remove(RemovalReason.KILLED);
+            helper.assertTrue(drops.isEmpty(), "Received unexpected drop, target killed by non-player should have prevented it: " + drops);
+            drops.clear();
+
+            // zombie - holding a bucket causes items to drop despite no player kill
+            zombie = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, 2, 1, 1);
+            zombie.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.TURTLE_HELMET));
+            zombie.setDropChance(EquipmentSlot.HEAD, 1.0f);
+            zombie.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.BUCKET));
+            // bucket drop chance of 0 means the event never fires for it
+            zombie.setDropChance(EquipmentSlot.OFFHAND, 0f);
+            zombie.die(level.damageSources().cactus());
+            zombie.remove(RemovalReason.KILLED);
+            helper.assertFalse(drops.isEmpty(), "Failed to find drop when event allowed non-player kill to drop.");
+            helper.assertTrue(drops.get(0).is(Items.TURTLE_HELMET), "Expected drop to be " + Items.TURTLE_HELMET + ", was " + drops.get(0));
+            drops.clear();
 
             helper.succeed();
         });

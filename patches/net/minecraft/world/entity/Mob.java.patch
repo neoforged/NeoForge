@@ -91,16 +91,25 @@
          if (this.level().getDifficulty() == Difficulty.PEACEFUL && !this.getType().isAllowedInPeaceful()) {
              this.discard();
          } else {
-@@ -895,7 +_,8 @@
-             if (dropChance != 0.0F) {
-                 boolean preserve = this.dropChances.isPreserved(slot);
-                 if (source.getEntity() instanceof LivingEntity livingSource && this.level() instanceof ServerLevel serverLevel) {
--                    dropChance = EnchantmentHelper.processEquipmentDropChance(serverLevel, livingSource, source, dropChance);
-+                    // Neo: pass in slot context for GetEquipmentDropChanceEvent
-+                    dropChance = EnchantmentHelper.processEquipmentDropChance(serverLevel, livingSource, source, dropChance, slot);
+@@ -898,11 +_,15 @@
+                     dropChance = EnchantmentHelper.processEquipmentDropChance(serverLevel, livingSource, source, dropChance);
                  }
  
++                // Neo: allow mods to change the equipment drop chance
++                if (itemStack.isEmpty()) continue;
++                var event = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.GetEquipmentDropChanceEvent(level, this, source, dropChance, this.dropChances.byEquipment(slot), slot, killedByPlayer, preserve));
++
                  if (!itemStack.isEmpty()
+                     && !EnchantmentHelper.has(itemStack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)
+-                    && (killedByPlayer || preserve)
+-                    && this.random.nextFloat() < dropChance) {
+-                    if (!preserve && itemStack.isDamageableItem()) {
++                    && (event.getCanDrop())
++                    && this.random.nextFloat() < event.getChance()) {
++                    if (!event.isPreserved() && itemStack.isDamageableItem()) {
+                         itemStack.setDamageValue(
+                             itemStack.getMaxDamage() - this.random.nextInt(1 + this.random.nextInt(Math.max(itemStack.getMaxDamage() - 3, 1)))
+                         );
 @@ -1077,6 +_,11 @@
          }
      }

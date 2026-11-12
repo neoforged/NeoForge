@@ -11,11 +11,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
-import org.apache.commons.lang3.mutable.MutableFloat;
-import org.jetbrains.annotations.ApiStatus;
-import org.jspecify.annotations.Nullable;
 
 /// Fired on the server when an entity is dying to determine the chance of dropping worn equipment after enchantments process [EnchantmentEffectComponents#EQUIPMENT_DROPS].
 ///
@@ -29,19 +25,21 @@ import org.jspecify.annotations.Nullable;
 public class GetEquipmentDropChanceEvent extends LivingEvent {
     private final ServerLevel level;
     private final DamageSource killingBlow;
-    private final MutableFloat chance;
+    private float chance;
     private final float originalChance;
-    @Nullable
     private final EquipmentSlot slot;
+    private boolean canDrop;
+    private boolean preserved;
 
-    @ApiStatus.Internal
-    public GetEquipmentDropChanceEvent(ServerLevel level, LivingEntity entity, DamageSource killingBlow, MutableFloat chance, float originalChance, @Nullable EquipmentSlot slot) {
+    public GetEquipmentDropChanceEvent(ServerLevel level, LivingEntity entity, DamageSource killingBlow, float chance, float originalChance, EquipmentSlot slot, boolean killedByPlayer, boolean preserved) {
         super(entity);
         this.level = level;
         this.killingBlow = killingBlow;
         this.chance = chance;
         this.originalChance = originalChance;
         this.slot = slot;
+        this.canDrop = killedByPlayer || preserved;
+        this.preserved = preserved;
     }
 
     public ServerLevel getLevel() {
@@ -60,32 +58,53 @@ public class GetEquipmentDropChanceEvent extends LivingEvent {
         return originalChance;
     }
 
-    /// {@return true if the equipment was guaranteed to drop. Typically means the item was picked rather than natural equipment}
+    /// {@return true if the equipment can drop} Will by default be true if the equipment was picked up or the mob was killed by a player.
+    public boolean getCanDrop() {
+        return canDrop;
+    }
+
+    /// Sets whether the item is allowed to drop. Note that it may still fail to drop if [#getChance()] is less than 1.
+    ///
+    /// @param canDrop If true, the item
+    public void setCanDrop(boolean canDrop) {
+        this.canDrop = canDrop;
+    }
+
+    /// {@return true if the equipment will not be damaged when dropped} Typically means the item was picked rather than natural equipment.
     public boolean isPreserved() {
-        return originalChance > 1.0f;
+        return preserved;
+    }
+
+    /// Sets whether the item should be damaged if dropped.
+    /// 
+    /// This does not change whether the item can drop, for that use [#setCanDrop(boolean)].
+    ///
+    /// @param preserved If true, the item durability will not be changed when dropped.
+    public void setPreserved(boolean preserved) {
+        this.preserved = preserved;
     }
 
     /// {@return the current chance modified by enchantments and event consumers}
     ///
     /// @see #getOriginalChance()
     public float getChance() {
-        return chance.floatValue();
+        return chance;
     }
 
     /// Sets the chance for this equipment to drop as a value between 0 and 1. 0 or fewer makes it never drop. 1 or more makes it guaranteed to drop.
     ///
     /// @param chance New chance
     public void setChance(float chance) {
-        this.chance.setValue(chance);
+        this.chance = chance;
     }
 
-    /// {@return the slot containing the item to drop} May be null if [EnchantmentHelper#processEquipmentDropChance(ServerLevel, LivingEntity, DamageSource, float, EquipmentSlot)] is called without the slot.
-    public @Nullable EquipmentSlot getSlot() {
+    /// {@return the slot containing the item to drop}
+    public EquipmentSlot getSlot() {
         return slot;
     }
 
-    /// {@return the stack being considered for dropping} May be empty if [EnchantmentHelper#processEquipmentDropChance(ServerLevel, LivingEntity, DamageSource, float, EquipmentSlot)] is called without the slot.
+    /// {@return the stack being considered for dropping}
     public ItemStack getStack() {
-        return slot == null ? ItemStack.EMPTY : getEntity().getItemBySlot(slot);
+        return getEntity().getItemBySlot(slot);
     }
 }
