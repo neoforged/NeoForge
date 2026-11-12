@@ -170,6 +170,16 @@
      public static boolean matchesIgnoringComponents(ItemStack a, ItemStack b, Predicate<DataComponentType<?>> ignoredPredicate) {
          if (a == b) {
              return true;
+@@ -722,6 +_,9 @@
+ 
+         if (level instanceof ServerLevel serverLevel) {
+             this.getItem().inventoryTick(this, serverLevel, owner, slot);
++        } else {
++            // Neo: Add support for ticking items in the inventory on the client side
++            this.getItem().clientInventoryTick(this, level, owner, slot);
+         }
+     }
+ 
 @@ -833,7 +_,7 @@
      }
  

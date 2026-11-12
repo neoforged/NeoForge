@@ -172,6 +172,15 @@ public interface IItemExtension {
         return false;
     }
 
+    /// Called on the client side when an item is ticked within an inventory.
+    /// 
+    /// @param stack The stack being ticked. **Do not modify this stack**
+    /// @param level Client level the item is in.
+    /// @param owner Entity that the item is in the inventory of.
+    /// @param slot  The slot the item is in.
+    /// @see Item#inventoryTick(ItemStack, ServerLevel, Entity, EquipmentSlot) Items ticking on the server.
+    default void clientInventoryTick(ItemStack stack, Level level, Entity owner, @Nullable EquipmentSlot slot) {}
+
     /**
      * ItemStack sensitive version of {@link Item#getCraftingRemainder()} ()}.
      * Returns a full ItemStack instance of the result.
