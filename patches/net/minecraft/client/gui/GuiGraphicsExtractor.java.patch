@@ -8,14 +8,15 @@
  
      private GuiGraphicsExtractor(Minecraft minecraft, Matrix3x2fStack pose, GuiRenderState guiRenderState, int mouseX, int mouseY) {
          this.minecraft = minecraft;
-@@ -879,6 +_,7 @@
+@@ -876,6 +_,8 @@
+         if (!itemStack.isEmpty()) {
+             this.pose.pushMatrix();
+             this.itemBar(itemStack, x, y);
++            // Neo: Render any custom item decorations (similar to the item bar) before the cooldown overlay or the item count
++            net.neoforged.neoforge.client.ItemDecoratorHandler.of(itemStack).render(this, font, itemStack, x, y);
              this.itemCooldown(itemStack, x, y);
              this.itemCount(font, itemStack, x, y, countText);
              this.pose.popMatrix();
-+            net.neoforged.neoforge.client.ItemDecoratorHandler.of(itemStack).render(this, font, itemStack, x, y);
-         }
-     }
- 
 @@ -1020,9 +_,34 @@
      }
  
