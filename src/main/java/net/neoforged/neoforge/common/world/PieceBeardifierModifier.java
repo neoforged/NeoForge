@@ -17,14 +17,18 @@ public interface PieceBeardifierModifier {
 
     TerrainAdjustment getTerrainAdjustment();
 
+    /// @deprecated To be removed in 26.4. Override [#getBeardifierGroundLevelDelta()] instead.
+    @Deprecated(forRemoval = true, since = "26.3")
     int getGroundLevelDelta();
 
-    /** How far above the bottom of {@link #getBeardifierBox()} the ground lies. */
+    /// {@return how far above the bottom of [the beardifier box][#getBeardifierBox()] the ground lies}
     default int getBeardifierGroundLevelDelta() {
         return getGroundLevelDelta();
     }
 
-    /** Junctions the Beardifier blends the terrain around. Defaults to the junctions of a {@link PoolElementStructurePiece}. */
+    /// {@return the junctions which the beardifier blends the terrain around}
+    /// 
+    /// @implNote Defaults to the junctions of a [PoolElementStructurePiece], or otherwise returns an empty list.
     default List<JigsawJunction> getBeardifierJunctions() {
         return this instanceof PoolElementStructurePiece poolPiece ? poolPiece.getJunctions() : List.of();
     }
