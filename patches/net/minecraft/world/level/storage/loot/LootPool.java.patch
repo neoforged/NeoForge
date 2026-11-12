@@ -18,7 +18,8 @@
 +        Holder<ContextFloatProvider> bonusRolls,
 +        java.util.Optional<String> name
      ) {
-         this.entries = entries;
+-        this.entries = entries;
++        this.entries = Lists.newArrayList(entries); // Neo: copy into a mutable list so entries can be added or removed
          this.condition = condition;
          this.modifier = modifier;
          this.rolls = rolls;
@@ -27,7 +28,7 @@
      }
  
      private void addRandomItem(Consumer<ItemStack> result, LootContext context) {
-@@ -110,6 +_,57 @@
+@@ -110,6 +_,97 @@
          Validatable.validateHolder(output, "bonus_rolls", this.bonusRolls);
      }
  
@@ -80,6 +81,46 @@
 +    public void setBonusRolls(Holder<ContextFloatProvider> v) {
 +        checkFrozen();
 +        this.bonusRolls = v;
++    }
++
++    // Neo: Add accessors and mutators for the entries of this pool
++    /**
++     * {@return an unmodifiable view of the entries of this pool}
++     */
++    public List<LootPoolEntryContainer> getEntries() {
++        return java.util.Collections.unmodifiableList(this.entries);
++    }
++
++    /**
++     * Adds an entry to the end of this pool.
++     *
++     * @throws RuntimeException if this pool is frozen
++     */
++    public void addEntry(LootPoolEntryContainer entry) {
++        checkFrozen();
++        this.entries.add(java.util.Objects.requireNonNull(entry));
++    }
++
++    /**
++     * Removes the given entry from this pool.
++     *
++     * @return {@code true} if the entry was part of this pool
++     * @throws RuntimeException if this pool is frozen
++     */
++    public boolean removeEntry(LootPoolEntryContainer entry) {
++        checkFrozen();
++        return this.entries.remove(entry);
++    }
++
++    /**
++     * Removes all entries of this pool that match the given predicate.
++     *
++     * @return {@code true} if any entry was removed
++     * @throws RuntimeException if this pool is frozen
++     */
++    public boolean removeEntriesIf(java.util.function.Predicate<? super LootPoolEntryContainer> filter) {
++        checkFrozen();
++        return this.entries.removeIf(filter);
 +    }
 +
      public static LootPool.Builder lootPool() {

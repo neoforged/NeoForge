@@ -48,6 +48,7 @@ public class LootPoolTest {
     private static final ResourceKey<LootTable> TEST_LOOT_TABLE_2 = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath("neoforge", "test_loot_table_2"));
     private static final ResourceKey<LootTable> TEST_LOOT_TABLE_3 = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath("neoforge", "test_loot_table_3"));
     private static final ResourceKey<LootTable> TEST_LOOT_TABLE_4 = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath("neoforge", "test_loot_table_4"));
+    private static final ResourceKey<LootTable> TEST_LOOT_TABLE_5 = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath("neoforge", "test_loot_table_5"));
 
     @GameTest
     @EmptyTemplate
@@ -180,6 +181,76 @@ public class LootPoolTest {
                     LootParams lootparams = lootParamsBuilder.withParameter(LootContextParams.BLOCK_STATE, Blocks.CONCRETE.pink().defaultBlockState()).create(LootContextParamSets.BLOCK);
                     ObjectArrayList<ItemStack> collectedItems = lootTable.getRandomItems(lootparams);
                     helper.assertTrue(collectedItems.size() == 2 && collectedItems.stream().allMatch(itemStack -> itemStack.getItem().equals(Items.CONCRETE.yellow())), "neoforge:test_loot_table_4 Loot Table should drop 2 Yellow Concrete");
+                })
+                .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if the LootTableLoadEvent can add entries to and remove entries from an existing loot pool")
+    static void lootPoolEntriesModified(final DynamicTest test, final RegistrationHelper reg) {
+        ResourceKey<LootTable> lootTableToUse = TEST_LOOT_TABLE_5;
+        // The entry added by the listener, so that it can be identified later
+        LootPoolEntryContainer[] addedEntry = new LootPoolEntryContainer[1];
+
+        reg.registries(registries -> registries.gatherFor("neoforge").lootTable(
+                new LootTableProvider.SubProviderEntry(context -> () -> {
+                    context.accept(
+                            lootTableToUse,
+                            LootTable.lootTable()
+                                    .withPool(LootPool.lootPool()
+                                            .add(LootItem.lootTableItem(Items.DIAMOND))
+                                            .add(LootItem.lootTableItem(Items.GOLD_NUGGET))
+                                            .name("test_pool")));
+                }, LootContextParamSets.ALL_PARAMS)));
+
+        NeoForge.EVENT_BUS.addListener((final LootTableLoadEvent event) -> {
+            if (event.getKey() == lootTableToUse) {
+                LootPool pool = event.getTable().getPool("test_pool");
+                LootPoolEntryContainer goldNugget = pool.getEntries().get(1);
+                addedEntry[0] = LootItem.lootTableItem(Items.EMERALD).build();
+                pool.addEntry(addedEntry[0]);
+                pool.removeEntriesIf(entry -> entry == goldNugget);
+            }
+        });
+
+        test.onGameTest(helper -> helper.startSequence()
+                .thenExecute(() -> {
+                    LootTable lootTable = helper.getLevel().getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTableToUse.identifier()));
+                    LootPool pool = lootTable.getPool("test_pool");
+                    helper.assertNotNull(pool, "Expected test_pool pool");
+                    helper.assertTrue(pool.getEntries().size() == 2 && pool.getEntries().get(1) == addedEntry[0], "Expected pool entries to be the original first entry followed by the added entry");
+
+                    LootParams.Builder lootParamsBuilder = new LootParams.Builder(helper.getLevel())
+                            .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(helper.absolutePos(BlockPos.ZERO)))
+                            .withParameter(LootContextParams.TOOL, ItemStack.EMPTY)
+                            .withOptionalParameter(LootContextParams.BLOCK_ENTITY, null);
+                    LootParams lootparams = lootParamsBuilder.withParameter(LootContextParams.BLOCK_STATE, Blocks.CONCRETE.pink().defaultBlockState()).create(LootContextParamSets.BLOCK);
+                    for (int i = 0; i < 64; i++) {
+                        ObjectArrayList<ItemStack> collectedItems = lootTable.getRandomItems(lootparams);
+                        helper.assertTrue(collectedItems.size() == 1 && (collectedItems.getFirst().is(Items.DIAMOND) || collectedItems.getFirst().is(Items.EMERALD)), "Expected only diamonds or emeralds to be dropped, but got " + collectedItems);
+                    }
+
+                    helper.assertTrue(pool.removeEntry(addedEntry[0]), "Expected removing an existing entry to succeed");
+                    helper.assertFalse(pool.removeEntry(addedEntry[0]), "Expected removing an absent entry to fail");
+                    helper.assertTrue(pool.getEntries().size() == 1, "Expected one remaining entry");
+
+                    boolean unmodifiable = false;
+                    try {
+                        pool.getEntries().clear();
+                    } catch (UnsupportedOperationException e) {
+                        unmodifiable = true;
+                    }
+                    helper.assertTrue(unmodifiable, "Expected the entries view to be unmodifiable");
+
+                    pool.freeze();
+                    boolean frozen = false;
+                    try {
+                        pool.addEntry(LootItem.lootTableItem(Items.DIAMOND).build());
+                    } catch (RuntimeException e) {
+                        frozen = true;
+                    }
+                    helper.assertTrue(frozen, "Expected adding an entry to a frozen pool to fail");
                 })
                 .thenSucceed());
     }
