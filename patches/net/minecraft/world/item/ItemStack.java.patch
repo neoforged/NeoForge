@@ -174,7 +174,7 @@
  
          if (level instanceof ServerLevel serverLevel) {
              this.getItem().inventoryTick(this, serverLevel, owner, slot);
-+        } else if (level.isClientSide()) {// Neo: Ensure that the level is a client level and not just a different implementation
++        } else {
 +            this.getItem().clientInventoryTick(this, level, owner, slot);
          }
      }
