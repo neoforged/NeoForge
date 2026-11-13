@@ -28,13 +28,11 @@
                  new ClientPacketListener(
                      this.minecraft,
                      this.connection,
-@@ -178,13 +_,22 @@
-                         this.customReportDetails,
+@@ -179,12 +_,21 @@
                          this.serverLinks(),
                          this.seenPlayers,
--                        this.seenInsecureChatWarning
-+                        this.seenInsecureChatWarning,
-+                        this.connectionType // Neo: retain connection type across protocol changes
+                         this.seenInsecureChatWarning
++                        , this.connectionType // Neo: retain connection type across protocol changes
                      )
                  )
              );

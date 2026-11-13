@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/extract/LevelExtractor.java
 +++ b/net/minecraft/client/renderer/extract/LevelExtractor.java
-@@ -173,11 +_,12 @@
+@@ -173,11 +_,13 @@
                          section.sectionMesh.get() != CompiledSectionMesh.UNCOMPILED
                              || this.sectionUpdateTracker.hasAllNeighbors(this.level, section.getSectionNode())
                      )) {
@@ -9,8 +9,8 @@
                          .sectionUpdateRenderStates
                          .add(
                              new SectionUpdateRenderState(
--                                section.getSectionNode(), dirtyState.isDirtyFromPlayer(), cache.createRegion(this.level, section.getSectionNode())
-+                                section.getSectionNode(), dirtyState.isDirtyFromPlayer(), cache.createRegion(this.level, section.getSectionNode()), additionalRenderers
+                                 section.getSectionNode(), dirtyState.isDirtyFromPlayer(), cache.createRegion(this.level, section.getSectionNode())
++                                , additionalRenderers
                              )
                          );
                      dirtyState.setNotDirty();
@@ -65,7 +65,7 @@
                  if (state != null) {
                      levelRenderState.blockEntityRenderStates.add(state);
                  }
-@@ -381,19 +_,24 @@
+@@ -381,9 +_,14 @@
                  BlockState state = this.level.getBlockState(pos);
                  if (!state.isAir() && this.level.getWorldBorder().isWithinBounds(pos)) {
                      BlockStateModel blockStateModel = this.minecraft.getModelManager().getBlockStateModelSet().get(state);
@@ -81,11 +81,11 @@
                      VoxelShape shape = state.getShape(this.level, pos, context);
                      if (SharedConstants.DEBUG_SHAPES) {
                          VoxelShape collisionShape = state.getCollisionShape(this.level, pos, context);
-                         VoxelShape occlusionShape = state.getOcclusionShape();
+@@ -391,9 +_,10 @@
                          VoxelShape interactionShape = state.getInteractionShape(this.level, pos);
                          levelRenderState.blockOutlineRenderState = new BlockOutlineRenderState(
--                            pos, isBlockTranslucent, highContrast, shape, collisionShape, occlusionShape, interactionShape
-+                            pos, isBlockTranslucent, highContrast, shape, collisionShape, occlusionShape, interactionShape, event.getCustomRenderers()
+                             pos, isBlockTranslucent, highContrast, shape, collisionShape, occlusionShape, interactionShape
++                            , event.getCustomRenderers()
                          );
                      } else {
 -                        levelRenderState.blockOutlineRenderState = new BlockOutlineRenderState(pos, isBlockTranslucent, highContrast, shape);

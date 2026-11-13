@@ -4,8 +4,8 @@
      }
  
      public final CompoundTag createTag(StructurePieceSerializationContext context) {
-+        // Neo: throw a more friendly error instead of the NPE on toString() below
 +        if (BuiltInRegistries.STRUCTURE_PIECE.getKey(this.getType()) == null) {
++            // Neo: throw a more friendly error instead of the NPE on toString() below
 +            throw new RuntimeException("StructurePiece \"" + this.getClass().getName() + "\": \"" + this.getType() + "\" unregistered, serializing impossible.");
 +        }
          CompoundTag tag = new CompoundTag();

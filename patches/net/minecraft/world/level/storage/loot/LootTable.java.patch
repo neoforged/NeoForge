@@ -58,19 +58,19 @@
 -            new LootContext.Builder(params).withOptionalRandomSeed(optionalLootTableSeed).create(this.randomSequence),
 -            createStackSplitter(params.getLevel(), output)
 -        );
-+        // Neo: defer to getRandomItems(LootContext) as a single entrypoint for GLMs
++        // Neo: defer to getRandomItems(LootContext) as a single entrypoint for GLMs (stack splitter handling is moved there)
 +        this.getRandomItems(new LootContext.Builder(params).withOptionalRandomSeed(optionalLootTableSeed).create(this.randomSequence)).forEach(output);
      }
  
      public void getRandomItems(LootParams params, Consumer<ItemStack> output) {
 -        this.getRandomItemsRaw(params, createStackSplitter(params.getLevel(), output));
-+        // Neo: defer to getRandomItems(LootContext) as a single entrypoint for GLMs
++        // Neo: defer to getRandomItems(LootContext) as a single entrypoint for GLMs (stack splitter handling is moved there)
 +        this.getRandomItems(params).forEach(output);
      }
  
      public void getRandomItems(LootContext context, Consumer<ItemStack> output) {
 -        this.getRandomItemsRaw(context, createStackSplitter(context.getLevel(), output));
-+        // Neo: defer to getRandomItems(LootContext) as a single entrypoint for GLMs
++        // Neo: defer to getRandomItems(LootContext) as a single entrypoint for GLMs (stack splitter handling is moved there)
 +        this.getRandomItems(context).forEach(output);
      }
  
@@ -157,7 +157,7 @@
          private final ImmutableList.Builder<Holder<LootItemFunction>> functions = ImmutableList.builder();
          private ContextKeySet paramSet = LootTable.DEFAULT_PARAM_SET;
          private Optional<Identifier> randomSequence = Optional.empty();
-+        private final List<net.neoforged.neoforge.common.conditions.ICondition> conditions = new java.util.ArrayList<>();
++        private final List<net.neoforged.neoforge.common.conditions.ICondition> conditions = Lists.newArrayList();
  
          public LootTable.Builder withPool(LootPool.Builder pool) {
              this.pools.add(pool.build());

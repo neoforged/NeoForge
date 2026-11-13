@@ -9,7 +9,7 @@
  
      private PrimaryLevelData(
          @Nullable UUID singlePlayerUUID,
-@@ -104,12 +_,13 @@
+@@ -104,11 +_,13 @@
              levelVersion.levelDataVersion(),
              input.get("initialized").asBoolean(true),
              input.get("ServerBrands").asStream().flatMap(b -> b.asString().result().stream()).collect(Collectors.toCollection(Sets::newLinkedHashSet)),
@@ -20,11 +20,10 @@
              specialWorldProperty,
              worldGenSettingsLifecycle,
              input.get("version_history").orElseEmptyList().asList(d -> d.asInt(-1))
--        );
-+        ).withConfirmedWarning(worldGenSettingsLifecycle != Lifecycle.stable() && input.get("confirmedExperimentalSettings").asBoolean(false)); // Neo: append experimental warning confirmation state
++        ).withConfirmedWarning(worldGenSettingsLifecycle != Lifecycle.stable() && input.get("confirmedExperimentalSettings").asBoolean(false) // Neo: append experimental warning confirmation state
+         );
      }
  
-     @Override
 @@ -147,6 +_,10 @@
          }
  
@@ -47,7 +46,7 @@
 +        return this.confirmedExperimentalWarning;
 +    }
 +
-+    /// Neo:
++    /// Neo: set whether the experimental warning was previously acknowledged
 +    public PrimaryLevelData withConfirmedWarning(boolean confirmedWarning) {
 +        this.confirmedExperimentalWarning = confirmedWarning;
 +        return this;

@@ -33,7 +33,7 @@
                  CompoundTag tag = this.readTagFromDisk(file, type.dataFixType(), SharedConstants.getCurrentVersion().dataVersion().version());
                  RegistryOps<Tag> ops = this.registries.createSerializationContext(NbtOps.INSTANCE);
 -                return type.codec()
-+                // Neo: use level-sensitive coded factory
++                // Neo: use level-sensitive codec factory
 +                return type.codecFactory().create(this.level)
                      .parse(ops, tag.get("data"))
                      .resultOrPartial(error -> LOGGER.error("Failed to parse saved data for '{}': {}", type, error))

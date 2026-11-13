@@ -16,13 +16,11 @@
      public static LevelSettings parse(Dynamic<?> input, WorldDataConfiguration loadConfig) {
          GameType gameType = GameType.byId(input.get("GameType").asInt(0));
          return new LevelSettings(
-@@ -15,16 +_,19 @@
-             gameType,
+@@ -16,15 +_,18 @@
              input.get("difficulty_settings").read(LevelSettings.DifficultySettings.CODEC).result().orElse(LevelSettings.DifficultySettings.DEFAULT),
              input.get("allowCommands").asBoolean(gameType == GameType.CREATIVE),
--            loadConfig
-+            loadConfig,
-+            net.neoforged.neoforge.common.CommonHooks.parseLifecycle(input.get("forgeLifecycle").asString("stable"))
+             loadConfig
++            , net.neoforged.neoforge.common.CommonHooks.parseLifecycle(input.get("forgeLifecycle").asString("stable"))
          );
      }
  
@@ -39,25 +37,21 @@
      }
  
      public LevelSettings withDifficulty(Difficulty difficulty) {
-@@ -33,7 +_,9 @@
-             this.gameType,
+@@ -34,6 +_,8 @@
              new LevelSettings.DifficultySettings(difficulty, this.difficultySettings.hardcore(), this.difficultySettings.locked()),
              this.allowCommands,
--            this.dataConfiguration
-+            this.dataConfiguration,
+             this.dataConfiguration
 +            // Neo: copy the lifecycle
-+            this.lifecycle
++            , this.lifecycle
          );
      }
  
-@@ -43,16 +_,32 @@
-             this.gameType,
+@@ -44,15 +_,31 @@
              new LevelSettings.DifficultySettings(this.difficultySettings.difficulty(), this.difficultySettings.hardcore(), locked),
              this.allowCommands,
--            this.dataConfiguration
-+            this.dataConfiguration,
+             this.dataConfiguration
 +            // Neo: copy the lifecycle
-+            this.lifecycle
++            , this.lifecycle
          );
      }
  

@@ -34,13 +34,11 @@
  
      private CreativeModeTab(
          CreativeModeTab.Row row,
-@@ -32,8 +_,20 @@
-         CreativeModeTab.Type type,
+@@ -33,7 +_,19 @@
          Component displayName,
          Supplier<ItemStack> iconGenerator,
--        CreativeModeTab.DisplayItemsGenerator displayItemsGenerator
-+        CreativeModeTab.DisplayItemsGenerator displayItemsGenerator,
-+        @Nullable Identifier scrollerSpriteLocation,
+         CreativeModeTab.DisplayItemsGenerator displayItemsGenerator
++        , @Nullable Identifier scrollerSpriteLocation,
 +        boolean hasSearchBar,
 +        int searchBarWidth,
 +        int labelColor,

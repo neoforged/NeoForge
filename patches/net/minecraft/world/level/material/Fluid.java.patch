@@ -45,9 +45,9 @@
 +        return this.defaultResource;
 +    }
 +
++    /// Neo: Patch in a toString similar to [Item#toString()] so that FluidStack#toString is more readable
 +    @Override
 +    public String toString() {
-+        // Neo: Patch in a toString similar to Item#toString() so that FluidStack#toString is more readable
 +        return BuiltInRegistries.FLUID.wrapAsHolder(this).getRegisteredName();
      }
  }

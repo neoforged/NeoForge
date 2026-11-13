@@ -36,9 +36,9 @@
 +        FeatureFlagSet requiredFeatures,
 +        boolean allowedInPeaceful,
 +        boolean trackDeltas,
-+        final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier,
-+        final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier,
-+        final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier,
++        java.util.function.Predicate<EntityType<?>> trackDeltasSupplier,
++        java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier,
++        java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier,
 +        boolean onlyOpCanSetNbt
 +    ) {
 +        this.trackDeltasSupplier = trackDeltasSupplier;
@@ -144,13 +144,11 @@
          public EntityType<T> build(ResourceKey<EntityType<?>> name) {
              if (this.serialize) {
                  Util.fetchChoiceType(References.ENTITY_TREE, name.identifier().toString());
-@@ -621,7 +_,11 @@
-                 this.lootTable.get(name),
+@@ -622,6 +_,10 @@
                  this.requiredFeatures,
                  this.allowedInPeaceful,
--                this.trackDeltas
-+                this.trackDeltas,
-+                this.velocityUpdateSupplier,
+                 this.trackDeltas
++                , this.velocityUpdateSupplier,
 +                this.trackingRangeSupplier,
 +                this.updateIntervalSupplier,
 +                this.onlyOpCanSetNbt

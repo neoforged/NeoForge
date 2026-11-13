@@ -50,13 +50,11 @@
          return CompletableFuture.allOf(
                  pendingBlockAtlasSprites,
                  pendingItemAtlasSprites,
-@@ -131,7 +_,8 @@
-                 itemStackModels,
+@@ -132,6 +_,7 @@
                  entityModelSet,
                  blockModels,
--                modelCache
-+                modelCache,
-+                standaloneModelsFuture
+                 modelCache
++                , standaloneModelsFuture
              )
              .thenComposeAsync(
                  var11x -> {

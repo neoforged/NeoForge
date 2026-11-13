@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/saveddata/SavedDataType.java
 +++ b/net/minecraft/world/level/saveddata/SavedDataType.java
-@@ -5,7 +_,32 @@
+@@ -5,7 +_,34 @@
  import net.minecraft.resources.Identifier;
  import net.minecraft.util.datafix.DataFixTypes;
  
@@ -19,12 +19,14 @@
 +        this(id, constructor, codec, null);
 +    }
 +
++    // Patched in as replacement for the synthetic record component getter
 +    /// @deprecated Neo: Use [#factory()] instead
 +    @Deprecated
 +    public Supplier<T> constructor() {
 +        return () -> this.factory.create(null);
 +    }
 +
++    // Patched in as replacement for the synthetic record component getter
 +    /// @deprecated Neo: Use [#codecFactory()] instead
 +    @Deprecated
 +    public Codec<T> codec() {

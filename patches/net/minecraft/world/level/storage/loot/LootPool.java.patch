@@ -1,17 +1,15 @@
 --- a/net/minecraft/world/level/storage/loot/LootPool.java
 +++ b/net/minecraft/world/level/storage/loot/LootPool.java
-@@ -33,7 +_,9 @@
-                 LootItemCondition.CODEC.optionalFieldOf("condition").forGetter(p -> p.condition),
+@@ -34,6 +_,8 @@
                  LootItemFunctions.CODEC.optionalFieldOf("modifier").forGetter(p -> p.modifier),
                  ContextIntProviders.CODEC.fieldOf("rolls").forGetter(p -> p.rolls),
--                ContextFloatProviders.CODEC.optionalFieldOf("bonus_rolls", ContextFloatProviders.exactly(0.0F)).forGetter(p -> p.bonusRolls)
-+                ContextFloatProviders.CODEC.optionalFieldOf("bonus_rolls", ContextFloatProviders.exactly(0.0F)).forGetter(p -> p.bonusRolls),
+                 ContextFloatProviders.CODEC.optionalFieldOf("bonus_rolls", ContextFloatProviders.exactly(0.0F)).forGetter(p -> p.bonusRolls)
 +                // Neo: add support for named pools
-+                Codec.STRING.optionalFieldOf("name").forGetter(pool -> Optional.ofNullable(pool.name).filter(name -> !name.startsWith("custom#")))
++                , Codec.STRING.optionalFieldOf("name").forGetter(pool -> Optional.ofNullable(pool.name).filter(name -> !name.startsWith("custom#")))
              )
              .apply(i, LootPool::new)
      );
-@@ -42,14 +_,21 @@
+@@ -42,6 +_,11 @@
      private final Optional<Holder<LootItemFunction>> modifier;
      private Holder<ContextIntProvider> rolls;
      private Holder<ContextFloatProvider> bonusRolls;
@@ -23,12 +21,11 @@
  
      private LootPool(
          List<LootPoolEntryContainer> entries,
-         Optional<Holder<LootItemCondition>> condition,
+@@ -49,7 +_,9 @@
          Optional<Holder<LootItemFunction>> modifier,
          Holder<ContextIntProvider> rolls,
--        Holder<ContextFloatProvider> bonusRolls
-+        Holder<ContextFloatProvider> bonusRolls,
-+        Optional<String> name
+         Holder<ContextFloatProvider> bonusRolls
++        , Optional<String> name
      ) {
 +        this.name = name.orElse(null);
          this.entries = entries;
@@ -104,7 +101,7 @@
  
          public LootPool.Builder setRolls(Holder<ContextIntProvider> rolls) {
              this.rolls = rolls;
-@@ -158,13 +_,21 @@
+@@ -158,6 +_,12 @@
              return this;
          }
  
@@ -117,13 +114,12 @@
          public LootPool build() {
              return new LootPool(
                  this.entries.build(),
-                 ConditionUserBuilder.buildCondition(this.conditions.build()),
+@@ -165,6 +_,8 @@
                  FunctionUserBuilder.buildFunction(this.functions.build()),
                  this.rolls,
--                this.bonusRolls
-+                this.bonusRolls,
+                 this.bonusRolls
 +                // Neo: add name
-+                Optional.ofNullable(this.name)
++                , Optional.ofNullable(this.name)
              );
          }
      }

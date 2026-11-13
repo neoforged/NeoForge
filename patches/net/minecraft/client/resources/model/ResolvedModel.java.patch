@@ -10,7 +10,7 @@
      }
  
      static Material.Baked resolveParticleMaterial(TextureSlots textureSlots, ModelBaker baker, ModelDebugName resolvedModel) {
-@@ -128,8 +_,17 @@
+@@ -128,8 +_,18 @@
          ItemTransform ground = findTopTransform(top, ItemDisplayContext.GROUND);
          ItemTransform fixed = findTopTransform(top, ItemDisplayContext.FIXED);
          ItemTransform fixedFromBottom = findTopTransform(top, ItemDisplayContext.ON_SHELF);
@@ -24,8 +24,8 @@
 +            }
 +        }
          return new ItemTransforms(
--            thirdPersonLeftHand, thirdPersonRightHand, firstPersonLeftHand, firstPersonRightHand, head, gui, ground, fixed, fixedFromBottom
-+            thirdPersonLeftHand, thirdPersonRightHand, firstPersonLeftHand, firstPersonRightHand, head, gui, ground, fixed, fixedFromBottom, moddedTransforms.build()
+             thirdPersonLeftHand, thirdPersonRightHand, firstPersonLeftHand, firstPersonRightHand, head, gui, ground, fixed, fixedFromBottom
++            , moddedTransforms.build()
          );
      }
  

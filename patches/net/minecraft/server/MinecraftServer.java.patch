@@ -118,13 +118,11 @@
      }
  
      protected void processPacketsAndTick(boolean sprinting) {
-@@ -1046,7 +_,8 @@
-             Optional.of(players),
+@@ -1047,6 +_,7 @@
              Optional.of(ServerStatus.Version.current()),
              Optional.ofNullable(this.statusIcon),
--            this.enforceSecureProfile()
-+            this.enforceSecureProfile(),
-+            true //TODO Neo: Possible build a system which indicates what the status of the modded server is.
+             this.enforceSecureProfile()
++            , true //TODO Neo: Possible build a system which indicates what the status of the modded server is.
          );
      }
  

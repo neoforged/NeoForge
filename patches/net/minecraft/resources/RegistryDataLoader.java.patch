@@ -85,9 +85,8 @@
          RegistryDataLoader.LoaderFactory loaderFactory,
          List<HolderLookup.RegistryLookup<?>> contextRegistries,
          List<RegistryDataLoader.RegistryData<?>> registriesToLoad,
--        Executor executor
-+        Executor executor,
-+        boolean fromResources
+         Executor executor
++        , boolean fromResources
      ) {
          return CompletableFuture.<CompletableFuture<RegistryAccess.Frozen>>supplyAsync(
                  () -> {

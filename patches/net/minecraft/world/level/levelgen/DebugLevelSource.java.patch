@@ -1,11 +1,12 @@
 --- a/net/minecraft/world/level/levelgen/DebugLevelSource.java
 +++ b/net/minecraft/world/level/levelgen/DebugLevelSource.java
-@@ -134,4 +_,13 @@
+@@ -134,4 +_,14 @@
      public int getSeaLevel() {
          return 63;
      }
 +
-+    /// Neo: re-compute valid states after registry freeze
++    /// Neo: re-compute valid states after registry freeze.
++    /// Matches the vanilla implementation in the static initializer
 +    public static void initValidStates() {
 +        ALL_BLOCKS = StreamSupport.stream(BuiltInRegistries.BLOCK.spliterator(), false)
 +                .flatMap(block -> block.getStateDefinition().getPossibleStates().stream())

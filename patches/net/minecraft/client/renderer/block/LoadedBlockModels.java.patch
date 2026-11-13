@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/LoadedBlockModels.java
 +++ b/net/minecraft/client/renderer/block/LoadedBlockModels.java
-@@ -36,14 +_,24 @@
+@@ -36,14 +_,25 @@
          this.playerSkinRenderCache = playerSkinRenderCache;
      }
  
@@ -20,9 +20,9 @@
              () -> {
                  BlockModel wrappedMissingModel = new BlockStateModelWrapper(missingModel, List.of(), IDENTITY);
                  BlockModel.BakingContext context = new BlockModel.BakingContext(
--                    this.entityModelSet, this.sprites, this.playerSkinRenderCache, bakedBlockStateModels, wrappedMissingModel
+                     this.entityModelSet, this.sprites, this.playerSkinRenderCache, bakedBlockStateModels, wrappedMissingModel
 +                    // Neo: provide access to data-driven animations
-+                    this.entityModelSet, this.sprites, this.playerSkinRenderCache, bakedBlockStateModels, wrappedMissingModel, pendingAnimations
++                    , pendingAnimations
                  );
                  Builder<BlockState, BlockModel> result = ImmutableMap.builder();
                  this.unbakedModels.forEach((blockState, unbakedModel) -> result.put(blockState, unbakedModel.bake(context, IDENTITY)));

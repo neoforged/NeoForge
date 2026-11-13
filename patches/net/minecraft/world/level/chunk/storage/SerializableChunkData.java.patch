@@ -1,12 +1,10 @@
 --- a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
 +++ b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
-@@ -90,7 +_,9 @@
-     List<SerializableChunkData.SectionData> sectionData,
+@@ -91,6 +_,8 @@
      List<CompoundTag> entities,
      List<CompoundTag> blockEntities,
--    CompoundTag structureData
-+    CompoundTag structureData,
-+    @Nullable CompoundTag attachmentData,
+     CompoundTag structureData
++    , @Nullable CompoundTag attachmentData,
 +    @Nullable ListTag auxLightData
  ) {
      private static final Codec<List<SavedTick<Block>>> BLOCK_TICKS_CODEC = SavedTick.codec(BuiltInRegistries.BLOCK.byNameCodec()).listOf();
@@ -52,13 +50,11 @@
          return new SerializableChunkData(
              containerFactory,
              chunkPos,
-@@ -201,7 +_,9 @@
-             sectionData,
+@@ -202,6 +_,8 @@
              entities,
              blockEntities,
--            structureData
-+            structureData,
-+            attachmentData,
+             structureData
++            , attachmentData,
 +            auxLightData
          );
      }
@@ -107,13 +103,11 @@
          return new SerializableChunkData(
              level.palettedContainerFactory(),
              pos,
-@@ -385,7 +_,9 @@
-             sectionData,
+@@ -386,6 +_,8 @@
              entities,
              blockEntities,
--            structureData
-+            structureData,
-+            attachmentData,
+             structureData
++            , attachmentData,
 +            auxLightData
          );
      }

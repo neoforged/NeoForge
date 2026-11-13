@@ -4,7 +4,7 @@
  public class FlowerPotBlock extends Block {
      private static final Map<Block, Block> POTTED_BY_CONTENT = Maps.newHashMap();
      private static final VoxelShape SHAPE = Block.column(6.0, 0.0, 6.0);
-+    /// Neo: Field accesses are redirected to {@link #getPotted()} with a coremod.
++    /// Neo: Field accesses are redirected to [#getPotted()] with a coremod.
      private final Block potted;
 +    /// Neo: holds the empty variant of this pot or null if this is an empty pot
 +    private final java.util.function.@org.jspecify.annotations.Nullable Supplier<FlowerPotBlock> emptyPot;
