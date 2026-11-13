@@ -13,10 +13,11 @@
                      level.setBlock(pos, state.setValue(AGE, 0), 260);
                  } else {
                      level.setBlock(pos, state.setValue(AGE, age + 1), 260);
-@@ -85,13 +_,18 @@
+@@ -85,13 +_,19 @@
              return true;
          }
  
++        // Neo: let the block decide whether it can sustain this plant
 +        var soilDecision = stateBelow.canSustainPlant(level, pos.below(), Direction.UP, state);
 +        if (!soilDecision.isDefault()) {
 +            return soilDecision.isTrue();

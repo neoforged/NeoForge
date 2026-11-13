@@ -35,7 +35,7 @@
 +
 +        public FeatureFlag create(Identifier name, boolean modded) {
 +            // Neo: disable ID limit
-+            if (this.id >= 64 && false) {
++            if (false && this.id >= 64) {
                  throw new IllegalStateException("Too many feature flags");
              } else {
 -                FeatureFlag result = new FeatureFlag(this.universe, this.id++);

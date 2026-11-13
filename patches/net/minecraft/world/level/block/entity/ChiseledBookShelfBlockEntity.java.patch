@@ -27,7 +27,7 @@
  
      public ChiseledBookShelfBlockEntity(BlockPos worldPosition, BlockState blockState) {
          super(BlockEntityTypes.CHISELED_BOOKSHELF, worldPosition, blockState);
-@@ -88,12 +_,31 @@
+@@ -88,12 +_,32 @@
  
      @Override
      public void setItem(int slot, ItemStack itemStack) {
@@ -39,10 +39,10 @@
 +    public void setItem(int slot, ItemStack itemStack, boolean insideTransaction) {
          if (this.acceptsItemType(itemStack)) {
              this.getItems().set(slot, itemStack);
--            this.updateState(slot);
-+            if (!insideTransaction) {
-+                this.updateState(slot);
++            if (insideTransaction) {
++                return;
 +            }
+             this.updateState(slot);
          } else if (itemStack.isEmpty()) {
 +            if (insideTransaction) {
 +                // Skip the updateState call in removeItem

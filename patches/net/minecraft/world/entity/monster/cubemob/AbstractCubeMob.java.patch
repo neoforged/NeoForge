@@ -9,7 +9,7 @@
              for (int i = 0; i < size * 16.0F; i++) {
                  float dir = this.random.nextFloat() * (float) (Math.PI * 2);
                  float d = this.random.nextFloat() * 0.5F + 0.5F;
-@@ -192,15 +_,27 @@
+@@ -192,15 +_,28 @@
              int count = this.getSplitCount();
              PlayerTeam team = this.getTeam();
  
@@ -20,8 +20,8 @@
              for (int i = 0; i < count; i++) {
                  float xd = (i % 2 - 0.5F) * xzCubeSpawnOffset;
                  float zd = (i / 2 - 0.5F) * xzCubeSpawnOffset;
--                this.convertTo(
-+                AbstractCubeMob child = this.convertTo(
++                AbstractCubeMob child =
+                 this.convertTo(
                      this.getType(),
                      new ConversionParams(ConversionType.SPLIT_ON_DEATH, false, false, team),
                      EntitySpawnReason.TRIGGERED,

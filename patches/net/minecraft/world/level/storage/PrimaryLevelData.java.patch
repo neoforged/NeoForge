@@ -1,9 +1,10 @@
 --- a/net/minecraft/world/level/storage/PrimaryLevelData.java
 +++ b/net/minecraft/world/level/storage/PrimaryLevelData.java
-@@ -45,6 +_,7 @@
+@@ -45,6 +_,8 @@
      private boolean wasModded;
      private final Set<String> removedFeatureFlags;
      private List<Integer> versionHistory;
++    /// Neo: indicates whether the experimental warning was previously acknowledged
 +    private boolean confirmedExperimentalWarning = false;
  
      private PrimaryLevelData(
@@ -20,7 +21,7 @@
              worldGenSettingsLifecycle,
              input.get("version_history").orElseEmptyList().asList(d -> d.asInt(-1))
 -        );
-+        ).withConfirmedWarning(worldGenSettingsLifecycle != Lifecycle.stable() && input.get("confirmedExperimentalSettings").asBoolean(false));
++        ).withConfirmedWarning(worldGenSettingsLifecycle != Lifecycle.stable() && input.get("confirmedExperimentalSettings").asBoolean(false)); // Neo: append experimental warning confirmation state
      }
  
      @Override
@@ -29,43 +30,37 @@
  
          tag.store(WorldDataConfiguration.MAP_CODEC, this.settings.dataConfiguration());
 +
-+        // Neo:
-+        tag.putString("forgeLifecycle", net.neoforged.neoforge.common.CommonHooks.encodeLifecycle(this.settings.getLifecycle()));
++        // Neo: serialize the world's lifecycle and experimental warning confirmation
++        tag.putString("forgeLifecycle", net.neoforged.neoforge.common.CommonHooks.encodeLifecycle(this.settings.lifecycle()));
 +        tag.putBoolean("confirmedExperimentalSettings", this.confirmedExperimentalWarning);
      }
  
      public static void writeLastPlayed(CompoundTag tag) {
-@@ -344,10 +_,33 @@
+@@ -342,6 +_,27 @@
+     @Override
+     public LevelSettings getLevelSettings() {
          return this.settings.copy();
-     }
- 
++    }
++
++    /// Neo: {@return whether the experimental warning was previously acknowledged}
 +    public boolean hasConfirmedExperimentalWarning() {
 +        return this.confirmedExperimentalWarning;
 +    }
 +
-+    public PrimaryLevelData withConfirmedWarning(boolean confirmedWarning) { // Builder-like to not patch ctor
++    /// Neo:
++    public PrimaryLevelData withConfirmedWarning(boolean confirmedWarning) {
 +        this.confirmedExperimentalWarning = confirmedWarning;
 +        return this;
 +    }
 +
-     @Deprecated
-     public enum SpecialWorldProperty {
-         NONE,
-         FLAT,
-         DEBUG;
-+    }
-+
++    /// Neo: update removed flags with missing modded ones found in the provided enabled flags
 +    private static java.util.stream.Stream<String> updateRemovedFeatureFlags(java.util.stream.Stream<String> removedFeatures, java.util.stream.Stream<String> enabledFeatures) {
 +        var unknownFeatureFlags = new HashSet<net.minecraft.resources.Identifier>();
-+        // parses the incoming Stream<String> and spits out unknown flag names (Identifier)
-+        // we do not care about the returned FeatureFlagSet, only the flags which do not exist
 +        net.minecraft.world.flag.FeatureFlags.REGISTRY.fromNames(enabledFeatures.map(net.minecraft.resources.Identifier::parse).collect(Collectors.toSet()), unknownFeatureFlags::add);
-+        // concat the received removed flags with our new additions
-+        return java.util.stream.Stream.concat(removedFeatures, unknownFeatureFlags.stream()
-+                // we only want modded flags, mojang has datafixers for vanilla flags
++        var missingModdedFlags = unknownFeatureFlags.stream()
 +                .filter(java.util.function.Predicate.not(name -> name.getNamespace().equals(net.minecraft.resources.Identifier.DEFAULT_NAMESPACE)))
-+                .map(net.minecraft.resources.Identifier::toString))
-+                // no duplicates should exist in this stream
-+                .distinct();
++                .map(net.minecraft.resources.Identifier::toString);
++        return java.util.stream.Stream.concat(removedFeatures, missingModdedFlags).distinct();
      }
- }
+ 
+     @Deprecated

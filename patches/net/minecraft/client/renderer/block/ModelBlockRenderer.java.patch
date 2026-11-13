@@ -10,7 +10,7 @@
          this.ambientOcclusion = ambientOcclusion;
          this.cull = cull;
          this.blockColors = blockColors;
-@@ -53,11 +_,20 @@
+@@ -53,11 +_,21 @@
          BlockQuadOutput output, float x, float y, float z, BlockAndTintGetter level, BlockPos pos, BlockState blockState, BlockStateModel model, long seed
      ) {
          this.random.setSeed(seed);
@@ -24,7 +24,8 @@
                  Vec3 offset = blockState.getOffset(pos);
 -                if (this.ambientOcclusion && blockState.getLightEmission() == 0 && this.parts.getFirst().useAmbientOcclusion()) {
 +                boolean perPartAO = net.neoforged.neoforge.client.config.NeoForgeClientConfig.INSTANCE.handleAmbientOcclusionPerPart.getAsBoolean();
-+                boolean useAO = this.ambientOcclusion && (perPartAO || switch(parts.getFirst().ambientOcclusion()) {
++                // Neo: use extended AO getter and level-sensitive light getter
++                boolean useAO = this.ambientOcclusion && (perPartAO || switch(this.parts.getFirst().ambientOcclusion()) {
 +                    case TRUE -> true;
 +                    case DEFAULT -> blockState.getLightEmission(level, pos) == 0;
 +                    case FALSE -> false;
@@ -33,16 +34,18 @@
                      this.tesselateAmbientOcclusion(output, x + (float)offset.x, y + (float)offset.y, z + (float)offset.z, this.parts, level, blockState, pos);
                  } else {
                      this.tesselateFlat(output, x + (float)offset.x, y + (float)offset.y, z + (float)offset.z, this.parts, level, blockState, pos);
-@@ -93,10 +_,22 @@
+@@ -93,10 +_,24 @@
      private void tesselateAmbientOcclusion(
          BlockQuadOutput output, float x, float y, float z, List<BlockStateModelPart> parts, BlockAndTintGetter level, BlockState state, BlockPos pos
      ) {
 +        boolean perPartAO = net.neoforged.neoforge.client.config.NeoForgeClientConfig.INSTANCE.handleAmbientOcclusionPerPart.getAsBoolean();
++        // Neo: holds the light value used for per-part AO computation
 +        int lightEmission = -1;
          int cacheValid = 0;
          int shouldRenderFaceCache = 0;
  
          for (BlockStateModelPart part : parts) {
++            // Neo: use extended AO getter and level-sensitive light getter
 +            boolean ao = !perPartAO || switch (part.ambientOcclusion()) {
 +                case TRUE -> true;
 +                case DEFAULT -> {
@@ -56,20 +59,22 @@
              for (Direction direction : DIRECTIONS) {
                  int cacheMask = 1 << direction.ordinal();
                  boolean validCacheForDirection = (cacheValid & cacheMask) != 0;
-@@ -105,7 +_,7 @@
+@@ -105,7 +_,8 @@
                      List<BakedQuad> culledQuads = part.getQuads(direction);
                      if (!culledQuads.isEmpty()) {
                          if (!validCacheForDirection) {
 -                            shouldRenderFace = this.shouldRenderFace(level, state, direction, this.scratchPos.setWithOffset(pos, direction));
++                            // Neo: use level-sensitive occlusion check
 +                            shouldRenderFace = this.shouldRenderFace(level, pos, state, direction, this.scratchPos.setWithOffset(pos, direction));
                              cacheValid |= cacheMask;
                              if (shouldRenderFace) {
                                  shouldRenderFaceCache |= cacheMask;
-@@ -113,7 +_,21 @@
+@@ -113,7 +_,24 @@
                          }
  
                          if (shouldRenderFace) {
 +                            BlockPos relativePos = this.scratchPos.setWithOffset(pos, direction);
++                            // Neo: render without AO if requested by the part
 +                            if (!ao) {
 +                                int lightCoords = this.lighter.getLightCoords(state, level, relativePos);
 +
@@ -77,8 +82,10 @@
 +                                    this.lighter.prepareQuadFlat(level, state, pos, lightCoords, quad, this.quadInstance);
 +                                    this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
 +                                }
-+                            } else
++                                continue;
++                            }
                              for (BakedQuad quad : culledQuads) {
++                                // Neo: render without AO if requested by the quad
 +                                if (!quad.materialInfo().ambientOcclusion()) {
 +                                    this.lighter.prepareQuadFlat(level, state, pos, -1, quad, this.quadInstance);
 +                                    this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
@@ -87,17 +94,20 @@
                                  this.lighter.prepareQuadAmbientOcclusion(level, state, pos, quad, this.quadInstance);
                                  this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
                              }
-@@ -122,7 +_,18 @@
+@@ -122,7 +_,21 @@
                  }
              }
  
++            // Neo: render without AO if requested by the part
 +            if (!ao) {
 +                for (BakedQuad quad : part.getQuads(null)) {
 +                    this.lighter.prepareQuadFlat(level, state, pos, -1, quad, this.quadInstance);
 +                    this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
 +                }
-+            } else
++                continue;
++            }
              for (BakedQuad quad : part.getQuads(null)) {
++                // Neo: render without AO if requested by the quad
 +                if (!quad.materialInfo().ambientOcclusion()) {
 +                    this.lighter.prepareQuadFlat(level, state, pos, -1, quad, this.quadInstance);
 +                    this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
@@ -106,19 +116,21 @@
                  this.lighter.prepareQuadAmbientOcclusion(level, state, pos, quad, this.quadInstance);
                  this.putQuadWithTint(output, x, y, z, level, state, pos, quad);
              }
-@@ -145,7 +_,7 @@
+@@ -145,7 +_,8 @@
                      if (!culledQuads.isEmpty()) {
                          BlockPos relativePos = this.scratchPos.setWithOffset(pos, direction);
                          if (!validCacheForDirection) {
 -                            shouldRenderFace = this.shouldRenderFace(level, state, direction, relativePos);
++                            // Neo: use level-sensitive occlusion check
 +                            shouldRenderFace = this.shouldRenderFace(level, pos, state, direction, relativePos);
                              cacheValid |= cacheMask;
                              if (shouldRenderFace) {
                                  shouldRenderFaceCache |= cacheMask;
-@@ -171,6 +_,17 @@
+@@ -171,6 +_,18 @@
          }
      }
  
++    /// Neo: overload of [#shouldRenderFace(BlockAndTintGetter, BlockState, Direction, BlockPos)] with level context
 +    private boolean shouldRenderFace(BlockAndTintGetter level, BlockPos pos, BlockState state, Direction direction, BlockPos neighborPos) {
 +        if (!this.cull) {
 +            return true;
@@ -133,10 +145,11 @@
      private boolean shouldRenderFace(BlockAndTintGetter level, BlockState state, Direction direction, BlockPos neighborPos) {
          if (!this.cull) {
              return true;
-@@ -204,6 +_,15 @@
+@@ -204,6 +_,16 @@
          if (!this.tintSourcesInitialized) {
              this.configureTintCache(state);
              this.tintSourcesInitialized = true;
++            // Neo: add support for blocks with dynamic tint amounts
 +            if (this.tintSources.isEmpty()) {
 +                net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(state)
 +                        .collectDynamicTintValues(state, level, pos, this.computedTintValues);

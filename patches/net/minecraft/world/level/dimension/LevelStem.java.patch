@@ -9,8 +9,8 @@
 +public record LevelStem(Holder<DimensionType> type, ChunkGenerator generator, java.util.OptionalLong seedOverride) {
      public static final Codec<LevelStem> CODEC = RecordCodecBuilder.create(
          i -> i.group(DimensionType.CODEC.fieldOf("type").forGetter(LevelStem::type), ChunkGenerator.CODEC.fieldOf("generator").forGetter(LevelStem::generator))
-+                // Neo: patch the neoforge:seed_override field into the codec
-+                .and(net.minecraft.util.ExtraCodecs.asOptionalLong(Codec.LONG.optionalFieldOf("neoforge:seed_override")).forGetter(LevelStem::seedOverride))
++            // Neo: patch the neoforge:seed_override field into the codec
++            .and(net.minecraft.util.ExtraCodecs.asOptionalLong(Codec.LONG.optionalFieldOf("neoforge:seed_override")).forGetter(LevelStem::seedOverride))
              .apply(i, i.stable(LevelStem::new))
      );
 +

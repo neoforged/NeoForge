@@ -1,12 +1,14 @@
 --- a/net/minecraft/world/level/block/FlowerPotBlock.java
 +++ b/net/minecraft/world/level/block/FlowerPotBlock.java
-@@ -30,12 +_,41 @@
+@@ -30,12 +_,43 @@
  public class FlowerPotBlock extends Block {
      private static final Map<Block, Block> POTTED_BY_CONTENT = Maps.newHashMap();
      private static final VoxelShape SHAPE = Block.column(6.0, 0.0, 6.0);
 +    /// Neo: Field accesses are redirected to {@link #getPotted()} with a coremod.
      private final Block potted;
++    /// Neo: holds the empty variant of this pot or null if this is an empty pot
 +    private final java.util.function.@org.jspecify.annotations.Nullable Supplier<FlowerPotBlock> emptyPot;
++    /// Neo: holds the flower block planted in this pot or AIR if this pot is empty
 +    private final java.util.function.Supplier<? extends Block> flowerDelegate;
  
 +    /// @deprecated Neo: Use the other constructors for [empty pots][#FlowerPotBlock(Properties)] and [full pots][#FlowerPotBlock(java.util.function.Supplier, java.util.function.Supplier, Properties)].
@@ -30,7 +32,7 @@
 +    /// @param potted   The potted flower/plant
 +    public FlowerPotBlock(java.util.function.Supplier<FlowerPotBlock> emptyPot, java.util.function.Supplier<? extends Block> potted, BlockBehaviour.Properties properties) {
 +        super(properties);
-+        this.potted = null; // Unused, redirected by coremod
++        this.potted = null; // Neo: unused, redirected by coremod
 +        this.flowerDelegate = java.util.Objects.requireNonNull(potted, "Use single-parameter constructor instead for empty pots");
 +        this.emptyPot = java.util.Objects.requireNonNull(emptyPot, "Use single-parameter constructor instead for empty pots");
 +    }
@@ -38,7 +40,7 @@
 +    /// Neo: Constructs an empty flower pot.
 +    public FlowerPotBlock(BlockBehaviour.Properties properties) {
 +        super(properties);
-+        this.potted = null; // Unused, redirected by coremod
++        this.potted = null; // Neo: unused, redirected by coremod
 +        this.flowerDelegate = () -> Blocks.AIR;
 +        this.emptyPot = null;
      }
@@ -49,7 +51,7 @@
      ) {
          BlockState newContents = (itemStack.getItem() instanceof BlockItem blockItem
 -                ? POTTED_BY_CONTENT.getOrDefault(blockItem.getBlock(), Blocks.AIR)
-+                ? this.emptyPot == null ? getFullPot(blockItem.getBlock()) : Blocks.AIR
++                ? this.emptyPot == null ? this.getFullPot(blockItem.getBlock()) : Blocks.AIR
                  : Blocks.AIR)
              .defaultBlockState();
          if (newContents.isAir()) {
@@ -58,11 +60,11 @@
          }
  
 -        level.setBlockAndUpdate(pos, Blocks.FLOWER_POT.defaultBlockState());
-+        level.setBlockAndUpdate(pos, getEmptyPot().defaultBlockState());
++        level.setBlockAndUpdate(pos, this.getEmptyPot().defaultBlockState());
          level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
          return InteractionResult.SUCCESS;
      }
-@@ -108,7 +_,32 @@
+@@ -108,7 +_,33 @@
      }
  
      public Block getPotted() {
@@ -70,6 +72,7 @@
 +        return this.flowerDelegate.get();
 +    }
 +
++    /// Neo: {@return the empty variant of this pot or this pot if it is itself the empty pot}
 +    public FlowerPotBlock getEmptyPot() {
 +        return this.emptyPot == null ? this : this.emptyPot.get();
 +    }

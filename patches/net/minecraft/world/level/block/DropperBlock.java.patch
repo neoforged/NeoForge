@@ -1,22 +1,21 @@
 --- a/net/minecraft/world/level/block/DropperBlock.java
 +++ b/net/minecraft/world/level/block/DropperBlock.java
-@@ -51,12 +_,16 @@
+@@ -51,11 +_,16 @@
                  ItemStack itemStack = blockEntity.getItem(slot);
                  if (!itemStack.isEmpty()) {
                      Direction direction = level.getBlockState(pos).getValue(FACING);
 -                    Container into = HopperBlockEntity.getContainerAt(level, pos.relative(direction));
-+                    var into = HopperBlockEntity.getContainerOrHandlerAt(level, pos.relative(direction), direction.getOpposite());
++                    // Neo: support both containers and resource handlers
++                    var containerOrHandler = HopperBlockEntity.getContainerOrHandlerAt(level, pos.relative(direction), direction.getOpposite());
++                    Container into = containerOrHandler.container();
                      ItemStack remaining;
 -                    if (into == null) {
-+                    if (into.isEmpty()) {
++                    if (containerOrHandler.isEmpty()) {
                          remaining = DISPENSE_BEHAVIOUR.dispense(source, itemStack);
                      } else {
--                        remaining = HopperBlockEntity.addItem(blockEntity, into, itemStack.copyWithCount(1), direction.getOpposite());
-+                        if (into.container() != null) {
-+                            remaining = HopperBlockEntity.addItem(blockEntity, into.container(), itemStack.copyWithCount(1), direction.getOpposite());
-+                        } else {
-+                            remaining = net.neoforged.neoforge.transfer.item.ItemUtil.insertItemReturnRemaining(into.itemHandler(), itemStack.copyWithCount(1), false, null);
-+                        }
++                        if (into == null) {
++                            remaining = net.neoforged.neoforge.transfer.item.ItemUtil.insertItemReturnRemaining(containerOrHandler.itemHandler(), itemStack.copyWithCount(1), false, null);
++                        } else
+                         remaining = HopperBlockEntity.addItem(blockEntity, into, itemStack.copyWithCount(1), direction.getOpposite());
                          if (remaining.isEmpty()) {
                              remaining = itemStack.copy();
-                             remaining.shrink(1);

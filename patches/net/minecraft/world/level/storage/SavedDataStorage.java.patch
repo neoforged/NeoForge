@@ -4,7 +4,7 @@
      private final Path dataFolder;
      private CompletableFuture<?> pendingWriteFuture = CompletableFuture.completedFuture(null);
      private boolean closed;
-+    /// Neo: Needed to make level context available to modded saved data
++    /// Neo: holds the level owning this data storage
 +    private final net.minecraft.server.level.@org.jspecify.annotations.Nullable ServerLevel level;
  
 +    /// @deprecated Neo: Use [#SavedDataStorage(net.minecraft.server.level.ServerLevel, Path, DataFixer, HolderLookup.Provider)] instead
@@ -18,37 +18,41 @@
          this.fixerUpper = fixerUpper;
          this.dataFolder = dataFolder;
          this.registries = registries;
-@@ -68,7 +_,7 @@
+@@ -68,7 +_,8 @@
              return data;
          }
  
 -        T newData = (T)type.constructor().get();
++        // Neo: use level-sensitive factory
 +        T newData = (T)type.factory().create(this.level);
          this.set(type, newData);
          return newData;
      }
-@@ -89,7 +_,7 @@
+@@ -89,7 +_,8 @@
              if (Files.exists(file)) {
                  CompoundTag tag = this.readTagFromDisk(file, type.dataFixType(), SharedConstants.getCurrentVersion().dataVersion().version());
                  RegistryOps<Tag> ops = this.registries.createSerializationContext(NbtOps.INSTANCE);
 -                return type.codec()
++                // Neo: use level-sensitive coded factory
 +                return type.codecFactory().create(this.level)
                      .parse(ops, tag.get("data"))
                      .resultOrPartial(error -> LOGGER.error("Failed to parse saved data for '{}': {}", type, error))
                      .orElse(null);
-@@ -106,7 +_,7 @@
+@@ -106,7 +_,8 @@
          data.setDirty();
      }
  
 -    public CompoundTag readTagFromDisk(Path dataFile, DataFixTypes type, int newVersion) throws IOException {
++    // Neo: make the data fix type nullable
 +    public CompoundTag readTagFromDisk(Path dataFile, @Nullable DataFixTypes type, int newVersion) throws IOException {
          try (
              InputStream in = Files.newInputStream(dataFile);
              PushbackInputStream inputStream = new PushbackInputStream(new FastBufferedInputStream(in), 2);
-@@ -120,8 +_,18 @@
+@@ -120,8 +_,19 @@
                  }
              }
  
++            // Neo: bail early if not data fix type is provided
 +            if (type == null) {
 +                return tag;
 +            }
@@ -64,11 +68,12 @@
          }
      }
  
-@@ -196,7 +_,7 @@
+@@ -196,7 +_,8 @@
      }
  
      private <T extends SavedData> CompoundTag encodeUnchecked(SavedDataType<T> type, SavedData data, RegistryOps<Tag> ops) {
 -        Codec<T> codec = type.codec();
++        // Neo: use level-sensitive codec factory
 +        Codec<T> codec = type.codecFactory().create(this.level);
          CompoundTag tag = new CompoundTag();
          tag.put("data", codec.encodeStart(ops, (T)data).getOrThrow());

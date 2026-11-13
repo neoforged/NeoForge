@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/level/SignalGetter.java
 +++ b/net/minecraft/world/level/SignalGetter.java
-@@ -65,7 +_,7 @@
+@@ -65,7 +_,8 @@
      default int getSignal(BlockPos pos, Direction direction) {
          BlockState state = this.getBlockState(pos);
          int signal = state.getSignal(this, pos, direction);
 -        return state.isRedstoneConductor(this, pos) ? Math.max(signal, this.getDirectSignalTo(pos)) : signal;
++        // Neo: give blocks more control over indirect power handling
 +        return state.shouldCheckWeakPower(this, pos, direction) ? Math.max(signal, this.getDirectSignalTo(pos)) : signal;
      }
  

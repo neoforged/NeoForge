@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/level/chunk/ProtoChunk.java
 +++ b/net/minecraft/world/level/chunk/ProtoChunk.java
-@@ -137,7 +_,7 @@
+@@ -137,7 +_,8 @@
                  this.lightEngine.updateSectionStatus(pos, isEmpty);
              }
  
 -            if (LightEngine.hasDifferentLightProperties(oldState, state)) {
++            // Neo: use level-sensitive light property check
 +            if (LightEngine.hasDifferentLightProperties(this, pos, oldState, state)) {
                  this.skyLightSources.update(this, localX, y, localZ);
                  this.lightEngine.checkBlock(pos);

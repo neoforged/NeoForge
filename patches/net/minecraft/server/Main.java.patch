@@ -20,7 +20,7 @@
              Util.startTimerHackThread();
              Path settingsFile = Paths.get("server.properties");
 +            if (!options.has(initSettings)) {
-+                // Neo: Load mods before we load almost anything else. Only loads if they haven't passed the initserver param
++                // Neo: Load mods before we load almost anything else. Only loads if they haven't passed the initSettings param
 +                net.neoforged.neoforge.server.loading.ServerModLoader.load(false);
 +            }
              DedicatedServerSettings settings = new DedicatedServerSettings(settingsFile);

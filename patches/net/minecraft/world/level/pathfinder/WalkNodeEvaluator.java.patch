@@ -1,26 +1,28 @@
 --- a/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
 +++ b/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
-@@ -477,6 +_,16 @@
+@@ -477,6 +_,17 @@
                  for (int dz = -1; dz <= 1; dz++) {
                      if (dx != 0 || dz != 0) {
                          PathType pathType = context.getPathTypeFromState(x + dx, y + dy, z + dz);
 +                        BlockState blockState = context.level().getBlockState(context.currentEvalPos());
++                        // Neo: let the block declare the path type to apply to adjacent positions
 +                        PathType adjBlockPathType = blockState.getAdjacentBlockPathType(context.level(), context.currentEvalPos(), null, pathType);
 +                        if (adjBlockPathType != null) {
 +                            return adjBlockPathType;
 +                        }
-+                        net.minecraft.world.level.material.FluidState fluidState = blockState.getFluidState();
-+                        PathType adjFluidPathType = fluidState.getAdjacentBlockPathType(context.level(), context.currentEvalPos(), null, pathType);
++                        // Neo: let the fluid declare the path type to apply to adjacent positions
++                        PathType adjFluidPathType = blockState.getFluidState().getAdjacentBlockPathType(context.level(), context.currentEvalPos(), null, pathType);
 +                        if (adjFluidPathType != null) {
 +                            return adjFluidPathType;
 +                        }
                          if (pathType == PathType.DAMAGING) {
                              return PathType.DAMAGING_IN_NEIGHBOR;
                          }
-@@ -502,6 +_,10 @@
+@@ -502,6 +_,11 @@
  
      protected static PathType getPathTypeFromState(BlockGetter level, BlockPos pos) {
          BlockState blockState = level.getBlockState(pos);
++        // Neo: let the block declare its path type
 +        PathType type = blockState.getBlockPathType(level, pos, null);
 +        if (type != null) {
 +            return type;
@@ -28,10 +30,11 @@
          Block block = blockState.getBlock();
          if (blockState.isAir()) {
              return PathType.OPEN;
-@@ -529,6 +_,10 @@
+@@ -529,6 +_,11 @@
  
          if (!blockState.is(Blocks.WITHER_ROSE) && !blockState.is(BlockTags.SPELEOTHEMS)) {
              FluidState fluidState = blockState.getFluidState();
++            // Neo: let the fluid declare its non-fluid-loggable path type
 +            PathType nonLoggableFluidPathType = fluidState.getBlockPathType(level, pos, null, false);
 +            if (nonLoggableFluidPathType != null) {
 +                return nonLoggableFluidPathType;
@@ -39,10 +42,11 @@
              if (fluidState.is(FluidTags.LAVA)) {
                  return PathType.LAVA;
              }
-@@ -558,6 +_,10 @@
+@@ -558,6 +_,11 @@
                      if (!blockState.isPathfindable(PathComputationType.LAND)) {
                          return PathType.BLOCKED;
                      } else {
++                        // Neo: let the fluid declare its fluid-loggable path type
 +                        PathType loggableFluidPathType = fluidState.getBlockPathType(level, pos, null, true);
 +                        if (loggableFluidPathType != null) {
 +                            return loggableFluidPathType;

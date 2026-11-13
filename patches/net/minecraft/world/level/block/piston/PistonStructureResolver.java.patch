@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/level/block/piston/PistonStructureResolver.java
 +++ b/net/minecraft/world/level/block/piston/PistonStructureResolver.java
-@@ -62,15 +_,11 @@
+@@ -62,15 +_,13 @@
      }
  
      private static boolean isSticky(BlockState state) {
 -        return state.is(Blocks.SLIME_BLOCK) || state.is(Blocks.HONEY_BLOCK);
++        // Neo: add support for modded slime/honey-like blocks
 +        return state.isStickyBlock();
      }
  
@@ -14,6 +15,7 @@
 -        } else {
 -            return state1.is(Blocks.SLIME_BLOCK) && state2.is(Blocks.HONEY_BLOCK) ? false : isSticky(state1) || isSticky(state2);
 -        }
++        // Neo: let the blocks decide whether they stick each other
 +        return state1.canStickTo(state2) && state2.canStickTo(state1);
      }
  

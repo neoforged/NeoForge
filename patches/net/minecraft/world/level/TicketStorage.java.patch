@@ -11,47 +11,53 @@
      );
      public static final SavedDataType<TicketStorage> TYPE = new SavedDataType<>(
          Identifier.withDefaultNamespace("chunk_tickets"), TicketStorage::new, CODEC, DataFixTypes.SAVED_DATA_FORCED_CHUNKS
-@@ -45,11 +_,16 @@
+@@ -45,11 +_,19 @@
      private LongSet chunksWithForcedTickets = new LongOpenHashSet();
      private TicketStorage.@Nullable ChunkUpdated loadingChunkUpdatedListener;
      private TicketStorage.@Nullable ChunkUpdated simulationChunkUpdatedListener;
-+    // Neo: Keep track of forced loaded chunks caused by entities or blocks.
++    /// Neo: holds the chunks force-loaded by blocks
 +    private final net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<net.minecraft.core.BlockPos> blockForcedChunks = new net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<>(this, net.neoforged.neoforge.common.NeoForgeMod.BLOCK_TICKET, net.neoforged.neoforge.common.NeoForgeMod.BLOCK_WITH_NATURAL_SPAWNING_TICKET);
++    /// Neo: holds the chunks force-loaded by entities
 +    private final net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<java.util.UUID> entityForcedChunks = new net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<>(this, net.neoforged.neoforge.common.NeoForgeMod.ENTITY_TICKET, net.neoforged.neoforge.common.NeoForgeMod.ENTITY_WITH_NATURAL_SPAWNING_TICKET);
++    /// Neo: holds the chunks with forced natural spawning
 +    private LongSet chunksWithForceNaturalSpawning = new LongOpenHashSet();
  
      private TicketStorage(Long2ObjectOpenHashMap<List<Ticket>> tickets, Long2ObjectOpenHashMap<List<Ticket>> deactivatedTickets) {
          this.tickets = tickets;
          this.deactivatedTickets = deactivatedTickets;
          this.updateForcedChunks();
++        // Neo: update forced natural spawning
 +        this.updateForcedNaturalSpawning();
      }
  
      public TicketStorage() {
-@@ -173,6 +_,9 @@
+@@ -173,6 +_,10 @@
          if (ticket.getType().equals(TicketType.FORCED)) {
              this.chunksWithForcedTickets.add(key);
          }
++        // Neo: apply forced natural spawning, if applicable
 +        if (ticket.getType().forceNaturalSpawning()) {
 +            this.chunksWithForceNaturalSpawning.add(key);
 +        }
  
          this.setDirty();
          return true;
-@@ -261,6 +_,9 @@
+@@ -261,6 +_,10 @@
          if (ticket.getType().equals(TicketType.FORCED)) {
              this.updateForcedChunks();
          }
++        // Neo: update forced natural spawning, if needed
 +        if (ticket.getType().forceNaturalSpawning()) {
 +            this.updateForcedNaturalSpawning();
 +        }
  
          this.setDirty();
          return true;
-@@ -303,11 +_,14 @@
+@@ -303,11 +_,16 @@
  
      public void deactivateTicketsOnClosing() {
          this.removeTicketIf((ticket, chunkPos) -> ticket.getType() != TicketType.UNKNOWN, this.deactivatedTickets);
++        // Neo: deactivate all block and entity chunk load tickets
 +        this.blockForcedChunks.deactivateTicketsOnClosing();
 +        this.entityForcedChunks.deactivateTicketsOnClosing();
      }
@@ -59,48 +65,55 @@
      public void removeTicketIf(TicketStorage.TicketPredicate predicate, @Nullable Long2ObjectOpenHashMap<List<Ticket>> removedTickets) {
          ObjectIterator<Entry<List<Ticket>>> ticketsPerChunkIterator = this.tickets.long2ObjectEntrySet().fastIterator();
          boolean removedForced = false;
++        // Neo: indicates whether natural spawning needs to be updated
 +        boolean updateNaturalSpawning = false;
  
          while (ticketsPerChunkIterator.hasNext()) {
              Entry<List<Ticket>> entry = ticketsPerChunkIterator.next();
-@@ -336,6 +_,9 @@
+@@ -336,6 +_,10 @@
                      if (ticket.getType().equals(TicketType.FORCED)) {
                          removedForced = true;
                      }
++                    // Neo: mark natural spawning for update, if needed
 +                    if (ticket.getType().forceNaturalSpawning()) {
 +                        updateNaturalSpawning = true;
 +                    }
                  }
              }
  
-@@ -358,6 +_,9 @@
+@@ -358,6 +_,10 @@
          if (removedForced) {
              this.updateForcedChunks();
          }
++        // Neo: update natural spawning, if needed
 +        if (updateNaturalSpawning) {
 +            this.updateForcedNaturalSpawning();
 +        }
      }
  
      public void replaceTicketLevelOfType(int newLevel, TicketType ticketType) {
-@@ -411,5 +_,21 @@
+@@ -411,5 +_,25 @@
  
      public interface TicketPredicate {
          boolean test(Ticket ticket, long chunkPos);
 +    }
 +
++    /// Neo: {@return the tracker for chunks force-loaded by blocks}
 +    public net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<net.minecraft.core.BlockPos> getBlockForcedChunks() {
 +        return this.blockForcedChunks;
 +    }
 +
++    /// Neo: {@return the tracker for chunks force-loaded by entities}
 +    public net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<java.util.UUID> getEntityForcedChunks() {
 +        return this.entityForcedChunks;
 +    }
 +
++    /// Neo: update forced natural spawning
 +    private void updateForcedNaturalSpawning() {
 +        this.chunksWithForceNaturalSpawning = this.getAllChunksWithTicketThat(ticket -> ticket.getType().forceNaturalSpawning());
 +    }
 +
++    /// Neo: {@return whether the given chunk has forced natural spawning}
 +    public boolean shouldForceNaturalSpawning(ChunkPos chunkPos) {
 +        return this.chunksWithForceNaturalSpawning.contains(chunkPos.pack());
      }

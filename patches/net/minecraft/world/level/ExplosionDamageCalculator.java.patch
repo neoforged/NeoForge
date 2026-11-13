@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/level/ExplosionDamageCalculator.java
 +++ b/net/minecraft/world/level/ExplosionDamageCalculator.java
-@@ -11,7 +_,7 @@
+@@ -11,7 +_,8 @@
      public Optional<Float> getBlockExplosionResistance(Explosion explosion, BlockGetter level, BlockPos pos, BlockState block, FluidState fluid) {
          return block.isAir() && fluid.isEmpty()
              ? Optional.empty()
 -            : Optional.of(Math.max(block.getBlock().getExplosionResistance(), fluid.getExplosionResistance()));
++            // Neo: use level-sensitive explosion resistance getter
 +            : Optional.of(Math.max(block.getExplosionResistance(level, pos, explosion), fluid.getExplosionResistance(level, pos, explosion)));
      }
  

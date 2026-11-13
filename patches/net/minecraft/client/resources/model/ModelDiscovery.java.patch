@@ -24,7 +24,7 @@
  
          return result;
      }
-@@ -147,16 +_,18 @@
+@@ -147,16 +_,20 @@
          private static final ModelDiscovery.Slot<TextureSlots> KEY_TEXTURE_SLOTS = slot(4);
          private static final ModelDiscovery.Slot<Material.Baked> KEY_PARTICLE_SPRITE = slot(5);
          private static final ModelDiscovery.Slot<QuadCollection> KEY_DEFAULT_GEOMETRY = slot(6);
@@ -37,20 +37,23 @@
          private ModelDiscovery.@Nullable ModelWrapper parent;
          private final UnbakedModel wrapped;
 -        private final AtomicReferenceArray<@Nullable Object> fixedSlots = new AtomicReferenceArray<>(7);
++        // Neo: use adjusted slot count
 +        private final AtomicReferenceArray<@Nullable Object> fixedSlots = new AtomicReferenceArray<>(SLOT_COUNT);
          private final Map<ModelState, QuadCollection> modelBakeCache = new ConcurrentHashMap<>();
  
          private static <T> ModelDiscovery.Slot<T> slot(int index) {
 -            Objects.checkIndex(index, 7);
++            // Neo: use adjusted slot count
 +            Objects.checkIndex(index, SLOT_COUNT);
              return new ModelDiscovery.Slot<>(index);
          }
  
-@@ -228,15 +_,20 @@
+@@ -228,15 +_,23 @@
  
          private QuadCollection bakeDefaultState(TextureSlots textureSlots, ModelBaker baker, ModelState state) {
              QuadCollection result = this.getSlot(KEY_DEFAULT_GEOMETRY);
 -            return result != null ? result : this.updateSlot(KEY_DEFAULT_GEOMETRY, this.getTopGeometry().bake(textureSlots, baker, state, this));
++            // Neo: provide additional baking properties
 +            return result != null ? result : this.updateSlot(KEY_DEFAULT_GEOMETRY, this.getTopGeometry().bake(textureSlots, baker, state, this, this.getTopAdditionalProperties()));
          }
  
@@ -59,10 +62,12 @@
              return state == BlockModelRotation.IDENTITY ? this.bakeDefaultState(textureSlots, baker, state) : this.modelBakeCache.computeIfAbsent(state, s -> {
                  UnbakedGeometry topGeometry = this.getTopGeometry();
 -                return topGeometry.bake(textureSlots, baker, s, this);
++                // Neo: provide additional baking properties
 +                return topGeometry.bake(textureSlots, baker, s, this, this.getTopAdditionalProperties());
              });
 +        }
 +
++        /// Neo: {@return the additional baking properties}
 +        @Override
 +        public net.minecraft.util.context.ContextMap getTopAdditionalProperties() {
 +            return this.getSimpleProperty(KEY_ADDITIONAL_PROPERTIES, net.neoforged.neoforge.client.extensions.ResolvedModelExtension::findTopAdditionalProperties);

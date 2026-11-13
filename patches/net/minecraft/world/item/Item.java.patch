@@ -48,15 +48,7 @@
      public final @Nullable ItemStackTemplate getCraftingRemainder() {
          return this.craftingRemainingItem;
      }
-@@ -364,13 +_,17 @@
-     }
- 
-     public boolean useOnRelease(ItemStack itemStack) {
--        return false;
-+        return itemStack.getItem() == Items.CROSSBOW;
-     }
- 
-     public ItemStack getDefaultInstance() {
+@@ -371,6 +_,10 @@
          return new ItemStack(this);
      }
  

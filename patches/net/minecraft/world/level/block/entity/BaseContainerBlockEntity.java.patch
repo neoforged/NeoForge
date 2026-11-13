@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/BaseContainerBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BaseContainerBlockEntity.java
-@@ -124,9 +_,17 @@
+@@ -124,8 +_,17 @@
  
      @Override
      public void setItem(int slot, ItemStack itemStack) {
@@ -12,13 +12,12 @@
 +    public void setItem(int slot, ItemStack itemStack, boolean insideTransaction) {
          this.getItems().set(slot, itemStack);
          itemStack.limitSize(this.getMaxStackSize(itemStack));
--        this.setChanged();
-+        if (!insideTransaction) {
-+            this.setChanged();
++        if (insideTransaction) {
++            return;
 +        }
+         this.setChanged();
      }
  
-     @Override
 @@ -178,12 +_,18 @@
      }
  

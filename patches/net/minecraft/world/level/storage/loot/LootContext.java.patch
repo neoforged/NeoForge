@@ -1,10 +1,10 @@
 --- a/net/minecraft/world/level/storage/loot/LootContext.java
 +++ b/net/minecraft/world/level/storage/loot/LootContext.java
-@@ -26,8 +_,16 @@
+@@ -26,8 +_,17 @@
      private final RandomSource random;
      private final HolderGetter.Provider lootDataResolver;
      private final Set<LootContext.VisitedEntry<?>> visitedElements = Sets.newLinkedHashSet();
-+    // Neo: Keep track of the original loot table ID through modifications
++    /// Neo: persists the original loot table ID through modifications
 +    @Nullable
 +    private Identifier queriedLootTableId;
  
@@ -12,6 +12,7 @@
 +        this(params, random, lootDataResolver, null);
 +    }
 +
++    /// Neo: overload of [#LootContext(LootParams, RandomSource, HolderGetter.Provider)] with the ability to specify the original ID of the loot table being queried
 +    private LootContext(LootParams params, RandomSource random, HolderGetter.Provider lootDataResolver, @Nullable Identifier queriedLootTableId) {
 +        this.queriedLootTableId = queriedLootTableId;
          this.params = params;
@@ -34,14 +35,15 @@
      public static LootContext.VisitedEntry<LootTable> createVisitedEntry(LootTable table) {
          return new LootContext.VisitedEntry<>(LootDataType.TABLE, table);
      }
-@@ -114,6 +_,15 @@
+@@ -114,6 +_,16 @@
      public static class Builder {
          private final LootParams params;
          private @Nullable RandomSource random;
-+        // Neo: correctly pass around loot table ID with copy constructor
++        /// Neo: holds the loot table ID for persistence through the copy constructor
 +        @Nullable
 +        private Identifier queriedLootTableId;
 +
++        /// Neo: copy constructor
 +        public Builder(LootContext context) {
 +            this.params = context.params;
 +            this.random = context.random;
@@ -62,23 +64,23 @@
          public ServerLevel getLevel() {
              return this.params.getLevel();
          }
-@@ -140,7 +_,7 @@
+@@ -140,7 +_,8 @@
              ServerLevel level = this.getLevel();
              MinecraftServer server = level.getServer();
              RandomSource random = Optional.ofNullable(this.random).or(() -> randomSequenceKey.map(server::getRandomSequence)).orElseGet(level::getRandom);
 -            return new LootContext(this.params, random, server.reloadableRegistries().lookup());
++            // Neo: add queried loot table ID
 +            return new LootContext(this.params, random, server.reloadableRegistries().lookup(), this.queriedLootTableId);
          }
      }
  
-@@ -164,6 +_,12 @@
+@@ -164,6 +_,11 @@
          @Override
          public ContextKey<? extends Entity> contextParam() {
              return this.param;
 +        }
 +
-+        // Neo: This method is patched in to expose the same name used in getByName so that ContextNbtProvider#forEntity serializes it properly
-+        // TODO 1.21.11: To be consistent with getParam() being renamed to contextParam(), consider renaming to name()
++        /// Neo: {@return the name of this target}
 +        public String getName() {
 +            return this.name;
          }

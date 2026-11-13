@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java
 +++ b/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java
-@@ -119,7 +_,7 @@
+@@ -119,7 +_,8 @@
              List<Entity> entities = level.getEntities(null, PistonMath.getMovementArea(aabb, movement, deltaProgress).minmax(aabb));
              if (!entities.isEmpty()) {
                  List<AABB> shapeAabbs = shape.toAabbs();
 -                boolean causeBounce = self.movedState.is(Blocks.SLIME_BLOCK);
++                // Neo: add support for modded slime-like blocks
 +                boolean causeBounce = self.movedState.isSlimeBlock();
  
                  for (Entity entity : entities) {

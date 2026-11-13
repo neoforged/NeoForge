@@ -1,20 +1,22 @@
 --- a/net/minecraft/world/level/block/ChorusPlantBlock.java
 +++ b/net/minecraft/world/level/block/ChorusPlantBlock.java
-@@ -42,7 +_,8 @@
+@@ -42,7 +_,9 @@
          BlockState south = level.getBlockState(pos.south());
          BlockState west = level.getBlockState(pos.west());
          Block block = defaultState.getBlock();
 -        return defaultState.trySetValue(DOWN, down.is(block) || down.is(Blocks.CHORUS_FLOWER) || down.is(BlockTags.SUPPORTS_CHORUS_PLANT))
++        // Neo: let the block decide whether it can sustain this plant
 +        var soilDecision = down.canSustainPlant(level, pos.below(), Direction.UP, defaultState);
-+        return defaultState.trySetValue(DOWN, down.is(block) || down.is(Blocks.CHORUS_FLOWER) || down.is(Blocks.END_STONE) || soilDecision.isTrue())
++        return defaultState.trySetValue(DOWN, down.is(block) || down.is(Blocks.CHORUS_FLOWER) || down.is(BlockTags.SUPPORTS_CHORUS_PLANT) || soilDecision.isTrue())
              .trySetValue(UP, up.is(block) || up.is(Blocks.CHORUS_FLOWER))
              .trySetValue(NORTH, north.is(block) || north.is(Blocks.CHORUS_FLOWER))
              .trySetValue(EAST, east.is(block) || east.is(Blocks.CHORUS_FLOWER))
-@@ -68,6 +_,12 @@
+@@ -68,6 +_,13 @@
              boolean connect = neighbourState.is(this)
                  || neighbourState.is(Blocks.CHORUS_FLOWER)
                  || directionToNeighbour == Direction.DOWN && neighbourState.is(BlockTags.SUPPORTS_CHORUS_PLANT);
 +            if (directionToNeighbour == Direction.DOWN) {
++                // Neo: let the block decide whether it can sustain this plant
 +                var soilDecision = neighbourState.canSustainPlant(level, neighbourPos.relative(directionToNeighbour), directionToNeighbour.getOpposite(), state);
 +                if (!soilDecision.isDefault()) {
 +                    connect = soilDecision.isTrue();
@@ -23,10 +25,11 @@
              return state.setValue(PROPERTY_BY_DIRECTION.get(directionToNeighbour), connect);
          }
      }
-@@ -99,6 +_,10 @@
+@@ -99,6 +_,11 @@
              }
          }
  
++        // Neo: let the block decide whether it can sustain this plant
 +        var soilDecision = belowState.canSustainPlant(level, pos.below(), Direction.UP, state);
 +        if (!soilDecision.isDefault()) {
 +            return soilDecision.isTrue();

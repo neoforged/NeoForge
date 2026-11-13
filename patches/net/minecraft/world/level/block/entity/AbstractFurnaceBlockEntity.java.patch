@@ -16,11 +16,10 @@
                  case 2:
                      return AbstractFurnaceBlockEntity.this.cookingTimer;
                  case 3:
-@@ -111,12 +_,38 @@
+@@ -111,6 +_,30 @@
      };
      private final Reference2IntOpenHashMap<ResourceKey<Recipe<?>>> recipesUsed = new Reference2IntOpenHashMap<>();
      private final RecipeManager.CachedCheck<SingleRecipeInput, ? extends AbstractCookingRecipe> quickCheck;
-+    private final RecipeType<? extends AbstractCookingRecipe> recipeType;
 +    // Neo: Reset cooking time when the input changes inside a transaction
 +    private boolean needsCookingReset = false;
 +    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Boolean> cookingResetJournal = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<>() {
@@ -48,32 +47,28 @@
  
      protected AbstractFurnaceBlockEntity(
          BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState, RecipeType<? extends AbstractCookingRecipe> recipeType
-     ) {
-         super(type, worldPosition, blockState);
-         this.quickCheck = RecipeManager.createCheck(recipeType);
-+        this.recipeType = recipeType;
-     }
- 
-     @Override
-@@ -225,7 +_,7 @@
+@@ -225,7 +_,8 @@
  
      private static void consumeFuel(ServerLevel level, BlockPos pos, NonNullList<ItemStack> items, ItemStack fuel) {
          Item fuelItem = fuel.getItem();
 -        ItemStackTemplate remainder = fuelItem.getCraftingRemainder();
++        // Neo: use stack-sensitive remainder getter
 +        ItemStackTemplate remainder = fuel.getCraftingRemainder();
          ItemStack newFuel = fuel;
          fuel.shrink(1);
          if (remainder != null) {
-@@ -270,11 +_,11 @@
+@@ -270,11 +_,13 @@
      }
  
      protected int getBurnDuration(ServerLevel level, ItemStack fuelItem) {
 -        return ResolvableInt.getFromItem(fuelItem, DataComponents.COOKING_FUEL, CookingFuel::burnTime, this.getLootContext(level), 0);
++        // Neo: add fuel stack to loot context
 +        return ResolvableInt.getFromItem(fuelItem, DataComponents.COOKING_FUEL, CookingFuel::burnTime, this.getLootContext(level, fuelItem), 0);
      }
  
      protected float getSpeedMultiplier(ServerLevel level, ItemStack fuelItem) {
 -        return ResolvableFloat.getFromItem(fuelItem, DataComponents.COOKING_FUEL, CookingFuel::speedMultiplier, this.getLootContext(level), 1.0F);
++        // Neo: add fuel stack to loot context
 +        return ResolvableFloat.getFromItem(fuelItem, DataComponents.COOKING_FUEL, CookingFuel::speedMultiplier, this.getLootContext(level, fuelItem), 1.0F);
      }
  

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntityType.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntityType.java
-@@ -11,18 +_,44 @@
+@@ -11,18 +_,45 @@
  
  public class BlockEntityType<T extends BlockEntity> {
      private final BlockEntityType.BlockEntitySupplier<? extends T> factory;
@@ -14,18 +14,19 @@
 +        this(factory, validBlocks, false);
 +    }
 +
++    /// Neo: overload of [#BlockEntityType(BlockEntityType.BlockEntitySupplier, Set)], allowing modded BE types to declare that they have NBT data only OPs can set
 +    public BlockEntityType(BlockEntityType.BlockEntitySupplier<? extends T> factory, Set<Block> validBlocks, boolean onlyOpCanSetNbt) {
          this.factory = factory;
          this.validBlocks = validBlocks;
 +        this.onlyOpCanSetNbt = onlyOpCanSetNbt;
 +    }
 +
-+    // Neo: Additional constructor for convenience.
++    /// Neo: overload of [#BlockEntityType(BlockEntityType.BlockEntitySupplier, Set)] accepting an array of blocks
 +    public BlockEntityType(BlockEntityType.BlockEntitySupplier<? extends T> factory, Block... validBlocks) {
 +        this(factory, false, validBlocks);
 +    }
 +
-+    // Neo: Additional constructor for convenience.
++    /// Neo: overload of [#BlockEntityType(BlockEntityType.BlockEntitySupplier, Set, boolean)] accepting an array of blocks
 +    public BlockEntityType(BlockEntityType.BlockEntitySupplier<? extends T> factory, boolean onlyOpCanSetNbt, Block... validBlocks) {
 +        this(factory, Set.of(validBlocks), onlyOpCanSetNbt);
 +        if (validBlocks.length == 0) {
@@ -37,7 +38,7 @@
          return (T)this.factory.create(worldPosition, blockState);
      }
  
-+    /// Neo: Add getter for an immutable view of the set of valid blocks.
++    /// Neo: {@return an unmodifiable view of the set of valid blocks}
 +    public Set<Block> getValidBlocks() {
 +        return java.util.Collections.unmodifiableSet(this.validBlocks);
 +    }
@@ -45,10 +46,11 @@
      public boolean isValid(BlockState state) {
          return this.validBlocks.contains(state.getBlock());
      }
-@@ -38,6 +_,9 @@
+@@ -38,6 +_,10 @@
      }
  
      public boolean onlyOpCanSetNbt() {
++        // Neo: take OP NBT flag into account
 +        if (this.onlyOpCanSetNbt) {
 +            return true;
 +        }

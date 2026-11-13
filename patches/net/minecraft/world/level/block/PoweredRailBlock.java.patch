@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/PoweredRailBlock.java
 +++ b/net/minecraft/world/level/block/PoweredRailBlock.java
-@@ -15,8 +_,20 @@
+@@ -15,8 +_,22 @@
      public static final EnumProperty<RailShape> SHAPE = BlockStateProperties.RAIL_SHAPE_STRAIGHT;
      public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
  
@@ -11,64 +11,73 @@
 +        this(properties, false);
 +    }
 +
++    /// Neo: overload of [#PoweredRailBlock(BlockBehaviour.Properties)] allowing to declare whether this is a powered or activator rail
 +    public PoweredRailBlock(BlockBehaviour.Properties properties, boolean isPoweredRail) {
          super(true, properties);
 +        this.isActivator = !isPoweredRail;
 +        this.registerDefaultState();
 +    }
 +
++    /// Neo: extracted from the constructor to allow overriding in subclasses
 +    protected void registerDefaultState() {
          this.registerDefaultState(this.stateDefinition.any().setValue(SHAPE, RailShape.NORTH_SOUTH).setValue(POWERED, false).setValue(WATERLOGGED, false));
      }
  
-@@ -29,7 +_,7 @@
+@@ -29,7 +_,8 @@
          int y = pos.getY();
          int z = pos.getZ();
          boolean checkBelow = true;
 -        RailShape shape = state.getValue(SHAPE);
++        // Neo: give modded rails more control over their shape
 +        RailShape shape = ((BaseRailBlock)state.getBlock()).getRailDirection(state, level, pos, null);
          switch (shape) {
              case NORTH_SOUTH:
                  if (forward) {
-@@ -97,17 +_,17 @@
+@@ -97,17 +_,20 @@
  
      protected boolean isSameRailWithPower(Level level, BlockPos pos, boolean forward, int searchDepth, RailShape dir) {
          BlockState state = level.getBlockState(pos);
 -        if (!state.is(this)) {
++        // Neo: add support for modded powered/activator rail blocks
 +        if (!(state.getBlock() instanceof PoweredRailBlock other)) {
              return false;
          }
  
 -        RailShape myShape = state.getValue(SHAPE);
++        // Neo: give modded rails more control over their shape
 +        RailShape myShape = other.getRailDirection(state, level, pos, null);
          if (dir != RailShape.EAST_WEST || myShape != RailShape.NORTH_SOUTH && myShape != RailShape.ASCENDING_NORTH && myShape != RailShape.ASCENDING_SOUTH) {
              if (dir != RailShape.NORTH_SOUTH || myShape != RailShape.EAST_WEST && myShape != RailShape.ASCENDING_EAST && myShape != RailShape.ASCENDING_WEST) {
 -                if (!state.getValue(POWERED)) {
-+                if (isActivatorRail() != other.isActivatorRail()) {
++                if (this.isActivatorRail() != other.isActivatorRail()) {
                      return false;
                  } else {
 -                    return level.hasNeighborSignal(pos) ? true : this.findPoweredRailSignal(level, pos, state, forward, searchDepth + 1);
++                    // Neo: defer to block owning the blockstate
 +                    return level.hasNeighborSignal(pos) ? true : other.findPoweredRailSignal(level, pos, state, forward, searchDepth + 1);
                  }
              } else {
                  return false;
-@@ -126,7 +_,7 @@
+@@ -126,7 +_,8 @@
          if (shouldPower != isPowered) {
              level.setBlockAndUpdate(pos, state.setValue(POWERED, shouldPower));
              level.updateNeighborsAt(pos.below(), this);
 -            if (state.getValue(SHAPE).isSlope()) {
++            // Neo: give modded rails more control over their shape
 +            if (((BaseRailBlock)state.getBlock()).getRailDirection(state, level, pos, null).isSlope()) {
                  level.updateNeighborsAt(pos.above(), this);
              }
          }
-@@ -153,6 +_,10 @@
+@@ -153,6 +_,12 @@
  
      @Override
      protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 -        builder.add(SHAPE, POWERED, WATERLOGGED);
-+        builder.add(getShapeProperty(), POWERED, WATERLOGGED);
++        // Neo: use the shape property dictated by getShapeProperty()
++        builder.add(this.getShapeProperty(), POWERED, WATERLOGGED);
 +    }
 +
++    /// Neo: {@return whether this is an activator rail or a powered rail}
 +    public boolean isActivatorRail() {
 +        return this.isActivator;
      }

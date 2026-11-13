@@ -17,28 +17,31 @@
          for (Entry<Heightmap.Types, Heightmap> entry : protoChunk.getHeightmaps()) {
              if (ChunkStatus.FULL.heightmapsAfter().contains(entry.getKey())) {
                  this.setHeightmap(entry.getKey(), entry.getValue().getRawData());
-@@ -293,7 +_,7 @@
+@@ -293,7 +_,8 @@
              this.level.getChunkSource().onSectionEmptinessChanged(this.chunkPos.x(), SectionPos.blockToSectionCoord(y), this.chunkPos.z(), isEmpty);
          }
  
 -        if (LightEngine.hasDifferentLightProperties(oldState, state)) {
++        // Neo: use level-sensitive light property check
 +        if (LightEngine.hasDifferentLightProperties(this, pos, oldState, state)) {
              ProfilerFiller profiler = Profiler.get();
              profiler.push("updateSkyLightSources");
              this.skyLightSources.update(this, localX, y, localZ);
-@@ -324,7 +_,7 @@
+@@ -324,7 +_,8 @@
              return null;
          }
  
 -        if (!this.level.isClientSide() && (flags & 512) == 0) {
++        // Neo: inhibit callback while capturing block snapshots
 +        if (!this.level.isClientSide() && !this.level.captureBlockSnapshots && (flags & 512) == 0) {
              state.onPlace(this.level, pos, oldState, movedByPiston);
          }
  
-@@ -368,6 +_,10 @@
+@@ -368,6 +_,11 @@
  
      public @Nullable BlockEntity getBlockEntity(BlockPos pos, LevelChunk.EntityCreationType creationType) {
          BlockEntity blockEntity = this.blockEntities.get(pos);
++        // Neo: eliminate removed BEs early
 +        if (blockEntity != null && blockEntity.isRemoved()) {
 +            blockEntities.remove(pos);
 +            blockEntity = null;
@@ -56,66 +59,73 @@
          }
  
          return blockEntity;
-@@ -402,6 +_,7 @@
+@@ -402,6 +_,8 @@
  
              this.level.onBlockEntityAdded(blockEntity);
              this.updateBlockEntityTicker(blockEntity);
++            // Neo: capture added BEs for onLoad() callback
 +            this.level.addFreshBlockEntities(java.util.List.of(blockEntity));
          }
      }
  
-@@ -445,6 +_,7 @@
+@@ -445,6 +_,8 @@
              BlockEntity previousEntry = this.blockEntities.put(pos.immutable(), blockEntity);
              if (previousEntry != null && previousEntry != blockEntity) {
                  previousEntry.setRemoved();
++                // Neo: remove dynamic light entry if a previous BE existed
 +                this.auxLightManager.removeLightAt(pos);
              }
          }
      }
-@@ -453,9 +_,14 @@
+@@ -453,9 +_,15 @@
      public @Nullable CompoundTag getBlockEntityNbtForSaving(BlockPos blockPos, HolderLookup.Provider registryAccess) {
          BlockEntity blockEntity = this.getBlockEntity(blockPos);
          if (blockEntity != null && !blockEntity.isRemoved()) {
++            // Neo: prevent errors during BE serialization from crashing the game
 +            try {
              CompoundTag result = blockEntity.saveWithFullMetadata(this.level.registryAccess());
              result.putBoolean("keepPacked", false);
              return result;
 +            } catch (Exception e) {
-+                LOGGER.error("A BlockEntity type {} has thrown an exception trying to write state. It will not persist, Report this to the mod author", blockEntity.getClass().getName(), e);
++                LOGGER.error("A BlockEntity of type {} has thrown an exception trying to write state. It will not persist, report this to the mod author", blockEntity.getClass().getName(), e);
 +                return null;
 +            }
          }
  
          CompoundTag result = this.pendingBlockEntities.get(blockPos);
-@@ -478,6 +_,7 @@
+@@ -478,6 +_,8 @@
                  }
  
                  removeThis.setRemoved();
++                // Neo: remove dynamic light entry of the removed BE
 +                this.auxLightManager.removeLightAt(pos);
              }
          }
  
-@@ -533,7 +_,7 @@
+@@ -533,7 +_,8 @@
              chunkData.forEachBlockEntityTag(chunkX, chunkZ, (pos, type, tag) -> {
                  BlockEntity blockEntity = this.getBlockEntity(pos, LevelChunk.EntityCreationType.IMMEDIATE);
                  if (blockEntity != null && tag != null && blockEntity.getType() == type) {
 -                    blockEntity.loadWithComponents(TagValueInput.create(reporter.forChild(blockEntity.problemPath()), this.level.registryAccess(), tag));
++                    // Neo: let the BE handle update tag separate from disk serialization
 +                    blockEntity.handleUpdateTag(TagValueInput.create(reporter.forChild(blockEntity.problemPath()), this.level.registryAccess(), tag));
                  }
              });
          }
-@@ -672,6 +_,7 @@
+@@ -672,6 +_,8 @@
      }
  
      public void clearAllBlockEntities() {
++        // Neo: notify BEs of their owning chunk being unloaded
 +        this.blockEntities.values().forEach(BlockEntity::onChunkUnloaded);
          this.blockEntities.values().forEach(BlockEntity::setRemoved);
          this.blockEntities.clear();
          this.tickersInLevel.values().forEach(ticker -> ticker.rebind(NULL_TICKER));
-@@ -679,6 +_,7 @@
+@@ -679,6 +_,8 @@
      }
  
      public void registerAllBlockEntitiesAfterLevelLoad() {
++        // Neo: capture added BEs for onLoad() callback
 +        this.level.addFreshBlockEntities(this.blockEntities.values());
          this.blockEntities.values().forEach(blockEntity -> {
              if (this.level instanceof ServerLevel serverLevel) {

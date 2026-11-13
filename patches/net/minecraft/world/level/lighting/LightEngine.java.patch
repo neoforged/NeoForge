@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/lighting/LightEngine.java
 +++ b/net/minecraft/world/level/lighting/LightEngine.java
-@@ -38,11 +_,17 @@
+@@ -38,11 +_,18 @@
          this.clearChunkCache();
      }
  
@@ -15,6 +15,7 @@
              ? false
              : newState.getLightDampening() != oldState.getLightDampening()
 -                || newState.getLightEmission() != oldState.getLightEmission()
++                // Neo: use level-sensitive light getter
 +                || newState.getLightEmission(level, pos) != oldState.getLightEmission(level, pos)
                  || newState.useShapeForLightOcclusion()
                  || oldState.useShapeForLightOcclusion();

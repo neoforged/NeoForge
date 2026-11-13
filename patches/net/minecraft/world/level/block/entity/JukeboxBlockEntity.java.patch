@@ -14,7 +14,7 @@
  
      public JukeboxBlockEntity(BlockPos worldPosition, BlockState blockState) {
          super(BlockEntityTypes.JUKEBOX, worldPosition, blockState);
-@@ -110,8 +_,28 @@
+@@ -110,8 +_,30 @@
      }
  
      @Override
@@ -22,6 +22,7 @@
 +        this.itemChangedJournal.updateSnapshots(transaction);
 +    }
 +
++    /// Neo: handle transaction-aware inventory mutation
 +    @Override
 +    public void setItem(int slot, ItemStack stack, boolean insideTransaction) {
 +        if (slot == 0) {
@@ -39,6 +40,7 @@
 +        this.itemChanged();
 +    }
 +
++    /// Neo: extracted from [#setTheItem(ItemStack)] for use in transaction commit
 +    private void itemChanged() {
          boolean itemWasInserted = !this.item.isEmpty();
          Optional<Holder<JukeboxSong>> maybeSong = JukeboxSong.fromStack(this.item);

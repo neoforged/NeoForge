@@ -1,11 +1,12 @@
 --- a/net/minecraft/world/level/block/DoorBlock.java
 +++ b/net/minecraft/world/level/block/DoorBlock.java
-@@ -108,7 +_,7 @@
+@@ -108,7 +_,8 @@
  
      @Override
      public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
 -        if (!level.isClientSide() && (player.preventsBlockDrops() || !player.hasCorrectToolForDrops(state))) {
-+        if (!level.isClientSide() && (player.isCreative() || !player.hasCorrectToolForDrops(state, level, pos))) {
++        // Neo: add additional context to tool check
++        if (!level.isClientSide() && (player.preventsBlockDrops() || !player.hasCorrectToolForDrops(state, level, pos))) {
              DoublePlantBlock.preventDropFromBottomPart(level, pos, state, player);
          }
  

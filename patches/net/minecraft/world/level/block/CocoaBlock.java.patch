@@ -5,7 +5,7 @@
      @Override
      protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
 -        if (level.getRandom().nextInt(5) == 0) {
-+        if (true) {
++        if (true) { // Neo: move random into event dispatch
              int age = state.getValue(AGE);
 -            if (age < 2) {
 +            if (age < 2 && net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, level.getRandom().nextInt(5) == 0)) {
@@ -14,10 +14,11 @@
              }
          }
      }
-@@ -54,6 +_,10 @@
+@@ -54,6 +_,11 @@
      @Override
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
          BlockState relativeState = level.getBlockState(pos.relative(state.getValue(FACING)));
++        // Neo: let the block decide whether it can sustain this plant
 +        var soilDecision = relativeState.canSustainPlant(level, pos.relative(state.getValue(FACING)), state.getValue(FACING).getOpposite(), state);
 +        if (!soilDecision.isDefault()) {
 +            return soilDecision.isTrue();

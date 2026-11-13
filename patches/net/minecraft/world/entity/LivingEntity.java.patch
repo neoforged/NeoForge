@@ -362,7 +362,7 @@
 +
 +        Collection<ItemEntity> drops = this.captureDrops(null);
 +        if (!net.neoforged.neoforge.common.CommonHooks.onLivingDrops(this, source, drops, lastHurtByPlayerMemoryTime > 0)) {
-+            drops.forEach(this.level()::addFreshEntity);
++            drops.forEach(level::addFreshEntity);
 +        }
      }
  

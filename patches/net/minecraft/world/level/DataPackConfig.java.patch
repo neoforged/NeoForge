@@ -1,20 +1,22 @@
 --- a/net/minecraft/world/level/DataPackConfig.java
 +++ b/net/minecraft/world/level/DataPackConfig.java
-@@ -15,7 +_,7 @@
+@@ -15,7 +_,8 @@
      private final List<String> disabled;
  
      public DataPackConfig(List<String> enabled, List<String> disabled) {
 -        this.enabled = ImmutableList.copyOf(enabled);
-+        this.enabled = com.google.common.collect.Lists.newArrayList(enabled);
++        // Neo: keep the enabled list mutable
++        this.enabled = new java.util.ArrayList<>(enabled);
          this.disabled = ImmutableList.copyOf(disabled);
      }
  
-@@ -25,5 +_,9 @@
+@@ -25,5 +_,10 @@
  
      public List<String> getDisabled() {
          return this.disabled;
 +    }
 +
++    /// Neo: add the given mod-builtin datapacks to the enabled packs
 +    public void addModPacks(List<String> modPacks) {
 +        this.enabled.addAll(modPacks.stream().filter(p -> !this.enabled.contains(p)).toList());
      }

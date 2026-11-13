@@ -1,10 +1,11 @@
 --- a/net/minecraft/locale/Language.java
 +++ b/net/minecraft/locale/Language.java
-@@ -36,9 +_,12 @@
+@@ -36,9 +_,13 @@
          DeprecatedTranslationsInfo deprecatedInfo = DeprecatedTranslationsInfo.loadFromDefaultResource();
          Map<String, String> loadedData = new HashMap<>();
          BiConsumer<String, String> output = loadedData::put;
 -        parseTranslations(output, "/assets/minecraft/lang/en_us.json");
++        // Neo: add support for full components in language files
 +        Map<String, net.minecraft.network.chat.Component> componentMap = new java.util.HashMap<>();
 +        parseTranslations(output, componentMap::put, "/assets/minecraft/lang/en_us.json");
          deprecatedInfo.applyToMap(loadedData);
@@ -15,16 +16,18 @@
          return new Language() {
              @Override
              public String getOrDefault(String elementId, String defaultValue) {
-@@ -63,21 +_,52 @@
+@@ -63,21 +_,57 @@
                      )
                      .isPresent();
              }
 +
++            /// Neo: {@return the full language data}
 +            @Override
 +            public Map<String, String> getLanguageData() {
 +                return loadedData;
 +            }
 +
++            /// Neo: {@return the component for the given translation key}
 +            @Override
 +            public net.minecraft.network.chat.@org.jspecify.annotations.Nullable Component getComponent(String key) {
 +                return componentMap.get(key);
@@ -38,6 +41,7 @@
 +        parseTranslations(output, (_, _) -> {}, path);
 +    }
 +
++    /// Neo: overload of [#parseTranslations(BiConsumer, String)] with support for loading full components
 +    private static void parseTranslations(BiConsumer<String, String> output, BiConsumer<String, net.minecraft.network.chat.Component> componentConsumer, String path) {
          try (InputStream stream = Language.class.getResourceAsStream(path)) {
 -            loadFromJson(stream, output);
@@ -51,10 +55,12 @@
 +        loadFromJson(stream, output, (_, _) -> {});
 +    }
 +
++    /// Neo: overload of [#loadFromJson(InputStream, BiConsumer)] with support for loading full components
 +    public static void loadFromJson(InputStream stream, BiConsumer<String, String> output, BiConsumer<String, net.minecraft.network.chat.Component> componentConsumer) {
          JsonObject entries = GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), JsonObject.class);
  
          for (Entry<String, JsonElement> entry : entries.entrySet()) {
++            // Neo: add support for loading full components
 +            if (entry.getValue().isJsonArray() || entry.getValue().isJsonObject()) {
 +                var component = net.minecraft.network.chat.ComponentSerialization.CODEC
 +                    .parse(com.mojang.serialization.JsonOps.INSTANCE, entry.getValue())
@@ -69,19 +75,19 @@
              String text = UNSUPPORTED_FORMAT_PATTERN.matcher(GsonHelper.convertToString(entry.getValue(), entry.getKey())).replaceAll("%$1s");
              output.accept(entry.getKey(), text);
          }
-@@ -89,6 +_,15 @@
+@@ -105,5 +_,15 @@
  
-     public static void inject(Language language) {
-         instance = language;
+     public List<FormattedCharSequence> getVisualOrder(List<FormattedText> lines) {
+         return lines.stream().map(this::getVisualOrder).collect(ImmutableList.toImmutableList());
 +    }
 +
-+    // Neo: All helpers methods below are injected by Neo to ease modder's usage of Language
++    /// Neo: {@return the full language data}
 +    public Map<String, String> getLanguageData() {
 +        return Map.of();
 +    }
 +
++    /// Neo: {@return the component for the given translation key}
 +    public net.minecraft.network.chat.@org.jspecify.annotations.Nullable Component getComponent(String key) {
 +        return null;
      }
- 
-     public String getOrDefault(String elementId) {
+ }

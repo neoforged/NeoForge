@@ -12,11 +12,12 @@
      private final Object2IntMap<Block> burnOdds = new Object2IntOpenHashMap<>();
  
      public FireBlock(BlockBehaviour.Properties properties) {
-@@ -108,13 +_,13 @@
+@@ -108,13 +_,15 @@
      protected BlockState getStateForPlacement(BlockGetter level, BlockPos pos) {
          BlockPos below = pos.below();
          BlockState belowState = level.getBlockState(below);
 -        if (!this.canBurn(belowState) && !belowState.isFaceSturdy(level, below, Direction.UP)) {
++        // Neo: use level-sensitive burn check
 +        if (!this.canCatchFire(level, below, Direction.UP) && !belowState.isFaceSturdy(level, below, Direction.UP)) {
              BlockState result = this.defaultBlockState();
  
@@ -24,7 +25,8 @@
                  BooleanProperty property = PROPERTY_BY_DIRECTION.get(direction);
                  if (property != null) {
 -                    result = result.setValue(property, this.canBurn(level.getBlockState(pos.relative(direction))));
-+                    result = result.setValue(property, Boolean.valueOf(this.canCatchFire(level, pos.relative(direction), direction.getOpposite())));
++                    // Neo: use level-sensitive burn check
++                    result = result.setValue(property, this.canCatchFire(level, pos.relative(direction), direction.getOpposite()));
                  }
              }
  
@@ -37,16 +39,17 @@
              int age = state.getValue(AGE);
              if (!infiniBurn && level.isRaining() && this.isNearRain(level, pos) && random.nextFloat() < 0.2F + age * 0.03F) {
                  level.removeBlock(pos, false);
-@@ -160,7 +_,7 @@
+@@ -160,7 +_,8 @@
                          return;
                      }
  
 -                    if (age == 15 && random.nextInt(4) == 0 && !this.canBurn(level.getBlockState(pos.below()))) {
++                    // Neo: use level-sensitive burn check
 +                    if (age == 15 && random.nextInt(4) == 0 && !this.canCatchFire(level, pos.below(), Direction.UP)) {
                          level.removeBlock(pos, false);
                          return;
                      }
-@@ -168,12 +_,12 @@
+@@ -168,12 +_,13 @@
  
                  boolean increasedBurnout = level.environmentAttributes().getValue(EnvironmentAttributes.INCREASED_FIRE_BURNOUT, pos);
                  int extra = increasedBurnout ? -50 : 0;
@@ -56,6 +59,7 @@
 -                this.checkBurnOut(level, pos.above(), 250 + extra, random, age);
 -                this.checkBurnOut(level, pos.north(), 300 + extra, random, age);
 -                this.checkBurnOut(level, pos.south(), 300 + extra, random, age);
++                // Neo: add side context
 +                this.checkBurnOut(level, pos.east(), 300 + extra, random, age, Direction.WEST);
 +                this.checkBurnOut(level, pos.west(), 300 + extra, random, age, Direction.EAST);
 +                this.checkBurnOut(level, pos.below(), 250 + extra, random, age, Direction.UP);
@@ -65,7 +69,7 @@
                  BlockPos.MutableBlockPos testPos = new BlockPos.MutableBlockPos();
  
                  for (int xx = -1; xx <= 1; xx++) {
-@@ -214,33 +_,34 @@
+@@ -214,33 +_,35 @@
              || level.isRainingAt(testPos.south());
      }
  
@@ -91,6 +95,7 @@
 +        int odds = level.getBlockState(pos).getFlammability(level, pos, face);
          if (random.nextInt(chance) < odds) {
              BlockState oldState = level.getBlockState(pos);
++            // Neo: let the block react to burnout
 +            oldState.onCaughtFire(level, pos, face, null, net.minecraft.world.item.ItemStack.EMPTY);
 +
              if (random.nextInt(age + 10) < 5 && !level.isRainingAt(pos)) {
@@ -107,11 +112,12 @@
          }
      }
  
-@@ -251,7 +_,7 @@
+@@ -251,7 +_,8 @@
  
      private boolean isValidFireLocation(BlockGetter level, BlockPos pos) {
          for (Direction direction : Direction.values()) {
 -            if (this.canBurn(level.getBlockState(pos.relative(direction)))) {
++            // Neo: use level-sensitive burn check
 +            if (this.canCatchFire(level, pos.relative(direction), direction.getOpposite())) {
                  return true;
              }
@@ -136,14 +142,14 @@
          builder.add(AGE, NORTH, EAST, SOUTH, WEST, UP);
      }
  
-+    /// Neo: Side sensitive version that calls the block function.
++    /// Neo: level- and side-sensitive overload of [#canBurn(BlockState)]
 +    ///
-+    /// @param world The current world
-+    /// @param pos Block position
-+    /// @param face The side the fire is coming from
++    /// @param level The current level
++    /// @param pos   Block position
++    /// @param face  The side the fire is coming from
 +    /// @return True if the face can catch fire.
-+    public boolean canCatchFire(BlockGetter world, BlockPos pos, Direction face) {
-+        return world.getBlockState(pos).isFlammable(world, pos, face);
++    public boolean canCatchFire(BlockGetter level, BlockPos pos, Direction face) {
++        return level.getBlockState(pos).isFlammable(level, pos, face);
 +    }
 +
 +    /// @deprecated Neo: Use the [flammable][net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FLAMMABLE] data map instead, as this field will be ignored in the future

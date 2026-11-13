@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/level/block/PowderSnowBlock.java
 +++ b/net/minecraft/world/level/block/PowderSnowBlock.java
-@@ -138,7 +_,7 @@
+@@ -138,7 +_,8 @@
          if (entity.is(EntityTypeTags.POWDER_SNOW_WALKABLE_MOBS)) {
              return true;
          } else {
 -            return entity instanceof LivingEntity livingEntity ? livingEntity.getItemBySlot(EquipmentSlot.FEET).is(Items.LEATHER_BOOTS) : false;
++            // Neo: add support for modded boots able to walk on powdered snow
 +            return entity instanceof LivingEntity livingEntity ? livingEntity.getItemBySlot(EquipmentSlot.FEET).canWalkOnPowderedSnow(livingEntity) : false;
          }
      }

@@ -1,9 +1,10 @@
 --- a/net/minecraft/world/level/block/CauldronBlock.java
 +++ b/net/minecraft/world/level/block/CauldronBlock.java
-@@ -51,6 +_,9 @@
+@@ -51,6 +_,10 @@
  
      @Override
      protected void receiveStalactiteDrip(BlockState state, Level level, BlockPos pos, Fluid fluid) {
++        // Neo: let the fluid type control stalactite drips
 +        if (fluid.getFluidType().handleCauldronDrip(fluid, level, pos)) {
 +            return;
 +        }

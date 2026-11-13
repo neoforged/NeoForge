@@ -63,20 +63,22 @@
          );
      }
  
-@@ -260,6 +_,9 @@
+@@ -260,6 +_,10 @@
                  postLoadChunk(level, this.entities, this.blockEntities),
                  BlendingData.unpack(this.blendingData)
              );
++            // Neo: deserialize auxiliary light data
 +            if (this.auxLightData != null) {
-+                ((LevelChunk) chunk).getAuxLightManager(chunkPos).deserializeNBT(this.auxLightData);
++                ((LevelChunk) chunk).getAuxLightManager(this.chunkPos).deserializeNBT(this.auxLightData);
 +            }
          } else {
              ProtoChunkTicks<Block> blockTicks = ProtoChunkTicks.load(this.packedTicks.blocks());
              ProtoChunkTicks<Fluid> fluidTicks = ProtoChunkTicks.load(this.packedTicks.fluids());
-@@ -297,6 +_,10 @@
+@@ -297,6 +_,11 @@
              }
          }
  
++        // Neo: deserialize chunk data attachments
 +        if (this.attachmentData != null) {
 +            chunk.readAttachmentsFromNBT(level.registryAccess(), this.attachmentData);
 +        }
@@ -84,17 +86,19 @@
          if (chunkType == ChunkType.LEVELCHUNK) {
              return new ImposterProtoChunk((LevelChunk)chunk, false);
          }
-@@ -368,6 +_,18 @@
+@@ -368,6 +_,20 @@
              .map(shorts -> shorts != null && !shorts.isEmpty() ? new ShortArrayList(shorts) : null)
              .toArray(ShortList[]::new);
          CompoundTag structureData = packStructureData(StructurePieceSerializationContext.fromLevel(level), pos, chunk.getAllStarts(), chunk.getAllReferences());
 +
++        // Neo: serialize chunk data attachments
 +        CompoundTag attachmentData = null;
 +        try {
 +            attachmentData = chunk.writeAttachmentsToNBT(level.registryAccess());
 +        } catch (Exception exception) {
 +            LOGGER.error("Failed to write chunk attachments. An attachment has likely thrown an exception trying to write state. It will not persist. Report this to the mod author", exception);
 +        }
++        // Neo: serialize auxiliary light data
 +        ListTag auxLightData = null;
 +        if (chunk instanceof LevelChunk levelChunk) {
 +            auxLightData = levelChunk.getAuxLightManager(pos).serializeNBT();

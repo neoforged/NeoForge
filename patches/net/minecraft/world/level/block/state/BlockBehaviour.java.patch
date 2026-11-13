@@ -1,32 +1,35 @@
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -163,7 +_,7 @@
+@@ -163,7 +_,8 @@
          if (!state.isAir() && explosion.getBlockInteraction() != Explosion.BlockInteraction.TRIGGER_BLOCK) {
              Block block = state.getBlock();
              boolean doDropExperienceHack = explosion.getIndirectSourceEntity() instanceof Player;
 -            if (block.dropFromExplosion(explosion)) {
++            // Neo: use level-sensitive explosion drop check
 +            if (state.canDropFromExplosion(level, pos, explosion)) {
                  BlockEntity blockEntity = state.hasBlockEntity() ? level.getBlockEntity(pos) : null;
                  LootParams.Builder params = new LootParams.Builder(level)
                      .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
-@@ -178,8 +_,7 @@
+@@ -178,8 +_,8 @@
                  state.getDrops(params).forEach(stack -> onHit.accept(stack, pos));
              }
  
 -            level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
 -            block.wasExploded(level, pos, explosion);
++            // Neo: defer explosion handling to the block
 +            state.onBlockExploded(level, pos, explosion);
          }
      }
  
-@@ -333,8 +_,8 @@
+@@ -333,8 +_,9 @@
              return 0.0F;
          }
  
 -        int modifier = player.hasCorrectToolForDrops(state) ? 30 : 100;
 -        return player.getDestroySpeed(state) / destroySpeed / modifier;
 +        int modifier = net.neoforged.neoforge.event.EventHooks.doPlayerHarvestCheck(player, state, level, pos) ? 30 : 100;
-+        return player.getDestroySpeed(state, pos) / destroySpeed / (float)modifier;
++        // Neo: use position-sensitive destroy speed getter
++        return player.getDestroySpeed(state, pos) / destroySpeed / modifier;
      }
  
      protected void spawnAfterBreak(BlockState state, ServerLevel level, BlockPos pos, ItemStack tool, boolean dropExperience) {
@@ -45,10 +48,11 @@
      protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
          return new ItemStack(this.asItem());
      }
-@@ -405,6 +_,10 @@
+@@ -405,6 +_,11 @@
          return this.properties.destroyTime;
      }
  
++    /// Neo: {@return whether the given state of this block is air}
 +    protected boolean isAir(BlockState state) {
 +        return ((BlockStateBase)state).isAir;
 +    }
@@ -70,7 +74,7 @@
                  }
              }
  
-@@ -556,14 +_,18 @@
+@@ -556,14 +_,19 @@
              return this.useShapeForLightOcclusion;
          }
  
@@ -82,6 +86,7 @@
  
          public boolean isAir() {
 -            return this.isAir;
++            // Neo: let the block decide whether it should be considered air
 +            return this.getBlock().isAir((BlockState)this);
          }
  
@@ -90,11 +95,12 @@
          public boolean ignitedByLava() {
              return this.ignitedByLava;
          }
-@@ -574,9 +_,11 @@
+@@ -574,9 +_,12 @@
          }
  
          public MapColor getMapColor(BlockGetter level, BlockPos pos) {
 -            return this.mapColor;
++            // Neo: use level-sensitive map color getter
 +            return this.getBlock().getMapColor(this.asState(), level, pos, this.mapColor);
          }
  
@@ -103,11 +109,12 @@
          public BlockState rotate(Rotation rotation) {
              return this.getBlock().rotate(this.asState(), rotation);
          }
-@@ -638,6 +_,10 @@
+@@ -638,6 +_,11 @@
          }
  
          public PushReaction getPistonPushReaction() {
-+            PushReaction reaction = this.getBlock().getPistonPushReaction(asState());
++            // Neo: use state-sensitive push reaction getter
++            PushReaction reaction = this.getBlock().getPistonPushReaction(this.asState());
 +            if (reaction != null) {
 +                return reaction;
 +            }
@@ -135,11 +142,12 @@
          public SoundType getSoundType() {
              return this.getBlock().getSoundType(this.asState());
          }
-@@ -1004,7 +_,7 @@
+@@ -1004,7 +_,8 @@
          private BlockBehaviour.StateArgumentPredicate<EntityType<?>> isValidSpawn = (state, level, pos, entityType) -> state.isFaceSturdy(
                  level, pos, Direction.UP
              )
 -            && state.getLightEmission() < 14;
++            // Neo: use level-sensitive light getter
 +            && state.getLightEmission(level, pos) < 14;
          private BlockBehaviour.StatePredicate isRedstoneConductor = BlockBehaviour.BlockStateBase::isCollisionShapeFullBlock;
          private BlockBehaviour.StatePredicate isSuffocating = (state, level, pos) -> state.is(BlockTags.CAUSES_SUFFOCATION)

@@ -9,22 +9,24 @@
              }
          }
  
-@@ -234,6 +_,10 @@
+@@ -234,6 +_,11 @@
          return transform(pos, settings.getMirror(), settings.getRotation(), settings.getRotationPivot());
      }
  
-+    public static Vec3 transformedVec3d(StructurePlaceSettings placementIn, Vec3 pos) {
-+        return transform(pos, placementIn.getMirror(), placementIn.getRotation(), placementIn.getRotationPivot());
++    /// Neo: {@return the given position transformed according to the given settings}
++    public static Vec3 transformedVec3d(StructurePlaceSettings settings, Vec3 pos) {
++        return transform(pos, settings.getMirror(), settings.getRotation(), settings.getRotationPivot());
 +    }
 +
      public boolean placeInWorld(
          ServerLevelAccessor level,
          BlockPos position,
-@@ -261,7 +_,7 @@
+@@ -261,7 +_,8 @@
              int maxX = Integer.MIN_VALUE;
              int maxY = Integer.MIN_VALUE;
              int maxZ = Integer.MIN_VALUE;
 -            List<StructureTemplate.StructureBlockInfo> processedBlockInfoList = processBlockInfos(level, position, referencePos, settings, blockInfoList);
++            // Neo: add template context to block processing
 +            List<StructureTemplate.StructureBlockInfo> processedBlockInfoList = processBlockInfos(level, position, referencePos, settings, blockInfoList, this);
  
              try (ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(LOGGER)) {
@@ -37,12 +39,13 @@
                                  }
                              }
  
-@@ -383,7 +_,8 @@
+@@ -383,7 +_,9 @@
                          settings.getRotationPivot(),
                          boundingBox,
                          settings.shouldFinalizeEntities(),
 -                        reporter
 +                        reporter,
++                        // Neo: add placement settings context
 +                        settings
                      );
                  }
@@ -67,11 +70,12 @@
          List<StructureTemplate.StructureBlockInfo> originalBlockInfoList = new ArrayList<>();
          List<StructureTemplate.StructureBlockInfo> processedBlockInfoList = new ArrayList<>();
          boolean processOnlyInCurrentChunk = true;
-@@ -447,7 +_,7 @@
+@@ -447,7 +_,8 @@
                  Iterator<StructureProcessor> iterator = settings.getProcessors().iterator();
  
                  while (processedBlockInfo != null && iterator.hasNext()) {
 -                    processedBlockInfo = iterator.next().processBlock(level, position, referencePos, blockInfo.pos, processedBlockInfo, settings);
++                    // Neo: add additional context to block processing
 +                    processedBlockInfo = iterator.next().process(level, position, referencePos, blockInfo, processedBlockInfo, settings, template);
                  }
  
@@ -82,7 +86,7 @@
          boolean finalizeEntities,
 -        ProblemReporter problemReporter
 +        ProblemReporter problemReporter,
-+        StructurePlaceSettings settings
++        StructurePlaceSettings settings // Neo: add placement settings context
      ) {
 -        for (StructureTemplate.StructureEntityInfo entityInfo : this.entityInfoList) {
 -            BlockPos blockPos = transform(entityInfo.blockPos, mirror, rotation, pivot).offset(position);
@@ -102,7 +106,7 @@
      public static final class Palette {
          private final List<StructureTemplate.StructureBlockInfo> blocks;
 -        private final Map<Block, List<StructureTemplate.StructureBlockInfo>> cache = Maps.newHashMap();
-+        // Neo: Fixes MC-271899 - Make the global StructureTemplate's palette caches now thread safe for worldgen
++        // Neo: Fixes MC-271899 - Make the global StructureTemplate's palette caches thread safe for worldgen
 +        private final Map<Block, List<StructureTemplate.StructureBlockInfo>> cache = Maps.newConcurrentMap();
          private @Nullable List<StructureTemplate.JigsawBlockInfo> cachedJigsaws;
  

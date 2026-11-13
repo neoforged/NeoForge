@@ -1,9 +1,10 @@
 --- a/net/minecraft/server/advancements/AdvancementVisibilityEvaluator.java
 +++ b/net/minecraft/server/advancements/AdvancementVisibilityEvaluator.java
-@@ -69,6 +_,15 @@
+@@ -69,6 +_,16 @@
          evaluateVisibility(root, visibilityStack, isDone, output);
      }
  
++    /// Neo: {@return whether the given advancement is visible according to the given predicate}
 +    public static boolean isVisible(AdvancementNode advancement, Predicate<AdvancementNode> test) {
 +        Stack<AdvancementVisibilityEvaluator.VisibilityRule> stack = new ObjectArrayList<>();
 +

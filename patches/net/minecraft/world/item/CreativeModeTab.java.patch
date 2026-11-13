@@ -5,9 +5,9 @@
  
  public class CreativeModeTab {
 +    /// Neo: holds the default scroller sprite
-+    private static final Identifier SCROLLER_SPRITE = net.minecraft.resources.Identifier.withDefaultNamespace("container/creative_inventory/scroller");
++    private static final Identifier SCROLLER_SPRITE = Identifier.withDefaultNamespace("container/creative_inventory/scroller");
 +    /// Neo: holds the default disabled scroller sprite
-+    private static final Identifier SCROLLER_DISABLED_SPRITE = net.minecraft.resources.Identifier.withDefaultNamespace("container/creative_inventory/scroller_disabled");
++    private static final Identifier SCROLLER_DISABLED_SPRITE = Identifier.withDefaultNamespace("container/creative_inventory/scroller_disabled");
      private static final Identifier DEFAULT_BACKGROUND = createTextureLocation("items");
      private final Component displayName;
      private Identifier backgroundTexture = DEFAULT_BACKGROUND;
@@ -108,7 +108,7 @@
      public static class Builder {
          private static final CreativeModeTab.DisplayItemsGenerator EMPTY_GENERATOR = (parameters, output) -> {};
 +        /// Neo: holds the default background for tabs with a search bar
-+        private static final net.minecraft.resources.Identifier CREATIVE_ITEM_SEARCH_BACKGROUND = createTextureLocation("item_search");
++        private static final Identifier CREATIVE_ITEM_SEARCH_BACKGROUND = createTextureLocation("item_search");
          private final CreativeModeTab.Row row;
          private final int column;
          private Component displayName = Component.empty();

@@ -6,12 +6,12 @@
      }
 +
 +    @Override
-+    public boolean getWeakChanges(BlockState state, net.minecraft.world.level.LevelReader level, BlockPos pos) {
++    public boolean getWeakChanges(BlockState state, LevelReader level, BlockPos pos) {
 +        return state.is(Blocks.COMPARATOR);
 +    }
 +
 +    @Override
-+    public void onNeighborChange(BlockState state, net.minecraft.world.level.LevelReader levelReader, BlockPos pos, BlockPos neighbor) {
++    public void onNeighborChange(BlockState state, LevelReader levelReader, BlockPos pos, BlockPos neighbor) {
 +        if (pos.getY() == neighbor.getY() && levelReader instanceof Level level && !levelReader.isClientSide()) {
 +            // TODO porting: check this still works as expected
 +            state.handleNeighborChanged(level, pos, levelReader.getBlockState(neighbor).getBlock(), null, false);

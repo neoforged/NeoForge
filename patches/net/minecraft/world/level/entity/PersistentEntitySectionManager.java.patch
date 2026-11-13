@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
 +++ b/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
-@@ -72,6 +_,17 @@
+@@ -72,6 +_,19 @@
      }
  
      private boolean addEntity(T entity, boolean loaded) {
@@ -10,15 +10,17 @@
 +        return this.addEntityWithoutEvent(entity, loaded);
 +    }
 +
++    /// Neo: add the given entity without firing `EntityJoinLevelEvent`
 +    public boolean addNewEntityWithoutEvent(T entity) {
 +        return this.addEntityWithoutEvent(entity, false);
 +    }
 +
++    /// Neo: add the given entity without firing `EntityJoinLevelEvent`
 +    private boolean addEntityWithoutEvent(T entity, boolean loaded) {
          if (!this.addEntityUuid(entity)) {
              return false;
          }
-@@ -105,11 +_,21 @@
+@@ -105,11 +_,23 @@
      }
  
      public void addLegacyChunkEntities(Stream<T> entities) {
@@ -26,6 +28,7 @@
 +        entities.forEach(e -> {
 +            this.addEntity(e, true);
 +            if (e instanceof Entity entity) {
++                // Neo: mark the entity as added to the level
 +                entity.onAddedToLevel();
 +            }
 +        });
@@ -36,13 +39,14 @@
 +        entities.forEach(e -> {
 +            this.addEntity(e, false);
 +            if (e instanceof Entity entity) {
++                // Neo: mark the entity as added to the level
 +                entity.onAddedToLevel();
 +            }
 +        });
      }
  
      private void startTicking(T entity) {
-@@ -232,7 +_,12 @@
+@@ -232,7 +_,13 @@
      public void processPendingLoads() {
          ChunkEntities<T> loadedChunk;
          while ((loadedChunk = this.loadingInbox.poll()) != null) {
@@ -50,32 +54,31 @@
 +            loadedChunk.getEntities().forEach(e -> {
 +                this.addEntity(e, true);
 +                if (e instanceof Entity entity) {
++                    // Neo: mark the entity as added to the level
 +                    entity.onAddedToLevel();
 +                }
 +            });
              this.chunkLoadStatuses.put(loadedChunk.getPos().pack(), PersistentEntitySectionManager.ChunkLoadStatus.LOADED);
          }
      }
-@@ -369,11 +_,14 @@
- 
-     private class Callback implements EntityInLevelCallback {
+@@ -371,8 +_,12 @@
          private final T entity;
-+        @org.jspecify.annotations.Nullable
-+        private final Entity realEntity;
          private long currentSectionKey;
          private EntitySection<T> currentSection;
++        /// Neo: retain the real entity for event dispatches
++        @org.jspecify.annotations.Nullable
++        private final Entity realEntity;
  
          private Callback(T entity, long currentSectionKey, EntitySection<T> currentSection) {
++            this.realEntity = entity instanceof Entity actualEntity ? actualEntity : null;
              this.entity = entity;
-+            this.realEntity = entity instanceof Entity ? (Entity) entity : null;
              this.currentSectionKey = currentSectionKey;
              this.currentSection = currentSection;
-         }
 @@ -392,9 +_,13 @@
                  PersistentEntitySectionManager.this.removeSectionIfEmpty(this.currentSectionKey, this.currentSection);
                  EntitySection<T> newSection = PersistentEntitySectionManager.this.sectionStorage.getOrCreateSection(newSectionPos);
                  newSection.add(this.entity);
-+                long oldSectionKey = currentSectionKey;
++                long oldSectionKey = this.currentSectionKey;
                  this.currentSection = newSection;
                  this.currentSectionKey = newSectionPos;
                  this.updateStatus(previousStatus, newSection.getStatus());

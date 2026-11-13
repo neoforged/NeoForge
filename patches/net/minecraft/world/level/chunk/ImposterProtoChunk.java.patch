@@ -1,22 +1,26 @@
 --- a/net/minecraft/world/level/chunk/ImposterProtoChunk.java
 +++ b/net/minecraft/world/level/chunk/ImposterProtoChunk.java
-@@ -209,6 +_,10 @@
+@@ -208,7 +_,6 @@
+         this.wrapped.findBlocks(predicate, consumer);
      }
  
-     @Override
-+    public void findBlocks(Predicate<BlockState> predicate, java.util.function.BiPredicate<BlockState, BlockPos> fineFilter, BiConsumer<BlockPos, BlockState> consumer) {
-+        this.wrapped.findBlocks(predicate, fineFilter, consumer);
-+    }
-+
+-    @Override
      public TickContainerAccess<Block> getBlockTicks() {
          return this.allowWrites ? this.wrapped.getBlockTicks() : BlackholeTickAccess.emptyContainer();
      }
-@@ -257,5 +_,10 @@
+@@ -257,5 +_,17 @@
      @Override
      public ChunkSkyLightSources getSkyLightSources() {
          return this.wrapped.getSkyLightSources();
 +    }
 +
++    /// Neo: delegate position-sensitive block scanning
++    @Override
++    public void findBlocks(Predicate<BlockState> predicate, java.util.function.BiPredicate<BlockState, BlockPos> fineFilter, BiConsumer<BlockPos, BlockState> consumer) {
++        this.wrapped.findBlocks(predicate, fineFilter, consumer);
++    }
++
++    /// Neo: delegate data attachment accesses
 +    @Override
 +    public net.neoforged.neoforge.attachment.AttachmentHolder.AsField getAttachmentHolder() {
 +        return this.wrapped.getAttachmentHolder();

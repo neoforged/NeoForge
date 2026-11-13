@@ -4,16 +4,17 @@
      protected final Map<BlockPos, BlockEntity> blockEntities = new Object2ObjectOpenHashMap<>();
      protected final LevelHeightAccessor levelHeightAccessor;
      protected final LevelChunkSection[] sections;
-+    // Neo: Hook in AttachmentHolder to chunks for data storage and retrieval
++    /// Neo: Hook in AttachmentHolder to chunks for data storage and retrieval
 +    private final net.neoforged.neoforge.attachment.AttachmentHolder.AsField attachmentHolder = new net.neoforged.neoforge.attachment.AttachmentHolder.AsField(this);
  
      public ChunkAccess(
          ChunkPos chunkPos,
-@@ -318,10 +_,14 @@
+@@ -318,10 +_,16 @@
  
      @Override
      public final void findBlockLightSources(BiConsumer<BlockPos, BlockState> consumer) {
 -        this.findBlocks(state -> state.getLightEmission() != 0, consumer);
++        // Neo: add support for modded blocks with dynamic light emission
 +        this.findBlocks(state -> state.hasDynamicLightEmission() || state.getLightEmission(net.minecraft.world.level.EmptyBlockGetter.INSTANCE, BlockPos.ZERO) != 0, (state, pos) -> state.getLightEmission(this, pos) != 0, consumer);
      }
  
@@ -21,15 +22,17 @@
 +        this.findBlocks(predicate, (state, _) -> predicate.test(state), consumer);
 +    }
 +
++    /// Neo: overload of [#findBlocks(Predicate, BiConsumer)] with support for a position-sensitive predicate
 +    public void findBlocks(Predicate<BlockState> predicate, java.util.function.BiPredicate<BlockState, BlockPos> fineFilter, BiConsumer<BlockPos, BlockState> consumer) {
          BlockStateConsumer blockStateConsumer = (pos, state) -> {
              consumer.accept(pos, state);
              return Continuation.CONTINUE;
-@@ -332,7 +_,7 @@
+@@ -332,7 +_,8 @@
              LevelChunkSection section = this.getSection(this.getSectionIndexFromSectionY(sectionY));
              if (section.maybeHas(predicate)) {
                  BlockPos origin = SectionPos.of(this.chunkPos, sectionY).origin();
 -                BlockScanUtils.findBlocksInSection(section, origin, 0, 0, 0, 15, 15, 15, predicate, blockStateConsumer);
++                // Neo: forward position-sensitive predicate
 +                BlockScanUtils.findBlocksInSection(section, origin, 0, 0, 0, 15, 15, 15, predicate, fineFilter, blockStateConsumer);
              }
          }
@@ -75,7 +78,7 @@
 +        return this.getAttachmentHolder().removeData(type);
 +    }
 +
-+    /// **FOR INTERNAL USE ONLY**
++    /// Neo: **FOR INTERNAL USE ONLY**
 +    ///
 +    /// Only public for use in [net.minecraft.world.level.chunk.storage.SerializableChunkData].
 +    @org.jetbrains.annotations.ApiStatus.Internal
@@ -90,7 +93,7 @@
 +        return tag.isEmpty() ? null : tag.buildResult();
 +    }
 +
-+    /// **FOR INTERNAL USE ONLY**
++    /// Neo: **FOR INTERNAL USE ONLY**
 +    ///
 +    /// Only public for use in [net.minecraft.world.level.chunk.storage.SerializableChunkData].
 +    @org.jetbrains.annotations.ApiStatus.Internal

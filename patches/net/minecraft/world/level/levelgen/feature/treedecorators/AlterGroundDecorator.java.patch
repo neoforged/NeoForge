@@ -26,13 +26,14 @@
                      }
                  }
              });
-@@ -45,19 +_,27 @@
+@@ -45,19 +_,29 @@
      }
  
      private void placeCircle(TreeDecorator.Context context, BlockPos pos) {
 +        this.placeCircle(context, pos, this.provider.value()::getOptionalState);
 +    }
 +
++    /// Neo: overload of [#placeCircle(Context, BlockPos)] using the state provider provided by `AlterGroundEvent`
 +    private void placeCircle(TreeDecorator.Context context, BlockPos pos, net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider eventProvider) {
          for (int xx = -2; xx <= 2; xx++) {
              for (int zz = -2; zz <= 2; zz++) {
@@ -48,6 +49,7 @@
 +        this.placeBlockAt(context, pos, this.provider.value()::getOptionalState);
 +    }
 +
++    /// Neo: overload of [#placeBlockAt(Context, BlockPos)] using the state provider provided by `AlterGroundEvent`
 +    private void placeBlockAt(TreeDecorator.Context context, BlockPos pos, net.neoforged.neoforge.event.level.AlterGroundEvent.StateProvider eventProvider) {
          for (int dy = 2; dy >= -3; dy--) {
              BlockPos cursor = pos.above(dy);

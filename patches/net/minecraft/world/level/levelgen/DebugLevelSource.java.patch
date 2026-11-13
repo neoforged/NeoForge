@@ -1,15 +1,16 @@
 --- a/net/minecraft/world/level/levelgen/DebugLevelSource.java
 +++ b/net/minecraft/world/level/levelgen/DebugLevelSource.java
-@@ -91,6 +_,12 @@
-         return 0;
+@@ -134,4 +_,13 @@
+     public int getSeaLevel() {
+         return 63;
      }
- 
++
++    /// Neo: re-compute valid states after registry freeze
 +    public static void initValidStates() {
-+        ALL_BLOCKS = StreamSupport.stream(BuiltInRegistries.BLOCK.spliterator(), false).flatMap(block -> block.getStateDefinition().getPossibleStates().stream()).collect(Collectors.toList());
++        ALL_BLOCKS = StreamSupport.stream(BuiltInRegistries.BLOCK.spliterator(), false)
++                .flatMap(block -> block.getStateDefinition().getPossibleStates().stream())
++                .collect(Collectors.toList());
 +        GRID_WIDTH = Mth.ceil(Mth.sqrt(ALL_BLOCKS.size()));
 +        GRID_HEIGHT = Mth.ceil((float)ALL_BLOCKS.size() / (float)GRID_WIDTH);
 +    }
-+
-     @Override
-     public NoiseColumn getBaseColumn(int x, int z, LevelHeightAccessor heightAccessor, RandomState randomState) {
-         return new NoiseColumn(0, new BlockState[0]);
+ }

@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
-@@ -74,7 +_,7 @@
+@@ -74,7 +_,8 @@
  
          for (Entity entity : entities) {
              if (!(entity instanceof Mob mob && (mob.isPersistenceRequired() || mob.requiresCustomPersistence()))) {
 -                MobCategory category = entity.getType().getCategory();
++                // Neo: give the entity more control over its mob category
 +                MobCategory category = entity.getClassification(true);
                  if (category != MobCategory.MISC) {
                      BlockPos pos = entity.blockPosition();

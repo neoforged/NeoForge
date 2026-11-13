@@ -9,12 +9,13 @@
      default StructureTemplate.@Nullable StructureBlockInfo processBlock(
          LevelReader level,
          BlockPos targetPosition,
-@@ -17,6 +_,35 @@
+@@ -17,6 +_,36 @@
          StructurePlaceSettings settings
      ) {
          return processedBlockInfo;
 +    }
 +
++    /// Neo: overload of [#processBlock] with template context
 +    default StructureTemplate.@Nullable StructureBlockInfo process(
 +        LevelReader level,
 +        BlockPos targetPosition,
@@ -27,7 +28,7 @@
 +        return this.processBlock(level, targetPosition, referencePos, originalBlockInfo.pos(), processedBlockInfo, settings);
 +    }
 +
-+    /// Neo: Add entity processing.
++    /// Neo: process structure entities
 +    ///
 +    /// Use this method to process entities from a structure in much the same way as
 +    /// blocks, parameters are analogous.
