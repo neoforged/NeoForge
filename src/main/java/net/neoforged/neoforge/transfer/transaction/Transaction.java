@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.transaction;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import org.jspecify.annotations.Nullable;
@@ -94,6 +95,21 @@ public final class Transaction implements AutoCloseable, TransactionContext {
     public static Transaction open(@Nullable TransactionContext parent) {
         // Don't delegate to other method due to getCallerClass()
         return TransactionManager.getManagerForThread().open(parent, STACK_WALKER.getCallerClass());
+    }
+
+    /**
+     * Opens a transaction with an explicitly supplied caller for diagnostic messages.
+     * The parent, thread and lifecycle checks are the same as {@link #open(TransactionContext)}.
+     *
+     * <p>Hot utility methods can retain their own {@link MethodHandles#lookup()} in a static field and
+     * pass it here instead of walking the stack for every transfer. The lookup must originate in the
+     * class that should appear as the transaction's caller; it is used only for its class identity.
+     *
+     * @param parent the parent transaction, or null for a root transaction
+     * @param caller a lookup created in the calling class
+     */
+    public static Transaction open(@Nullable TransactionContext parent, MethodHandles.Lookup caller) {
+        return TransactionManager.getManagerForThread().open(parent, caller.lookupClass());
     }
 
     /**
