@@ -220,9 +220,7 @@ public class NeoForgeMod {
     /// If the server is intended to be vanilla-compatible then this attribute must not be applied via item attribute modifiers.
     public static final Holder<Attribute> GLIDING_FLIGHT = ATTRIBUTES.register("gliding_flight", () -> new BooleanAttribute("neoforge.gliding_flight", false).setSyncable(true));
 
-    /**
-     * Stock loot modifier type that adds loot from a subtable to the final loot.
-     */
+    /// Stock loot modifier type that adds loot from a subtable to the final loot.
     public static final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<AddTableLootModifier>> ADD_TABLE_LOOT_MODIFIER_TYPE = GLOBAL_LOOT_MODIFIER_SERIALIZERS.register("add_table", () -> AddTableLootModifier.CODEC);
 
     /**
