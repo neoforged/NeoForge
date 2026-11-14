@@ -9,10 +9,11 @@
                          if (nearest == 0.0) {
                              hovered = entity;
                              hoveredPos = location;
-@@ -261,6 +_,12 @@
+@@ -261,6 +_,13 @@
          }
      }
  
++    /// Neo: overload of [#getWeaponHoldingHand(LivingEntity, Item)] allowing filtering broader than a specific item
 +    public static InteractionHand getWeaponHoldingHand(LivingEntity livingEntity, Predicate<Item> itemPredicate) {
 +        return itemPredicate.test(livingEntity.getMainHandItem().getItem()) ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
 +    }

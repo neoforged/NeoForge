@@ -1,17 +1,17 @@
 --- a/net/minecraft/world/entity/EntityType.java
 +++ b/net/minecraft/world/entity/EntityType.java
-@@ -75,6 +_,11 @@
+@@ -74,6 +_,11 @@
+     private final FeatureFlagSet requiredFeatures;
      private final boolean allowedInPeaceful;
      private final boolean trackDeltas;
- 
 +    private final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier;
 +    private final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier;
 +    private final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier;
++    /// Neo: indicates that an entity of this type has NBT data only OPs can set
 +    private final boolean onlyOpCanSetNbt;
-+
+ 
      public static Identifier getKey(EntityType<?> type) {
          return BuiltInRegistries.ENTITY_TYPE.getKey(type);
-     }
 @@ -97,6 +_,35 @@
          boolean allowedInPeaceful,
          boolean trackDeltas
@@ -89,7 +89,7 @@
          return this.updateInterval != Integer.MAX_VALUE;
      }
  
-@@ -450,9 +_,16 @@
+@@ -450,9 +_,17 @@
      }
  
      public boolean onlyOpCanSetNbt() {
@@ -99,7 +99,8 @@
          return EntityTypes.OP_ONLY_CUSTOM_DATA.contains(this);
      }
  
-+    public Stream<net.minecraft.tags.TagKey<EntityType<?>>> getTags() {
++    /// Neo: {@return the tags this entity type is in}
++    public Stream<TagKey<EntityType<?>>> getTags() {
 +        return this.builtInRegistryHolder().tags();
 +    }
 +
@@ -117,7 +118,7 @@
  
          private Builder(EntityType.EntityFactory<T> factory, MobCategory category) {
              this.factory = factory;
-@@ -600,6 +_,26 @@
+@@ -600,6 +_,27 @@
              return this;
          }
  
@@ -136,6 +137,7 @@
 +            return this;
 +        }
 +
++        /// Neo: mark this entity type as having NBT data only OPs can set
 +        public EntityType.Builder<T> setOnlyOpCanSetNbt(boolean onlyOpCanSetNbt) {
 +            this.onlyOpCanSetNbt = onlyOpCanSetNbt;
 +            return this;

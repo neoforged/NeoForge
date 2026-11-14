@@ -45,11 +45,12 @@
              || this.scissorChanged(scissorArea, this.previousScissorArea)
              || !textureSetup.equals(this.previousTextureSetup)) {
              this.previousPipeline = pipeline;
-@@ -292,14 +_,31 @@
+@@ -292,14 +_,34 @@
  
      private void preparePictureInPicture() {
          int guiScale = Minecraft.getInstance().gameRenderer.gameRenderState().windowRenderState.guiScale;
 -        this.renderState.forEachPictureInPicture(pictureInPictureState -> this.preparePictureInPictureState(pictureInPictureState, guiScale));
++        // Neo: allow multiple uses of a given PiP in a single frame, re-using render states from the previous frame where possible
 +        this.pictureInPictureRenderStatesScratch.clear();
 +        this.renderState.forEachPictureInPicture(state -> {
 +            if (this.preparePictureInPictureState(state, guiScale, true)) {
@@ -66,6 +67,8 @@
  
 -    private <T extends PictureInPictureRenderState> void preparePictureInPictureState(T picturesInPictureState, int guiScale) {
 -        PictureInPictureRenderer<T> renderer = (PictureInPictureRenderer<T>)this.pictureInPictureRenderers.get(picturesInPictureState.getClass());
++    /// Neo: allow multiple uses of a given PiP in a single frame, re-using render states from the previous frame where possible
++    /// {@return whether a PiP was found which accepted and re-used the given render state}
 +    private <T extends PictureInPictureRenderState> boolean preparePictureInPictureState(T picturesInPictureState, int guiScale, boolean firstPass) {
 +        var pool = (net.neoforged.neoforge.client.gui.PictureInPictureRendererPool<T>)this.pictureInPictureRendererPools.get(picturesInPictureState.getClass());
 +        if (pool == null) {

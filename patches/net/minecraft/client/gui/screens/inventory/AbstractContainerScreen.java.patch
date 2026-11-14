@@ -8,11 +8,12 @@
          this.extractCarriedItem(graphics, mouseX, mouseY);
          this.extractTooltip(graphics, mouseX, mouseY);
      }
-@@ -170,7 +_,7 @@
+@@ -170,7 +_,8 @@
              ItemStack item = this.hoveredSlot.getItem();
              if (this.menu.getCarried().isEmpty() || this.showTooltipWithItemInHand(item)) {
                  graphics.setTooltipForNextFrame(
 -                    this.font, this.getTooltipFromContainerItem(item), item.getTooltipImage(), mouseX, mouseY, item.get(DataComponents.TOOLTIP_STYLE), true
++                    // Neo: add stack to tooltip context
 +                    this.font, this.getTooltipFromContainerItem(item), item.getTooltipImage(), item, mouseX, mouseY, item.get(DataComponents.TOOLTIP_STYLE), true
                  );
              }
@@ -53,12 +54,13 @@
          }
      }
  
-@@ -297,7 +_,8 @@
+@@ -297,7 +_,9 @@
              return true;
          }
  
 -        boolean cloning = this.minecraft.options.keyPickItem.matchesMouse(event) && this.minecraft.player.hasInfiniteMaterials();
 +        var mouseKey = com.mojang.blaze3d.platform.InputConstants.Type.MOUSE.getOrCreate(event.button());
++        // Neo: also check conflict context
 +        boolean cloning = this.minecraft.options.keyPickItem.isActiveAndMatches(mouseKey) && this.minecraft.player.hasInfiniteMaterials();
          Slot slot = this.getHoveredSlot(event.x(), event.y());
          this.doubleclick = this.lastClickSlot == slot && doubleClick;
@@ -74,11 +76,12 @@
              int slotId = -1;
              if (slot != null) {
                  slotId = slot.index;
-@@ -386,10 +_,16 @@
+@@ -386,10 +_,17 @@
  
      @Override
      public boolean mouseReleased(MouseButtonEvent event) {
-+        super.mouseReleased(event); // Neo: call parent to release buttons
++        // Neo: call parent to release buttons
++        super.mouseReleased(event);
          Slot slot = this.getHoveredSlot(event.x(), event.y());
          int xo = this.leftPos;
          int yo = this.topPos;
@@ -91,39 +94,44 @@
          int slotId = -1;
          if (slot != null) {
              slotId = slot.index;
-@@ -406,7 +_,7 @@
+@@ -406,7 +_,8 @@
                          if (target != null
                              && target.mayPickup(this.minecraft.player)
                              && target.hasItem()
 -                            && target.container == slot.container
++                            // Neo: allow custom slots to override comparison of their backing inventory
 +                            && target.isSameInventory(slot)
                              && AbstractContainerMenu.canItemQuickReplace(target, this.lastQuickMoved, true)) {
                              this.slotClicked(target, target.index, event, ContainerInput.QUICK_MOVE);
                          }
-@@ -433,7 +_,7 @@
+@@ -433,7 +_,8 @@
              if (this.isQuickCrafting && !this.quickCraftSlots.isEmpty()) {
                  this.quickCraftToSlots();
              } else if (!this.menu.getCarried().isEmpty()) {
 -                if (this.minecraft.options.keyPickItem.matchesMouse(event)) {
++                // Neo: also check conflict context
 +                if (this.minecraft.options.keyPickItem.isActiveAndMatches(mouseKey)) {
                      this.slotClicked(slot, slotId, event, ContainerInput.CLONE);
                  } else {
                      boolean quickKey = slotId != -999 && event.hasShiftDown();
-@@ -501,32 +_,38 @@
+@@ -501,32 +_,44 @@
              return true;
          }
  
 -        if (this.minecraft.options.keyInventory.matches(event)) {
 +        var key = com.mojang.blaze3d.platform.InputConstants.getKey(event);
++        // Neo: also check conflict context
 +        if (this.minecraft.options.keyInventory.isActiveAndMatches(key)) {
              this.onClose();
              return true;
          }
  
 -        this.checkHotbarKeyPressed(event);
-+        boolean handled = this.checkHotbarKeyPressed(event); // Neo: Needs to return true when the key is handled (MC-146650)
++        // Neo: Needs to return true when the key is handled (MC-146650)
++        boolean handled = this.checkHotbarKeyPressed(event);
          if (this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
 -            if (this.minecraft.options.keyPickItem.matches(event)) {
++            // Neo: also check conflict context
 +            if (this.minecraft.options.keyPickItem.isActiveAndMatches(key)) {
                  this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, 0, ContainerInput.CLONE);
 +                handled = true;
@@ -131,8 +139,9 @@
                  this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, event.hasControlDown() ? 1 : 0, ContainerInput.THROW);
 +                handled = true;
              }
-+        } else if (this.minecraft.options.keyDrop.isActiveAndMatches(key)) {
-+            handled = true; // Neo: Emulate MC bug, so we don't drop from hotbar when pressing drop without hovering over an item (MC-146650)
++        } else if (this.minecraft.options.keyDrop.isActiveAndMatches(key)) { // Neo: also check conflict context
++            // Neo: Emulate MC bug, so we don't drop from hotbar when pressing drop without hovering over an item (MC-146650)
++            handled = true;
          }
  
 -        return false;
@@ -143,6 +152,7 @@
          if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null) {
 -            if (this.minecraft.options.keySwapOffhand.matches(event)) {
 +            var key = com.mojang.blaze3d.platform.InputConstants.getKey(event);
++            // Neo: also check conflict context
 +            if (this.minecraft.options.keySwapOffhand.isActiveAndMatches(key)) {
                  this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, 40, ContainerInput.SWAP);
                  return true;
@@ -150,6 +160,7 @@
  
              for (int i = 0; i < 9; i++) {
 -                if (this.minecraft.options.keyHotbarSlots[i].matches(event)) {
++                // Neo: also check conflict context
 +                if (this.minecraft.options.keyHotbarSlots[i].isActiveAndMatches(key)) {
                      this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, i, ContainerInput.SWAP);
                      return true;

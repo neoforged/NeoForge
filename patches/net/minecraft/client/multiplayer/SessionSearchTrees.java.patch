@@ -22,13 +22,14 @@
                          recipes
                      ),
                      Util.backgroundExecutor()
-@@ -89,44 +_,60 @@
+@@ -89,44 +_,64 @@
      }
  
      public void updateCreativeTags(List<ItemStack> items) {
 +        this.updateCreativeTags(items, CREATIVE_TAGS);
 +    }
 +
++    /// Neo: overload of [#updateCreativeTags(List)] with support for custom search tree keys used by modded creative tabs
 +    public void updateCreativeTags(List<ItemStack> items, SessionSearchTrees.Key key) {
          this.register(
 -            CREATIVE_TAGS,
@@ -51,6 +52,7 @@
 +        return this.creativeTagSearch(CREATIVE_TAGS);
 +    }
 +
++    /// Neo: overload of [#creativeTagSearch()] with support for custom search tree keys used by modded creative tabs
 +    public SearchTree<ItemStack> creativeTagSearch(SessionSearchTrees.Key key) {
 +        return net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getTagSearchTree(key).join();
      }
@@ -59,6 +61,7 @@
 +        this.updateCreativeTooltips(registries, itemStacks, CREATIVE_NAMES);
 +    }
 +
++    /// Neo: overload of [#updateCreativeTooltips(HolderLookup.Provider, List)] with support for custom search tree keys used by modded creative tabs
 +    public void updateCreativeTooltips(HolderLookup.Provider registries, List<ItemStack> itemStacks, SessionSearchTrees.Key key) {
          this.register(
 -            CREATIVE_NAMES,
@@ -89,6 +92,7 @@
 +        return this.creativeNameSearch(CREATIVE_NAMES);
 +    }
 +
++    /// Neo: overload of [#creativeNameSearch()] with support for custom search tree keys used by modded creative tabs
 +    public SearchTree<ItemStack> creativeNameSearch(SessionSearchTrees.Key key) {
 +        return net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getNameSearchTree(key).join();
      }

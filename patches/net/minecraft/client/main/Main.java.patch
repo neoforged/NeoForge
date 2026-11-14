@@ -1,32 +1,34 @@
 --- a/net/minecraft/client/main/Main.java
 +++ b/net/minecraft/client/main/Main.java
-@@ -99,12 +_,13 @@
+@@ -99,12 +_,14 @@
          OptionSpec<Integer> proxyPortOption = parser.accepts("proxyPort").withRequiredArg().defaultsTo("8080").ofType(Integer.class);
          OptionSpec<String> proxyUserOption = parser.accepts("proxyUser").withRequiredArg();
          OptionSpec<String> proxyPassOption = parser.accepts("proxyPass").withRequiredArg();
 -        OptionSpec<String> usernameOption = parser.accepts("username").withRequiredArg().defaultsTo("Player" + System.currentTimeMillis() % 1000L);
++        // Neo: default player name to "Dev" in dev
 +        OptionSpec<String> usernameOption = parser.accepts("username").withRequiredArg().defaultsTo(net.neoforged.fml.loading.FMLEnvironment.isProduction() ? "Player" + System.currentTimeMillis() % 1000L : "Dev").withValuesConvertedBy(net.neoforged.neoforge.client.ClientHooks.convertUsername());
          OptionSpec<Void> offlineDeveloperMode = parser.accepts("offlineDeveloperMode");
          OptionSpec<String> uuidOption = parser.accepts("uuid").withRequiredArg();
          OptionSpec<String> xuidOption = parser.accepts("xuid").withOptionalArg().defaultsTo("");
          OptionSpec<String> clientIdOption = parser.accepts("clientId").withOptionalArg().defaultsTo("");
 -        OptionSpec<String> accessTokenOption = parser.accepts("accessToken").withRequiredArg().required();
-+        // Neo: Make accessToken optional in dev
++        // Neo: make accessToken optional in dev
 +        OptionSpec<String> accessTokenOption = net.neoforged.neoforge.client.ClientHooks.optionalInDev(parser.accepts("accessToken").withRequiredArg(), "0");
          OptionSpec<String> versionOption = parser.accepts("version").withRequiredArg().required();
          OptionSpec<Integer> widthOption = parser.accepts("width").withRequiredArg().ofType(Integer.class).defaultsTo(854);
          OptionSpec<Integer> heightOption = parser.accepts("height").withRequiredArg().ofType(Integer.class).defaultsTo(480);
-@@ -159,10 +_,12 @@
+@@ -159,10 +_,13 @@
              CrashReport.preload();
              logger = LogUtils.getLogger();
              stage = "Bootstrap";
 -            Bootstrap.bootStrap();
 -            ClientBootstrap.bootstrap();
++            // Neo: wrap vanilla boostrap in ELS ticks
 +            net.neoforged.fml.loading.BackgroundWaiter.runAndTick(() -> Bootstrap.bootStrap(), net.neoforged.fml.loading.ImmediateWindowHandler::renderTick);
              GameLoadTimesEvent.INSTANCE.setBootstrapTime(Bootstrap.bootstrapDuration.get());
              Bootstrap.validate();
 +
-+            net.neoforged.neoforge.client.loading.ClientModLoader.begin(); // Mirroring server mod-loading, we construct immediately after Bootstrap.validate()
++            net.neoforged.neoforge.client.loading.ClientModLoader.begin();
 +
              stage = "Argument parsing";
              List<String> leftoverArgs = optionSet.valuesOf(nonOption);

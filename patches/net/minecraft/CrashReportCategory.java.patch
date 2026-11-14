@@ -15,7 +15,7 @@
          return this.stackTrace.length;
      }
  
-@@ -181,16 +_,16 @@
+@@ -181,16 +_,17 @@
  
          if (this.stackTrace.length > 0) {
              builder.append("\nStacktrace:");
@@ -32,6 +32,7 @@
          return this.stackTrace;
 +    }
 +
++    /// Neo: overwrite the captured stack trace with the given one
 +    public void setStackTrace(StackTraceElement[] stackTrace) {
 +        this.stackTrace = stackTrace;
      }

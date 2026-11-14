@@ -7,7 +7,7 @@
 +    /// Neo: This field will be modified by `BlockEntityTypeAddBlocksEvent` event. Please use the event to add to this field for vanilla or other mod's [BlockEntityType]s.
      private final Set<Block> validBlocks;
      private final Holder.Reference<BlockEntityType<?>> builtInRegistryHolder = BuiltInRegistries.BLOCK_ENTITY_TYPE.createIntrusiveHolder(this);
-+    /// Neo: Allow modded BE types to declare that they have NBT data only OPs can set
++    /// Neo: indicates that a BE of this type has NBT data only OPs can set
 +    private final boolean onlyOpCanSetNbt;
  
      public BlockEntityType(BlockEntityType.BlockEntitySupplier<? extends T> factory, Set<Block> validBlocks) {

@@ -1,11 +1,10 @@
 --- a/net/minecraft/world/effect/MobEffect.java
 +++ b/net/minecraft/world/effect/MobEffect.java
-@@ -68,6 +_,14 @@
+@@ -68,6 +_,13 @@
          this.particleFactory = ignored -> particleOptions;
      }
  
-+    /// Neo: Constructor that can take in the particle factory as a function of the [MobEffectInstance].
-+    /// This should be used if the desired [ParticleOptions] depends on the presence of other registry entries.
++    /// Neo: constructor overload providing full control over the particle factory
 +    protected MobEffect(MobEffectCategory category, int color, Function<MobEffectInstance, ParticleOptions> particleFactory) {
 +        this.category = category;
 +        this.color = color;
@@ -33,11 +32,12 @@
      public MobEffect setBlendDuration(int ticks) {
          return this.setBlendDuration(ticks, ticks, ticks);
      }
-@@ -196,8 +_,15 @@
+@@ -196,8 +_,16 @@
          return this.requiredFeatures;
      }
  
 -    public record AttributeTemplate(Identifier id, double amount, AttributeModifier.Operation operation) {
++    /// @param curve Neo: a function computing the attribute modifier amount based on the effect amplifier
 +    public record AttributeTemplate(Identifier id, double amount, AttributeModifier.Operation operation, it.unimi.dsi.fastutil.ints.@Nullable Int2DoubleFunction curve) {
 +        public AttributeTemplate(Identifier id, double amount, AttributeModifier.Operation operation) {
 +            this(id, amount, operation, null);

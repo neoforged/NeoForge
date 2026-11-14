@@ -23,7 +23,7 @@
              return false;
          }
  
-@@ -139,11 +_,12 @@
+@@ -139,11 +_,13 @@
              return false;
          }
  
@@ -31,7 +31,8 @@
          oldBlock.playerWillDestroy(level, pos, oldState, this.minecraft.player);
          FluidState fluidState = level.getFluidState(pos);
 -        boolean changed = level.setBlock(pos, fluidState.createLegacyBlock(), 11);
-+        boolean changed = oldState.onDestroyedByPlayer(level, pos, minecraft.player, minecraft.player.getMainHandItem().copy(), false, fluidState);
++        // Neo: let the block control how it is removed from the level
++        boolean changed = oldState.onDestroyedByPlayer(level, pos, this.minecraft.player, this.minecraft.player.getMainHandItem().copy(), false, fluidState);
          if (changed) {
 -            oldBlock.destroy(level, pos, oldState);
 +            oldBlock.destroy(level, pos, removedBlockState);
@@ -58,7 +59,7 @@
              this.startPrediction(this.minecraft.level, sequence -> {
                  boolean notAir = !state.isAir();
                  if (notAir && this.destroyProgress == 0.0F) {
-+                    if (event.getUseBlock() != net.minecraft.util.TriState.FALSE)
++                    if (!event.getUseBlock().isFalse())
                      state.attack(this.minecraft.level, pos, this.minecraft.player);
                  }
  
@@ -96,11 +97,12 @@
              if (this.destroyProgress >= 1.0F) {
                  this.isDestroying = false;
                  if (SharedConstants.DEBUG_BLOCK_BREAK) {
-@@ -308,7 +_,7 @@
+@@ -308,7 +_,8 @@
  
      private boolean sameDestroyTarget(BlockPos pos) {
          ItemStack selected = this.minecraft.player.getMainHandItem();
 -        return pos.equals(this.destroyBlockPos) && ItemStack.isSameItemSameComponents(selected, this.destroyingItem);
++        // Neo: let the active item control whether changing to the now selected item resets the block break progress
 +        return pos.equals(this.destroyBlockPos) && !this.destroyingItem.shouldCauseBlockBreakReset(selected);
      }
  
@@ -118,13 +120,13 @@
          }
  
 -        boolean haveSomethingInOurHands = !player.getMainHandItem().isEmpty() || !player.getOffhandItem().isEmpty();
-+        UseOnContext useoncontext = new UseOnContext(player, hand, blockHit);
-+        if (event.getUseItem() != net.minecraft.util.TriState.FALSE) {
-+            InteractionResult result = itemStack.onItemUseFirst(useoncontext);
++        if (!event.getUseItem().isFalse()) {
++            InteractionResult result = itemStack.onItemUseFirst(new UseOnContext(player, hand, blockHit));
 +            if (result != InteractionResult.PASS) {
 +                return result;
 +            }
 +        }
++        // Neo: let the held items decide whether crouching bypasses block interaction
 +        boolean haveSomethingInOurHands = !player.getMainHandItem().doesSneakBypassUse(player.level(), pos, player) || !player.getOffhandItem().doesSneakBypassUse(player.level(), pos, player);
          boolean suppressUsingBlock = player.isSecondaryUseActive() && haveSomethingInOurHands;
 -        if (!suppressUsingBlock) {

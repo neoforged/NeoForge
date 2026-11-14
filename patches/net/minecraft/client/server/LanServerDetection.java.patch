@@ -1,10 +1,11 @@
 --- a/net/minecraft/client/server/LanServerDetection.java
 +++ b/net/minecraft/client/server/LanServerDetection.java
-@@ -32,7 +_,7 @@
+@@ -32,7 +_,8 @@
              this.setDaemon(true);
              this.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(LanServerDetection.LOGGER));
              this.socket = new MulticastSocket(4445);
 -            this.pingGroup = InetAddress.getByName("224.0.2.60");
++            // Neo: use IP-version-dependent multicast group
 +            this.pingGroup = InetAddress.getByName(LanServerPinger.MULTICAST_GROUP);
              this.socket.setSoTimeout(5000);
              this.socket.joinGroup(this.pingGroup);

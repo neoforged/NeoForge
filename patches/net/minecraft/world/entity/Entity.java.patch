@@ -52,13 +52,15 @@
          this.updateFluidInteraction();
          this.updateSwimming();
          if (this.level() instanceof ServerLevel serverLevel) {
-@@ -569,7 +_,9 @@
+@@ -569,7 +_,11 @@
          }
  
          if (this.isInLava()) {
 -            this.fallDistance *= 0.5;
++            // Neo: allow modded entities to control the fall distance modifier
 +            this.fallDistance *= this.getFluidFallDistanceModifier(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
 +        } else if (!this.isInWater()) {
++            // Neo: allow modded fluids and entities to control the fall distance modifier
 +            this.fallDistance *= this.fluidInteraction.getFallDistanceModifier(this);
          }
  
@@ -105,18 +107,19 @@
      private double getBlockBounciness(Block onBlock) {
          float blockBounciness = onBlock.getBounceRestitution();
          if (!(this instanceof LivingEntity)) {
-@@ -1098,9 +_,7 @@
+@@ -1098,9 +_,8 @@
              }
  
              BlockState belowState = this.level().getBlockState(getOnPos);
 -            return (!(offset <= 0.5) || !belowState.is(BlockTags.FENCES))
 -                    && !belowState.is(BlockTags.WALLS)
 -                    && !(belowState.getBlock() instanceof FenceGateBlock)
++            // Neo: allow modded blocks to declare their collision box to be higher than a single block, similar to walls/fences
 +            return (!(offset <= 0.5) || !belowState.collisionExtendsVertically(this.level(), getOnPos, this))
                  ? getOnPos.atY(Mth.floor(this.position.y - offset))
                  : getOnPos;
          } else {
-@@ -1471,20 +_,20 @@
+@@ -1471,20 +_,22 @@
          return !aboveState.is(BlockTags.INSIDE_STEP_SOUND_BLOCKS) && !aboveState.is(BlockTags.COMBINATION_STEP_SOUND_BLOCKS) ? affectingPos : abovePos;
      }
  
@@ -124,6 +127,7 @@
 -        SoundType primaryStepSoundType = primaryStepSound.getSoundType();
 -        this.playSound(primaryStepSoundType.getStepSound(), primaryStepSoundType.getVolume() * 0.15F, primaryStepSoundType.getPitch());
 -        this.playMuffledStepSound(secondaryStepSound);
++    // Neo: add position context
 +    protected void playCombinationStepSounds(BlockState primaryStepSound, BlockState secondaryStepSound, BlockPos primaryPos, BlockPos secondaryPos) {
 +        // Neo: Allow the blockstate full control over step sounds
 +        primaryStepSound.playStepSound(this.level, primaryPos, this, .15F, 1F);
@@ -133,6 +137,7 @@
 -    protected void playMuffledStepSound(BlockState blockState) {
 -        SoundType secondaryStepSoundType = blockState.getSoundType();
 -        this.playSound(secondaryStepSoundType.getStepSound(), secondaryStepSoundType.getVolume() * 0.05F, secondaryStepSoundType.getPitch() * 0.8F);
++    // Neo: add position context
 +    protected void playMuffledStepSound(BlockState blockState, BlockPos pos) {
 +        // Neo: Allow the blockstate full control over step sounds
 +        blockState.playStepSound(this.level, pos, this, .05F, .8F);
@@ -155,7 +160,7 @@
      }
  
      public boolean isInClouds() {
-@@ -1663,18 +_,17 @@
+@@ -1663,18 +_,19 @@
  
      public void updateSwimming() {
          if (this.isSwimming()) {
@@ -164,6 +169,7 @@
          } else {
              this.setSwimming(
 -                this.isSprinting() && this.isUnderWater() && !this.isPassenger() && this.level().getFluidState(this.blockPosition).is(FluidTags.WATER)
++                // Neo: give modded entities and fluids more control over the ability to swim in a fluid
 +                this.isSprinting() && this.canStartSwimming() && !this.isPassenger()
              );
          }
@@ -173,12 +179,13 @@
 -        boolean inAnyFluid = this.fluidInteraction.update(this, !this.isPushedByFluid());
 -        boolean inWater = this.fluidInteraction.isInFluid(FluidTags.WATER);
 -        boolean inLava = this.fluidInteraction.isInFluid(FluidTags.LAVA);
++        // Neo: give modded entities and fluids control over which fluids push which entities
 +        boolean inAnyFluid = this.fluidInteraction.update(this, this::isPushedByFluid);
 +        boolean inWater = this.fluidInteraction.isInFluidMatching(this, (_, type, _) -> type.getIsWaterLike());
          if (inWater) {
              this.resetFallDistance();
              if (!this.wasTouchingWater && !this.firstTick) {
-@@ -1683,16 +_,7 @@
+@@ -1683,16 +_,8 @@
          }
  
          this.wasTouchingWater = inWater;
@@ -192,32 +199,36 @@
 -                this.fluidInteraction.applyCurrentTo(FluidTags.LAVA, this, lavaFlowScale);
 -            }
 -        }
++        // Neo: unconditionally apply current
 +        this.fluidInteraction.applyCurrentTo(this);
  
          return inAnyFluid;
      }
-@@ -1740,12 +_,15 @@
+@@ -1740,12 +_,17 @@
      }
  
      public boolean canSpawnSprintParticle() {
 -        return this.isSprinting() && !this.isInWater() && !this.isSpectator() && !this.isCrouching() && !this.isInLava() && this.isAlive();
++        // Neo: take modded fluids into account
 +        return this.isSprinting() && !this.isInWater() && !this.isSpectator() && !this.isCrouching() && !this.isInLava() && this.isAlive() && !this.fluidInteraction.isInAnyFluid();
      }
  
      protected void spawnSprintParticle() {
          BlockPos pos = this.getOnPosLegacy();
          BlockState blockState = this.level().getBlockState(pos);
++        // Neo: give the block control over how sprint particles are spawned
 +        if (blockState.addRunningEffects(level, pos, this)) {
 +            return;
 +        }
          if (blockState.getRenderShape() != RenderShape.INVISIBLE) {
              Vec3 movement = this.getDeltaMovement();
              BlockPos entityPosition = this.blockPosition();
-@@ -1760,16 +_,22 @@
+@@ -1760,16 +_,23 @@
              }
  
              this.level()
 -                .addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockState), x, this.getY() + 0.1, z, movement.x * -4.0, 1.5, movement.z * -4.0);
++                // Neo: sync block position for position-dependent particles
 +                .addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockState, pos), x, this.getY() + 0.1, z, movement.x * -4.0, 1.5, movement.z * -4.0);
          }
      }
@@ -261,10 +272,11 @@
                  this.tags.clear();
                  input.read("Tags", TAG_LIST_CODEC).ifPresent(this.tags::addAll);
                  input.getString("Team").ifPresent(teamName -> {
-@@ -2286,6 +_,9 @@
+@@ -2286,6 +_,10 @@
  
          ItemEntity entity = new ItemEntity(level, this.getX() + offset.x, this.getY() + offset.y, this.getZ() + offset.z, itemStack);
          entity.setDefaultPickUpDelay();
++        // Neo: capture drops if requested
 +        if (this.captureDrops() != null) {
 +            this.captureDrops().add(entity);
 +        } else
@@ -414,7 +426,7 @@
      }
  
      public void checkDespawn() {
-@@ -4223,6 +_,88 @@
+@@ -4223,6 +_,97 @@
  
      protected @Nullable AABB modifyPassengerFluidInteractionBox(AABB passengerBox) {
          return passengerBox;
@@ -425,11 +437,13 @@
 +        return this.fluidInteraction;
 +    }
 +
++    /// Neo: {@return the collection drops are currently being collected into}
 +    @Override
 +    public java.util.@Nullable Collection<ItemEntity> captureDrops() {
 +        return this.captureDrops;
 +    }
 +
++    /// Neo: start or stop capturing drops
 +    @Override
 +    public java.util.@Nullable Collection<ItemEntity> captureDrops(java.util.@Nullable Collection<ItemEntity> value) {
 +        java.util.Collection<ItemEntity> ret = this.captureDrops;
@@ -437,6 +451,7 @@
 +        return ret;
 +    }
 +
++    /// Neo: {@return the persistent data tag}
 +    @Override
 +    public net.minecraft.nbt.CompoundTag getPersistentData() {
 +        if (this.persistentData == null) {
@@ -449,24 +464,30 @@
 +    @Override
 +    public boolean canTrample(ServerLevel level, BlockState state, BlockPos pos, double fallDistance) {
 +        if (level.getRandom().nextFloat() < fallDistance - .5F && this instanceof LivingEntity) {
-+            boolean canTrample = this instanceof Player player
-+                                 ? !level.getServer().isUnderSpawnProtection(level, pos, player)
-+                                 : net.neoforged.neoforge.event.EventHooks.canEntityGrief(level, this);
++            boolean canTrample;
++            if (this instanceof Player player) {
++                canTrample = !level.getServer().isUnderSpawnProtection(level, pos, player);
++            } else {
++                canTrample = net.neoforged.neoforge.event.EventHooks.canEntityGrief(level, this);
++            }
 +            return canTrample && this.getBbWidth() * this.getBbWidth() * this.getBbHeight() > 0.512F;
 +        }
 +        return false;
 +    }
 +
++    /// Neo: {@return whether this entity has been added to the level}
 +    @Override
 +    public final boolean isAddedToLevel() {
 +        return this.isAddedToLevel;
 +    }
 +
++    /// Neo: mark the entity as added to the level
 +    @Override
 +    public void onAddedToLevel() {
 +        this.isAddedToLevel = true;
 +    }
 +
++    /// Neo: mark the entity as removed from the level
 +    @Override
 +    public void onRemovedFromLevel() {
 +        this.isAddedToLevel = false;

@@ -10,20 +10,23 @@
              level.setBlockAndUpdate(pos, this.concrete.defaultBlockState());
          }
      }
-@@ -36,20 +_,24 @@
-         return shouldSolidify(level, pos, replacedBlock) ? this.concrete.defaultBlockState() : super.getStateForPlacement(context);
+@@ -37,19 +_,27 @@
      }
  
+     private static boolean shouldSolidify(BlockGetter level, BlockPos pos, BlockState replacedBlock) {
+-        return canSolidify(replacedBlock) || touchesLiquid(level, pos);
+-    }
+-
+-    private static boolean touchesLiquid(BlockGetter level, BlockPos pos) {
++        return shouldSolidify(level, pos, replacedBlock, level.getFluidState(pos));
++    }
++
++    /// Neo: {@return whether the concrete powder should solidify in the given fluid}
 +    private static boolean shouldSolidify(BlockGetter level, BlockPos pos, BlockState replacedBlock, net.minecraft.world.level.material.FluidState fluidState) {
 +        return replacedBlock.canBeHydrated(level, pos, fluidState) || touchesLiquid(level, pos, replacedBlock);
 +    }
 +
-     private static boolean shouldSolidify(BlockGetter level, BlockPos pos, BlockState replacedBlock) {
--        return canSolidify(replacedBlock) || touchesLiquid(level, pos);
-+        return shouldSolidify(level, pos, replacedBlock, level.getFluidState(pos));
-     }
- 
--    private static boolean touchesLiquid(BlockGetter level, BlockPos pos) {
++    // Neo: add state context
 +    private static boolean touchesLiquid(BlockGetter level, BlockPos pos, BlockState state) {
          boolean touchesLiquid = false;
          BlockPos.MutableBlockPos testPos = pos.mutable();
@@ -31,19 +34,22 @@
          for (Direction direction : Direction.values()) {
              BlockState blockState = level.getBlockState(testPos);
 -            if (direction != Direction.DOWN || canSolidify(blockState)) {
++            // Neo: let the block control whether it can be hydrated by the fluid
 +            if (direction != Direction.DOWN || state.canBeHydrated(level, pos, blockState.getFluidState())) {
                  testPos.setWithOffset(pos, direction);
                  blockState = level.getBlockState(testPos);
 -                if (canSolidify(blockState) && !blockState.isFaceSturdy(level, pos, direction.getOpposite())) {
++                // Neo: let the block control whether it can be hydrated by the fluid
 +                if (state.canBeHydrated(level, pos, blockState.getFluidState()) && !blockState.isFaceSturdy(level, pos, direction.getOpposite())) {
                      touchesLiquid = true;
                      break;
                  }
-@@ -74,7 +_,7 @@
+@@ -74,7 +_,8 @@
          BlockState neighbourState,
          RandomSource random
      ) {
 -        return touchesLiquid(level, pos)
++        // Neo: add state context
 +        return touchesLiquid(level, pos, state)
              ? this.concrete.defaultBlockState()
              : super.updateShape(state, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourState, random);

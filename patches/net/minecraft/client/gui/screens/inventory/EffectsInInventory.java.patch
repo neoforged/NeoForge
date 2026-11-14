@@ -19,7 +19,7 @@
              int yStep = 33;
              if (activeEffects.size() > 5) {
                  yStep = 132 / (activeEffects.size() - 1);
-@@ -65,11 +_,16 @@
+@@ -65,11 +_,17 @@
          Font font = this.screen.getFont();
  
          for (MobEffectInstance effect : sortedEffects) {
@@ -31,13 +31,14 @@
 -            this.extractText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, mouseX, mouseY);
 +            // Neo: Re-align coordinates the same way as vanilla extractText does
 +            if (!renderer.extractInventoryText(effect, screen, graphics, x0 + 32, y0 + 7, textureWidth - 32 - 7, net.minecraft.util.CommonColors.WHITE))
++            // Neo: provide effect being displayed
 +            this.extractText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, mouseX, mouseY, effect);
 +            // Neo: Re-align coordinates the same way as vanilla call to blitSprite
 +            if (!renderer.extractInventoryIcon(effect, screen, graphics, x0 + 7, y0 + 7, 18, 18, net.minecraft.util.CommonColors.WHITE))
              graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Hud.getMobEffectSprite(effect.getEffect()), x0 + 7, y0 + 7, 18, 18);
              y0 += yStep;
          }
-@@ -85,9 +_,17 @@
+@@ -85,9 +_,18 @@
          return textureWidth;
      }
  
@@ -49,13 +50,14 @@
 +        extractText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, mouseX, mouseY, null);
 +    }
 +
++    /// Neo: overload of [#extractText(GuiGraphicsExtractor, Component, Component, Font, int, int, int, int, int, int)] providing the effect whose text is being displayed
 +    private void extractText(
 +        GuiGraphicsExtractor graphics, Component effectText, Component duration, Font font, int x0, int y0, int textureWidth, int yStep, int mouseX, int mouseY, @org.jspecify.annotations.Nullable MobEffectInstance effectInstance
 +    ) {
          int textX = x0 + 32;
          int textY = y0 + 7;
          int maxTextWidth = textureWidth - 32 - 7;
-@@ -102,8 +_,15 @@
+@@ -102,8 +_,16 @@
              isCompact = true;
          }
  
@@ -63,13 +65,14 @@
 -            graphics.setTooltipForNextFrame(this.screen.getFont(), List.of(effectText, duration), Optional.empty(), mouseX, mouseY);
 +        if (mouseX >= x0 && mouseX <= x0 + textureWidth && mouseY >= y0 && mouseY <= y0 + yStep) {
 +            // Neo: Allow mods to create or adjust the tooltip shown when hovering over a mob effect.
-+            var list = isCompact ? List.of(effectText, duration) : List.<Component>of();
++            List<Component> list = isCompact ? List.of(effectText, duration) : List.of();
 +            if (effectInstance != null) {
 +                list = net.neoforged.neoforge.client.ClientHooks.getEffectTooltip(screen, effectInstance, list);
 +            }
-+            if (!list.isEmpty()) {
-+                graphics.setTooltipForNextFrame(this.screen.getFont(), list, Optional.empty(), mouseX, mouseY);
++            if (list.isEmpty()) {
++                return;
 +            }
++            graphics.setTooltipForNextFrame(this.screen.getFont(), list, Optional.empty(), mouseX, mouseY);
          }
      }
  
