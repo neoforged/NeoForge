@@ -37,7 +37,7 @@
          Map<ResourceKey<EquipmentAsset>, EquipmentClientInfo> equipmentAssets = new HashMap<>();
 -        bootstrap((id, asset) -> {
 +        // Neo: make EquipmentAssetProvider subclassable
-+        registerModels((id, asset) -> {
++        this.registerModels((id, asset) -> {
              if (equipmentAssets.putIfAbsent(id, asset) != null) {
                  throw new IllegalStateException("Tried to register equipment asset twice for id: " + id);
              }

@@ -1,0 +1,15 @@
+--- a/net/minecraft/server/network/ServerStatusPacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerStatusPacketListenerImpl.java
+@@ -16,6 +_,12 @@
+     private final Connection connection;
+     private boolean hasRequestedStatus;
+ 
++    /// @deprecated Neo: cached status is non-functionaö
++    @Deprecated(forRemoval = true, since = "26.3")
++    public ServerStatusPacketListenerImpl(ServerStatus status, Connection connection, @org.jspecify.annotations.Nullable String statusCache) {
++        this(status, connection);
++    }
++
+     public ServerStatusPacketListenerImpl(ServerStatus status, Connection connection) {
+         this.status = status;
+         this.connection = connection;

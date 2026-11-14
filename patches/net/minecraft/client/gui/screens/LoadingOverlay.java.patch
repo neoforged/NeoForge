@@ -1,10 +1,11 @@
 --- a/net/minecraft/client/gui/screens/LoadingOverlay.java
 +++ b/net/minecraft/client/gui/screens/LoadingOverlay.java
-@@ -157,6 +_,7 @@
+@@ -157,6 +_,8 @@
      @Override
      public void tick() {
          if (this.fadeOutStart == -1L && this.reload.isDone() && this.isReadyToFadeOut()) {
-+            this.fadeOutStart = Util.getMillis(); // Neo: Moved up to guard against infinite loops caused by callback
++            // Neo: Moved up to guard against infinite loops caused by callback
++            this.fadeOutStart = Util.getMillis();
              try {
                  this.reload.checkExceptions();
                  this.onFinish.accept(Optional.empty());

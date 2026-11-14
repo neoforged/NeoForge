@@ -154,10 +154,10 @@
                      this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, i, ContainerInput.SWAP);
                      return true;
                  }
-@@ -588,6 +_,32 @@
-     @Override
-     public T getMenu() {
-         return this.menu;
+@@ -598,5 +_,31 @@
+         }
+ 
+         super.onClose();
 +    }
 +
 +    /// Neo: {@return the currently hovered slot}
@@ -168,22 +168,21 @@
 +
 +    /// Neo: {@return the X coordinate of this container screen's content}
 +    public int getLeftPos() {
-+        return leftPos;
++        return this.leftPos;
 +    }
 +
 +    /// Neo: {@return the Y coordinate of this container screen's content}
 +    public int getTopPos() {
-+        return topPos;
++        return this.topPos;
 +    }
 +
 +    /// Neo: {@return the width of this container screen's content}
 +    public int getImageWidth() {
-+        return imageWidth;
++        return this.imageWidth;
 +    }
 +
 +    /// Neo: {@return the height of this container screen's content}
 +    public int getImageHeight() {
-+        return imageHeight;
++        return this.imageHeight;
      }
- 
-     @Override
+ }

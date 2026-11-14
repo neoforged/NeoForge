@@ -12,7 +12,7 @@
                  movementSpeed.addTransientModifier(SPEED_MODIFIER_ATTACKING);
              }
          }
-+        // Neo: Moved down to allow event handlers to write data manager values.
++        // Neo: Moved down to allow event handlers to write synced data values
 +        super.setTarget(target);
      }
  
