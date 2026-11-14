@@ -269,7 +269,7 @@
 +    }
 +
 +    /// @deprecated Neo: cached status is non-functional
-+    @Deprecated(forRemoval = true)
++    @Deprecated(forRemoval = true, since = "26.3")
 +    public @Nullable String getStatusJson() {
 +        return null;
      }
