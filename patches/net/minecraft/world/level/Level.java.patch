@@ -217,7 +217,7 @@
  
      public void blockEntityChanged(BlockPos pos) {
          if (this.hasChunkAt(pos)) {
-@@ -916,16 +_,18 @@
+@@ -916,16 +_,20 @@
      public abstract Scoreboard getScoreboard();
  
      public void updateNeighbourForOutputSignal(BlockPos pos, Block changedBlock) {
@@ -227,12 +227,11 @@
              BlockPos relativePos = pos.relative(direction);
              if (this.hasChunkAt(relativePos)) {
                  BlockState state = this.getBlockState(relativePos);
--                if (state.is(Blocks.COMPARATOR)) {
--                    this.neighborChanged(state, relativePos, changedBlock, null, false);
--                } else if (state.isRedstoneConductor(this, relativePos)) {
 +                // Neo: allow any block to receive comparator input updates
 +                state.onNeighborChange(this, relativePos, pos);
-+                if (state.isRedstoneConductor(this, relativePos)) {
+                 if (state.is(Blocks.COMPARATOR)) {
+                     this.neighborChanged(state, relativePos, changedBlock, null, false);
+                 } else if (state.isRedstoneConductor(this, relativePos)) {
                      relativePos = relativePos.relative(direction);
                      state = this.getBlockState(relativePos);
 -                    if (state.is(Blocks.COMPARATOR)) {
