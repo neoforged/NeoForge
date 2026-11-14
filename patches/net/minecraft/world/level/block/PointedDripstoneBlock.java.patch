@@ -26,22 +26,26 @@
                          BlockPos stalactiteTipPos = findTip(state, level, pos, 11, false);
                          if (stalactiteTipPos != null) {
                              if (fluidInfo.get().sourceState.is(Blocks.MUD) && fluid == Fluids.WATER) {
-@@ -180,7 +_,7 @@
+@@ -180,7 +_,8 @@
      }
  
      private static boolean canFillCauldron(Fluid fluidAbove) {
 -        return fluidAbove == Fluids.LAVA || fluidAbove == Fluids.WATER;
++        // Neo: defer to fluid type's drip info
 +        return fluidAbove.getFluidType().getDripInfo() != null;
      }
  
      @Override
-@@ -193,7 +_,9 @@
+@@ -193,7 +_,12 @@
          if (fluidAbove.isSame(Fluids.EMPTY)) {
              return level.environmentAttributes().getValue(EnvironmentAttributes.DEFAULT_DRIPSTONE_PARTICLE, posAbove);
          } else {
 -            return fluidAbove.is(FluidTags.LAVA) ? ParticleTypes.DRIPPING_DRIPSTONE_LAVA : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
++            // Neo: use fluid type's drip info
 +            ParticleOptions options = fluidAbove.getFluidType().getDripInfo() != null ? fluidAbove.getFluidType().getDripInfo().dripParticle() : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
-+            if (options == null) options = level.environmentAttributes().getValue(EnvironmentAttributes.DEFAULT_DRIPSTONE_PARTICLE, posAbove);
++            if (options == null) {
++                options = level.environmentAttributes().getValue(EnvironmentAttributes.DEFAULT_DRIPSTONE_PARTICLE, posAbove);
++            }
 +            return options;
          }
      }

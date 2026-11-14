@@ -17,7 +17,7 @@
              packRepository,
              worldStem,
 -            Optional.of(new GameRules(ENABLED_FEATURES)),
-+            Optional.of(TEST_GAME_RULES),
++            Optional.of(TEST_GAME_RULES), // Neo: use prepared game rules
              Proxy.NO_PROXY,
              DataFixers.getDataFixer(),
              NO_SERVICES,
@@ -33,11 +33,12 @@
          return true;
      }
  
-@@ -257,8 +_,14 @@
+@@ -257,8 +_,15 @@
              GlobalTestReporter.finish();
              LOGGER.info("========= {} GAME TESTS COMPLETE IN {} ======================", this.testTracker.getTotalCount(), this.stopwatch.stop());
              if (this.testTracker.hasFailedRequired()) {
 -                LOGGER.info("{} required tests failed :(", this.testTracker.getFailedRequiredCount());
++                // Neo: log failed tests at error level
 +                LOGGER.error("{} required tests failed :(", this.testTracker.getFailedRequiredCount());
                  this.testTracker.getFailedRequired().forEach(GameTestServer::logFailedTest);
 +
@@ -49,16 +50,18 @@
              } else {
                  LOGGER.info("All {} required tests passed :)", this.testTracker.getTotalCount());
              }
-@@ -274,11 +_,11 @@
+@@ -274,11 +_,13 @@
  
      private static void logFailedTest(GameTestInfo testInfo) {
          if (testInfo.getRotation() != Rotation.NONE) {
 -            LOGGER.info(
++            // Neo: log failed tests at error level
 +            LOGGER.error(
                  "   - {} with rotation {}: {}", testInfo.id(), testInfo.getRotation().getSerializedName(), testInfo.getError().getDescription().getString()
              );
          } else {
 -            LOGGER.info("   - {}: {}", testInfo.id(), testInfo.getError().getDescription().getString());
++            // Neo: log failed tests at error level
 +            LOGGER.error("   - {}: {}", testInfo.id(), testInfo.getError().getDescription().getString());
          }
      }

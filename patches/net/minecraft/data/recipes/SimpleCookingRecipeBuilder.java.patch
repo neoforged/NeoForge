@@ -1,33 +1,53 @@
 --- a/net/minecraft/data/recipes/SimpleCookingRecipeBuilder.java
 +++ b/net/minecraft/data/recipes/SimpleCookingRecipeBuilder.java
-@@ -92,6 +_,34 @@
+@@ -92,6 +_,54 @@
          return new SimpleCookingRecipeBuilder(craftingCategory, CookingBookCategory.FOOD, result, ingredient, experience, cookingTime, SmokingRecipe::new);
      }
  
++    /// Neo: {@return a builder for a cooking recipe of the type created by the given factory, producing the given result}
++    /// @deprecated ItemStacks cannot be constructed in datagen, use [#generic(Ingredient, RecipeCategory, CookingBookCategory, ItemStackTemplate, float, int, AbstractCookingRecipe.Factory)] instead
++    @Deprecated(forRemoval = true, since = "26.3")
 +    public static <T extends AbstractCookingRecipe> SimpleCookingRecipeBuilder generic(
-+            Ingredient ingredient,
-+            RecipeCategory craftingCategory,
-+            CookingBookCategory cookingCategory,
-+            net.minecraft.world.item.ItemStack result,
-+            float experience,
-+            int cookingTime,
-+            AbstractCookingRecipe.Factory<T> factory
++        Ingredient ingredient,
++        RecipeCategory craftingCategory,
++        CookingBookCategory cookingCategory,
++        net.minecraft.world.item.ItemStack result,
++        float experience,
++        int cookingTime,
++        AbstractCookingRecipe.Factory<T> factory
 +    ) {
 +        return new SimpleCookingRecipeBuilder(craftingCategory, cookingCategory, ItemStackTemplate.fromNonEmptyStack(result), ingredient, experience, cookingTime, factory);
 +    }
 +
++    /// Neo: {@return a builder for a cooking recipe of the type created by the given factory, producing the given result}
++    public static <T extends AbstractCookingRecipe> SimpleCookingRecipeBuilder generic(
++        Ingredient ingredient,
++        RecipeCategory craftingCategory,
++        CookingBookCategory cookingCategory,
++        ItemStackTemplate result,
++        float experience,
++        int cookingTime,
++        AbstractCookingRecipe.Factory<T> factory
++    ) {
++        return new SimpleCookingRecipeBuilder(craftingCategory, cookingCategory, result, ingredient, experience, cookingTime, factory);
++    }
++
++    /// Neo: {@return a builder for a campfire cooking recipe, producing the given result}
 +    public static SimpleCookingRecipeBuilder campfireCooking(Ingredient ingredient, RecipeCategory craftingCategory, ItemStackTemplate result, float experience, int cookingTime) {
 +        return new SimpleCookingRecipeBuilder(craftingCategory, CookingBookCategory.FOOD, result, ingredient, experience, cookingTime, CampfireCookingRecipe::new);
 +    }
 +
++    /// Neo: {@return a builder for a blasting recipe, producing the given result}
 +    public static SimpleCookingRecipeBuilder blasting(Ingredient ingredient, RecipeCategory craftingCategory, CookingBookCategory cookingCategory, ItemStackTemplate result, float experience, int cookingTime) {
 +        return new SimpleCookingRecipeBuilder(craftingCategory, cookingCategory, result, ingredient, experience, cookingTime, BlastingRecipe::new);
 +    }
 +
++    /// Neo: {@return a builder for a smelting recipe, producing the given result}
 +    public static SimpleCookingRecipeBuilder smelting(Ingredient ingredient, RecipeCategory craftingCategory, CookingBookCategory cookingCategory, ItemStackTemplate result, float experience, int cookingTime) {
 +        return new SimpleCookingRecipeBuilder(craftingCategory, cookingCategory, result, ingredient, experience, cookingTime, SmeltingRecipe::new);
 +    }
 +
++    /// Neo: {@return a builder for a smoking recipe, producing the given result}
 +    public static SimpleCookingRecipeBuilder smoking(Ingredient ingredient, RecipeCategory craftingCategory, ItemStackTemplate result, float experience, int cookingTime) {
 +        return new SimpleCookingRecipeBuilder(craftingCategory, CookingBookCategory.FOOD, result, ingredient, experience, cookingTime, SmokingRecipe::new);
 +    }

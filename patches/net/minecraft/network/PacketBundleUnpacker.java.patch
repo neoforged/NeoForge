@@ -1,10 +1,11 @@
 --- a/net/minecraft/network/PacketBundleUnpacker.java
 +++ b/net/minecraft/network/PacketBundleUnpacker.java
-@@ -14,7 +_,7 @@
+@@ -14,7 +_,8 @@
      }
  
      protected void encode(ChannelHandlerContext ctx, Packet<?> msg, List<Object> out) throws Exception {
 -        this.bundlerInfo.unbundlePacket(msg, out::add);
++        // Neo: provide the channel handler context to the unbundler
 +        this.bundlerInfo.unbundlePacket(msg, out::add, ctx);
          if (msg.isTerminal()) {
              ctx.pipeline().remove(ctx.name());

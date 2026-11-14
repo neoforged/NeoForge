@@ -9,7 +9,7 @@
  
      public AbstractWidget(int x, int y, int width, int height, Component message) {
          this.x = x;
-@@ -223,6 +_,24 @@
+@@ -223,6 +_,28 @@
      @Override
      public void setFocused(boolean focused) {
          this.focused = focused;
@@ -21,9 +21,13 @@
 +    ///
 +    /// Subclasses may override this to provide more advanced text color handling.
 +    public int getLabelTextColor() {
-+        return this.labelTextColor != null
-+                ? this.labelTextColor
-+                : this.active ? net.minecraft.util.CommonColors.WHITE : net.minecraft.util.CommonColors.LIGHT_GRAY;
++        if (this.labelTextColor != null) {
++            return this.labelTextColor;
++        } else if (this.active) {
++            return net.minecraft.util.CommonColors.WHITE;
++        } else {
++            return net.minecraft.util.CommonColors.LIGHT_GRAY;
++        }
 +    }
 +
 +    /// Neo: Sets the label text color for this widget based on the given ARGB value, or `null` to reset it to the default colors.

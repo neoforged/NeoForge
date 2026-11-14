@@ -1,8 +1,10 @@
 --- a/net/minecraft/world/entity/monster/Endermite.java
 +++ b/net/minecraft/world/entity/monster/Endermite.java
-@@ -129,7 +_,7 @@
+@@ -128,8 +_,9 @@
+         }
      }
  
++    // Neo: widen generic to support subclasses
      public static boolean checkEndermiteSpawnRules(
 -        EntityType<Endermite> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
 +        EntityType<? extends Endermite> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random

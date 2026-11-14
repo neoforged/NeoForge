@@ -1,34 +1,39 @@
 --- a/net/minecraft/world/entity/monster/skeleton/AbstractSkeleton.java
 +++ b/net/minecraft/world/entity/monster/skeleton/AbstractSkeleton.java
-@@ -133,8 +_,8 @@
+@@ -133,8 +_,9 @@
          if (this.level() != null && !this.level().isClientSide()) {
              this.goalSelector.removeGoal(this.meleeGoal);
              this.goalSelector.removeGoal(this.bowGoal);
 -            ItemStack usedWeapon = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, Items.BOW));
 -            if (usedWeapon.is(Items.BOW)) {
++            // Neo: add support for modded bows
 +            ItemStack itemstack = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof net.minecraft.world.item.BowItem));
 +            if (itemstack.getItem() instanceof net.minecraft.world.item.BowItem) {
                  int minAttackInterval = this.getHardAttackInterval();
                  if (this.level().getDifficulty() != Difficulty.HARD) {
                      minAttackInterval = this.getAttackInterval();
-@@ -158,9 +_,11 @@
+@@ -158,9 +_,14 @@
  
      @Override
      public void performRangedAttack(LivingEntity target, float power) {
 -        ItemStack bowItem = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, Items.BOW));
++        // Neo: add support for modded bows
 +        ItemStack bowItem = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof net.minecraft.world.item.BowItem));
          ItemStack projectile = this.getProjectile(bowItem);
          AbstractArrow arrow = this.getArrow(projectile, power, bowItem);
-+        if (bowItem.getItem() instanceof net.minecraft.world.item.ProjectileWeaponItem weaponItem)
++        // Neo: allow modded weapons to provide custom projectile entities
++        if (bowItem.getItem() instanceof net.minecraft.world.item.ProjectileWeaponItem weaponItem) {
 +            arrow = weaponItem.customArrow(arrow, projectile, bowItem);
++        }
          double xd = target.getX() - this.getX();
          double yd = target.getY(0.3333333333333333) - arrow.getY();
          double zd = target.getZ() - this.getZ();
-@@ -180,7 +_,7 @@
+@@ -180,7 +_,8 @@
  
      @Override
      public boolean canUseNonMeleeWeapon(ItemStack item) {
 -        return item.getItem() == Items.BOW;
++        // Neo: add support for modded bows
 +        return item.is(net.neoforged.neoforge.common.Tags.Items.SKELETON_USABLE_BOWS);
      }
  

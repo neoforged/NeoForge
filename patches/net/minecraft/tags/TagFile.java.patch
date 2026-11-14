@@ -1,10 +1,11 @@
 --- a/net/minecraft/tags/TagFile.java
 +++ b/net/minecraft/tags/TagFile.java
-@@ -4,11 +_,18 @@
+@@ -4,11 +_,19 @@
  import com.mojang.serialization.codecs.RecordCodecBuilder;
  import java.util.List;
  
 -public record TagFile(List<TagEntry> entries, boolean replace) {
++/// @param remove Neo: contains the entries to be removed from the tag this file is loaded for
 +public record TagFile(List<TagEntry> entries, boolean replace, List<TagEntry> remove) {
      public static final Codec<TagFile> CODEC = RecordCodecBuilder.create(
          i -> i.group(

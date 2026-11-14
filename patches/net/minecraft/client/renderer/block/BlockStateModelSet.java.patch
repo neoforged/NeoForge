@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/BlockStateModelSet.java
 +++ b/net/minecraft/client/renderer/block/BlockStateModelSet.java
-@@ -26,6 +_,10 @@
+@@ -26,6 +_,11 @@
      }
  
      public Material.Baked getParticleMaterial(BlockState blockState) {
@@ -8,6 +8,7 @@
 +        return this.getParticleMaterial(blockState, net.minecraft.client.renderer.block.BlockAndTintGetter.EMPTY, net.minecraft.core.BlockPos.ZERO);
 +    }
 +
++    /// Neo: {@return the level-aware particle material of the blockstate's model}
 +    public Material.Baked getParticleMaterial(BlockState blockState, net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos) {
 +        return this.get(blockState).particleMaterial(level, pos, blockState);
      }

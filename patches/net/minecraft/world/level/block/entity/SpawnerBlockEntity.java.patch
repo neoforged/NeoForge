@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/level/block/entity/SpawnerBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/SpawnerBlockEntity.java
-@@ -33,6 +_,11 @@
+@@ -33,6 +_,12 @@
                  level.sendBlockUpdated(pos, state, state, 260);
              }
          }
 +
++        /// Neo: {@return the owner of this spawner}
 +        @Override
 +        public com.mojang.datafixers.util.Either<net.minecraft.world.level.block.entity.BlockEntity, net.minecraft.world.entity.Entity> getOwner() {
 +            return com.mojang.datafixers.util.Either.left(SpawnerBlockEntity.this);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
-@@ -165,18 +_,18 @@
+@@ -165,17 +_,17 @@
          this.guiRenderer = new GuiRenderer(
              this.gameRenderState.guiRenderState,
              this.featureRenderDispatcher,
@@ -22,11 +22,10 @@
          this.screenEffectRenderer = new ScreenEffectRenderer(this, atlasManager);
          this.debugCrosshairRenderer = new DebugCrosshairRenderer();
 -        this.mainRenderTarget = new MainTarget(minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight());
-         this.hud3DTarget = new TextureTarget("hud_3d_depth", minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight(), null, GpuFormat.D32_FLOAT);
 +        this.mainRenderTarget = net.neoforged.neoforge.client.ClientHooks.instantiateMainTarget(minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight());
+         this.hud3DTarget = new TextureTarget("hud_3d_depth", minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight(), null, GpuFormat.D32_FLOAT);
      }
  
-     @Override
 @@ -236,6 +_,7 @@
                  break;
              case null:
@@ -35,12 +34,14 @@
                  this.clearSpectatedEntityPostEffect();
          }
      }
-@@ -348,6 +_,9 @@
+@@ -348,6 +_,11 @@
                  return;
              }
  
-+            // Neo: Prevent screen shake if the damage type is marked as "forge:no_flinch"
-+            if (cameraState.entityRenderState.preventFlinch) return;
++            // Neo: Prevent screen shake if the damage type is tagged as "neoforge:no_flinch"
++            if (cameraState.entityRenderState.preventFlinch) {
++                return;
++            }
 +
              hurt /= cameraState.entityRenderState.hurtDuration;
              hurt = Mth.sin(hurt * hurt * hurt * hurt * (float) Math.PI);

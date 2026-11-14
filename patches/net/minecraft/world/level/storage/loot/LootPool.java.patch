@@ -1,61 +1,64 @@
 --- a/net/minecraft/world/level/storage/loot/LootPool.java
 +++ b/net/minecraft/world/level/storage/loot/LootPool.java
-@@ -33,7 +_,8 @@
-                 LootItemCondition.CODEC.optionalFieldOf("condition").forGetter(p -> p.condition),
+@@ -34,6 +_,8 @@
                  LootItemFunctions.CODEC.optionalFieldOf("modifier").forGetter(p -> p.modifier),
                  ContextIntProviders.CODEC.fieldOf("rolls").forGetter(p -> p.rolls),
--                ContextFloatProviders.CODEC.optionalFieldOf("bonus_rolls", ContextFloatProviders.exactly(0.0F)).forGetter(p -> p.bonusRolls)
-+                ContextFloatProviders.CODEC.optionalFieldOf("bonus_rolls", ContextFloatProviders.exactly(0.0F)).forGetter(p -> p.bonusRolls),
-+                Codec.STRING.optionalFieldOf("name").forGetter(pool -> java.util.Optional.ofNullable(pool.name).filter(name -> !name.startsWith("custom#")))
+                 ContextFloatProviders.CODEC.optionalFieldOf("bonus_rolls", ContextFloatProviders.exactly(0.0F)).forGetter(p -> p.bonusRolls)
++                // Neo: add support for named pools
++                , Codec.STRING.optionalFieldOf("name").forGetter(pool -> Optional.ofNullable(pool.name).filter(name -> !name.startsWith("custom#")))
              )
              .apply(i, LootPool::new)
      );
-@@ -48,13 +_,15 @@
-         Optional<Holder<LootItemCondition>> condition,
+@@ -42,6 +_,11 @@
+     private final Optional<Holder<LootItemFunction>> modifier;
+     private Holder<ContextIntProvider> rolls;
+     private Holder<ContextFloatProvider> bonusRolls;
++    /// Neo: indicates whether this pool has been frozen to prevent manipulation outside of Neo APIs
++    private boolean isFrozen = false;
++    /// Neo: holds the name of this pool, if present
++    @org.jspecify.annotations.Nullable
++    private String name;
+ 
+     private LootPool(
+         List<LootPoolEntryContainer> entries,
+@@ -49,7 +_,9 @@
          Optional<Holder<LootItemFunction>> modifier,
          Holder<ContextIntProvider> rolls,
--        Holder<ContextFloatProvider> bonusRolls
-+        Holder<ContextFloatProvider> bonusRolls,
-+        java.util.Optional<String> name
+         Holder<ContextFloatProvider> bonusRolls
++        , Optional<String> name
      ) {
++        this.name = name.orElse(null);
          this.entries = entries;
          this.condition = condition;
          this.modifier = modifier;
-         this.rolls = rolls;
-         this.bonusRolls = bonusRolls;
-+        this.name = name.orElse(null);
-     }
- 
-     private void addRandomItem(Consumer<ItemStack> result, LootContext context) {
-@@ -110,6 +_,57 @@
+@@ -110,6 +_,59 @@
          Validatable.validateHolder(output, "bonus_rolls", this.bonusRolls);
      }
  
-+    // Neo: Implement LootPool freezing to prevent manipulation outside of Neo APIs
-+    private boolean isFrozen = false;
-+
++    /// Neo: freeze this loot pool
 +    public void freeze() {
 +        this.isFrozen = true;
 +    }
 +
++    /// Neo: {@return whether this loot pool is frozen}
 +    public boolean isFrozen() {
 +        return this.isFrozen;
 +    }
 +
++    /// Neo: assert that this loot pool is not frozen
 +    private void checkFrozen() {
-+        if (this.isFrozen())
++        if (this.isFrozen()) {
 +            throw new RuntimeException("Attempted to modify LootPool after being frozen!");
++        }
 +    }
 +
-+    // Neo: Apply names for LootPools to allow easier targeting specific pools
-+    @org.jspecify.annotations.Nullable
-+    private String name;
-+
++    /// Neo: {@return the name of this loot pool, if present}
 +    @org.jspecify.annotations.Nullable
 +    public String getName() {
 +        return this.name;
 +    }
 +
++    /// Neo: set the name of this loot pool
 +    void setName(final String name) {
 +        if (this.name != null) {
 +            throw new UnsupportedOperationException("Cannot change the name of a pool when it has a name set!");
@@ -63,41 +66,46 @@
 +        this.name = name;
 +    }
 +
-+    // Neo: Add getters and setters for changing the rolls for this pool
++    /// Neo: {@return the rolls into provider}
 +    public Holder<ContextIntProvider> getRolls() {
 +        return this.rolls;
 +    }
 +
++    /// Neo: {@return the bonus rolls int provider}
 +    public Holder<ContextFloatProvider> getBonusRolls() {
 +        return this.bonusRolls;
 +    }
 +
-+    public void setRolls(Holder<ContextIntProvider> v) {
-+        checkFrozen();
-+        this.rolls = v;
++    /// Neo: set the rools int provider
++    public void setRolls(Holder<ContextIntProvider> rolls) {
++        this.checkFrozen();
++        this.rolls = rolls;
 +    }
 +
-+    public void setBonusRolls(Holder<ContextFloatProvider> v) {
-+        checkFrozen();
-+        this.bonusRolls = v;
++    /// Neo: set the bonus rolls int provider
++    public void setBonusRolls(Holder<ContextFloatProvider> bonusRolls) {
++        this.checkFrozen();
++        this.bonusRolls = bonusRolls;
 +    }
 +
      public static LootPool.Builder lootPool() {
          return new LootPool.Builder();
      }
-@@ -120,6 +_,8 @@
+@@ -120,6 +_,9 @@
          private final ImmutableList.Builder<Holder<LootItemFunction>> functions = ImmutableList.builder();
          private Holder<ContextIntProvider> rolls = ContextIntProviders.exactly(1);
          private Holder<ContextFloatProvider> bonusRolls = ContextFloatProviders.exactly(0.0F);
++        /// Neo: holds the name of the loot pool
 +        @org.jspecify.annotations.Nullable
 +        private String name;
  
          public LootPool.Builder setRolls(Holder<ContextIntProvider> rolls) {
              this.rolls = rolls;
-@@ -158,13 +_,19 @@
+@@ -158,6 +_,12 @@
              return this;
          }
  
++        /// Neo: set the name of the loot pool
 +        public LootPool.Builder name(String name) {
 +            this.name = name;
 +            return this;
@@ -106,12 +114,12 @@
          public LootPool build() {
              return new LootPool(
                  this.entries.build(),
-                 ConditionUserBuilder.buildCondition(this.conditions.build()),
+@@ -165,6 +_,8 @@
                  FunctionUserBuilder.buildFunction(this.functions.build()),
                  this.rolls,
--                this.bonusRolls
-+                this.bonusRolls,
-+                java.util.Optional.ofNullable(this.name)
+                 this.bonusRolls
++                // Neo: add name
++                , Optional.ofNullable(this.name)
              );
          }
      }

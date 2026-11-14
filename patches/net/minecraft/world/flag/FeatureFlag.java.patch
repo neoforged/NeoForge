@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/flag/FeatureFlag.java
 +++ b/net/minecraft/world/flag/FeatureFlag.java
-@@ -3,9 +_,25 @@
+@@ -3,9 +_,26 @@
  public class FeatureFlag {
      final FeatureFlagUniverse universe;
      final long mask;
++    /// Neo: holds the index into the extended mask array
 +    final int extMaskIndex;
++    /// Neo: indicates whether this is a modded flag
 +    final boolean modded;
  
-+    /**
-+     * @deprecated Neo: use {@link #FeatureFlag(FeatureFlagUniverse, int, int, boolean)} instead
-+     */
++    /// @deprecated Neo: use [#FeatureFlag(FeatureFlagUniverse, int, int, boolean)] instead
 +    @Deprecated
      FeatureFlag(FeatureFlagUniverse universe, int bit) {
 +        this(universe, bit, 0, false);
@@ -22,7 +22,8 @@
 +        this.modded = modded;
 +    }
 +
++    /// Neo: {@return whether this is a modded flag}
 +    public boolean isModded() {
-+        return modded;
++        return this.modded;
      }
  }

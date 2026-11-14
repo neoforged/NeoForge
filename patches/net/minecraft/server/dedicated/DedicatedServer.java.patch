@@ -8,15 +8,17 @@
  
      public DedicatedServer(
          Thread serverThread,
-@@ -167,6 +_,7 @@
+@@ -167,6 +_,9 @@
          Thread consoleThread = new Thread("Server console handler") {
              @Override
              public void run() {
-+                if (net.neoforged.neoforge.server.console.TerminalHandler.handleCommands(DedicatedServer.this)) return;
++                if (net.neoforged.neoforge.server.console.TerminalHandler.handleCommands(DedicatedServer.this)) {
++                    return;
++                }
                  BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
  
                  String line;
-@@ -241,11 +_,13 @@
+@@ -241,11 +_,14 @@
          this.tickTimeLogger = new RemoteSampleLogger(TpsDebugDimensions.values().length, this.debugSubscribers(), RemoteDebugSampleType.TICK_TIME);
          long levelNanoTime = Util.getNanos();
          this.services.nameToIdCache().resolveOfflineUsers(!this.usesAuthentication());
@@ -26,7 +28,8 @@
          long elapsed = Util.getNanos() - levelNanoTime;
          String time = String.format(Locale.ROOT, "%.3fs", elapsed / 1.0E9);
          LOGGER.info("Done ({})! For help, type \"help\"", time);
-+        this.nextTickTimeNanos = Util.getNanos(); // Neo: Update server time to prevent watchdog/spamming during long load.
++        // Neo: Update server time to prevent watchdog/spamming during long load.
++        this.nextTickTimeNanos = Util.getNanos();
          if (properties.announcePlayerAchievements != null) {
              this.getGameRules().set(GameRules.SHOW_ADVANCEMENT_MESSAGES, properties.announcePlayerAchievements, this);
          }
@@ -43,10 +46,11 @@
          return true;
      }
  
-@@ -410,6 +_,11 @@
+@@ -410,6 +_,12 @@
              this.queryThreadGs4.stop();
          }
  
++        // Neo: shut down lan pinger
 +        if (this.dediLanPinger != null) {
 +            this.dediLanPinger.interrupt();
 +            this.dediLanPinger = null;
@@ -55,12 +59,13 @@
          if (this.jsonRpcServer != null) {
              try {
                  this.jsonRpcServer.stop(true);
-@@ -720,7 +_,12 @@
+@@ -720,7 +_,13 @@
      @Override
      protected void stopServer() {
          this.notificationManager().serverShuttingDown();
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.GameShuttingDownEvent());
          super.stopServer();
++        // Neo: shut down lan pinger
 +        if (this.dediLanPinger != null) {
 +            this.dediLanPinger.interrupt();
 +            this.dediLanPinger = null;

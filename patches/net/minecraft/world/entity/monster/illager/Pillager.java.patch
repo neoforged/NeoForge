@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/entity/monster/illager/Pillager.java
 +++ b/net/minecraft/world/entity/monster/illager/Pillager.java
-@@ -97,7 +_,7 @@
+@@ -97,7 +_,8 @@
  
      @Override
      public boolean canUseNonMeleeWeapon(ItemStack item) {
 -        return item.getItem() == Items.CROSSBOW;
++        // Neo: add support for modded crossbows
 +        return item.is(net.neoforged.neoforge.common.Tags.Items.PILLAGER_USABLE_CROSSBOWS);
      }
  
@@ -14,7 +15,7 @@
          if (this.isChargingCrossbow()) {
              return AbstractIllager.IllagerArmPose.CROSSBOW_CHARGE;
 -        } else if (this.isHolding(Items.CROSSBOW)) {
-+        } else if (this.isHolding(is -> is.getItem() instanceof net.minecraft.world.item.CrossbowItem)) {
++        } else if (this.isHolding(is -> is.getItem() instanceof net.minecraft.world.item.CrossbowItem)) { // Neo: add support for modded crossbows
              return AbstractIllager.IllagerArmPose.CROSSBOW_HOLD;
          } else {
              return this.isAggressive() ? AbstractIllager.IllagerArmPose.ATTACKING : AbstractIllager.IllagerArmPose.NEUTRAL;

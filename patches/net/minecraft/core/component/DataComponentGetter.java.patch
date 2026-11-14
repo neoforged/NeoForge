@@ -1,25 +1,28 @@
 --- a/net/minecraft/core/component/DataComponentGetter.java
 +++ b/net/minecraft/core/component/DataComponentGetter.java
-@@ -14,4 +_,22 @@
+@@ -14,4 +_,25 @@
          T value = this.get(type);
          return value != null ? new TypedDataComponent<>(type, value) : null;
      }
 +
-+    // Neo: Utility for modded component types, to remove the need to invoke '.value()'
++    /// Neo: overload of [#get(DataComponentType)] for use with deferred holders.
 +    @Nullable
 +    default <T> T get(java.util.function.Supplier<? extends DataComponentType<? extends T>> componentType) {
-+        return get(componentType.get());
++        return this.get(componentType.get());
 +    }
 +
++    /// Neo: overload of [#getOrDefault(DataComponentType, Object)] for use with deferred holders.
 +    default <T> T getOrDefault(java.util.function.Supplier<? extends DataComponentType<? extends T>> componentType, T value) {
-+        return getOrDefault(componentType.get(), value);
++        return this.getOrDefault(componentType.get(), value);
 +    }
 +
++    /// Neo: overload of [#has(DataComponentType)] for use with deferred holders.
 +    default <T> boolean has(java.util.function.Supplier<? extends DataComponentType<? extends T>> componentType) {
-+        return get(componentType) != null;
++        return this.get(componentType) != null;
 +    }
 +
++    /// Neo: pulled up from [DataComponentHolder] and [DataComponentMap].
 +    default boolean has(DataComponentType<?> componentType) {
-+        return get(componentType) != null;
++        return this.get(componentType) != null;
 +    }
  }

@@ -1,16 +1,17 @@
 --- a/net/minecraft/world/entity/ai/navigation/WallClimberNavigation.java
 +++ b/net/minecraft/world/entity/ai/navigation/WallClimberNavigation.java
-@@ -44,11 +_,12 @@
+@@ -44,11 +_,13 @@
              super.tick();
          } else {
              if (this.pathToPosition != null) {
 -                if (!this.pathToPosition.closerToCenterThan(this.mob.position(), this.mob.getBbWidth())
-+                // FORGE: Fix MC-94054
++                // Neo: Fix MC-94054
 +                if (!this.pathToPosition.closerToCenterThan(this.mob.position(), Math.max(this.mob.getBbWidth(), 1.0D))
                      && (
                          !(this.mob.getY() > this.pathToPosition.getY())
                              || !BlockPos.containing(this.pathToPosition.getX(), this.mob.getY(), this.pathToPosition.getZ())
 -                                .closerToCenterThan(this.mob.position(), this.mob.getBbWidth())
++                                // Neo: Fix MC-94054
 +                                .closerToCenterThan(this.mob.position(), Math.max(this.mob.getBbWidth(), 1.0D))
                      )) {
                      this.mob

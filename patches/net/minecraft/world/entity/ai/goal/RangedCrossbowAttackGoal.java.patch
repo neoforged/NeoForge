@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/entity/ai/goal/RangedCrossbowAttackGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/RangedCrossbowAttackGoal.java
-@@ -14,7 +_,7 @@
+@@ -14,7 +_,8 @@
  import net.minecraft.world.item.Items;
  import net.minecraft.world.item.component.ChargedProjectiles;
  
 -public class RangedCrossbowAttackGoal<T extends Monster & RangedAttackMob & CrossbowAttackMob> extends Goal {
++// Neo: widen generic to allow any Mob
 +public class RangedCrossbowAttackGoal<T extends net.minecraft.world.entity.Mob & CrossbowAttackMob> extends Goal {
      public static final UniformInt PATHFINDING_DELAY_RANGE = TimeUtil.rangeOfSeconds(1, 2);
      private final T mob;
@@ -20,20 +21,22 @@
      public RangedCrossbowAttackGoal(T mob, double speedModifier, float attackRadius) {
          this.mob = mob;
          this.speedModifier = speedModifier;
-@@ -37,7 +_,7 @@
+@@ -37,7 +_,8 @@
      }
  
      private boolean isHoldingCrossbow() {
 -        return this.mob.isHolding(Items.CROSSBOW);
++        // Neo: add support for modded crossbows
 +        return this.mob.isHolding(is -> is.getItem() instanceof CrossbowItem);
      }
  
      @Override
-@@ -99,7 +_,7 @@
+@@ -99,7 +_,8 @@
              this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
              if (this.crossbowState == RangedCrossbowAttackGoal.CrossbowState.UNCHARGED) {
                  if (!needsToMove) {
 -                    this.mob.startUsingItem(ProjectileUtil.getWeaponHoldingHand(this.mob, Items.CROSSBOW));
++                    // Neo: add support for modded crossbows
 +                    this.mob.startUsingItem(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof CrossbowItem));
                      this.crossbowState = RangedCrossbowAttackGoal.CrossbowState.CHARGING;
                      this.mob.setChargingCrossbow(true);

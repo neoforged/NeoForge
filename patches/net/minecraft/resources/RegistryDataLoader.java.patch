@@ -34,7 +34,7 @@
          new RegistryDataLoader.RegistryData<>(Registries.BIOME, Biome.NETWORK_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.CHAT_TYPE, ChatType.DIRECT_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.TRIM_PATTERN, TrimPattern.DIRECT_CODEC),
-@@ -194,21 +_,33 @@
+@@ -194,21 +_,34 @@
          new RegistryDataLoader.RegistryData<>(Registries.DECORATED_POT_PATTERN, DecoratedPotPattern.CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.BLOCK_TRANSFORMER, BlockTransformer.DIRECT_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.BLOCK_STATE_PROVIDER, BlockStateProvider.DIRECT_CODEC)
@@ -63,6 +63,7 @@
              @Override
              public <T> RegistryLoadTask<T> create(RegistryDataLoader.RegistryData<T> data, Map<ResourceKey<?>, Exception> loadingErrors) {
 -                return new ResourceManagerRegistryLoadTask<>(data, Lifecycle.stable(), loadingErrors, resourceManager);
++                // Neo: add pending tags for use in loading conditions
 +                return new ResourceManagerRegistryLoadTask<>(data, Lifecycle.stable(), loadingErrors, resourceManager, pendingTags);
              }
          };
@@ -84,9 +85,8 @@
          RegistryDataLoader.LoaderFactory loaderFactory,
          List<HolderLookup.RegistryLookup<?>> contextRegistries,
          List<RegistryDataLoader.RegistryData<?>> registriesToLoad,
--        Executor executor
-+        Executor executor,
-+        boolean fromResources
+         Executor executor
++        , boolean fromResources
      ) {
          return CompletableFuture.<CompletableFuture<RegistryAccess.Frozen>>supplyAsync(
                  () -> {
@@ -106,12 +106,13 @@
                                  List<RegistryLoadTask<?>> frozenRegistries = loadTasks.stream().filter(task -> task.freezeRegistry(loadingErrors)).toList();
                                  if (!loadingErrors.isEmpty()) {
                                      throw logErrors(loadingErrors);
-@@ -276,13 +_,25 @@
+@@ -276,13 +_,26 @@
          List<HolderLookup.RegistryLookup<?>> contextRegistries, List<RegistryLoadTask<?>> newRegistriesAndLoaders
      ) {
          final Map<ResourceKey<? extends Registry<?>>, HolderGetter<?>> result = new HashMap<>();
 -        contextRegistries.forEach(e -> result.put(e.key(), e));
 -        newRegistriesAndLoaders.forEach(e -> result.put(e.registryKey(), e.concurrentRegistrationGetter));
++        // Neo: capture lookups of the "real" registries, used in custom holderset deserialization
 +        final Map<ResourceKey<? extends Registry<?>>, HolderLookup<?>> fullLookups = new HashMap<>();
 +        contextRegistries.forEach(e -> {
 +            result.put(e.key(), e);

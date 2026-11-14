@@ -1,22 +1,25 @@
 --- a/net/minecraft/world/level/blockscan/BoxBlockMatcher.java
 +++ b/net/minecraft/world/level/blockscan/BoxBlockMatcher.java
-@@ -23,8 +_,14 @@
+@@ -22,9 +_,17 @@
+         return this;
      }
  
-     @Override
++    /// Neo: apply the given position-sensitive predicate
++    @Override
 +    public BlockMatcher filterPosition(java.util.function.BiPredicate<BlockState, BlockPos> predicate) {
 +        super.filterPosition(predicate);
 +        return this;
 +    }
 +
-+    @Override
+     @Override
      public boolean atLeastMatched(int n) {
 -        return BlockScanUtils.findBlocks(this.level, this.from, this.to, this.statePredicate, new BlockStateConsumer() {
++        // Neo: forward position-sensitive predicate
 +        return BlockScanUtils.findBlocks(this.level, this.from, this.to, this.statePredicate, this.positionPredicate, new BlockStateConsumer() {
              private int count = 0;
  
              @Override
-@@ -35,13 +_,13 @@
+@@ -35,13 +_,14 @@
      }
  
      @Override
@@ -29,15 +32,17 @@
      @Override
      public void forEach(BiConsumer<BlockPos, BlockState> consumer) {
 -        BlockScanUtils.findBlocks(this.level, this.from, this.to, this.statePredicate, (pos, state) -> {
++        // Neo: forward position-sensitive predicate
 +        BlockScanUtils.findBlocks(this.level, this.from, this.to, this.statePredicate, this.positionPredicate, (pos, state) -> {
              consumer.accept(pos, state);
              return Continuation.CONTINUE;
          });
-@@ -49,6 +_,6 @@
+@@ -49,6 +_,7 @@
  
      @Override
      public boolean forEachUntil(BlockStateConsumer consumer) {
 -        return BlockScanUtils.findBlocks(this.level, this.from, this.to, this.statePredicate, consumer);
++        // Neo: forward position-sensitive predicate
 +        return BlockScanUtils.findBlocks(this.level, this.from, this.to, this.statePredicate, this.positionPredicate, consumer);
      }
  }

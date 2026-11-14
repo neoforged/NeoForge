@@ -1,21 +1,22 @@
 --- a/net/minecraft/SharedConstants.java
 +++ b/net/minecraft/SharedConstants.java
-@@ -125,8 +_,9 @@
+@@ -125,7 +_,9 @@
      public static final float MAXIMUM_BLOCK_EXPLOSION_RESISTANCE = 3600000.0F;
      public static final boolean USE_DEVONLY = false;
      public static boolean CHECK_DATA_FIXER_SCHEMA = true;
 -    public static boolean IS_RUNNING_IN_IDE;
-     public static boolean IS_RENDERDOC_ATTACHED = false;
 +    public static boolean IS_RUNNING_IN_IDE = !net.neoforged.fml.loading.FMLEnvironment.isProduction();
++    /// Neo: separate flag for debugger detection, used for pause helpers in [net.minecraft.util.Util] in place of [#IS_RUNNING_IN_IDE]
 +    public static final boolean IS_RUNNING_WITH_JDWP = java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().stream().anyMatch(str -> str.startsWith("-agentlib:jdwp"));
+     public static boolean IS_RENDERDOC_ATTACHED = false;
      public static final int WORLD_RESOLUTION = 16;
      public static final int MAX_CHAT_LENGTH = 256;
-     public static final int MAX_USER_INPUT_COMMAND_LENGTH = 32500;
-@@ -219,6 +_,7 @@
+@@ -219,6 +_,8 @@
      }
  
      static {
-+        if (System.getProperty("io.netty.leakDetection.level") == null) // Forge: allow level to be manually specified
++        // Neo: allow level to be manually specified
++        if (System.getProperty("io.netty.leakDetection.level") == null)
          ResourceLeakDetector.setLevel(NETTY_LEAK_DETECTION);
          CommandSyntaxException.ENABLE_COMMAND_STACK_TRACES = COMMAND_STACK_TRACES;
          CommandSyntaxException.BUILT_IN_EXCEPTIONS = new BrigadierExceptions();

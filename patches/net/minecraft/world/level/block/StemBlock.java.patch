@@ -1,28 +1,28 @@
 --- a/net/minecraft/world/level/block/StemBlock.java
 +++ b/net/minecraft/world/level/block/StemBlock.java
-@@ -63,13 +_,13 @@
+@@ -63,9 +_,15 @@
  
      @Override
      protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-+        if (!level.isAreaLoaded(pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
++        // Neo: prevent loading unloaded chunks when checking neighbor's light
++        if (!level.isAreaLoaded(pos, 1)) {
++            return;
++        }
          if (level.getRawBrightness(pos, 0) >= 9) {
 -            float growthSpeed = CropBlock.getGrowthSpeed(this, level, pos);
 -            if (random.nextInt((int)(25.0F / growthSpeed) + 1) == 0) {
-+            float f = CropBlock.getGrowthSpeed(state, level, pos);
-+            if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, random.nextInt((int)(25.0F / f) + 1) == 0)) {
++            // Neo: add full blockstate context
++            float growthSpeed = CropBlock.getGrowthSpeed(state, level, pos);
++            if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, random.nextInt((int)(25.0F / growthSpeed) + 1) == 0)) {
++                BlockState prevState = state;
                  int age = state.getValue(AGE);
                  if (age < 7) {
--                    state = state.setValue(AGE, age + 1);
--                    level.setBlock(pos, state, 2);
-+                    level.setBlock(pos, state.setValue(AGE, age + 1), 2);
-                 } else {
-                     Direction direction = Direction.Plane.HORIZONTAL.getRandomDirection(random);
-                     BlockPos relative = pos.relative(direction);
+                     state = state.setValue(AGE, age + 1);
 @@ -84,6 +_,7 @@
                          }
                      }
                  }
-+                net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(level, pos, state);
++                net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(level, pos, prevState);
              }
          }
      }

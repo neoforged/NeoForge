@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/level/storage/ValueInputContextHelper.java
 +++ b/net/minecraft/world/level/storage/ValueInputContextHelper.java
-@@ -150,6 +_,11 @@
+@@ -150,6 +_,12 @@
          public Optional<int[]> getIntArray(String name) {
              return Optional.empty();
          }
 +
++        /// Neo: {@return the top-level keys of this input}
 +        @Override
 +        public java.util.Set<String> keySet() {
 +            return java.util.Set.of();

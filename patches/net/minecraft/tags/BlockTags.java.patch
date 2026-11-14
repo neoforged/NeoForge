@@ -1,10 +1,11 @@
 --- a/net/minecraft/tags/BlockTags.java
 +++ b/net/minecraft/tags/BlockTags.java
-@@ -296,4 +_,8 @@
+@@ -296,4 +_,9 @@
      private static TagKey<Block> create(String name) {
          return TagKey.create(Registries.BLOCK, Identifier.withDefaultNamespace(name));
      }
 +
++    /// Neo: create a block tag with the given ID
 +    public static TagKey<Block> create(Identifier name) {
 +        return TagKey.create(Registries.BLOCK, name);
 +    }

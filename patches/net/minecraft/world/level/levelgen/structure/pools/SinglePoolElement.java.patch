@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/level/levelgen/structure/pools/SinglePoolElement.java
 +++ b/net/minecraft/world/level/levelgen/structure/pools/SinglePoolElement.java
-@@ -153,7 +_,7 @@
-         }
+@@ -154,6 +_,8 @@
  
          for (StructureTemplate.StructureBlockInfo dataMarker : StructureTemplate.processBlockInfos(
--            level, position, referencePos, settings, this.getDataMarkers(structureTemplateManager, position, rotation, false)
-+            level, position, referencePos, settings, this.getDataMarkers(structureTemplateManager, position, rotation, false), template
+             level, position, referencePos, settings, this.getDataMarkers(structureTemplateManager, position, rotation, false)
++            // Neo: provide source structure template to structure processors
++            , template
          )) {
              this.handleDataMarker(level, dataMarker, position, rotation, random, chunkBB);
          }

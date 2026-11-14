@@ -17,11 +17,12 @@
      }
  
      @Override
-@@ -87,6 +_,13 @@
+@@ -87,6 +_,14 @@
          Language currentLanguage = Language.getInstance();
          if (currentLanguage != this.decomposedWith) {
              this.decomposedWith = currentLanguage;
 +
++            // Neo: add support for full components in language files
 +            Component langComponent = currentLanguage.getComponent(this.key);
 +            if (langComponent != null) {
 +                this.decomposedParts = ImmutableList.of(langComponent);

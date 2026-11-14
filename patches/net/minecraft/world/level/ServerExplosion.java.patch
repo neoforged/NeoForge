@@ -1,9 +1,10 @@
 --- a/net/minecraft/world/level/ServerExplosion.java
 +++ b/net/minecraft/world/level/ServerExplosion.java
-@@ -169,7 +_,12 @@
+@@ -169,7 +_,13 @@
          return new ObjectArrayList<>(toBlowSet);
      }
  
++    /// @deprecated Neo: use [#hurtEntities(List)] instead
 +    @Deprecated
      private void hurtEntities() {
 +        this.hurtEntities(List.of());
@@ -32,11 +33,12 @@
                          entity.pushFromExplosion(knockback);
                          if (entity.is(EntityTypeTags.REDIRECTABLE_PROJECTILE) && entity instanceof Projectile projectile) {
                              projectile.setOwner(this.damageSource.getEntity());
-@@ -235,7 +_,7 @@
+@@ -235,7 +_,8 @@
      public int explode() {
          this.level.gameEvent(this.source, GameEvent.EXPLODE, this.center);
          List<BlockPos> toBlow = this.calculateExplodedPositions();
 -        this.hurtEntities();
++        // Neo: forward block positions to blow up
 +        this.hurtEntities(toBlow);
          if (this.interactsWithBlocks()) {
              ProfilerFiller profiler = Profiler.get();

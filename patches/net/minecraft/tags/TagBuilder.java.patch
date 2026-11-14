@@ -25,10 +25,10 @@
 +
 +    /// Neo: Shorthand for `setReplace(true)`.
 +    public TagBuilder replace() {
-+        return setReplace(true);
++        return this.setReplace(true);
 +    }
 +
-+    /// Neo: Returns the entries to be removed from this tag.
++    /// Neo: {@return the entries to be removed from this tag}
 +    public java.util.stream.Stream<TagEntry> getRemoveEntries() {
 +        return this.removeEntries.stream();
      }

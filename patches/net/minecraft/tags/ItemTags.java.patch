@@ -1,10 +1,11 @@
 --- a/net/minecraft/tags/ItemTags.java
 +++ b/net/minecraft/tags/ItemTags.java
-@@ -231,4 +_,8 @@
+@@ -231,4 +_,9 @@
      private static TagKey<Item> bind(String name) {
          return TagKey.create(Registries.ITEM, Identifier.withDefaultNamespace(name));
      }
 +
++    /// Neo: create a fluid tag with the given ID
 +    public static TagKey<Item> create(final Identifier name) {
 +        return TagKey.create(Registries.ITEM, name);
 +    }

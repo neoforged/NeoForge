@@ -5,6 +5,6 @@
  public interface ClockManager {
      ClockInstance getInstance(Holder<WorldClock> definition);
 +
-+    default void setRate(Holder<WorldClock> definition, float rate) {
-+    }
++    /// Neo: set the rate of the given clock
++    default void setRate(Holder<WorldClock> definition, float rate) {}
  }

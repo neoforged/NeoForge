@@ -1,25 +1,28 @@
 --- a/com/mojang/blaze3d/vertex/VertexConsumer.java
 +++ b/com/mojang/blaze3d/vertex/VertexConsumer.java
-@@ -62,7 +_,7 @@
+@@ -62,7 +_,8 @@
          for (int vertex = 0; vertex < 4; vertex++) {
              Vector3fc pos = quad.position(vertex);
              long packedUv = quad.packedUV(vertex);
 -            int vertexColor = instance.getColor(vertex);
-+            int vertexColor = net.minecraft.util.ARGB.multiply(instance.getColor(vertex), quad.bakedColors().color(vertex)); // Neo: apply baked color from the quad
++            // Neo: apply baked color from the quad
++            int vertexColor = net.minecraft.util.ARGB.multiply(instance.getColor(vertex), quad.bakedColors().color(vertex));
              int light = instance.getLightCoordsWithEmission(vertex, lightEmission);
              float u = UVPair.unpackU(packedUv);
              float v = UVPair.unpackV(packedUv);
-@@ -79,11 +_,12 @@
+@@ -79,11 +_,14 @@
          for (int vertex = 0; vertex < 4; vertex++) {
              Vector3fc position = quad.position(vertex);
              long packedUv = quad.packedUV(vertex);
 -            int vertexColor = instance.getColor(vertex);
-+            int vertexColor = net.minecraft.util.ARGB.multiply(instance.getColor(vertex), quad.bakedColors().color(vertex)); // Neo: apply baked color from the quad
++            // Neo: apply baked color from the quad
++            int vertexColor = net.minecraft.util.ARGB.multiply(instance.getColor(vertex), quad.bakedColors().color(vertex));
              int light = instance.getLightCoordsWithEmission(vertex, lightEmission);
              Vector3f pos = matrix.transformPosition(position, new Vector3f());
              float u = UVPair.unpackU(packedUv);
              float v = UVPair.unpackV(packedUv);
-+            applyBakedNormals(normal, quad.bakedNormals(), vertex, pose.normal()); // Neo: apply baked normals from the quad
++            // Neo: apply baked normals from the quad
++            applyBakedNormals(normal, quad.bakedNormals(), vertex, pose.normal());
              this.addVertex(pos.x(), pos.y(), pos.z(), vertexColor, u, v, instance.overlayCoords(), light, normal.x(), normal.y(), normal.z());
          }
      }

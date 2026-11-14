@@ -4,32 +4,35 @@
          private final HolderOwner<T> owner;
          private final TagKey<T> key;
          private @Nullable List<Holder<T>> contents;
-+        // Neo: Keep a list of invalidation callbacks so they can be run when tags rebind
++        /// Neo: holds invalidation callbacks to be run when tags rebind
 +        private final List<Runnable> invalidationCallbacks = new java.util.ArrayList<>();
  
          Named(HolderOwner<T> owner, TagKey<T> key) {
              this.owner = owner;
-@@ -174,6 +_,9 @@
+@@ -174,6 +_,10 @@
  
          void bind(List<Holder<T>> contents) {
              this.contents = List.copyOf(contents);
++            // Neo: invoke invalidation listeners when tags rebind
 +            for (Runnable runnable : this.invalidationCallbacks) {
-+                runnable.run(); // FORGE: invalidate listeners when tags rebind
++                runnable.run();
 +            }
          }
  
          public TagKey<T> key() {
-@@ -217,6 +_,16 @@
+@@ -217,6 +_,18 @@
          @Override
          public boolean canSerializeIn(HolderOwner<T> context) {
              return context.canSerialize(this.owner);
 +        }
 +
++        /// Neo: add an invalidation listener to be notified when the bound tag contents change
 +        @Override
 +        public void addInvalidationListener(Runnable runnable) {
-+            invalidationCallbacks.add(runnable);
++            this.invalidationCallbacks.add(runnable);
 +        }
 +
++        /// Neo: {@return whether this holderset can be immediately resolved to the contents it contains}
 +        @Override
 +        public boolean isImmediatelyResolvable() {
 +            return false;

@@ -1,45 +1,57 @@
 --- a/net/minecraft/world/level/storage/loot/LootContext.java
 +++ b/net/minecraft/world/level/storage/loot/LootContext.java
-@@ -111,14 +_,39 @@
-         }
-     }
- 
-+    // Neo: Keep track of the original loot table ID through modifications
-+    @org.jspecify.annotations.Nullable
+@@ -26,8 +_,17 @@
+     private final RandomSource random;
+     private final HolderGetter.Provider lootDataResolver;
+     private final Set<LootContext.VisitedEntry<?>> visitedElements = Sets.newLinkedHashSet();
++    /// Neo: persists the original loot table ID through modifications
++    @Nullable
 +    private Identifier queriedLootTableId;
-+
-+    private LootContext(LootParams params, RandomSource random, HolderGetter.Provider p_287619_, Identifier queriedLootTableId) {
-+        this(params, random, p_287619_);
-+        this.queriedLootTableId = queriedLootTableId;
+ 
+     private LootContext(LootParams params, RandomSource random, HolderGetter.Provider lootDataResolver) {
++        this(params, random, lootDataResolver, null);
 +    }
 +
++    /// Neo: overload of [#LootContext(LootParams, RandomSource, HolderGetter.Provider)] with the ability to specify the original ID of the loot table being queried
++    private LootContext(LootParams params, RandomSource random, HolderGetter.Provider lootDataResolver, @Nullable Identifier queriedLootTableId) {
++        this.queriedLootTableId = queriedLootTableId;
+         this.params = params;
+         this.random = random;
+         this.lootDataResolver = lootDataResolver;
+@@ -73,6 +_,16 @@
+         return this.params.getLevel();
+     }
+ 
 +    public void setQueriedLootTableId(@org.jspecify.annotations.Nullable Identifier queriedLootTableId) {
-+        if (this.queriedLootTableId == null && queriedLootTableId != null) this.queriedLootTableId = queriedLootTableId;
++        if (this.queriedLootTableId == null && queriedLootTableId != null) {
++            this.queriedLootTableId = queriedLootTableId;
++        }
 +    }
 +
 +    public Identifier getQueriedLootTableId() {
-+        return this.queriedLootTableId == null ? net.neoforged.neoforge.common.loot.LootTableIdCondition.UNKNOWN_LOOT_TABLE : this.queriedLootTableId;
++        return java.util.Objects.requireNonNullElse(this.queriedLootTableId, net.neoforged.neoforge.common.loot.LootTableIdCondition.UNKNOWN_LOOT_TABLE);
 +    }
 +
+     public static LootContext.VisitedEntry<LootTable> createVisitedEntry(LootTable table) {
+         return new LootContext.VisitedEntry<>(LootDataType.TABLE, table);
+     }
+@@ -114,6 +_,16 @@
      public static class Builder {
          private final LootParams params;
          private @Nullable RandomSource random;
++        /// Neo: holds the loot table ID for persistence through the copy constructor
 +        @Nullable
-+        private Identifier queriedLootTableId; // Forge: correctly pass around loot table ID with copy constructor
- 
-         public Builder(LootParams params) {
-             this.params = params;
-         }
- 
++        private Identifier queriedLootTableId;
++
++        /// Neo: copy constructor
 +        public Builder(LootContext context) {
 +            this.params = context.params;
 +            this.random = context.random;
 +            this.queriedLootTableId = context.queriedLootTableId;
 +        }
-+
-         public LootContext.Builder withOptionalRandomSeed(long seed) {
-             if (seed != 0L) {
-                 this.random = RandomSource.create(seed);
+ 
+         public Builder(LootParams params) {
+             this.params = params;
 @@ -132,6 +_,11 @@
              return this;
          }
@@ -52,23 +64,23 @@
          public ServerLevel getLevel() {
              return this.params.getLevel();
          }
-@@ -140,7 +_,7 @@
+@@ -140,7 +_,8 @@
              ServerLevel level = this.getLevel();
              MinecraftServer server = level.getServer();
              RandomSource random = Optional.ofNullable(this.random).or(() -> randomSequenceKey.map(server::getRandomSequence)).orElseGet(level::getRandom);
 -            return new LootContext(this.params, random, server.reloadableRegistries().lookup());
-+            return new LootContext(this.params, random, server.reloadableRegistries().lookup(), queriedLootTableId);
++            // Neo: add queried loot table ID
++            return new LootContext(this.params, random, server.reloadableRegistries().lookup(), this.queriedLootTableId);
          }
      }
  
-@@ -164,6 +_,12 @@
+@@ -164,6 +_,11 @@
          @Override
          public ContextKey<? extends Entity> contextParam() {
              return this.param;
 +        }
 +
-+        // Forge: This method is patched in to expose the same name used in getByName so that ContextNbtProvider#forEntity serializes it properly
-+        // TODO 1.21.11: To be consistent with getParam() being renamed to contextParam(), consider renaming to name()
++        /// Neo: {@return the name of this target}
 +        public String getName() {
 +            return this.name;
          }

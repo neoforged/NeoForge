@@ -1,19 +1,21 @@
 --- a/net/minecraft/CrashReportCategory.java
 +++ b/net/minecraft/CrashReportCategory.java
-@@ -138,8 +_,10 @@
+@@ -138,8 +_,12 @@
              return 0;
          }
  
 -        this.stackTrace = new StackTraceElement[full.length - 3 - nestedOffset];
 -        System.arraycopy(full, 3 + nestedOffset, this.stackTrace, 0, this.stackTrace.length);
 +        int len = full.length - 3 - nestedOffset;
-+        if (len <= 0) len = full.length;
++        if (len <= 0) {
++            len = full.length;
++        }
 +        this.stackTrace = new StackTraceElement[len];
 +        System.arraycopy(full, full.length - len, this.stackTrace, 0, this.stackTrace.length);
          return this.stackTrace.length;
      }
  
-@@ -181,16 +_,16 @@
+@@ -181,16 +_,17 @@
  
          if (this.stackTrace.length > 0) {
              builder.append("\nStacktrace:");
@@ -30,6 +32,7 @@
          return this.stackTrace;
 +    }
 +
++    /// Neo: overwrite the captured stack trace with the given one
 +    public void setStackTrace(StackTraceElement[] stackTrace) {
 +        this.stackTrace = stackTrace;
      }

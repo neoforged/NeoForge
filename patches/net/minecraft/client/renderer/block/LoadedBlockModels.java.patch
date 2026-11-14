@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/LoadedBlockModels.java
 +++ b/net/minecraft/client/renderer/block/LoadedBlockModels.java
-@@ -36,14 +_,22 @@
+@@ -36,14 +_,25 @@
          this.playerSkinRenderCache = playerSkinRenderCache;
      }
  
@@ -9,9 +9,10 @@
      public CompletableFuture<Map<BlockState, BlockModel>> bake(
          Function<BlockState, BlockStateModel> bakedBlockStateModels, BlockStateModel missingModel, Executor executor
      ) {
-+        return bake(bakedBlockStateModels, missingModel, executor, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY);
++        return this.bake(bakedBlockStateModels, missingModel, executor, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY);
 +    }
 +
++    /// Neo: overload of [#bake(Function, BlockStateModel, Executor)] providing access to data-driven animations
 +    public CompletableFuture<Map<BlockState, BlockModel>> bake(
 +        Function<BlockState, BlockStateModel> bakedBlockStateModels, BlockStateModel missingModel, Executor executor, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations
 +    ) {
@@ -19,8 +20,9 @@
              () -> {
                  BlockModel wrappedMissingModel = new BlockStateModelWrapper(missingModel, List.of(), IDENTITY);
                  BlockModel.BakingContext context = new BlockModel.BakingContext(
--                    this.entityModelSet, this.sprites, this.playerSkinRenderCache, bakedBlockStateModels, wrappedMissingModel
-+                    this.entityModelSet, this.sprites, this.playerSkinRenderCache, bakedBlockStateModels, wrappedMissingModel, pendingAnimations
+                     this.entityModelSet, this.sprites, this.playerSkinRenderCache, bakedBlockStateModels, wrappedMissingModel
++                    // Neo: provide access to data-driven animations
++                    , pendingAnimations
                  );
                  Builder<BlockState, BlockModel> result = ImmutableMap.builder();
                  this.unbakedModels.forEach((blockState, unbakedModel) -> result.put(blockState, unbakedModel.bake(context, IDENTITY)));

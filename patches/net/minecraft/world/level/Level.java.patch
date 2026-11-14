@@ -9,24 +9,32 @@
      public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceKey.codec(Registries.DIMENSION);
      public static final ResourceKey<Level> OVERWORLD = ResourceKey.create(Registries.DIMENSION, Identifier.withDefaultNamespace("overworld"));
      public static final ResourceKey<Level> NETHER = ResourceKey.create(Registries.DIMENSION, Identifier.withDefaultNamespace("the_nether"));
-@@ -132,6 +_,11 @@
+@@ -132,6 +_,19 @@
      private final DamageSources damageSources;
      private final PalettedContainerFactory palettedContainerFactory;
      private long subTickCount;
++    /// Neo: holds the order in which neighbor updates should be triggered
++    private static final Direction[] NEIGHBOR_UPDATE_LIST = java.util.stream.Stream.concat(Direction.Plane.HORIZONTAL.stream(), Direction.Plane.VERTICAL.stream()).toArray(Direction[]::new);
++    /// Neo: indicates whether block snapshots are currently being rolled back
 +    public boolean restoringBlockSnapshots = false;
++    /// Neo: indicates whether block snapshots are currently being captured
 +    public boolean captureBlockSnapshots = false;
++    /// Neo: holds the captured block snapshots
 +    public java.util.ArrayList<net.neoforged.neoforge.common.util.BlockSnapshot> capturedBlockSnapshots = new java.util.ArrayList<>();
-+    private final java.util.ArrayList<BlockEntity> freshBlockEntities = new java.util.ArrayList<>();
-+    private final java.util.ArrayList<BlockEntity> pendingFreshBlockEntities = new java.util.ArrayList<>();
++    /// Neo: holds all BEs which were added and haven't had [BlockEntity#onLoad()] called yet
++    private final List<BlockEntity> freshBlockEntities = new java.util.ArrayList<>();
++    /// Neo: holds all BEs which were added during BE ticking and haven't had [BlockEntity#onLoad()] called yet
++    private final List<BlockEntity> pendingFreshBlockEntities = new java.util.ArrayList<>();
++    private double maxEntityRadius = 2.0D;
  
      protected Level(
          WritableLevelData levelData,
-@@ -226,11 +_,30 @@
+@@ -226,11 +_,33 @@
  
          LevelChunk chunk = this.getChunkAt(pos);
          Block block = blockState.getBlock();
 +
-+        pos = pos.immutable(); // Forge - prevent mutable BlockPos leaks
++        pos = pos.immutable(); // Neo - prevent mutable BlockPos leaks
 +        net.neoforged.neoforge.common.util.BlockSnapshot blockSnapshot = null;
 +        if (this.captureBlockSnapshots && !this.isClientSide) {
 +            blockSnapshot = net.neoforged.neoforge.common.util.BlockSnapshot.create(this.dimension, this, pos, updateFlags);
@@ -35,27 +43,31 @@
 +
          BlockState oldState = chunk.setBlockState(pos, blockState, updateFlags);
          if (oldState == null) {
-+            if (blockSnapshot != null) this.capturedBlockSnapshots.remove(blockSnapshot);
++            if (blockSnapshot != null) {
++                this.capturedBlockSnapshots.remove(blockSnapshot);
++            }
              return false;
          }
  
-+        if (blockSnapshot == null) { // Don't notify clients or update physics while capturing blockstates
++        // Neo: Don't notify clients or update physics while capturing blockstates
++        if (blockSnapshot == null) {
 +            this.markAndNotifyBlock(pos, chunk, oldState, blockState, updateFlags, updateLimit);
 +        }
 +
 +        return true;
 +    }
 +
-+    // Split off from original setBlockState(BlockPos, BlockState, int, int) method in order to directly send client and physic updates
++    /// Neo: split off from [#setBlock(BlockPos, BlockState, int, int)] in order to directly send client and physic updates
 +    public void markAndNotifyBlock(BlockPos pos, @Nullable LevelChunk chunk, BlockState oldState, BlockState blockState, int updateFlags, int updateLimit) {
 +        Block block = blockState.getBlock();
          BlockState newState = this.getBlockState(pos);
          if (newState == blockState) {
              if (oldState != newState) {
-@@ -258,9 +_,8 @@
+@@ -258,9 +_,9 @@
              }
  
              this.updatePOIOnBlockStateChange(pos, oldState, newState);
++            // Neo: notify the block that its state changed
 +            blockState.onBlockStateChange(this, pos, oldState);
          }
 -
@@ -71,10 +83,11 @@
      }
  
      public void updateNeighborsAtExceptFromFacing(BlockPos pos, Block blockObject, Direction skipDirection, @Nullable Orientation orientation) {
-@@ -455,8 +_,30 @@
+@@ -455,8 +_,33 @@
          (this.tickingBlockEntities ? this.pendingBlockEntityTickers : this.blockEntityTickers).add(ticker);
      }
  
++    /// Neo: capture the given newly added BEs to call [BlockEntity#onLoad()] on
 +    public void addFreshBlockEntities(java.util.Collection<BlockEntity> beList) {
 +        if (this.tickingBlockEntities) {
 +            this.pendingFreshBlockEntities.addAll(beList);
@@ -84,11 +97,13 @@
 +    }
 +
      public void tickBlockEntities() {
++        // Neo: transfer new BEs added during the last tick while ticking BEs
 +        if (!this.pendingFreshBlockEntities.isEmpty()) {
 +            this.freshBlockEntities.addAll(this.pendingFreshBlockEntities);
 +            this.pendingFreshBlockEntities.clear();
 +        }
          this.tickingBlockEntities = true;
++        // Neo: call onLoad() on newly added BEs
 +        if (!this.freshBlockEntities.isEmpty()) {
 +            this.freshBlockEntities.forEach(blockEntity -> {
 +                // Only call onLoad() on BEs which have been fully added to the level, prevents crashes with BEs that
@@ -102,7 +117,7 @@
          if (!this.pendingBlockEntityTickers.isEmpty()) {
              this.blockEntityTickers.addAll(this.pendingBlockEntityTickers);
              this.pendingBlockEntityTickers.clear();
-@@ -479,12 +_,19 @@
+@@ -479,12 +_,20 @@
  
      public <T extends Entity> void guardEntityTick(Consumer<T> tick, T entity) {
          try {
@@ -115,27 +130,30 @@
 +            if (net.neoforged.neoforge.common.config.NeoForgeSyncedConfig.INSTANCE.removeErroringEntities.get()) {
 +                com.mojang.logging.LogUtils.getLogger().error("{}", report.getFriendlyReport(net.minecraft.ReportType.CRASH));
 +                entity.discard();
-+            } else
++                return;
++            }
              throw new ReportedException(report);
 +        } finally {
 +            net.neoforged.neoforge.server.timings.TimeTracker.ENTITY_UPDATE.trackEnd(entity);
          }
      }
  
-@@ -630,6 +_,7 @@
+@@ -630,6 +_,8 @@
          if (this.isInValidBounds(pos)) {
              this.getChunkAt(pos).removeBlockEntity(pos);
          }
-+        this.updateNeighbourForOutputSignal(pos, getBlockState(pos).getBlock()); //Notify neighbors of changes
++        // Neo: Notify neighbors of changes
++        this.updateNeighbourForOutputSignal(pos, this.getBlockState(pos).getBlock());
      }
  
      public boolean isLoaded(BlockPos pos) {
-@@ -695,8 +_,8 @@
+@@ -695,8 +_,9 @@
              }
          });
  
 -        for (EnderDragonPart dragonPart : this.dragonParts()) {
 -            if (dragonPart != except && dragonPart.parentMob != except && selector.test(dragonPart) && bb.intersects(dragonPart.getBoundingBox())) {
++        // Neo: widen generic to support non-dragon multipart entities
 +        for (net.neoforged.neoforge.entity.PartEntity<?> dragonPart : this.dragonParts()) {
 +            if (dragonPart != except && dragonPart.getParent() != except && selector.test(dragonPart) && bb.intersects(dragonPart.getBoundingBox())) {
                  output.add(dragonPart);
@@ -145,14 +163,15 @@
                  }
              }
  
-+            if (false)
++            if (false) // Neo: disable dragon-specific handling, part entities are handled below
              if (e instanceof EnderDragon enderDragon) {
                  for (EnderDragonPart subEntity : enderDragon.getSubEntities()) {
                      T castSubPart = type.tryCast(subEntity);
-@@ -739,6 +_,15 @@
+@@ -739,6 +_,16 @@
  
              return Continuation.CONTINUE;
          });
++        // Neo: handle part entities
 +        for (net.neoforged.neoforge.entity.PartEntity<?> p : this.dragonParts()) {
 +            T t = type.tryCast(p);
 +            if (t != null && t.getBoundingBox().intersects(bb) && selector.test(t)) {
@@ -169,14 +188,15 @@
                  return Continuation.ABORT;
              }
  
-+            if (false)
++            if (false) // Neo: disable dragon-specific handling, part entities are handled below
              if (e instanceof EnderDragon enderDragon) {
                  for (EnderDragonPart subEntity : enderDragon.getSubEntities()) {
                      T castSubPart = type.tryCast(subEntity);
-@@ -762,6 +_,13 @@
+@@ -762,6 +_,14 @@
  
              return Continuation.CONTINUE;
          });
++        // Neo: handle part entities
 +        for (net.neoforged.neoforge.entity.PartEntity<?> p : this.dragonParts()) {
 +            T t = type.tryCast(p);
 +            if (t != null && t.getBoundingBox().intersects(bb) && selector.test(t)) {
@@ -187,21 +207,19 @@
          return hasEntities.isTrue();
      }
  
-@@ -783,7 +_,7 @@
+@@ -783,7 +_,8 @@
          return this.getPlayerByUUID(uuid);
      }
  
 -    public abstract Collection<EnderDragonPart> dragonParts();
++    // Neo: widen generic to support non-dragon part entities
 +    public abstract Collection<? extends net.neoforged.neoforge.entity.PartEntity<?>> dragonParts();
  
      public void blockEntityChanged(BlockPos pos) {
          if (this.hasChunkAt(pos)) {
-@@ -915,17 +_,20 @@
- 
+@@ -916,16 +_,20 @@
      public abstract Scoreboard getScoreboard();
  
-+    private static final Direction[] NEIGHBOR_UPDATE_LIST = java.util.stream.Stream.concat(Direction.Plane.HORIZONTAL.stream(), Direction.Plane.VERTICAL.stream()).toArray(Direction[]::new);
-+
      public void updateNeighbourForOutputSignal(BlockPos pos, Block changedBlock) {
 -        for (Direction direction : Direction.Plane.HORIZONTAL) {
 +        // Neo: send update to vertical directions as well, after horizontal ones
@@ -209,11 +227,11 @@
              BlockPos relativePos = pos.relative(direction);
              if (this.hasChunkAt(relativePos)) {
                  BlockState state = this.getBlockState(relativePos);
--                if (state.is(Blocks.COMPARATOR)) {
--                    this.neighborChanged(state, relativePos, changedBlock, null, false);
--                } else if (state.isRedstoneConductor(this, relativePos)) {
++                // Neo: allow any block to receive comparator input updates
 +                state.onNeighborChange(this, relativePos, pos);
-+                if (state.isRedstoneConductor(this, relativePos)) {
+                 if (state.is(Blocks.COMPARATOR)) {
+                     this.neighborChanged(state, relativePos, changedBlock, null, false);
+                 } else if (state.isRedstoneConductor(this, relativePos)) {
                      relativePos = relativePos.relative(direction);
                      state = this.getBlockState(relativePos);
 -                    if (state.is(Blocks.COMPARATOR)) {
@@ -222,22 +240,23 @@
                          this.neighborChanged(state, relativePos, changedBlock, null, false);
                      }
                  }
-@@ -988,6 +_,18 @@
-     @Override
-     public BiomeManager getBiomeManager() {
-         return this.biomeManager;
+@@ -1020,6 +_,19 @@
+ 
+     public PalettedContainerFactory palettedContainerFactory() {
+         return this.palettedContainerFactory;
 +    }
 +
-+    private double maxEntityRadius = 2.0D;
 +    @Override
 +    public double getMaxEntityRadius() {
-+        return maxEntityRadius;
++        return this.maxEntityRadius;
 +    }
++
 +    @Override
 +    public double increaseMaxEntityRadius(double value) {
-+        if (value > maxEntityRadius)
-+            maxEntityRadius = value;
-+        return maxEntityRadius;
++        if (value > this.maxEntityRadius) {
++            this.maxEntityRadius = value;
++        }
++        return this.maxEntityRadius;
      }
  
-     public final boolean isDebug() {
+     public enum ExplosionInteraction implements StringRepresentable {

@@ -4,35 +4,38 @@
  
                      String sourceId = resource.sourcePackId();
                      parsedContents.entries().forEach(ex -> tagContents.add(new TagLoader.EntryWithSource(ex, sourceId)));
-+                    // Make all removal entries optional at runtime to avoid them creating intrusive holders - see NeoForge#2319
++                    // Neo: Make all removal entries optional at runtime to avoid them creating intrusive holders - see NeoForge#2319
 +                    parsedContents.remove().forEach(e -> tagContents.add(new TagLoader.EntryWithSource(e.withRequired(false), sourceId, true)));
                  } catch (Exception e) {
                      LOGGER.error("Couldn't read tag list {} from {} in data pack {}", id, location, resource.sourcePackId(), e);
                  }
-@@ -78,7 +_,7 @@
+@@ -78,7 +_,8 @@
          List<TagLoader.EntryWithSource> missingElements = new ArrayList<>();
  
          for (TagLoader.EntryWithSource entry : entries) {
 -            if (!entry.entry().build(lookup, values::add)) {
++            // Neo: add support for tag removals
 +            if (!entry.entry().build(lookup, entry.remove() ? values::remove : values::add)) {
                  missingElements.add(entry);
              }
          }
-@@ -107,7 +_,7 @@
+@@ -107,7 +_,8 @@
                      missing -> LOGGER.error(
                          "Couldn't load tag {} as it is missing following references: {}",
                          id,
 -                        missing.stream().map(Objects::toString).collect(Collectors.joining(", "))
++                        // Neo: improve formatting of log output
 +                        missing.stream().map(Objects::toString).collect(Collectors.joining("\n\t", "\n\t", ""))
                      )
                  )
                  .ifRight(tag -> newTags.put(id, (List<T>)tag))
-@@ -184,7 +_,11 @@
+@@ -184,7 +_,12 @@
          }
      }
  
 -    public record EntryWithSource(TagEntry entry, String source) {
-+    public static record EntryWithSource(TagEntry entry, String source, boolean remove) {
++    /// @param remove Neo: indicates whether this entry is for a removal
++    public record EntryWithSource(TagEntry entry, String source, boolean remove) {
 +        public EntryWithSource(TagEntry entry, String source) {
 +            this(entry, source, false);
 +        }

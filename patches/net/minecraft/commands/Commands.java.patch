@@ -25,17 +25,18 @@
          Profiler.get().push(() -> "/" + commandString);
          ContextChain<CommandSourceStack> commandChain = finishParsing(command, commandString, sender);
  
-@@ -418,10 +_,12 @@
+@@ -418,10 +_,13 @@
          Map<CommandNode<CommandSourceStack>, CommandNode<CommandSourceStack>> playerCommands = new HashMap<>();
          RootCommandNode<CommandSourceStack> root = new RootCommandNode<>();
          playerCommands.put(this.dispatcher.getRoot(), root);
 -        fillUsableCommands(this.dispatcher.getRoot(), root, player.createCommandSourceStack(), playerCommands);
-+        // Neo: Use our own command node merging method to handle redirect nodes properly, see issue Forge-7551
++        // Neo: Use our own command node merging method to handle redirect nodes properly, see issue MinecraftForge#7551
 +        net.neoforged.neoforge.server.command.CommandHelper.mergeCommandNode(this.dispatcher.getRoot(), root, playerCommands, player.createCommandSourceStack(), ctx -> 0, suggest -> SuggestionProviders.cast((com.mojang.brigadier.suggestion.SuggestionProvider<SharedSuggestionProvider>) (com.mojang.brigadier.suggestion.SuggestionProvider<?>) suggest));
          player.connection.send(new ClientboundCommandsPacket(root, COMMAND_NODE_INSPECTOR));
      }
  
-+    // Neo: Replaced by our own command merging logic
++    /// @deprecated Neo: Replaced by our own command merging logic
++    @Deprecated
      private static <S> void fillUsableCommands(CommandNode<S> source, CommandNode<S> target, S commandFilter, Map<CommandNode<S>, CommandNode<S>> converted) {
          for (CommandNode<S> child : source.getChildren()) {
              if (child.canUse(commandFilter)) {

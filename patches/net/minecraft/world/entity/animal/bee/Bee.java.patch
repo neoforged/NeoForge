@@ -1,30 +1,32 @@
 --- a/net/minecraft/world/entity/animal/bee/Bee.java
 +++ b/net/minecraft/world/entity/animal/bee/Bee.java
-@@ -472,7 +_,7 @@
+@@ -472,7 +_,8 @@
          if (this.hivePos == null) {
              return null;
          } else {
 -            return this.isTooFarAway(this.hivePos) ? null : this.level().getBlockEntity(this.hivePos, BlockEntityTypes.BEEHIVE).orElse(null);
++            // Neo: add support for modded beehive BEs
 +            return this.isTooFarAway(this.hivePos) ? null : this.level().getBlockEntity(this.hivePos) instanceof BeehiveBlockEntity hive ? hive : null;
          }
      }
  
-@@ -638,8 +_,18 @@
+@@ -637,8 +_,19 @@
+         return super.hurtServer(level, source, damage);
      }
  
++    /// @deprecated Neo: use [#jumpInFluid] instead
++    @Deprecated
      @Override
-+    @Deprecated // FORGE: use jumpInFluid instead
      protected void jumpInLiquid(TagKey<Fluid> type) {
 +        this.jumpInLiquidInternal();
-+    }
-+
-+    private void jumpInLiquidInternal() {
-         this.setDeltaMovement(this.getDeltaMovement().add(0.0, 0.01, 0.0));
 +    }
 +
 +    @Override
 +    public void jumpInFluid(net.neoforged.neoforge.fluids.FluidType type) {
 +        this.jumpInLiquidInternal();
++    }
++
++    private void jumpInLiquidInternal() {
+         this.setDeltaMovement(this.getDeltaMovement().add(0.0, 0.01, 0.0));
      }
  
-     @Override

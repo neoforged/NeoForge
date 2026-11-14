@@ -1,11 +1,12 @@
 --- a/net/minecraft/client/ToggleKeyMapping.java
 +++ b/net/minecraft/client/ToggleKeyMapping.java
-@@ -29,12 +_,17 @@
+@@ -29,12 +_,19 @@
      @Override
      public void setDown(boolean down) {
          if (this.needsToggle.getAsBoolean()) {
 -            if (down) {
-+            if (down && isConflictContextAndModifierActive()) {
++            // Neo: take conflict context into account
++            if (down && this.isConflictContextAndModifierActive()) {
                  super.setDown(!this.isDown());
              }
          } else {
@@ -15,7 +16,8 @@
 +
 +    @Override
 +    public boolean isDown() {
-+        return this.isDown && (isConflictContextAndModifierActive() || needsToggle.getAsBoolean());
++        // Neo: take conflict context into account
++        return this.isDown && (this.isConflictContextAndModifierActive() || this.needsToggle.getAsBoolean());
      }
  
      @Override

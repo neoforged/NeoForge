@@ -6,12 +6,12 @@
                  level.gameEvent(null, GameEvent.BLOCK_PLACE, targetPos);
 -            } else if (CampfireBlock.canLight(target) || CandleBlock.canLight(target) || CandleCakeBlock.canLight(target)) {
 -                level.setBlockAndUpdate(targetPos, target.setValue(BlockStateProperties.LIT, true));
-+            } else if (target.getToolModifiedState(new net.minecraft.world.item.context.UseOnContext(level, null, net.minecraft.world.InteractionHand.MAIN_HAND, dispensed, new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(targetPos), facing.getOpposite(), targetPos, false)), net.neoforged.neoforge.common.ItemAbilities.FIRESTARTER_LIGHT, false) instanceof BlockState blockstate2) {
-+                level.setBlockAndUpdate(targetPos, blockstate2);
++            } else if (target.getToolModifiedState(new net.minecraft.world.item.context.UseOnContext(level, null, net.minecraft.world.InteractionHand.MAIN_HAND, dispensed, new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(targetPos), facing.getOpposite(), targetPos, false)), net.neoforged.neoforge.common.ItemAbilities.FIRESTARTER_LIGHT, false) instanceof BlockState modifiedState) {
++                level.setBlockAndUpdate(targetPos, modifiedState);
                  level.gameEvent(null, GameEvent.BLOCK_CHANGE, targetPos);
 -            } else if (target.getBlock() instanceof TntBlock) {
 -                if (TntBlock.prime(level, targetPos, null, dispensed)) {
-+            } else if (target.isFlammable(level, targetPos, source.state().getValue(DispenserBlock.FACING).getOpposite())) {
++            } else if (target.isFlammable(level, targetPos, source.state().getValue(DispenserBlock.FACING).getOpposite())) { // Neo: allow any flammable block to be triggered
 +                if (target.onCaughtFire(level, targetPos, source.state().getValue(DispenserBlock.FACING).getOpposite(), null, dispensed)) {
 +                    if (target.getBlock() instanceof TntBlock)
                      level.removeBlock(targetPos, false);

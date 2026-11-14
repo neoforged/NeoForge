@@ -9,12 +9,13 @@
                  this.setUnderwaterMovement();
              } else if (!colliding) {
                  this.applyGravity();
-@@ -134,7 +_,8 @@
+@@ -134,7 +_,9 @@
              this.applyEffectsFromBlocks();
              float friction = this.getAirDrag();
              if (this.onGround()) {
 -                friction *= this.level().getBlockState(this.getBlockPosBelowThatAffectsMyMovement()).getBlock().getFriction();
 +                BlockPos pos = this.getBlockPosBelowThatAffectsMyMovement();
++                // Neo: use level-sensitive friction getter
 +                friction *= this.level().getBlockState(pos).getFriction(this.level(), pos, this);
              }
  
@@ -28,19 +29,22 @@
              if (nearestPlayer != null && !nearestPlayer.isSpectator() && !nearestPlayer.isDeadOrDying()) {
                  this.followingPlayer = nearestPlayer;
              } else {
-@@ -280,6 +_,7 @@
+@@ -280,6 +_,9 @@
      public void playerTouch(Player player) {
          if (player instanceof ServerPlayer serverPlayer) {
              if (player.takeXpDelay == 0) {
-+                if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.PlayerXpEvent.PickupXp(player, this)).isCanceled()) return;
++                if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.PlayerXpEvent.PickupXp(player, this)).isCanceled()) {
++                    return;
++                }
                  player.takeXpDelay = 2;
                  player.take(this, 1);
                  int remaining = this.repairPlayerItems(serverPlayer, this.getValue());
-@@ -299,7 +_,7 @@
+@@ -299,7 +_,8 @@
          Optional<EnchantedItemInUse> selected = EnchantmentHelper.getRandomItemWith(EnchantmentEffectComponents.REPAIR_WITH_XP, player, ItemStack::isDamaged);
          if (selected.isPresent()) {
              ItemStack itemStack = selected.get().itemStack();
 -            int toRepairFromXpAmount = EnchantmentHelper.modifyDurabilityToRepairFromXp(player.level(), itemStack, amount);
++            // Neo: let the item decide how much mending affects it
 +            int toRepairFromXpAmount = EnchantmentHelper.modifyDurabilityToRepairFromXp(player.level(), itemStack, (int) (amount * itemStack.getXpRepairRatio()));
              int repair = Math.min(toRepairFromXpAmount, itemStack.getDamageValue());
              itemStack.setDamageValue(itemStack.getDamageValue() - repair);

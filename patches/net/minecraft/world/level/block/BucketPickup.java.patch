@@ -1,12 +1,10 @@
 --- a/net/minecraft/world/level/block/BucketPickup.java
 +++ b/net/minecraft/world/level/block/BucketPickup.java
-@@ -14,5 +_,9 @@
+@@ -14,5 +_,7 @@
  public interface BucketPickup extends IBucketPickupExtension {
      ItemStack pickupBlock(@Nullable LivingEntity user, LevelAccessor level, BlockPos pos, BlockState state);
  
-+    /**
-+     * Neo: use state sensitive variant instead.
-+     */
++    /// @deprecated Neo: use [#getPickupSound(BlockState)] instead
 +    @Deprecated
      Optional<SoundEvent> getPickupSound();
  }

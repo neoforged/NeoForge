@@ -1,18 +1,17 @@
 --- a/net/minecraft/client/resources/model/cuboid/CuboidModelElement.java
 +++ b/net/minecraft/client/resources/model/cuboid/CuboidModelElement.java
-@@ -26,12 +_,25 @@
-     Map<Direction, CuboidFace> faces,
+@@ -27,11 +_,25 @@
      @Nullable CuboidRotation rotation,
      @Nullable Direction shadeDirectionOverride,
--    int lightEmission
-+    int lightEmission,
-+    net.neoforged.neoforge.client.model.ExtraFaceData faceData
+     int lightEmission
++    , net.neoforged.neoforge.client.model.ExtraFaceData faceData
  ) {
      private static final boolean DEFAULT_RESCALE = false;
      private static final float MIN_EXTENT = -16.0F;
      private static final float MAX_EXTENT = 32.0F;
  
 +    public CuboidModelElement {
++        // Neo: make the faces aware of the element containing them for ExtraFaceData inheritance
 +        faces.values().forEach(face -> face.parent().setValue(this));
 +    }
 +

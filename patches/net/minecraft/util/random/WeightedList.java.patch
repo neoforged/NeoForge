@@ -1,43 +1,50 @@
 --- a/net/minecraft/util/random/WeightedList.java
 +++ b/net/minecraft/util/random/WeightedList.java
-@@ -154,7 +_,7 @@
+@@ -154,7 +_,8 @@
      }
  
      public static class Builder<E> {
 -        private final ImmutableList.Builder<Weighted<E>> result = ImmutableList.builder();
++        // Neo: use ArrayList to allow removals
 +        private final List<Weighted<E>> result = new java.util.ArrayList<>();
  
          public WeightedList.Builder<E> add(E item) {
              return this.add(item, 1);
-@@ -170,8 +_,37 @@
+@@ -170,8 +_,43 @@
              return this;
          }
  
++        /// Neo: add the given weighted value
 +        public WeightedList.Builder<E> add(Weighted<E> value) {
 +            this.result.add(value);
 +            return this;
 +        }
 +
++        /// Neo: add the given weighted values
 +        public WeightedList.Builder<E> addAll(java.util.Collection<Weighted<E>> values) {
 +            this.result.addAll(values);
 +            return this;
 +        }
 +
++        /// Neo: remove the given weighted value
 +        public WeightedList.Builder<E> remove(Weighted<E> value) {
 +            this.result.remove(value);
 +            return this;
 +        }
 +
++        /// Neo: remove the given value
 +        public WeightedList.Builder<E> remove(E value) {
 +            this.result.removeIf(weighted -> weighted.value().equals(value));
 +            return this;
 +        }
 +
++        /// Neo: remove values matching the given predicate
 +        public WeightedList.Builder<E> removeIf(java.util.function.Predicate<Weighted<E>> filter) {
 +            this.result.removeIf(filter);
 +            return this;
 +        }
 +
++        /// Neo: {@return an unmodifiable view of the backing list}
 +        public List<Weighted<E>> getList() {
 +            return java.util.Collections.unmodifiableList(this.result);
 +        }

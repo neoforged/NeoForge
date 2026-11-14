@@ -1,12 +1,13 @@
 --- a/net/minecraft/client/particle/TerrainParticle.java
 +++ b/net/minecraft/client/particle/TerrainParticle.java
-@@ -69,12 +_,19 @@
+@@ -69,12 +_,21 @@
          return this.sprite.getV((this.vo + 1.0F) / 4.0F);
      }
  
++    /// Neo: update the sprite with level-awareness if the exact position is available
 +    public TerrainParticle updateSprite(BlockState state, @Nullable BlockPos pos) {
-+        if (pos != null) { // There are cases where we are not able to obtain the correct source pos, and need to fallback to the non-model data version
-+            this.setSprite(Minecraft.getInstance().getModelManager().getBlockStateModelSet().getParticleMaterial(state, level, pos).sprite());
++        if (pos != null) { // There are cases where we are not able to obtain the correct source pos, and need to fall back to the non-model data version
++            this.setSprite(Minecraft.getInstance().getModelManager().getBlockStateModelSet().getParticleMaterial(state, this.level, pos).sprite());
 +        }
 +        return this;
 +    }
@@ -17,6 +18,7 @@
          BlockState state = options.getState();
          return !state.isAir() && !state.is(Blocks.MOVING_PISTON) && state.shouldSpawnTerrainParticles()
 -            ? new TerrainParticle(level, x, y, z, xAux, yAux, zAux, state)
++            // Neo: update the sprite with level-awareness if possible
 +            ? new TerrainParticle(level, x, y, z, xAux, yAux, zAux, state).updateSprite(state, options.getPos())
              : null;
      }

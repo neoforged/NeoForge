@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/Ingredient.java
 +++ b/net/minecraft/world/item/crafting/Ingredient.java
-@@ -23,18 +_,21 @@
+@@ -23,18 +_,22 @@
  import net.minecraft.world.level.ItemLike;
  
  public final class Ingredient implements Predicate<ItemStack>, StackedContents.IngredientInfo<Holder<Item>> {
@@ -14,7 +14,7 @@
              ingredient -> ingredient.size() == 0 ? Optional.empty() : Optional.of(new Ingredient((HolderSet<Item>)ingredient)),
 -            ingredient -> ingredient.<HolderSet<Item>>map(i -> i.values).orElse(HolderSet.empty())
 -        );
-+            ingredient -> ingredient.map(i -> i.getValuesForSync()).orElse(HolderSet.direct())
++            ingredient -> ingredient.map(Ingredient::getValuesForSync).orElse(HolderSet.empty())
 +        ));
      public static final Codec<HolderSet<Item>> NON_AIR_HOLDER_SET_CODEC = HolderSetCodec.create(Registries.ITEM, Item.CODEC, false);
 -    public static final Codec<Ingredient> CODEC = ExtraCodecs.nonEmptyHolderSet(NON_AIR_HOLDER_SET_CODEC).xmap(Ingredient::new, i -> i.values);
@@ -24,11 +24,12 @@
 +    private java.util.@org.jspecify.annotations.Nullable List<Holder<Item>> customIngredientValues;
  
      private Ingredient(HolderSet<Item> values) {
-+        if (values.isImmediatelyResolvable())//Neo: Skip validating holderset contents for holdersets if they are not immediately resolvable
++        //Neo: Skip validating holderset contents for holdersets if they are not immediately resolvable
++        if (values.isImmediatelyResolvable())
          values.unwrap().ifRight(directValues -> {
              if (directValues.isEmpty()) {
                  throw new UnsupportedOperationException("Ingredients can't be empty");
-@@ -47,35 +_,95 @@
+@@ -47,35 +_,101 @@
          this.values = values;
      }
  
@@ -43,20 +44,23 @@
  
      @Deprecated
      public Stream<Holder<Item>> items() {
++        // Neo: defer to custom ingredient if present
 +        if (this.customIngredient != null) {
-+            return updateCustomIngredientValues().stream();
++            return this.updateCustomIngredientValues().stream();
 +        }
          return this.values.stream();
      }
  
      public boolean isEmpty() {
++        // Neo: defer to custom ingredient if present
 +        if (this.customIngredient != null) {
-+            return updateCustomIngredientValues().isEmpty();
++            return this.updateCustomIngredientValues().isEmpty();
 +        }
          return this.values.size() == 0;
      }
  
      public boolean test(ItemStack input) {
++        // Neo: defer to custom ingredient if present
 +        if (this.customIngredient != null) {
 +            return this.customIngredient.test(input);
 +        }
@@ -64,8 +68,9 @@
      }
  
      public boolean acceptsItem(Holder<Item> item) {
++        // Neo: defer to custom ingredient if present
 +        if (this.customIngredient != null) {
-+            return updateCustomIngredientValues().contains(item);
++            return this.updateCustomIngredientValues().contains(item);
 +        }
          return this.values.contains(item);
      }
@@ -73,51 +78,53 @@
      @Override
      public boolean equals(Object o) {
 -        return o instanceof Ingredient other ? Objects.equals(this.values, other.values) : false;
-+        return o instanceof Ingredient ingredient ? java.util.Objects.equals(this.customIngredient, ingredient.customIngredient) && Objects.equals(this.values, ingredient.values) : false;
++        // Neo: check custom ingredient
++        return o instanceof Ingredient other ? Objects.equals(this.customIngredient, other.customIngredient) && Objects.equals(this.values, other.values) : false;
      }
  
      @Override
      public int hashCode() {
 -        return Objects.hashCode(this.values);
++        // Neo: defer to custom ingredient if present
 +        if (this.customIngredient != null) {
 +            return this.customIngredient.hashCode();
 +        }
 +        return this.values.hashCode();
 +    }
 +
-+    /**
-+      * Retrieves the underlying values of this ingredient.
-+      * If this is a {@linkplain #isCustom custom ingredient}, an exception is thrown.
-+      */
++    /// Neo: Retrieves the underlying values of this ingredient.
++    /// If this is a [custom ingredient][#isCustom], an exception is thrown.
 +    public HolderSet<Item> getValues() {
-+        if (isCustom()) {
++        if (this.isCustom()) {
 +            throw new IllegalStateException("Cannot retrieve values from custom ingredient!");
 +        }
 +        return this.values;
 +    }
 +
-+    /**
-+     * Retrieves the holder set to use for syncing {@linkplain #isSimple() simple} ingredients
-+     */
++    /// Neo: Retrieves the holder set to use for syncing [simple][#isSimple()] ingredients
 +    private HolderSet<Item> getValuesForSync() {
-+        if (isCustom()) {
++        if (this.isCustom()) {
 +            return HolderSet.direct(this.items().toList());
 +        }
 +        return this.values;
 +    }
 +
++    /// Neo: {@return whether this is a simple ingredient}
 +    public boolean isSimple() {
 +        return this.customIngredient == null || this.customIngredient.isSimple();
 +    }
 +
++    /// Neo: {@return the backing custom ingredient}
 +    public net.neoforged.neoforge.common.crafting.@org.jspecify.annotations.Nullable ICustomIngredient getCustomIngredient() {
 +        return this.customIngredient;
 +    }
 +
++    /// Neo: {@return whether this ingredient is backed by a custom ingredient}
 +    public boolean isCustom() {
 +        return this.customIngredient != null;
 +    }
 +
++    /// Neo: update the custom ingredient values
 +    private java.util.List<Holder<Item>> updateCustomIngredientValues() {
 +        if (this.customIngredientValues == null) {
 +            this.customIngredientValues = this.customIngredient.items().toList();
@@ -126,10 +133,11 @@
      }
  
      public static Ingredient of(ItemLike itemLike) {
-@@ -95,6 +_,9 @@
+@@ -95,6 +_,10 @@
      }
  
      public SlotDisplay display() {
++        // Neo: defer to the custom ingredient if present
 +        if (this.customIngredient != null) {
 +            return this.customIngredient.display();
 +        }

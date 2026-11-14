@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
-@@ -255,7 +_,7 @@
+@@ -255,7 +_,8 @@
  
      @Override
      public boolean shouldRenderFace(Direction direction) {
 -        return Block.shouldRenderFace(this.getBlockState(), this.level.getBlockState(this.getBlockPos().relative(direction)), direction);
++        // Neo: use level-aware occlusion check
 +        return Block.shouldRenderFace(this.level, this.worldPosition, this.getBlockState(), this.level.getBlockState(this.getBlockPos().relative(direction)), direction);
      }
  

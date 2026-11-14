@@ -480,7 +480,7 @@ public interface IBlockExtension {
      * @return true To be notified of changes
      */
     default boolean getWeakChanges(BlockState state, LevelReader level, BlockPos pos) {
-        return false;
+        return state.is(Blocks.COMPARATOR);
     }
 
     /**

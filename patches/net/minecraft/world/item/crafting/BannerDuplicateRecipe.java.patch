@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/item/crafting/BannerDuplicateRecipe.java
 +++ b/net/minecraft/world/item/crafting/BannerDuplicateRecipe.java
-@@ -97,7 +_,7 @@
+@@ -97,7 +_,8 @@
          for (int slot = 0; slot < result.size(); slot++) {
              ItemStack itemStack = input.getItem(slot);
              if (!itemStack.isEmpty()) {
 -                ItemStackTemplate remainder = itemStack.getItem().getCraftingRemainder();
++                // Neo: use stack-sensitive remainder getter
 +                ItemStackTemplate remainder = itemStack.getCraftingRemainder();
                  if (remainder != null) {
                      result.set(slot, remainder.create());

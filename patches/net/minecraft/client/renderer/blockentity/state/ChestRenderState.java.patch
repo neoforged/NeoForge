@@ -1,9 +1,10 @@
 --- a/net/minecraft/client/renderer/blockentity/state/ChestRenderState.java
 +++ b/net/minecraft/client/renderer/blockentity/state/ChestRenderState.java
-@@ -11,6 +_,7 @@
+@@ -11,6 +_,8 @@
      public float open;
      public Direction facing = Direction.SOUTH;
      public ChestRenderState.ChestMaterialType material = ChestRenderState.ChestMaterialType.REGULAR;
++    /// Neo: holds the custom sprite to use for a modded chest instead of vanilla material selection
 +    public net.minecraft.client.resources.model.sprite.@org.jspecify.annotations.Nullable SpriteId customSprite;
  
      public enum ChestMaterialType {

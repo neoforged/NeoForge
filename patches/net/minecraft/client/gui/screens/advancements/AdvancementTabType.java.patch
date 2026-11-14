@@ -1,9 +1,10 @@
 --- a/net/minecraft/client/gui/screens/advancements/AdvancementTabType.java
 +++ b/net/minecraft/client/gui/screens/advancements/AdvancementTabType.java
-@@ -72,6 +_,7 @@
+@@ -72,6 +_,8 @@
  
      private final AdvancementTabType.Sprites selectedSprites;
      private final AdvancementTabType.Sprites unselectedSprites;
++    /// Neo: holds the max amount of tabs that fit on a single page of the advancements screen
 +    public static final int MAX_TABS = java.util.Arrays.stream(values()).mapToInt(AdvancementTabType::getMax).sum();
      private final int width;
      private final int height;

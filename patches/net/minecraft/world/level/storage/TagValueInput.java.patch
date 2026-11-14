@@ -1,27 +1,31 @@
 --- a/net/minecraft/world/level/storage/TagValueInput.java
 +++ b/net/minecraft/world/level/storage/TagValueInput.java
-@@ -116,6 +_,12 @@
+@@ -115,6 +_,15 @@
+         return compound != null ? this.wrapChild(name, compound) : this.context.empty();
      }
  
-     @Override
++    /// Neo: {@return the child of the given name}
++    ///
++    /// The child is wrapped such that it can be read from by a suitable codec if it is present but empty
++    @Override
 +    public ValueInput rawChildOrEmpty(String key) {
 +        CompoundTag compoundtag = this.getOptionalTypedTag(key, CompoundTag.TYPE);
 +        return compoundtag != null ? new TagValueInput(this.problemReporter.forChild(new ProblemReporter.FieldPathElement(key)), this.context, compoundtag) : this.context.empty();
 +    }
 +
-+    @Override
+     @Override
      public Optional<ValueInput.ValueInputList> childrenList(String name) {
          ListTag list = this.getOptionalTypedTag(name, ListTag.TYPE);
-         return list != null ? Optional.of(this.wrapList(name, this.context, list)) : Optional.empty();
-@@ -214,6 +_,11 @@
+@@ -214,6 +_,12 @@
      @Override
      public HolderLookup.Provider lookup() {
          return this.context.lookup();
 +    }
 +
++    /// Neo: {@return the top-level keys of this input}
 +    @Override
 +    public java.util.Set<String> keySet() {
-+        return java.util.Collections.unmodifiableSet(input.keySet());
++        return java.util.Collections.unmodifiableSet(this.input.keySet());
      }
  
      private ValueInput wrapChild(String name, CompoundTag compoundTag) {

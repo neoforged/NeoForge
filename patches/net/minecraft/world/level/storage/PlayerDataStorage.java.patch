@@ -8,13 +8,14 @@
          } catch (Exception ignored) {
              LOGGER.warn("Failed to save player data for {}", player.getPlainTextName());
          }
-@@ -83,5 +_,9 @@
+@@ -83,5 +_,10 @@
              int version = NbtUtils.getDataVersion(tag);
              return DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, tag, version);
          });
 +    }
 +
++    /// Neo: {@return the player data directory}
 +    public File getPlayerDir() {
-+        return playerDir;
++        return this.playerDir;
      }
  }

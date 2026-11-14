@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/level/pathfinder/PathfindingContext.java
 +++ b/net/minecraft/world/level/pathfinder/PathfindingContext.java
-@@ -40,4 +_,8 @@
+@@ -40,4 +_,9 @@
      public BlockPos mobPosition() {
          return this.mobPosition;
      }
 +
++    /// Neo: {@return the position currently being evaluated}
 +    BlockPos currentEvalPos() {
 +        return this.mutablePos;
 +    }

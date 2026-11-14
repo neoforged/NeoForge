@@ -1,8 +1,10 @@
 --- a/net/minecraft/world/entity/monster/skeleton/Stray.java
 +++ b/net/minecraft/world/entity/monster/skeleton/Stray.java
-@@ -24,7 +_,7 @@
+@@ -23,8 +_,9 @@
+         super(type, level);
      }
  
++    // Neo: widen generic to support subclasses
      public static boolean checkStraySpawnRules(
 -        EntityType<Stray> type, ServerLevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
 +        EntityType<? extends Stray> type, ServerLevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random

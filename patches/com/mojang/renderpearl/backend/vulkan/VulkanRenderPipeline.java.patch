@@ -1,9 +1,10 @@
 --- a/com/mojang/renderpearl/backend/vulkan/VulkanRenderPipeline.java
 +++ b/com/mojang/renderpearl/backend/vulkan/VulkanRenderPipeline.java
-@@ -41,6 +_,8 @@
+@@ -41,6 +_,9 @@
  @OnlyIn(Dist.CLIENT)
  public final class VulkanRenderPipeline implements BackendRenderPipeline, Destroyable {
      private final VulkanDevice device;
++    // Neo: store pointers to stencil-aware pipelines
 +    private final long withStencilPipeline;
 +    private final long withDepthStencilPipeline;
      private final long withDepthPipeline;
@@ -27,11 +28,12 @@
          this.withDepthPipeline = withDepthPipeline;
          this.withoutDepthPipeline = withoutDepthPipeline;
          this.pipelineLayout = pipelineLayout;
-@@ -232,6 +_,27 @@
+@@ -232,6 +_,28 @@
                  vkDepthStencilState.depthTestEnable(true);
                  vkDepthStencilState.depthWriteEnable(depthStencilState.writeDepth());
                  vkDepthStencilState.depthCompareOp(VulkanConst.toVk(depthStencilState.depthTest()));
 +
++                // Neo: configure stencil test if applicable
 +                final var stencilTest = depthStencilState.stencilTest();
 +                if (stencilTest != null) {
 +                    vkDepthStencilState.stencilTestEnable(true);
@@ -60,20 +62,22 @@
              device.instance().debug().setObjectName(device.vkDevice(), 19, withDepthPipeline, () -> "Pipeline " + pipelineCreateInfo.name());
              long withoutDepthPipeline;
 -            if (depthStencilState == null) {
-+            if (true) {
++            if (true) { // Neo: always build a no-depth pipeline
                  renderingInfo.depthAttachmentFormat(0);
                  VulkanUtils.crashIfFailure(
                      device,
-@@ -302,8 +_,20 @@
+@@ -302,8 +_,22 @@
                  withoutDepthPipeline = 0L;
              }
  
++            // Neo: build depth and stencil aware pipeline
 +            renderingInfo.depthAttachmentFormat(VK12.VK_FORMAT_D32_SFLOAT_S8_UINT);
 +            renderingInfo.stencilAttachmentFormat(VK12.VK_FORMAT_D32_SFLOAT_S8_UINT);
 +            VulkanUtils.crashIfFailure(device, VK12.vkCreateGraphicsPipelines(device.vkDevice(), 0L, createInfo, null, pointer), "Can't compile pipeline " + pipelineCreateInfo.name());
 +            long withDepthStencilPipeline = pointer.get(0);
 +            device.instance().debug().setObjectName(device.vkDevice(), VK12.VK_OBJECT_TYPE_PIPELINE, withDepthStencilPipeline, () -> "Pipeline " + pipelineCreateInfo.name());
 +
++            // Neo: build stencil-aware pipeline
 +            renderingInfo.depthAttachmentFormat(VK12.VK_FORMAT_UNDEFINED);
 +            renderingInfo.stencilAttachmentFormat(VK12.VK_FORMAT_S8_UINT);
 +            VulkanUtils.crashIfFailure(device, VK12.vkCreateGraphicsPipelines(device.vkDevice(), 0L, createInfo, null, pointer), "Can't compile pipeline " + pipelineCreateInfo.name());
@@ -86,16 +90,18 @@
              );
          }
      }
-@@ -334,6 +_,14 @@
+@@ -334,6 +_,16 @@
  
      public VulkanDevice device() {
          return this.device;
 +    }
 +
++    /// Neo: {@return the stencil-aware pipeline}
 +    public long withStencilPipeline() {
 +        return this.withStencilPipeline;
 +    }
 +
++    /// Neo: {@return the depth and stencil aware pipeline}
 +    public long withDepthStencilPipeline() {
 +        return this.withDepthStencilPipeline;
      }

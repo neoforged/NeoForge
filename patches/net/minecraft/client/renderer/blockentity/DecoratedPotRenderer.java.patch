@@ -1,9 +1,10 @@
 --- a/net/minecraft/client/renderer/blockentity/DecoratedPotRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/DecoratedPotRenderer.java
-@@ -215,6 +_,12 @@
+@@ -215,6 +_,13 @@
          this.bottom.getExtentsForGui(poseStack, output);
      }
  
++    /// Neo: {@return the render bounding box of this BER for frustum culling}
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(DecoratedPotBlockEntity blockEntity) {
 +        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();

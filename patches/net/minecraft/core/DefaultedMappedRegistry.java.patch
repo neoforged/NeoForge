@@ -1,9 +1,11 @@
 --- a/net/minecraft/core/DefaultedMappedRegistry.java
 +++ b/net/minecraft/core/DefaultedMappedRegistry.java
-@@ -38,6 +_,12 @@
+@@ -38,6 +_,14 @@
          return k == null ? this.defaultKey : k;
      }
  
++    /// Neo: {@return the ID of the given element or null if it does not exist in this registry}
++    /// Bypasses the default value.
 +    @Nullable
 +    @Override
 +    public Identifier getKeyOrNull(T element) {

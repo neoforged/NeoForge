@@ -1,16 +1,17 @@
 --- a/net/minecraft/world/level/storage/TagValueOutput.java
 +++ b/net/minecraft/world/level/storage/TagValueOutput.java
-@@ -70,6 +_,13 @@
+@@ -69,6 +_,14 @@
+         }
      }
  
-     @Override
++    /// Neo: copy the contents of the given tag into this output
++    @Override
 +    public void store(CompoundTag tag) {
 +        for (var entry : tag.entrySet()) {
-+            output.put(entry.getKey(), entry.getValue());
++            this.output.put(entry.getKey(), entry.getValue());
 +        }
 +    }
 +
-+    @Override
+     @Override
      public void putBoolean(String name, boolean value) {
          this.output.putBoolean(name, value);
-     }

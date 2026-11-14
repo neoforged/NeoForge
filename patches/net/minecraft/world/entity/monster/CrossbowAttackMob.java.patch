@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/entity/monster/CrossbowAttackMob.java
 +++ b/net/minecraft/world/entity/monster/CrossbowAttackMob.java
-@@ -16,7 +_,7 @@
+@@ -16,7 +_,8 @@
      void onCrossbowAttackPerformed();
  
      default void performCrossbowAttack(LivingEntity body, float crossbowPower) {
 -        InteractionHand hand = ProjectileUtil.getWeaponHoldingHand(body, Items.CROSSBOW);
++        // Neo: add support for modded crossbows
 +        InteractionHand hand = ProjectileUtil.getWeaponHoldingHand(body, item -> item instanceof CrossbowItem);
          ItemStack usedItem = body.getItemInHand(hand);
          if (usedItem.getItem() instanceof CrossbowItem crossbow) {
