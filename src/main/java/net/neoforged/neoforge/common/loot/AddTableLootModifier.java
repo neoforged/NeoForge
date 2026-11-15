@@ -34,6 +34,7 @@ import org.jetbrains.annotations.ApiStatus;
 ///   "table": "namespace:loot_table_id" // subtable to roll loot for to add to the target table(s)
 /// }
 /// ```
+///
 public class AddTableLootModifier extends LootModifier {
     /// @see NeoForgeMod#ADD_TABLE_LOOT_MODIFIER_TYPE
     @ApiStatus.Internal
