@@ -226,7 +226,7 @@
 +
 +    /// Neo: Split off into separate method to wrap in a layer
 +    private void maybeExtractSpectatorTooltip(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-+        // Neo: Note this is originally mutually exclusive with the condition in maybeExtractSelectedItemName()
++        // Neo: Note this is originally mutually exclusive with the condition in maybeExtractSelectedItemName(), which is why we must query both MultiPlayerGameMode and the player
 +        if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR && this.minecraft.player.isSpectator()) {
              this.spectatorGui.extractAction(graphics);
          }
@@ -420,16 +420,15 @@
          graphics.fill(RenderPipelines.GUI, 0, bottom, graphics.guiWidth(), graphics.guiHeight(), -16777216);
          graphics.fill(RenderPipelines.GUI, 0, 0, graphics.guiWidth(), top, -16777216);
          graphics.fill(RenderPipelines.GUI, 0, top, left, bottom, -16777216);
-@@ -1202,7 +_,8 @@
+@@ -1202,6 +_,8 @@
                  this.toolHighlightTimer = 0;
              } else if (this.lastToolHighlight.isEmpty()
                  || !selected.is(this.lastToolHighlight.getItem())
--                || !selected.getHoverName().equals(this.lastToolHighlight.getHoverName())) {
 +                // Neo: allow items to override their item selection display name
-+                || (!selected.getHoverName().equals(this.lastToolHighlight.getHoverName()) || !selected.getHighlightTip(selected.getHoverName()).equals(this.lastToolHighlight.getHighlightTip(this.lastToolHighlight.getHoverName())))) {
++                || !selected.getHighlightTip(selected.getHoverName()).equals(this.lastToolHighlight.getHighlightTip(this.lastToolHighlight.getHoverName()))
+                 || !selected.getHoverName().equals(this.lastToolHighlight.getHoverName())) {
                  this.toolHighlightTimer = (int)(40.0 * this.minecraft.options.notificationDisplayTime().get());
              } else if (this.toolHighlightTimer > 0) {
-                 this.toolHighlightTimer--;
 @@ -1479,7 +_,18 @@
                  type = NORMAL;
              }

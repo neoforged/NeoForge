@@ -15,7 +15,7 @@
 +        // Neo: add argument specifying to which mod(s) GatherDataEvent should be dispatched
 +        OptionSpec<String> modOption = parser.accepts("mod", "A modid to dump").withRequiredArg().withValuesSeparatedBy(",");
 +        // Neo: add argument indicating that output directory should not be suffixed by mod IDs
-+        OptionSpec<Void> flatOption = parser.accepts("flat", "Do not append modid prefix to output directory when generating for multiple mods");
++        OptionSpec<Void> flatOption = parser.accepts("flat", "Do not append the mod ID prefix to output directory when generating for multiple mods");
 +        // Neo: add argument indicating that the uncached data generator should be used
 +        OptionSpec<Void> uncachedOption = parser.accepts("uncached", "Disables cached data generation");
          OptionSet optionSet = parser.parse(args);

@@ -17,12 +17,13 @@
  
      public KeyBindsScreen(Screen lastScreen, Options options) {
          super(lastScreen, options, TITLE);
-@@ -42,7 +_,7 @@
+@@ -42,7 +_,8 @@
      protected void addFooter() {
          this.resetButton = Button.builder(Component.translatable("controls.resetAll"), button -> {
              for (KeyMapping key : this.options.keyMappings) {
 -                key.setKey(key.getDefaultKey());
-+                key.setToDefault(); // Neo: reset to default, including the key modifier
++                // Neo: reset to default, including the key modifier
++                key.setToDefault();
              }
  
              this.keyBindsList.resetMappingAndUpdateButtons();
