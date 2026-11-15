@@ -30,7 +30,7 @@
      }
  
      public void registerReloadListeners(ReloadableResourceManager resourceManager) {
-@@ -224,28 +_,49 @@
+@@ -224,28 +_,50 @@
      public void extractRenderState(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
          this.minecraft.gameRenderer.gameRenderState().guiRenderState.isHudHidden = this.isHidden;
          if (!(this.minecraft.gui.screen() instanceof LevelLoadingScreen)) {
@@ -51,6 +51,7 @@
 -                this.extractTitle(graphics, deltaTracker);
 -                this.extractChat(graphics, deltaTracker);
 -                this.extractTabList(graphics, deltaTracker);
++            // Neo: render HUD via GuiLayerManager
 +            this.leftHeight = 39;
 +            this.rightHeight = 39;
 +            this.updateContextualBarRenderer();
@@ -98,17 +99,18 @@
      }
  
      private void extractBossOverlay(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-@@ -289,8 +_,12 @@
+@@ -289,8 +_,13 @@
                  for (EquipmentSlot slot : EquipmentSlot.values()) {
                      ItemStack item = player.getItemBySlot(slot);
                      Equippable equippable = item.get(DataComponents.EQUIPPABLE);
 -                    if (equippable != null && equippable.slot() == slot && equippable.cameraOverlay().isPresent()) {
++                    // Neo: allow custom overlay rendering on equippables without a static camera overlay
 +                    if (equippable != null && equippable.slot() == slot) {
 +                        if (equippable.cameraOverlay().isPresent()) {
                          this.extractTextureOverlay(graphics, equippable.cameraOverlay().get().withPath(p -> "textures/" + p + ".png"), 1.0F);
 +                        }
 +
-+                        net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(item).renderFirstPersonOverlay(item, slot, this.minecraft.player, graphics, deltaTracker);
++                        net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(item).renderFirstPersonOverlay(item, slot, player, graphics, deltaTracker);
                      }
                  }
              }
@@ -117,10 +119,10 @@
                  graphics.nextStratum();
                  graphics.pose().pushMatrix();
 -                graphics.pose().translate(graphics.guiWidth() / 2, graphics.guiHeight() - 68);
-+                // Include a shift based on the bar height plus the difference between the height that renderSelectedItemName
++                // Neo: Include a shift based on the bar height plus the difference between the height that renderSelectedItemName
 +                // renders at (59) and the height that the overlay/status bar renders at (68) by default
 +                int yShift = Math.max(this.leftHeight, this.rightHeight) + (68 - 59);
-+                // If y shift is less than the default y level, just render it at the base y level
++                // Neo: If y shift is less than the default y level, just render it at the base y level
 +                graphics.pose().translate(graphics.guiWidth() / 2, graphics.guiHeight() - Math.max(yShift, 68));
                  int color;
                  if (this.animateOverlayMessageColor) {
@@ -134,7 +136,7 @@
 +            var event = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(
 +                    new net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.Chat(window, graphics, deltaTracker, 0, graphics.guiHeight() - chatBottomMargin)
 +            );
-+            // The event is given the absolute Y position; account for chat component's own offsetting here
++            // Neo: The event is given the absolute Y position; account for chat component's own offsetting here
 +            graphics.pose().pushMatrix();
 +            graphics.pose().translate(event.getPosX(), (event.getPosY() - graphics.guiHeight() + chatBottomMargin) / (float) this.chat.getScale());
              int mouseX = Mth.floor(this.minecraft.mouseHandler.getScaledXPos(window));
@@ -156,22 +158,23 @@
                  Holder<MobEffect> effect = instance.getEffect();
                  if (instance.showIcon()) {
                      int x = graphics.guiWidth();
-@@ -532,6 +_,9 @@
+@@ -532,6 +_,10 @@
                          }
                      }
  
++                    // Neo: let the effect control its HUD icon rendering
 +                    if (renderer.extractHudIcon(instance, this, graphics, x + 3, y + 3, 18, 18, ARGB.white(alpha))) {
 +                        continue;
 +                    }
                      graphics.blitSprite(RenderPipelines.GUI_TEXTURED, getMobEffectSprite(effect), x + 3, y + 3, 18, 18, ARGB.white(alpha));
                  }
              }
-@@ -542,32 +_,51 @@
+@@ -542,32 +_,52 @@
          return effect.unwrapKey().map(ResourceKey::identifier).map(id -> id.withPrefix("mob_effect/")).orElseGet(MissingTextureAtlasSprite::getLocation);
      }
  
 -    private void extractHotbarAndDecorations(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-+    // Neo: Split off into separate method to wrap in a layer
++    /// Neo: Split off into separate method to wrap in a layer
 +    private void extractHotbar(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
          if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR) {
              this.spectatorGui.extractHotbar(graphics);
@@ -186,7 +189,7 @@
 -        this.extractVehicleHealth(graphics);
 +    }
 +
-+    // Neo: Wrap in a method to call it when re-rendering
++    /// Neo: Wrap in a method to call it when re-rendering
 +    private void updateContextualBarRenderer() {
          Hud.ContextualInfo nextContextualInfo = this.nextContextualInfoState();
          if (nextContextualInfo != this.contextualInfoBar.getFirst()) {
@@ -194,59 +197,64 @@
          }
 +    }
  
-+    // Neo: Split off into separate method to wrap in a layer
++    /// Neo: Split off into separate method to wrap in a layer
 +    private void extractContextualInfoBarBackground(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
          this.contextualInfoBar.getSecond().extractBackground(graphics, deltaTracker);
 +    }
 +
-+    // Neo: Split off into separate method to wrap in a layer
++    /// Neo: Split off into separate method to wrap in a layer
 +    private void extractExperienceLevel(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
          if (this.minecraft.gameMode.hasExperience() && this.minecraft.player.experienceLevel > 0) {
              ContextualBar.extractExperienceLevel(graphics, this.minecraft.font, this.minecraft.player.experienceLevel);
          }
 +    }
  
-+    // Neo: Split off into separate method to wrap in a layer
++    /// Neo: Split off into separate method to wrap in a layer
 +    private void extractContextualInfoBar(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
          this.contextualInfoBar.getSecond().extractRenderState(graphics, deltaTracker);
 +    }
 +
-+    // Neo: Split off into separate method to wrap in a layer
++    /// Neo: Split off into separate method to wrap in a layer
 +    private void maybeExtractSelectedItemName(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
          if (this.minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR) {
 -            this.extractSelectedItemName(graphics);
 -        } else if (this.minecraft.player.isSpectator()) {
++            // Neo: take height of "bar stacks" into account
 +            this.extractSelectedItemName(graphics, Math.max(this.leftHeight, this.rightHeight));
 +        }
 +    }
 +
-+    // Neo: Split off into separate method to wrap in a layer
++    /// Neo: Split off into separate method to wrap in a layer
 +    private void maybeExtractSpectatorTooltip(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-+        // Neo: Note this is originally mutually exclusive with the condition in maybeRenderSelectedItemName
++        // Neo: Note this is originally mutually exclusive with the condition in maybeExtractSelectedItemName()
 +        if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR && this.minecraft.player.isSpectator()) {
              this.spectatorGui.extractAction(graphics);
          }
      }
-@@ -634,15 +_,20 @@
+@@ -634,15 +_,24 @@
      }
  
      private void extractSelectedItemName(GuiGraphicsExtractor graphics) {
 +        this.extractSelectedItemName(graphics, 0);
 +    }
 +
++    /// Neo: overload of [#extractSelectedItemName(GuiGraphicsExtractor, int)] with support for dynamic Y offset
 +    private void extractSelectedItemName(GuiGraphicsExtractor graphics, int yShift) {
          if (this.toolHighlightTimer > 0 && !this.lastToolHighlight.isEmpty()) {
 -            MutableComponent str = Component.empty().append(this.lastToolHighlight.getHoverName()).withStyle(this.lastToolHighlight.getRarity().color());
++            // Neo: allow custom rarities to apply style modifications other than color
 +            MutableComponent str = Component.empty().append(this.lastToolHighlight.getHoverName()).withStyle(this.lastToolHighlight.getRarity().getStyleModifier());
              if (this.lastToolHighlight.has(DataComponents.CUSTOM_NAME)) {
                  str.withStyle(ChatFormatting.ITALIC);
              }
  
 -            int strWidth = this.getFont().width(str);
++            // Neo: allow items to override their item selection display name
 +            Component highlightTip = this.lastToolHighlight.getHighlightTip(str);
 +            int strWidth = this.getFont().width(highlightTip);
              int x = (graphics.guiWidth() - strWidth) / 2;
 -            int y = graphics.guiHeight() - 59;
++            // Neo: take dynamic Y offset into account
 +            int y = graphics.guiHeight() - Math.max(yShift, 59);
              if (!this.minecraft.gameMode.canHurtPlayer()) {
                  y += 14;
@@ -256,7 +264,7 @@
  
              if (alpha > 0) {
 -                graphics.textWithBackdrop(this.getFont(), str, x, y, strWidth, ARGB.white(alpha));
-+                Font font = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(lastToolHighlight).getFont(lastToolHighlight, net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.FontContext.SELECTED_ITEM_NAME);
++                Font font = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(this.lastToolHighlight).getFont(this.lastToolHighlight, net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.FontContext.SELECTED_ITEM_NAME);
 +                if (font == null) {
 +                    graphics.textWithBackdrop(this.getFont(), highlightTip, x, y, strWidth, ARGB.white(alpha));
 +                } else {
@@ -266,7 +274,7 @@
              }
          }
      }
-@@ -770,7 +_,16 @@
+@@ -770,7 +_,17 @@
          return (int)Math.ceil(hearts / 10.0);
      }
  
@@ -279,21 +287,24 @@
 +        this.extractAirLevel(graphics);
 +    }
 +
++    /// Neo: extracted from [#extractPlayerHealth(GuiGraphicsExtractor)] to put player health into a separate HUD layer
 +    private void extractHealthLevel(GuiGraphicsExtractor graphics) {
          Player player = this.getCameraPlayer();
          if (player != null) {
              int currentHealth = Mth.ceil(player.getHealth());
-@@ -794,33 +_,62 @@
+@@ -794,33 +_,72 @@
              this.random.setSeed(this.tickCount * 312871);
              int xLeft = graphics.guiWidth() / 2 - 91;
              int xRight = graphics.guiWidth() / 2 + 91;
 -            int yLineBase = graphics.guiHeight() - 39;
++            // Neo: take height of the left "bar stack" into account
 +            int yLineBase = graphics.guiHeight() - this.leftHeight;
              float maxHealth = Math.max((float)player.getAttributeValue(Attributes.MAX_HEALTH), Math.max(oldHealth, currentHealth));
              int totalAbsorption = Mth.ceil(player.getAbsorptionAmount());
              int numHealthRows = Mth.ceil((maxHealth + totalAbsorption) / 2.0F / 10.0F);
              int healthRowHeight = Math.max(10 - (numHealthRows - 2), 3);
              int yLineAir = yLineBase - 10;
++            // Neo: adjust height of the left "bar stack"
 +            this.leftHeight += (numHealthRows - 1) * healthRowHeight + 10;
              int heartOffsetIndex = -1;
              if (player.hasEffect(MobEffects.REGENERATION)) {
@@ -311,19 +322,23 @@
 +        }
 +    }
 +
++    /// Neo: extracted from [#extractPlayerHealth(GuiGraphicsExtractor)] to put armor into a separate HUD layer
 +    private void extractArmorLevel(GuiGraphicsExtractor graphics) {
 +        Player player = this.getCameraPlayer();
 +        if (player != null) {
 +            int xLeft = graphics.guiWidth() / 2 - 91;
 +            Profiler.get().push("armor");
++            // Neo: take height of the left "bar stack" into account
 +            extractArmor(graphics, player, graphics.guiHeight() - this.leftHeight + 10, 1, 0, xLeft);
 +            Profiler.get().pop();
 +            if (player.getArmorValue() > 0) {
++                // Neo: adjust height of the left "bar stack"
 +                this.leftHeight += 10;
 +            }
 +        }
 +    }
 +
++    /// Neo: extracted from [#extractPlayerHealth(GuiGraphicsExtractor)] to put food into a separate HUD layer
 +    private void extractFoodLevel(GuiGraphicsExtractor graphics) {
 +        Player player = this.getCameraPlayer();
 +        if (player != null) {
@@ -333,9 +348,11 @@
 -                Profiler.get().popPush("food");
 +                Profiler.get().push("food");
 +                int xRight = graphics.guiWidth() / 2 + 91;
++                // Neo: take height of the "left bar" stack into account
 +                int yLineBase = graphics.guiHeight() - this.rightHeight;
                  this.extractFood(graphics, player, yLineBase, xRight);
 -                yLineAir -= 10;
++                // Neo: adjust height of the right "bar stack"
 +                this.rightHeight += 10;
 +                Profiler.get().pop();
              }
@@ -344,10 +361,12 @@
  
 -            Profiler.get().popPush("air");
 -            this.extractAirBubbles(graphics, player, vehicleHearts, yLineAir, xRight);
++    /// Neo: extracted from [#extractPlayerHealth(GuiGraphicsExtractor)] to put air into a separate HUD layer
 +    private void extractAirLevel(GuiGraphicsExtractor graphics) {
 +        Player player = this.getCameraPlayer();
 +        if (player != null) {
 +            int xRight = graphics.guiWidth() / 2 + 91;
++            // Neo: take height of the right "bar stack" into account
 +            int yLineAir = graphics.guiHeight() - this.rightHeight;
 +            Profiler.get().push("air");
 +            this.extractAirBubbles(graphics, player, 10, yLineAir, xRight);
@@ -363,11 +382,12 @@
          if (isUnderWater || currentAirSupplyTicks < maxAirSupplyTicks) {
              yLineAir = this.getAirBubbleYLine(vehicleHearts, yLineAir);
              int fullAirBubbles = getCurrentAirSupplyBubble(currentAirSupplyTicks, maxAirSupplyTicks, -2);
-@@ -933,6 +_,8 @@
+@@ -933,6 +_,9 @@
                      graphics.blitSprite(RenderPipelines.GUI_TEXTURED, AIR_EMPTY_SPRITE, airBubbleXPos, yLineAir + wobbleYOffset, 9, 9);
                  }
              }
 +
++            // Neo: adjust height of the left "bar stack"
 +            this.rightHeight += 10;
          }
      }
@@ -400,11 +420,12 @@
          graphics.fill(RenderPipelines.GUI, 0, bottom, graphics.guiWidth(), graphics.guiHeight(), -16777216);
          graphics.fill(RenderPipelines.GUI, 0, 0, graphics.guiWidth(), top, -16777216);
          graphics.fill(RenderPipelines.GUI, 0, top, left, bottom, -16777216);
-@@ -1202,7 +_,7 @@
+@@ -1202,7 +_,8 @@
                  this.toolHighlightTimer = 0;
              } else if (this.lastToolHighlight.isEmpty()
                  || !selected.is(this.lastToolHighlight.getItem())
 -                || !selected.getHoverName().equals(this.lastToolHighlight.getHoverName())) {
++                // Neo: allow items to override their item selection display name
 +                || (!selected.getHoverName().equals(this.lastToolHighlight.getHoverName()) || !selected.getHighlightTip(selected.getHoverName()).equals(this.lastToolHighlight.getHighlightTip(this.lastToolHighlight.getHoverName())))) {
                  this.toolHighlightTimer = (int)(40.0 * this.minecraft.options.notificationDisplayTime().get());
              } else if (this.toolHighlightTimer > 0) {
