@@ -12,7 +12,7 @@
      private static final double MAX_MOVEMENT_RESETTING_TRACE_DISTANCE = 8.0;
      private static final Set<TagKey<Fluid>> FLUIDS_WITH_CURRENT = Set.of(FluidTags.WATER, FluidTags.LAVA);
      private static double viewScale = 1.0;
-+    /** @deprecated Neo: Use the getter to allow overriding in mods */
++    /// @deprecated  Neo: Field accesses are redirected to [#getType()] with a coremod.
 +    @Deprecated
      private final EntityType<?> type;
      private boolean requiresPrecisePosition;
@@ -320,15 +320,6 @@
      }
  
      public void onAboveBubbleColumn(boolean dragDown, BlockPos pos) {
-@@ -3049,7 +_,7 @@
-     }
- 
-     protected Component getTypeName() {
--        return this.type.getDescription();
-+        return this.getType().getDescription(); // Forge: Use getter to allow overriding by mods
-     }
- 
-     public boolean is(Entity other) {
 @@ -3104,10 +_,11 @@
      }
  
