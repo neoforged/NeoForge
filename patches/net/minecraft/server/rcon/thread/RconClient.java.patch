@@ -1,11 +1,12 @@
 --- a/net/minecraft/server/rcon/thread/RconClient.java
 +++ b/net/minecraft/server/rcon/thread/RconClient.java
-@@ -123,13 +_,14 @@
+@@ -123,13 +_,15 @@
      }
  
      private void sendCmdResponse(int requestid, String response) throws IOException {
 -        int len = response.length();
 -
++        // Neo: handle UTF8-encoded characters correctly
 +        byte[] whole = response.getBytes(StandardCharsets.UTF_8);
 +        int len = whole.length;
 +        int start = 0;

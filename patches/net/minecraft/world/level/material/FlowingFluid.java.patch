@@ -9,11 +9,12 @@
                      neighbourSources++;
                  }
  
-@@ -175,7 +_,7 @@
+@@ -175,7 +_,8 @@
              }
          }
  
 -        if (neighbourSources >= 2 && this.canConvertToSource(level)) {
++        // Neo: move source conversion check to event above
 +        if (neighbourSources >= 2) {
              BlockState belowState = level.getBlockState(mutablePos.setWithOffset(pos, Direction.DOWN));
              FluidState belowFluid = belowState.getFluidState();

@@ -1,11 +1,12 @@
 --- a/net/minecraft/CrashReportCategory.java
 +++ b/net/minecraft/CrashReportCategory.java
-@@ -138,8 +_,12 @@
+@@ -138,8 +_,13 @@
              return 0;
          }
  
 -        this.stackTrace = new StackTraceElement[full.length - 3 - nestedOffset];
 -        System.arraycopy(full, 3 + nestedOffset, this.stackTrace, 0, this.stackTrace.length);
++        // Neo: prevent AIOOBE on extremely short stacktraces
 +        int len = full.length - 3 - nestedOffset;
 +        if (len <= 0) {
 +            len = full.length;

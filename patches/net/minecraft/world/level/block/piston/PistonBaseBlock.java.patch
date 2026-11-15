@@ -39,22 +39,16 @@
              toUpdate[updateIndex++] = state;
          }
  
-@@ -355,6 +_,11 @@
-     }
- 
-     @Override
-+    public BlockState rotate(BlockState state, net.minecraft.world.level.LevelAccessor level, BlockPos pos, Rotation direction) {
-+        return state.getValue(EXTENDED) ? state : super.rotate(state, level, pos, direction);
-+    }
-+
-+    @Override
-     protected BlockState mirror(BlockState state, Mirror mirror) {
-         return state.rotate(mirror.getRotation(state.getValue(FACING)));
-     }
-@@ -372,5 +_,24 @@
+@@ -372,5 +_,30 @@
      @Override
      protected boolean isPathfindable(BlockState state, PathComputationType type) {
          return false;
++    }
++
++    @Override
++    public BlockState rotate(BlockState state, net.minecraft.world.level.LevelAccessor level, BlockPos pos, Rotation direction) {
++        // Neo: prevent rotating extended pistons with tools
++        return state.getValue(EXTENDED) ? state : super.rotate(state, level, pos, direction);
 +    }
 +
 +    // Neo: Extended piston multiblock can be relocated if and only if both halves are being relocated

@@ -9,7 +9,7 @@
      public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceKey.codec(Registries.DIMENSION);
      public static final ResourceKey<Level> OVERWORLD = ResourceKey.create(Registries.DIMENSION, Identifier.withDefaultNamespace("overworld"));
      public static final ResourceKey<Level> NETHER = ResourceKey.create(Registries.DIMENSION, Identifier.withDefaultNamespace("the_nether"));
-@@ -132,6 +_,19 @@
+@@ -132,6 +_,21 @@
      private final DamageSources damageSources;
      private final PalettedContainerFactory palettedContainerFactory;
      private long subTickCount;
@@ -25,6 +25,8 @@
 +    private final List<BlockEntity> freshBlockEntities = new java.util.ArrayList<>();
 +    /// Neo: holds all BEs which were added during BE ticking and haven't had [BlockEntity#onLoad()] called yet
 +    private final List<BlockEntity> pendingFreshBlockEntities = new java.util.ArrayList<>();
++    /// @deprecated Neo: non-functional
++    @Deprecated(forRemoval = true, since = "26.3")
 +    private double maxEntityRadius = 2.0D;
  
      protected Level(
@@ -227,7 +229,7 @@
              BlockPos relativePos = pos.relative(direction);
              if (this.hasChunkAt(relativePos)) {
                  BlockState state = this.getBlockState(relativePos);
-+                // Neo: allow any block to receive comparator input updates
++                // Neo: broken BE update handling patch, requires BC to fix
 +                state.onNeighborChange(this, relativePos, pos);
                  if (state.is(Blocks.COMPARATOR)) {
                      this.neighborChanged(state, relativePos, changedBlock, null, false);
@@ -240,18 +242,22 @@
                          this.neighborChanged(state, relativePos, changedBlock, null, false);
                      }
                  }
-@@ -1020,6 +_,19 @@
+@@ -1020,6 +_,23 @@
  
      public PalettedContainerFactory palettedContainerFactory() {
          return this.palettedContainerFactory;
 +    }
 +
++    /// @deprecated Neo: non-functional
 +    @Override
++    @Deprecated(forRemoval = true, since = "26.3")
 +    public double getMaxEntityRadius() {
 +        return this.maxEntityRadius;
 +    }
 +
++    /// @deprecated Neo: non-functional
 +    @Override
++    @Deprecated(forRemoval = true, since = "26.3")
 +    public double increaseMaxEntityRadius(double value) {
 +        if (value > this.maxEntityRadius) {
 +            this.maxEntityRadius = value;
