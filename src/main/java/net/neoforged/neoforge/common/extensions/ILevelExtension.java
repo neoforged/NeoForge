@@ -38,6 +38,7 @@ public interface ILevelExtension {
     /**
      * The maximum radius to scan for entities when trying to check bounding boxes. Vanilla's default is
      * 2.0D But mods that add larger entities may increase this.
+     * 
      * @deprecated non-functional
      */
     @Deprecated(forRemoval = true, since = "26.3")
