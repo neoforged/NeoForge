@@ -1909,7 +1909,7 @@ public class CommonHooks {
     }
 
     public static List<StructureTemplate.StructureEntityInfo> processStructureEntityInfos(
-            @Nullable StructureTemplate template,
+            StructureTemplate template,
             LevelAccessor level,
             BlockPos position,
             StructurePlaceSettings settings,

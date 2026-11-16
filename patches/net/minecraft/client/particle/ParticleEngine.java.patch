@@ -1,10 +1,12 @@
 --- a/net/minecraft/client/particle/ParticleEngine.java
 +++ b/net/minecraft/client/particle/ParticleEngine.java
-@@ -35,10 +_,17 @@
+@@ -35,10 +_,19 @@
      private final Object2IntOpenHashMap<ParticleLimit> trackedParticleCounts = new Object2IntOpenHashMap<>();
      private final ParticleResources resourceManager;
      private final RandomSource random = RandomSource.create();
++    /// Neo: holds the group factories for modded particle render types
 +    private final Map<ParticleRenderType, java.util.function.Function<ParticleEngine, ParticleGroup<?>>> particleGroupFactories;
++    /// Neo: holds the adjusted particle render order
 +    private final List<ParticleRenderType> particleRenderOrder;
  
      public ParticleEngine(ClientLevel level, ParticleResources resourceManager) {
@@ -18,29 +20,32 @@
      }
  
      public void createTrackingEmitter(Entity entity, ParticleOptions particle) {
-@@ -60,7 +_,7 @@
+@@ -60,7 +_,8 @@
      }
  
      private <T extends ParticleOptions> @Nullable Particle makeParticle(T options, double x, double y, double z, double xa, double ya, double za) {
 -        ParticleProvider<T> provider = (ParticleProvider<T>)this.resourceManager.getProviders().get(BuiltInRegistries.PARTICLE_TYPE.getId(options.getType()));
++        // Neo: look up provides by name instead of by int ID
 +        ParticleProvider<T> provider = (ParticleProvider<T>)this.resourceManager.getProviders().get(BuiltInRegistries.PARTICLE_TYPE.getKey(options.getType()));
          return provider == null ? null : provider.createParticle(options, this.level, x, y, z, xa, ya, za, this.random);
      }
  
-@@ -110,6 +_,8 @@
+@@ -110,6 +_,9 @@
              return new ItemPickupParticleGroup(this);
          } else if (type == ParticleRenderType.ELDER_GUARDIANS) {
              return new ElderGuardianParticleGroup(this);
 +        } else if (this.particleGroupFactories.containsKey(type)) {
++            // Neo: add support for modded particle render types
 +            return this.particleGroupFactories.get(type).apply(this);
          } else {
              return type == ParticleRenderType.NO_RENDER ? new NoRenderParticleGroup(this) : new QuadParticleGroup(this, type);
          }
-@@ -120,7 +_,7 @@
+@@ -120,7 +_,8 @@
      }
  
      public void extract(ParticlesRenderState particlesRenderState, Frustum frustum, Camera camera, float partialTickTime) {
 -        for (ParticleRenderType particleType : RENDER_ORDER) {
++        // Neo: use adjusted render order
 +        for (ParticleRenderType particleType : this.particleRenderOrder) {
              ParticleGroup<?> particles = this.particles.get(particleType);
              if (particles != null && !particles.isEmpty()) {

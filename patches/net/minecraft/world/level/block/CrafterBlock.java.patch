@@ -1,16 +1,17 @@
 --- a/net/minecraft/world/level/block/CrafterBlock.java
 +++ b/net/minecraft/world/level/block/CrafterBlock.java
-@@ -176,7 +_,8 @@
+@@ -176,7 +_,9 @@
  
      private void dispenseItem(ServerLevel level, BlockPos pos, CrafterBlockEntity blockEntity, ItemStack results, BlockState blockState, RecipeHolder<?> recipe) {
          Direction direction = blockState.getValue(ORIENTATION).front();
 -        Container into = HopperBlockEntity.getContainerAt(level, pos.relative(direction));
++        // Neo: support both containers and resource handlers
 +        var containerOrHandler = HopperBlockEntity.getContainerOrHandlerAt(level, pos.relative(direction), direction.getOpposite());
 +        Container into = containerOrHandler.container();
          ItemStack remaining = results.copy();
          if (into != null && (into instanceof CrafterBlockEntity || results.getCount() > into.getMaxStackSize(results))) {
              while (!remaining.isEmpty()) {
-@@ -188,10 +_,14 @@
+@@ -188,9 +_,12 @@
  
                  remaining.shrink(1);
              }
@@ -18,12 +19,9 @@
 +        } else if (!containerOrHandler.isEmpty()) {
              while (!remaining.isEmpty()) {
                  int oldSize = remaining.getCount();
--                remaining = HopperBlockEntity.addItem(blockEntity, into, remaining, direction.getOpposite());
-+                if (into != null) {
-+                    remaining = HopperBlockEntity.addItem(blockEntity, into, remaining, direction.getOpposite());
-+                } else {
++                if (into == null) {
 +                    remaining = net.neoforged.neoforge.transfer.item.ItemUtil.insertItemReturnRemaining(containerOrHandler.itemHandler(), remaining, false, null);
-+                }
++                } else
+                 remaining = HopperBlockEntity.addItem(blockEntity, into, remaining, direction.getOpposite());
                  if (oldSize == remaining.getCount()) {
                      break;
-                 }

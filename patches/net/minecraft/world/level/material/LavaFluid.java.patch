@@ -9,12 +9,13 @@
                              return;
                          }
                      } else if (blockState.is(BlockTags.BLOCKS_LAVA_FIRE_SPREAD)) {
-@@ -108,8 +_,8 @@
+@@ -108,8 +_,9 @@
                          return;
                      }
  
 -                    if (level.isEmptyBlock(testPos.above()) && this.isFlammable(level, testPos)) {
 -                        level.setBlockAndUpdate(testPos.above(), BaseFireBlock.getState(level, testPos));
++                    // Neo: add side context to flammability check
 +                    if (level.isEmptyBlock(testPos.above()) && this.isFlammable(level, testPos, Direction.UP)) {
 +                        level.setBlockAndUpdate(testPos.above(), net.neoforged.neoforge.event.EventHooks.fireFluidPlaceBlockEvent(level, testPos.above(), pos, BaseFireBlock.getState(level, testPos)));
                      }
@@ -29,33 +30,29 @@
                  return true;
              }
          }
-@@ -133,10 +_,20 @@
+@@ -133,6 +_,16 @@
          return false;
      }
  
-+    /** @deprecated Forge: use {@link LavaFluid#isFlammable(LevelReader,BlockPos,Direction)} instead */
-+    @Deprecated
-     private boolean isFlammable(LevelReader level, BlockPos pos) {
-         return level.isInsideBuildHeight(pos.getY()) && !level.hasChunkAt(pos) ? false : level.getBlockState(pos).ignitedByLava();
-     }
- 
++    /// Neo: overload of [#isFlammable(LevelReader, BlockPos)] with side context
 +    private boolean isFlammable(LevelReader level, BlockPos pos, Direction face) {
 +        if (level.isInsideBuildHeight(pos.getY()) && !level.hasChunkAt(pos)) {
 +            return false;
 +        }
-+        BlockState state = level.getBlockState(pos);
-+        return state.ignitedByLava(level, pos, face);
++        return level.getBlockState(pos).ignitedByLava(level, pos, face);
 +    }
 +
-     @Override
-     public @Nullable ParticleOptions getDripParticle() {
-         return ParticleTypes.DRIPPING_LAVA;
++    /// @deprecated Neo: use [LavaFluid#isFlammable(LevelReader, BlockPos, Direction)] instead
++    @Deprecated
+     private boolean isFlammable(LevelReader level, BlockPos pos) {
+         return level.isInsideBuildHeight(pos.getY()) && !level.hasChunkAt(pos) ? false : level.getBlockState(pos).ignitedByLava();
+     }
 @@ -207,7 +_,7 @@
              FluidState fluidState = level.getFluidState(pos);
              if (this.is(FluidTags.LAVA) && fluidState.is(FluidTags.WATER)) {
                  if (state.getBlock() instanceof LiquidBlock) {
 -                    level.setBlockAndUpdate(pos, Blocks.STONE.defaultBlockState());
-+                    level.setBlock(pos, net.neoforged.neoforge.event.EventHooks.fireFluidPlaceBlockEvent(level, pos, pos, Blocks.STONE.defaultBlockState()), 3);
++                    level.setBlockAndUpdate(pos, net.neoforged.neoforge.event.EventHooks.fireFluidPlaceBlockEvent(level, pos, pos, Blocks.STONE.defaultBlockState()));
                  }
  
                  this.fizz(level, pos);

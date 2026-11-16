@@ -1,16 +1,17 @@
 --- a/net/minecraft/world/level/chunk/storage/EntityStorage.java
 +++ b/net/minecraft/world/level/chunk/storage/EntityStorage.java
-@@ -94,9 +_,13 @@
+@@ -94,9 +_,14 @@
                  ListTag entities = new ListTag();
                  chunk.getEntities().forEach(e -> {
                      TagValueOutput output = TagValueOutput.createWithContext(reporter.forChild(e.problemPath()), e.registryAccess());
++                    // Neo: prevent errors during entity serialization from crashing the game
 +                    try {
                      if (e.save(output)) {
                          CompoundTag result = output.buildResult();
                          entities.add(result);
 +                    }
 +                    } catch (Exception ex) {
-+                        LOGGER.error("An Entity type {} has thrown an exception trying to write state. It will not persist. Report this to the mod author", e.getType(), ex);
++                        LOGGER.error("An Entity of type {} has thrown an exception trying to write state. It will not persist. Report this to the mod author", e.getType(), ex);
                      }
                  });
                  CompoundTag chunkTag = NbtUtils.addCurrentDataVersion(new CompoundTag());

@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/item/MinecartItem.java
 +++ b/net/minecraft/world/item/MinecartItem.java
-@@ -35,7 +_,7 @@
+@@ -35,7 +_,8 @@
  
          ItemStack itemStack = context.getItemInHand();
          RailShape shape = blockState.getBlock() instanceof BaseRailBlock
 -            ? blockState.getValue(((BaseRailBlock)blockState.getBlock()).getShapeProperty())
++            // Neo: give modded rails more control over their shape
 +            ? ((BaseRailBlock)blockState.getBlock()).getRailDirection(blockState, level, pos, null)
              : RailShape.NORTH_SOUTH;
          double offset = 0.0;

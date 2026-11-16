@@ -1,42 +1,38 @@
 --- a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
 +++ b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
-@@ -90,7 +_,9 @@
-     List<SerializableChunkData.SectionData> sectionData,
+@@ -91,6 +_,8 @@
      List<CompoundTag> entities,
      List<CompoundTag> blockEntities,
--    CompoundTag structureData
-+    CompoundTag structureData,
-+    @Nullable CompoundTag attachmentData,
+     CompoundTag structureData
++    , @Nullable CompoundTag attachmentData,
 +    @Nullable ListTag auxLightData
  ) {
      private static final Codec<List<SavedTick<Block>>> BLOCK_TICKS_CODEC = SavedTick.codec(BuiltInRegistries.BLOCK.byNameCodec()).listOf();
      private static final Codec<List<SavedTick<Fluid>>> FLUID_TICKS_CODEC = SavedTick.codec(BuiltInRegistries.FLUID.byNameCodec()).listOf();
-@@ -106,6 +_,32 @@
+@@ -106,6 +_,30 @@
      public static final String BLOCK_LIGHT_TAG = "BlockLight";
      public static final String SKY_LIGHT_TAG = "SkyLight";
  
-+    /**
-+     * @deprecated Neo: use constructor with additional data instead
-+     */
++    /// @deprecated Neo: use constructor with additional data instead
 +    @Deprecated
 +    SerializableChunkData(
-+            PalettedContainerFactory containerFactory,
-+            ChunkPos chunkPos,
-+            int minSectionY,
-+            long lastUpdateTime,
-+            long inhabitedTime,
-+            ChunkStatus chunkStatus,
-+            BlendingData.@Nullable Packed blendingData,
-+            @Nullable BelowZeroRetrogen belowZeroRetrogen,
-+            UpgradeData upgradeData,
-+            Map<Heightmap.Types, long[]> heightmaps,
-+            ChunkAccess.PackedTicks packedTicks,
-+            ShortList[] postProcessingSections,
-+            boolean lightCorrect,
-+            List<SerializableChunkData.SectionData> sectionData,
-+            List<CompoundTag> entities,
-+            List<CompoundTag> blockEntities,
-+            CompoundTag structureData
++        PalettedContainerFactory containerFactory,
++        ChunkPos chunkPos,
++        int minSectionY,
++        long lastUpdateTime,
++        long inhabitedTime,
++        ChunkStatus chunkStatus,
++        BlendingData.@Nullable Packed blendingData,
++        @Nullable BelowZeroRetrogen belowZeroRetrogen,
++        UpgradeData upgradeData,
++        Map<Heightmap.Types, long[]> heightmaps,
++        ChunkAccess.PackedTicks packedTicks,
++        ShortList[] postProcessingSections,
++        boolean lightCorrect,
++        List<SerializableChunkData.SectionData> sectionData,
++        List<CompoundTag> entities,
++        List<CompoundTag> blockEntities,
++        CompoundTag structureData
 +    ) {
 +        this(containerFactory, chunkPos, minSectionY, lastUpdateTime, inhabitedTime, chunkStatus, blendingData, belowZeroRetrogen, upgradeData, heightmaps, packedTicks, postProcessingSections, lightCorrect, sectionData, entities, blockEntities, structureData, null, null);
 +    }
@@ -54,31 +50,31 @@
          return new SerializableChunkData(
              containerFactory,
              chunkPos,
-@@ -201,7 +_,9 @@
-             sectionData,
+@@ -202,6 +_,8 @@
              entities,
              blockEntities,
--            structureData
-+            structureData,
-+            attachmentData,
+             structureData
++            , attachmentData,
 +            auxLightData
          );
      }
  
-@@ -260,6 +_,9 @@
+@@ -260,6 +_,10 @@
                  postLoadChunk(level, this.entities, this.blockEntities),
                  BlendingData.unpack(this.blendingData)
              );
++            // Neo: deserialize auxiliary light data
 +            if (this.auxLightData != null) {
-+                ((LevelChunk) chunk).getAuxLightManager(chunkPos).deserializeNBT(this.auxLightData);
++                ((LevelChunk) chunk).getAuxLightManager(this.chunkPos).deserializeNBT(this.auxLightData);
 +            }
          } else {
              ProtoChunkTicks<Block> blockTicks = ProtoChunkTicks.load(this.packedTicks.blocks());
              ProtoChunkTicks<Fluid> fluidTicks = ProtoChunkTicks.load(this.packedTicks.fluids());
-@@ -297,6 +_,10 @@
+@@ -297,6 +_,11 @@
              }
          }
  
++        // Neo: deserialize chunk data attachments
 +        if (this.attachmentData != null) {
 +            chunk.readAttachmentsFromNBT(level.registryAccess(), this.attachmentData);
 +        }
@@ -86,17 +82,19 @@
          if (chunkType == ChunkType.LEVELCHUNK) {
              return new ImposterProtoChunk((LevelChunk)chunk, false);
          }
-@@ -368,6 +_,18 @@
+@@ -368,6 +_,20 @@
              .map(shorts -> shorts != null && !shorts.isEmpty() ? new ShortArrayList(shorts) : null)
              .toArray(ShortList[]::new);
          CompoundTag structureData = packStructureData(StructurePieceSerializationContext.fromLevel(level), pos, chunk.getAllStarts(), chunk.getAllReferences());
 +
++        // Neo: serialize chunk data attachments
 +        CompoundTag attachmentData = null;
 +        try {
 +            attachmentData = chunk.writeAttachmentsToNBT(level.registryAccess());
 +        } catch (Exception exception) {
 +            LOGGER.error("Failed to write chunk attachments. An attachment has likely thrown an exception trying to write state. It will not persist. Report this to the mod author", exception);
 +        }
++        // Neo: serialize auxiliary light data
 +        ListTag auxLightData = null;
 +        if (chunk instanceof LevelChunk levelChunk) {
 +            auxLightData = levelChunk.getAuxLightManager(pos).serializeNBT();
@@ -105,13 +103,11 @@
          return new SerializableChunkData(
              level.palettedContainerFactory(),
              pos,
-@@ -385,7 +_,9 @@
-             sectionData,
+@@ -386,6 +_,8 @@
              entities,
              blockEntities,
--            structureData
-+            structureData,
-+            attachmentData,
+             structureData
++            , attachmentData,
 +            auxLightData
          );
      }
@@ -121,11 +117,11 @@
          tag.put("Heightmaps", heightmapsTag);
          tag.put("structures", this.structureData);
 +
-+        if (attachmentData != null) {
-+            tag.put(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY, attachmentData);
++        if (this.attachmentData != null) {
++            tag.put(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY, this.attachmentData);
 +        }
-+        if (auxLightData != null) {
-+            tag.put(net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager.LIGHT_NBT_KEY, auxLightData);
++        if (this.auxLightData != null) {
++            tag.put(net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager.LIGHT_NBT_KEY, this.auxLightData);
 +        }
 +
          return tag;

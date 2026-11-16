@@ -1,12 +1,13 @@
 --- a/net/minecraft/data/recipes/RecipeUnlockAdvancementBuilder.java
 +++ b/net/minecraft/data/recipes/RecipeUnlockAdvancementBuilder.java
-@@ -20,6 +_,10 @@
+@@ -20,6 +_,11 @@
      }
  
      public AdvancementHolder build(RecipeOutput output, ResourceKey<Recipe<?>> id, RecipeCategory category) {
 +        return this.build(output, id, category.getFolderName());
 +    }
 +
++    /// Neo: add support for custom subfolders
 +    public AdvancementHolder build(RecipeOutput output, ResourceKey<Recipe<?>> id, @org.jspecify.annotations.Nullable String category) {
          if (this.criteria.isEmpty()) {
              throw new IllegalStateException("No way of obtaining recipe " + id.identifier());

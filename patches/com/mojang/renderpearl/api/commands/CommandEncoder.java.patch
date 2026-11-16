@@ -1,9 +1,13 @@
 --- a/com/mojang/renderpearl/api/commands/CommandEncoder.java
 +++ b/com/mojang/renderpearl/api/commands/CommandEncoder.java
-@@ -70,6 +_,8 @@
+@@ -70,6 +_,12 @@
  
      void clearDepthTexture(GpuTexture depthTexture, double clearDepth);
  
++    /// Neo: clears the stencil bits of the given texture to the given value.
++    ///
++    /// @param texture The texture to clear
++    /// @param value   The value to set the stencil bits to
 +    void clearStencilTexture(GpuTexture texture, int value);
 +
      void writeToBuffer(GpuBufferSlice destination, ByteBuffer data);

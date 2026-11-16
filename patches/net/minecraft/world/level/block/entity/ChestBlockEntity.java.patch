@@ -6,7 +6,7 @@
  
 +    @Override
 +    public void setBlockState(BlockState blockState) {
-+        var oldState = getBlockState();
++        var oldState = this.getBlockState();
 +        super.setBlockState(blockState);
 +        // Neo: Chest state change might change the chest item handler -> invalidate
 +        if ((oldState.getValue(ChestBlock.FACING) != blockState.getValue(ChestBlock.FACING))

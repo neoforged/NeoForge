@@ -1,9 +1,10 @@
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -79,6 +_,8 @@
+@@ -79,6 +_,9 @@
      private boolean handlingFault;
      private volatile @Nullable DisconnectionDetails delayedDisconnect;
      private @Nullable BandwidthDebugMonitor bandwidthDebugMonitor;
++    /// Neo: holds the active inbound protocol
 +    @Nullable
 +    private ProtocolInfo<?> inboundProtocol;
  
@@ -37,10 +38,11 @@
                      DisconnectionDetails details;
                      if (listener != null) {
                          details = listener.createDisconnectionInfo(reason, cause);
-@@ -199,6 +_,7 @@
+@@ -199,6 +_,8 @@
              throw new IllegalStateException("Invalid inbound protocol: " + protocol.id());
          }
  
++        // Neo: capture the inbound protocol
 +        this.inboundProtocol = protocol;
          this.packetListener = packetListener;
          this.disconnectListener = null;
@@ -76,20 +78,23 @@
          return new Bootstrap().group(eventLoopGroupHolder.eventLoopGroup()).handler(new ChannelInitializer<Channel>() {
              @Override
              protected void initChannel(Channel channel) {
-@@ -588,5 +_,17 @@
+@@ -588,5 +_,20 @@
  
      public void setBandwidthLogger(LocalSampleLogger bandwidthLogger) {
          this.bandwidthDebugMonitor = new BandwidthDebugMonitor(bandwidthLogger);
 +    }
 +
++    /// Neo: {@return the underlying Netty channel}
 +    public Channel channel() {
 +        return this.channel;
 +    }
 +
++    /// Neo: {@return the direction of this connection}
 +    public PacketFlow getDirection() {
 +        return this.receiving;
 +    }
 +
++    /// Neo: {@return the active inbound protocol}
 +    public ProtocolInfo<?> getInboundProtocol() {
 +        return Objects.requireNonNull(this.inboundProtocol, "Inbound protocol not set?");
      }

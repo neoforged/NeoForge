@@ -1,9 +1,10 @@
 --- a/net/minecraft/world/item/DispensibleContainerItem.java
 +++ b/net/minecraft/world/item/DispensibleContainerItem.java
-@@ -12,5 +_,6 @@
+@@ -12,5 +_,7 @@
      default void checkExtraContent(@Nullable LivingEntity user, Level level, ItemStack itemStack, BlockPos pos) {
      }
  
-+    @Deprecated //Forge: use the ItemStack sensitive version
++    /// @deprecated Neo: use [#emptyContents(LivingEntity, Level, BlockPos, BlockHitResult, ItemStack)] instead
++    @Deprecated
      boolean emptyContents(final @Nullable LivingEntity user, final Level level, final BlockPos pos, final @Nullable BlockHitResult hitResult);
  }

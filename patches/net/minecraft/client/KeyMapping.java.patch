@@ -1,23 +1,27 @@
 --- a/net/minecraft/client/KeyMapping.java
 +++ b/net/minecraft/client/KeyMapping.java
-@@ -22,8 +_,8 @@
+@@ -22,8 +_,10 @@
  
  @OnlyIn(Dist.CLIENT)
  public class KeyMapping implements Comparable<KeyMapping>, IKeyMappingExtension {
 -    private static final Map<String, KeyMapping> ALL = Maps.newHashMap();
 -    private static final Map<InputConstants.Key, List<KeyMapping>> MAP = Maps.newHashMap();
++    // Neo: make key mapping instantiation thread-safe
 +    private static final Map<String, KeyMapping> ALL = Maps.newConcurrentMap();
++    // Neo: replace key mapping storage for key modifier support
 +    private static final net.neoforged.neoforge.client.settings.KeyMappingLookup MAP = new net.neoforged.neoforge.client.settings.KeyMappingLookup();
      private final String name;
      private final InputConstants.Key defaultKey;
      private final KeyMapping.Category category;
-@@ -31,17 +_,25 @@
+@@ -31,17 +_,30 @@
      boolean isDown;
      private int clickCount;
      private final int order;
-+    // Neo: Injected Key Mapping controls
++    /// Neo: holds the default key modifier
 +    private net.neoforged.neoforge.client.settings.KeyModifier keyModifierDefault = net.neoforged.neoforge.client.settings.KeyModifier.NONE;
++    /// Neo: holds the current key modifier
 +    private net.neoforged.neoforge.client.settings.KeyModifier keyModifier = net.neoforged.neoforge.client.settings.KeyModifier.NONE;
++    /// Neo: holds the conflict context
 +    private net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext = net.neoforged.neoforge.client.settings.KeyConflictContext.UNIVERSAL;
  
      public static void click(InputConstants.Key key) {
@@ -26,6 +30,7 @@
  
      public static void set(InputConstants.Key key, boolean state) {
 -        forAllKeyMappings(key, keyMapping -> keyMapping.setDown(state));
++        // Neo: forward whether the key is being released
 +        forAllKeyMappings(key, keyMapping -> keyMapping.setDown(state), !state);
      }
  
@@ -34,7 +39,9 @@
 +        forAllKeyMappings(key, operation, false);
 +    }
 +
++    /// Neo: extracted from [#forAllKeyMappings(InputConstants.Key, Consumer)] to allow indicating whether the key is being released
 +    private static void forAllKeyMappings(InputConstants.Key key, Consumer<KeyMapping> operation, boolean releasing) {
++        // Neo: use custom key mapping storage
 +        List<KeyMapping> keyMappings = MAP.getAll(key, releasing);
          if (keyMappings != null && !keyMappings.isEmpty()) {
              for (KeyMapping keyMapping : keyMappings) {
@@ -43,31 +50,22 @@
          this.registerMapping(this.key);
      }
  
-+    // Neo: Injected Key Mapping constructors to assist modders
-+    /**
-+     * Convenience constructor for creating KeyMappings with keyConflictContext set.
-+     */
++    /// Neo: convenience constructor for creating KeyMappings with keyConflictContext set.
 +    public KeyMapping(String name, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, InputConstants.Type inputType, int keyCode, KeyMapping.Category category) {
 +        this(name, keyConflictContext, inputType.getOrCreate(keyCode), category);
 +    }
 +
-+    /**
-+     * Convenience constructor for creating KeyMappings with keyConflictContext set.
-+     */
++    /// Neo: convenience constructor for creating KeyMappings with keyConflictContext set.
 +    public KeyMapping(String name, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, InputConstants.Key keyCode, KeyMapping.Category category) {
 +        this(name, keyConflictContext, net.neoforged.neoforge.client.settings.KeyModifier.NONE, keyCode, category);
 +    }
 +
-+    /**
-+     * Convenience constructor for creating KeyMappings with keyConflictContext and keyModifier set.
-+     */
++    /// Neo: convenience constructor for creating KeyMappings with keyConflictContext and keyModifier set.
 +    public KeyMapping(String name, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, net.neoforged.neoforge.client.settings.KeyModifier keyModifier, InputConstants.Type inputType, int keyCode, KeyMapping.Category category) {
 +        this(name, keyConflictContext, keyModifier, inputType.getOrCreate(keyCode), category);
 +    }
 +
-+    /**
-+     * Convenience constructor for creating KeyMappings with keyConflictContext and keyModifier set.
-+     */
++    /// Neo: convenience constructor for creating KeyMappings with keyConflictContext and keyModifier set.
 +    public KeyMapping(String name, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, net.neoforged.neoforge.client.settings.KeyModifier keyModifier, InputConstants.Key keyCode, KeyMapping.Category category) {
 +        this.name = name;
 +        this.key = keyCode;
@@ -77,42 +75,50 @@
 +        this.keyConflictContext = keyConflictContext;
 +        this.keyModifier = keyModifier;
 +        this.keyModifierDefault = keyModifier;
-+        if (this.keyModifier.matches(keyCode))
++        if (this.keyModifier.matches(keyCode)) {
 +            this.keyModifier = net.neoforged.neoforge.client.settings.KeyModifier.NONE;
++        }
 +        ALL.put(name, this);
 +        MAP.put(keyCode, this);
 +    }
 +
++    /// Neo: {@return the bound key}
 +    @Override
 +    public InputConstants.Key getKey() {
 +        return key;
 +    }
 +
++    /// Neo: set the conflict context
 +    @Override
 +    public void setKeyConflictContext(net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext) {
 +        this.keyConflictContext = keyConflictContext;
 +    }
 +
++    /// Neo: {@return the conflict context}
 +    @Override
 +    public net.neoforged.neoforge.client.settings.IKeyConflictContext getKeyConflictContext() {
-+        return keyConflictContext;
++        return this.keyConflictContext;
 +    }
 +
++    /// Neo: {@return the default key modifier}
 +    @Override
 +    public net.neoforged.neoforge.client.settings.KeyModifier getDefaultKeyModifier() {
-+        return keyModifierDefault;
++        return this.keyModifierDefault;
 +    }
 +
++    /// Neo: {@return the bound key modifier}
 +    @Override
 +    public net.neoforged.neoforge.client.settings.KeyModifier getKeyModifier() {
-+        return keyModifier;
++        return this.keyModifier;
 +    }
 +
++    /// Neo: set the key and modifier
 +    @Override
 +    public void setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier keyModifier, InputConstants.Key keyCode) {
 +        this.key = keyCode;
-+        if (keyModifier.matches(keyCode))
++        if (keyModifier.matches(keyCode)) {
 +            keyModifier = net.neoforged.neoforge.client.settings.KeyModifier.NONE;
++        }
 +        MAP.remove(this);
 +        this.keyModifier = keyModifier;
 +        MAP.put(keyCode, this);
@@ -120,62 +126,65 @@
 +
      public boolean isDown() {
 -        return this.isDown;
-+        return this.isDown && isConflictContextAndModifierActive();
++        // Neo: take conflict context and modifier into account
++        return this.isDown && this.isConflictContextAndModifierActive();
      }
  
      public KeyMapping.Category getCategory() {
-@@ -159,6 +_,20 @@
+@@ -159,6 +_,21 @@
      }
  
      public boolean same(KeyMapping that) {
-+        if (getKeyConflictContext().conflicts(that.getKeyConflictContext()) || that.getKeyConflictContext().conflicts(getKeyConflictContext())) {
-+            net.neoforged.neoforge.client.settings.KeyModifier keyModifier = getKeyModifier();
++        // Neo: compare conflict contexts and modifiers
++        if (this.getKeyConflictContext().conflicts(that.getKeyConflictContext()) || that.getKeyConflictContext().conflicts(this.getKeyConflictContext())) {
++            net.neoforged.neoforge.client.settings.KeyModifier keyModifier = this.getKeyModifier();
 +            net.neoforged.neoforge.client.settings.KeyModifier otherKeyModifier = that.getKeyModifier();
-+            if (keyModifier.matches(that.getKey()) || otherKeyModifier.matches(getKey())) {
++            if (keyModifier.matches(that.getKey()) || otherKeyModifier.matches(this.getKey())) {
 +                return true;
-+            } else if (getKey().equals(that.getKey())) {
++            } else if (this.getKey().equals(that.getKey())) {
 +                // IN_GAME key contexts have a conflict when at least one modifier is NONE.
 +                // For example: If you hold shift to crouch, you can still press E to open your inventory. This means that a Shift+E hotkey is in conflict with E.
 +                // GUI and other key contexts do not have this limitation.
 +                return keyModifier == otherKeyModifier ||
-+                    (getKeyConflictContext().conflicts(net.neoforged.neoforge.client.settings.KeyConflictContext.IN_GAME) &&
++                    (this.getKeyConflictContext().conflicts(net.neoforged.neoforge.client.settings.KeyConflictContext.IN_GAME) &&
 +                    (keyModifier == net.neoforged.neoforge.client.settings.KeyModifier.NONE || otherKeyModifier == net.neoforged.neoforge.client.settings.KeyModifier.NONE));
 +            }
 +        }
          return this.key.equals(that.key);
      }
  
-@@ -179,11 +_,13 @@
+@@ -179,11 +_,15 @@
      }
  
      public Component getTranslatedKeyMessage() {
-+        return getKeyModifier().getCombinedName(key, () -> {
++        // Neo: include modifier in key name
++        return this.getKeyModifier().getCombinedName(this.key, () -> {
          return this.key.getDisplayName();
 +        });
      }
  
      public boolean isDefault() {
 -        return this.key.equals(this.defaultKey);
-+        return this.key.equals(this.defaultKey) && getKeyModifier() == getDefaultKeyModifier();
++        // Neo: check key modifier
++        return this.key.equals(this.defaultKey) && this.getKeyModifier() == this.getDefaultKeyModifier();
      }
  
      public String saveString() {
-@@ -195,7 +_,7 @@
+@@ -195,7 +_,8 @@
      }
  
      private void registerMapping(InputConstants.Key key) {
 -        MAP.computeIfAbsent(key, k -> new ArrayList<>()).add(this);
++        // Neo: use custom key mapping storage
 +        MAP.put(key, this);
      }
  
      public static @Nullable KeyMapping get(String name) {
-@@ -217,6 +_,10 @@
+@@ -217,6 +_,8 @@
              return register(Identifier.withDefaultNamespace(name));
          }
  
-+        /**
-+         * @deprecated Neo: use {@link net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent#registerCategory(Category)} instead
-+         */
++        /// @deprecated Neo: use [net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent#registerCategory(Category)] instead
 +        @Deprecated
          public static KeyMapping.Category register(Identifier id) {
              KeyMapping.Category category = new KeyMapping.Category(id);

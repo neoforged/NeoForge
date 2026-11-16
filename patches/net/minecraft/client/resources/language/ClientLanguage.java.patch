@@ -1,9 +1,10 @@
 --- a/net/minecraft/client/resources/language/ClientLanguage.java
 +++ b/net/minecraft/client/resources/language/ClientLanguage.java
-@@ -22,25 +_,35 @@
+@@ -22,25 +_,37 @@
  public class ClientLanguage extends Language {
      private static final Logger LOGGER = LogUtils.getLogger();
      private final Map<String, String> storage;
++    /// Neo: holds full components loaded from language files
 +    private final Map<String, net.minecraft.network.chat.Component> componentStorage;
      private final boolean defaultRightToLeft;
  
@@ -21,6 +22,7 @@
  
      public static ClientLanguage loadFrom(ResourceManager resourceManager, List<String> languageStack, boolean defaultRightToLeft) {
          Map<String, String> translations = new HashMap<>();
++        // Neo: add support for full components in language files
 +        Map<String, net.minecraft.network.chat.Component> componentMap = new HashMap<>();
  
          for (String languageCode : languageStack) {
@@ -37,7 +39,7 @@
                      hasAnyTranslations = true;
                  }
              }
-@@ -51,13 +_,19 @@
+@@ -51,13 +_,21 @@
          }
  
          DeprecatedTranslationsInfo.loadFromDefaultResource().applyToMap(translations);
@@ -51,27 +53,31 @@
 +        appendFrom(languageCode, resources, translations, new java.util.HashMap<>());
 +    }
 +
++    /// Neo: overload of [#appendFrom(String, List, Map)] with support for loading full components
 +    private static void appendFrom(String languageCode, List<Resource> resources, Map<String, String> translations, Map<String, net.minecraft.network.chat.Component> componentMap) {
          for (Resource resource : resources) {
              try (InputStream inputStream = resource.open()) {
 -                Language.loadFromJson(inputStream, translations::put);
++                // Neo: add support for full components in language files
 +                Language.loadFromJson(inputStream, translations::put, componentMap::put);
              } catch (IOException e) {
                  LOGGER.warn("Failed to load translations for {} from pack {}", languageCode, resource.sourcePackId(), e);
              }
-@@ -82,5 +_,15 @@
+@@ -82,5 +_,17 @@
      @Override
      public FormattedCharSequence getVisualOrder(FormattedText logicalOrderText) {
          return FormattedBidiReorder.reorder(logicalOrderText, this.defaultRightToLeft);
 +    }
 +
++    /// Neo: {@return the full language data}
 +    @Override
 +    public Map<String, String> getLanguageData() {
-+        return storage;
++        return this.storage;
 +    }
 +
++    /// Neo: {@return the component for the given translation key}
 +    @Override
 +    public net.minecraft.network.chat.@org.jspecify.annotations.Nullable Component getComponent(String key) {
-+        return componentStorage.get(key);
++        return this.componentStorage.get(key);
      }
  }

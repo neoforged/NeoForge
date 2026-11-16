@@ -1,14 +1,15 @@
 --- a/net/minecraft/data/tags/BannerPatternTagsProvider.java
 +++ b/net/minecraft/data/tags/BannerPatternTagsProvider.java
-@@ -9,8 +_,13 @@
+@@ -9,8 +_,14 @@
  import net.minecraft.world.level.block.entity.BannerPatterns;
  
  public class BannerPatternTagsProvider extends TagsProvider<BannerPattern> {
-+    /** @deprecated Forge: Use the {@linkplain #BannerPatternTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
++    /// @deprecated Neo: Use the [mod id variant][#BannerPatternTagsProvider(PackOutput, CompletableFuture, String)]
 +    @Deprecated
      public BannerPatternTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
          super(output, Registries.BANNER_PATTERN, lookupProvider);
 +    }
++
 +    public BannerPatternTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
 +        super(output, Registries.BANNER_PATTERN, lookupProvider, modId);
      }

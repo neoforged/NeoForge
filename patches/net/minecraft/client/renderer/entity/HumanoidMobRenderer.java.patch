@@ -1,10 +1,11 @@
 --- a/net/minecraft/client/renderer/entity/HumanoidMobRenderer.java
 +++ b/net/minecraft/client/renderer/entity/HumanoidMobRenderer.java
-@@ -59,7 +_,7 @@
+@@ -59,7 +_,8 @@
          state.isCrouching = entity.isCrouching();
          state.isFallFlying = entity.isFallFlying();
          state.isVisuallySwimming = entity.isVisuallySwimming();
 -        state.isPassenger = entity.isPassenger();
++        // Neo: let the vehicle entity determine whether the passenger should be in the "sitting" position
 +        state.isPassenger = entity.isPassenger() && (entity.getVehicle() != null && entity.getVehicle().shouldRiderSit());
          state.speedValue = 1.0F;
          if (state.isFallFlying) {

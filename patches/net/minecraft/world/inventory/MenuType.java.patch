@@ -1,17 +1,18 @@
 --- a/net/minecraft/world/inventory/MenuType.java
 +++ b/net/minecraft/world/inventory/MenuType.java
-@@ -57,6 +_,14 @@
+@@ -56,6 +_,15 @@
+         return this.constructor.create(containerId, inventory);
      }
  
-     @Override
-+    public T create(int windowId, Inventory playerInv, net.minecraft.network.RegistryFriendlyByteBuf extraData) {
-+        if (this.constructor instanceof net.neoforged.neoforge.network.IContainerFactory) {
-+            return ((net.neoforged.neoforge.network.IContainerFactory<T>) this.constructor).create(windowId, playerInv, extraData);
++    /// Neo: instantiate a menu of this type with the given extended context
++    @Override
++    public T create(int containerId, Inventory inventory, net.minecraft.network.RegistryFriendlyByteBuf extraData) {
++        if (this.constructor instanceof net.neoforged.neoforge.network.IContainerFactory<T> factory) {
++            return factory.create(containerId, inventory, extraData);
 +        }
-+        return create(windowId, playerInv);
++        return this.create(containerId, inventory);
 +    }
 +
-+    @Override
+     @Override
      public FeatureFlagSet requiredFeatures() {
          return this.requiredFeatures;
-     }

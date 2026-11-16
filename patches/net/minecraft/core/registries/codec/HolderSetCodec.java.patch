@@ -47,7 +47,7 @@
                      : this.tagKeyOrValuesCodec.encode(Either.left(named.key()), ops, prefix);
              }
 +        } else if (input instanceof net.neoforged.neoforge.registries.holdersets.ICustomHolderSet<E> customHolderSet) {
-+            // FORGE: use the dispatch codec to encode custom holdersets, otherwise fall back to vanilla tag/list
++            // Neo: use the dispatch codec to encode custom holdersets, otherwise fall back to vanilla tag/list
 +            return this.customDispatchCodec.encode(customHolderSet, ops, prefix);
          } else {
              return this.tagKeyOrValuesCodec.encode(Either.right(input.stream().toList()), ops, prefix);

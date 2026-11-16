@@ -5,7 +5,7 @@
          }
  
 -        if (this.timeInOverworld > 300) {
-+        if (this.timeInOverworld > 300 && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityTypes.ZOMBIFIED_PIGLIN, (timer) -> this.timeInOverworld = timer)) {
++        if (this.timeInOverworld > 300 && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityTypes.ZOMBIFIED_PIGLIN, timer -> this.timeInOverworld = timer)) {
              if (level.getDifficulty() != Difficulty.PEACEFUL) {
                  this.playConvertedSound();
              }

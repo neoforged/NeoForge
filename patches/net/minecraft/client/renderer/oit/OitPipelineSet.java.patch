@@ -14,14 +14,12 @@
          return new OitPipelineSet.Builder(builder.buildSnippet(), locationSuffix);
      }
  
-@@ -26,13 +_,23 @@
-         private static final Consumer<RenderPipeline.Builder> DISABLE_DEPTH_TEST = builder -> builder.withDepthStencilState(Optional.empty());
-         private final RenderPipeline.Snippet baseSnippet;
-         private final String locationSuffix;
-+        private final net.minecraft.resources.Identifier locationSuffixId;
+@@ -29,10 +_,21 @@
          private Optional<Consumer<RenderPipeline.Builder>> depthBoundsModifier = Optional.empty();
          private Optional<Consumer<RenderPipeline.Builder>> transmittanceModifier = Optional.empty();
          private Optional<Consumer<RenderPipeline.Builder>> accumulateModifier = Optional.empty();
++        /// Neo: stores the namespaced location suffix
++        private final net.minecraft.resources.Identifier locationSuffixId;
  
 +        /// @deprecated Neo: use [#Builder(RenderPipeline.Snippet, net.minecraft.resources.Identifier)] instead
 +        @Deprecated
@@ -43,15 +41,15 @@
          public OitPipelineSet build() {
              RenderPipeline.Builder depthBoundsBuilder = RenderPipeline.builder(this.baseSnippet, RenderPipelines.OIT_DEPTH_BOUNDS_SNIPPET)
 -                .withLocation("pipeline/oit_depth_bounds_" + this.locationSuffix);
-+                .withLocation(this.locationSuffixId.withPrefix("pipeline/oit_depth_bounds_"));
++                .withLocation(this.locationSuffixId.withPrefix("pipeline/oit_depth_bounds_")); // Neo: build location with namespaced suffix
              this.depthBoundsModifier.ifPresent(modifier -> modifier.accept(depthBoundsBuilder));
              RenderPipeline.Builder transmittanceBuilder = RenderPipeline.builder(this.baseSnippet, RenderPipelines.OIT_TRANSMITTANCE_SNIPPET)
 -                .withLocation("pipeline/oit_transmittance_" + this.locationSuffix);
-+                .withLocation(this.locationSuffixId.withPrefix("pipeline/oit_transmittance_"));
++                .withLocation(this.locationSuffixId.withPrefix("pipeline/oit_transmittance_")); // Neo: build location with namespaced suffix
              this.transmittanceModifier.ifPresent(modifier -> modifier.accept(transmittanceBuilder));
              RenderPipeline.Builder accumulateBuilder = RenderPipeline.builder(this.baseSnippet, RenderPipelines.OIT_ACCUMULATE_SNIPPET)
 -                .withLocation("pipeline/oit_accumulate_" + this.locationSuffix);
-+                .withLocation(this.locationSuffixId.withPrefix("pipeline/oit_accumulate_"));
++                .withLocation(this.locationSuffixId.withPrefix("pipeline/oit_accumulate_")); // Neo: build location with namespaced suffix
              this.accumulateModifier.ifPresent(modifier -> modifier.accept(accumulateBuilder));
              return new OitPipelineSet(depthBoundsBuilder.build(), transmittanceBuilder.build(), accumulateBuilder.build());
          }

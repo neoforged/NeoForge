@@ -1,51 +1,60 @@
 --- a/net/minecraft/world/level/block/CropBlock.java
 +++ b/net/minecraft/world/level/block/CropBlock.java
-@@ -70,12 +_,14 @@
+@@ -70,12 +_,17 @@
  
      @Override
      protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-+        if (!level.isAreaLoaded(pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
++        // Neo: prevent loading unloaded chunks when checking neighbor's light
++        if (!level.isAreaLoaded(pos, 1)) {
++            return;
++        }
          if (level.getRawBrightness(pos, 0) >= 9) {
              int age = this.getAge(state);
              if (age < this.getMaxAge()) {
 -                float growthSpeed = getGrowthSpeed(this, level, pos);
 -                if (random.nextInt((int)(25.0F / growthSpeed) + 1) == 0) {
-+                float f = getGrowthSpeed(state, level, pos);
-+                if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, random.nextInt((int)(25.0F / f) + 1) == 0)) {
++                float growthSpeed = getGrowthSpeed(state, level, pos);
++                if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(level, pos, state, random.nextInt((int) (25.0F / growthSpeed) + 1) == 0)) {
                      level.setBlock(pos, this.getStateForAge(age + 1), 2);
 +                    net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(level, pos, state);
                  }
              }
          }
-@@ -90,7 +_,8 @@
+@@ -90,7 +_,9 @@
          return Mth.nextInt(level.getRandom(), 2, 5);
      }
  
 -    protected static float getGrowthSpeed(Block type, BlockGetter level, BlockPos pos) {
++    // Neo: add full blockstate context for the crop
 +    protected static float getGrowthSpeed(BlockState cropBlockState, BlockGetter level, BlockPos pos) {
 +        Block type = cropBlockState.getBlock();
          float speed = 1.0F;
          BlockPos below = pos.below();
  
-@@ -98,9 +_,10 @@
+@@ -98,9 +_,12 @@
              for (int zz = -1; zz <= 1; zz++) {
                  float blockSpeed = 0.0F;
                  BlockState blockState = level.getBlockState(below.offset(xx, 0, zz));
 -                if (blockState.is(BlockTags.GROWS_CROPS)) {
-+                var soilDecision = blockState.canSustainPlant(level, below.offset(xx, 0, zz), net.minecraft.core.Direction.UP, blockState);
++                // Neo: let the block decide whether it can sustain this plant
++                var soilDecision = blockState.canSustainPlant(level, below.offset(xx, 0, zz), net.minecraft.core.Direction.UP, cropBlockState);
 +                if (soilDecision.isDefault() ? blockState.is(BlockTags.GROWS_CROPS) : soilDecision.isTrue()) {
                      blockSpeed = 1.0F;
 -                    if (blockState.getValueOrElse(FarmlandBlock.MOISTURE, 0) > 0) {
++                    // Neo: let the block decide whether it provides a growth speed boost
 +                    if (blockState.isFertile(level, pos.offset(xx, 0, zz))) {
                          blockSpeed = 3.0F;
                      }
                  }
-@@ -136,6 +_,8 @@
+@@ -136,6 +_,11 @@
  
      @Override
      protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
++        // Neo: let the block decide whether it can sustain this plant
 +        var soilDecision = level.getBlockState(pos.below()).canSustainPlant(level, pos.below(), net.minecraft.core.Direction.UP, state);
-+        if (!soilDecision.isDefault()) return soilDecision.isTrue();
++        if (!soilDecision.isDefault()) {
++            return soilDecision.isTrue();
++        }
          return hasSufficientLight(level, pos) && super.canSurvive(state, level, pos);
      }
  
