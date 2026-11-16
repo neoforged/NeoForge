@@ -34,7 +34,7 @@
 +            var existingPacks = optionSet.valuesOf(existingOption).stream().map(Path::of).toList();
 +            // Neo: holds the mod IDs to dispatch GatherDataEvent to
 +            var mods = new java.util.HashSet<>(optionSet.valuesOf(modOption));
-+            // Neo: indicates whether the output directory should not be suffixed by mod IDs
++            // Neo: indicates whether the specified output directory should not be suffixed by mod IDs
 +            boolean flat = mods.isEmpty() || optionSet.has(flatOption);
 +            // Neo: indicates whether validators should run
 +            boolean validate = optionSet.has(validateOption);
