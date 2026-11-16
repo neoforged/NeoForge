@@ -18,9 +18,16 @@ import net.neoforged.neoforge.common.extensions.IBlockExtension;
 import net.neoforged.neoforge.common.extensions.IItemExtension;
 
 public class ItemAbilities {
-    /**
-     * Exposed by shears to allow querying tool behaviours
-     */
+    /// The *_DIG abilities are used to query if an item behaves like the target tool for block-breaking purposes.
+    ///
+    /// They should be used to classify an item as a particular tool (for placement in slots, checking if the player has "any pickaxe", etc).
+    /// Prefer these over checking item tags for this purpose, or trying to introspect the Tool component.
+
+    public static final ItemAbility AXE_DIG = ItemAbility.get("axe_dig");
+    public static final ItemAbility PICKAXE_DIG = ItemAbility.get("pickaxe_dig");
+    public static final ItemAbility SHOVEL_DIG = ItemAbility.get("shovel_dig");
+    public static final ItemAbility HOE_DIG = ItemAbility.get("hoe_dig");
+    public static final ItemAbility SWORD_DIG = ItemAbility.get("sword_dig");
     public static final ItemAbility SHEARS_DIG = ItemAbility.get("shears_dig");
 
     /**
