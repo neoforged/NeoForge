@@ -1,9 +1,11 @@
 --- a/net/minecraft/client/multiplayer/ServerData.java
 +++ b/net/minecraft/client/multiplayer/ServerData.java
-@@ -36,6 +_,7 @@
+@@ -36,6 +_,9 @@
      private ServerData.Type type;
      private int acceptedCodeOfConduct;
      private ServerData.State state = ServerData.State.INITIAL;
++    /// @deprecated Neo: mod list data is no longer sent to the client for display in the server list screen
++    @Deprecated(forRemoval = true, since = "26.3")
 +    public net.neoforged.neoforge.client.ExtendedServerListData neoForgeData = null;
  
      public ServerData(String name, String ip, ServerData.Type type) {

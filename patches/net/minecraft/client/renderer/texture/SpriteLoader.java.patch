@@ -1,10 +1,11 @@
 --- a/net/minecraft/client/renderer/texture/SpriteLoader.java
 +++ b/net/minecraft/client/renderer/texture/SpriteLoader.java
-@@ -126,7 +_,7 @@
+@@ -126,7 +_,8 @@
          ResourceManager manager, Identifier atlasInfoLocation, int maxMipmapLevels, Executor taskExecutor, Set<MetadataSectionType<?>> additionalMetadata
      ) {
          SpriteResourceLoader spriteResourceLoader = SpriteResourceLoader.create(additionalMetadata);
 -        return CompletableFuture.<List<SpriteSource.Loader>>supplyAsync(() -> SpriteSourceList.load(manager, atlasInfoLocation).list(manager), taskExecutor)
++        // Neo: pass additional metadata types to the sprite sources
 +        return CompletableFuture.<List<SpriteSource.Loader>>supplyAsync(() -> SpriteSourceList.load(manager, atlasInfoLocation).list(manager, additionalMetadata), taskExecutor)
              .thenCompose(sprites -> runSpriteSuppliers(spriteResourceLoader, (List<SpriteSource.Loader>)sprites, taskExecutor))
              .thenApply(resources -> this.stitch((List<SpriteContents>)resources, maxMipmapLevels, taskExecutor));

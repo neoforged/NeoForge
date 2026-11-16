@@ -11,7 +11,7 @@
                  poseStack.pushPose();
                  poseStack.translate(decoration.x / 2.0F + 64.0F, decoration.y / 2.0F + 64.0F, -0.02F);
                  poseStack.rotateDegrees(Axis.ZP, decoration.rot * 360 / 16.0F);
-@@ -84,13 +_,15 @@
+@@ -84,13 +_,16 @@
          mapRenderState.texture = this.mapTextureManager.prepareMapTexture(mapId, mapData);
          mapRenderState.decorations.clear();
  
@@ -24,6 +24,7 @@
  
      private MapRenderState.MapDecorationRenderState extractDecorationRenderState(MapDecoration decoration) {
          MapRenderState.MapDecorationRenderState state = new MapRenderState.MapDecorationRenderState();
++        // Neo: capture decoration type for custom decoration renderers
 +        state.type = decoration.type();
          state.atlasSprite = this.decorationSprites.getSprite(decoration.getSpriteLocation());
          state.x = decoration.x();

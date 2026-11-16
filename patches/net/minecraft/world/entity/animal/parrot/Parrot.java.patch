@@ -8,7 +8,7 @@
 +            return input != null && (Parrot.MOB_SOUND_MAP.containsKey(input.getType()) || input.getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.PARROT_IMITATIONS) != null);
          }
      };
-+    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#PARROT_IMITATIONS data map} instead */
++    /// @deprecated Neo: use the [`data map`][net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#PARROT_IMITATIONS] instead
 +    @Deprecated
      private static final Map<EntityType<?>, SoundEvent> MOB_SOUND_MAP = Util.make(Maps.newHashMap(), map -> {
          map.put(EntityTypes.BLAZE, SoundEvents.PARROT_IMITATE_BLAZE);
@@ -22,11 +22,12 @@
                      this.tame(player);
                      this.level().broadcastEntityEvent(this, (byte)7);
                  } else {
-@@ -303,7 +_,7 @@
+@@ -303,7 +_,8 @@
          return false;
      }
  
 -    public static boolean checkParrotSpawnRules(EntityType<Parrot> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
++    // Neo: widen generic to support subclasses
 +    public static boolean checkParrotSpawnRules(EntityType<? extends Parrot> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
          return level.getBlockState(pos.below()).is(BlockTags.PARROTS_SPAWNABLE_ON) && isBrightEnoughToSpawn(level, pos);
      }
@@ -43,14 +44,13 @@
              return getImitatedSound(keys.get(random.nextInt(keys.size())));
          } else {
              return SoundEvents.PARROT_AMBIENT;
-@@ -336,7 +_,9 @@
+@@ -336,7 +_,8 @@
      }
  
      private static SoundEvent getImitatedSound(EntityType<?> id) {
 -        return MOB_SOUND_MAP.getOrDefault(id, SoundEvents.PARROT_AMBIENT);
 +        var imitation = id.builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.PARROT_IMITATIONS);
-+        if (imitation != null) return imitation.sound();
-+        return SoundEvents.PARROT_AMBIENT;
++        return imitation != null ? imitation.sound() : SoundEvents.PARROT_AMBIENT;
      }
  
      @Override

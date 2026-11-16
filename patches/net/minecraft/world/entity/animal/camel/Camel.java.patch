@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/entity/animal/camel/Camel.java
 +++ b/net/minecraft/world/entity/animal/camel/Camel.java
-@@ -141,7 +_,7 @@
+@@ -141,7 +_,8 @@
          return super.finalizeSpawn(level, difficulty, spawnReason, groupData);
      }
  
 -    public static boolean checkCamelSpawnRules(EntityType<Camel> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
++    // Neo: widen generic to support subclasses
 +    public static boolean checkCamelSpawnRules(EntityType<? extends Camel> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
          return level.getBlockState(pos.below()).is(BlockTags.CAMELS_SPAWNABLE_ON) && isBrightEnoughToSpawn(level, pos);
      }

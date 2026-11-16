@@ -1,32 +1,37 @@
 --- a/net/minecraft/client/gui/screens/options/controls/KeyBindsScreen.java
 +++ b/net/minecraft/client/gui/screens/options/controls/KeyBindsScreen.java
-@@ -24,6 +_,13 @@
+@@ -24,6 +_,16 @@
      public long lastKeySelection;
      private KeyBindsList keyBindsList;
      private Button resetButton;
-+    // Neo: These are to hold the last key and modifier pressed so they can be checked in keyReleased
++    /// Neo: holds the last pressed key for use in [#keyReleased] to configure the selected key mapping
 +    private InputConstants.Key lastPressedKey = InputConstants.UNKNOWN;
++    /// Neo: holds the last pressed modifier key for use in [#keyReleased] to configure the selected key mapping
 +    private InputConstants.Key lastPressedModifier = InputConstants.UNKNOWN;
++    /// Neo: indicates whether the last pressed key is still held down
 +    private boolean isLastKeyHeldDown = false;
++    /// Neo: indicates whether the last pressed modifier key is still held down
 +    private boolean isLastModifierHeldDown = false;
-+    // Neo: Used by KeyBindsList to ensure the key press that assigns selectedKey is ignored on release (doesn't itself get set as the value)
++    /// Neo: set by KeyBindsList to ensure the key press that assigns selectedKey is ignored on release (doesn't itself get set as the value)
 +    boolean ignoreNextRelease = false;
  
      public KeyBindsScreen(Screen lastScreen, Options options) {
          super(lastScreen, options, TITLE);
-@@ -42,7 +_,7 @@
+@@ -42,7 +_,8 @@
      protected void addFooter() {
          this.resetButton = Button.builder(Component.translatable("controls.resetAll"), button -> {
              for (KeyMapping key : this.options.keyMappings) {
 -                key.setKey(key.getDefaultKey());
++                // Neo: reset to default, including the key modifier
 +                key.setToDefault();
              }
  
              this.keyBindsList.resetMappingAndUpdateButtons();
-@@ -77,18 +_,65 @@
+@@ -77,18 +_,67 @@
      @Override
      public boolean keyPressed(KeyEvent event) {
          if (this.selectedKey != null) {
++            // Neo: capture the pressed key for use in keyReleased to allow combining with a modifier
 +            var key = InputConstants.getKey(event);
 +            if (this.lastPressedModifier == InputConstants.UNKNOWN && net.neoforged.neoforge.client.settings.KeyModifier.isKeyCodeModifier(key)) {
 +                this.lastPressedModifier = key;
@@ -43,7 +48,8 @@
 +
 +    @Override
 +    public boolean keyReleased(KeyEvent event) {
-+        if (!ignoreNextRelease && this.selectedKey != null) {
++        // Neo: apply captured key and modifier
++        if (!this.ignoreNextRelease && this.selectedKey != null) {
              if (event.isEscape()) {
 +                this.selectedKey.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.NONE, InputConstants.UNKNOWN);
                  this.selectedKey.setKey(InputConstants.UNKNOWN);

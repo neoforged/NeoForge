@@ -34,12 +34,12 @@
 +            @Override
 +            @org.jspecify.annotations.Nullable
 +            default <A> A getData(net.neoforged.neoforge.registries.datamaps.DataMapType<T, A> type, ResourceKey<T> key) {
-+                return parent().getData(type, key);
++                return this.parent().getData(type, key);
 +            }
 +
 +            @Override
 +            default <A> Map<ResourceKey<T>, A> getDataMap(net.neoforged.neoforge.registries.datamaps.DataMapType<T, A> type) {
-+                return parent().getDataMap(type);
++                return this.parent().getDataMap(type);
              }
          }
      }

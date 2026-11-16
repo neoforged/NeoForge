@@ -1,12 +1,14 @@
 --- a/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
 +++ b/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
-@@ -434,8 +_,8 @@
+@@ -434,8 +_,10 @@
  
      public Vec3 getRedstoneDirection(BlockPos pos) {
          BlockState state = this.level().getBlockState(pos);
 -        if (state.is(Blocks.POWERED_RAIL) && state.getValue(PoweredRailBlock.POWERED)) {
 -            RailShape shape = state.getValue(((BaseRailBlock)state.getBlock()).getShapeProperty());
++        // Neo: add support for modded powered rails
 +        if (state.getBlock() instanceof PoweredRailBlock poweredRail && !poweredRail.isActivatorRail() && state.getValue(PoweredRailBlock.POWERED)) {
++            // Neo: give modded rails more control over their shape
 +            RailShape shape = ((BaseRailBlock)state.getBlock()).getRailDirection(state, this.level(), pos, this);
              if (shape == RailShape.EAST_WEST) {
                  if (this.isRedstoneConductor(pos.west())) {

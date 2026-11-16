@@ -1,8 +1,10 @@
 --- a/net/minecraft/world/entity/monster/zombie/ZombifiedPiglin.java
 +++ b/net/minecraft/world/entity/monster/zombie/ZombifiedPiglin.java
-@@ -168,7 +_,7 @@
+@@ -167,8 +_,9 @@
+         this.setTimeToRemainAngry(PERSISTENT_ANGER_TIME.sample(this.random));
      }
  
++    // Neo: widen generic to support subclasses
      public static boolean checkZombifiedPiglinSpawnRules(
 -        EntityType<ZombifiedPiglin> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
 +        EntityType<? extends ZombifiedPiglin> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random

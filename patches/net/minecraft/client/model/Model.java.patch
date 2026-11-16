@@ -1,9 +1,10 @@
 --- a/net/minecraft/client/model/Model.java
 +++ b/net/minecraft/client/model/Model.java
-@@ -23,6 +_,10 @@
+@@ -23,6 +_,11 @@
          this.allParts = root.getAllParts();
      }
  
++    /// Neo: provide access to keyframe animations loaded from JSON
 +    protected static net.neoforged.neoforge.client.entity.animation.json.AnimationHolder getAnimation(Identifier key) {
 +        return net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.INSTANCE.getAnimationHolder(key);
 +    }

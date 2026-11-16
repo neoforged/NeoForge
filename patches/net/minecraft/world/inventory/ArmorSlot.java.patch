@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/inventory/ArmorSlot.java
 +++ b/net/minecraft/world/inventory/ArmorSlot.java
-@@ -35,7 +_,7 @@
+@@ -35,7 +_,8 @@
  
      @Override
      public boolean mayPlace(ItemStack itemStack) {
 -        return this.owner.isEquippableInSlot(itemStack, this.slot);
++        // Neo: let the item decide whether it can be equipped
 +        return itemStack.canEquip(this.slot, this.owner);
      }
  

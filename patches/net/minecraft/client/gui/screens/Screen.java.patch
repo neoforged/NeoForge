@@ -13,11 +13,12 @@
          graphics.extractDeferredElements(mouseX, mouseY, a);
      }
  
-@@ -202,7 +_,7 @@
+@@ -202,7 +_,8 @@
      }
  
      public void onClose() {
 -        this.minecraft.gui.setScreen(null);
++        // Neo: pop this screen off the layer stack instead of clearing the entire layer stack
 +        this.minecraft.gui.popScreenLayer();
      }
  
@@ -27,7 +28,7 @@
      public static List<Component> getTooltipFromItem(Minecraft minecraft, ItemStack itemStack) {
          return itemStack.getTooltipLines(
 -            Item.TooltipContext.of(minecraft.level),
-+            Item.TooltipContext.of(minecraft.level, minecraft.player),
++            Item.TooltipContext.of(minecraft.level, minecraft.player), // Neo: provide player context
              minecraft.player,
 -            minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL
 +            net.neoforged.neoforge.client.ClientTooltipFlag.of(minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL)
@@ -58,31 +59,26 @@
      }
  
      protected void fadeWidgets(float widgetFade) {
-@@ -467,6 +_,10 @@
-     public void onFilesDrop(List<Path> files) {
-     }
- 
-+    public Minecraft getMinecraft() {
-+        return this.minecraft;
-+    }
-+
-     private void scheduleNarration(long delay, boolean ignoreSuppression, NarrationTrigger narrationTrigger) {
-         this.nextNarrationTime = Util.getMillis() + delay;
-         this.nextNarrationTriggeredBy = narrationTrigger;
-@@ -619,6 +_,16 @@
+@@ -619,6 +_,22 @@
  
      public @Nullable Music getBackgroundMusic() {
          return null;
 +    }
 +
++    /// Neo: {@return the minecraft instance}
++    public Minecraft getMinecraft() {
++        return this.minecraft;
++    }
++
++    /// Neo: helper for adding widgets via screen init events
 +    private void addEventWidget(GuiEventListener listener) {
-+        if (listener instanceof Renderable r) {
-+            this.renderables.add(r);
++        if (listener instanceof Renderable renderable) {
++            this.renderables.add(renderable);
 +        }
-+        if (listener instanceof NarratableEntry ne) {
-+            this.narratables.add(ne);
++        if (listener instanceof NarratableEntry narratable) {
++            this.narratables.add(narratable);
 +        }
-+        children.add(listener);
++        this.children.add(listener);
      }
  
      public record NarratableSearchResult(NarratableEntry entry, int index, NarratableEntry.NarrationPriority priority) {

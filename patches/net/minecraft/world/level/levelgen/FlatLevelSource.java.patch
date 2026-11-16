@@ -4,7 +4,7 @@
          i -> i.group(FlatLevelGeneratorSettings.CODEC.fieldOf("settings").forGetter(FlatLevelSource::settings)).apply(i, i.stable(FlatLevelSource::new))
      );
      private final FlatLevelGeneratorSettings settings;
-+    // Neo: Store the memoized generation settings getter, so the cache can be cleared later
++    /// Neo: holds the memoized generation settings getter, so the cache can be cleared later
 +    private final net.neoforged.neoforge.common.util.MemoizedFunction<Holder<net.minecraft.world.level.biome.Biome>, net.minecraft.world.level.biome.BiomeGenerationSettings> generationSettingsGetter;
  
      public FlatLevelSource(FlatLevelGeneratorSettings generatorSettings) {
@@ -19,7 +19,7 @@
          return -63;
 +    }
 +
-+    // Neo: clear the cache for the generation settings getter on refresh
++    /// Neo: clear the cache for the generation settings getter on refresh
 +    @Override
 +    public void refreshFeaturesPerStep() {
 +        super.refreshFeaturesPerStep();

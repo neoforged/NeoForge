@@ -1,12 +1,14 @@
 --- a/net/minecraft/world/level/blockscan/BlockMatcher.java
 +++ b/net/minecraft/world/level/blockscan/BlockMatcher.java
-@@ -8,8 +_,10 @@
+@@ -8,8 +_,12 @@
  
  public abstract class BlockMatcher {
      private static final Predicate<BlockState> NO_PREDICATE = var0 -> true;
++    /// Neo: holds the default predicate when no position-sensitive predicate is specified
 +    static final java.util.function.BiPredicate<BlockState, BlockPos> NO_POSITION_PREDICATE = (_, _) -> true;
      protected final LevelReader level;
      protected Predicate<BlockState> statePredicate = NO_PREDICATE;
++    /// Neo: holds the configured position-sensitive predicate
 +    protected java.util.function.BiPredicate<BlockState, BlockPos> positionPredicate = NO_POSITION_PREDICATE;
  
      public BlockMatcher(LevelReader levelReader) {
@@ -34,7 +36,7 @@
      public abstract boolean atLeastMatched(final int n);
  
      public boolean atMostMatched(int n) {
-@@ -27,16 +_,25 @@
+@@ -27,16 +_,27 @@
      }
  
      public boolean anyMatched() {
@@ -46,9 +48,11 @@
 +    }
 +
 +    protected boolean anyMatched(final Predicate<BlockState> statePredicate) {
++        // Neo: make non-abstract and defer to method below with no position-sensitive predicate
 +        return this.anyMatched(statePredicate, NO_POSITION_PREDICATE);
 +    }
 +
++    /// Neo: {@return whether any block matched both predicates}
 +    protected abstract boolean anyMatched(final Predicate<BlockState> statePredicate, final java.util.function.BiPredicate<BlockState, BlockPos> predicate);
  
      public boolean noneMatched() {

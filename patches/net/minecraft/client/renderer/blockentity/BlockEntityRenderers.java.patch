@@ -1,10 +1,11 @@
 --- a/net/minecraft/client/renderer/blockentity/BlockEntityRenderers.java
 +++ b/net/minecraft/client/renderer/blockentity/BlockEntityRenderers.java
-@@ -14,7 +_,7 @@
+@@ -14,7 +_,8 @@
  
  @OnlyIn(Dist.CLIENT)
  public class BlockEntityRenderers {
 -    private static final Map<BlockEntityType<?>, BlockEntityRendererProvider<?, ?>> PROVIDERS = Maps.newHashMap();
++    // Neo: make BER registration thread-safe in case mods bypass the registration event
 +    private static final Map<BlockEntityType<?>, BlockEntityRendererProvider<?, ?>> PROVIDERS = new java.util.concurrent.ConcurrentHashMap<>();
  
      public static <T extends BlockEntity, S extends BlockEntityRenderState> void register(

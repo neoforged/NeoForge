@@ -19,10 +19,11 @@
  
      public void reset() {
          this.hasPlayer = false;
-@@ -30,6 +_,10 @@
+@@ -30,6 +_,11 @@
          this.blockOverlay = null;
          this.waterOverlay = null;
          this.itemActivation = null;
++        // Neo: reset custom render data and overlay renderers
 +        this.resetRenderData();
 +        this.customBlockOverlayRenderer = null;
 +        this.customFluidOverlayRenderer = null;

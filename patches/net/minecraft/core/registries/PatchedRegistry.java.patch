@@ -1,11 +1,12 @@
 --- a/net/minecraft/core/registries/PatchedRegistry.java
 +++ b/net/minecraft/core/registries/PatchedRegistry.java
-@@ -73,8 +_,13 @@
+@@ -73,8 +_,14 @@
          }
  
          HolderLookup.RegistryLookup<T> patchContents = patchProvider.lookupOrThrow(registryKey);
 -        HolderLookup.RegistryLookup<T> baseContents = baseProvider.lookupOrThrow(registryKey);
 -        Lifecycle lifecycle = patchContents.registryLifecycle().add(baseContents.registryLifecycle());
++        // Neo: allow the patch target to be absent from the base registries
 +        Optional<? extends HolderLookup.RegistryLookup<T>> maybeBaseContents = baseProvider.lookup(registryKey);
 +        Lifecycle lifecycle;
 +        if (maybeBaseContents.isPresent()) {

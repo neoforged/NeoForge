@@ -13,12 +13,13 @@
  
                  mob.setPersistenceRequired();
                  nextSpawnData.getEquipment().ifPresent(mob::equip);
-@@ -424,5 +_,13 @@
+@@ -424,5 +_,14 @@
          TrialSpawnerState getState();
  
          void markUpdated();
 +    }
 +
++    /// Neo: {@return the owner of this spawner}
 +    @Override
 +    public com.mojang.datafixers.util.@org.jspecify.annotations.Nullable Either<net.minecraft.world.level.block.entity.BlockEntity, Entity> getOwner() {
 +        if (this.stateAccessor instanceof net.minecraft.world.level.block.entity.TrialSpawnerBlockEntity be) {

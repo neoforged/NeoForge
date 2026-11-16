@@ -29,7 +29,7 @@
  
          for (RecipeBookComponent.TabInfo tabInfo : this.tabInfos) {
 -            this.tabButtons.add(new RecipeBookTabButton(0, 0, tabInfo, this::onTabButtonPress));
-+            this.tabButtons.add(createTabButton(0, 0, tabInfo, this::onTabButtonPress));
++            this.tabButtons.add(this.createTabButton(0, 0, tabInfo, this::onTabButtonPress));
          }
  
          if (this.selectedTab != null) {

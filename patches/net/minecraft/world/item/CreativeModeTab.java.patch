@@ -1,67 +1,69 @@
 --- a/net/minecraft/world/item/CreativeModeTab.java
 +++ b/net/minecraft/world/item/CreativeModeTab.java
-@@ -11,6 +_,8 @@
+@@ -11,6 +_,10 @@
  import org.jspecify.annotations.Nullable;
  
  public class CreativeModeTab {
-+    private static final net.minecraft.resources.Identifier SCROLLER_SPRITE = net.minecraft.resources.Identifier.withDefaultNamespace("container/creative_inventory/scroller");
-+    private static final net.minecraft.resources.Identifier SCROLLER_DISABLED_SPRITE = net.minecraft.resources.Identifier.withDefaultNamespace("container/creative_inventory/scroller_disabled");
++    /// Neo: holds the default scroller sprite
++    private static final Identifier SCROLLER_SPRITE = Identifier.withDefaultNamespace("container/creative_inventory/scroller");
++    /// Neo: holds the default disabled scroller sprite
++    private static final Identifier SCROLLER_DISABLED_SPRITE = Identifier.withDefaultNamespace("container/creative_inventory/scroller_disabled");
      private static final Identifier DEFAULT_BACKGROUND = createTextureLocation("items");
      private final Component displayName;
      private Identifier backgroundTexture = DEFAULT_BACKGROUND;
-@@ -25,6 +_,12 @@
+@@ -25,6 +_,22 @@
      private Set<ItemStack> displayItemsSearchTab = ItemStackLinkedSet.createTypeAndComponentsSet();
      private final Supplier<ItemStack> iconGenerator;
      private final CreativeModeTab.DisplayItemsGenerator displayItemsGenerator;
-+    private final net.minecraft.resources.@Nullable Identifier scrollerSpriteLocation;
++    /// Neo: holds the scroller sprite to use in this tab
++    private final @Nullable Identifier scrollerSpriteLocation;
++    /// Neo: indicates whether this tab has a search bar
 +    private final boolean hasSearchBar;
++    /// Neo: holds the width of the search bar
 +    private final int searchBarWidth;
++    /// Neo: holds the text color of the tab title
 +    private final int labelColor;
-+    public final java.util.List<net.minecraft.resources.Identifier> tabsBefore;
-+    public final java.util.List<net.minecraft.resources.Identifier> tabsAfter;
++    /// Neo: holds the IDs of tabs which should appear before this tab
++    public final java.util.List<Identifier> tabsBefore;
++    /// Neo: holds the IDs of tabs which should appear after this tab
++    public final java.util.List<Identifier> tabsAfter;
++
++    protected CreativeModeTab(CreativeModeTab.Builder builder) {
++        this(builder.row, builder.column, builder.type, builder.displayName, builder.iconGenerator, builder.displayItemsGenerator, builder.spriteScrollerLocation, builder.hasSearchBar, builder.searchBarWidth, builder.labelColor, builder.tabsBefore, builder.tabsAfter);
++    }
  
      private CreativeModeTab(
          CreativeModeTab.Row row,
-@@ -32,7 +_,13 @@
-         CreativeModeTab.Type type,
+@@ -33,7 +_,19 @@
          Component displayName,
          Supplier<ItemStack> iconGenerator,
--        CreativeModeTab.DisplayItemsGenerator displayItemsGenerator
-+        CreativeModeTab.DisplayItemsGenerator displayItemsGenerator,
-+        net.minecraft.resources.Identifier scrollerSpriteLocation,
+         CreativeModeTab.DisplayItemsGenerator displayItemsGenerator
++        , @Nullable Identifier scrollerSpriteLocation,
 +        boolean hasSearchBar,
 +        int searchBarWidth,
 +        int labelColor,
-+        java.util.List<net.minecraft.resources.Identifier> tabsBefore,
-+        java.util.List<net.minecraft.resources.Identifier> tabsAfter
++        java.util.List<Identifier> tabsBefore,
++        java.util.List<Identifier> tabsAfter
      ) {
-         this.row = row;
-         this.column = column;
-@@ -40,12 +_,27 @@
-         this.iconGenerator = iconGenerator;
-         this.displayItemsGenerator = displayItemsGenerator;
-         this.type = type;
 +        this.scrollerSpriteLocation = scrollerSpriteLocation;
 +        this.hasSearchBar = hasSearchBar;
 +        this.searchBarWidth = searchBarWidth;
 +        this.labelColor = labelColor;
 +        this.tabsBefore = java.util.List.copyOf(tabsBefore);
 +        this.tabsAfter = java.util.List.copyOf(tabsAfter);
-+    }
-+
-+    protected CreativeModeTab(CreativeModeTab.Builder builder) {
-+        this(builder.row, builder.column, builder.type, builder.displayName, builder.iconGenerator, builder.displayItemsGenerator, builder.spriteScrollerLocation, builder.hasSearchBar, builder.searchBarWidth, builder.labelColor, builder.tabsBefore, builder.tabsAfter);
-+    }
-+
-+    public static CreativeModeTab.Builder builder() {
-+        return new CreativeModeTab.Builder(Row.TOP, 0);
-     }
- 
-     public static Identifier createTextureLocation(String name) {
+         this.row = row;
+         this.column = column;
+         this.displayName = displayName;
+@@ -46,6 +_,12 @@
          return Identifier.withDefaultNamespace("textures/gui/container/creative_inventory/tab_" + name + ".png");
      }
  
-+    /** @deprecated Forge: use {@link #builder()} **/ @Deprecated
++    public static CreativeModeTab.Builder builder() {
++        return new CreativeModeTab.Builder(Row.TOP, 0);
++    }
++
++    /// @deprecated Neo: use [#builder()] instead
++    @Deprecated
      public static CreativeModeTab.Builder builder(CreativeModeTab.Row row, int column) {
          return new CreativeModeTab.Builder(row, column);
      }
@@ -74,134 +76,143 @@
          this.displayItems = displayList.tabContents;
          this.displayItemsSearchTab = displayList.searchTabContents;
      }
-@@ -117,8 +_,27 @@
+@@ -117,8 +_,33 @@
          return this.displayItemsSearchTab.contains(stack);
      }
  
++    /// Neo: {@return whether this tab has a search bar}
 +    public boolean hasSearchBar() {
 +        return this.hasSearchBar;
 +    }
 +
++    /// Neo: {@return the width of the search bar}
 +    public int getSearchBarWidth() {
-+        return searchBarWidth;
++        return this.searchBarWidth;
 +    }
 +
++    /// Neo: {@return the text color of this tab's title}
 +    public int getLabelColor() {
-+        return labelColor;
++        return this.labelColor;
 +    }
 +
++    /// Neo: {@return the scroller sprite to use in this tab}
 +    public net.minecraft.resources.Identifier getScrollerSprite() {
-+        if (scrollerSpriteLocation == null)
++        if (this.scrollerSpriteLocation == null) {
 +            return this.canScroll() ? SCROLLER_SPRITE : SCROLLER_DISABLED_SPRITE;
-+        return scrollerSpriteLocation;
++        }
++        return this.scrollerSpriteLocation;
 +    }
 +
      public static class Builder {
          private static final CreativeModeTab.DisplayItemsGenerator EMPTY_GENERATOR = (parameters, output) -> {};
-+        private static final net.minecraft.resources.Identifier CREATIVE_ITEM_SEARCH_BACKGROUND = createTextureLocation("item_search");
++        /// Neo: holds the default background for tabs with a search bar
++        private static final Identifier CREATIVE_ITEM_SEARCH_BACKGROUND = createTextureLocation("item_search");
          private final CreativeModeTab.Row row;
          private final int column;
          private Component displayName = Component.empty();
-@@ -129,6 +_,13 @@
+@@ -129,6 +_,20 @@
          private boolean alignedRight = false;
          private CreativeModeTab.Type type = CreativeModeTab.Type.CATEGORY;
          private Identifier backgroundTexture = CreativeModeTab.DEFAULT_BACKGROUND;
-+        private net.minecraft.resources.@Nullable Identifier spriteScrollerLocation;
++        /// Neo: holds the scroller sprite to use in this tab
++        private @Nullable Identifier spriteScrollerLocation;
++        /// Neo: indicates whether this tab has a search bar
 +        private boolean hasSearchBar = false;
++        /// Neo: holds the width of the search bar
 +        private int searchBarWidth = 89;
++        /// Neo: holds the text color of the tab title
 +        private int labelColor = -12566464;
++        /// Neo: holds the function to use for constructing the tab
 +        private java.util.function.Function<CreativeModeTab.Builder, CreativeModeTab> tabFactory = CreativeModeTab::new;
-+        private final java.util.List<net.minecraft.resources.Identifier> tabsBefore = new java.util.ArrayList<>();
-+        private final java.util.List<net.minecraft.resources.Identifier> tabsAfter = new java.util.ArrayList<>();
++        /// Neo: holds the IDs of tabs which should appear before this tab
++        private final java.util.List<Identifier> tabsBefore = new java.util.ArrayList<>();
++        /// Neo: holds the IDs of tabs which should appear after this tab
++        private final java.util.List<Identifier> tabsAfter = new java.util.ArrayList<>();
  
          public Builder(CreativeModeTab.Row row, int column) {
              this.row = row;
-@@ -167,6 +_,8 @@
+@@ -167,6 +_,9 @@
  
          protected CreativeModeTab.Builder type(CreativeModeTab.Type type) {
              this.type = type;
-+            if (type == Type.SEARCH)
++            if (type == Type.SEARCH) {
 +                return this.withSearchBar();
++            }
              return this;
          }
  
-@@ -175,12 +_,94 @@
+@@ -175,12 +_,90 @@
              return this;
          }
  
-+        /**
-+         * Gives this tab a search bar.
-+         * <p>Note that, if using a custom {@link #backgroundTexture(net.minecraft.resources.Identifier) background image}, you will need to make sure that your image contains the input box and the scroll bar.</p>
-+         */
++        /// Neo: give this tab a search bar.
++        ///
++        /// Note that, if using a custom [`background image`][#backgroundTexture(Identifier)], you will need
++        /// to make sure that your image contains the input box and the scroll bar.
 +        public CreativeModeTab.Builder withSearchBar() {
 +            this.hasSearchBar = true;
-+            if (this.backgroundTexture == CreativeModeTab.DEFAULT_BACKGROUND)
++            if (this.backgroundTexture == CreativeModeTab.DEFAULT_BACKGROUND) {
 +                return this.backgroundTexture(CREATIVE_ITEM_SEARCH_BACKGROUND);
++            }
 +            return this;
 +        }
 +
-+        /**
-+         * Gives this tab a search bar, with a specific width.
-+         * @param searchBarWidth the width of the search bar
-+         */
++        /// Neo: give this tab a search bar, with a specific width.
++        /// @param searchBarWidth the width of the search bar
 +        public CreativeModeTab.Builder withSearchBar(int searchBarWidth) {
 +            this.searchBarWidth = searchBarWidth;
-+            return withSearchBar();
++            return this.withSearchBar();
 +        }
 +
-+        /**
-+         * Sets the location of the scroll bar background.
-+         */
-+        public CreativeModeTab.Builder withScrollBarSpriteLocation(net.minecraft.resources.Identifier scrollBarSpriteLocation) {
++        /// Neo: set the location of the scroll bar background.
++        public CreativeModeTab.Builder withScrollBarSpriteLocation(Identifier scrollBarSpriteLocation) {
 +            this.spriteScrollerLocation = scrollBarSpriteLocation;
 +            return this;
 +        }
 +
-+        /**
-+         * Sets the color of the tab label.
-+         */
++        /// Neo: set the color of the tab label.
 +        public CreativeModeTab.Builder withLabelColor(int labelColor) {
 +            this.labelColor = labelColor;
 +            return this;
 +        }
 +
++        /// Neo: define the function to use for constructing the final tab
 +        public CreativeModeTab.Builder withTabFactory(java.util.function.Function<CreativeModeTab.Builder, CreativeModeTab> tabFactory) {
 +            this.tabFactory = tabFactory;
 +            return this;
 +        }
 +
-+        /** Define tabs that should come <i>before</i> this tab. This tab will be placed <strong>after</strong> the {@code tabs}. **/
-+        public CreativeModeTab.Builder withTabsBefore(net.minecraft.resources.Identifier... tabs) {
++        /// Neo: define tabs that should come _before_ this tab. This tab will be placed **after** the `tabs`.
++        public CreativeModeTab.Builder withTabsBefore(Identifier... tabs) {
 +            this.tabsBefore.addAll(java.util.List.of(tabs));
 +            return this;
 +        }
 +
-+        /** Define tabs that should come <i>after</i> this tab. This tab will be placed <strong>before</strong> the {@code tabs}.**/
-+        public CreativeModeTab.Builder withTabsAfter(net.minecraft.resources.Identifier... tabs) {
++        /// Neo: define tabs that should come _after_ this tab. This tab will be placed **before** the `tabs`.
++        public CreativeModeTab.Builder withTabsAfter(Identifier... tabs) {
 +            this.tabsAfter.addAll(java.util.List.of(tabs));
 +            return this;
 +        }
 +
-+        /** Define tabs that should come <i>before</i> this tab. This tab will be placed <strong>after</strong> the {@code tabs}. **/
++        /// Neo: define tabs that should come _before_ this tab. This tab will be placed **after** the `tabs`.
 +        @SafeVarargs
 +        public final CreativeModeTab.Builder withTabsBefore(net.minecraft.resources.ResourceKey<CreativeModeTab>... tabs) {
 +            java.util.stream.Stream.of(tabs).map(net.minecraft.resources.ResourceKey::identifier).forEach(this.tabsBefore::add);
 +            return this;
 +        }
 +
-+        /** Define tabs that should come <i>after</i> this tab. This tab will be placed <strong>before</strong> the {@code tabs}.**/
++        /// Neo: define tabs that should come _after_ this tab. This tab will be placed **before** the `tabs`.
 +        @SafeVarargs
 +        public final CreativeModeTab.Builder withTabsAfter(net.minecraft.resources.ResourceKey<CreativeModeTab>... tabs) {
 +            java.util.stream.Stream.of(tabs).map(net.minecraft.resources.ResourceKey::identifier).forEach(this.tabsAfter::add);
 +            return this;
 +        }
 +
-+        /**
-+         * Helper to set this tabs contents to everything in the supplied Collection of Holders.
-+         * Intended for use with {@link net.neoforged.neoforge.registries.DeferredRegister#getEntries()}, for Item or Block DeferredRegisters.
-+         * Entries added through this method are filtered out if {@link ItemLike#asItem()} returns {@link Items#AIR} or if disabled via {@link Item#isEnabled(FeatureFlagSet)}.
-+         * Note that like the vanilla method this overrides any other calls for this tab to {@link #displayItems}.
-+         */
++        /// Neo: helper to set this tab's contents to everything in the supplied Collection of Holders.
++        ///
++        /// Intended for use with [net.neoforged.neoforge.registries.DeferredRegister#getEntries()], for Item or Block DeferredRegisters.
++        /// Entries added through this method are filtered out if [ItemLike#asItem()] returns [Items#AIR] or if disabled via [Item#isEnabled(FeatureFlagSet)].
++        /// Note that like the vanilla method this overrides any other calls for this tab to [#displayItems].
 +        public CreativeModeTab.Builder displayItems(Collection<? extends net.minecraft.core.Holder<? extends ItemLike>> collection) {
 +            return this.displayItems((p, o) -> collection.stream()
 +                    .map(net.minecraft.core.Holder::value)
@@ -217,7 +228,8 @@
              }
  
 -            CreativeModeTab tab = new CreativeModeTab(this.row, this.column, this.type, this.displayName, this.iconGenerator, this.displayItemsGenerator);
-+            CreativeModeTab tab = tabFactory.apply(this);
++            // Neo: construct the tab with the configured factory
++            CreativeModeTab tab = this.tabFactory.apply(this);
              tab.alignedRight = this.alignedRight;
              tab.showTitle = this.showTitle;
              tab.canScroll = this.canScroll;

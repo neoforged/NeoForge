@@ -1,30 +1,29 @@
 --- a/net/minecraft/client/renderer/state/level/BlockOutlineRenderState.java
 +++ b/net/minecraft/client/renderer/state/level/BlockOutlineRenderState.java
-@@ -14,9 +_,28 @@
-     VoxelShape shape,
+@@ -15,8 +_,29 @@
      @Nullable VoxelShape collisionShape,
      @Nullable VoxelShape occlusionShape,
--    @Nullable VoxelShape interactionShape
-+    @Nullable VoxelShape interactionShape,
-+    java.util.List<net.neoforged.neoforge.client.CustomBlockOutlineRenderer> customRenderers
+     @Nullable VoxelShape interactionShape
++    , java.util.List<net.neoforged.neoforge.client.CustomBlockOutlineRenderer> customRenderers
  ) {
++    /// @deprecated Neo: use [#BlockOutlineRenderState(BlockPos, boolean, boolean, VoxelShape, VoxelShape, VoxelShape, VoxelShape, java.util.List)] instead
 +    @Deprecated
 +    public BlockOutlineRenderState(
-+            BlockPos pos,
-+            boolean isTranslucent,
-+            boolean highContrast,
-+            VoxelShape shape,
-+            @Nullable VoxelShape collisionShape,
-+            @Nullable VoxelShape occlusionShape,
-+            @Nullable VoxelShape interactionShape
++        BlockPos pos,
++        boolean isTranslucent,
++        boolean highContrast,
++        VoxelShape shape,
++        @Nullable VoxelShape collisionShape,
++        @Nullable VoxelShape occlusionShape,
++        @Nullable VoxelShape interactionShape
 +    ) {
 +        this(pos, isTranslucent, highContrast, shape, collisionShape, occlusionShape, interactionShape, java.util.List.of());
 +    }
 +
++    /// @deprecated Neo: use [#BlockOutlineRenderState(BlockPos, boolean, boolean, VoxelShape, java.util.List)] instead
 +    @Deprecated
      public BlockOutlineRenderState(BlockPos pos, boolean isTranslucent, boolean highContrast, VoxelShape shape) {
--        this(pos, isTranslucent, highContrast, shape, null, null, null);
-+        this(pos, isTranslucent, highContrast, shape, java.util.List.of());
+         this(pos, isTranslucent, highContrast, shape, null, null, null);
 +    }
 +
 +    public BlockOutlineRenderState(BlockPos pos, boolean isTranslucent, boolean highContrast, VoxelShape shape, java.util.List<net.neoforged.neoforge.client.CustomBlockOutlineRenderer> customRenderers) {

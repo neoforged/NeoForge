@@ -25,12 +25,13 @@
          this.loadingErrors = loadingErrors;
          this.concurrentRegistrationGetter = new ConcurrentHolderGetter<>(this.registryWriteLock, this.registry.createRegistrationLookup());
      }
-@@ -60,7 +_,13 @@
+@@ -60,7 +_,14 @@
              elements.forEach(
                  element -> element.value
                      .ifLeft(value -> this.registry.register(element.key, (T)value, element.registrationInfo))
 -                    .ifRight(error -> this.loadingErrors.put(element.key, error))
 +                    .ifRight(error -> {
++                        // Neo: ignore marker exceptions for elements disabled by loading conditions or LootTableLoadEvent
 +                        if (error == SKIPPED_CONDITIONAL_ELEMENT_MARKER) {
 +                            LOGGER.debug("Skipping loading registry entry {} as its conditions were not met", element.key);
 +                        } else if (error != SKIPPED_ELEMENT_MARKER) {
@@ -46,7 +47,7 @@
                  JsonElement json = StrictJsonParser.parse(reader);
 -                return Either.left(elementDecoder.parse(ops, json).getOrThrow());
 +
-+                // Neo: Allow a condition to skip the entire element, in which case we return a special marker error to skip it in the loader. Look for uses of SKIPPED_ELEMENT_MARKER
++                // Neo: Allow a condition to skip the entire element, in which case we return a special marker error to skip it in the loader. Look for uses of SKIPPED_CONDITIONAL_ELEMENT_MARKER
 +                var conditionalDecoder = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.decodeOnly(elementDecoder));
 +                var candidate = conditionalDecoder.parse(ops, json).getOrThrow();
 +                if (candidate.isEmpty()) {
@@ -54,7 +55,7 @@
 +                }
 +
 +                var elementCandidate = candidate.get();
-+                // For loot tables, we fire the appropriate LootTableLoadEvent first; if the event hook returns null, skip it
++                // For loot tables, we fire the appropriate LootTableLoadEvent first; if the event hook returns null, skip it with the SKIPPED_ELEMENT_MARKER error
 +                if (elementKey.isFor(net.minecraft.core.registries.Registries.LOOT_TABLE) && elementCandidate instanceof net.minecraft.world.level.storage.loot.LootTable lootTable) {
 +                    lootTable.setLootTableId(elementKey.identifier());
 +                    var resultLootTable = net.neoforged.neoforge.event.EventHooks.loadLootTable(ops.lookupProvider::lookup, elementKey.identifier(), lootTable);

@@ -30,13 +30,13 @@
  
          this.server.getServerResourcePack().ifPresent(info -> this.configurationTasks.add(new ServerResourcePackConfigurationTask(info)));
 +
-+        // Neo: Gather modded configuration tasks and schedule them for execution
++        // Neo: gather modded configuration tasks and schedule them for execution
 +        this.configurationTasks.addAll(net.neoforged.fml.ModLoader.postEventWithReturn(new net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent(this)).getConfigurationTasks());
 +    }
 +
 +    @Override
 +    public void handleCustomPayload(net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket packet) {
-+        // Neo: Perform modded network initialization when the client sends their channel list.
++        // Neo: perform modded network initialization when the client sends their channel list.
 +        if (packet.payload() instanceof net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload moddedEnvironmentPayload) {
 +            this.connectionType = net.neoforged.neoforge.network.connection.ConnectionType.NEOFORGE;
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeNeoForgeConnection(this, moddedEnvironmentPayload.queries());
@@ -48,7 +48,7 @@
 +    @Override
 +    public void handlePong(net.minecraft.network.protocol.common.ServerboundPongPacket serverboundPongPacket) {
 +        super.handlePong(serverboundPongPacket);
-+        // During startConfiguration() we send a ping with id 0, if we get a pong back, we initiate the connection.
++        // Neo: during startConfiguration() we send a ping with id 0, if we get a pong back, we initiate the connection.
 +        if (serverboundPongPacket.getId() == 0) {
 +            if (!this.connectionType.isNeoForge() && !net.neoforged.neoforge.network.registration.NetworkRegistry.initializeOtherConnection(this)) {
 +                return;
@@ -58,26 +58,28 @@
      }
  
      @Override
-@@ -160,7 +_,13 @@
+@@ -160,7 +_,14 @@
      public void handleConfigurationFinished(ServerboundFinishConfigurationPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.server.packetProcessor());
          this.finishCurrentTask(JoinWorldTask.TYPE);
 -        this.connection.setupOutboundProtocol(GameProtocols.CLIENTBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess())));
++        // Neo: retain connection type over protocol switches
 +        this.connection.setupOutboundProtocol(GameProtocols.CLIENTBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(this.server.registryAccess(), this.connectionType)));
-+        // Packets can only be sent after the outbound protocol is set up again
++        // Neo: packets can only be sent after the outbound protocol is set up again
 +        if (this.connectionType == net.neoforged.neoforge.network.connection.ConnectionType.OTHER) {
-+            //We need to also initialize this here, as the client may have sent the packet before we have finished our configuration.
++            // Neo: we need to also initialize this here, as the client may have sent the packet before we have finished our configuration.
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.initializeNeoForgeConnection(this, java.util.Map.of());
 +        }
 +        net.neoforged.neoforge.network.registration.NetworkRegistry.onConfigurationFinished(this);
  
          try {
              PlayerList playerList = this.server.getPlayerList();
-@@ -175,7 +_,7 @@
+@@ -175,7 +_,8 @@
                  return;
              }
  
 -            Objects.requireNonNull(this.prepareSpawnTask).spawnPlayer(this.connection, this.createCookie(this.clientInformation));
++            // Neo: retain connection type over protocol switches
 +            Objects.requireNonNull(this.prepareSpawnTask).spawnPlayer(this.connection, this.createCookie(this.clientInformation, this.connectionType));
          } catch (Exception e) {
              LOGGER.error("Couldn't place player in world", e);

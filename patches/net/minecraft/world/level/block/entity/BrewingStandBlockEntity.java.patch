@@ -11,12 +11,13 @@
          for (int dest = 0; dest < 3; dest++) {
              ItemStack container = items.get(dest);
              BrewingInput input = new BrewingInput(container, ingredient);
-@@ -236,7 +_,8 @@
+@@ -236,7 +_,9 @@
              items.set(dest, recipe.isPresent() ? recipe.get().value().assemble(input) : container);
          }
  
 -        ItemStackTemplate remainder = ingredient.getItem().getCraftingRemainder();
 +        net.neoforged.neoforge.event.EventHooks.onPotionBrewed(items);
++        // Neo: use stack-sensitive remainder getter
 +        ItemStackTemplate remainder = ingredient.getCraftingRemainder();
          ingredient.shrink(1);
          if (remainder != null) {
