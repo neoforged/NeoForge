@@ -1,10 +1,11 @@
 --- a/com/mojang/blaze3d/resource/RenderTargetDescriptor.java
 +++ b/com/mojang/blaze3d/resource/RenderTargetDescriptor.java
-@@ -20,14 +_,18 @@
+@@ -20,14 +_,20 @@
      }
  
      public void prepare(RenderTarget resource) {
 -        if (this.color != null && this.depth != null && this.color.clearColor != null && this.depth.clearColor != null) {
++        // Neo: only clear depth if there is actually a depth component
 +        if (this.color != null && this.depth != null && this.color.clearColor != null && this.depth.clearColor != null && this.depth.format.hasDepthAspect()) {
              RenderSystem.getDevice()
                  .createCommandEncoder()
@@ -12,9 +13,10 @@
          } else if (this.color != null && this.color.clearColor != null) {
              RenderSystem.getDevice().createCommandEncoder().clearColorTexture(resource.getColorTexture(), this.color.clearColor);
 -        } else if (this.depth != null && this.depth.clearColor != null) {
-+        } else if (this.depth != null && this.depth.clearColor != null && this.depth.format.hasDepthAspect()) {
++        } else if (this.depth != null && this.depth.clearColor != null && this.depth.format.hasDepthAspect()) { // Neo: only clear depth if there is actually a depth component
              RenderSystem.getDevice().createCommandEncoder().clearDepthTexture(resource.getDepthTexture(), this.depth.clearColor.x());
 +        }
++        // Neo: clear stencil buffer if present, using the Y component of the depth clear "color" if depth is also present or X if depth is absent
 +        if (this.depth != null && this.depth.clearColor != null && this.depth.format.hasStencilAspect()) {
 +            int value = (int) (this.depth.format.hasDepthAspect() ? this.depth.clearColor.y() : this.depth.clearColor.x());
 +            RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(resource.getDepthTexture(), value);

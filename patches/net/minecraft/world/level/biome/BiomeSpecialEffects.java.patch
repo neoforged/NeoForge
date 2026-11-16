@@ -9,31 +9,32 @@
      public enum GrassColorModifier implements StringRepresentable, IExtensibleEnum {
          NONE("none") {
              @Override
-@@ -95,12 +_,22 @@
+@@ -95,11 +_,23 @@
          };
  
          private final String name;
++        /// Neo: holds the color modifier to apply
 +        private final ColorModifier delegate;
          public static final Codec<BiomeSpecialEffects.GrassColorModifier> CODEC = StringRepresentable.fromEnum(BiomeSpecialEffects.GrassColorModifier::values);
  
 -        public abstract int modifyColor(final double x, final double z, final int baseColor);
++        // Neo: make non-abstract and defer to delegate modifier
 +        public int modifyColor(double x, double z, int baseColor) {
-+            return delegate.modifyGrassColor(x, z, baseColor);
++            return this.delegate.modifyGrassColor(x, z, baseColor);
 +        }
  
 +        @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
          GrassColorModifier(String name) {
-             this.name = name;
-+            this.delegate = null;
++            this(name, (_, _, color) -> color);
 +        }
 +
++        /// Neo: constructor for modded grass color modifiers
 +        GrassColorModifier(String name, ColorModifier delegate) {
-+            this.name = name;
 +            this.delegate = delegate;
+             this.name = name;
          }
  
-         public String getName() {
-@@ -110,6 +_,15 @@
+@@ -110,6 +_,16 @@
          @Override
          public String getSerializedName() {
              return this.name;
@@ -43,6 +44,7 @@
 +            return net.neoforged.fml.common.asm.enumextension.ExtensionInfo.nonExtended(BiomeSpecialEffects.GrassColorModifier.class);
 +        }
 +
++        /// Neo: functional interface representing a modifier to apply to the grass color
 +        @FunctionalInterface
 +        public interface ColorModifier {
 +            int modifyGrassColor(double x, double z, int color);

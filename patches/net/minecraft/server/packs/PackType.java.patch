@@ -1,12 +1,13 @@
 --- a/net/minecraft/server/packs/PackType.java
 +++ b/net/minecraft/server/packs/PackType.java
-@@ -15,4 +_,9 @@
+@@ -15,4 +_,10 @@
      public String getDirectory() {
          return this.directory;
      }
 +
++    /// Neo: {@return the serialized name of this pack type}
 +    @Override
 +    public String getSerializedName() {
-+        return name().toLowerCase(java.util.Locale.ROOT);
++        return this.name().toLowerCase(java.util.Locale.ROOT);
 +    }
  }

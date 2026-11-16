@@ -1,15 +1,14 @@
 --- a/net/minecraft/world/inventory/EnchantmentMenu.java
 +++ b/net/minecraft/world/inventory/EnchantmentMenu.java
-@@ -61,7 +_,7 @@
+@@ -61,6 +_,7 @@
          this.addSlot(new Slot(this.enchantSlots, 1, 35, 47) {
              @Override
              public boolean mayPlace(ItemStack itemStack) {
--                return itemStack.is(Items.LAPIS_LAZULI);
-+                return itemStack.is(Items.LAPIS_LAZULI); // Neo: TODO - replace with the tag once we have client tags
++                // Neo: TODO - replace with the tag once we have client tags
+                 return itemStack.is(Items.LAPIS_LAZULI);
              }
  
-             @Override
-@@ -89,23 +_,24 @@
+@@ -89,23 +_,25 @@
              if (!itemStack.isEmpty() && itemStack.isEnchantable()) {
                  this.access.execute((level, pos) -> {
                      IdMap<Holder<Enchantment>> holders = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).asHolderIdMap();
@@ -19,6 +18,7 @@
                      for (BlockPos offset : EnchantingTableBlock.BOOKSHELF_OFFSETS) {
                          if (EnchantingTableBlock.isValidBookShelf(level, pos, offset)) {
 -                            bookcases++;
++                            // Neo: add support for modded bookshelfs with custom power bonus
 +                            bookcases += level.getBlockState(pos.offset(offset)).getEnchantPowerBonus(level, pos.offset(offset));
                          }
                      }

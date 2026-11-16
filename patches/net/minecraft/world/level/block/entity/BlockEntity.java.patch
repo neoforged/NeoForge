@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -40,9 +_,11 @@
+@@ -40,15 +_,22 @@
  
  import net.neoforged.neoforge.common.extensions.IBlockEntityExtension;
  
@@ -13,100 +13,105 @@
      private final BlockEntityType<?> type;
      protected @Nullable Level level;
      protected final BlockPos worldPosition;
-@@ -50,6 +_,11 @@
+     protected boolean remove;
      private BlockState blockState;
      private DataComponentMap components = DataComponentMap.EMPTY;
- 
++    /// Neo: injected ability to store arbitrary NBT onto block entities in ways that allow inter-mod compat without compile-time dependencies
 +    @Nullable
 +    private CompoundTag customPersistentData;
 +    @Nullable
 +    private Set<net.neoforged.neoforge.attachment.AttachmentType<?>> attachmentTypesToSync;
-+
+ 
      public BlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState) {
          this.type = type;
-         this.worldPosition = worldPosition.immutable();
 @@ -95,6 +_,8 @@
      }
  
      protected void loadAdditional(ValueInput input) {
 +        input.read("NeoForgeData", CompoundTag.CODEC).ifPresent(neoData -> this.customPersistentData = neoData);
-+        input.child(ATTACHMENTS_NBT_KEY).ifPresent(attachments -> this.deserializeAttachments(attachments));
++        input.child(ATTACHMENTS_NBT_KEY).ifPresent(this::deserializeAttachments);
      }
  
      public final void loadWithComponents(ValueInput input) {
-@@ -107,6 +_,11 @@
+@@ -107,6 +_,14 @@
      }
  
      protected void saveAdditional(ValueOutput output) {
-+        if (this.customPersistentData != null) output.store("NeoForgeData", CompoundTag.CODEC, this.customPersistentData.copy());
-+        HolderLookup.Provider registries = this.level != null ? this.level.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY;
-+        var attachments = output.child(ATTACHMENTS_NBT_KEY);
-+        serializeAttachments(attachments);
-+        if (attachments.isEmpty()) output.discard(ATTACHMENTS_NBT_KEY);
++        if (this.customPersistentData != null) {
++            output.store("NeoForgeData", CompoundTag.CODEC, this.customPersistentData.copy());
++        }
++        ValueOutput attachments = output.child(ATTACHMENTS_NBT_KEY);
++        this.serializeAttachments(attachments);
++        if (attachments.isEmpty()) {
++            output.discard(ATTACHMENTS_NBT_KEY);
++        }
      }
  
      public final CompoundTag saveWithFullMetadata(HolderLookup.Provider registries) {
-@@ -226,10 +_,14 @@
+@@ -226,10 +_,15 @@
  
      public void setRemoved() {
          this.remove = true;
++        // Neo: invalidate capabilities and trigger model data update on block entity removal
 +        this.invalidateCapabilities();
-+        requestModelDataUpdate();
++        this.requestModelDataUpdate();
      }
  
      public void clearRemoved() {
          this.remove = false;
 +        // Neo: invalidate capabilities on block entity placement
-+        invalidateCapabilities();
++        this.invalidateCapabilities();
      }
  
      public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-@@ -259,6 +_,48 @@
+@@ -333,6 +_,50 @@
  
-     public BlockEntityType<?> getType() {
-         return this.type;
+     @Override
+     public void registerDebugValues(ServerLevel level, DebugValueSource.Registration registration) {
 +    }
 +
++    /// Neo: {@return the persistent data NBT tag}
 +    @Override
 +    public CompoundTag getPersistentData() {
-+        if (this.customPersistentData == null)
++        if (this.customPersistentData == null) {
 +            this.customPersistentData = new CompoundTag();
++        }
 +        return this.customPersistentData;
 +    }
 +
 +    @Override
 +    @Nullable
 +    public final <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
-+        setChanged();
++        this.setChanged();
 +        return super.setData(type, data);
 +    }
 +
 +    @Override
 +    @Nullable
 +    public final <T> T removeData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
-+        setChanged();
++        this.setChanged();
 +        return super.removeData(type);
 +    }
 +
 +    @Override
 +    public final void syncData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
-+        if (!(level instanceof ServerLevel serverLevel)) {
++        if (!(this.level instanceof ServerLevel serverLevel)) {
 +            return;
 +        }
-+        if (attachmentTypesToSync == null) {
-+            attachmentTypesToSync = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
++        if (this.attachmentTypesToSync == null) {
++            this.attachmentTypesToSync = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
 +        }
-+        attachmentTypesToSync.add(type);
++        this.attachmentTypesToSync.add(type);
 +        // Schedule the BE for syncing
-+        serverLevel.getChunkSource().blockChanged(worldPosition);
++        serverLevel.getChunkSource().blockChanged(this.worldPosition);
 +    }
 +
 +    @Nullable
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public final Set<net.neoforged.neoforge.attachment.AttachmentType<?>> getAndClearAttachmentTypesToSync() {
-+        var ret = attachmentTypesToSync;
-+        attachmentTypesToSync = null;
++        var ret = this.attachmentTypesToSync;
++        this.attachmentTypesToSync = null;
 +        return ret;
      }
  
-     @Override
+     private record BlockEntityPathElement(BlockEntity blockEntity) implements ProblemReporter.PathElement {

@@ -1,19 +1,21 @@
 --- a/net/minecraft/server/WorldLoader.java
 +++ b/net/minecraft/server/WorldLoader.java
-@@ -39,7 +_,7 @@
+@@ -39,7 +_,8 @@
                      );
                      RegistryAccess.Frozen worldLoadContext = initialLayers.getAccessForLoading(RegistryLayer.WORLD);
                      List<HolderLookup.RegistryLookup<?>> worldContextRegistries = TagLoader.buildUpdatedLookups(worldLoadContext, staticLayerTags);
 -                    return RegistryDataLoader.load(resources, worldContextRegistries, RegistryDataLoader.WORLD_REGISTRIES, backgroundExecutor)
++                    // Neo: add pending tags for use in loading conditions
 +                    return RegistryDataLoader.load(resources, worldContextRegistries, RegistryDataLoader.WORLD_REGISTRIES, backgroundExecutor, staticLayerTags)
                          .thenComposeAsync(
                              loadedWorldRegistries -> {
                                  List<HolderLookup.RegistryLookup<?>> dimensionContextRegistries = Stream.concat(
-@@ -47,7 +_,7 @@
+@@ -47,7 +_,8 @@
                                      )
                                      .toList();
                                  return RegistryDataLoader.load(
 -                                        resources, dimensionContextRegistries, RegistryDataLoader.DIMENSION_REGISTRIES, backgroundExecutor
++                                        // Neo: add pending tags for use in loading conditions
 +                                        resources, dimensionContextRegistries, RegistryDataLoader.DIMENSION_REGISTRIES, backgroundExecutor, staticLayerTags
                                      )
                                      .thenComposeAsync(

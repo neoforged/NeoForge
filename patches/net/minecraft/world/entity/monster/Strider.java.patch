@@ -1,8 +1,10 @@
 --- a/net/minecraft/world/entity/monster/Strider.java
 +++ b/net/minecraft/world/entity/monster/Strider.java
-@@ -100,7 +_,7 @@
+@@ -99,8 +_,9 @@
+         this.setPathfindingMalus(PathType.FIRE, 0.0F);
      }
  
++    // Neo: widen generic to support subclasses
      public static boolean checkStriderSpawnRules(
 -        EntityType<Strider> ignoredType, LevelAccessor level, EntitySpawnReason ignoredSpawnType, BlockPos pos, RandomSource ignoredRandom
 +        EntityType<? extends Strider> ignoredType, LevelAccessor level, EntitySpawnReason ignoredSpawnType, BlockPos pos, RandomSource ignoredRandom

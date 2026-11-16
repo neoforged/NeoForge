@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/chunk/RenderSectionRegion.java
 +++ b/net/minecraft/client/renderer/chunk/RenderSectionRegion.java
-@@ -25,8 +_,15 @@
+@@ -25,8 +_,16 @@
      private final ClientLevel level;
      private final CardinalLighting cardinalLighting;
      private final LevelLightEngine lightEngine;
@@ -13,17 +13,10 @@
 +    }
 +
 +    RenderSectionRegion(ClientLevel level, int minSectionX, int minSectionY, int minSectionZ, SectionCopy[] sections, it.unimi.dsi.fastutil.longs.Long2ObjectFunction<net.neoforged.neoforge.model.data.ModelData> modelDataSnapshot) {
++        this.modelDataSnapshot = modelDataSnapshot;
          this.level = level;
          this.minSectionX = minSectionX;
          this.minSectionY = minSectionY;
-@@ -34,6 +_,7 @@
-         this.sections = sections;
-         this.cardinalLighting = level.cardinalLighting();
-         this.lightEngine = level.getLightEngine();
-+        this.modelDataSnapshot = modelDataSnapshot;
-     }
- 
-     @Override
 @@ -88,6 +_,16 @@
      @Override
      public int getHeight() {
@@ -32,7 +25,7 @@
 +
 +    @Override
 +    public net.neoforged.neoforge.model.data.ModelData getModelData(BlockPos pos) {
-+        return modelDataSnapshot.get(pos.asLong());
++        return this.modelDataSnapshot.get(pos.asLong());
 +    }
 +
 +    @Override

@@ -11,11 +11,12 @@
              ServerPlayer.this.connection.send(new ClientboundContainerSetDataPacket(container.containerId, id, value));
          }
  
-@@ -367,10 +_,17 @@
+@@ -367,10 +_,26 @@
          public void sendSystemMessage(Component message) {
              ServerPlayer.this.sendSystemMessage(message);
          }
 +
++        /// Neo: {@return the game profile of the player owning this command source}
 +        @Override
 +        public Optional<GameProfile> getGameProfile() {
 +            return Optional.of(ServerPlayer.this.getGameProfile());
@@ -24,8 +25,16 @@
      private Set<DebugSubscription<?>> requestedDebugSubscriptions = Set.of();
      private int containerCounter;
      public boolean wonGame;
-+    // Neo: Used to track partial TIME_SINCE_REST increases for dimensions in which clocks move at different speeds. No need to persist, at most Phantoms will spawn one tick too early for each save/load cycle.
++    /// Neo: Used to track partial TIME_SINCE_REST increases for dimensions in which clocks move at different speeds. No need to persist, at most Phantoms will spawn one tick too early for each save/load cycle.
 +    private float partialTimeSinceRestTick;
++    /// Neo: holds the player list header shown to this player
++    private Component tabListHeader = Component.empty();
++    /// Neo: holds the player list footer shown to this player
++    private Component tabListFooter = Component.empty();
++    /// Neo: we need this as tabListDisplayName may be null even if the event was fired.
++    private boolean hasTabListName = false;
++    @Nullable
++    private Component tabListDisplayName = null;
  
      public ServerPlayer(MinecraftServer server, ServerLevel level, GameProfile gameProfile, ClientInformation clientInformation) {
          super(level, gameProfile);
@@ -42,9 +51,9 @@
 +                    } else {
 +                        float speed = level().clockManager().getInstance(defaultClock.get()).rate();
 +                        int fullTicks = (int) speed;
-+                        partialTimeSinceRestTick += speed;
-+                        if (partialTimeSinceRestTick >= 1) {
-+                            partialTimeSinceRestTick = 0;
++                        this.partialTimeSinceRestTick += speed;
++                        if (this.partialTimeSinceRestTick >= 1) {
++                            this.partialTimeSinceRestTick = 0;
 +                            fullTicks++;
 +                        }
 +
@@ -53,14 +62,15 @@
 +                        }
 +                    }
 +                } else {
-+                    partialTimeSinceRestTick = 0;
++                    this.partialTimeSinceRestTick = 0;
                  }
              }
  
-@@ -730,6 +_,11 @@
+@@ -730,6 +_,12 @@
                  this.connection.send(new ClientboundSetExperiencePacket(this.experienceProgress, this.totalExperience, this.experienceLevel));
              }
  
++            // Neo: disable creative flight if it's no longer allowed by Abilities#mayfly or the attribute
 +            if (this.getAbilities().flying && !this.mayFly()) {
 +                this.getAbilities().flying = false;
 +                this.onUpdateAbilities();
@@ -69,20 +79,23 @@
              if (this.tickCount % 20 == 0) {
                  CriteriaTriggers.LOCATION.trigger(this);
              }
-@@ -743,7 +_,7 @@
+@@ -743,7 +_,8 @@
  
      private void synchronizeSpecialItemUpdates(ItemStack itemStack) {
          MapId mapId = itemStack.get(DataComponents.MAP_ID);
 -        MapItemSavedData data = MapItem.getSavedData(mapId, this.level());
++        // Neo: give items control over the source of the map data
 +        MapItemSavedData data = MapItem.getSavedData(itemStack, this.level());
          if (data != null) {
              Packet<?> packet = data.getUpdatePacket(mapId, this);
              if (packet != null) {
-@@ -892,6 +_,7 @@
+@@ -892,6 +_,9 @@
      @Override
      public void die(DamageSource source) {
          this.gameEvent(GameEvent.ENTITY_DIE);
-+        if (net.neoforged.neoforge.common.CommonHooks.onLivingDeath(this, source)) return;
++        if (net.neoforged.neoforge.common.CommonHooks.onLivingDeath(this, source)) {
++            return;
++        }
          boolean showDeathMessage = this.level().getGameRules().get(GameRules.SHOW_DEATH_MESSAGES);
          if (showDeathMessage) {
              Component deathMessage = this.getCombatTracker().getDeathMessage();
@@ -96,11 +109,13 @@
              }
  
              boolean freeBottom = block.isPossibleToRespawnInThis(blockState);
-@@ -1137,6 +_,7 @@
+@@ -1137,6 +_,9 @@
      }
  
      public @Nullable ServerPlayer teleport(TeleportTransition transition) {
-+        if (!net.neoforged.neoforge.common.CommonHooks.onTravelToDimension(this, transition.newLevel().dimension())) return null;
++        if (!net.neoforged.neoforge.common.CommonHooks.onTravelToDimension(this, transition.newLevel().dimension())) {
++            return null;
++        }
          if (this.isRemoved()) {
              return null;
          }
@@ -113,13 +128,7 @@
          ProfilerFiller profiler = Profiler.get();
          profiler.push("moving");
          if (lastDimension == Level.OVERWORLD && newLevel.dimension() == Level.NETHER) {
-@@ -1187,11 +_,15 @@
-         playerList.sendAllPlayerInfo(this);
-         playerList.sendActivePlayerEffects(this);
-         this.sendPostEffects();
-+        // TODO 1.21: Play custom teleport sound
-         transition.postTeleportTransition().onTransition(this);
-         this.lastSentExp = -1;
+@@ -1192,6 +_,9 @@
          this.lastSentHealth = -1.0F;
          this.lastSentFood = -1;
          this.teleportSpectators(transition, oldLevel);
@@ -184,15 +193,7 @@
      }
  
      @Override
-@@ -1300,6 +_,7 @@
-     }
- 
-     private boolean bedInRange(BlockPos pos, Direction direction) {
-+        if (direction == null) return false;
-         return this.isReachableBedBlock(pos) || this.isReachableBedBlock(pos.relative(direction.getOpposite()));
-     }
- 
-@@ -1384,12 +_,20 @@
+@@ -1384,11 +_,20 @@
  
      @Override
      public OptionalInt openMenu(@Nullable MenuProvider provider) {
@@ -206,36 +207,34 @@
          }
  
          if (this.containerMenu != this.inventoryMenu) {
-+            if (provider.shouldTriggerClientSideContainerClosingOnOpen())
-             this.closeContainer();
-+            else
++            // Neo: allow replacing the open menu/screen without re-centering the cursor
++            if (!provider.shouldTriggerClientSideContainerClosingOnOpen()) {
 +                this.doCloseContainer();
++            } else
+             this.closeContainer();
          }
  
-         this.nextContainerCounter();
-@@ -1401,9 +_,31 @@
+@@ -1401,9 +_,29 @@
  
              return OptionalInt.empty();
          } else {
 +            // Neo: Support sending additional arbitrary data to menu factories on the client-side
-+            var extraData = net.neoforged.neoforge.common.util.FriendlyByteBufUtil.writeCustomData(
++            byte[] extraData = net.neoforged.neoforge.common.util.FriendlyByteBufUtil.writeCustomData(
 +                    buffer -> {
 +                        provider.writeClientSideData(this, menu, buffer);
 +                        if (extraDataWriter != null) {
 +                            extraDataWriter.accept(buffer);
 +                        }
 +                    },
-+                    registryAccess()
++                    this.registryAccess()
 +            );
 +            if (extraData.length != 0) {
-+                this.connection.send(
-+                        new net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload(
-+                                menu.containerId,
-+                                menu.getType(),
-+                                provider.getDisplayName(),
-+                                extraData
-+                        )
-+                );
++                this.connection.send(new net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload(
++                        menu.containerId,
++                        menu.getType(),
++                        provider.getDisplayName(),
++                        extraData
++                ));
 +            } else {
              this.connection.send(new ClientboundOpenScreenPacket(menu.containerId, menu.getType(), provider.getDisplayName()));
 +            }
@@ -274,31 +273,35 @@
          this.setLastDeathLocation(oldPlayer.getLastDeathLocation());
          this.waypointIcon().copyFrom(oldPlayer.waypointIcon());
 +
-+        //Copy over a section of the Entity Data from the old player.
-+        //Allows mods to specify data that persists after players respawn.
++        // Neo: Copy over a section of the Entity Data from the old player. Allows mods to specify data that persists after players respawn.
 +        var old = oldPlayer.getPersistentData();
-+        if (old.contains(PERSISTED_NBT_TAG))
-+             getPersistentData().put(PERSISTED_NBT_TAG, old.get(PERSISTED_NBT_TAG));
++        if (old.contains(PERSISTED_NBT_TAG)) {
++            this.getPersistentData().put(PERSISTED_NBT_TAG, old.get(PERSISTED_NBT_TAG));
++        }
 +        net.neoforged.neoforge.event.EventHooks.onPlayerClone(this, oldPlayer, !restoreAll);
 +        this.tabListHeader = oldPlayer.tabListHeader;
 +        this.tabListFooter = oldPlayer.tabListFooter;
      }
  
      private void transferInventoryXpAndScore(Player oldPlayer) {
-@@ -1784,6 +_,8 @@
+@@ -1784,6 +_,10 @@
  
      public boolean setGameMode(GameType mode) {
          boolean wasSpectator = this.isSpectator();
 +        mode = net.neoforged.neoforge.common.CommonHooks.onChangeGameType(this, this.gameMode.getGameModeForPlayer(), mode);
-+        if (mode == null) return false;
++        if (mode == null) {
++            return false;
++        }
          if (!this.gameMode.changeGameModeForPlayer(mode)) {
              return false;
          }
-@@ -1957,6 +_,7 @@
+@@ -1957,6 +_,9 @@
      public void setCamera(@Nullable Entity newCamera) {
          Entity oldCamera = this.getCamera();
          this.camera = newCamera == null ? this : newCamera;
-+        while (this.camera instanceof net.neoforged.neoforge.entity.PartEntity<?> partEntity) this.camera = partEntity.getParent(); // Neo: fix MC-46486
++        while (this.camera instanceof net.neoforged.neoforge.entity.PartEntity<?> partEntity) {
++            this.camera = partEntity.getParent(); // Neo: fix MC-46486
++        }
          if (oldCamera != this.camera) {
              if (this.camera.level() instanceof ServerLevel level) {
                  this.teleportTo(level, this.camera.getX(), this.camera.getY(), this.camera.getZ(), Set.of(), this.getYRot(), this.getXRot(), false);
@@ -315,90 +318,16 @@
      }
  
      public int getTabListOrder() {
-@@ -2011,6 +_,7 @@
+@@ -2011,6 +_,9 @@
      }
  
      public void setRespawnPosition(ServerPlayer.@Nullable RespawnConfig respawnConfig, boolean showMessage) {
-+        if (net.neoforged.neoforge.event.EventHooks.onPlayerSpawnSet(this, respawnConfig)) return;
++        if (net.neoforged.neoforge.event.EventHooks.onPlayerSpawnSet(this, respawnConfig)) {
++            return;
++        }
          if (showMessage && respawnConfig != null && !respawnConfig.isSamePosition(this.respawnConfig)) {
              this.sendSystemMessage(SPAWN_SET_MESSAGE);
          }
-@@ -2048,6 +_,75 @@
-         return entity;
-     }
- 
-+    /**
-+     * Returns the language last reported by the player as their local language.
-+     * Defaults to en_us if the value is unknown.
-+     */
-+    public String getLanguage() {
-+        return this.language;
-+    }
-+
-+    private Component tabListHeader = Component.empty();
-+    private Component tabListFooter = Component.empty();
-+
-+    public Component getTabListHeader() {
-+        return this.tabListHeader;
-+    }
-+
-+    /**
-+     * Set the tab list header while preserving the footer.
-+     *
-+     * @param header the new header, or {@link Component#empty()} to clear
-+     */
-+    public void setTabListHeader(final Component header) {
-+        this.setTabListHeaderFooter(header, this.tabListFooter);
-+    }
-+
-+    public Component getTabListFooter() {
-+        return this.tabListFooter;
-+    }
-+
-+    /**
-+     * Set the tab list footer while preserving the header.
-+     *
-+     * @param footer the new footer, or {@link Component#empty()} to clear
-+     */
-+    public void setTabListFooter(final Component footer) {
-+        this.setTabListHeaderFooter(this.tabListHeader, footer);
-+    }
-+
-+    /**
-+     * Set the tab list header and footer at once.
-+     *
-+     * @param header the new header, or {@link Component#empty()} to clear
-+     * @param footer the new footer, or {@link Component#empty()} to clear
-+     */
-+    public void setTabListHeaderFooter(final Component header, final Component footer) {
-+        if (java.util.Objects.equals(header, this.tabListHeader)
-+                && java.util.Objects.equals(footer, this.tabListFooter)) {
-+            return;
-+        }
-+
-+        this.tabListHeader = java.util.Objects.requireNonNull(header, "header");
-+        this.tabListFooter = java.util.Objects.requireNonNull(footer, "footer");
-+
-+        this.connection.send(new net.minecraft.network.protocol.game.ClientboundTabListPacket(header, footer));
-+    }
-+
-+    // We need this as tablistDisplayname may be null even if the event was fired.
-+    private boolean hasTabListName = false;
-+    private Component tabListDisplayName = null;
-+    /**
-+     * Force the name displayed in the tab list to refresh, by firing {@link net.neoforged.neoforge.event.entity.player.PlayerEvent.TabListNameFormat}.
-+     */
-+    public void refreshTabListName() {
-+        Component oldName = this.tabListDisplayName;
-+        this.tabListDisplayName = net.neoforged.neoforge.event.EventHooks.getPlayerTabListDisplayName(this);
-+        if (!java.util.Objects.equals(oldName, this.tabListDisplayName)) {
-+            this.server.getPlayerList().broadcastAll(new net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket(net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME, this));
-+        }
-+    }
-+
-     public TextFilter getTextFilter() {
-         return this.textFilter;
-     }
 @@ -2062,6 +_,9 @@
      }
  
@@ -409,12 +338,75 @@
          GameType forcedGameType = this.server.getForcedGameType();
          if (forcedGameType == null
              || !(this.server instanceof DedicatedServer) && this.server.getProfilePermissions(this.nameAndId()).hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
-@@ -2099,6 +_,8 @@
+@@ -2099,6 +_,11 @@
  
      public void drop(boolean all) {
          Inventory inventory = this.getInventory();
 +        ItemStack selected = inventory.getSelectedItem();
-+        if (selected.isEmpty() || !selected.onDroppedByPlayer(this)) return;
++        // Neo: let the item control whether it can be dropped
++        if (selected.isEmpty() || !selected.onDroppedByPlayer(this)) {
++            return;
++        }
          ItemStack removed = inventory.removeFromSelected(all);
          this.containerMenu
              .findSlot(inventory, inventory.getSelectedSlot())
+@@ -2310,6 +_,59 @@
+     public void swingAndResetAttackStrength(InteractionHand hand, SwingAnimation animation, boolean sendToSwingingEntity) {
+         if (this.swing(hand, animation, sendToSwingingEntity)) {
+             this.resetAttackStrengthTicker();
++        }
++    }
++
++    /// Neo: {@return the language last reported by the player as their local language or `en_us` if the value is unknown}
++    public String getLanguage() {
++        return this.language;
++    }
++
++    /// Neo: {@return the header shown in this player's tab list}
++    public Component getTabListHeader() {
++        return this.tabListHeader;
++    }
++
++    /// Neo: {@return the footer shown in this player's tab list}
++    public Component getTabListFooter() {
++        return this.tabListFooter;
++    }
++
++    /// Neo: set the tab list header while preserving the footer.
++    ///
++    /// @param header the new header, or [Component#empty()] to clear
++    public void setTabListHeader(Component header) {
++        this.setTabListHeaderFooter(header, this.tabListFooter);
++    }
++
++    /// Neo: set the tab list footer while preserving the header.
++    ///
++    /// @param footer the new footer, or [Component#empty()] to clear
++    public void setTabListFooter(Component footer) {
++        this.setTabListHeaderFooter(this.tabListHeader, footer);
++    }
++
++    /// Neo: set the tab list header and footer at once.
++    ///
++    /// @param header the new header, or [Component#empty()] to clear
++    /// @param footer the new footer, or [Component#empty()] to clear
++    public void setTabListHeaderFooter(final Component header, final Component footer) {
++        if (java.util.Objects.equals(header, this.tabListHeader) && java.util.Objects.equals(footer, this.tabListFooter)) {
++            return;
++        }
++
++        this.tabListHeader = java.util.Objects.requireNonNull(header, "header");
++        this.tabListFooter = java.util.Objects.requireNonNull(footer, "footer");
++
++        this.connection.send(new net.minecraft.network.protocol.game.ClientboundTabListPacket(header, footer));
++    }
++
++    /// Neo: force the name displayed in the tab list to refresh, by firing [net.neoforged.neoforge.event.entity.player.PlayerEvent.TabListNameFormat].
++    public void refreshTabListName() {
++        Component oldName = this.tabListDisplayName;
++        this.tabListDisplayName = net.neoforged.neoforge.event.EventHooks.getPlayerTabListDisplayName(this);
++        if (!java.util.Objects.equals(oldName, this.tabListDisplayName)) {
++            this.server.getPlayerList().broadcastAll(new net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket(net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME, this));
+         }
+     }
+ 

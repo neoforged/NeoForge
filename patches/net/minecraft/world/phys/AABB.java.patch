@@ -1,9 +1,10 @@
 --- a/net/minecraft/world/phys/AABB.java
 +++ b/net/minecraft/world/phys/AABB.java
-@@ -12,6 +_,7 @@
+@@ -12,6 +_,8 @@
  
  public class AABB {
      private static final double EPSILON = 1.0E-7;
++    /// Neo: holds the infinite AABB
 +    public static final AABB INFINITE = new AABB(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
      public final double minX;
      public final double minY;
@@ -14,7 +15,7 @@
          );
 +    }
 +
-+    /// {@return true if this AABB is infinite in all directions}
++    /// Neo: {@return true if this AABB is infinite in all directions}
 +    public boolean isInfinite() {
 +        return this == INFINITE || (Double.isInfinite(this.minX) && Double.isInfinite(this.minY) && Double.isInfinite(this.minZ)
 +                && Double.isInfinite(this.maxX) && Double.isInfinite(this.maxY) && Double.isInfinite(this.maxZ));

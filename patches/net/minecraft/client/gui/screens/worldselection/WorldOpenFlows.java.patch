@@ -11,19 +11,21 @@
          }
  
          this.minecraft
-@@ -319,6 +_,7 @@
+@@ -319,6 +_,8 @@
          try {
              levelDataTag = worldAccess.getUnfixedDataTag(false);
              summary = worldAccess.fixAndGetSummaryFromTag(levelDataTag);
++            // Neo: read additional NeoForge data
 +            worldAccess.readAdditionalLevelSaveData(false);
          } catch (IOException | NbtException | ReportedNbtException e) {
              this.minecraft.gui.setScreen(new RecoverWorldDataScreen(this.minecraft, success -> {
                  if (success) {
-@@ -533,11 +_,20 @@
+@@ -533,11 +_,21 @@
          WorldData data = worldDataAndGenSettings.data();
          boolean oldCustomized = worldDataAndGenSettings.genSettings().options().isOldCustomizedWorld();
          boolean unstable = data.worldGenSettingsLifecycle() != Lifecycle.stable();
 -        if (!oldCustomized && !unstable) {
++        // Neo: skip experimental warning if it was previously confirmed
 +        boolean skipConfirmation = data instanceof PrimaryLevelData pld && pld.hasConfirmedExperimentalWarning();
 +        if (skipConfirmation || (!oldCustomized && !unstable)) {
              this.openWorldLoadBundledResourcePack(worldAccess, worldStem, packRepository, onCancel);

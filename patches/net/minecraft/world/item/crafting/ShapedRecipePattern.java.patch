@@ -1,54 +1,64 @@
 --- a/net/minecraft/world/item/crafting/ShapedRecipePattern.java
 +++ b/net/minecraft/world/item/crafting/ShapedRecipePattern.java
-@@ -20,8 +_,31 @@
+@@ -20,8 +_,39 @@
  import net.minecraft.world.item.ItemStack;
  
  public final class ShapedRecipePattern {
-+    /** @deprecated Neo: use {@link #getMaxWidth} and {@link #getMaxHeight} */ @Deprecated
++    /// @deprecated Neo: use [#getMaxWidth] and [#getMaxHeight]
++    @Deprecated
      private static final int MAX_SIZE = 3;
      public static final char EMPTY_SLOT = ' ';
-+    static int maxWidth = 3;
-+    static int maxHeight = 3;
++    /// Neo: holds the maximum shaped recipe pattern width
++    static int maxWidth = MAX_SIZE;
++    /// Neo: holds the maximum shaped recipe pattern height
++    static int maxHeight = MAX_SIZE;
 +
++    /// Neo: {@return the maximum shaped recipe pattern width}
 +    public static int getMaxWidth() {
 +        return maxWidth;
 +    }
 +
++    /// Neo: {@return the maximum shaped recipe pattern height}
 +    public static int getMaxHeight() {
 +        return maxHeight;
 +    }
 +
-+    /**
-+     * Expand the max width and height allowed in the deserializer.
-+     * This should be called by modders who add custom crafting tables that are larger than the vanilla 3x3.
-+     * @param width your max recipe width
-+     * @param height your max recipe height
-+     */
++    /// Neo: Expand the max width and height allowed in the deserializer.
++    /// This should be called by modders who add custom crafting tables that are larger than the vanilla 3x3.
++    ///
++    /// @param width your max recipe width
++    /// @param height your max recipe height
 +    public static void setCraftingSize(int width, int height) {
-+        if (maxWidth < width) maxWidth = width;
-+        if (maxHeight < height) maxHeight = height;
++        if (maxWidth < width) {
++            maxWidth = width;
++        }
++        if (maxHeight < height) {
++            maxHeight = height;
++        }
 +    }
 +
      public static final MapCodec<ShapedRecipePattern> MAP_CODEC = ShapedRecipePattern.Data.MAP_CODEC
          .flatXmap(
              ShapedRecipePattern::unpack,
-@@ -205,8 +_,8 @@
+@@ -205,8 +_,9 @@
  
      public record Data(Map<Character, Ingredient> key, List<String> pattern) {
          private static final Codec<List<String>> PATTERN_CODEC = Codec.STRING.listOf().comapFlatMap(strings -> {
 -            if (strings.size() > 3) {
 -                return DataResult.error(() -> "Invalid pattern: too many rows, 3 is maximum");
++            // Neo: use configured pattern height limit
 +            if (strings.size() > maxHeight) {
 +                return DataResult.error(() -> "Invalid pattern: too many rows, %s is maximum".formatted(maxHeight));
              }
  
              if (strings.isEmpty()) {
-@@ -216,8 +_,8 @@
+@@ -216,8 +_,9 @@
              int firstLength = strings.getFirst().length();
  
              for (String line : strings) {
 -                if (line.length() > 3) {
 -                    return DataResult.error(() -> "Invalid pattern: too many columns, 3 is maximum");
++                // Neo: use configured pattern width limit
 +                if (line.length() > maxWidth) {
 +                    return DataResult.error(() -> "Invalid pattern: too many columns, %s is maximum".formatted(maxWidth));
                  }

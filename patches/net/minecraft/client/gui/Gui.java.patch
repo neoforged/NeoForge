@@ -32,7 +32,7 @@
              this.minecraft.setLastInputType(InputType.NONE);
          }
  
-@@ -254,6 +_,21 @@
+@@ -254,6 +_,23 @@
              }
          }
  
@@ -40,7 +40,9 @@
 +        Screen old = this.screen;
 +        if (screen != null) {
 +            var event = new net.neoforged.neoforge.client.event.ScreenEvent.Opening(old, screen);
-+            if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) return;
++            if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) {
++                return;
++            }
 +            screen = event.getNewScreen();
 +        }
 +
@@ -63,7 +65,7 @@
          return nextStep;
      }
  
-@@ -474,5 +_,48 @@
+@@ -474,5 +_,50 @@
                          }
                      )
              );
@@ -100,11 +102,13 @@
 +        }
 +    }
 +
++    /// Neo: resize all screens in the layer stack
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public void resizeScreenLayers(int width, int height) {
 +        this.screenLayers.forEach(screen -> screen.resize(width, height));
 +    }
 +
++    /// Neo: Close the currently active screen, if any, and replace it with the next screen in the layer stack
 +    private void popScreenLayerInternal() {
 +        if (this.screen != null) {
 +            this.screen.removed();

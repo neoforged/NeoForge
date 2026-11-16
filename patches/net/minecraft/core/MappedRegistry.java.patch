@@ -9,25 +9,28 @@
      private final ResourceKey<? extends Registry<T>> key;
      private final ObjectList<Holder.Reference<T>> byId = new ObjectArrayList<>(256);
      private final Reference2IntMap<T> toId = Util.make(new Reference2IntOpenHashMap<>(), t -> t.defaultReturnValue(-1));
-@@ -86,9 +_,17 @@
+@@ -86,9 +_,20 @@
  
      @Override
      public Holder.Reference<T> register(ResourceKey<T> key, T value, RegistrationInfo registrationInfo) {
-+        return register(this.byId.size(), key, value, registrationInfo);
++        return this.register(this.byId.size(), key, value, registrationInfo);
 +    }
 +
++    /// Neo: registers the given key-value pair with the given int ID. Used for full-backup registry snapshots
 +    public Holder.Reference<T> register(int id, ResourceKey<T> key, T value, RegistrationInfo registrationInfo) {
          this.validateWrite(key);
          Objects.requireNonNull(key);
          Objects.requireNonNull(value);
 +        int newId = id;
-+        if (newId > this.getMaxId())
++        // Neo: validate ID limit specified by the registry builder
++        if (newId > this.getMaxId()) {
 +            throw new IllegalStateException(String.format(java.util.Locale.ENGLISH, "Invalid id %d - maximum id range of %d exceeded.", newId, this.getMaxId()));
++        }
 +
          if (this.byLocation.containsKey(key.identifier())) {
              throw (IllegalStateException)Util.pauseInIde(new IllegalStateException("Adding duplicate key '" + key + "' to registry"));
          }
-@@ -107,16 +_,18 @@
+@@ -107,16 +_,19 @@
              holder.bindKey(key);
          } else {
              holder = this.byKey.computeIfAbsent(key, k -> Holder.Reference.createStandAlone(this, (ResourceKey<T>)k));
@@ -43,59 +46,65 @@
          this.toId.put(value, newId);
          this.registrationInfos.put(key, registrationInfo);
          this.registryLifecycle = this.registryLifecycle.add(registrationInfo.lifecycle());
++        // Neo: invoked add callbacks
 +        this.addCallbacks.forEach(addCallback -> addCallback.onAdd(this, newId, key, value));
          return holder;
      }
  
-@@ -138,7 +_,7 @@
+@@ -138,6 +_,10 @@
  
      @Override
      public @Nullable T getValue(@Nullable ResourceKey<T> key) {
--        return getValueFromNullable(this.byKey.get(key));
-+        return getValueFromNullable(this.byKey.get(resolve(key)));
++        // Neo: resolve registry aliases
++        if (key != null) {
++            key = this.resolve(key);
++        }
+         return getValueFromNullable(this.byKey.get(key));
      }
  
-     @Override
-@@ -153,12 +_,12 @@
+@@ -153,11 +_,15 @@
  
      @Override
      public Optional<Holder.Reference<T>> get(Identifier id) {
--        return Optional.ofNullable(this.byLocation.get(id));
-+        return Optional.ofNullable(this.byLocation.get(resolve(id)));
++        // Neo: resolve registry aliases
++        id = this.resolve(id);
+         return Optional.ofNullable(this.byLocation.get(id));
      }
  
      @Override
      public Optional<Holder.Reference<T>> get(ResourceKey<T> id) {
--        return Optional.ofNullable(this.byKey.get(id));
-+        return Optional.ofNullable(this.byKey.get(resolve(id)));
++        // Neo: resolve registry aliases
++        id = this.resolve(id);
+         return Optional.ofNullable(this.byKey.get(id));
      }
  
-     @Override
-@@ -173,7 +_,7 @@
+@@ -173,6 +_,8 @@
      }
  
      private Holder.Reference<T> getOrCreateHolderOrThrow(ResourceKey<T> key) {
--        return this.byKey.computeIfAbsent(key, id -> {
-+        return this.byKey.computeIfAbsent(resolve(key), id -> {
++        // Neo: resolve registry aliases
++        key = this.resolve(key);
+         return this.byKey.computeIfAbsent(key, id -> {
              if (this.unregisteredIntrusiveHolders != null) {
                  throw new IllegalStateException("This registry can't create new holders without value");
-             }
-@@ -205,7 +_,7 @@
+@@ -205,6 +_,10 @@
  
      @Override
      public @Nullable T getValue(@Nullable Identifier key) {
--        Holder.Reference<T> result = this.byLocation.get(key);
-+        Holder.Reference<T> result = this.byLocation.get(key != null ? resolve(key) : null);
++        // Neo: resolve registry aliases
++        if (key != null) {
++            key = this.resolve(key);
++        }
+         Holder.Reference<T> result = this.byLocation.get(key);
          return getValueFromNullable(result);
      }
- 
 @@ -271,6 +_,17 @@
          return Objects.requireNonNull(this.componentLookup, "Registry not frozen yet");
      }
  
-+    /** @deprecated Neo: For internal use only. Use the Register events when registering values. */
-+    @Deprecated
++    /// Neo: For internal use only. Use [net.neoforged.neoforge.registries.DeferredRegister] or [net.neoforged.neoforge.registries.RegisterEvent] for registering values.
 +    @Override
++    @org.jetbrains.annotations.ApiStatus.Internal
 +    public void unfreeze(boolean clearTags) {
 +        if (clearTags) {
 +            // unbind tags which were bound by the previous freeze
@@ -115,7 +124,7 @@
          List<Identifier> unboundEntries = this.byKey
              .entrySet()
              .stream()
-@@ -295,11 +_,14 @@
+@@ -295,11 +_,15 @@
                  throw new IllegalStateException("Some intrusive holders were not registered: " + this.unregisteredIntrusiveHolders.values());
              }
  
@@ -123,6 +132,7 @@
 +            // Neo: We freeze/unfreeze vanilla registries more than once, so we need to keep the unregistered intrusive holders map around.
 +            // this.unregisteredIntrusiveHolders = null;
          }
++        // Neo: invoke bake callbacks
 +        this.bakeCallbacks.forEach(bakeCallback -> bakeCallback.onBake(this));
  
          if (this.allTags.isBound()) {
@@ -145,12 +155,13 @@
              @Override
              public void apply() {
                  pendingTags.forEach((id, tag) -> {
-@@ -458,6 +_,55 @@
+@@ -458,6 +_,52 @@
                  MappedRegistry.this.refreshTagsInHolders();
              }
          };
 +    }
 +
++    /// Neo: clear the registry to prepare for registry snapshot application
 +    @Override
 +    protected void clear(boolean full) {
 +        this.validateWrite();
@@ -164,40 +175,36 @@
 +            this.byValue.clear();
 +            this.allTags = MappedRegistry.TagSet.unbound();
 +            this.frozenTags.entrySet().removeIf(entry -> !entry.getValue().isBound());
-+            if (unregisteredIntrusiveHolders != null) {
-+                unregisteredIntrusiveHolders.clear();
-+                unregisteredIntrusiveHolders = null;
++            if (this.unregisteredIntrusiveHolders != null) {
++                this.unregisteredIntrusiveHolders.clear();
++                this.unregisteredIntrusiveHolders = null;
 +            }
 +        }
 +    }
 +
++    /// Neo: register a key <-> ID mapping from a shallow registry snapshot
 +    @Override
 +    protected void registerIdMapping(ResourceKey<T> key, int id) {
 +        this.validateWrite(key);
-+        if (id > this.getMaxId())
++        if (id > this.getMaxId()) {
 +            throw new IllegalStateException(String.format(java.util.Locale.ENGLISH, "Invalid id %d - maximum id range of %d exceeded.", id, this.getMaxId()));
-+        if (0 <= id && id < this.byId.size() && this.byId.get(id) != null) { // Don't use byId() method, it will return the default value if the entry is absent
++        }
++        // Don't use byId() method, it will return the default value if the entry is absent
++        if (0 <= id && id < this.byId.size() && this.byId.get(id) != null) {
 +            throw new IllegalStateException("Duplicate id " + id + " for " + key + " and " + this.getKey(this.byId.get(id).value()));
 +        }
-+        var holder = byKey.get(key);
-+        while (this.byId.size() < (id + 1)) this.byId.add(null);
++        var holder = this.byKey.get(key);
++        while (this.byId.size() < (id + 1)) {
++            this.byId.add(null);
++        }
 +        this.byId.set(id, holder);
 +        this.toId.put(holder.value(), id);
 +    }
 +
-+    @Override
-+    public int getId(Identifier name) {
-+        return getId(getValue(name));
-+    }
-+
-+    @Override
-+    public int getId(ResourceKey<T> key) {
-+        return getId(getValue(key));
-+    }
-+
++    /// Neo: {@return whether this registry contains the given value}
 +    @Override
 +    public boolean containsValue(T value) {
-+        return byValue.containsKey(value);
++        return this.byValue.containsKey(value);
      }
  
      private interface TagSet<T> {

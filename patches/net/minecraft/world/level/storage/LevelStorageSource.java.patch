@@ -1,17 +1,18 @@
 --- a/net/minecraft/world/level/storage/LevelStorageSource.java
 +++ b/net/minecraft/world/level/storage/LevelStorageSource.java
-@@ -525,6 +_,19 @@
+@@ -525,6 +_,20 @@
              }
          }
  
-+        // Neo: For reading NeoForge's additional save data (mod list, etc.)
++        /// Neo: read Neo's additional save data (mod list, etc.)
 +        public void readAdditionalLevelSaveData(boolean fallback) {
-+            checkLock();
++            this.checkLock();
 +            Path path = fallback ? this.levelDirectory.oldDataFile() : this.levelDirectory.dataFile();
 +            try {
 +                var tag = readLightweightData(path);
-+                if (tag instanceof CompoundTag compoundTag)
++                if (tag instanceof CompoundTag compoundTag) {
 +                    net.neoforged.neoforge.common.CommonHooks.readAdditionalLevelSaveData(compoundTag, this.levelDirectory);
++                }
 +            } catch (Exception e) {
 +                LOGGER.error("Exception reading {}", path, e);
 +            }
@@ -20,15 +21,17 @@
          public PlayerDataStorage createPlayerStorage() {
              this.checkLock();
              return new PlayerDataStorage(this, LevelStorageSource.this.fixerUpper);
-@@ -554,10 +_,12 @@
+@@ -554,10 +_,14 @@
              Dynamic<?> unfixedDataTag;
              try {
                  unfixedDataTag = this.getUnfixedDataTag(false);
++                // Neo: read Neo's additional data
 +                this.readAdditionalLevelSaveData(false);
              } catch (IOException | NbtException | ReportedNbtException e) {
                  LevelStorageSource.LOGGER.warn("Failed to load world data from {}", this.levelDirectory.dataFile(), e);
                  LevelStorageSource.LOGGER.info("Attempting to use fallback {}", this.levelDirectory.oldDataFile());
                  unfixedDataTag = this.getUnfixedDataTag(true);
++                // Neo: read Neo's additional data
 +                this.readAdditionalLevelSaveData(true);
                  this.restoreLevelDataFromOld();
              }
@@ -41,14 +44,15 @@
              this.saveLevelData(root);
          }
  
-@@ -609,6 +_,10 @@
+@@ -609,6 +_,11 @@
  
          public Optional<Path> getIconFile() {
              return !this.lock.isValid() ? Optional.empty() : Optional.of(this.levelDirectory.iconFile());
 +        }
 +
++        /// Neo: {@return the world directory}
 +        public Path getWorldDir() {
-+            return baseDir;
++            return LevelStorageSource.this.baseDir;
          }
  
          public void deleteLevel() throws IOException {

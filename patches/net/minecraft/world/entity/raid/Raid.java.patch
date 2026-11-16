@@ -18,13 +18,15 @@
                      Raider ridingRaider = null;
                      if (groupNumber == this.getNumGroups(Difficulty.NORMAL)) {
                          ridingRaider = EntityTypes.PILLAGER.create(level, EntitySpawnReason.EVENT);
-@@ -838,12 +_,26 @@
+@@ -838,12 +_,29 @@
          RAVAGER(EntityTypes.RAVAGER, new int[]{0, 0, 0, 1, 0, 1, 0, 2});
  
          private static final Raid.RaiderType[] VALUES = values();
-+        @Deprecated // Neo: null for custom types, use the supplier instead
++        /// @deprecated Neo: null for custom types, use the supplier instead
++        @Deprecated
          private final EntityType<? extends Raider> entityType;
          private final int[] spawnsPerWaveBeforeBonus;
++        /// Neo: holds a supplier of the entity type
 +        final java.util.function.Supplier<EntityType<? extends Raider>> entityTypeSupplier;
  
 +        @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
@@ -34,7 +36,8 @@
 +            this.entityTypeSupplier = () -> entityType;
 +        }
 +
-+        private RaiderType(java.util.function.Supplier<EntityType<? extends Raider>> entityTypeSupplier, int[] spawnsPerWave) {
++        /// Neo: constructor for modded raider types
++        RaiderType(java.util.function.Supplier<EntityType<? extends Raider>> entityTypeSupplier, int[] spawnsPerWave) {
 +            this.entityType = null;
 +            this.spawnsPerWaveBeforeBonus = spawnsPerWave;
 +            this.entityTypeSupplier = entityTypeSupplier;

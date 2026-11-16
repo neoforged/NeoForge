@@ -19,10 +19,11 @@
  
      public void reset() {
          this.sectionUpdateRenderStates.clear();
-@@ -48,5 +_,9 @@
+@@ -48,5 +_,10 @@
          this.particlesRenderState.reset();
          this.chunkLoadingRenderState.reset();
          this.gameTime = 0L;
++        // Neo: reset sky/cloud/weather renderers and custom render data
 +        this.customSkyboxRenderer = null;
 +        this.customCloudsRenderer = null;
 +        this.customWeatherEffectRenderer = null;

@@ -1,9 +1,10 @@
 --- a/net/minecraft/client/gui/screens/worldselection/WorldCreationContext.java
 +++ b/net/minecraft/client/gui/screens/worldselection/WorldCreationContext.java
-@@ -98,6 +_,10 @@
+@@ -98,6 +_,11 @@
          );
      }
  
++    /// Neo: create a new context with the data configuration overridden by the given value
 +    public WorldCreationContext withDataConfiguration(WorldDataConfiguration dataConfiguration) {
 +        return new WorldCreationContext(this.options, this.datapackDimensions, this.selectedDimensions, this.worldgenRegistries, this.dataPackResources, dataConfiguration, this.initialWorldCreationOptions);
 +    }

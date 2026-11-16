@@ -1,13 +1,12 @@
 --- a/net/minecraft/world/flag/FeatureFlagSet.java
 +++ b/net/minecraft/world/flag/FeatureFlagSet.java
-@@ -7,13 +_,20 @@
- 
- public final class FeatureFlagSet {
-     private static final FeatureFlagSet EMPTY = new FeatureFlagSet(null, 0L);
-+    private static final long[] EMPTY_EXT_MASK = new long[0];
+@@ -10,8 +_,17 @@
      public static final int MAX_CONTAINER_SIZE = 64;
      private final @Nullable FeatureFlagUniverse universe;
      private final long mask;
++    /// Neo: holds the empty extended mask
++    private static final long[] EMPTY_EXT_MASK = new long[0];
++    /// Neo: holds the extended masks of this flag set
 +    private final long[] extendedMask;
  
      private FeatureFlagSet(@Nullable FeatureFlagUniverse universe, long mask) {
@@ -15,27 +14,27 @@
 +    }
 +
 +    private FeatureFlagSet(@Nullable FeatureFlagUniverse universe, long mask, long[] extendedMask) {
++        this.extendedMask = extendedMask;
          this.universe = universe;
          this.mask = mask;
-+        this.extendedMask = extendedMask;
      }
- 
-     static FeatureFlagSet create(FeatureFlagUniverse universe, Collection<FeatureFlag> flags) {
-@@ -22,7 +_,8 @@
+@@ -22,7 +_,9 @@
          }
  
          long mask = computeMask(universe, 0L, flags);
 -        return new FeatureFlagSet(universe, mask);
++        // Neo: compute the extended masks for the given flags
 +        long[] extMask = computeExtendedMask(universe, 0, 0L, flags);
 +        return new FeatureFlagSet(universe, mask, extMask);
      }
  
      public static FeatureFlagSet of() {
-@@ -30,16 +_,19 @@
+@@ -30,16 +_,25 @@
      }
  
      public static FeatureFlagSet of(FeatureFlag flag) {
 -        return new FeatureFlagSet(flag.universe, flag.mask);
++        // Neo: compute the extended mask for the given flag
 +        long[] extMask = computeExtendedMask(flag.universe, flag.extMaskIndex, flag.mask, java.util.List.of());
 +        return new FeatureFlagSet(flag.universe, flag.extMaskIndex >= 0 ? 0L : flag.mask, extMask);
      }
@@ -43,21 +42,27 @@
      public static FeatureFlagSet of(FeatureFlag flag, FeatureFlag... flags) {
 -        long mask = flags.length == 0 ? flag.mask : computeMask(flag.universe, flag.mask, Arrays.asList(flags));
 -        return new FeatureFlagSet(flag.universe, mask);
-+        long i = flags.length == 0 ? (flag.extMaskIndex >= 0 ? 0L : flag.mask) : computeMask(flag.universe, flag.extMaskIndex >= 0 ? 0L : flag.mask, Arrays.asList(flags));
++        // Neo: ignore first flag's mask if it uses the extended mask
++        long mask = flags.length == 0 ? (flag.extMaskIndex >= 0 ? 0L : flag.mask) : computeMask(flag.universe, flag.extMaskIndex >= 0 ? 0L : flag.mask, Arrays.asList(flags));
++        // Neo: compute the extended mask for all flags
 +        long[] extMask = computeExtendedMask(flag.universe, flag.extMaskIndex, flag.mask, flags.length == 0 ? java.util.List.of() : Arrays.asList(flags));
-+        return new FeatureFlagSet(flag.universe, i, extMask);
++        return new FeatureFlagSet(flag.universe, mask, extMask);
      }
  
      private static long computeMask(FeatureFlagUniverse universe, long mask, Iterable<FeatureFlag> flags) {
          for (FeatureFlag f : flags) {
-+            if (f.extMaskIndex >= 0) continue;
++            // Neo: ignore flags using the extended mask in the "base" mask calculation
++            if (f.extMaskIndex >= 0) {
++                continue;
++            }
              if (universe != f.universe) {
                  throw new IllegalStateException("Mismatched feature universe, expected '" + universe + "', but got '" + f.universe + "'");
              }
-@@ -50,8 +_,36 @@
+@@ -50,8 +_,40 @@
          return mask;
      }
  
++    /// Neo: computes the extended masks for the given feature flags
 +    private static long[] computeExtendedMask(FeatureFlagUniverse universe, int firstExtIndex, long firstMask, Iterable<FeatureFlag> otherFlags) {
 +        long[] extMask = EMPTY_EXT_MASK;
 +        if (firstExtIndex >= 0) {
@@ -65,7 +70,9 @@
 +            extMask[firstExtIndex] |= firstMask;
 +        }
 +        for (FeatureFlag flag : otherFlags) {
-+            if (flag.extMaskIndex < 0) continue;
++            if (flag.extMaskIndex < 0) {
++                continue;
++            }
 +            if (universe != flag.universe) {
 +                throw new IllegalStateException("Mismatched feature universe, expected '" + universe + "', but got '" + flag.universe + "'");
 +            }
@@ -82,6 +89,7 @@
 +        if (this.universe != flag.universe) {
 +            return false;
 +        }
++        // Neo: take extended masks into account
 +        if (flag.extMaskIndex < 0) {
 +            return (this.mask & flag.mask) != 0L;
 +        }
@@ -92,13 +100,14 @@
      }
  
      public boolean isEmpty() {
-@@ -61,13 +_,33 @@
+@@ -61,13 +_,35 @@
      public boolean isSubsetOf(FeatureFlagSet set) {
          if (this.universe == null) {
              return true;
 -        } else {
 -            return this.universe != set.universe ? false : (this.mask & ~set.mask) == 0L;
 +        } else if (this.universe == set.universe) {
++            // Neo: take extended masks into account
 +            int len = Math.max(this.extendedMask.length, set.extendedMask.length);
 +            for (int i = 0; i < len; i++) {
 +                long thisMask = i < this.extendedMask.length ? this.extendedMask[i] : 0L;
@@ -117,6 +126,7 @@
 +        if (this.universe == null || set.universe == null || this.universe != set.universe) {
 +            return false;
 +        }
++        // Neo: take extended masks into account
 +        int len = Math.min(this.extendedMask.length, set.extendedMask.length);
 +        for (int i = 0; i < len; i++) {
 +            long thisMask = this.extendedMask[i];
@@ -125,16 +135,17 @@
 +                return true;
 +            }
 +        }
-+       return (this.mask & set.mask) != 0L;
++        return (this.mask & set.mask) != 0L;
      }
  
      public FeatureFlagSet join(FeatureFlagSet other) {
-@@ -78,7 +_,16 @@
+@@ -78,7 +_,17 @@
          } else if (this.universe != other.universe) {
              throw new IllegalArgumentException("Mismatched set elements: '" + this.universe + "' != '" + other.universe + "'");
          } else {
 -            return new FeatureFlagSet(this.universe, this.mask | other.mask);
 +            long[] extMask = EMPTY_EXT_MASK;
++            // Neo: join extended masks
 +            if (this.extendedMask.length > 0 || other.extendedMask.length > 0) {
 +                extMask = new long[Math.max(this.extendedMask.length, other.extendedMask.length)];
 +                for (int i = 0; i < extMask.length; i++) {
@@ -147,12 +158,13 @@
          }
      }
  
-@@ -92,16 +_,28 @@
+@@ -92,16 +_,31 @@
          }
  
          long newMask = this.mask & ~other.mask;
 -        return newMask == 0L ? EMPTY : new FeatureFlagSet(this.universe, newMask);
 +        long[] extMask = EMPTY_EXT_MASK;
++        // Neo: subtract extended masks
 +        if (this.extendedMask.length > 0 || other.extendedMask.length > 0) {
 +            extMask = new long[this.extendedMask.length];
 +            for (int idx = 0; idx < extMask.length; idx++) {
@@ -166,6 +178,7 @@
      @Override
      public boolean equals(Object o) {
 -        return this == o ? true : o instanceof FeatureFlagSet that && this.universe == that.universe && this.mask == that.mask;
++        // Neo: check extended masks
 +        return this == o ? true : o instanceof FeatureFlagSet that && this.universe == that.universe && this.mask == that.mask && Arrays.equals(this.extendedMask, that.extendedMask);
      }
  
@@ -173,6 +186,7 @@
      public int hashCode() {
 -        return (int)HashCommon.mix(this.mask);
 +        int hash = (int)HashCommon.mix(this.mask);
++        // Neo: hash extended masks
 +        for (long extMask : this.extendedMask) {
 +            hash = 13 * hash + (int) HashCommon.mix(extMask);
 +        }

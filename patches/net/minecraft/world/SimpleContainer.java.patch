@@ -1,17 +1,20 @@
 --- a/net/minecraft/world/SimpleContainer.java
 +++ b/net/minecraft/world/SimpleContainer.java
-@@ -109,8 +_,14 @@
+@@ -109,8 +_,17 @@
  
      @Override
      public void setItem(int slot, ItemStack itemStack) {
-+        setItem(slot, itemStack, false);
++        this.setItem(slot, itemStack, false);
 +    }
 +
++    /// Neo: handle transaction-aware inventory mutation
 +    @Override
 +    public void setItem(int slot, ItemStack itemStack, boolean insideTransaction) {
          this.items.set(slot, itemStack);
          itemStack.limitSize(this.getMaxStackSize(itemStack));
-+        if (!insideTransaction)
++        if (insideTransaction) {
++            return;
++        }
          this.setChanged();
      }
  

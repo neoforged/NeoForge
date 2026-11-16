@@ -1,48 +1,53 @@
 --- a/net/minecraft/world/entity/vehicle/minecart/NewMinecartBehavior.java
 +++ b/net/minecraft/world/entity/vehicle/minecart/NewMinecartBehavior.java
-@@ -153,7 +_,7 @@
+@@ -153,7 +_,8 @@
  
      public void adjustToRails(BlockPos targetBlockPos, BlockState currentState, boolean instant) {
          if (BaseRailBlock.isRail(currentState)) {
 -            RailShape shape = currentState.getValue(((BaseRailBlock)currentState.getBlock()).getShapeProperty());
++            // Neo: give modded rails more control over their shape
 +            RailShape shape = ((BaseRailBlock)currentState.getBlock()).getRailDirection(currentState, this.level(), targetBlockPos, this.minecart);
              Pair<Vec3i, Vec3i> exits = AbstractMinecart.exits(shape);
              Vec3 exit0 = new Vec3(exits.getFirst()).scale(0.5);
              Vec3 exit1 = new Vec3(exits.getSecond()).scale(0.5);
-@@ -246,12 +_,12 @@
+@@ -246,12 +_,14 @@
              if (onRails) {
                  this.minecart.resetFallDistance();
                  this.minecart.setOldPosAndRot();
 -                if (currentState.is(Blocks.ACTIVATOR_RAIL)) {
++                // Neo: add support for modded powered rails
 +                if (currentState.getBlock() instanceof PoweredRailBlock poweredRail && poweredRail.isActivatorRail()) {
                      this.minecart
                          .activateMinecart(level, currentPos.getX(), currentPos.getY(), currentPos.getZ(), currentState.getValue(PoweredRailBlock.POWERED));
                  }
  
 -                RailShape shape = currentState.getValue(((BaseRailBlock)currentState.getBlock()).getShapeProperty());
++                // Neo: give modded rails more control over their shape
 +                RailShape shape = ((BaseRailBlock)currentState.getBlock()).getRailDirection(currentState, this.level(), currentPos, this.minecart);;
                  Vec3 newDeltaMovement = this.calculateTrackSpeed(level, initialStepDeltaMovement.horizontal(), trackIteration, currentPos, currentState, shape);
                  if (trackIteration.firstIteration) {
                      trackIteration.movementLeft = newDeltaMovement.horizontalDistance();
-@@ -381,7 +_,7 @@
+@@ -381,7 +_,8 @@
      }
  
      private Vec3 calculateHaltTrackSpeed(Vec3 deltaMovement, BlockState state) {
 -        if (state.is(Blocks.POWERED_RAIL) && !state.getValue(PoweredRailBlock.POWERED)) {
++        // Neo: add support for modded powered rails
 +        if (state.getBlock() instanceof PoweredRailBlock poweredRail && !poweredRail.isActivatorRail() && !state.getValue(PoweredRailBlock.POWERED)) {
              return deltaMovement.length() < 0.03 ? Vec3.ZERO : deltaMovement.scale(0.5);
          } else {
              return deltaMovement;
-@@ -389,7 +_,7 @@
+@@ -389,7 +_,8 @@
      }
  
      private Vec3 calculateBoostTrackSpeed(Vec3 deltaMovement, BlockPos pos, BlockState state) {
 -        if (state.is(Blocks.POWERED_RAIL) && state.getValue(PoweredRailBlock.POWERED)) {
++        // Neo: add support for modded powered rails
 +        if (state.getBlock() instanceof PoweredRailBlock poweredRail && !poweredRail.isActivatorRail() && state.getValue(PoweredRailBlock.POWERED)) {
              if (deltaMovement.length() > 0.01) {
                  return deltaMovement.normalize().scale(deltaMovement.length() + 0.06);
              }
-@@ -440,10 +_,11 @@
+@@ -440,10 +_,12 @@
          }
  
          this.minecart.move(MoverType.SELF, newPosition.subtract(oldPosition));
@@ -52,6 +57,7 @@
          if (inHill) {
              if (BaseRailBlock.isRail(newBlockState)) {
 -                RailShape newRailShape = newBlockState.getValue(((BaseRailBlock)newBlockState.getBlock()).getShapeProperty());
++                // Neo: give modded rails more control over their shape
 +                RailShape newRailShape = ((BaseRailBlock)newBlockState.getBlock()).getRailDirection(newBlockState, this.level(), railPos, this.minecart);
                  if (this.restAtVShape(shape, newRailShape)) {
                      return 0.0;

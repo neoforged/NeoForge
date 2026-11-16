@@ -1,9 +1,10 @@
 --- a/net/minecraft/server/network/EventLoopGroupHolder.java
 +++ b/net/minecraft/server/network/EventLoopGroupHolder.java
-@@ -52,6 +_,7 @@
+@@ -52,6 +_,8 @@
      private final Class<? extends Channel> channelCls;
      private final Class<? extends ServerChannel> serverChannelCls;
      private volatile @Nullable EventLoopGroup group;
++    /// Neo: holds a separate event group for the server-side which allows us to identify server threads
 +    private volatile @Nullable EventLoopGroup serverGroup;
  
      public static EventLoopGroupHolder remote(boolean allowNativeTransport) {
@@ -14,7 +15,7 @@
          return new MultiThreadIoEventLoopGroup(this.createThreadFactory(), this.ioHandlerFactory());
 +    }
 +
-+    // Neo: Use a separate event group for the server-side which allows us to identify server threads
++    /// Neo: Use a separate event group for the server-side which allows us to identify server threads
 +    public EventLoopGroup serverEventLoopGroup() {
 +        var eventloopgroup = this.serverGroup;
 +        if (eventloopgroup == null) {

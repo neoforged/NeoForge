@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/level/block/entity/SignBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/SignBlockEntity.java
-@@ -202,7 +_,7 @@
+@@ -202,7 +_,8 @@
                      break;
                  case ClickEvent.Custom custom:
                      if (this.allowOpFeatures) {
 -                        level.getServer().handleCustomClickAction(custom.id(), custom.payload());
++                        // Neo: add player and profile context to click action handling
 +                        level.getServer().handleCustomClickAction(custom.id(), custom.payload(), (net.minecraft.server.level.ServerPlayer) player, player.getGameProfile());
                      }
  

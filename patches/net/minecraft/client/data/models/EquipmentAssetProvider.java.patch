@@ -1,9 +1,10 @@
 --- a/net/minecraft/client/data/models/EquipmentAssetProvider.java
 +++ b/net/minecraft/client/data/models/EquipmentAssetProvider.java
-@@ -27,6 +_,10 @@
+@@ -27,6 +_,11 @@
          this.pathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "equipment");
      }
  
++    /// Neo: provide non-static bootstrapping method for subclassing
 +    protected void registerModels(BiConsumer<ResourceKey<EquipmentAsset>, EquipmentClientInfo> output) {
 +        bootstrap(output);
 +    }
@@ -11,15 +12,17 @@
      private static void bootstrap(BiConsumer<ResourceKey<EquipmentAsset>, EquipmentClientInfo> consumer) {
          consumer.accept(
              EquipmentAssets.LEATHER,
-@@ -140,20 +_,20 @@
+@@ -140,20 +_,23 @@
      }
  
      public static EquipmentClientInfo.Builder onlyHumanoid(String name) {
 -        return EquipmentClientInfo.builder().addHumanoidLayers(Identifier.withDefaultNamespace(name));
++        // Neo: use Identifier#parse() to support non-vanilla namespaces
 +        return EquipmentClientInfo.builder().addHumanoidLayers(Identifier.parse(name));
      }
  
      public static EquipmentClientInfo.Builder humanoidAndMountArmor(String name) {
++        // Neo: use Identifier#parse() to support non-vanilla namespaces
          return EquipmentClientInfo.builder()
 -            .addHumanoidLayers(Identifier.withDefaultNamespace(name))
 -            .addLayers(EquipmentClientInfo.LayerType.HORSE_BODY, EquipmentClientInfo.Layer.leatherDyeable(Identifier.withDefaultNamespace(name), false))
@@ -33,7 +36,8 @@
      public CompletableFuture<?> run(CachedOutput cache) {
          Map<ResourceKey<EquipmentAsset>, EquipmentClientInfo> equipmentAssets = new HashMap<>();
 -        bootstrap((id, asset) -> {
-+        registerModels((id, asset) -> {
++        // Neo: make EquipmentAssetProvider subclassable
++        this.registerModels((id, asset) -> {
              if (equipmentAssets.putIfAbsent(id, asset) != null) {
                  throw new IllegalStateException("Tried to register equipment asset twice for id: " + id);
              }

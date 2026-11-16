@@ -21,12 +21,13 @@
  
                                  nextSpawnData.getEquipment().ifPresent(mob::equip);
                              }
-@@ -287,5 +_,11 @@
+@@ -287,5 +_,12 @@
  
      public double getOSpin() {
          return this.oSpin;
 +    }
 +
++    /// Neo: {@return the owner of this spawner}
 +    @Override
 +    public com.mojang.datafixers.util.@Nullable Either<net.minecraft.world.level.block.entity.BlockEntity, Entity> getOwner() {
 +        // The vanilla anonymous classes have proper overrides, but we return null here for compatibility.

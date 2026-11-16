@@ -4,11 +4,10 @@
          GameEvent.UNEQUIP.key()
      );
  
-+    /** @deprecated Neo: Use the {@linkplain #GameEventTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
++    /// @deprecated Neo: Use the [mod id variant][#GameEventTagsProvider(PackOutput, CompletableFuture, String)]
 +    @Deprecated
      public GameEventTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
--        super(output, Registries.GAME_EVENT, lookupProvider);
-+        this(output, lookupProvider, "vanilla");
+         super(output, Registries.GAME_EVENT, lookupProvider);
 +    }
 +
 +    public GameEventTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
