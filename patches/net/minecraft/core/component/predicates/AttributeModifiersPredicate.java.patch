@@ -1,11 +1,12 @@
 --- a/net/minecraft/core/component/predicates/AttributeModifiersPredicate.java
 +++ b/net/minecraft/core/component/predicates/AttributeModifiersPredicate.java
-@@ -40,6 +_,14 @@
+@@ -40,6 +_,15 @@
          return !this.modifiers.isPresent() || this.modifiers.get().test(value.modifiers());
      }
  
 +    @Override
 +    public boolean matches(net.minecraft.core.component.DataComponentGetter getter) {
++        // Neo: take non-datacomponent attributes into account if the incoming getter is an itemstack
 +        if (getter instanceof net.minecraft.world.item.ItemStack stack) {
 +            return this.matches(stack.getAttributeModifiers());
 +        }

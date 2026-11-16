@@ -1,31 +1,35 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -507,18 +_,21 @@
+@@ -507,18 +_,24 @@
  
                  if (fail && level.noCollision(vehicle, oldAABB) || this.isEntityCollidingWithAnythingNew(level, vehicle, oldAABB, targetX, targetY, targetZ)) {
                      vehicle.absSnapTo(oldX, oldY, oldZ, targetYRot, targetXRot);
-+                    resyncPlayerWithVehicle(vehicle); // Neo - Resync player position on vehicle moving
++                    // Neo: resync player position on vehicle moving
++                    this.resyncPlayerWithVehicle(vehicle);
                      this.send(ClientboundMoveVehiclePacket.fromEntity(vehicle));
                      vehicle.removeLatestMovementRecording();
                      return;
                  }
  
                  vehicle.absSnapTo(targetX, targetY, targetZ, targetYRot, targetXRot);
-+                resyncPlayerWithVehicle(vehicle); // Neo - Resync player position on vehicle moving
++                // Neo: resync player position on vehicle moving
++                this.resyncPlayerWithVehicle(vehicle);
                  this.player.level().getChunkSource().move(this.player);
                  Vec3 clientDeltaMovement = new Vec3(vehicle.getX() - oldX, vehicle.getY() - oldY, vehicle.getZ() - oldZ);
                  this.handlePlayerKnownMovement(clientDeltaMovement);
                  vehicle.setOnGroundWithMovement(packet.onGround(), clientDeltaMovement);
                  vehicle.doCheckFallDamage(clientDeltaMovement.x, clientDeltaMovement.y, clientDeltaMovement.z, packet.onGround());
                  this.player.checkMovementStatistics(clientDeltaMovement.x, clientDeltaMovement.y, clientDeltaMovement.z);
-+                this.player.checkRidingStatistics(clientDeltaMovement.x, clientDeltaMovement.y, clientDeltaMovement.z); // Neo: check riding stats too as vanilla checks them in rideTick based on the assumption that Entity#rideTick will move the entity, which we break
++                // Neo: check riding stats too as vanilla checks them in rideTick based on the assumption that Entity#rideTick will move the entity, which we break
++                this.player.checkRidingStatistics(clientDeltaMovement.x, clientDeltaMovement.y, clientDeltaMovement.z);
                  this.clientVehicleIsFloating = oyDist >= -0.03125
                      && !vehicleRestsOnSomething
                      && !this.server.allowFlight()
-@@ -540,6 +_,23 @@
+@@ -540,6 +_,24 @@
          }
      }
  
++    /// Neo: resync the player with the given vehicle
 +    private void resyncPlayerWithVehicle(Entity vehicle) {
 +        Vec3 oldPos = this.player.position();
 +        float yRot = this.player.getYRot();
@@ -46,12 +50,13 @@
      private boolean noBlocksAround(Entity entity) {
          AABB box = entity.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0);
          return entity.level().findBlocksIn(box).filterState(BlockBehaviour.BlockStateBase::isAir).allMatched();
-@@ -716,7 +_,7 @@
+@@ -716,7 +_,8 @@
              if (level.isLoaded(pos)) {
                  BlockState blockState = level.getBlockState(pos);
                  boolean includeData = this.player.hasInfiniteMaterials() && packet.includeData();
 -                ItemStack itemStack = blockState.getCloneItemStack(level, pos, includeData);
-+                ItemStack itemStack = blockState.getCloneItemStack(pos, level, includeData, player);
++                // Neo: add player context
++                ItemStack itemStack = blockState.getCloneItemStack(pos, level, includeData, this.player);
                  if (!itemStack.isEmpty()) {
                      if (includeData) {
                          addBlockDataToItem(blockState, level, pos, itemStack);
@@ -60,11 +65,11 @@
                          && !this.player.isSpectator()
                          && !this.server.allowFlight()
 -                        && !this.player.getAbilities().mayfly
-+                        && !this.player.mayFly()
++                        && !this.player.mayFly() // Neo: check creative flight attribute
                          && !this.player.hasEffect(MobEffects.LEVITATION)
                          && !isFallFlying
                          && !isAutoSpinAttack
-@@ -1355,9 +_,10 @@
+@@ -1355,9 +_,12 @@
                      }
                  case SWAP_ITEM_WITH_OFFHAND:
                      if (!this.player.isSpectator()) {
@@ -72,7 +77,9 @@
 -                        this.player.setItemInHand(InteractionHand.OFF_HAND, this.player.getItemInHand(InteractionHand.MAIN_HAND));
 -                        this.player.setItemInHand(InteractionHand.MAIN_HAND, swap);
 +                        var event = net.neoforged.neoforge.common.CommonHooks.onLivingSwapHandItems(this.player);
-+                        if (event.isCanceled()) return;
++                        if (event.isCanceled()) {
++                            return;
++                        }
 +                        this.player.setItemInHand(InteractionHand.OFF_HAND, event.getItemSwappedToOffHand());
 +                        this.player.setItemInHand(InteractionHand.MAIN_HAND, event.getItemSwappedToMainHand());
                          this.player.stopUsingItem();
@@ -83,8 +90,8 @@
      public void handleSetCarriedItem(ServerboundSetCarriedItemPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
 +
-+        if (this.player.getInventory().getSelectedSlot() != packet.getSlot()) {
-+            if (net.neoforged.neoforge.event.EventHooks.onSwitchHotbarSlotPre(this.player, this.player.getInventory().getSelectedSlot(), packet.getSlot())) return;
++        if (net.neoforged.neoforge.event.EventHooks.onSwitchHotbarSlotPre(this.player, this.player.getInventory().getSelectedSlot(), packet.getSlot())) {
++            return;
 +        }
 +
          if (packet.getSlot() >= 0 && packet.getSlot() < Inventory.getSelectionSize()) {
@@ -103,22 +110,26 @@
          } else {
              LOGGER.warn("{} tried to set an invalid carried item", this.player.getPlainTextName());
          }
-@@ -1575,8 +_,9 @@
+@@ -1575,8 +_,12 @@
                  }
  
                  CompletableFuture<FilteredText> filteredFuture = this.filterTextPacket(signedMessage.signedContent());
 -                Component decorated = this.server.getChatDecorator().decorate(this.player, signedMessage.decoratedContent());
 +                Component decorated = net.neoforged.neoforge.common.CommonHooks.getServerChatSubmittedDecorator().decorate(this.player, signedMessage.decoratedContent());
                  this.chatMessageChain.append(filteredFuture, filtered -> {
-+                    if (decorated == null) return; // Forge: ServerChatEvent was canceled if this is null.
++                    if (decorated == null) {
++                        // Neo: ServerChatEvent was canceled if this is null.
++                        return;
++                    }
                      PlayerChatMessage filteredMessage = signedMessage.withUnsignedContent(decorated).filter(filtered.mask());
                      this.broadcastChatMessage(filteredMessage);
                  });
-@@ -2140,14 +_,16 @@
+@@ -2140,14 +_,17 @@
      @Override
      public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
 -        this.player.getAbilities().flying = packet.isFlying() && this.player.getAbilities().mayfly;
++        // Neo: check creative flight attribute
 +        this.player.getAbilities().flying = packet.isFlying() && this.player.mayFly();
      }
  
@@ -132,11 +143,12 @@
          if (this.player.isModelPartShown(PlayerModelPart.HAT) != wasHatShown) {
              this.server.getPlayerList().broadcastAll(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_HAT, this.player));
          }
-@@ -2224,7 +_,7 @@
+@@ -2224,7 +_,8 @@
          this.connection
              .setupInboundProtocol(
                  ConfigurationProtocols.SERVERBOUND,
 -                new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation()))
++                // Neo: retain connection type over protocol changes
 +                new ServerConfigurationPacketListenerImpl(this.server, this.connection, this.createCookie(this.player.clientInformation(), this.connectionType))
              );
      }

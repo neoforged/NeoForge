@@ -1,10 +1,11 @@
 --- a/net/minecraft/server/dedicated/DedicatedServerProperties.java
 +++ b/net/minecraft/server/dedicated/DedicatedServerProperties.java
-@@ -53,7 +_,7 @@
+@@ -53,7 +_,8 @@
      public static final String MANAGEMENT_SERVER_TLS_ENABLED_KEY = "management-server-tls-enabled";
      public static final String MANAGEMENT_SERVER_TLS_KEYSTORE_KEY = "management-server-tls-keystore";
      public static final String MANAGEMENT_SERVER_TLS_KEYSTORE_PASSWORD_KEY = "management-server-tls-keystore-password";
 -    public final boolean onlineMode = this.get("online-mode", true);
++    // Neo: default online-mode to false in dev environments
 +    public final boolean onlineMode = this.get("online-mode", !net.minecraft.SharedConstants.IS_RUNNING_IN_IDE);
      public final boolean preventProxyConnections = this.get("prevent-proxy-connections", false);
      public final String serverIp = this.get("server-ip", "");

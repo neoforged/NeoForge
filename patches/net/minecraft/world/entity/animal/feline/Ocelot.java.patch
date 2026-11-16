@@ -9,11 +9,12 @@
                      this.setTrusting(true);
                      this.spawnTrustingParticles(true);
                      this.level().broadcastEntityEvent(this, (byte)41);
-@@ -235,7 +_,7 @@
+@@ -235,7 +_,8 @@
          return itemStack.is(ItemTags.OCELOT_FOOD);
      }
  
 -    public static boolean checkOcelotSpawnRules(EntityType<Ocelot> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
++    // Neo: widen generic to support subclasses
 +    public static boolean checkOcelotSpawnRules(EntityType<? extends Ocelot> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
          return random.nextInt(3) != 0;
      }

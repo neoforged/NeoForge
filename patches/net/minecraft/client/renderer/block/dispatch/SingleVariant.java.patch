@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/dispatch/SingleVariant.java
 +++ b/net/minecraft/client/renderer/block/dispatch/SingleVariant.java
-@@ -33,8 +_,14 @@
+@@ -33,8 +_,15 @@
          return this.model.materialFlags();
      }
  
@@ -11,6 +11,7 @@
 +
      public record Unbaked(Variant variant) implements BlockStateModel.Unbaked {
 -        public static final Codec<SingleVariant.Unbaked> CODEC = Variant.CODEC.xmap(SingleVariant.Unbaked::new, SingleVariant.Unbaked::variant);
++        /// Neo: retain as a MapCodec for use in the blockstate model dispatch codec
 +        public static final com.mojang.serialization.MapCodec<SingleVariant.Unbaked> MAP_CODEC = Variant.MAP_CODEC.xmap(SingleVariant.Unbaked::new, SingleVariant.Unbaked::variant);
 +        public static final Codec<SingleVariant.Unbaked> CODEC = MAP_CODEC.codec();
  

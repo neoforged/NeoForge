@@ -1,21 +1,23 @@
 --- a/net/minecraft/world/level/block/DetectorRailBlock.java
 +++ b/net/minecraft/world/level/block/DetectorRailBlock.java
-@@ -32,6 +_,10 @@
+@@ -32,6 +_,11 @@
  
      public DetectorRailBlock(BlockBehaviour.Properties properties) {
          super(true, properties);
 +        this.registerDefaultState();
 +    }
 +
++    /// Neo: extracted from the constructor to allow overriding in subclasses
 +    protected void registerDefaultState() {
          this.registerDefaultState(this.stateDefinition.any().setValue(POWERED, false).setValue(SHAPE, RailShape.NORTH_SOUTH).setValue(WATERLOGGED, false));
      }
  
-@@ -176,6 +_,6 @@
+@@ -176,6 +_,7 @@
  
      @Override
      protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 -        builder.add(SHAPE, POWERED, WATERLOGGED);
-+        builder.add(getShapeProperty(), POWERED, WATERLOGGED);
++        // Neo: use the shape property dictated by getShapeProperty()
++        builder.add(this.getShapeProperty(), POWERED, WATERLOGGED);
      }
  }

@@ -1,11 +1,12 @@
 --- a/net/minecraft/server/rcon/RconConsoleSource.java
 +++ b/net/minecraft/server/rcon/RconConsoleSource.java
-@@ -35,7 +_,7 @@
+@@ -35,7 +_,8 @@
  
      @Override
      public void sendSystemMessage(Component message) {
 -        this.buffer.append(message.getString());
-+        this.buffer.append(message.getString()).append("\n"); // FIX MC-7569 - RCON has no newlines in multiline output
++        // Neo: Fix MC-7569 - RCON has no newlines in multiline output
++        this.buffer.append(message.getString()).append("\n");
      }
  
      @Override

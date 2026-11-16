@@ -1,13 +1,12 @@
 --- a/net/minecraft/world/item/component/CustomData.java
 +++ b/net/minecraft/world/item/component/CustomData.java
-@@ -62,6 +_,10 @@
-         return this.tag.copy();
+@@ -80,4 +_,9 @@
+     public String toString() {
+         return this.tag.toString();
      }
- 
++
++    /// Neo: {@return whether this component contains the given key}
 +    public boolean contains(String key) {
 +        return this.tag.contains(key);
 +    }
-+
-     @Override
-     public boolean equals(Object obj) {
-         if (obj == this) {
+ }

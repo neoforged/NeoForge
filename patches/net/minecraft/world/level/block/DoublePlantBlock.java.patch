@@ -1,14 +1,17 @@
 --- a/net/minecraft/world/level/block/DoublePlantBlock.java
 +++ b/net/minecraft/world/level/block/DoublePlantBlock.java
-@@ -75,6 +_,7 @@
+@@ -75,6 +_,10 @@
          }
  
          BlockState belowState = level.getBlockState(pos.below());
-+        if (state.getBlock() != this) return super.canSurvive(state, level, pos); // Neo: This function is called during world gen and placement, before this block is set, so if we are not 'here' then assume it's the pre-check.
++        if (state.getBlock() != this) {
++            // Neo: This function is called during world gen and placement, before this block is set, so if we are not 'here' then assume it's the pre-check.
++            return super.canSurvive(state, level, pos);
++        }
          return belowState.is(this) && belowState.getValue(HALF) == DoubleBlockHalf.LOWER;
      }
  
-@@ -129,5 +_,21 @@
+@@ -129,5 +_,22 @@
      @Override
      protected long getSeed(BlockState state, BlockPos pos) {
          return Mth.getSeed(pos.getX(), pos.below(state.getValue(HALF) == DoubleBlockHalf.LOWER ? 0 : 1).getY(), pos.getZ());
@@ -25,8 +28,9 @@
 +        BlockPos neighborPos = pos.relative(thisHalf.getDirectionToOther());
 +        BlockState neighborState = level.getBlockState(neighborPos);
 +        BlockState expectedState = state.setValue(HALF, thisHalf.getOtherHalf());
-+        if (neighborState != expectedState)
++        if (neighborState != expectedState) {
 +            return net.neoforged.neoforge.common.util.BlockRelocability.Yes.INSTANCE;
++        }
 +        return new net.neoforged.neoforge.common.util.BlockRelocability.Multiblock(java.util.Set.of(pos, neighborPos));
      }
  }

@@ -20,6 +20,6 @@
 +    /// a subsequent frame. In Vanilla, a renderer would be used for multiple different states even within the same frame,
 +    /// leading to crashes and the last state being used for all blits of that renderer in that frame.
 +    public boolean canBeReusedFor(T state, int textureWidth, int textureHeight) {
-+        return texture == null || (texture.getWidth(0) == textureWidth && texture.getHeight(0) == textureHeight);
++        return this.texture == null || (this.texture.getWidth(0) == textureWidth && this.texture.getHeight(0) == textureHeight);
 +    }
  }

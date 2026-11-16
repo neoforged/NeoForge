@@ -1,12 +1,14 @@
 --- a/net/minecraft/world/level/block/FenceGateBlock.java
 +++ b/net/minecraft/world/level/block/FenceGateBlock.java
-@@ -51,11 +_,25 @@
+@@ -51,11 +_,29 @@
      private static final Map<Direction.Axis, VoxelShape> SHAPE_OCCLUSION_WALL = Maps.newEnumMap(
          Util.mapValues(SHAPE_OCCLUSION, v -> v.move(0.0, -0.1875, 0.0).optimize())
      );
++    /// Neo: holds the opening sound
 +    public final net.minecraft.sounds.SoundEvent openSound;
++    /// Neo: holds the closing sound
 +    public final net.minecraft.sounds.SoundEvent closeSound;
-+    @org.jspecify.annotations.Nullable
++    @Nullable // Neo: make nullable to allow non-wooden fence gates
      private final WoodType type;
  
      public FenceGateBlock(WoodType type, BlockBehaviour.Properties properties) {
@@ -15,43 +17,48 @@
 +        this(java.util.Optional.of(type), properties.sound(type.soundType()), java.util.Optional.of(type.fenceGateOpen()), java.util.Optional.of(type.fenceGateClose()));
 +    }
 +
++    /// Neo: overload of [#FenceGateBlock(WoodType, BlockBehaviour.Properties)] to allow non-wooden fence gates
 +    public FenceGateBlock(BlockBehaviour.Properties properties, net.minecraft.sounds.SoundEvent openSound, net.minecraft.sounds.SoundEvent closeSound) {
 +        this(java.util.Optional.empty(), properties, java.util.Optional.of(openSound), java.util.Optional.of(closeSound));
 +    }
 +
++    /// Neo: overload of [#FenceGateBlock(WoodType, BlockBehaviour.Properties)] to allow non-wooden fence gates and/or custom opening and closing sounds
 +    public FenceGateBlock(java.util.Optional<WoodType> type, BlockBehaviour.Properties properties, java.util.Optional<net.minecraft.sounds.SoundEvent> openSound, java.util.Optional<net.minecraft.sounds.SoundEvent> closeSound) {
 +        super(properties);
-+        com.google.common.base.Preconditions.checkArgument(type.isPresent() || (openSound.isPresent() && closeSound.isPresent()), "Fence gates must have sounds set");
++        com.google.common.base.Preconditions.checkArgument(type.isPresent() || (openSound.isPresent() && closeSound.isPresent()), "Fence gates must have a wood type or sounds set");
 +        this.type = type.orElse(null);
 +        this.openSound = openSound.orElseGet(() -> this.type.fenceGateOpen()); // Type may be null, so we cannot do a method ref
 +        this.closeSound = closeSound.orElseGet(() -> this.type.fenceGateClose());
          this.registerDefaultState(this.stateDefinition.any().setValue(OPEN, false).setValue(POWERED, false).setValue(IN_WALL, false));
      }
  
-@@ -146,7 +_,7 @@
+@@ -146,7 +_,8 @@
  
          boolean opens = state.getValue(OPEN);
          level.playSound(
 -            player, pos, opens ? this.type.fenceGateOpen() : this.type.fenceGateClose(), SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.1F + 0.9F
-+            player, pos, opens ? openSound : closeSound, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.1F + 0.9F
++            // Neo: use sound fields instead of wood type
++            player, pos, opens ? this.openSound : this.closeSound, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.1F + 0.9F
          );
          level.gameEvent(player, opens ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
          return InteractionResult.SUCCESS;
-@@ -158,7 +_,7 @@
+@@ -158,7 +_,8 @@
              boolean open = state.getValue(OPEN);
              level.setBlockAndUpdate(pos, state.setValue(OPEN, !open));
              level.playSound(
 -                null, pos, open ? this.type.fenceGateClose() : this.type.fenceGateOpen(), SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.1F + 0.9F
-+                null, pos, open ? closeSound : openSound, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.1F + 0.9F
++                // Neo: use sound fields instead of wood type
++                null, pos, open ? this.closeSound : this.openSound, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.1F + 0.9F
              );
              level.gameEvent(open ? GameEvent.BLOCK_CLOSE : GameEvent.BLOCK_OPEN, pos, GameEvent.Context.of(state));
          }
-@@ -176,7 +_,7 @@
+@@ -176,7 +_,8 @@
                      level.playSound(
                          null,
                          pos,
 -                        hasPower ? this.type.fenceGateOpen() : this.type.fenceGateClose(),
-+                        hasPower ? openSound : closeSound,
++                        // Neo: use sound fields instead of wood type
++                        hasPower ? this.openSound : this.closeSound,
                          SoundSource.BLOCKS,
                          1.0F,
                          level.getRandom().nextFloat() * 0.1F + 0.9F

@@ -1,17 +1,25 @@
 --- a/net/minecraft/client/data/Main.java
 +++ b/net/minecraft/client/data/Main.java
-@@ -28,17 +_,40 @@
+@@ -28,17 +_,59 @@
          OptionSpec<Void> clientOption = parser.accepts("client", "Include client generators");
          OptionSpec<Void> allOption = parser.accepts("all", "Include all generators");
          OptionSpec<String> outputOption = parser.accepts("output", "Output folder").withRequiredArg().defaultsTo("generated");
++        // Neo: add support for --input like vanilla does in server datagen
 +        OptionSpec<String> inputOption = parser.accepts("input", "Input folder").withRequiredArg();
-+        OptionSpec<String> existing = parser.accepts("existing", "Existing resource packs that generated resources can reference").withRequiredArg();
-+        OptionSpec<String> mod = parser.accepts("mod", "A modid to dump").withRequiredArg().withValuesSeparatedBy(",");
-+        OptionSpec<Void> flat = parser.accepts("flat", "Do not append modid prefix to output directory when generating for multiple mods");
-+        OptionSpec<String> assetIndex = parser.accepts("assetIndex").withRequiredArg();
-+        OptionSpec<java.io.File> assetsDir = parser.accepts("assetsDir").withRequiredArg().ofType(java.io.File.class);
-+        OptionSpec<Void> validateSpec = parser.accepts("validate", "Validate inputs");
-+        OptionSpec<Void> uncachedSpec = parser.accepts("uncached", "Disables cached data generation");
++        // Neo: add argument for paths to existing resources to be made available via a ResourceManager
++        OptionSpec<String> existingOption = parser.accepts("existing", "Existing resource packs that generated resources can reference").withRequiredArg();
++        // Neo: add argument specifying to which mod(s) GatherDataEvent should be dispatched
++        OptionSpec<String> modOption = parser.accepts("mod", "A modid to dump").withRequiredArg().withValuesSeparatedBy(",");
++        // Neo: add argument indicating that the specified output directory should not be suffixed by mod IDs
++        OptionSpec<Void> flatOption = parser.accepts("flat", "Do not append the mod ID prefix to output directory when generating for multiple mods");
++        // Neo: add argument specifying the asset index to use for exposing vanilla resources
++        OptionSpec<String> assetIndexOption = parser.accepts("assetIndex").withRequiredArg();
++        // Neo: add argument specifying the asset directory to use for exposing vanilla resources
++        OptionSpec<java.io.File> assetsDirOption = parser.accepts("assetsDir").withRequiredArg().ofType(java.io.File.class);
++        // Neo: add support for --validate like vanilla does in server datagen
++        OptionSpec<Void> validateOption = parser.accepts("validate", "Validate inputs");
++        // Neo: add argument indicating that the uncached data generator should be used
++        OptionSpec<Void> uncachedOption = parser.accepts("uncached", "Disables cached data generation");
          OptionSet optionSet = parser.parse(args);
          if (!optionSet.has(helpOption) && optionSet.hasOptions()) {
              Path output = Paths.get(outputOption.value(optionSet));
@@ -20,26 +28,37 @@
 -            Bootstrap.bootStrap();
 -            ClientBootstrap.bootstrap();
 -            DataGenerator generator = new DataGenerator.Cached(output, SharedConstants.getCurrentVersion(), true);
-+            var input = optionSet.valuesOf(inputOption).stream().map(Paths::get).toList();
-+            java.util.Collection<Path> existingPacks = optionSet.valuesOf(existing).stream().map(Paths::get).toList();
-+            java.util.Set<String> mods = new java.util.HashSet<>(optionSet.valuesOf(mod));
-+            boolean isFlat = mods.isEmpty() || optionSet.has(flat);
-+            boolean validate = optionSet.has(validateSpec);
-+            boolean uncached = optionSet.has(uncachedSpec);
-+            DataGenerator generator = uncached ? new DataGenerator.Uncached(isFlat ? output : output.resolve("minecraft")) : new DataGenerator.Cached(isFlat ? output : output.resolve("minecraft"), SharedConstants.getCurrentVersion(), true);
++            // Neo: holds the input paths
++            var input = optionSet.valuesOf(inputOption).stream().map(Path::of).toList();
++            // Neo: holds the paths of existing resources to expose
++            var existingPacks = optionSet.valuesOf(existingOption).stream().map(Path::of).toList();
++            // Neo: holds the mod IDs to dispatch GatherDataEvent to
++            var mods = new java.util.HashSet<>(optionSet.valuesOf(modOption));
++            // Neo: indicates whether the specified output directory should not be suffixed by mod IDs
++            boolean flat = mods.isEmpty() || optionSet.has(flatOption);
++            // Neo: indicates whether validators should run
++            boolean validate = optionSet.has(validateOption);
++            // Neo: indicates whether the uncached data generator should be used
++            boolean uncached = optionSet.has(uncachedOption);
++            // Neo: holds the actual output path
++            Path outputPath = flat ? output : output.resolve("minecraft");
++            DataGenerator generator = uncached ? new DataGenerator.Uncached(outputPath) : new DataGenerator.Cached(outputPath, SharedConstants.getCurrentVersion(), true);
++            // Neo: only run vanilla generators if explicitly specified or no mods are declared
 +            if (mods.contains("minecraft") || mods.isEmpty()) {
              addClientProviders(generator, client);
 -            generator.run();
              Util.shutdownExecutors();
 +            }
-+            java.io.File assetsDirValue = optionSet.valueOf(assetsDir);
-+            String assetIndexValue = optionSet.valueOf(assetIndex);
-+            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, output, input, existingPacks, false, false, validate, isFlat, uncached, () -> {
++            // Neo: holds the asset directory to use for exposing vanilla resources
++            var assetsDir = optionSet.valueOf(assetsDirOption);
++            // Neo: holds the asset index to use for exposing vanilla resources
++            String assetIndex = optionSet.valueOf(assetIndexOption);
++            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, output, input, existingPacks, false, false, validate, flat, uncached, () -> {
 +                ClientBootstrap.bootstrap();
 +                net.neoforged.neoforge.client.ClientHooks.initClientRegistries();
 +            }, net.neoforged.neoforge.data.event.GatherDataEvent.Client::new, generator, packConsumer -> {
-+                if (assetsDirValue != null && assetIndexValue != null) {
-+                    packConsumer.accept(net.minecraft.client.resources.ClientPackSource.createVanillaPackSource(net.minecraft.client.resources.IndexedAssetSource.createIndexFs(assetsDirValue.toPath(), assetIndexValue)).fullResources());
++                if (assetsDir != null && assetIndex != null) {
++                    packConsumer.accept(net.minecraft.client.resources.ClientPackSource.createVanillaPackSource(net.minecraft.client.resources.IndexedAssetSource.createIndexFs(assetsDir.toPath(), assetIndex)).fullResources());
 +                }
 +            });
          } else {

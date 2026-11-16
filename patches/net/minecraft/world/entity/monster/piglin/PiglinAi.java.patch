@@ -1,47 +1,32 @@
 --- a/net/minecraft/world/entity/monster/piglin/PiglinAi.java
 +++ b/net/minecraft/world/entity/monster/piglin/PiglinAi.java
-@@ -384,7 +_,7 @@
-         ItemStack itemStack = body.getItemInHand(InteractionHand.OFF_HAND);
-         body.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
-         if (body.isAdult()) {
--            boolean barterCurrency = isBarterCurrency(itemStack);
-+            boolean barterCurrency = itemStack.isPiglinCurrency();
-             if (barteringEnabled && barterCurrency) {
-                 throwItems(body, getBarterResponseItems(body));
-             } else if (!barterCurrency) {
-@@ -465,7 +_,7 @@
-             return false;
-         } else if (isAdmiringDisabled(body) && body.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET)) {
-             return false;
--        } else if (isBarterCurrency(itemStack)) {
-+        } else if (itemStack.isPiglinCurrency()) {
-             return isNotHoldingLovedItemInOffHand(body);
-         } else {
-             boolean hasSpace = body.canAddToInventory(itemStack);
-@@ -559,7 +_,7 @@
-     }
- 
-     protected static boolean canAdmire(Piglin body, ItemStack playerHeldItemStack) {
--        return !isAdmiringDisabled(body) && !isAdmiringItem(body) && body.isAdult() && isBarterCurrency(playerHeldItemStack);
-+        return !isAdmiringDisabled(body) && !isAdmiringItem(body) && body.isAdult() && playerHeldItemStack.isPiglinCurrency();
-     }
- 
-     protected static void wasHurtBy(ServerLevel level, Piglin body, LivingEntity attacker) {
-@@ -648,7 +_,7 @@
+@@ -648,7 +_,8 @@
  
      public static boolean isWearingSafeArmor(LivingEntity livingEntity) {
          for (EquipmentSlot slot : EquipmentSlotGroup.ARMOR) {
 -            if (livingEntity.getItemBySlot(slot).is(ItemTags.PIGLIN_SAFE_ARMOR)) {
++            // Neo: let the item control whether it makes the given entity neutral
 +            if (livingEntity.getItemBySlot(slot).makesPiglinsNeutral(livingEntity)) {
                  return true;
              }
          }
-@@ -798,7 +_,7 @@
+@@ -798,7 +_,8 @@
      }
  
      private static boolean hasCrossbow(LivingEntity body) {
 -        return body.isHolding(Items.CROSSBOW);
++        // Neo: add support for modded crossbows
 +        return body.isHolding(is -> is.getItem() instanceof net.minecraft.world.item.CrossbowItem);
      }
  
      private static void admireGoldItem(LivingEntity body) {
+@@ -810,7 +_,8 @@
+     }
+ 
+     private static boolean isBarterCurrency(ItemStack itemStack) {
+-        return itemStack.is(BARTERING_ITEM);
++        // Neo: add support for modded piglin currency items
++        return itemStack.isPiglinCurrency();
+     }
+ 
+     private static boolean isFood(ItemStack itemStack) {

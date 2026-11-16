@@ -5,7 +5,7 @@
              int amount = this.getConversionProgress();
              this.villagerConversionTime -= amount;
 -            if (this.villagerConversionTime <= 0) {
-+            if (this.villagerConversionTime <= 0 && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityTypes.VILLAGER, (timer) -> this.villagerConversionTime = timer)) {
++            if (this.villagerConversionTime <= 0 && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityTypes.VILLAGER, timer -> this.villagerConversionTime = timer)) {
                  this.finishConversion((ServerLevel)this.level());
              }
          }

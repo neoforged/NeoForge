@@ -9,11 +9,12 @@
      public static final int PING_PORT = 4445;
      private static final long PING_INTERVAL = 1500L;
      private final String motd;
-@@ -41,7 +_,7 @@
+@@ -41,7 +_,8 @@
  
          while (!this.isInterrupted() && this.isRunning) {
              try {
 -                InetAddress group = InetAddress.getByName("224.0.2.60");
++                // Neo: use IP-version-dependent multicast group
 +                InetAddress group = InetAddress.getByName(MULTICAST_GROUP);
                  DatagramPacket packet = new DatagramPacket(ping, ping.length, group, 4445);
                  this.socket.send(packet);

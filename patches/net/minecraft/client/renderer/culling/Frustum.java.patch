@@ -1,11 +1,13 @@
 --- a/net/minecraft/client/renderer/culling/Frustum.java
 +++ b/net/minecraft/client/renderer/culling/Frustum.java
-@@ -84,6 +_,8 @@
+@@ -84,6 +_,10 @@
      }
  
      public boolean isVisible(AABB bb) {
-+        // FORGE: exit early for infinite bounds, these would otherwise fail in the intersection test at certain camera angles (GH-9321)
-+        if (bb.isInfinite()) return true;
++        // Neo: exit early for infinite bounds, these would otherwise fail in the intersection test at certain camera angles (MinecraftForge#9321)
++        if (bb.isInfinite()) {
++            return true;
++        }
          int intersectionResult = this.cubeInFrustum(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ);
          return intersectionResult == -2 || intersectionResult == -1;
      }
