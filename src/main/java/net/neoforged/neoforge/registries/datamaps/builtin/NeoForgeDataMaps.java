@@ -66,6 +66,17 @@ public class NeoForgeDataMaps {
             .merger(DataMapValueMerger.wrappedListMerger(BlockTransformAppender::entries, BlockTransformAppender::new))
             .build();
 
+    /// The [Block] data map that replaces [FireBlock#igniteOdds] and [FireBlock#burnOdds].
+    ///
+    /// The location of this data map is `neoforge/data_maps/block/flammable.json`, and the values are objects with 2 fields:
+    /// - `ignite_odds`, int value for likelihood of a block to catch fire, typical values used by vanilla are [FireBlock#IGNITE_INSTANT], [FireBlock#IGNITE_EASY], [FireBlock#IGNITE_MEDIUM], [FireBlock#IGNITE_HARD].
+    /// - `burn_odds`, int value for likelihood of a block to be destroyed by fire, typical values used by vanilla are [FireBlock#BURN_INSTANT], [FireBlock#BURN_EASY], [FireBlock#BURN_MEDIUM], [FireBlock#BURN_HARD].
+    public static final DataMapType<Block, Flammable> FLAMMABLE = AdvancedDataMapType
+            .builder(id("flammable"), Registries.BLOCK, Flammable.CODEC)
+            .synced(Flammable.CODEC, false)
+            .clientDefaults(Flammable::buildClientDefaults)
+            .build();
+
     /**
      * The {@linkplain EntityType} data map that replaces {@link MonsterRoomFeature#MOBS}.
      * <p>
@@ -186,14 +197,6 @@ public class NeoForgeDataMaps {
     public static final DataMapType<Block, Waxable> WAXABLES = DataMapType.builder(
             id("waxables"), Registries.BLOCK, Waxable.CODEC).synced(Waxable.CODEC, false).build();
 
-    /// The [Block] data map that replaces [FireBlock#igniteOdds] and [FireBlock#burnOdds].
-    ///
-    /// The location of this data map is `neoforge/data_maps/block/flammable.json`, and the values are objects with 2 fields:
-    /// - `ignite_odds`, int value for likelihood of a block to catch fire, typical values used by vanilla are [FireBlock#IGNITE_INSTANT], [FireBlock#IGNITE_EASY], [FireBlock#IGNITE_MEDIUM], [FireBlock#IGNITE_HARD].
-    /// - `burn_odds`, int value for likelihood of a block to be destroyed by fire, typical values used by vanilla are [FireBlock#BURN_INSTANT], [FireBlock#BURN_EASY], [FireBlock#BURN_MEDIUM], [FireBlock#BURN_HARD].
-    public static final DataMapType<Block, Flammable> FLAMMABLE = DataMapType.builder(
-            id("flammable"), Registries.BLOCK, Flammable.CODEC).synced(Flammable.CODEC, false).build();
-
     private static Identifier id(final String name) {
         return Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, name);
     }
@@ -202,6 +205,7 @@ public class NeoForgeDataMaps {
     private static void register(final RegisterDataMapTypesEvent event) {
         event.register(ACCEPTABLE_VILLAGER_DISTANCES);
         event.register(BLOCK_TRANSFORM_APPENDERS);
+        event.register(FLAMMABLE);
         event.register(MONSTER_ROOM_MOBS);
         event.register(OXIDIZABLES);
         event.register(PARROT_IMITATIONS);
@@ -211,6 +215,5 @@ public class NeoForgeDataMaps {
         event.register(VILLAGER_COMPOSTABLES);
         event.register(VILLAGER_TYPES);
         event.register(WAXABLES);
-        event.register(FLAMMABLE);
     }
 }
