@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/block/Block.java
 +++ b/net/minecraft/world/level/block/Block.java
+@@ -83,7 +_,7 @@
+ public class Block extends BlockBehaviour implements ItemLike, IBlockExtension {
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private final Holder.Reference<Block> builtInRegistryHolder = BuiltInRegistries.BLOCK.createIntrusiveHolder(this);
+-    public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = new IdMapper<>();
++    public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = net.neoforged.neoforge.registries.GameData.getBlockStateIDMap();
+     public static final StreamCodec<RegistryFriendlyByteBuf, BlockState> BLOCK_STATE_REGISTRY_STREAM_CODEC = ByteBufCodecs.idMapper(
+             BLOCK_STATE_REGISTRY::byIdOrThrow, BLOCK_STATE_REGISTRY::getIdOrThrow
+         )
 @@ -126,6 +_,10 @@
          map.defaultReturnValue((byte)127);
          return map;
@@ -48,6 +57,18 @@
          if (occluder == Shapes.empty()) {
              return true;
          }
+@@ -376,8 +_,10 @@
+ 
+     public static void dropResources(BlockState state, Level level, BlockPos pos, @Nullable BlockEntity blockEntity, @Nullable Entity breaker, ItemStack tool) {
+         if (level instanceof ServerLevel serverLevel) {
++            beginCapturingDrops();
+             getDrops(state, serverLevel, pos, blockEntity, breaker, tool).forEach(stack -> popResource(level, pos, stack));
+-            state.spawnAfterBreak(serverLevel, pos, tool, true, breaker);
++            List<ItemEntity> captured = stopCapturingDrops();
++            net.neoforged.neoforge.common.CommonHooks.handleBlockDrops(serverLevel, pos, state, blockEntity, captured, breaker, tool);
+         }
+     }
+ 
 @@ -407,19 +_,28 @@
      }
  
