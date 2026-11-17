@@ -1,0 +1,19 @@
+--- a/net/minecraft/network/protocol/common/ClientboundCustomPayloadPacket.java
++++ b/net/minecraft/network/protocol/common/ClientboundCustomPayloadPacket.java
+@@ -17,10 +17,16 @@
+     public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundCustomPayloadPacket> GAMEPLAY_STREAM_CODEC = CustomPacketPayload.<RegistryFriendlyByteBuf>codec(
+             id -> DiscardedPayload.codec(id, 1048576),
+             Util.make(Lists.newArrayList(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)), types -> {})
++            // Neo: assign protocol and flow for modded payload codec lookup
++            , net.minecraft.network.ConnectionProtocol.PLAY,
++            net.minecraft.network.protocol.PacketFlow.CLIENTBOUND
+         )
+         .map(ClientboundCustomPayloadPacket::new, ClientboundCustomPayloadPacket::payload);
+     public static final StreamCodec<FriendlyByteBuf, ClientboundCustomPayloadPacket> CONFIG_STREAM_CODEC = CustomPacketPayload.<FriendlyByteBuf>codec(
+             id -> DiscardedPayload.codec(id, 1048576), List.of(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC))
++            // Neo: assign protocol and flow for modded payload codec lookup
++            , net.minecraft.network.ConnectionProtocol.CONFIGURATION,
++            net.minecraft.network.protocol.PacketFlow.CLIENTBOUND
+         )
+         .map(ClientboundCustomPayloadPacket::new, ClientboundCustomPayloadPacket::payload);
+ 

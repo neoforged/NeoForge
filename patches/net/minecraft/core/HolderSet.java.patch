@@ -7,7 +7,7 @@
 +        /// Neo: holds invalidation callbacks to be run when tags rebind
 +        private final List<Runnable> invalidationCallbacks = new java.util.ArrayList<>();
  
-         Named(HolderOwner<T> owner, TagKey<T> key) {
+         protected Named(HolderOwner<T> owner, TagKey<T> key) {
              this.owner = owner;
 @@ -174,6 +_,10 @@
  

@@ -1,0 +1,156 @@
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -211,6 +212,8 @@
+     private static final double MAX_MOVEMENT_RESETTING_TRACE_DISTANCE = 8.0;
+     private static final Set<TagKey<Fluid>> FLUIDS_WITH_CURRENT = Set.of(FluidTags.WATER, FluidTags.LAVA);
+     private static double viewScale = 1.0;
++    /// @deprecated  Neo: Field accesses are redirected to [#getType()] with a coremod.
++    @Deprecated
+     private final EntityType<?> type;
+     private boolean requiresPrecisePosition;
+     private int id = 0;
+@@ -549,7 +563,7 @@
+ 
+         this.wasInPowderSnow = this.isInPowderSnow;
+         this.isInPowderSnow = false;
+-        this.wasEyeInWater = this.isEyeInFluid(FluidTags.WATER);
++        this.wasEyeInWater = this.fluidInteraction.isEyeInFluidMatching(this, (_, type, _) -> type.getIsWaterLike());
+         this.updateFluidInteraction();
+         this.updateSwimming();
+         if (this.level() instanceof ServerLevel serverLevel) {
+@@ -569,7 +583,11 @@
+         }
+ 
+         if (this.isInLava()) {
+-            this.fallDistance *= 0.5;
++            // Neo: allow modded entities to control the fall distance modifier
++            this.fallDistance *= this.getFluidFallDistanceModifier(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
++        } else if (!this.isInWater()) {
++            // Neo: allow modded fluids and entities to control the fall distance modifier
++            this.fallDistance *= this.fluidInteraction.getFallDistanceModifier(this);
+         }
+ 
+         this.checkBelowWorld();
+@@ -812,7 +830,8 @@
+                 profiler.pop();
+             } else {
+                 if (this.canSimulateMovement() && (movedVertically && this.verticalCollision || this.horizontalCollision)) {
+-                    this.restituteMovementAfterCollisions(effectState, xCollision, zCollision, movement);
++                    // Neo: pass the bounce position to our extensions
++                    this.restituteMovementAfterCollisions(effectPos, effectState, xCollision, zCollision, movement);
+                 }
+ 
+                 if (!this.level().isClientSide() || this.isLocalInstanceAuthoritative()) {
+@@ -1471,20 +1497,22 @@
+         return !aboveState.is(BlockTags.INSIDE_STEP_SOUND_BLOCKS) && !aboveState.is(BlockTags.COMBINATION_STEP_SOUND_BLOCKS) ? affectingPos : abovePos;
+     }
+ 
+-    protected void playCombinationStepSounds(BlockState primaryStepSound, BlockState secondaryStepSound) {
+-        SoundType primaryStepSoundType = primaryStepSound.getSoundType();
+-        this.playSound(primaryStepSoundType.getStepSound(), primaryStepSoundType.getVolume() * 0.15F, primaryStepSoundType.getPitch());
+-        this.playMuffledStepSound(secondaryStepSound);
++    // Neo: add position context
++    protected void playCombinationStepSounds(BlockState primaryStepSound, BlockState secondaryStepSound, BlockPos primaryPos, BlockPos secondaryPos) {
++        // Neo: Allow the blockstate full control over step sounds
++        primaryStepSound.playStepSound(this.level, primaryPos, this, .15F, 1F);
++        this.playMuffledStepSound(secondaryStepSound, secondaryPos);
+     }
+ 
+-    protected void playMuffledStepSound(BlockState blockState) {
+-        SoundType secondaryStepSoundType = blockState.getSoundType();
+-        this.playSound(secondaryStepSoundType.getStepSound(), secondaryStepSoundType.getVolume() * 0.05F, secondaryStepSoundType.getPitch() * 0.8F);
++    // Neo: add position context
++    protected void playMuffledStepSound(BlockState blockState, BlockPos pos) {
++        // Neo: Allow the blockstate full control over step sounds
++        blockState.playStepSound(this.level, pos, this, .05F, .8F);
+     }
+ 
+     protected void playStepSound(BlockPos pos, BlockState blockState) {
+-        SoundType soundType = blockState.getSoundType();
+-        this.playSound(soundType.getStepSound(), soundType.getVolume() * 0.15F, soundType.getPitch());
++        // Neo: Allow the blockstate full control over step sounds
++        blockState.playStepSound(this.level(), pos, this, .15F, 1F);
+     }
+ 
+     private boolean shouldPlayAmethystStepSound(BlockState affectingState) {
+@@ -1663,18 +1691,19 @@
+ 
+     public void updateSwimming() {
+         if (this.isSwimming()) {
+-            this.setSwimming(this.isSprinting() && this.isInWater() && !this.isPassenger());
++            this.setSwimming(this.isSprinting() && (this.isInWater() || this.fluidInteraction.isInFluidMatching(this, (entity, type, _) -> entity.canSwimInFluidType(type))) && !this.isPassenger());
+         } else {
+             this.setSwimming(
+-                this.isSprinting() && this.isUnderWater() && !this.isPassenger() && this.level().getFluidState(this.blockPosition).is(FluidTags.WATER)
++                // Neo: give modded entities and fluids more control over the ability to swim in a fluid
++                this.isSprinting() && this.canStartSwimming() && !this.isPassenger()
+             );
+         }
+     }
+ 
+     protected boolean updateFluidInteraction() {
+-        boolean inAnyFluid = this.fluidInteraction.update(this, !this.isPushedByFluid());
+-        boolean inWater = this.fluidInteraction.isInFluid(FluidTags.WATER);
+-        boolean inLava = this.fluidInteraction.isInFluid(FluidTags.LAVA);
++        // Neo: give modded entities and fluids control over which fluids push which entities
++        boolean inAnyFluid = this.fluidInteraction.update(this, this::isPushedByFluid);
++        boolean inWater = this.fluidInteraction.isInFluidMatching(this, (_, type, _) -> type.getIsWaterLike());
+         if (inWater) {
+             this.resetFallDistance();
+             if (!this.wasTouchingWater && !this.firstTick) {
+@@ -1683,16 +1712,8 @@
+         }
+ 
+         this.wasTouchingWater = inWater;
+-        if (this.isPushedByFluid()) {
+-            if (inWater) {
+-                this.fluidInteraction.applyCurrentTo(FluidTags.WATER, this, 0.014);
+-            }
+-
+-            if (inLava) {
+-                double lavaFlowScale = this.level.environmentAttributes().getDimensionValue(EnvironmentAttributes.FAST_LAVA) ? 0.007 : 0.0023333333333333335;
+-                this.fluidInteraction.applyCurrentTo(FluidTags.LAVA, this, lavaFlowScale);
+-            }
+-        }
++        // Neo: unconditionally apply current
++        this.fluidInteraction.applyCurrentTo(this);
+ 
+         return inAnyFluid;
+     }
+@@ -1760,16 +1786,23 @@
+             }
+ 
+             this.level()
+-                .addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockState), x, this.getY() + 0.1, z, movement.x * -4.0, 1.5, movement.z * -4.0);
++                // Neo: sync block position for position-dependent particles
++                .addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockState, pos), x, this.getY() + 0.1, z, movement.x * -4.0, 1.5, movement.z * -4.0);
+         }
+     }
+ 
++    /// @deprecated Neo: use [#isEyeInFluid(net.neoforged.neoforge.fluids.FluidType)] instead
++    @Deprecated
+     public boolean isEyeInFluid(TagKey<Fluid> type) {
+         return this.fluidInteraction.isEyeInFluid(type);
+     }
+ 
++    public boolean isEyeInFluid(net.neoforged.neoforge.fluids.FluidType type) {
++        return this.fluidInteraction.isEyeInFluid(type);
++    }
++
+     public boolean isInLava() {
+-        return !this.firstTick && this.fluidInteraction.isInFluid(FluidTags.LAVA);
++        return !this.firstTick && this.fluidInteraction.isInFluid(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
+     }
+ 
+     public void moveRelative(float speed, Vec3 input) {
+@@ -2286,6 +2328,10 @@
+ 
+         ItemEntity entity = new ItemEntity(level, this.getX() + offset.x, this.getY() + offset.y, this.getZ() + offset.z, itemStack);
+         entity.setDefaultPickUpDelay();
++        // Neo: capture drops if requested
++        if (this.captureDrops() != null) {
++            this.captureDrops().add(entity);
++        } else
+         level.addFreshEntity(entity);
+         return entity;
+     }

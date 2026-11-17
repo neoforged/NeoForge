@@ -1,0 +1,33 @@
+--- a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
++++ b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
+@@ -106,6 +108,30 @@
+     public static final String BLOCK_LIGHT_TAG = "BlockLight";
+     public static final String SKY_LIGHT_TAG = "SkyLight";
+ 
++    /// @deprecated Neo: use constructor with additional data instead
++    @Deprecated
++    SerializableChunkData(
++        PalettedContainerFactory containerFactory,
++        ChunkPos chunkPos,
++        int minSectionY,
++        long lastUpdateTime,
++        long inhabitedTime,
++        ChunkStatus chunkStatus,
++        BlendingData.@Nullable Packed blendingData,
++        @Nullable BelowZeroRetrogen belowZeroRetrogen,
++        UpgradeData upgradeData,
++        Map<Heightmap.Types, long[]> heightmaps,
++        ChunkAccess.PackedTicks packedTicks,
++        ShortList[] postProcessingSections,
++        boolean lightCorrect,
++        List<SerializableChunkData.SectionData> sectionData,
++        List<CompoundTag> entities,
++        List<CompoundTag> blockEntities,
++        CompoundTag structureData
++    ) {
++        this(containerFactory, chunkPos, minSectionY, lastUpdateTime, inhabitedTime, chunkStatus, blendingData, belowZeroRetrogen, upgradeData, heightmaps, packedTicks, postProcessingSections, lightCorrect, sectionData, entities, blockEntities, structureData, null, null);
++    }
++
+     public static SerializableChunkData parse(LevelHeightAccessor levelHeight, PalettedContainerFactory containerFactory, CompoundTag chunkData) {
+         if (chunkData.getString("Status").isEmpty()) {
+             return null;

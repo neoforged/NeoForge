@@ -1,23 +1,23 @@
 --- a/net/minecraft/client/gui/GuiGraphicsExtractor.java
 +++ b/net/minecraft/client/gui/GuiGraphicsExtractor.java
-@@ -102,6 +_,8 @@
+@@ -103,6 +_,8 @@
      private @Nullable Style hoveredTextStyle;
      private @Nullable Style clickableTextStyle;
      private @Nullable Renderable preeditOverlay;
 +    /// Neo: holds the stack for which a tooltip is being built
 +    private ItemStack tooltipStack = ItemStack.EMPTY;
  
-     private GuiGraphicsExtractor(Minecraft minecraft, Matrix3x2fStack pose, GuiRenderState guiRenderState, int mouseX, int mouseY) {
+     public GuiGraphicsExtractor(Minecraft minecraft, GuiRenderState guiRenderState, int mouseX, int mouseY) {
          this.minecraft = minecraft;
-@@ -879,6 +_,7 @@
+@@ -889,6 +_,7 @@
              this.itemCooldown(itemStack, x, y);
-             this.itemCount(font, itemStack, x, y, countText);
+             this.itemCount(font, itemStack, x, y, overrideItemCount);
              this.pose.popMatrix();
 +            net.neoforged.neoforge.client.ItemDecoratorHandler.of(itemStack).render(this, font, itemStack, x, y);
          }
      }
  
-@@ -1020,9 +_,39 @@
+@@ -1030,9 +_,39 @@
      }
  
      public void setTooltipForNextFrame(Font font, ItemStack itemStack, int xo, int yo) {
@@ -56,21 +56,8 @@
 +        this.tooltipStack = ItemStack.EMPTY;
      }
  
-     public void setTooltipForNextFrame(Font font, List<Component> texts, Optional<TooltipComponent> optionalImage, int xo, int yo) {
-@@ -1042,11 +_,7 @@
-         @Nullable Identifier style,
-         boolean extraSpaceAfterFirstLine
-     ) {
--        List<ClientTooltipComponent> components = texts.stream()
--            .map(Component::getVisualOrderText)
--            .map(ClientTooltipComponent::create)
--            .collect(Util.toMutableList());
--        optionalImage.ifPresent(image -> components.add(components.isEmpty() ? 0 : 1, ClientTooltipComponent.create(image)));
-+        List<ClientTooltipComponent> components = net.neoforged.neoforge.client.ClientHooks.gatherTooltipComponents(this.tooltipStack, texts, optionalImage, xo, guiWidth(), guiHeight(), font);
-         this.setTooltipForNextFrameInternal(font, components, xo, yo, DefaultTooltipPositioner.INSTANCE, style, false, extraSpaceAfterFirstLine);
-     }
- 
-@@ -1074,13 +_,14 @@
+     public void setTooltipForNextFrame(Font font, ItemStack itemStack, ClientTooltipPositioner positioner, int xo, int yo) {
+@@ -1117,13 +_,14 @@
      }
  
      public void setComponentTooltipForNextFrame(Font font, List<Component> lines, int xo, int yo) {
@@ -87,7 +74,7 @@
              xo,
              yo,
              DefaultTooltipPositioner.INSTANCE,
-@@ -1089,6 +_,32 @@
+@@ -1132,6 +_,32 @@
          );
      }
  
@@ -120,7 +107,7 @@
      public void setTooltipForNextFrame(Font font, List<? extends FormattedCharSequence> lines, int xo, int yo) {
          this.setTooltipForNextFrame(font, lines, xo, yo, null);
      }
-@@ -1125,7 +_,9 @@
+@@ -1168,7 +_,9 @@
      ) {
          if (!lines.isEmpty()) {
              if (this.deferredTooltip == null || replaceExisting) {
@@ -131,7 +118,7 @@
              }
          }
      }
-@@ -1139,6 +_,29 @@
+@@ -1182,6 +_,29 @@
          @Nullable Identifier style,
          boolean extraSpaceAfterFirstLine
      ) {
@@ -161,7 +148,7 @@
          int textWidth = 0;
          int tempHeight = extraSpaceAfterFirstLine && lines.size() != 1 ? 0 : -2;
  
-@@ -1157,6 +_,7 @@
+@@ -1200,6 +_,7 @@
          int x = positionedTooltip.x();
          int y = positionedTooltip.y();
          this.pose.pushMatrix();
@@ -169,7 +156,7 @@
          TooltipRenderUtil.extractTooltipBackground(this, x, y, w, h, style);
          int localY = y;
  
-@@ -1219,6 +_,25 @@
+@@ -1262,6 +_,25 @@
                  default:
              }
          }

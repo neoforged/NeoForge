@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/MappedRegistry.java
 +++ b/net/minecraft/core/MappedRegistry.java
-@@ -30,7 +_,7 @@
+@@ -31,7 +_,7 @@
  import net.minecraft.util.Util;
  import org.jspecify.annotations.Nullable;
  
@@ -9,7 +9,7 @@
      private final ResourceKey<? extends Registry<T>> key;
      private final ObjectList<Holder.Reference<T>> byId = new ObjectArrayList<>(256);
      private final Reference2IntMap<T> toId = Util.make(new Reference2IntOpenHashMap<>(), t -> t.defaultReturnValue(-1));
-@@ -86,9 +_,20 @@
+@@ -87,9 +_,20 @@
  
      @Override
      public Holder.Reference<T> register(ResourceKey<T> key, T value, RegistrationInfo registrationInfo) {
@@ -28,9 +28,9 @@
 +        }
 +
          if (this.byLocation.containsKey(key.identifier())) {
-             throw (IllegalStateException)Util.pauseInIde(new IllegalStateException("Adding duplicate key '" + key + "' to registry"));
+             throw (IllegalStateException)DevUtil.pauseInIde(new IllegalStateException("Adding duplicate key '" + key + "' to registry"));
          }
-@@ -107,16 +_,19 @@
+@@ -108,16 +_,19 @@
              holder.bindKey(key);
          } else {
              holder = this.byKey.computeIfAbsent(key, k -> Holder.Reference.createStandAlone(this, (ResourceKey<T>)k));
@@ -51,7 +51,7 @@
          return holder;
      }
  
-@@ -138,6 +_,10 @@
+@@ -139,6 +_,10 @@
  
      @Override
      public @Nullable T getValue(@Nullable ResourceKey<T> key) {
@@ -62,7 +62,7 @@
          return getValueFromNullable(this.byKey.get(key));
      }
  
-@@ -153,11 +_,15 @@
+@@ -154,11 +_,15 @@
  
      @Override
      public Optional<Holder.Reference<T>> get(Identifier id) {
@@ -78,7 +78,7 @@
          return Optional.ofNullable(this.byKey.get(id));
      }
  
-@@ -173,6 +_,8 @@
+@@ -174,6 +_,8 @@
      }
  
      private Holder.Reference<T> getOrCreateHolderOrThrow(ResourceKey<T> key) {
@@ -87,7 +87,7 @@
          return this.byKey.computeIfAbsent(key, id -> {
              if (this.unregisteredIntrusiveHolders != null) {
                  throw new IllegalStateException("This registry can't create new holders without value");
-@@ -205,6 +_,10 @@
+@@ -206,6 +_,10 @@
  
      @Override
      public @Nullable T getValue(@Nullable Identifier key) {
@@ -98,7 +98,7 @@
          Holder.Reference<T> result = this.byLocation.get(key);
          return getValueFromNullable(result);
      }
-@@ -271,6 +_,17 @@
+@@ -272,6 +_,17 @@
          return Objects.requireNonNull(this.componentLookup, "Registry not frozen yet");
      }
  
@@ -116,7 +116,7 @@
      @Override
      public Registry<T> freeze() {
          if (this.frozen) {
-@@ -278,7 +_,6 @@
+@@ -279,7 +_,6 @@
          }
  
          this.frozen = true;
@@ -124,7 +124,7 @@
          List<Identifier> unboundEntries = this.byKey
              .entrySet()
              .stream()
-@@ -295,11 +_,15 @@
+@@ -296,11 +_,15 @@
                  throw new IllegalStateException("Some intrusive holders were not registered: " + this.unregisteredIntrusiveHolders.values());
              }
  
@@ -142,7 +142,7 @@
          }
  
          List<Identifier> unboundTags = this.frozenTags
-@@ -448,6 +_,12 @@
+@@ -449,6 +_,12 @@
                  return patchedHolder;
              }
  
@@ -155,7 +155,7 @@
              @Override
              public void apply() {
                  pendingTags.forEach((id, tag) -> {
-@@ -458,6 +_,52 @@
+@@ -459,6 +_,52 @@
                  MappedRegistry.this.refreshTagsInHolders();
              }
          };

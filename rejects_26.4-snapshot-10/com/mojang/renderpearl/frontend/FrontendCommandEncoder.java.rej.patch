@@ -1,0 +1,29 @@
+--- a/com/mojang/renderpearl/frontend/FrontendCommandEncoder.java
++++ b/com/mojang/renderpearl/frontend/FrontendCommandEncoder.java
+@@ -743,6 +757,26 @@
+                 throw new UnsupportedOperationException("Textures with multiple depths or layers are not yet supported for copying");
+             }
+ 
++            final var sourceFormat = source.getFormat();
++            final var destFormat = destination.getFormat();
++            // Neo: ensure the source and destination formats match exactly if a depth or stencil buffer is present
++            if (sourceFormat.hasDepthAspect() || sourceFormat.hasStencilAspect()) {
++                if (sourceFormat != destFormat) {
++                    throw new IllegalArgumentException(
++                            "When copying depth or stencil data, the source and destination texture formats must be identical. Source: "
++                                    + sourceFormat + ", Destination: " + destFormat
++                    );
++                }
++            }
++
++            // Neo: validate that the presence of the color aspect matches between the two textures
++            if (sourceFormat.hasColorAspect() != destFormat.hasColorAspect()) {
++                throw new IllegalArgumentException(
++                        "Source and destination texture formats must have consistent color aspects. Source: "
++                                + sourceFormat + ", Destination: " + destFormat
++                );
++            }
++
+             this.backend.copyTextureToTexture(source, destination, mipLevel, destX, destY, sourceX, sourceY, width, height);
+         } else {
+             throw new IllegalArgumentException(

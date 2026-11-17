@@ -1,0 +1,21 @@
+--- a/net/minecraft/client/gui/screens/inventory/EffectsInInventory.java
++++ b/net/minecraft/client/gui/screens/inventory/EffectsInInventory.java
+@@ -85,9 +101,18 @@
+         return textureWidth;
+     }
+ 
++    /// @deprecated Neo: use [#extractText(GuiGraphicsExtractor, Component, Component, Font, int, int, int, int, int, int, MobEffectInstance)] instead
++    @Deprecated
+     private void extractText(
+         GuiGraphicsExtractor graphics, Component effectText, Component duration, Font font, int x0, int y0, int textureWidth, int yStep, int mouseX, int mouseY
+     ) {
++        extractText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, mouseX, mouseY, null);
++    }
++
++    /// Neo: overload of [#extractText(GuiGraphicsExtractor, Component, Component, Font, int, int, int, int, int, int)] providing the effect whose text is being displayed
++    private void extractText(
++        GuiGraphicsExtractor graphics, Component effectText, Component duration, Font font, int x0, int y0, int textureWidth, int yStep, int mouseX, int mouseY, @org.jspecify.annotations.Nullable MobEffectInstance effectInstance
++    ) {
+         int textX = x0 + 32;
+         int textY = y0 + 7;
+         int maxTextWidth = textureWidth - 32 - 7;

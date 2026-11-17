@@ -7,7 +7,7 @@
 -    private final Int2ObjectMap<EnderDragonPart> dragonParts = new Int2ObjectOpenHashMap<>();
 +    // Neo: widen generic to support non-dragon part entities
 +    private final Int2ObjectMap<net.neoforged.neoforge.entity.PartEntity<?>> dragonParts = new Int2ObjectOpenHashMap<>();
-     private final BiomeResolver uncachedBiomeResolver;
+     private final BiomeManager uncachedBiomeResolver;
      private final StructureManager structureManager;
      private final StructureCheck structureCheck;
      private final boolean tickTime;
@@ -18,7 +18,7 @@
  
      public ServerLevel(
          MinecraftServer server,
-@@ -236,10 +_,14 @@
+@@ -234,10 +_,14 @@
          List<CustomSpawner> customSpawners,
          boolean tickTime
      ) {
@@ -27,14 +27,14 @@
 +        biomeZoomSeed = net.minecraft.util.ExtraCodecs.fromOptionalLong.apply(levelStem.seedOverride())
 +                .map(net.minecraft.world.level.biome.BiomeManager::obfuscateSeed)
 +                .orElse(biomeZoomSeed);
-         super(levelData, dimension, server.registryAccess(), levelStem.type(), false, isDebug, biomeZoomSeed, server.getMaxChainedNeighborUpdates());
+         super(levelData, dimension, server.registryAccess(), levelStem.type(), false, server.getMaxChainedNeighborUpdates());
          this.tickTime = tickTime;
          this.server = server;
 -        this.customSpawners = customSpawners;
          this.serverLevelData = levelData;
          ChunkGenerator generator = levelStem.generator();
          boolean syncWrites = server.forceSynchronousWrites();
-@@ -281,7 +_,8 @@
+@@ -279,7 +_,8 @@
  
          WorldGenSettings worldGenSettings = server.getWorldGenSettings();
          WorldOptions options = worldGenSettings.options();
@@ -44,19 +44,7 @@
          this.structureCheck = new StructureCheck(
              this.chunkSource.chunkScanner(),
              this.registryAccess(),
-@@ -306,6 +_,11 @@
-         this.environmentAttributes = EnvironmentAttributeSystem.builder().addDefaultLayers(this).build();
-         this.uncachedBiomeResolver = this.getChunkSource().getGenerator().getBiomeSource().createUncachedResolver(this.getChunkSource().randomState());
-         this.updateSkyBrightness();
-+
-+        net.neoforged.neoforge.attachment.LevelAttachmentsSavedData.init(this);
-+        // Neo: Move the initialization of customSpawners to the end of costructor
-+        // Providing a fully initialized ServerLevel instance for the ServerLevelEvent.CustomSpawners
-+        this.customSpawners = net.neoforged.neoforge.event.EventHooks.getCustomSpawners(this, customSpawners);
-     }
- 
-     @Override
-@@ -373,7 +_,11 @@
+@@ -369,7 +_,11 @@
          if (this.sleepStatus.areEnoughSleeping(percentage) && this.sleepStatus.areEnoughDeepSleeping(percentage, this.players)) {
              Optional<Holder<WorldClock>> defaultClock = this.dimensionType().defaultClock();
              if (this.getGameRules().get(GameRules.ADVANCE_TIME) && defaultClock.isPresent()) {
@@ -69,7 +57,7 @@
              }
  
              this.wakeUpAllPlayers();
-@@ -411,7 +_,7 @@
+@@ -407,7 +_,7 @@
  
          this.handlingTick = false;
          profiler.pop();
@@ -78,7 +66,7 @@
          if (isActive) {
              this.resetEmptyTime();
          }
-@@ -448,7 +_,10 @@
+@@ -444,7 +_,10 @@
                                      }
  
                                      profiler.push("tick");
@@ -90,7 +78,7 @@
                                      profiler.pop();
                                  }
                              }
-@@ -588,6 +_,8 @@
+@@ -586,6 +_,8 @@
          BlockPos topPos = this.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos);
          BlockPos belowPos = topPos.below();
          Biome biome = this.getBiome(topPos).value();
@@ -99,7 +87,7 @@
          if (biome.shouldFreeze(this, belowPos)) {
              this.setBlockAndUpdate(belowPos, Blocks.ICE.defaultBlockState());
          }
-@@ -790,15 +_,19 @@
+@@ -788,15 +_,19 @@
                  .broadcastAll(new ClientboundGameEventPacket(ClientboundGameEventPacket.THUNDER_LEVEL_CHANGE, this.thunderLevel), this.dimension());
          }
  
@@ -123,7 +111,7 @@
          }
      }
  
-@@ -834,8 +_,12 @@
+@@ -832,8 +_,12 @@
          ProfilerFiller profiler = Profiler.get();
          profiler.push(entity.typeHolder()::getRegisteredName);
          profiler.incrementCounter("tickNonPassenger");
@@ -138,7 +126,7 @@
          profiler.pop();
  
          for (Entity passenger : entity.getPassengers()) {
-@@ -897,6 +_,7 @@
+@@ -895,6 +_,7 @@
              } else {
                  this.entityManager.autoSave();
              }
@@ -146,7 +134,7 @@
          }
      }
  
-@@ -986,6 +_,9 @@
+@@ -984,6 +_,9 @@
      }
  
      private void addPlayer(ServerPlayer player) {
@@ -156,7 +144,7 @@
          Entity existing = this.getEntity(player.getUUID());
          if (existing != null) {
              LOGGER.warn("Force-added player with duplicate UUID {}", player.getUUID());
-@@ -993,7 +_,8 @@
+@@ -991,7 +_,8 @@
              this.removePlayerImmediately((ServerPlayer)existing, Entity.RemovalReason.DISCARDED);
          }
  
@@ -166,7 +154,7 @@
      }
  
      private boolean addEntity(Entity entity) {
-@@ -1001,7 +_,12 @@
+@@ -999,7 +_,12 @@
              LOGGER.warn("Tried to add entity {} but it was marked as removed already", entity.typeHolder().getRegisteredName());
              return false;
          } else {
@@ -180,7 +168,7 @@
          }
      }
  
-@@ -1042,6 +_,14 @@
+@@ -1040,6 +_,14 @@
      public void playSeededSound(
          @Nullable Entity except, double x, double y, double z, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
@@ -195,7 +183,7 @@
          this.server
              .getPlayerList()
              .broadcast(
-@@ -1059,6 +_,14 @@
+@@ -1057,6 +_,14 @@
      public void playSeededSound(
          @Nullable Entity except, Entity sourceEntity, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
@@ -210,7 +198,7 @@
          this.server
              .getPlayerList()
              .broadcast(
-@@ -1117,6 +_,9 @@
+@@ -1115,6 +_,9 @@
  
      @Override
      public void gameEvent(Holder<GameEvent> gameEvent, Vec3 position, GameEvent.Context context) {
@@ -220,7 +208,7 @@
          this.gameEventDispatcher.post(gameEvent, position, context);
      }
  
-@@ -1160,11 +_,19 @@
+@@ -1158,11 +_,19 @@
  
      @Override
      public void updateNeighborsAt(BlockPos pos, Block sourceBlock, @Nullable Orientation orientation) {
@@ -240,7 +228,7 @@
          this.neighborUpdater.updateNeighborsAtExceptFromFacing(pos, blockObject, skipDirection, orientation);
      }
  
-@@ -1211,7 +_,7 @@
+@@ -1209,7 +_,7 @@
          Explosion.BlockInteraction blockInteraction = switch (interactionType) {
              case NONE -> Explosion.BlockInteraction.KEEP;
              case BLOCK -> this.getDestroyType(GameRules.BLOCK_EXPLOSION_DROP_DECAY);
@@ -249,17 +237,7 @@
                  ? this.getDestroyType(GameRules.MOB_EXPLOSION_DROP_DECAY)
                  : Explosion.BlockInteraction.KEEP;
              case TNT -> this.getDestroyType(GameRules.TNT_EXPLOSION_DROP_DECAY);
-@@ -1219,6 +_,9 @@
-         };
-         Vec3 center = new Vec3(x, y, z);
-         ServerExplosion explosion = new ServerExplosion(this, source, damageSource, damageCalculator, center, r, fire, blockInteraction);
-+        if (net.neoforged.neoforge.event.EventHooks.onExplosionStart(this, explosion)) {
-+            return;
-+        }
-         int blockCount = explosion.explode();
-         ParticleOptions explosionParticle = explosion.isSmall() ? smallExplosionParticles : largeExplosionParticles;
- 
-@@ -1504,8 +_,9 @@
+@@ -1497,8 +_,9 @@
          return entity != null ? entity : this.dragonParts.get(id);
      }
  
@@ -270,7 +248,7 @@
          return this.dragonParts.values();
      }
  
-@@ -1762,7 +_,8 @@
+@@ -1755,7 +_,8 @@
  
      @Override
      public long getSeed() {
@@ -280,7 +258,7 @@
      }
  
      public @Nullable EnderDragonFight getDragonFight() {
-@@ -2011,8 +_,9 @@
+@@ -2008,8 +_,9 @@
                  ServerLevel.this.navigatingMobs.add(mob);
              }
  
@@ -292,7 +270,7 @@
                      ServerLevel.this.dragonParts.put(subEntity.getId(), subEntity);
                  }
              }
-@@ -2039,18 +_,56 @@
+@@ -2036,18 +_,56 @@
                  ServerLevel.this.navigatingMobs.remove(mob);
              }
  

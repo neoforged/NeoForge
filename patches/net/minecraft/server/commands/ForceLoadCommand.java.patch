@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/commands/ForceLoadCommand.java
 +++ b/net/minecraft/server/commands/ForceLoadCommand.java
-@@ -38,7 +_,7 @@
+@@ -39,7 +_,7 @@
          (chunkCount, var1, params) -> Component.translatable(
              "commands.forceload.added.multiple",
              chunkCount,
@@ -9,7 +9,7 @@
              Component.translationArg(params.min()),
              Component.translationArg(params.max())
          )
-@@ -51,7 +_,7 @@
+@@ -52,7 +_,7 @@
          (chunkCount, var1, params) -> Component.translatable(
              "commands.forceload.removed.multiple",
              chunkCount,
@@ -18,7 +18,7 @@
              Component.translationArg(params.min()),
              Component.translationArg(params.max())
          )
-@@ -119,13 +_,13 @@
+@@ -120,13 +_,13 @@
          if (result) {
              source.sendSuccess(
                  () -> Component.translatable(
@@ -34,7 +34,7 @@
          }
      }
  
-@@ -138,16 +_,16 @@
+@@ -139,16 +_,16 @@
              String chunkList = Joiner.on(", ").join(forcedChunks.longStream().sorted().mapToObj(ChunkPos::unpack).map(ChunkPos::toString).iterator());
              if (chunkCount == 1) {
                  source.sendSuccess(
@@ -54,7 +54,7 @@
          }
  
          return chunkCount;
-@@ -158,7 +_,7 @@
+@@ -159,7 +_,7 @@
          ResourceKey<Level> dimension = level.dimension();
          LongSet forcedChunks = level.getForceLoadedChunks();
          forcedChunks.forEach(chunk -> level.setChunkForced(ChunkPos.getX(chunk), ChunkPos.getZ(chunk), false));

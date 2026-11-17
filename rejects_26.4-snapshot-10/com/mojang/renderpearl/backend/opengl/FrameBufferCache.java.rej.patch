@@ -1,0 +1,11 @@
+--- a/com/mojang/renderpearl/backend/opengl/FrameBufferCache.java
++++ b/com/mojang/renderpearl/backend/opengl/FrameBufferCache.java
+@@ -52,6 +52,8 @@
+ 
+         dsa.bindFrameBufferTextures(
+             fbo, colorIds, mipLevels, depthAttachment == null ? 0 : depthAttachment.glId(), depthAttachment == null ? 0 : depthAttachment.fboMipLevel(), 0
++            // Neo: bind stencil buffer if present
++            , depthAttachment != null && depthAttachment.hasStencilAspect() ? depthAttachment.glId() : 0, depthAttachment != null && depthAttachment.hasStencilAspect() ? depthAttachment.fboMipLevel() : 0
+         );
+         return fbo;
+     }

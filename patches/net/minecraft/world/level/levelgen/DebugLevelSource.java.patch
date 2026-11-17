@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/DebugLevelSource.java
 +++ b/net/minecraft/world/level/levelgen/DebugLevelSource.java
-@@ -134,4 +_,14 @@
+@@ -197,4 +_,14 @@
      public int getSeaLevel() {
          return 63;
      }

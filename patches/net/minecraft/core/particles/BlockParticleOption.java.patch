@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/particles/BlockParticleOption.java
 +++ b/net/minecraft/core/particles/BlockParticleOption.java
-@@ -15,18 +_,36 @@
+@@ -14,18 +_,36 @@
      );
      private final ParticleType<BlockParticleOption> type;
      private final BlockState state;
@@ -12,7 +12,7 @@
      }
  
      public static StreamCodec<? super RegistryFriendlyByteBuf, BlockParticleOption> streamCodec(ParticleType<BlockParticleOption> type) {
--        return ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY).map(state -> new BlockParticleOption(type, state), o -> o.state);
+-        return Block.BLOCK_STATE_REGISTRY_STREAM_CODEC.map(state -> new BlockParticleOption(type, state), o -> o.state);
 +        return StreamCodec.composite(
 +                ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY),
 +                option -> option.state,
@@ -38,7 +38,7 @@
      }
  
      @Override
-@@ -36,5 +_,10 @@
+@@ -35,5 +_,10 @@
  
      public BlockState getState() {
          return this.state;

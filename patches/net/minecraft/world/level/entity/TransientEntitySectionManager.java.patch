@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/entity/TransientEntitySectionManager.java
 +++ b/net/minecraft/world/level/entity/TransientEntitySectionManager.java
-@@ -84,8 +_,12 @@
+@@ -89,8 +_,12 @@
          private final T entity;
          private long currentSectionKey;
          private EntitySection<T> currentSection;
@@ -13,7 +13,7 @@
              this.entity = entity;
              this.currentSectionKey = currentSectionKey;
              this.currentSection = currentSection;
-@@ -105,6 +_,7 @@
+@@ -110,6 +_,7 @@
                  TransientEntitySectionManager.this.removeSectionIfEmpty(this.currentSectionKey, this.currentSection);
                  EntitySection<T> newSection = TransientEntitySectionManager.this.sectionStorage.getOrCreateSection(newSectionPos);
                  newSection.add(this.entity);
@@ -21,7 +21,7 @@
                  this.currentSection = newSection;
                  this.currentSectionKey = newSectionPos;
                  TransientEntitySectionManager.this.callbacks.onSectionChange(this.entity);
-@@ -116,6 +_,9 @@
+@@ -121,6 +_,9 @@
                      } else if (!wasTicking && isTicking) {
                          TransientEntitySectionManager.this.callbacks.onTickingStart(this.entity);
                      }

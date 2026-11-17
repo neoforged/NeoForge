@@ -145,7 +145,7 @@
      private boolean shouldRenderFace(BlockAndTintGetter level, BlockState state, Direction direction, BlockPos neighborPos) {
          if (!this.cull) {
              return true;
-@@ -204,6 +_,16 @@
+@@ -201,6 +_,16 @@
          if (!this.tintSourcesInitialized) {
              this.configureTintCache(state);
              this.tintSourcesInitialized = true;

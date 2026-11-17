@@ -11,7 +11,7 @@
      protected abstract boolean isValidBlock(BlockState state);
  
      public ItemCombinerMenu(
-@@ -71,6 +_,12 @@
+@@ -77,6 +_,12 @@
                  @Override
                  public void onTake(Player player, ItemStack carried) {
                      ItemCombinerMenu.this.onTake(player, carried);

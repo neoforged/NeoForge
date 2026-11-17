@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/material/LavaFluid.java
++++ b/net/minecraft/world/level/material/LavaFluid.java
+@@ -207,7 +218,7 @@
+             FluidState fluidState = level.getFluidState(pos);
+             if (this.is(FluidTags.LAVA) && fluidState.is(FluidTags.WATER)) {
+                 if (state.getBlock() instanceof LiquidBlock) {
+-                    level.setBlockAndUpdate(pos, Blocks.STONE.defaultBlockState());
++                    level.setBlockAndUpdate(pos, net.neoforged.neoforge.event.EventHooks.fireFluidPlaceBlockEvent(level, pos, pos, Blocks.STONE.defaultBlockState()));
+                 }
+ 
+                 this.fizz(level, pos);

@@ -10,7 +10,7 @@
              int width = minecraft.font.width(name);
              if (width > this.maxNameWidth) {
                  this.maxNameWidth = width;
-@@ -123,8 +_,19 @@
+@@ -124,8 +_,19 @@
                          ? Component.translatable("narrator.controls.unbound", name)
                          : Component.translatable("narrator.controls.bound", name, defaultNarrationSupplier.get())
                  )
@@ -31,7 +31,7 @@
                  key.setKey(key.getDefaultKey());
                  KeyBindsList.this.resetMappingAndUpdateButtons();
              }).bounds(0, 0, 50, 20).createNarration(defaultNarrationSupplier -> Component.translatable("narrator.controls.reset", name)).build();
-@@ -166,13 +_,14 @@
+@@ -167,13 +_,14 @@
              MutableComponent tooltip = Component.empty();
              if (!this.key.isUnbound()) {
                  for (KeyMapping otherKey : KeyBindsList.this.minecraft.options.keyMappings) {

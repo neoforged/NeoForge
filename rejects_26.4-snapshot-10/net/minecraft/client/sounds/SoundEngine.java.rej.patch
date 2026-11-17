@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/sounds/SoundEngine.java
++++ b/net/minecraft/client/sounds/SoundEngine.java
+@@ -100,6 +101,7 @@
+ 
+         this.destroy();
+         this.loadLibrary();
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.sound.SoundEngineLoadEvent(this));
+     }
+ 
+     private synchronized void loadLibrary() {

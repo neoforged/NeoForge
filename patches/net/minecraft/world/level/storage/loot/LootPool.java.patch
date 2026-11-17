@@ -31,8 +31,8 @@
          this.entries = entries;
          this.condition = condition;
          this.modifier = modifier;
-@@ -110,6 +_,59 @@
-         Validatable.validateHolder(output, "bonus_rolls", this.bonusRolls);
+@@ -111,6 +_,59 @@
+         }
      }
  
 +    /// Neo: freeze this loot pool
@@ -91,7 +91,7 @@
      public static LootPool.Builder lootPool() {
          return new LootPool.Builder();
      }
-@@ -120,6 +_,9 @@
+@@ -121,6 +_,9 @@
          private final ImmutableList.Builder<Holder<LootItemFunction>> functions = ImmutableList.builder();
          private Holder<ContextIntProvider> rolls = ContextIntProviders.exactly(1);
          private Holder<ContextFloatProvider> bonusRolls = ContextFloatProviders.exactly(0.0F);
@@ -101,7 +101,7 @@
  
          public LootPool.Builder setRolls(Holder<ContextIntProvider> rolls) {
              this.rolls = rolls;
-@@ -158,6 +_,12 @@
+@@ -159,6 +_,12 @@
              return this;
          }
  
@@ -114,7 +114,7 @@
          public LootPool build() {
              return new LootPool(
                  this.entries.build(),
-@@ -165,6 +_,8 @@
+@@ -166,6 +_,8 @@
                  FunctionUserBuilder.buildFunction(this.functions.build()),
                  this.rolls,
                  this.bonusRolls

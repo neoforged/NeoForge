@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/component/ItemAttributeModifiers.java
 +++ b/net/minecraft/world/item/component/ItemAttributeModifiers.java
-@@ -38,7 +_,7 @@
+@@ -36,7 +_,7 @@
      public static final Codec<ItemAttributeModifiers> CODEC = ItemAttributeModifiers.Entry.CODEC
          .listOf()
          .xmap(ItemAttributeModifiers::new, ItemAttributeModifiers::modifiers);

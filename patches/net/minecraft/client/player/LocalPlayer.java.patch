@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/player/LocalPlayer.java
 +++ b/net/minecraft/client/player/LocalPlayer.java
-@@ -560,7 +_,16 @@
+@@ -574,7 +_,16 @@
  
      @Override
      public void playSound(SoundEvent sound, float volume, float pitch) {
@@ -18,7 +18,7 @@
      }
  
      @Override
-@@ -803,6 +_,7 @@
+@@ -817,6 +_,7 @@
              && this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.CROUCHING)
              && (this.isShiftKeyDown() || !this.isSleeping() && !this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.STANDING));
          this.input.tick();
@@ -26,7 +26,7 @@
          this.minecraft.getTutorial().onInput(this.input);
          boolean wasAutoJump = false;
          if (this.autoJumpTime > 0) {
-@@ -847,7 +_,8 @@
+@@ -861,7 +_,8 @@
          }
  
          boolean justToggledCreativeFlight = false;
@@ -36,16 +36,7 @@
              if (this.minecraft.gameMode.isSpectator()) {
                  if (!abilities.flying) {
                      abilities.flying = true;
-@@ -944,7 +_,7 @@
-     }
- 
-     private boolean shouldStopSwimSprinting() {
--        return !this.isSprintingPossible(true) || !this.isInWater() || !this.input.hasForwardImpulse() && !this.onGround() && !this.input.keyPresses.shift();
-+        return !this.isSprintingPossible(true) || !(this.isInWater() || this.getFluidInteraction().isInFluidMatching(this, (entity, fluidType, _) -> entity.canSwimInFluidType(fluidType))) || !this.input.hasForwardImpulse() && !this.onGround() && !this.input.keyPresses.shift();
-     }
- 
-     public Portal.Transition getActivePortalLocalTransition() {
-@@ -999,6 +_,13 @@
+@@ -1014,6 +_,13 @@
  
      public float getSpinningEffectAngle(float partialTick) {
          return this.spinningEffectTime + partialTick * this.spinningEffectSpeed;

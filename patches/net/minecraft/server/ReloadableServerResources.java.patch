@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/ReloadableServerResources.java
 +++ b/net/minecraft/server/ReloadableServerResources.java
-@@ -29,6 +_,11 @@
+@@ -30,6 +_,11 @@
      private final ServerFunctionLibrary functionLibrary;
      private final List<Registry.PendingTags<?>> postponedTags;
      private final List<DataComponentInitializers.PendingComponents<?>> newComponents;
@@ -12,18 +12,7 @@
  
      private ReloadableServerResources(
          ReloadableServerRegistries.LoadResult loadingContext,
-@@ -45,6 +_,10 @@
-         this.commands = new Commands(commandSelection, CommandBuildContext.simple(loadingContext.lookupWithUpdatedTags(), enabledFeatures));
-         this.advancements = new ServerAdvancementManager(loadingContext.lookupWithUpdatedTags());
-         this.functionLibrary = new ServerFunctionLibrary(functionCompilationPermissions, this.commands.getDispatcher());
-+        // Neo: Store registries and create context object
-+        this.registryAccess = loadingContext.layers().compositeAccess();
-+        this.loadingContext = loadingContext.lookupWithUpdatedTags();
-+        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.postponedTags, this.loadingContext, enabledFeatures);
-     }
- 
-     public ServerFunctionLibrary getFunctionLibrary() {
-@@ -71,6 +_,29 @@
+@@ -73,6 +_,29 @@
          return List.of(this.functionLibrary);
      }
  
@@ -53,7 +42,7 @@
      public static CompletableFuture<ReloadableServerResources> loadResources(
          ResourceManager resourceManager,
          LayeredRegistryAccess<RegistryLayer> contextLayers,
-@@ -96,15 +_,35 @@
+@@ -98,15 +_,35 @@
                                  functionCompilationPermissions,
                                  (List<DataComponentInitializers.PendingComponents<?>>)pendingComponents
                              );
@@ -90,7 +79,7 @@
                                  .thenApply(ignore -> result);
                          }
                      )
-@@ -113,6 +_,8 @@
+@@ -115,6 +_,8 @@
  
      public void updateComponentsAndStaticRegistryTags() {
          this.postponedTags.forEach(Registry.PendingTags::apply);

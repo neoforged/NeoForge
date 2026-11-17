@@ -1,6 +1,6 @@
 --- a/net/minecraft/locale/Language.java
 +++ b/net/minecraft/locale/Language.java
-@@ -36,9 +_,13 @@
+@@ -37,9 +_,13 @@
          DeprecatedTranslationsInfo deprecatedInfo = DeprecatedTranslationsInfo.loadFromDefaultResource();
          Map<String, String> loadedData = new HashMap<>();
          BiConsumer<String, String> output = loadedData::put;
@@ -16,7 +16,7 @@
          return new Language() {
              @Override
              public String getOrDefault(String elementId, String defaultValue) {
-@@ -63,21 +_,57 @@
+@@ -65,21 +_,57 @@
                      )
                      .isPresent();
              }
@@ -75,7 +75,7 @@
              String text = UNSUPPORTED_FORMAT_PATTERN.matcher(GsonHelper.convertToString(entry.getValue(), entry.getKey())).replaceAll("%$1s");
              output.accept(entry.getKey(), text);
          }
-@@ -105,5 +_,15 @@
+@@ -107,5 +_,15 @@
  
      public List<FormattedCharSequence> getVisualOrder(List<FormattedText> lines) {
          return lines.stream().map(this::getVisualOrder).collect(ImmutableList.toImmutableList());

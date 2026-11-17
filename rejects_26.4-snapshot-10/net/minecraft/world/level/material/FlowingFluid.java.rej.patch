@@ -1,0 +1,16 @@
+--- a/net/minecraft/world/level/material/FlowingFluid.java
++++ b/net/minecraft/world/level/material/FlowingFluid.java
+@@ -257,6 +258,13 @@
+         return this.getSource().defaultFluidState().setValue(FALLING, falling);
+     }
+ 
++    @Override
++    public boolean canConvertToSource(FluidState state, ServerLevel level, BlockPos pos) {
++        return this.canConvertToSource(level);
++    }
++
++    /// @deprecated Neo: Use [#canConvertToSource(FluidState, ServerLevel, BlockPos)] instead.
++    @Deprecated
+     protected abstract boolean canConvertToSource(ServerLevel level);
+ 
+     protected void spreadTo(LevelAccessor level, BlockPos pos, BlockState state, Direction direction, FluidState target) {

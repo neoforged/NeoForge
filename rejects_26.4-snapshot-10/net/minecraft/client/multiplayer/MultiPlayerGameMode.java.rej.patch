@@ -1,0 +1,12 @@
+--- a/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
++++ b/net/minecraft/client/multiplayer/MultiPlayerGameMode.java
+@@ -263,6 +281,9 @@
+             this.destroyProgress = this.destroyProgress + state.getDestroyProgress(this.minecraft.player, this.minecraft.player.level(), pos);
+             this.destroyTicks++;
+             this.minecraft.getTutorial().onDestroyBlock(this.minecraft.level, pos, state, Mth.clamp(this.destroyProgress, 0.0F, 1.0F));
++            if (net.neoforged.neoforge.common.CommonHooks.onClientMineHold(this.minecraft.player, pos, direction).getUseItem().isFalse()) {
++                return true;
++            }
+             if (this.destroyProgress >= 1.0F) {
+                 this.isDestroying = false;
+                 if (SharedConstants.DEBUG_BLOCK_BREAK) {

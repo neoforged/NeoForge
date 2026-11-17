@@ -1,21 +1,21 @@
 --- a/net/minecraft/server/jsonrpc/IncomingRpcMethod.java
 +++ b/net/minecraft/server/jsonrpc/IncomingRpcMethod.java
-@@ -113,10 +_,14 @@
+@@ -114,10 +_,14 @@
              }
          }
  
 +        /// @deprecated Neo: Use the [RegisterEvent][net.neoforged.neoforge.registries.RegisterEvent] to register instead of this
 +        @Deprecated
-         public IncomingRpcMethod<?, ?> register(Registry<IncomingRpcMethod<?, ?>> methodRegistry, String key) {
+         public IncomingRpcMethod<?, ?> register(WritableRegistry<IncomingRpcMethod<?, ?>> methodRegistry, String key) {
              return this.register(methodRegistry, Identifier.withDefaultNamespace(key));
          }
  
 +        /// @deprecated Neo: Use the [RegisterEvent][net.neoforged.neoforge.registries.RegisterEvent] to register instead of this
 +        @Deprecated
-         private IncomingRpcMethod<?, ?> register(Registry<IncomingRpcMethod<?, ?>> methodRegistry, Identifier id) {
+         private IncomingRpcMethod<?, ?> register(WritableRegistry<IncomingRpcMethod<?, ?>> methodRegistry, Identifier id) {
              return Registry.register(methodRegistry, id, this.build());
          }
-@@ -152,18 +_,22 @@
+@@ -153,18 +_,22 @@
                      paramsJsonElement = jsonArray.get(0);
                  }
  
@@ -40,7 +40,7 @@
                  }
              } else {
                  throw new InvalidParameterJsonRpcException("Expected params as array or named");
-@@ -184,12 +_,16 @@
+@@ -185,12 +_,16 @@
                      if (this.info.result().isEmpty()) {
                          throw new IllegalStateException("No result codec defined");
                      } else {

@@ -1,0 +1,40 @@
+--- a/net/minecraft/resources/RegistryDataLoader.java
++++ b/net/minecraft/resources/RegistryDataLoader.java
+@@ -194,21 +194,34 @@
+         new RegistryDataLoader.RegistryData<>(Registries.DECORATED_POT_PATTERN, DecoratedPotPattern.CODEC),
+         new RegistryDataLoader.RegistryData<>(Registries.BLOCK_TRANSFORMER, BlockTransformer.DIRECT_CODEC),
+         new RegistryDataLoader.RegistryData<>(Registries.BLOCK_STATE_PROVIDER, BlockStateProvider.DIRECT_CODEC)
+-    );
++    )); // Neo: Keep the list so custom registries can be added later
+ 
++    /// @deprecated Neo: use [#load(ResourceManager, List, List, Executor, List)] instead
++    @Deprecated
+     public static CompletableFuture<RegistryAccess.Frozen> load(
+         ResourceManager resourceManager,
+         List<HolderLookup.RegistryLookup<?>> contextRegistries,
+         List<RegistryDataLoader.RegistryData<?>> registriesToLoad,
+         Executor executor
+     ) {
++        return load(resourceManager, contextRegistries, registriesToLoad, executor, List.of());
++    }
++
++    public static CompletableFuture<RegistryAccess.Frozen> load(
++        ResourceManager resourceManager,
++        List<HolderLookup.RegistryLookup<?>> contextRegistries,
++        List<RegistryDataLoader.RegistryData<?>> registriesToLoad,
++        Executor executor,
++        List<Registry.PendingTags<?>> pendingTags
++    ) {
+         RegistryDataLoader.LoaderFactory loaderFactory = new RegistryDataLoader.LoaderFactory() {
+             @Override
+             public <T> RegistryLoadTask<T> create(RegistryDataLoader.RegistryData<T> data, Map<ResourceKey<?>, Exception> loadingErrors) {
+-                return new ResourceManagerRegistryLoadTask<>(data, Lifecycle.stable(), loadingErrors, resourceManager);
++                // Neo: add pending tags for use in loading conditions
++                return new ResourceManagerRegistryLoadTask<>(data, Lifecycle.stable(), loadingErrors, resourceManager, pendingTags);
+             }
+         };
+-        return load(loaderFactory, contextRegistries, registriesToLoad, executor);
++        return load(loaderFactory, contextRegistries, registriesToLoad, executor, true);
+     }
+ 
+     public static CompletableFuture<RegistryAccess.Frozen> load(

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/BucketItem.java
 +++ b/net/minecraft/world/item/BucketItem.java
-@@ -58,8 +_,9 @@
+@@ -57,8 +_,9 @@
          BlockPos directionOffsetPos = pos.relative(direction);
          if (level.mayInteract(player, pos) && player.mayUseItemAt(directionOffsetPos, direction, itemStack)) {
              BlockState clicked = level.getBlockState(pos);
@@ -12,7 +12,7 @@
                  this.checkExtraContent(player, level, itemStack, placePos);
                  if (player instanceof ServerPlayer serverPlayer && this.content != Fluids.EMPTY) {
                      CriteriaTriggers.PLACED_BLOCK.trigger(serverPlayer, placePos, itemStack);
-@@ -75,7 +_,8 @@
+@@ -74,7 +_,8 @@
                          ItemStack taken = bucketPickupBlock.pickupBlock(player, level, pos, blockState);
                          if (!taken.isEmpty()) {
                              player.awardStat(Stats.ITEM_USED.get(this));
@@ -22,7 +22,7 @@
                              level.gameEvent(player, GameEvent.FLUID_PICKUP, pos);
                              ItemStack result = ItemUtils.createFilledResult(itemStack, player, taken);
                              if (!level.isClientSide()) {
-@@ -106,8 +_,15 @@
+@@ -105,8 +_,15 @@
      public void checkExtraContent(@Nullable LivingEntity user, Level level, ItemStack itemStack, BlockPos pos) {
      }
  
@@ -38,10 +38,10 @@
          if (!(this.content instanceof FlowingFluid flowingFluid)) {
              return false;
          } else {
-@@ -117,8 +_,16 @@
+@@ -116,8 +_,16 @@
              boolean shiftKeyDown = user != null && user.isShiftKeyDown();
              boolean placeLiquid = mayReplace
-                 || block instanceof LiquidBlockContainer container && container.canPlaceLiquid(user, level, pos, blockState, this.content);
+                 || block instanceof LiquidBlockContainer container && container.canPlaceLiquid(user, level, pos, blockState, this.content.defaultFluidState());
 +            // TODO: The stack is only used as a parameter in the vaporization check. What if the fluidType is different? And should the rest of the method be made stack-aware as well?
 +            var containedFluidStack = containerItem != null ? net.neoforged.neoforge.transfer.fluid.FluidUtil.getFirstStackContained(containerItem) : net.neoforged.neoforge.fluids.FluidStack.EMPTY;
              boolean canPlaceFluidInsideBlock = blockState.isAir() || placeLiquid && (!shiftKeyDown || hitResult == null);
@@ -52,19 +52,19 @@
 +                    return true;
 +                }
 +
-                 if (level.environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, pos) && this.content.is(FluidTags.WATER)) {
+                 if (level.environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, pos) && this.content == Fluids.WATER) {
                      int x = pos.getX();
                      int y = pos.getY();
-@@ -132,7 +_,7 @@
+@@ -131,7 +_,7 @@
                      }
  
                      return true;
 -                } else if (block instanceof LiquidBlockContainer container && this.content == Fluids.WATER) {
 +                } else if (block instanceof LiquidBlockContainer container && container.canPlaceLiquid(user, level, pos, blockState, this.content)) { // Neo: let the block decide whether the fluid can be placed in it
-                     container.placeLiquid(level, pos, blockState, flowingFluid.getSource(false));
+                     container.placeLiquid(level, pos, blockState, flowingFluid.getSource());
                      this.playEmptySound(user, level, pos);
                      return true;
-@@ -149,13 +_,23 @@
+@@ -148,13 +_,23 @@
                      return true;
                  }
              } else {
@@ -81,7 +81,7 @@
      }
  
      protected void playEmptySound(@Nullable LivingEntity user, LevelAccessor level, BlockPos pos) {
--        SoundEvent soundEvent = this.content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
+-        SoundEvent soundEvent = this.content == Fluids.LAVA ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
 +        // Neo: let the fluid type control its bucket emptying sound
 +        SoundEvent soundEvent = this.content.getFluidType().getSound(user, level, pos, net.neoforged.neoforge.common.SoundActions.BUCKET_EMPTY);
 +        if (soundEvent == null) {

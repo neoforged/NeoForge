@@ -33,7 +33,7 @@
 +                            tagOrList -> tagOrList.map(
                              tagKey -> {
                                  if (ops instanceof RegistryOps<T> registryOps) {
-                                     Optional<HolderGetter<E>> maybeRegistry = registryOps.getter(this.registryKey);
+                                     Optional<? extends HolderGetter<E>> maybeRegistry = registryOps.getter(this.registryKey);
 @@ -54,6 +_,7 @@
                                  }
                              },

@@ -1,6 +1,6 @@
 --- a/net/minecraft/commands/arguments/MessageArgument.java
 +++ b/net/minecraft/commands/arguments/MessageArgument.java
-@@ -90,7 +_,7 @@
+@@ -96,7 +_,7 @@
  
      public record Message(String text, MessageArgument.Part[] parts) {
          private Component resolveComponent(CommandSourceStack sender) throws CommandSyntaxException {

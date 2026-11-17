@@ -2,7 +2,7 @@
 +++ b/net/minecraft/world/entity/TamableAnimal.java
 @@ -137,6 +_,8 @@
          this.usePlayerItem(player, hand, itemStack);
-         this.heal(foodProperties != null ? healingFactor * foodProperties.nutrition() : defaultHeal);
+         this.healNaturally(foodProperties != null ? healingFactor * foodProperties.nutrition() : defaultHeal);
          this.playEatingSound();
 +        // Neo: dispatch EAT game event
 +        this.gameEvent(net.minecraft.world.level.gameevent.GameEvent.EAT);

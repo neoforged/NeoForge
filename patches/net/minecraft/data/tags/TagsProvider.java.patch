@@ -3,7 +3,7 @@
 @@ -31,26 +_,46 @@
      private final CompletableFuture<TagsProvider.TagLookup<T>> parentProvider;
      protected final ResourceKey<? extends Registry<T>> registryKey;
-     protected final Map<Identifier, TagBuilder> builders = Maps.newLinkedHashMap();
+     protected final Map<Identifier, TagBuilder> builders = new LinkedHashMap<>();
 +    protected final String modId;
  
 +    /// @deprecated Neo: Use the [mod id variant][#TagsProvider(PackOutput, ResourceKey, CompletableFuture, String)]

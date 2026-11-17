@@ -1,19 +1,6 @@
 --- a/net/minecraft/client/gui/screens/Screen.java
 +++ b/net/minecraft/client/gui/screens/Screen.java
-@@ -108,8 +_,12 @@
-     public final void extractRenderStateWithTooltipAndSubtitles(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-         graphics.nextStratum();
-         this.extractBackground(graphics, mouseX, mouseY, a);
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Render.Background(this, graphics, mouseX, mouseY, a));
-         graphics.nextStratum();
-         this.extractRenderState(graphics, mouseX, mouseY, a);
-+        if (!(this instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>)) {
-+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Render.Foreground(this, graphics, mouseX, mouseY, a));
-+        }
-         graphics.extractDeferredElements(mouseX, mouseY, a);
-     }
- 
-@@ -202,7 +_,8 @@
+@@ -208,7 +_,8 @@
      }
  
      public void onClose() {
@@ -23,7 +10,7 @@
      }
  
      protected <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T widget) {
-@@ -245,9 +_,9 @@
+@@ -255,9 +_,9 @@
  
      public static List<Component> getTooltipFromItem(Minecraft minecraft, ItemStack itemStack) {
          return itemStack.getTooltipLines(
@@ -35,7 +22,7 @@
          );
      }
  
-@@ -333,8 +_,11 @@
+@@ -347,8 +_,11 @@
          this.width = width;
          this.height = height;
          if (!this.initialized) {
@@ -47,7 +34,7 @@
          } else {
              this.repositionElements();
          }
-@@ -351,8 +_,11 @@
+@@ -365,8 +_,11 @@
      protected void rebuildWidgets() {
          this.clearWidgets();
          this.clearFocus();
@@ -59,7 +46,7 @@
      }
  
      protected void fadeWidgets(float widgetFade) {
-@@ -619,6 +_,22 @@
+@@ -663,6 +_,22 @@
  
      public @Nullable Music getBackgroundMusic() {
          return null;

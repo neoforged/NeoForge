@@ -1,6 +1,6 @@
 --- a/com/mojang/renderpearl/backend/opengl/GlConst.java
 +++ b/com/mojang/renderpearl/backend/opengl/GlConst.java
-@@ -363,4 +_,20 @@
+@@ -377,4 +_,20 @@
              return 35044;
          }
      }

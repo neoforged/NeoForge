@@ -4,7 +4,7 @@
      }
  
      private void logNarratedMessage(String message) {
--        if (SharedConstants.IS_RUNNING_IN_IDE) {
+-        if (DevUtil.IS_RUNNING_IN_IDE) {
 +        // Neo: disable narrator debug logging
 +        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
              LOGGER.debug("Narrating: {}", message.replaceAll("\n", "\\\\n"));

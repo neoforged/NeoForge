@@ -28,10 +28,10 @@
                  new ClientPacketListener(
                      this.minecraft,
                      this.connection,
-@@ -179,12 +_,21 @@
-                         this.serverLinks(),
+@@ -180,12 +_,21 @@
                          this.seenPlayers,
-                         this.seenInsecureChatWarning
+                         this.seenInsecureChatWarning,
+                         this.commandSuggestions
 +                        , this.connectionType // Neo: retain connection type across protocol changes
                      )
                  )
@@ -51,7 +51,7 @@
                  @Override
                  public boolean hasInfiniteMaterials() {
                      return true;
-@@ -211,6 +_,57 @@
+@@ -212,6 +_,57 @@
      public void onDisconnect(DisconnectionDetails reason) {
          super.onDisconnect(reason);
          this.minecraft.clearDownloadedResourcePacks();

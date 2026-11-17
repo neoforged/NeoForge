@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/level/block/FenceGateBlock.java
 +++ b/net/minecraft/world/level/block/FenceGateBlock.java
 @@ -51,11 +_,29 @@
-     private static final Map<Direction.Axis, VoxelShape> SHAPE_OCCLUSION_WALL = Maps.newEnumMap(
+     private static final Map<Direction.Axis, VoxelShape> SHAPE_OCCLUSION_WALL = new EnumMap<>(
          Util.mapValues(SHAPE_OCCLUSION, v -> v.move(0.0, -0.1875, 0.0).optimize())
      );
 +    /// Neo: holds the opening sound
@@ -12,7 +12,7 @@
      private final WoodType type;
  
      public FenceGateBlock(WoodType type, BlockBehaviour.Properties properties) {
--        super(properties.sound(type.soundType()));
+-        super(properties.sound(type.blockSoundSet()));
 -        this.type = type;
 +        this(java.util.Optional.of(type), properties.sound(type.soundType()), java.util.Optional.of(type.fenceGateOpen()), java.util.Optional.of(type.fenceGateClose()));
 +    }

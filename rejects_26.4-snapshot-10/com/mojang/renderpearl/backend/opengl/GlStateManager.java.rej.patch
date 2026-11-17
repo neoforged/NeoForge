@@ -1,0 +1,11 @@
+--- a/com/mojang/renderpearl/backend/opengl/GlStateManager.java
++++ b/com/mojang/renderpearl/backend/opengl/GlStateManager.java
+@@ -31,6 +31,8 @@
+     private static final GlStateManager.CullState CULL = new GlStateManager.CullState();
+     private static final GlStateManager.PolygonOffsetState POLY_OFFSET = new GlStateManager.PolygonOffsetState();
+     private static final GlStateManager.ColorLogicState COLOR_LOGIC = new GlStateManager.ColorLogicState();
++    /// Neo: store the current configuration of stencil testing
++    private static final GlStateManager.StencilState STENCIL = new GlStateManager.StencilState();
+     private static final GlStateManager.ScissorState SCISSOR = new GlStateManager.ScissorState();
+     private static int activeTexture;
+     private static final int TEXTURE_COUNT = 12;

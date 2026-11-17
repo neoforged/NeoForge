@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/WallBlock.java
 +++ b/net/minecraft/world/level/block/WallBlock.java
-@@ -96,6 +_,11 @@
+@@ -94,6 +_,11 @@
      }
  
      protected boolean connectsTo(BlockState state, boolean faceSolid, Direction direction) {

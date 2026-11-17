@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/extract/LevelExtractor.java
 +++ b/net/minecraft/client/renderer/extract/LevelExtractor.java
-@@ -173,11 +_,13 @@
+@@ -177,11 +_,13 @@
                          section.sectionMesh.get() != CompiledSectionMesh.UNCOMPILED
                              || this.sectionUpdateTracker.hasAllNeighbors(this.level, section.getSectionNode())
                      )) {
@@ -14,7 +14,7 @@
                              )
                          );
                      dirtyState.setNotDirty();
-@@ -235,6 +_,13 @@
+@@ -239,6 +_,13 @@
  
          this.levelRenderState.shouldShowEntityOutlines = shouldShowEntityOutlines(camera, this.levelRenderState.playerRenderState);
          this.extractGizmos();
@@ -28,7 +28,7 @@
          profiler.pop();
          profiler.pop();
      }
-@@ -272,7 +_,7 @@
+@@ -276,7 +_,7 @@
              float entityPartialTicks = deltaTracker.getGameTimeDeltaPartialTick(!tickRateManager.isEntityFrozen(entity));
              if (this.isEntityVisible(entity, frustum, camX, camY, camZ, entityPartialTicks, chunkFadeDuration)
                  && (entity != camera.entity() || camera.isDetached() || camera.entity() instanceof LivingEntity && ((LivingEntity)camera.entity()).isSleeping())
@@ -37,7 +37,7 @@
                  if (entity.tickCount == 0) {
                      entity.xOld = entity.getX();
                      entity.yOld = entity.getY();
-@@ -304,6 +_,7 @@
+@@ -308,6 +_,7 @@
      }
  
      private void extractVisibleBlockEntities(Camera camera, float deltaPartialTick, LevelRenderState levelRenderState) {
@@ -45,7 +45,7 @@
          Vec3 cameraPos = camera.position();
          double camX = cameraPos.x();
          double camY = cameraPos.y();
-@@ -329,7 +_,8 @@
+@@ -333,7 +_,8 @@
  
                      BlockEntityRenderState state = this.levelRenderer
                          .blockEntityRenderDispatcher()
@@ -55,7 +55,7 @@
                      if (state != null) {
                          levelRenderState.blockEntityRenderStates.add(state);
                      }
-@@ -346,7 +_,8 @@
+@@ -350,7 +_,8 @@
              } else {
                  BlockEntityRenderState state = this.levelRenderer
                      .blockEntityRenderDispatcher()
@@ -65,7 +65,7 @@
                  if (state != null) {
                      levelRenderState.blockEntityRenderStates.add(state);
                  }
-@@ -381,9 +_,14 @@
+@@ -385,9 +_,14 @@
                  BlockState state = this.level.getBlockState(pos);
                  if (!state.isAir() && this.level.getWorldBorder().isWithinBounds(pos)) {
                      BlockStateModel blockStateModel = this.minecraft.getModelManager().getBlockStateModelSet().get(state);
@@ -81,7 +81,7 @@
                      VoxelShape shape = state.getShape(this.level, pos, context);
                      if (SharedConstants.DEBUG_SHAPES) {
                          VoxelShape collisionShape = state.getCollisionShape(this.level, pos, context);
-@@ -391,9 +_,10 @@
+@@ -395,9 +_,10 @@
                          VoxelShape interactionShape = state.getInteractionShape(this.level, pos);
                          levelRenderState.blockOutlineRenderState = new BlockOutlineRenderState(
                              pos, isBlockTranslucent, highContrast, shape, collisionShape, occlusionShape, interactionShape
@@ -93,7 +93,7 @@
                      }
                  }
              }
-@@ -436,8 +_,9 @@
+@@ -445,8 +_,9 @@
                  }
  
                  if (!(camera.entity() instanceof LivingEntity livingEntity && livingEntity.isSleeping())) {
@@ -105,7 +105,7 @@
                          TextureAtlasSprite sprite = this.minecraft.getModelManager().getBlockStateModelSet().getParticleMaterial(viewBlockingState).sprite();
                          state.blockOverlay = new PlayerRenderState.BlockOverlay(
                              sprite.atlasLocation(), sprite.getU0(), sprite.getV0(), sprite.getU1(), sprite.getV1()
-@@ -447,12 +_,22 @@
+@@ -456,12 +_,22 @@
                      if (this.minecraft.options.getCameraType().isFirstPerson()) {
                          state.isEyeInWater = player.isEyeInFluid(FluidTags.WATER);
                          state.isOnFire = player.isOnFire();
@@ -129,7 +129,7 @@
                          }
                      }
                  }
-@@ -462,7 +_,13 @@
+@@ -471,7 +_,13 @@
          }
      }
  
@@ -143,16 +143,7 @@
          if (player.noPhysics) {
              return null;
          }
-@@ -478,7 +_,7 @@
-             );
-             BlockState blockState = player.level().getBlockState(testPos);
-             if (blockState.getRenderShape() != RenderShape.INVISIBLE && blockState.isViewBlocking(player.level(), testPos, nearPlaneBB)) {
--                return blockState;
-+                return org.apache.commons.lang3.tuple.Pair.of(blockState, testPos.immutable());
-             }
-         }
- 
-@@ -605,6 +_,14 @@
+@@ -609,6 +_,14 @@
          }
  
          return rendered;

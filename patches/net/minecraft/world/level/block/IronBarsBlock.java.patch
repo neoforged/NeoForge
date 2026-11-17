@@ -13,7 +13,7 @@
 +            .setValue(SOUTH, this.attachesTo(southState, southState.isFaceSturdy(level, south, Direction.NORTH), Direction.NORTH))
 +            .setValue(WEST, this.attachesTo(westState, westState.isFaceSturdy(level, west, Direction.EAST), Direction.EAST))
 +            .setValue(EAST, this.attachesTo(eastState, eastState.isFaceSturdy(level, east, Direction.WEST), Direction.WEST))
-             .setValue(WATERLOGGED, replacedFluidState.is(Fluids.WATER));
+             .setValue(WATERLOGGED, replacedFluidState.isSourceOfType(Fluids.WATER));
      }
  
 @@ -64,7 +_,8 @@

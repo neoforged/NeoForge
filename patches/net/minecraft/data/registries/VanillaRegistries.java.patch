@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/registries/VanillaRegistries.java
 +++ b/net/minecraft/data/registries/VanillaRegistries.java
-@@ -138,6 +_,8 @@
+@@ -142,6 +_,8 @@
          .add(Registries.CONTEXT_INT_PROVIDER, ContextIntProviders::bootstrap)
          .add(Registries.CONTEXT_FLOAT_PROVIDER, ContextFloatProviders::bootstrap)
          .add(VanillaRecipeProvider.create());

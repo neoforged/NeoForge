@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/AnvilMenu.java
 +++ b/net/minecraft/world/inventory/AnvilMenu.java
-@@ -73,6 +_,16 @@
+@@ -72,6 +_,16 @@
  
      @Override
      protected void onTake(Player player, ItemStack carried) {
@@ -17,7 +17,7 @@
          if (!player.hasInfiniteMaterials()) {
              player.giveExperienceLevels(-this.cost.get());
          }
-@@ -112,10 +_,28 @@
+@@ -111,10 +_,28 @@
                  level.levelEvent(1030, pos, 0);
              }
          });
@@ -47,7 +47,7 @@
          ItemStack input = this.inputSlots.getItem(0);
          this.onlyRenaming = false;
          this.cost.set(1);
-@@ -180,8 +_,10 @@
+@@ -179,8 +_,10 @@
                          int level = entry.getIntValue();
                          level = current == level ? level + 1 : Math.max(level, current);
                          Enchantment enchantment = enchantmentHolder.value();
@@ -60,7 +60,7 @@
                              compatible = true;
                          }
  
-@@ -304,5 +_,10 @@
+@@ -303,5 +_,10 @@
  
      public int getCost() {
          return this.cost.get();

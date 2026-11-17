@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/commands/SetSpawnCommand.java
 +++ b/net/minecraft/server/commands/SetSpawnCommand.java
-@@ -29,7 +_,7 @@
+@@ -30,7 +_,7 @@
              respawnData.pos().getZ(),
              respawnData.yaw(),
              respawnData.pitch(),
@@ -9,7 +9,7 @@
              player.getDisplayName()
          ),
          (playerCount, var1, respawnData) -> Component.translatable(
-@@ -39,7 +_,7 @@
+@@ -40,7 +_,7 @@
              respawnData.pos().getZ(),
              respawnData.yaw(),
              respawnData.pitch(),

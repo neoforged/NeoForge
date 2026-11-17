@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/biome/Biome.java
++++ b/net/minecraft/world/level/biome/Biome.java
+@@ -84,6 +87,8 @@
+         map.defaultReturnValue(Float.NaN);
+         return map;
+     });
++    /// Neo: Grant ability to modify Biomes in specific ways such as adding new features or change temperature
++    private final net.neoforged.neoforge.common.world.ModifiableBiomeInfo modifiableBiomeInfo;
+ 
+     private Biome(
+         Biome.ClimateSettings climateSettings,

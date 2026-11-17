@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/ItemUseAnimation.java
 +++ b/net/minecraft/world/item/ItemUseAnimation.java
-@@ -10,6 +_,9 @@
+@@ -8,6 +_,9 @@
  
  import net.neoforged.fml.common.asm.enumextension.IExtensibleEnum;
  
@@ -10,7 +10,7 @@
  public enum ItemUseAnimation implements StringRepresentable, IExtensibleEnum {
      NONE(0, "none"),
      EAT(1, "eat", true),
-@@ -48,6 +_,10 @@
+@@ -45,6 +_,10 @@
      @Override
      public String getSerializedName() {
          return this.name;

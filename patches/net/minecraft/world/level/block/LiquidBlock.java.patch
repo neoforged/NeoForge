@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/LiquidBlock.java
 +++ b/net/minecraft/world/level/block/LiquidBlock.java
-@@ -175,7 +_,7 @@
+@@ -176,7 +_,7 @@
  
      @Override
      protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, @Nullable Orientation orientation, boolean movedByPiston) {
@@ -9,12 +9,3 @@
              level.scheduleTick(pos, state.getFluidState().getType(), this.fluid.getTickDelay(level));
          }
  
-@@ -191,6 +_,8 @@
-         }
-     }
- 
-+    /// @deprecated Neo: Use [net.neoforged.neoforge.fluids.FluidInteractionRegistry#canInteract] instead
-+    @Deprecated
-     private boolean shouldSpreadLiquid(Level level, BlockPos pos, BlockState state) {
-         if (this.fluid.is(FluidTags.LAVA)) {
-             boolean isOverSoulSoil = level.getBlockState(pos.below()).is(Blocks.SOUL_SOIL);

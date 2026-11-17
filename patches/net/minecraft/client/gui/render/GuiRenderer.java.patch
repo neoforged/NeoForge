@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/render/GuiRenderer.java
 +++ b/net/minecraft/client/gui/render/GuiRenderer.java
-@@ -88,7 +_,8 @@
+@@ -87,7 +_,8 @@
      private final Projection guiProjection = new Projection();
      private final ProjectionMatrixBuffer guiProjectionMatrixBuffer = new ProjectionMatrixBuffer("gui");
      private final FeatureRenderDispatcher featureRenderDispatcher;
@@ -10,7 +10,7 @@
      private @Nullable GuiItemAtlas itemAtlas;
      private int cachedGuiScale;
      private final CubeMap cubeMap = new CubeMap(Identifier.withDefaultNamespace("textures/gui/title/background/panorama"));
-@@ -97,16 +_,10 @@
+@@ -96,16 +_,10 @@
      private @Nullable TextureSetup previousTextureSetup = null;
      private StagedVertexBuffer.@Nullable Draw previousDraw;
  
@@ -29,15 +29,15 @@
      }
  
      public void endFrame() {
-@@ -135,6 +_,7 @@
+@@ -134,6 +_,7 @@
          this.renderState.reset();
          this.firstDrawIndexAfterBlur = Integer.MAX_VALUE;
          this.clearUnusedOversizedItemRenderers();
 +        this.pictureInPictureRendererPools.values().forEach(net.neoforged.neoforge.client.gui.PictureInPictureRendererPool::clearUnusedRenderers);
          if (SharedConstants.DEBUG_SHUFFLE_UI_RENDERING_ORDER) {
-             RenderPipeline.updateSortKeySeed();
+             GuiPipeline.updateSortKeySeed();
              TextureSetup.updateSortKeySeed();
-@@ -229,6 +_,7 @@
+@@ -222,6 +_,7 @@
          ScreenRectangle scissorArea = elementState.scissorArea();
          if (this.previousDraw == null
              || pipeline != this.previousPipeline
@@ -45,7 +45,7 @@
              || this.scissorChanged(scissorArea, this.previousScissorArea)
              || !textureSetup.equals(this.previousTextureSetup)) {
              this.previousPipeline = pipeline;
-@@ -292,14 +_,34 @@
+@@ -285,14 +_,34 @@
  
      private void preparePictureInPicture() {
          int guiScale = Minecraft.getInstance().gameRenderer.gameRenderState().windowRenderState.guiScale;
@@ -83,7 +83,7 @@
      }
  
      private void submitBlitFromItemAtlas(GuiItemRenderState itemState, GuiItemAtlas.SlotView slotView) {
-@@ -427,7 +_,7 @@
+@@ -420,7 +_,7 @@
              this.itemAtlas = null;
          }
  

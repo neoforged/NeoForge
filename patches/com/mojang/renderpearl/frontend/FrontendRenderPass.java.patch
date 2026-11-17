@@ -1,6 +1,6 @@
 --- a/com/mojang/renderpearl/frontend/FrontendRenderPass.java
 +++ b/com/mojang/renderpearl/frontend/FrontendRenderPass.java
-@@ -188,6 +_,17 @@
+@@ -256,6 +_,17 @@
          this.backend.pushConstants(value);
      }
  
@@ -16,5 +16,5 @@
 +    }
 +
      @Override
-     public void enableScissor(int x, int y, int width, int height) {
+     public void setViewport(int x, int y, int width, int height) {
          if (width > 0 && height > 0) {

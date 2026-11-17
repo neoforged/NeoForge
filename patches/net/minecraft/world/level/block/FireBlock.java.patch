@@ -69,50 +69,7 @@
                  BlockPos.MutableBlockPos testPos = new BlockPos.MutableBlockPos();
  
                  for (int xx = -1; xx <= 1; xx++) {
-@@ -214,33 +_,35 @@
-             || level.isRainingAt(testPos.south());
-     }
- 
-+    /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.IBlockExtension#getFlammability] instead
-+    @Deprecated
-     public int getBurnOdds(BlockState state) {
-         return state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)
-             ? 0
-             : this.burnOdds.getInt(state.getBlock());
-     }
- 
-+    /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.IBlockExtension#getFireSpreadSpeed] instead
-+    @Deprecated
-     public int getIgniteOdds(BlockState state) {
-         return state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)
-             ? 0
-             : this.igniteOdds.getInt(state.getBlock());
-     }
- 
--    private void checkBurnOut(Level level, BlockPos pos, int chance, RandomSource random, int age) {
--        int odds = this.getBurnOdds(level.getBlockState(pos));
-+    private void checkBurnOut(Level level, BlockPos pos, int chance, RandomSource random, int age, Direction face) {
-+        int odds = level.getBlockState(pos).getFlammability(level, pos, face);
-         if (random.nextInt(chance) < odds) {
-             BlockState oldState = level.getBlockState(pos);
-+            // Neo: let the block react to burnout
-+            oldState.onCaughtFire(level, pos, face, null, net.minecraft.world.item.ItemStack.EMPTY);
-+
-             if (random.nextInt(age + 10) < 5 && !level.isRainingAt(pos)) {
-                 int newAge = Math.min(age + random.nextInt(5) / 4, 15);
-                 level.setBlockAndUpdate(pos, this.getStateWithAge(level, pos, newAge));
-             } else {
-                 level.removeBlock(pos, false);
-             }
--
--            Block block = oldState.getBlock();
--            if (block instanceof TntBlock) {
--                TntBlock.prime(level, pos);
--            }
-         }
-     }
- 
-@@ -251,7 +_,8 @@
+@@ -247,7 +_,8 @@
  
      private boolean isValidFireLocation(BlockGetter level, BlockPos pos) {
          for (Direction direction : Direction.values()) {
@@ -122,7 +79,7 @@
                  return true;
              }
          }
-@@ -268,12 +_,14 @@
+@@ -264,12 +_,14 @@
  
          for (Direction direction : Direction.values()) {
              BlockState blockState = level.getBlockState(pos.relative(direction));
@@ -138,7 +95,7 @@
      @Override
      protected boolean canBurn(BlockState state) {
          return this.getIgniteOdds(state) > 0;
-@@ -294,6 +_,18 @@
+@@ -290,6 +_,18 @@
          builder.add(AGE, NORTH, EAST, SOUTH, WEST, UP);
      }
  

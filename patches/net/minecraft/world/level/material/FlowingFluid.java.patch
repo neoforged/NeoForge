@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/level/material/FlowingFluid.java
 +++ b/net/minecraft/world/level/material/FlowingFluid.java
-@@ -167,7 +_,7 @@
+@@ -177,7 +_,7 @@
              BlockState blockState = level.getBlockState(relativePos);
              FluidState fluidState = blockState.getFluidState();
-             if (fluidState.getType().isSame(this) && canPassThroughWall(direction, level, pos, state, relativePos, blockState)) {
+             if (fluidState.is(this) && canPassThroughWall(direction, level, pos, state, relativePos, blockState)) {
 -                if (fluidState.isSource()) {
 +                if (fluidState.isSource() && net.neoforged.neoforge.event.EventHooks.canCreateFluidSource(level, relativePos, blockState)) {
                      neighbourSources++;
                  }
  
-@@ -175,7 +_,8 @@
+@@ -185,7 +_,8 @@
              }
          }
  
@@ -19,17 +19,3 @@
              BlockState belowState = level.getBlockState(mutablePos.setWithOffset(pos, Direction.DOWN));
              FluidState belowFluid = belowState.getFluidState();
              if (belowState.isSolid() || this.isSourceBlockOfThisType(belowFluid)) {
-@@ -257,6 +_,13 @@
-         return this.getSource().defaultFluidState().setValue(FALLING, falling);
-     }
- 
-+    @Override
-+    public boolean canConvertToSource(FluidState state, ServerLevel level, BlockPos pos) {
-+        return this.canConvertToSource(level);
-+    }
-+
-+    /// @deprecated Neo: Use [#canConvertToSource(FluidState, ServerLevel, BlockPos)] instead.
-+    @Deprecated
-     protected abstract boolean canConvertToSource(ServerLevel level);
- 
-     protected void spreadTo(LevelAccessor level, BlockPos pos, BlockState state, Direction direction, FluidState target) {

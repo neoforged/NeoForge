@@ -14,7 +14,7 @@
      }
  
      private Map<String, Pack> discoverAvailable() {
--        Map<String, Pack> discovered = Maps.newTreeMap();
+-        Map<String, Pack> discovered = new TreeMap<>();
 +        // Neo: sort packs within a source by name, between sources according to source order
 +        Map<String, Pack> discovered = Maps.newLinkedHashMap();
  

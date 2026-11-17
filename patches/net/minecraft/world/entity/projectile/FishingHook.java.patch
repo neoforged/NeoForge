@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/projectile/FishingHook.java
 +++ b/net/minecraft/world/entity/projectile/FishingHook.java
-@@ -255,8 +_,8 @@
+@@ -253,8 +_,8 @@
          if (owner.canInteractWithLevel()) {
              ItemStack selectedItem = owner.getMainHandItem();
              ItemStack selectedItemOffHand = owner.getOffhandItem();
@@ -11,7 +11,7 @@
              if ((mainHandIsFishing || offHandIsFishing) && this.distanceToSqr(owner) <= 1024.0) {
                  return false;
              }
-@@ -268,6 +_,9 @@
+@@ -266,6 +_,9 @@
  
      private void checkCollision() {
          HitResult hitResult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
@@ -21,7 +21,7 @@
          this.hitTargetOrDeflectSelf(hitResult);
      }
  
-@@ -449,6 +_,7 @@
+@@ -447,6 +_,7 @@
          Player owner = this.getPlayerOwner();
          if (!this.level().isClientSide() && owner != null && !this.shouldStopFishing(owner)) {
              int dmg = 0;
@@ -29,7 +29,7 @@
              if (this.hookedIn != null) {
                  this.pullEntity(this.hookedIn);
                  CriteriaTriggers.FISHING_ROD_HOOKED.trigger((ServerPlayer)owner, rod, this, Collections.emptyList());
-@@ -459,10 +_,17 @@
+@@ -457,10 +_,17 @@
                      .withParameter(LootContextParams.ORIGIN, this.position())
                      .withParameter(LootContextParams.TOOL, rod)
                      .withParameter(LootContextParams.THIS_ENTITY, this)
@@ -47,7 +47,7 @@
                  CriteriaTriggers.FISHING_ROD_HOOKED.trigger((ServerPlayer)owner, rod, this, items);
  
                  for (ItemStack itemStack : items) {
-@@ -488,6 +_,9 @@
+@@ -486,6 +_,9 @@
              }
  
              this.discard();

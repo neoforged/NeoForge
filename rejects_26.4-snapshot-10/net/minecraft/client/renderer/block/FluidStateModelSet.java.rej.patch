@@ -1,0 +1,12 @@
+--- a/net/minecraft/client/renderer/block/FluidStateModelSet.java
++++ b/net/minecraft/client/renderer/block/FluidStateModelSet.java
+@@ -33,7 +34,8 @@
+     public static Map<Fluid, FluidModel> bake(MaterialBaker materials) {
+         FluidModel waterModel = WATER_MODEL.bake(materials, () -> "Water");
+         FluidModel lavaModel = LAVA_MODEL.bake(materials, () -> "Lava");
+-        return Map.of(Fluids.WATER, waterModel, Fluids.FLOWING_WATER, waterModel, Fluids.LAVA, lavaModel, Fluids.FLOWING_LAVA, lavaModel);
++        Map<Fluid, FluidModel> models = Map.of(Fluids.WATER, waterModel, Fluids.FLOWING_WATER, waterModel, Fluids.LAVA, lavaModel, Fluids.FLOWING_LAVA, lavaModel);
++        return net.neoforged.neoforge.client.ClientHooks.gatherFluidModels(models, materials);
+     }
+ 
+     public FluidModel get(FluidState state) {

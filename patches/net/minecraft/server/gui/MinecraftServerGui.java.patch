@@ -2,7 +2,7 @@
 +++ b/net/minecraft/server/gui/MinecraftServerGui.java
 @@ -39,6 +_,8 @@
      private Thread logAppenderThread;
-     private final Collection<Runnable> finalizers = Lists.newArrayList();
+     private final Collection<Runnable> finalizers = new ArrayList<>();
      private final AtomicBoolean isClosing = new AtomicBoolean();
 +    /// Neo: countdown latch used to block logging until the GUI is fully configured
 +    private final java.util.concurrent.CountDownLatch startupLatch = new java.util.concurrent.CountDownLatch(1);

@@ -1,6 +1,6 @@
 --- a/com/mojang/renderpearl/backend/opengl/GlRenderPass.java
 +++ b/com/mojang/renderpearl/backend/opengl/GlRenderPass.java
-@@ -94,6 +_,17 @@
+@@ -106,6 +_,17 @@
          this.pushConstantsDirty = true;
      }
  
@@ -16,5 +16,5 @@
 +    }
 +
      @Override
-     public void enableScissor(int x, int y, int width, int height) {
-         this.scissorState.enable(x, y, width, height);
+     public void setViewport(int x, int y, int width, int height) {
+         GL33C.glViewport(x, y, width, height);

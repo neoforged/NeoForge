@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/zombie/Drowned.java
 +++ b/net/minecraft/world/entity/monster/zombie/Drowned.java
-@@ -136,8 +_,9 @@
+@@ -137,8 +_,9 @@
          return groupData;
      }
  

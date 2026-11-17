@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/advancements/packs/VanillaAdventureAdvancements.java
 +++ b/net/minecraft/data/advancements/packs/VanillaAdventureAdvancements.java
-@@ -1227,6 +_,7 @@
+@@ -1248,6 +_,7 @@
  
          Map<MobCategory, Set<EntityType<?>>> doNotKillByCategory = this.output
              .listContextElements(Registries.ENTITY_TYPE)

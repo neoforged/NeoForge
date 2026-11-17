@@ -1,15 +1,6 @@
 --- a/com/mojang/renderpearl/backend/opengl/FrameBufferCache.java
 +++ b/com/mojang/renderpearl/backend/opengl/FrameBufferCache.java
-@@ -52,6 +_,8 @@
- 
-         dsa.bindFrameBufferTextures(
-             fbo, colorIds, mipLevels, depthAttachment == null ? 0 : depthAttachment.glId(), depthAttachment == null ? 0 : depthAttachment.fboMipLevel(), 0
-+            // Neo: bind stencil buffer if present
-+            , depthAttachment != null && depthAttachment.hasStencilAspect() ? depthAttachment.glId() : 0, depthAttachment != null && depthAttachment.hasStencilAspect() ? depthAttachment.fboMipLevel() : 0
-         );
-         return fbo;
-     }
-@@ -76,7 +_,8 @@
+@@ -82,7 +_,8 @@
  
          public CacheKey(List<@Nullable FrameBufferAttachment> colorAttachments, @Nullable FrameBufferAttachment depthAttachment, int mipOffset) {
              int colorAttachmentCount = colorAttachments.size();
@@ -19,7 +10,7 @@
  
              for (int i = 0; i < colorAttachmentCount; i++) {
                  FrameBufferAttachment attachment = colorAttachments.get(i);
-@@ -93,6 +_,8 @@
+@@ -99,6 +_,8 @@
              if (depthAttachment != null) {
                  this.data[colorAttachmentCount * 2] = depthAttachment.glId();
                  this.data[colorAttachmentCount * 2 + 1] = depthAttachment.fboMipLevel() + mipOffset;

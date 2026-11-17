@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/MapRenderer.java
 +++ b/net/minecraft/client/renderer/MapRenderer.java
-@@ -43,6 +_,10 @@
+@@ -42,6 +_,10 @@
  
          for (MapRenderState.MapDecorationRenderState decoration : mapRenderState.decorations) {
              if (!showOnlyFrame || decoration.renderOnFrame) {
@@ -11,7 +11,7 @@
                  poseStack.pushPose();
                  poseStack.translate(decoration.x / 2.0F + 64.0F, decoration.y / 2.0F + 64.0F, -0.02F);
                  poseStack.rotateDegrees(Axis.ZP, decoration.rot * 360 / 16.0F);
-@@ -84,13 +_,16 @@
+@@ -83,13 +_,16 @@
          mapRenderState.texture = this.mapTextureManager.prepareMapTexture(mapId, mapData);
          mapRenderState.decorations.clear();
  

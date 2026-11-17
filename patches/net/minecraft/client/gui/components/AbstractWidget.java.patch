@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/components/AbstractWidget.java
 +++ b/net/minecraft/client/gui/components/AbstractWidget.java
-@@ -41,6 +_,8 @@
+@@ -42,6 +_,8 @@
      private int tabOrderGroup;
      private boolean focused;
      private final WidgetTooltipHolder tooltip = new WidgetTooltipHolder();
@@ -9,7 +9,7 @@
  
      public AbstractWidget(int x, int y, int width, int height, Component message) {
          this.x = x;
-@@ -223,6 +_,28 @@
+@@ -247,6 +_,28 @@
      @Override
      public void setFocused(boolean focused) {
          this.focused = focused;

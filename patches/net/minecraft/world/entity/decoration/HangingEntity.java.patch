@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/decoration/HangingEntity.java
 +++ b/net/minecraft/world/entity/decoration/HangingEntity.java
-@@ -84,7 +_,10 @@
+@@ -105,7 +_,10 @@
              return false;
          }
  

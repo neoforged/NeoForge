@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/debug/DebugRenderer.java
 +++ b/net/minecraft/client/renderer/debug/DebugRenderer.java
-@@ -137,6 +_,9 @@
+@@ -140,6 +_,9 @@
          }
  
          this.renderers.add(new ChunkCullingDebugRenderer(minecraft));

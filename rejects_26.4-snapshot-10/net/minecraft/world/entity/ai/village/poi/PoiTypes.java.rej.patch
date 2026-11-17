@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/ai/village/poi/PoiTypes.java
++++ b/net/minecraft/world/entity/ai/village/poi/PoiTypes.java
+@@ -56,7 +56,7 @@
+         .stream()
+         .flatMap(block -> block.getStateDefinition().getPossibleStates().stream())
+         .collect(ImmutableSet.toImmutableSet());
+-    private static final Map<BlockState, Holder<PoiType>> TYPE_BY_STATE = Maps.newHashMap();
++    private static final Map<BlockState, Holder<PoiType>> TYPE_BY_STATE = net.neoforged.neoforge.registries.GameData.getBlockStatePointOfInterestTypeMap();
+ 
+     private static Set<BlockState> getBlockStates(Block block) {
+         return ImmutableSet.copyOf(block.getStateDefinition().getPossibleStates());

@@ -1,0 +1,55 @@
+--- a/com/mojang/renderpearl/backend/opengl/DirectStateAccess.java
++++ b/com/mojang/renderpearl/backend/opengl/DirectStateAccess.java
+@@ -40,7 +40,17 @@
+ 
+     public abstract int createFrameBufferObject();
+ 
+-    public abstract void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot);
++    /// Neo: add support for binding a stencil buffer independent of the depth buffer
++    public abstract void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot, int stencil, int stencilMipLevel);
++
++    public void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot) {
++        this.bindFrameBufferTextures(fbo, color, colorMipLevels, depth, depthMipLevel, bindSlot, 0, 0);
++    }
++
++    /// Neo: add support for binding a stencil buffer independent of the depth buffer
++    public void bindFrameBufferTextures(int fbo, int color, int depth, int mipLevel, int bindSlot, int stencil, int stencilMipLevel) {
++        this.bindFrameBufferTextures(fbo, new int[]{color}, new int[]{mipLevel}, depth, mipLevel, bindSlot, stencil, stencilMipLevel);
++    }
+ 
+     public void bindFrameBufferTextures(int fbo, int color, int depth, int mipLevel, int bindSlot) {
+         this.bindFrameBufferTextures(fbo, new int[]{color}, new int[]{mipLevel}, depth, mipLevel, bindSlot);
+@@ -102,12 +112,14 @@
+         }
+ 
+         @Override
+-        public void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot) {
++        public void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot, int stencil, int stencilMipLevel) {
+             for (int i = 0; i < color.length; i++) {
+                 ARBDirectStateAccess.glNamedFramebufferTexture(fbo, 36064 + i, color[i], colorMipLevels[i]);
+             }
+ 
+             ARBDirectStateAccess.glNamedFramebufferTexture(fbo, 36096, depth, depthMipLevel);
++            // Neo: bind provided stencil buffer at the provided mip level
++            ARBDirectStateAccess.glNamedFramebufferTexture(fbo, GL33C.GL_STENCIL_ATTACHMENT, stencil, stencilMipLevel);
+             if (bindSlot != 0) {
+                 GlStateManager._glBindFramebuffer(bindSlot, fbo);
+             }
+@@ -217,7 +229,7 @@
+         }
+ 
+         @Override
+-        public void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot) {
++        public void bindFrameBufferTextures(int fbo, int[] color, int[] colorMipLevels, int depth, int depthMipLevel, int bindSlot, int stencil, int stencilMipLevel) {
+             int tempBindSlot = bindSlot == 0 ? 36009 : bindSlot;
+             int oldFbo = GlStateManager.getFrameBuffer(tempBindSlot);
+             GlStateManager._glBindFramebuffer(tempBindSlot, fbo);
+@@ -227,6 +239,8 @@
+             }
+ 
+             GlStateManager._glFramebufferTexture2D(tempBindSlot, 36096, 3553, depth, depthMipLevel);
++            // Neo: bind provided stencil buffer at the provided mip level
++            GlStateManager._glFramebufferTexture2D(tempBindSlot, GL33C.GL_STENCIL_ATTACHMENT, 3553, stencil, stencilMipLevel);
+             if (bindSlot == 0) {
+                 GlStateManager._glBindFramebuffer(tempBindSlot, oldFbo);
+             }

@@ -1,0 +1,24 @@
+--- a/net/minecraft/network/chat/contents/TranslatableContents.java
++++ b/net/minecraft/network/chat/contents/TranslatableContents.java
+@@ -173,12 +197,21 @@
+         }
+ 
+         return Optional.empty();
++        } finally {
++            net.neoforged.neoforge.common.util.InsertingContents.popTranslation();
++        }
+     }
+ 
+     @Override
+     public <T> Optional<T> visit(FormattedText.ContentConsumer<T> output) {
+         this.decompose();
+ 
++        if (!net.neoforged.neoforge.common.util.InsertingContents.pushTranslation(this)) {
++            // Reference cycle.
++            return Optional.empty();
++        }
++
++        try {
+         for (FormattedText part : this.decomposedParts) {
+             Optional<T> result = part.visit(output);
+             if (result.isPresent()) {

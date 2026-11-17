@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/model/cuboid/ItemModelGenerator.java
 +++ b/net/minecraft/client/resources/model/cuboid/ItemModelGenerator.java
-@@ -40,7 +_,7 @@
+@@ -42,7 +_,7 @@
  
      @Override
      public UnbakedGeometry geometry() {
@@ -9,7 +9,7 @@
      }
  
      @Override
-@@ -48,7 +_,13 @@
+@@ -50,7 +_,13 @@
          return UnbakedModel.GuiLight.FRONT;
      }
  
@@ -23,7 +23,7 @@
          QuadCollection singleResult = null;
          QuadCollection.Builder builder = null;
  
-@@ -60,7 +_,8 @@
+@@ -62,7 +_,8 @@
              }
  
              Material.Baked bakedMaterial = modelBaker.materials().get(material, name);
@@ -33,7 +33,7 @@
              if (builder != null) {
                  builder.addAll(bakedLayer);
              } else if (singleResult != null) {
-@@ -80,17 +_,31 @@
+@@ -82,17 +_,31 @@
          }
      }
  
@@ -48,8 +48,8 @@
 +    private static void bakeExtrudedSprite(
 +        QuadCollection.Builder builder, ModelBaker.Interner interner, ModelState modelState, BakedQuad.MaterialInfo materialInfo, net.neoforged.neoforge.client.model.ExtraFaceData faceData
 +    ) {
-         Vector3f from = new Vector3f(0.0F, 0.0F, 7.5F);
-         Vector3f to = new Vector3f(16.0F, 16.0F, 8.5F);
+         Vector3f from = new Vector3f(0.0F, 0.0F, 7.51F);
+         Vector3f to = new Vector3f(16.0F, 16.0F, 8.49F);
 -        builder.addUnculledFace(FaceBakery.bakeQuad(interner, from, to, SOUTH_FACE_UVS, Quadrant.R0, materialInfo, Direction.SOUTH, modelState, null));
 -        builder.addUnculledFace(FaceBakery.bakeQuad(interner, from, to, NORTH_FACE_UVS, Quadrant.R0, materialInfo, Direction.NORTH, modelState, null));
 -        bakeSideFaces(builder, interner, modelState, materialInfo);
@@ -77,8 +77,8 @@
          }
      }
  
-@@ -206,12 +_,16 @@
-         return x >= 0 && y >= 0 && x < width && y < height ? sprite.isTransparent(frame, x, y) : true;
+@@ -293,12 +_,16 @@
+         }
      }
  
 -    public record ItemLayerKey(Material.Baked material, ModelState modelState, int layerIndex) implements ModelBaker.SharedOperationKey<QuadCollection> {

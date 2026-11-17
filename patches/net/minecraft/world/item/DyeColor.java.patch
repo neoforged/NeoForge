@@ -1,26 +1,9 @@
 --- a/net/minecraft/world/item/DyeColor.java
 +++ b/net/minecraft/world/item/DyeColor.java
-@@ -60,8 +_,14 @@
-     private final int textureDiffuseColor;
-     private final int fireworkColor;
-     private final int textColor;
-+    /// Neo: holds a tag of dye items of this color
-+    private final net.minecraft.tags.TagKey<Item> dyesTag;
-+    /// Neo: holds a tag of items dyed with this color
-+    private final net.minecraft.tags.TagKey<Item> dyedTag;
- 
-     DyeColor(int id, String name, int textureDiffuseColor, MapColor mapColor, MapColor terracottaColor, int fireworkColor, int textColor) {
-+        this.dyesTag = net.minecraft.tags.ItemTags.create(net.minecraft.resources.Identifier.fromNamespaceAndPath("c", "dyes/" + name));
-+        this.dyedTag = net.minecraft.tags.ItemTags.create(net.minecraft.resources.Identifier.fromNamespaceAndPath("c", "dyed/" + name));
-         this.id = id;
-         this.name = name;
-         this.mapColor = mapColor;
-@@ -121,6 +_,31 @@
-     @Override
-     public String getSerializedName() {
+@@ -78,6 +_,31 @@
          return this.name;
-+    }
-+
+     }
+ 
 +    /// Neo: {@return the tag of items which provide this dye color}
 +    public net.minecraft.tags.TagKey<Item> getTag() {
 +        return this.dyesTag;
@@ -44,6 +27,8 @@
 +            }
 +        }
 +        return null;
-     }
- 
++    }
++
      public static DyeColor getMixedColor(ServerLevel level, DyeColor dyeColor1, DyeColor dyeColor2) {
+         DyeColor mixedColor = findColorMixInRecipes(level, dyeColor1, dyeColor2);
+         if (mixedColor != null) {

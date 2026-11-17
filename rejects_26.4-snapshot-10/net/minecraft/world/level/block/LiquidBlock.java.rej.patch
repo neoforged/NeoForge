@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/LiquidBlock.java
++++ b/net/minecraft/world/level/block/LiquidBlock.java
+@@ -191,6 +191,8 @@
+         }
+     }
+ 
++    /// @deprecated Neo: Use [net.neoforged.neoforge.fluids.FluidInteractionRegistry#canInteract] instead
++    @Deprecated
+     private boolean shouldSpreadLiquid(Level level, BlockPos pos, BlockState state) {
+         if (this.fluid.is(FluidTags.LAVA)) {
+             boolean isOverSoulSoil = level.getBlockState(pos.below()).is(Blocks.SOUL_SOIL);

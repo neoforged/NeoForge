@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/PhantomSpawner.java
 +++ b/net/minecraft/world/level/levelgen/PhantomSpawner.java
-@@ -33,13 +_,15 @@
+@@ -32,13 +_,15 @@
                          for (ServerPlayer player : level.players()) {
                              if (!player.isSpectator()) {
                                  BlockPos playerPos = player.blockPosition();
@@ -12,14 +12,14 @@
 -                                    if (difficulty.isHarderThan(random.nextFloat() * 3.0F)) {
 +                                    if (isAllow || difficulty.isHarderThan(random.nextFloat() * 3.0F)) {
                                          ServerStatsCounter stats = player.getStats();
-                                         int value = Mth.clamp(stats.getValue(Stats.CUSTOM.get(Stats.TIME_SINCE_REST)), 1, Integer.MAX_VALUE);
+                                         int value = Math.clamp(stats.getValue(Stats.CUSTOM.get(Stats.TIME_SINCE_REST)), 1, Integer.MAX_VALUE);
                                          int dayLength = 24000;
 -                                        if (random.nextInt(value) >= 72000) {
 +                                        if (isAllow || random.nextInt(value) >= 72000) {
                                              BlockPos spawnPos = playerPos.above(20 + random.nextInt(15))
                                                  .east(-10 + random.nextInt(21))
                                                  .south(-10 + random.nextInt(21));
-@@ -47,7 +_,7 @@
+@@ -46,7 +_,7 @@
                                              FluidState fluidState = level.getFluidState(spawnPos);
                                              if (NaturalSpawner.isValidEmptySpawnBlock(level, spawnPos, blockState, fluidState, EntityTypes.PHANTOM)) {
                                                  SpawnGroupData groupData = null;

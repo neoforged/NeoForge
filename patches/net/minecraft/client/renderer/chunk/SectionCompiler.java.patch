@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/chunk/SectionCompiler.java
 +++ b/net/minecraft/client/renderer/chunk/SectionCompiler.java
-@@ -49,7 +_,13 @@
+@@ -50,7 +_,13 @@
          this.blockColors = blockColors;
      }
  
@@ -14,7 +14,7 @@
          SectionCompiler.Results results = new SectionCompiler.Results();
          BlockPos minPos = sectionPos.origin();
          BlockPos maxPos = minPos.offset(15, 15, 15);
-@@ -85,6 +_,8 @@
+@@ -90,6 +_,8 @@
  
                      FluidState fluidState = blockState.getFluidState();
                      if (!fluidState.isEmpty()) {
@@ -23,11 +23,3 @@
                          fluidRenderer.tesselate(region, pos, fluidOutput, blockState, fluidState);
                      }
  
-@@ -110,6 +_,7 @@
-             }
-         }
- 
-+        net.neoforged.neoforge.client.ClientHooks.addAdditionalGeometry(additionalRenderers, layer -> this.getOrBeginLayer(startedLayers, builders, layer), region, blockRenderer);
-         for (Entry<ChunkSectionLayer, BufferBuilder> entry : startedLayers.entrySet()) {
-             ChunkSectionLayer layer = entry.getKey();
-             MeshData mesh = entry.getValue().build();

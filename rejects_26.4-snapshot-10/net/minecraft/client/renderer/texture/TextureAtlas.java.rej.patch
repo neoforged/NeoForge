@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/renderer/texture/TextureAtlas.java
++++ b/net/minecraft/client/renderer/texture/TextureAtlas.java
+@@ -324,5 +326,10 @@
+ 
+     int getHeight() {
+         return this.height;
++    }
++
++    /// Neo: {@return an unmodifiable view of the sprites on this atlas by name}
++    public Map<Identifier, TextureAtlasSprite> getTextures() {
++        return java.util.Collections.unmodifiableMap(this.texturesByName);
+     }
+ }

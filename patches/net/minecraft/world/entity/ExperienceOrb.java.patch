@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ExperienceOrb.java
 +++ b/net/minecraft/world/entity/ExperienceOrb.java
-@@ -104,7 +_,7 @@
+@@ -108,7 +_,7 @@
          } else {
              super.tick();
              boolean colliding = !this.level().noCollision(this.getBoundingBox());
@@ -9,7 +9,7 @@
                  this.setUnderwaterMovement();
              } else if (!colliding) {
                  this.applyGravity();
-@@ -134,7 +_,9 @@
+@@ -142,7 +_,9 @@
              this.applyEffectsFromBlocks();
              float friction = this.getAirDrag();
              if (this.onGround()) {
@@ -20,16 +20,7 @@
              }
  
              this.setDeltaMovement(this.getDeltaMovement().scale(friction));
-@@ -156,7 +_,7 @@
- 
-     private void followNearbyPlayer() {
-         if (this.followingPlayer == null || this.followingPlayer.isSpectator() || this.followingPlayer.distanceToSqr(this) > 64.0) {
--            Player nearestPlayer = this.level().getNearestPlayer(this, 8.0);
-+            Player nearestPlayer = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.entity.XpOrbTargetingEvent(this, 8.0)).getFollowingPlayer();
-             if (nearestPlayer != null && !nearestPlayer.isSpectator() && !nearestPlayer.isDeadOrDying()) {
-                 this.followingPlayer = nearestPlayer;
-             } else {
-@@ -280,6 +_,9 @@
+@@ -291,6 +_,9 @@
      public void playerTouch(Player player) {
          if (player instanceof ServerPlayer serverPlayer) {
              if (player.takeXpDelay == 0) {
@@ -39,7 +30,7 @@
                  player.takeXpDelay = 2;
                  player.take(this, 1);
                  int remaining = this.repairPlayerItems(serverPlayer, this.getValue());
-@@ -299,7 +_,8 @@
+@@ -310,7 +_,8 @@
          Optional<EnchantedItemInUse> selected = EnchantmentHelper.getRandomItemWith(EnchantmentEffectComponents.REPAIR_WITH_XP, player, ItemStack::isDamaged);
          if (selected.isPresent()) {
              ItemStack itemStack = selected.get().itemStack();

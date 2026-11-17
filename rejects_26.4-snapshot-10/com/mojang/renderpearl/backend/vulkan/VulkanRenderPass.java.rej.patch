@@ -1,0 +1,39 @@
+--- a/com/mojang/renderpearl/backend/vulkan/VulkanRenderPass.java
++++ b/com/mojang/renderpearl/backend/vulkan/VulkanRenderPass.java
+@@ -50,6 +50,8 @@
+     private final int outputWidth;
+     private final int outputHeight;
+     private final boolean hasDepth;
++    /// Neo: store whether this render pass uses a stencil-aware render pipeline
++    private final boolean hasStencil;
+     private final Supplier<String> label;
+     protected int pushedDebugGroups = 0;
+     private final VkCommandBuffer commandBuffer;
+@@ -66,6 +68,7 @@
+         int outputWidth,
+         int outputHeight,
+         boolean hasDepth,
++        boolean hasStencil,
+         Supplier<String> label
+     ) {
+         this.device = device;
+@@ -76,6 +79,7 @@
+         this.outputWidth = outputWidth;
+         this.outputHeight = outputHeight;
+         this.hasDepth = hasDepth;
++        this.hasStencil = hasStencil;
+         this.label = label;
+ 
+         try (MemoryStack stack = MemoryStack.stackPush()) {
+@@ -118,6 +122,11 @@
+             this.anyDescriptorDirty = true;
+             this.uniforms.clear();
+             this.uniforms.size(vulkanRenderPipeline.uniforms().size());
++            // Neo: bind the stencil-aware render pipeline
++            if (this.hasStencil) {
++                VK12.vkCmdBindPipeline(this.commandBuffer(), VK12.VK_PIPELINE_BIND_POINT_GRAPHICS, this.hasDepth ? this.pipeline.withDepthStencilPipeline() : this.pipeline.withStencilPipeline());
++                return;
++            }
+             VK12.vkCmdBindPipeline(this.commandBuffer(), 0, this.hasDepth ? this.pipeline.withDepthPipeline() : this.pipeline.withoutDepthPipeline());
+         } else {
+             throw new IllegalArgumentException("Pipeline must be instance of VulkanRenderPipeline");

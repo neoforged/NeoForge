@@ -28,7 +28,7 @@
          double xd = target.getX() - this.getX();
          double yd = target.getY(0.3333333333333333) - arrow.getY();
          double zd = target.getZ() - this.getZ();
-@@ -180,7 +_,8 @@
+@@ -187,7 +_,8 @@
  
      @Override
      public boolean canUseNonMeleeWeapon(ItemStack item) {

@@ -12,4 +12,4 @@
 +        }
      };
  
-     public ValueInputContextHelper(HolderLookup.Provider lookup, DynamicOps<Tag> ops) {
+     public ValueInputContextHelper(HolderGetter.Provider lookup, DynamicOps<Tag> ops) {

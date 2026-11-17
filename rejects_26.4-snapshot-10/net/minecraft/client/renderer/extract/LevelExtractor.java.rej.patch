@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/extract/LevelExtractor.java
++++ b/net/minecraft/client/renderer/extract/LevelExtractor.java
+@@ -478,7 +513,7 @@
+             );
+             BlockState blockState = player.level().getBlockState(testPos);
+             if (blockState.getRenderShape() != RenderShape.INVISIBLE && blockState.isViewBlocking(player.level(), testPos, nearPlaneBB)) {
+-                return blockState;
++                return org.apache.commons.lang3.tuple.Pair.of(blockState, testPos.immutable());
+             }
+         }
+ 

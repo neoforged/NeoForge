@@ -9,7 +9,7 @@
      public final double minX;
      public final double minY;
      public final double minZ;
-@@ -473,6 +_,12 @@
+@@ -488,6 +_,12 @@
              Math.nextDown(this.maxY),
              Math.nextDown(this.maxZ)
          );

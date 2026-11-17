@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -389,6 +_,7 @@
+@@ -377,6 +_,7 @@
              this.modified = true;
          }
  
@@ -8,7 +8,7 @@
          return chunk;
      }
  
-@@ -523,9 +_,13 @@
+@@ -511,9 +_,13 @@
  
                      this.save(chunk);
                      if (chunk instanceof LevelChunk levelChunk) {
@@ -22,7 +22,7 @@
                      this.lightEngine.updateChunkStatus(chunk.getPos());
                      this.lightEngine.tryScheduleUpdate();
                      this.nextChunkSaveTime.remove(chunk.getPos().pack());
-@@ -565,6 +_,7 @@
+@@ -557,6 +_,7 @@
                  Profiler.get().incrementCounter("chunkLoad");
                  if (chunkData.isPresent()) {
                      ChunkAccess chunk = chunkData.get().read(this.level, this.poiManager, this.storageInfo(), pos);
@@ -30,7 +30,7 @@
                      this.markPosition(pos, chunk.getPersistedStatus().getChunkType());
                      return chunk;
                  } else {
-@@ -761,6 +_,7 @@
+@@ -750,6 +_,7 @@
              Profiler.get().incrementCounter("chunkSave");
              this.activeChunkWrites.incrementAndGet();
              SerializableChunkData data = SerializableChunkData.copyOf(this.level, chunk);
@@ -38,7 +38,7 @@
              CompletableFuture<CompoundTag> encodedData = CompletableFuture.supplyAsync(data::write, Util.backgroundExecutor());
              this.write(pos, encodedData::join).handle((ignored, throwable) -> {
                  if (throwable != null) {
-@@ -826,9 +_,11 @@
+@@ -816,9 +_,11 @@
  
      private static void markChunkPendingToSend(ServerPlayer player, LevelChunk chunk) {
          player.connection.chunkSender.markChunkPendingToSend(chunk);
@@ -50,7 +50,7 @@
          player.connection.chunkSender.dropChunk(player, pos);
      }
  
-@@ -936,7 +_,8 @@
+@@ -926,7 +_,8 @@
              ChunkHolder holder = this.visibleChunkMap.get(spawnCandidateChunks.nextLong());
              if (holder != null) {
                  LevelChunk chunk = holder.getTickingChunk();
@@ -60,7 +60,7 @@
                      output.add(chunk);
                  }
              }
-@@ -1137,7 +_,8 @@
+@@ -1127,7 +_,8 @@
      }
  
      protected void addEntity(Entity entity) {
@@ -70,10 +70,13 @@
              EntityType<?> type = entity.getType();
              int range = type.clientTrackingRange() * 16;
              if (range != 0) {
-@@ -1291,6 +_,20 @@
-         }
-     }
- 
+@@ -1281,6 +_,20 @@
+             if (chunk != null) {
+                 consumer.accept(chunk);
+             }
++        }
++    }
++
 +    /// Neo: {@return all players watching the given entity}
 +    public List<ServerPlayer> getPlayersWatching(Entity entity) {
 +        var trackedEntity = this.entityMap.get(entity.getId());
@@ -85,28 +88,6 @@
 +            return java.util.Collections.unmodifiableList(ret);
 +        } else {
 +            return List.of();
-+        }
-+    }
-+
-     private class DistanceManager extends net.minecraft.server.level.DistanceManager {
-         protected DistanceManager(TicketStorage ticketStorage, Executor executor, Executor mainThreadExecutor) {
-             super(ticketStorage, executor, mainThreadExecutor);
-@@ -1422,5 +_,18 @@
-                 this.updatePlayer(player);
-             }
          }
-+    }
-+
-+    /// Neo: PR #937
-+    /// This is for mainly pre-generation usage such as Neoforge's generate command.
-+    /// Use this to schedule chunk load tasks into ChunkTaskPriorityQueueSorter so a chunk is fully finished all of their tasks before scheduling more chunks to load.
-+    /// Reason for this is when scheduling a huge ton of Full Status chunk tasks to the server (to load chunks),
-+    /// you could cause the server to only process those loading tasks and never reach the two chunk tasks that are
-+    /// automatically scheduled to run after the chunk is loaded to Full. As a result of flooding the system with Full Status chunk tasks,
-+    /// the queue for the two kind of successor chunk tasks will grow and become a memory leak of lambdas and chunk references.
-+    /// Use this method to schedule tasks for loading chunks in your whenCompleteAsync method call so the tasks gets processed properly over time and not leak.
-+    /// See [net.neoforged.neoforge.server.command.generation.GenerationTask#enqueueChunks] as an example usage of this method.
-+    public void scheduleOnMainThreadMailbox(Runnable runnable) {
-+        this.mainThreadExecutor.schedule(runnable);
      }
- }
+ 

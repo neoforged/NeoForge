@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/model/geom/LayerDefinitions.java
 +++ b/net/minecraft/client/model/geom/LayerDefinitions.java
-@@ -561,6 +_,7 @@
+@@ -570,6 +_,7 @@
          result.put(ModelLayers.MANGROVE_CHEST_BOAT, chestBoatModel);
          result.put(ModelLayers.POPLAR_BOAT, boatModel);
          result.put(ModelLayers.POPLAR_CHEST_BOAT, chestBoatModel);

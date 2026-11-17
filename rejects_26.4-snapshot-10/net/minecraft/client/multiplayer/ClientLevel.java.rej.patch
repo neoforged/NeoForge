@@ -1,0 +1,12 @@
+--- a/net/minecraft/client/multiplayer/ClientLevel.java
++++ b/net/minecraft/client/multiplayer/ClientLevel.java
+@@ -159,7 +159,8 @@
+     private final @Nullable EndFlashState endFlashState;
+     private final Minecraft minecraft = Minecraft.getInstance();
+     private final List<AbstractClientPlayer> players = Lists.newArrayList();
+-    private final List<EnderDragonPart> dragonParts = Lists.newArrayList();
++    // Neo: widen generic to support non-dragon part entities
++    private final List<net.neoforged.neoforge.entity.PartEntity<?>> dragonParts = Lists.newArrayList();
+     private final Map<MapId, MapItemSavedData> mapData = Maps.newHashMap();
+     private int skyFlashTime;
+     private int rainSoundTime;

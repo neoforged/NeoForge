@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/level/block/entity/ChestBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/ChestBlockEntity.java
-@@ -182,6 +_,17 @@
-         return ChestMenu.threeRows(containerId, inventory, this);
+@@ -184,6 +_,17 @@
+             : ChestMenu.threeRows(containerId, inventory, this);
      }
  
 +    @Override

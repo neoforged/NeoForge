@@ -1,50 +1,12 @@
 --- a/net/minecraft/world/inventory/Slot.java
 +++ b/net/minecraft/world/inventory/Slot.java
-@@ -13,6 +_,9 @@
-     public int index;
-     public final int x;
-     public final int y;
-+    /// Neo: holds the background sprite of this slot
-+    @Nullable
-+    private Identifier backgroundSprite;
- 
-     public Slot(Container container, int slot, int x, int y) {
-         this.container = container;
-@@ -79,7 +_,8 @@
+@@ -86,7 +_,8 @@
      }
  
-     public @Nullable Identifier getNoItemIcon() {
+     public @Nullable Component getNarrationName() {
 -        return null;
 +        // Neo: return the configured background sprite
 +        return this.backgroundSprite;
      }
  
      public ItemStack remove(int amount) {
-@@ -167,5 +_,27 @@
- 
-     public boolean isFake() {
-         return false;
-+    }
-+
-+    /// Neo: {@return the index in the inventory for this slot}
-+    /// This value should typically not be used, but can be useful for some occasions.
-+    ///
-+    /// @return Index in associated inventory for this slot.
-+    public int getSlotIndex() {
-+        return this.slot;
-+    }
-+
-+    /// Neo: {@return whether this slot belongs to the same inventory as the given slot}
-+    public boolean isSameInventory(Slot other) {
-+        return this.container == other.container;
-+    }
-+
-+    /// Neo: Set the background sprite location.
-+    ///
-+    /// @param sprite The sprite location
-+    /// @return this, to allow chaining.
-+    public Slot setBackground(Identifier sprite) {
-+        this.backgroundSprite = sprite;
-+        return this;
-     }
- }

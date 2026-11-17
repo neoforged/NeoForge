@@ -18,7 +18,7 @@
                  Vec3 clientDeltaMovement = new Vec3(vehicle.getX() - oldX, vehicle.getY() - oldY, vehicle.getZ() - oldZ);
                  this.handlePlayerKnownMovement(clientDeltaMovement);
                  vehicle.setOnGroundWithMovement(packet.onGround(), clientDeltaMovement);
-                 vehicle.doCheckFallDamage(clientDeltaMovement.x, clientDeltaMovement.y, clientDeltaMovement.z, packet.onGround());
+                 vehicle.updateFallDistanceAndCheckFallDamageForClientControlledEntity(clientDeltaMovement, packet.onGround());
                  this.player.checkMovementStatistics(clientDeltaMovement.x, clientDeltaMovement.y, clientDeltaMovement.z);
 +                // Neo: check riding stats too as vanilla checks them in rideTick based on the assumption that Entity#rideTick will move the entity, which we break
 +                this.player.checkRidingStatistics(clientDeltaMovement.x, clientDeltaMovement.y, clientDeltaMovement.z);
@@ -60,7 +60,7 @@
                  if (!itemStack.isEmpty()) {
                      if (includeData) {
                          addBlockDataToItem(blockState, level, pos, itemStack);
-@@ -1203,7 +_,7 @@
+@@ -1201,7 +_,7 @@
                          && !playerStandsOnSomething
                          && !this.player.isSpectator()
                          && !this.server.allowFlight()
@@ -69,7 +69,7 @@
                          && !this.player.hasEffect(MobEffects.LEVITATION)
                          && !isFallFlying
                          && !isAutoSpinAttack
-@@ -1355,9 +_,12 @@
+@@ -1353,9 +_,12 @@
                      }
                  case SWAP_ITEM_WITH_OFFHAND:
                      if (!this.player.isSpectator()) {
@@ -85,7 +85,7 @@
                          this.player.stopUsingItem();
                      }
  
-@@ -1549,13 +_,24 @@
+@@ -1547,13 +_,24 @@
      @Override
      public void handleSetCarriedItem(ServerboundSetCarriedItemPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
@@ -110,7 +110,7 @@
          } else {
              LOGGER.warn("{} tried to set an invalid carried item", this.player.getPlainTextName());
          }
-@@ -1575,8 +_,12 @@
+@@ -1573,8 +_,12 @@
                  }
  
                  CompletableFuture<FilteredText> filteredFuture = this.filterTextPacket(signedMessage.signedContent());
@@ -124,7 +124,7 @@
                      PlayerChatMessage filteredMessage = signedMessage.withUnsignedContent(decorated).filter(filtered.mask());
                      this.broadcastChatMessage(filteredMessage);
                  });
-@@ -2140,14 +_,17 @@
+@@ -2137,14 +_,17 @@
      @Override
      public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
@@ -143,7 +143,7 @@
          if (this.player.isModelPartShown(PlayerModelPart.HAT) != wasHatShown) {
              this.server.getPlayerList().broadcastAll(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_HAT, this.player));
          }
-@@ -2224,7 +_,8 @@
+@@ -2221,7 +_,8 @@
          this.connection
              .setupInboundProtocol(
                  ConfigurationProtocols.SERVERBOUND,
@@ -153,11 +153,3 @@
              );
      }
  
-@@ -2258,6 +_,7 @@
- 
-     @Override
-     public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {
-+        super.handleCustomPayload(packet); // Neo: Call super to invoke modded payload handling.
-     }
- 
-     @Override

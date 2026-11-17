@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/zombie/Zombie.java
 +++ b/net/minecraft/world/entity/monster/zombie/Zombie.java
-@@ -102,7 +_,7 @@
+@@ -106,7 +_,7 @@
          DATA_DROWNED_CONVERSION_ID,
          this::convertsToWhenDrowning,
          this::getConversionSound,
@@ -9,7 +9,7 @@
          "InWaterTime",
          600,
          "DrownedConversionTime",
-@@ -243,6 +_,7 @@
+@@ -274,6 +_,7 @@
                  zombie.setGossips(villager.getGossips().copy());
                  zombie.setTradeOffers(villager.getOffers().copy());
                  zombie.setVillagerXp(villager.getVillagerXp());
@@ -17,7 +17,7 @@
                  if (!this.isSilent()) {
                      level.levelEvent(null, 1026, this.blockPosition(), 0);
                  }
-@@ -399,7 +_,7 @@
+@@ -450,7 +_,7 @@
      @Override
      public boolean killedEntity(ServerLevel level, LivingEntity entity, DamageSource source) {
          boolean perished = super.killedEntity(level, entity, source);

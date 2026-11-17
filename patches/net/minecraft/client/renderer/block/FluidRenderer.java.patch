@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/FluidRenderer.java
 +++ b/net/minecraft/client/renderer/block/FluidRenderer.java
-@@ -56,6 +_,18 @@
+@@ -59,6 +_,18 @@
          return isFaceOccludedByState(direction.getOpposite(), 1.0F, state);
      }
  
@@ -19,7 +19,7 @@
      public static boolean shouldRenderFace(FluidState fluidState, BlockState blockState, Direction direction, FluidState neighborFluidState) {
          return !isNeighborSameFluid(fluidState, neighborFluidState) && !isFaceOccludedBySelf(blockState, direction);
      }
-@@ -74,16 +_,18 @@
+@@ -77,16 +_,18 @@
          BlockState blockStateEast = level.getBlockState(pos.relative(Direction.EAST));
          FluidState fluidStateEast = blockStateEast.getFluidState();
          boolean renderUp = !isNeighborSameFluid(fluidState, fluidStateUp);
@@ -37,14 +37,14 @@
 +        boolean renderEast = shouldRenderFace(fluidState, blockState, Direction.EAST, blockStateEast);
          if (renderUp || renderDown || renderEast || renderWest || renderNorth || renderSouth) {
              FluidModel model = this.fluidModels.get(fluidState);
-             VertexConsumer builder = output.getBuilder(model.layer());
+             ChunkSectionLayer layer = model.layer();
 -            int tintColor = model.tintSource() != null ? model.tintSource().colorInWorld(blockState, level, pos) : -1;
 +            // Neo: use extended fluid tint source
 +            int tintColor = model.fluidTintSource() != null ? model.fluidTintSource().colorInWorld(fluidState, blockState, level, pos) : -1;
              CardinalLighting cardinalLighting = level.cardinalLighting();
              Fluid type = fluidState.getType();
              float heightSelf = this.getHeight(level, type, pos, blockState, fluidState);
-@@ -289,8 +_,8 @@
+@@ -296,8 +_,8 @@
                      TextureAtlasSprite sprite = model.flowingMaterial().sprite();
                      boolean isOverlay = false;
                      if (model.overlayMaterial() != null) {

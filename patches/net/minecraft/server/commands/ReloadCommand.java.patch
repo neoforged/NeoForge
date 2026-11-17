@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/commands/ReloadCommand.java
 +++ b/net/minecraft/server/commands/ReloadCommand.java
-@@ -34,6 +_,7 @@
+@@ -35,6 +_,7 @@
              }
          }
  

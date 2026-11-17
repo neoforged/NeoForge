@@ -3,7 +3,7 @@
 @@ -45,6 +_,8 @@
      private boolean wasModded;
      private final Set<String> removedFeatureFlags;
-     private List<Integer> versionHistory;
+     private final List<Integer> versionHistory;
 +    /// Neo: indicates whether the experimental warning was previously acknowledged
 +    private boolean confirmedExperimentalWarning = false;
  
@@ -12,7 +12,7 @@
 @@ -104,11 +_,15 @@
              levelVersion.levelDataVersion(),
              input.get("initialized").asBoolean(true),
-             input.get("ServerBrands").asStream().flatMap(b -> b.asString().result().stream()).collect(Collectors.toCollection(Sets::newLinkedHashSet)),
+             input.get("ServerBrands").asStream().flatMap(b -> b.asString().result().stream()).collect(Collectors.toCollection(LinkedHashSet::new)),
 -            input.get("removed_features").asStream().flatMap(b -> b.asString().result().stream()).collect(Collectors.toSet()),
 +            // Neo: Append removed modded feature flags
 +            updateRemovedFeatureFlags(input.get("removed_features").asStream().flatMap(b -> b.asString().result().stream()), input.get("enabled_features").asStream().flatMap(features -> features.asString().result().stream())).collect(Collectors.toSet()),

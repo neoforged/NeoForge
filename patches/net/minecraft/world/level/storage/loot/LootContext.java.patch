@@ -3,7 +3,7 @@
 @@ -26,8 +_,17 @@
      private final RandomSource random;
      private final HolderGetter.Provider lootDataResolver;
-     private final Set<LootContext.VisitedEntry<?>> visitedElements = Sets.newLinkedHashSet();
+     private final Set<LootContext.VisitedEntry<?>> visitedElements = new LinkedHashSet<>();
 +    /// Neo: persists the original loot table ID through modifications
 +    @Nullable
 +    private Identifier queriedLootTableId;

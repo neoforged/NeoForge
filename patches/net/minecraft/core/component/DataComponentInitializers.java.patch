@@ -18,14 +18,14 @@
  
          default <C> DataComponentInitializers.Initializer<T> add(DataComponentType<C> type, C value) {
 +            net.neoforged.neoforge.common.CommonHooks.validateComponent(value);
-             return this.andThen((components, context, key) -> components.set(type, value));
+             return this.andThen((components, var3, var4) -> components.set(type, value));
          }
      }
 @@ -142,7 +_,11 @@
          C create(HolderLookup.Provider context);
  
          default <T> DataComponentInitializers.Initializer<T> asInitializer(DataComponentType<C> type) {
--            return (components, context, key) -> components.set(type, this.create(context));
+-            return (components, context, var4) -> components.set(type, this.create(context));
 +            return (components, context, key) -> {
 +                var value = this.create(context);
 +                net.neoforged.neoforge.common.CommonHooks.validateComponent(value);

@@ -1,6 +1,6 @@
 --- a/com/mojang/renderpearl/backend/opengl/GlTexture.java
 +++ b/com/mojang/renderpearl/backend/opengl/GlTexture.java
-@@ -86,4 +_,10 @@
+@@ -91,4 +_,10 @@
              this.destroyImmediately();
          }
      }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/component/BlockTransformer.java
 +++ b/net/minecraft/core/component/BlockTransformer.java
-@@ -53,6 +_,19 @@
+@@ -49,6 +_,19 @@
      public static final StreamCodec<RegistryFriendlyByteBuf, Holder<BlockTransformer>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.BLOCK_TRANSFORMER);
  
      public InteractionResult transformBlock(UseOnContext context) {
@@ -20,7 +20,7 @@
          if (playerHasBlockingItemUseIntent(context)) {
              return InteractionResult.PASS;
          }
-@@ -60,7 +_,7 @@
+@@ -56,7 +_,7 @@
          BlockPos pos = context.getClickedPos();
          Level level = context.getLevel();
  

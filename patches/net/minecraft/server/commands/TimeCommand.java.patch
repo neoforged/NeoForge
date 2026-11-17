@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/commands/TimeCommand.java
 +++ b/net/minecraft/server/commands/TimeCommand.java
-@@ -215,6 +_,9 @@
+@@ -221,6 +_,9 @@
      }
  
      private static int setPaused(CommandSourceStack source, Holder<WorldClock> clock, boolean paused) throws CommandSyntaxException {

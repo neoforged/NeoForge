@@ -33,17 +33,3 @@
          state.ageInTicks = entity.tickCount + partialTicks;
          state.boundingBoxWidth = entity.getBbWidth();
          state.boundingBoxHeight = entity.getBbHeight();
-@@ -252,9 +_,11 @@
-     protected final void extractNameTags(T entity, S state, float partialTicks, double nameTagDistance, double belowNameDistance) {
-         if (this.entityRenderDispatcher.camera != null) {
-             state.distanceToCameraSq = this.entityRenderDispatcher.distanceToSqr(entity);
--            boolean shouldShowName = state.distanceToCameraSq < Mth.square(nameTagDistance) && this.shouldShowName(entity, state.distanceToCameraSq);
-+            var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.CanRender(entity, state, this.getNameTag(entity), this, partialTicks);
-+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
-+            boolean shouldShowName = event.canRender().isTrue() || (event.canRender().isDefault() && state.distanceToCameraSq < Mth.square(nameTagDistance) && this.shouldShowName(entity, state.distanceToCameraSq));
-             if (shouldShowName) {
--                state.nameTag = this.getNameTag(entity);
-+                state.nameTag = event.getContent();
-                 state.nameTagAttachment = entity.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, entity.getYRot(partialTicks));
-             } else {
-                 state.nameTag = null;

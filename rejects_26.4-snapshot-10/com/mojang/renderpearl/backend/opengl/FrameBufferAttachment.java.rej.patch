@@ -1,0 +1,12 @@
+--- a/com/mojang/renderpearl/backend/opengl/FrameBufferAttachment.java
++++ b/com/mojang/renderpearl/backend/opengl/FrameBufferAttachment.java
+@@ -12,4 +12,9 @@
+     void addAssociatedFbo(FrameBufferCache.CacheKey fboKey);
+ 
+     void removeAssociatedFbo(FrameBufferCache.CacheKey fboKey);
++
++    /// Neo: {@return whether this attachment has a stencil buffer}
++    default boolean hasStencilAspect() {
++        return false;
++    }
+ }

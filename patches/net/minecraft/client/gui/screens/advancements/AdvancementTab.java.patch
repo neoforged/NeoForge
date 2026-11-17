@@ -36,7 +36,7 @@
      public void copyPosition(AdvancementTab source) {
          this.scrollX = source.scrollX;
          this.scrollY = source.scrollY;
-@@ -179,8 +_,9 @@
+@@ -185,8 +_,9 @@
          Identifier background = rootDisplay.background().get().texturePath();
  
          for (AdvancementTabType type : AdvancementTabType.values()) {

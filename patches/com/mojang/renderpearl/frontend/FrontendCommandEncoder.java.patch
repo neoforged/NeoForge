@@ -1,7 +1,7 @@
 --- a/com/mojang/renderpearl/frontend/FrontendCommandEncoder.java
 +++ b/com/mojang/renderpearl/frontend/FrontendCommandEncoder.java
-@@ -287,6 +_,20 @@
-         this.backend.clearDepthTexture(depthTexture, clearDepth);
+@@ -200,6 +_,20 @@
+         this.backend.clearStencilTexture(stencilTexture, clearStencil);
      }
  
 +    /// Neo: clears the stencil bits of the given texture to the given value.
@@ -21,34 +21,7 @@
      @Override
      public void writeToBuffer(GpuBufferSlice destination, ByteBuffer data) {
          if (this.isInRenderPass) {
-@@ -743,6 +_,26 @@
-                 throw new UnsupportedOperationException("Textures with multiple depths or layers are not yet supported for copying");
-             }
- 
-+            final var sourceFormat = source.getFormat();
-+            final var destFormat = destination.getFormat();
-+            // Neo: ensure the source and destination formats match exactly if a depth or stencil buffer is present
-+            if (sourceFormat.hasDepthAspect() || sourceFormat.hasStencilAspect()) {
-+                if (sourceFormat != destFormat) {
-+                    throw new IllegalArgumentException(
-+                            "When copying depth or stencil data, the source and destination texture formats must be identical. Source: "
-+                                    + sourceFormat + ", Destination: " + destFormat
-+                    );
-+                }
-+            }
-+
-+            // Neo: validate that the presence of the color aspect matches between the two textures
-+            if (sourceFormat.hasColorAspect() != destFormat.hasColorAspect()) {
-+                throw new IllegalArgumentException(
-+                        "Source and destination texture formats must have consistent color aspects. Source: "
-+                                + sourceFormat + ", Destination: " + destFormat
-+                );
-+            }
-+
-             this.backend.copyTextureToTexture(source, destination, mipLevel, destX, destY, sourceX, sourceY, width, height);
-         } else {
-             throw new IllegalArgumentException(
-@@ -810,6 +_,25 @@
+@@ -690,6 +_,25 @@
  
          if (depthTexture.getDepthOrLayers() > 1) {
              throw new UnsupportedOperationException("Clearing a texture with multiple layers or depths is not yet supported");

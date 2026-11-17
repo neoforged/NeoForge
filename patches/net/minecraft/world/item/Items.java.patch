@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/Items.java
 +++ b/net/minecraft/world/item/Items.java
-@@ -2972,7 +_,8 @@
+@@ -3035,7 +_,8 @@
      }
  
      private static Item registerBlock(BlockItemId id, Block block, Block... alternatives) {
@@ -10,7 +10,7 @@
  
          for (Block alternative : alternatives) {
              Item.BY_BLOCK.put(alternative, item);
-@@ -2982,7 +_,8 @@
+@@ -3045,7 +_,8 @@
      }
  
      private static Item registerBlock(BlockItemId id, Block block, Item.Properties properties, Block... alternatives) {

@@ -133,7 +133,7 @@
      }
  
      public static Ingredient of(ItemLike itemLike) {
-@@ -95,6 +_,10 @@
+@@ -104,6 +_,10 @@
      }
  
      public SlotDisplay display() {

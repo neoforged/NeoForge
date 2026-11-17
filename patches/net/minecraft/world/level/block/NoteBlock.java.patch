@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/NoteBlock.java
 +++ b/net/minecraft/world/level/block/NoteBlock.java
-@@ -108,7 +_,11 @@
+@@ -109,7 +_,11 @@
      @Override
      protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
          if (!level.isClientSide()) {
@@ -13,7 +13,7 @@
              level.setBlockAndUpdate(pos, state);
              this.playNote(player, state, level, pos);
              player.awardStat(Stats.TUNE_NOTEBLOCK);
-@@ -131,6 +_,11 @@
+@@ -132,6 +_,11 @@
  
      @Override
      protected boolean triggerEvent(BlockState state, Level level, BlockPos pos, int b0, int b1) {

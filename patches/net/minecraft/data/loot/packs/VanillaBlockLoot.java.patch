@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/loot/packs/VanillaBlockLoot.java
 +++ b/net/minecraft/data/loot/packs/VanillaBlockLoot.java
-@@ -1451,4 +_,13 @@
+@@ -1476,4 +_,13 @@
                  )
              );
      }

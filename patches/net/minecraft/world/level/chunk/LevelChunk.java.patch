@@ -17,7 +17,7 @@
          for (Entry<Heightmap.Types, Heightmap> entry : protoChunk.getHeightmaps()) {
              if (ChunkStatus.FULL.heightmapsAfter().contains(entry.getKey())) {
                  this.setHeightmap(entry.getKey(), entry.getValue().getRawData());
-@@ -293,7 +_,8 @@
+@@ -281,7 +_,8 @@
              this.level.getChunkSource().onSectionEmptinessChanged(this.chunkPos.x(), SectionPos.blockToSectionCoord(y), this.chunkPos.z(), isEmpty);
          }
  
@@ -27,7 +27,7 @@
              ProfilerFiller profiler = Profiler.get();
              profiler.push("updateSkyLightSources");
              this.skyLightSources.update(this, localX, y, localZ);
-@@ -324,7 +_,8 @@
+@@ -312,7 +_,8 @@
              return null;
          }
  
@@ -37,7 +37,7 @@
              state.onPlace(this.level, pos, oldState, movedByPiston);
          }
  
-@@ -368,6 +_,11 @@
+@@ -356,6 +_,11 @@
  
      public @Nullable BlockEntity getBlockEntity(BlockPos pos, LevelChunk.EntityCreationType creationType) {
          BlockEntity blockEntity = this.blockEntities.get(pos);
@@ -49,7 +49,7 @@
          if (blockEntity == null) {
              CompoundTag tag = this.pendingBlockEntities.remove(pos);
              if (tag != null) {
-@@ -385,9 +_,6 @@
+@@ -373,9 +_,6 @@
                      this.addAndRegisterBlockEntity(blockEntity);
                  }
              }
@@ -59,7 +59,7 @@
          }
  
          return blockEntity;
-@@ -402,6 +_,8 @@
+@@ -390,6 +_,8 @@
  
              this.level.onBlockEntityAdded(blockEntity);
              this.updateBlockEntityTicker(blockEntity);
@@ -68,7 +68,7 @@
          }
      }
  
-@@ -445,6 +_,8 @@
+@@ -433,6 +_,8 @@
              BlockEntity previousEntry = this.blockEntities.put(pos.immutable(), blockEntity);
              if (previousEntry != null && previousEntry != blockEntity) {
                  previousEntry.setRemoved();
@@ -77,7 +77,7 @@
              }
          }
      }
-@@ -453,9 +_,15 @@
+@@ -441,9 +_,15 @@
      public @Nullable CompoundTag getBlockEntityNbtForSaving(BlockPos blockPos, HolderLookup.Provider registryAccess) {
          BlockEntity blockEntity = this.getBlockEntity(blockPos);
          if (blockEntity != null && !blockEntity.isRemoved()) {
@@ -93,7 +93,7 @@
          }
  
          CompoundTag result = this.pendingBlockEntities.get(blockPos);
-@@ -478,6 +_,8 @@
+@@ -466,6 +_,8 @@
                  }
  
                  removeThis.setRemoved();
@@ -102,7 +102,7 @@
              }
          }
  
-@@ -533,7 +_,8 @@
+@@ -521,7 +_,8 @@
              chunkData.forEachBlockEntityTag(chunkX, chunkZ, (pos, type, tag) -> {
                  BlockEntity blockEntity = this.getBlockEntity(pos, LevelChunk.EntityCreationType.IMMEDIATE);
                  if (blockEntity != null && tag != null && blockEntity.getType() == type) {
@@ -112,7 +112,7 @@
                  }
              });
          }
-@@ -672,6 +_,8 @@
+@@ -660,6 +_,8 @@
      }
  
      public void clearAllBlockEntities() {
@@ -121,7 +121,7 @@
          this.blockEntities.values().forEach(BlockEntity::setRemoved);
          this.blockEntities.clear();
          this.tickersInLevel.values().forEach(ticker -> ticker.rebind(NULL_TICKER));
-@@ -679,6 +_,8 @@
+@@ -667,6 +_,8 @@
      }
  
      public void registerAllBlockEntitiesAfterLevelLoad() {
@@ -130,7 +130,7 @@
          this.blockEntities.values().forEach(blockEntity -> {
              if (this.level instanceof ServerLevel serverLevel) {
                  this.addGameEventListener(blockEntity, serverLevel);
-@@ -724,6 +_,16 @@
+@@ -712,6 +_,16 @@
          return new LevelChunk.BoundTickingBlockEntity<>(blockEntity, ticker);
      }
  
@@ -147,7 +147,7 @@
      private class BoundTickingBlockEntity<T extends BlockEntity> implements TickingBlockEntity {
          private final T blockEntity;
          private final BlockEntityTicker<T> ticker;
-@@ -741,6 +_,7 @@
+@@ -729,6 +_,7 @@
                  if (LevelChunk.this.isTicking(pos)) {
                      try {
                          ProfilerFiller profiler = Profiler.get();
@@ -155,7 +155,7 @@
                          profiler.push(this::getType);
                          BlockState blockState = LevelChunk.this.getBlockState(pos);
                          if (this.blockEntity.getType().isValid(blockState)) {
-@@ -762,7 +_,14 @@
+@@ -750,7 +_,14 @@
                          CrashReport report = CrashReport.forThrowable(t, "Ticking block entity");
                          CrashReportCategory category = report.addCategory("Block entity being ticked");
                          this.blockEntity.fillCrashReportCategory(category);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/structure/Structure.java
 +++ b/net/minecraft/world/level/levelgen/structure/Structure.java
-@@ -47,10 +_,14 @@
+@@ -48,10 +_,14 @@
  public abstract class Structure {
      public static final Codec<Structure> DIRECT_CODEC = BuiltInRegistries.STRUCTURE_TYPE.byNameCodec().dispatch(Structure::type, StructureType::codec);
      public static final Codec<Holder<Structure>> CODEC = RegistryCodecs.holder(Registries.STRUCTURE, DIRECT_CODEC);
@@ -17,7 +17,7 @@
      }
  
      public static <S extends Structure> MapCodec<S> simpleCodec(Function<Structure.StructureSettings, S> constructor) {
-@@ -59,6 +_,8 @@
+@@ -60,6 +_,8 @@
  
      protected Structure(Structure.StructureSettings settings) {
          this.settings = settings;
@@ -26,23 +26,3 @@
      }
  
      public HolderSet<Biome> biomes() {
-@@ -208,6 +_,19 @@
-     }
- 
-     public abstract StructureType<?> type();
-+
-+    /// Neo: {@return Cache of original structure data and structure data modified by structure modifiers}
-+    ///
-+    /// Modified structure data is set by server after datapacks and serverconfigs load.
-+    /// Settings field reads are coremodded to redirect to this.
-+    public net.neoforged.neoforge.common.world.ModifiableStructureInfo modifiableStructureInfo() {
-+        return this.modifiableStructureInfo;
-+    }
-+
-+    /// Neo: {@return The structure's settings, with modifications if called after modifiers are applied in server init.}
-+    public StructureSettings getModifiedStructureSettings() {
-+        return this.modifiableStructureInfo().get().structureSettings();
-+    }
- 
-     public record GenerationContext(
-         RegistryAccess registryAccess,

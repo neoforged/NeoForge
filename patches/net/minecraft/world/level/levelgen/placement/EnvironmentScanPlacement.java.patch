@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/placement/EnvironmentScanPlacement.java
 +++ b/net/minecraft/world/level/levelgen/placement/EnvironmentScanPlacement.java
-@@ -14,7 +_,8 @@
+@@ -15,7 +_,8 @@
      implements PlacementModifier {
      public static final MapCodec<EnvironmentScanPlacement> CODEC = RecordCodecBuilder.mapCodec(
          i -> i.group(

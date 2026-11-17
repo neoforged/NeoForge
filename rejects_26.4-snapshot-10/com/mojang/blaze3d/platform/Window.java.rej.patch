@@ -1,0 +1,12 @@
+--- a/com/mojang/blaze3d/platform/Window.java
++++ b/com/mojang/blaze3d/platform/Window.java
+@@ -347,7 +348,8 @@
+         }
+ 
+         this.updateWindowMouseGrab();
+-        if (Minecraft.getInstance().mouseHandler.isMouseGrabbed()) {
++        // Neo: prevent crash during ELS handover
++        if (Minecraft.getInstance().mouseHandler != null && Minecraft.getInstance().mouseHandler.isMouseGrabbed()) {
+             double xpos = this.getScreenWidth() / 2.0;
+             double ypos = this.getScreenHeight() / 2.0;
+             InputConstants.grabMouse(this, xpos, ypos);

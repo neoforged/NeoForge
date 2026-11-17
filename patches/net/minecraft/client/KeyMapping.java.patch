@@ -4,8 +4,8 @@
  
  @OnlyIn(Dist.CLIENT)
  public class KeyMapping implements Comparable<KeyMapping>, IKeyMappingExtension {
--    private static final Map<String, KeyMapping> ALL = Maps.newHashMap();
--    private static final Map<InputConstants.Key, List<KeyMapping>> MAP = Maps.newHashMap();
+-    private static final Map<String, KeyMapping> ALL = new HashMap<>();
+-    private static final Map<InputConstants.Key, List<KeyMapping>> MAP = new HashMap<>();
 +    // Neo: make key mapping instantiation thread-safe
 +    private static final Map<String, KeyMapping> ALL = Maps.newConcurrentMap();
 +    // Neo: replace key mapping storage for key modifier support
@@ -13,7 +13,7 @@
      private final String name;
      private final InputConstants.Key defaultKey;
      private final KeyMapping.Category category;
-@@ -31,17 +_,30 @@
+@@ -31,18 +_,31 @@
      boolean isDown;
      private int clickCount;
      private final int order;
@@ -35,7 +35,8 @@
      }
  
      private static void forAllKeyMappings(InputConstants.Key key, Consumer<KeyMapping> operation) {
--        List<KeyMapping> keyMappings = MAP.get(key);
+         if (!key.equals(InputConstants.UNKNOWN)) {
+-            List<KeyMapping> keyMappings = MAP.get(key);
 +        forAllKeyMappings(key, operation, false);
 +    }
 +
@@ -43,10 +44,10 @@
 +    private static void forAllKeyMappings(InputConstants.Key key, Consumer<KeyMapping> operation, boolean releasing) {
 +        // Neo: use custom key mapping storage
 +        List<KeyMapping> keyMappings = MAP.getAll(key, releasing);
-         if (keyMappings != null && !keyMappings.isEmpty()) {
-             for (KeyMapping keyMapping : keyMappings) {
-                 operation.accept(keyMapping);
-@@ -107,8 +_,83 @@
+             if (keyMappings != null && !keyMappings.isEmpty()) {
+                 for (KeyMapping keyMapping : keyMappings) {
+                     operation.accept(keyMapping);
+@@ -109,8 +_,83 @@
          this.registerMapping(this.key);
      }
  
@@ -131,7 +132,7 @@
      }
  
      public KeyMapping.Category getCategory() {
-@@ -159,6 +_,21 @@
+@@ -161,6 +_,21 @@
      }
  
      public boolean same(KeyMapping that) {
@@ -153,7 +154,7 @@
          return this.key.equals(that.key);
      }
  
-@@ -179,11 +_,15 @@
+@@ -181,11 +_,15 @@
      }
  
      public Component getTranslatedKeyMessage() {
@@ -170,7 +171,7 @@
      }
  
      public String saveString() {
-@@ -195,7 +_,8 @@
+@@ -197,7 +_,8 @@
      }
  
      private void registerMapping(InputConstants.Key key) {
@@ -180,7 +181,7 @@
      }
  
      public static @Nullable KeyMapping get(String name) {
-@@ -217,6 +_,8 @@
+@@ -219,6 +_,8 @@
              return register(Identifier.withDefaultNamespace(name));
          }
  

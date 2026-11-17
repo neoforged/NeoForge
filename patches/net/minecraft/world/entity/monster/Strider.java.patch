@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/Strider.java
 +++ b/net/minecraft/world/entity/monster/Strider.java
-@@ -99,8 +_,9 @@
+@@ -100,8 +_,9 @@
          this.setPathfindingMalus(PathType.FIRE, 0.0F);
      }
  

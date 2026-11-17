@@ -1,0 +1,60 @@
+--- a/net/minecraft/client/multiplayer/ClientPacketListener.java
++++ b/net/minecraft/client/multiplayer/ClientPacketListener.java
+@@ -956,6 +961,7 @@
+                         this.serverLinks(),
+                         this.seenPlayers,
+                         this.seenInsecureChatWarning
++                        , this.connectionType // Neo: retain connection type across protocol changes
+                     )
+                 )
+             );
+@@ -1696,7 +1712,9 @@
+     @Override
+     public void handleCommands(ClientboundCommandsPacket packet) {
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.minecraft.packetProcessor());
+-        this.commands = new CommandDispatcher<>(packet.getRoot(CommandBuildContext.simple(this.registryAccess, this.enabledFeatures), COMMAND_NODE_BUILDER));
++        var context = CommandBuildContext.simple(this.registryAccess, this.enabledFeatures);
++        this.commands = new CommandDispatcher<>(packet.getRoot(context, COMMAND_NODE_BUILDER));
++        this.commands = net.neoforged.neoforge.client.ClientCommandHandler.mergeServerCommands(this.commands, context);
+     }
+ 
+     @Override
+@@ -2671,6 +2699,10 @@
+     }
+ 
+     public void sendCommand(String command) {
++        // Neo: Dispatch client commands for chat inputs.
++        if (net.neoforged.neoforge.client.ClientCommandHandler.runCommand(command)) {
++            return;
++        }
+         SignableCommand<ClientSuggestionProvider> signableCommand = SignableCommand.of(this.commands.parse(command, this.suggestionsProvider));
+         if (signableCommand.arguments().isEmpty()) {
+             this.send(new ServerboundChatCommandPacket(command));
+@@ -2687,6 +2719,10 @@
+     }
+ 
+     public void sendUnattendedCommand(String command, @Nullable Screen screenAfterCommand) {
++        // Neo: Dispatch client commands for text component click actions.
++        if (net.neoforged.neoforge.client.ClientCommandHandler.runCommand(command)) {
++            return;
++        }
+         switch (this.verifyCommand(command)) {
+             case NO_ISSUES:
+                 this.send(new ServerboundChatCommandPacket(command));
+@@ -2887,6 +2925,16 @@
+ 
+     public ClientClockManager clockManager() {
+         return this.clockManager;
++    }
++
++    @Override
++    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {
++        return this.connectionType;
++    }
++
++    @Override
++    public net.neoforged.neoforge.attachment.SessionData getSessionData() {
++        return this.sessionData;
+     }
+ 
+     private enum CommandCheckResult {

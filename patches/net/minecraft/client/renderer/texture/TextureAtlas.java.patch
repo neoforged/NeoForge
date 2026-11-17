@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/texture/TextureAtlas.java
 +++ b/net/minecraft/client/renderer/texture/TextureAtlas.java
-@@ -145,6 +_,8 @@
+@@ -152,6 +_,8 @@
                  LOGGER.warn("Failed to dump atlas contents to {}", dumpDir);
              }
          }
@@ -9,14 +9,3 @@
      }
  
      private void uploadInitialContents() {
-@@ -324,5 +_,10 @@
- 
-     int getHeight() {
-         return this.height;
-+    }
-+
-+    /// Neo: {@return an unmodifiable view of the sprites on this atlas by name}
-+    public Map<Identifier, TextureAtlasSprite> getTextures() {
-+        return java.util.Collections.unmodifiableMap(this.texturesByName);
-     }
- }
