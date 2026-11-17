@@ -20,6 +20,15 @@
              }
  
              this.setDeltaMovement(this.getDeltaMovement().scale(friction));
+@@ -167,7 +_,7 @@
+             || this.followingPlayer.isRemoved()
+             || this.followingPlayer.isSpectator()
+             || this.followingPlayer.distanceToSqr(this) > 64.0) {
+-            Player nearestPlayer = this.level().getNearestPlayer(this, 8.0);
++            Player nearestPlayer = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.entity.XpOrbTargetingEvent(this, MAX_FOLLOW_DIST)).getFollowingPlayer();
+             if (nearestPlayer != null && !nearestPlayer.isSpectator() && !nearestPlayer.isDeadOrDying()) {
+                 this.followingPlayer = nearestPlayer;
+             } else {
 @@ -291,6 +_,9 @@
      public void playerTouch(Player player) {
          if (player instanceof ServerPlayer serverPlayer) {
