@@ -44,6 +44,18 @@
          this.structureCheck = new StructureCheck(
              this.chunkSource.chunkScanner(),
              this.registryAccess(),
+@@ -306,6 +_,11 @@
+             this.getChunkSource().getGenerator().getBiomeSource().createUncachedResolver(this.getChunkSource().randomState()), BiomeManager.obfuscateSeed(seed)
+         );
+         this.updateSkyBrightness();
++
++        net.neoforged.neoforge.attachment.LevelAttachmentsSavedData.init(this);
++        // Neo: Move the initialization of customSpawners to the end of costructor
++        // Providing a fully initialized ServerLevel instance for the ServerLevelEvent.CustomSpawners
++        this.customSpawners = net.neoforged.neoforge.event.EventHooks.getCustomSpawners(this, customSpawners);
+     }
+ 
+     @Override
 @@ -369,7 +_,11 @@
          if (this.sleepStatus.areEnoughSleeping(percentage) && this.sleepStatus.areEnoughDeepSleeping(percentage, this.players)) {
              Optional<Holder<WorldClock>> defaultClock = this.dimensionType().defaultClock();
@@ -237,6 +249,16 @@
                  ? this.getDestroyType(GameRules.MOB_EXPLOSION_DROP_DECAY)
                  : Explosion.BlockInteraction.KEEP;
              case TNT -> this.getDestroyType(GameRules.TNT_EXPLOSION_DROP_DECAY);
+@@ -1217,6 +_,9 @@
+         };
+         Vec3 center = new Vec3(x, y, z);
+         ServerExplosion explosion = new ServerExplosion(this, source, damageSource, damageCalculator, center, r, fire, blockInteraction);
++        if (net.neoforged.neoforge.event.EventHooks.onExplosionStart(this, explosion)) {
++            return;
++        }
+         int blockCount = explosion.explode();
+         Optional<ParticleOptions> explosionParticle = Optional.ofNullable(explosion.isSmall() ? smallExplosionParticles : largeExplosionParticles);
+         Optional<Holder<SoundEvent>> effectiveExplosionSound = source != null && source.isSilent() ? Optional.empty() : Optional.ofNullable(explosionSound);
 @@ -1497,8 +_,9 @@
          return entity != null ? entity : this.dragonParts.get(id);
      }
