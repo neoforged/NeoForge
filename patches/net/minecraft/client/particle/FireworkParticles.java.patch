@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/particle/FireworkParticles.java
 +++ b/net/minecraft/client/particle/FireworkParticles.java
-@@ -228,6 +228,10 @@
-                     colors = IntList.of(DyeColor.BLACK.getFireworkColor());
+@@ -227,6 +_,10 @@
+                     colors = IntList.of(FireworkExplosion.DEFAULT_COLOR_TINTS.black());
                  }
  
 +                var factory = net.neoforged.neoforge.client.FireworkShapeFactoryRegistry.get(explosion.shape());
