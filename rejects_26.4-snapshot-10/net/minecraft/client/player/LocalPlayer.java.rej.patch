@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/player/LocalPlayer.java
++++ b/net/minecraft/client/player/LocalPlayer.java
+@@ -944,7 +955,7 @@
+     }
+ 
+     private boolean shouldStopSwimSprinting() {
+-        return !this.isSprintingPossible(true) || !this.isInWater() || !this.input.hasForwardImpulse() && !this.onGround() && !this.input.keyPresses.shift();
++        return !this.isSprintingPossible(true) || !(this.isInWater() || this.getFluidInteraction().isInFluidMatching(this, (entity, fluidType, _) -> entity.canSwimInFluidType(fluidType))) || !this.input.hasForwardImpulse() && !this.onGround() && !this.input.keyPresses.shift();
+     }
+ 
+     public Portal.Transition getActivePortalLocalTransition() {

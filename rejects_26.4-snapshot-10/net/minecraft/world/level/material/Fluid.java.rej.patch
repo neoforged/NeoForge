@@ -1,0 +1,25 @@
+--- a/net/minecraft/world/level/material/Fluid.java
++++ b/net/minecraft/world/level/material/Fluid.java
+@@ -31,6 +31,10 @@
+     protected final StateDefinition<Fluid, FluidState> stateDefinition;
+     private FluidState defaultFluidState;
+     private final Holder.Reference<Fluid> builtInRegistryHolder = BuiltInRegistries.FLUID.createIntrusiveHolder(this);
++    /// Neo: holds the fluid type representing this fluid for vanilla fluids
++    private net.neoforged.neoforge.fluids.@Nullable FluidType neoForgeFluidType;
+ 
+     protected Fluid() {
+         StateDefinition.Builder<Fluid, FluidState> builder = new StateDefinition.Builder<>(this);
+@@ -125,5 +133,28 @@
+     @Deprecated
+     public Holder.Reference<Fluid> builtInRegistryHolder() {
+         return this.builtInRegistryHolder;
++    }
++
++    @Override
++    public net.neoforged.neoforge.fluids.FluidType getFluidType() {
++        if (this.neoForgeFluidType == null) {
++            this.neoForgeFluidType = net.neoforged.neoforge.common.CommonHooks.getVanillaFluidType(this);
++        }
++        return this.neoForgeFluidType;
++    }
+ }

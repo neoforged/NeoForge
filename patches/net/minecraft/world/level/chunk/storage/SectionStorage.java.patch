@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/storage/SectionStorage.java
 +++ b/net/minecraft/world/level/chunk/storage/SectionStorage.java
-@@ -299,6 +_,17 @@
+@@ -298,6 +_,17 @@
          this.simpleRegionStorage.close();
      }
  

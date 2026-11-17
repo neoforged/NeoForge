@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/component/FireworkExplosion.java
 +++ b/net/minecraft/world/item/component/FireworkExplosion.java
-@@ -105,6 +_,9 @@
+@@ -123,6 +_,9 @@
          return new FireworkExplosion(this.shape, this.colors, new IntArrayList(fadeColors), this.hasTrail, this.hasTwinkle);
      }
  
@@ -10,7 +10,7 @@
      public enum Shape implements StringRepresentable, IExtensibleEnum {
          SMALL_BALL(0, "small_ball"),
          LARGE_BALL(1, "large_ball"),
-@@ -140,6 +_,10 @@
+@@ -153,6 +_,10 @@
          @Override
          public String getSerializedName() {
              return this.name;

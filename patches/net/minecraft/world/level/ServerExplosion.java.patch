@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/ServerExplosion.java
 +++ b/net/minecraft/world/level/ServerExplosion.java
-@@ -169,7 +_,13 @@
+@@ -167,7 +_,13 @@
          return new ObjectArrayList<>(toBlowSet);
      }
  
@@ -14,7 +14,7 @@
          if (!(this.radius < 1.0E-5F)) {
              float doubleRadius = this.radius * 2.0F;
              int x0 = Mth.floor(this.center.x - doubleRadius - 1.0);
-@@ -179,7 +_,9 @@
+@@ -177,7 +_,9 @@
              int z0 = Mth.floor(this.center.z - doubleRadius - 1.0);
              int z1 = Mth.floor(this.center.z + doubleRadius + 1.0);
  
@@ -25,15 +25,15 @@
                  if (!entity.ignoreExplosion(this)) {
                      double dist = Math.sqrt(entity.distanceToSqr(this.center)) / doubleRadius;
                      if (!(dist > 1.0)) {
-@@ -197,6 +_,7 @@
-                             : 0.0;
-                         double knockbackPower = (1.0 - dist) * exposure * knockbackMultiplier * (1.0 - knockbackResistance);
-                         Vec3 knockback = direction.scale(knockbackPower);
-+                        knockback = net.neoforged.neoforge.event.EventHooks.getExplosionKnockback(this.level, this, entity, knockback, blocks);
-                         entity.pushFromExplosion(knockback);
-                         if (entity.is(EntityTypeTags.REDIRECTABLE_PROJECTILE) && entity instanceof Projectile projectile) {
-                             projectile.setOwner(this.damageSource.getEntity());
-@@ -235,7 +_,8 @@
+@@ -196,6 +_,7 @@
+                                 : 0.0;
+                             double knockbackPower = (1.0 - dist) * exposure * knockbackMultiplier * (1.0 - knockbackResistance);
+                             Vec3 knockback = direction.scale(knockbackPower);
++                            knockback = net.neoforged.neoforge.event.EventHooks.getExplosionKnockback(this.level, this, entity, knockback, blocks);
+                             if (entity.getControllingPassengerOrSelf() instanceof ServerPlayer serverPlayer) {
+                                 serverPlayer.connection.send(new ClientboundAddEntityMotionPacket(entity.getId(), knockback));
+                             } else {
+@@ -238,7 +_,8 @@
      public int explode() {
          this.level.gameEvent(this.source, GameEvent.EXPLODE, this.center);
          List<BlockPos> toBlow = this.calculateExplodedPositions();

@@ -1,0 +1,37 @@
+--- a/net/minecraft/network/Connection.java
++++ b/net/minecraft/network/Connection.java
+@@ -220,7 +234,12 @@
+         BundlerInfo bundlerInfo = protocol.bundlerInfo();
+         if (bundlerInfo != null) {
+             PacketBundleUnpacker newUnbundler = new PacketBundleUnpacker(bundlerInfo);
+-            configMessage = configMessage.andThen(ctx -> ctx.pipeline().addAfter("encoder", "unbundler", newUnbundler));
++            configMessage = configMessage.andThen(ctx -> {
++                ctx.pipeline().addAfter("encoder", "unbundler", newUnbundler);
++                // Neo: our handlers must be between the encoder and the unbundler, so re-inject them
++                // Note, this call must be inside the .andThen lambda, or it will actually run before the unbundler gets added.
++                net.neoforged.neoforge.network.filters.NetworkFilters.injectIfNecessary(this);
++            });
+         }
+ 
+         boolean isLoginProtocol = protocol.id() == ConnectionProtocol.LOGIN;
+@@ -588,5 +608,20 @@
+ 
+     public void setBandwidthLogger(LocalSampleLogger bandwidthLogger) {
+         this.bandwidthDebugMonitor = new BandwidthDebugMonitor(bandwidthLogger);
++    }
++
++    /// Neo: {@return the underlying Netty channel}
++    public Channel channel() {
++        return this.channel;
++    }
++
++    /// Neo: {@return the direction of this connection}
++    public PacketFlow getDirection() {
++        return this.receiving;
++    }
++
++    /// Neo: {@return the active inbound protocol}
++    public ProtocolInfo<?> getInboundProtocol() {
++        return Objects.requireNonNull(this.inboundProtocol, "Inbound protocol not set?");
+     }
+ }

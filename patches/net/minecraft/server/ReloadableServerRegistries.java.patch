@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/ReloadableServerRegistries.java
 +++ b/net/minecraft/server/ReloadableServerRegistries.java
-@@ -34,7 +_,8 @@
+@@ -24,7 +_,8 @@
              context.getAccessForLoading(RegistryLayer.RELOADABLE), updatedContextTags
          );
          HolderLookup.Provider loadingContextWithTags = HolderLookup.Provider.create(contextRegistriesWithTags.stream());

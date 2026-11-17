@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/gui/screens/worldselection/WorldSelectionList.java
++++ b/net/minecraft/client/gui/screens/worldselection/WorldSelectionList.java
+@@ -506,6 +507,8 @@
+             this.infoText.setPosition(textX, this.getContentY() + 9 + 9 + 3);
+             this.infoText.extractRenderState(graphics, mouseX, mouseY, a);
+             graphics.blit(RenderPipelines.GUI_TEXTURED, this.icon.textureLocation(), this.getContentX(), this.getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);
++            // Neo: render icon on list entry indication experimental state
++            this.renderExperimentalWarning(graphics, mouseX, mouseY, hovered);
+             if (this.list.entryType == WorldSelectionList.EntryType.SINGLEPLAYER && hovered) {
+                 graphics.fill(this.getContentX(), this.getContentY(), this.getContentX() + 32, this.getContentY() + 32, -1601138544);
+                 int relX = mouseX - this.getContentX();

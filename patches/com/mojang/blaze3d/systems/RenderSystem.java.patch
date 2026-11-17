@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/systems/RenderSystem.java
 +++ b/com/mojang/blaze3d/systems/RenderSystem.java
-@@ -83,6 +_,7 @@
+@@ -85,6 +_,7 @@
      private static final SamplerCache samplerCache = new SamplerCache();
      private static @Nullable PipelineCache fallbackPipelineCache;
      private static @Nullable PipelineCache currentPipelineCache;
@@ -8,17 +8,17 @@
  
      public static SamplerCache getSamplerCache() {
          return samplerCache;
-@@ -103,6 +_,9 @@
+@@ -105,6 +_,9 @@
      }
  
-     public static @Nullable CompiledRenderPipeline getCompiledPipelineNullable(RenderPipeline pipeline) {
+     public static @Nullable CompiledRenderPipeline getCompiledPipelineNullable(RenderPipeline pipeline, RenderPassLayout.Subpass subpass) {
 +        // Neo: apply pipeline modifiers before resolving the compiled pipeline
 +        pipeline = PIPELINE_MODIFIERS.apply(pipeline);
 +
          if (currentPipelineCache != null) {
-             CompiledRenderPipeline cachedPipeline = currentPipelineCache.get(pipeline);
+             CompiledRenderPipeline cachedPipeline = currentPipelineCache.get(pipeline, subpass);
              if (cachedPipeline != null) {
-@@ -491,5 +_,29 @@
+@@ -500,5 +_,29 @@
      }
  
      private record GpuAsyncTask(Runnable callback, GpuFence fence) {

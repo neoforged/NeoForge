@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/HolderLookup.java
 +++ b/net/minecraft/core/HolderLookup.java
-@@ -96,6 +_,24 @@
+@@ -101,6 +_,24 @@
              };
          }
  
@@ -25,7 +25,7 @@
          interface Delegate<T> extends HolderLookup.RegistryLookup<T> {
              HolderLookup.RegistryLookup<T> parent();
  
-@@ -132,6 +_,17 @@
+@@ -137,6 +_,17 @@
              @Override
              default boolean canSerialize(HolderOwner<T> owner) {
                  return this.parent().canSerialize(owner);

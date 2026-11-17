@@ -4,9 +4,9 @@
                  throw this.libraryLoadFailure;
              }
  
--            if (!SDLVideo.SDL_GL_LoadLibrary(((SharedLibrary)GL.getFunctionProvider()).getPath())) {
+-            if (!SDLVideo.SDL_GL_LoadLibrary((ByteBuffer)null)) {
 +            // Neo: Ensure the ELS having already loaded GL does not prevent the GL backend from working
-+            if (!SDLVideo.SDL_GL_LoadLibrary(((SharedLibrary)GL.getFunctionProvider()).getPath()) && !Objects.equals(SDLError.SDL_GetError(), "OpenGL library already loaded")) {
++            if (!SDLVideo.SDL_GL_LoadLibrary((ByteBuffer)null) && !Objects.equals(SDLError.SDL_GetError(), "OpenGL library already loaded")) {
                  this.libraryLoadFailure = new BackendCreationException(
                      "OpenGL is not supported: " + Objects.requireNonNullElse(SDLError.SDL_GetError(), "<no error>"),
                      BackendCreationException.Reason.OPENGL_MISSING

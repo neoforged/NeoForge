@@ -1,6 +1,6 @@
 --- a/net/minecraft/nbt/CompoundTag.java
 +++ b/net/minecraft/nbt/CompoundTag.java
-@@ -48,13 +_,20 @@
+@@ -47,13 +_,20 @@
              }
          }
  
@@ -12,7 +12,7 @@
 +
          private static CompoundTag loadCompound(DataInput input, NbtAccounter accounter) throws IOException {
              accounter.accountBytes(48L);
-             Map<String, Tag> values = Maps.newHashMap();
+             Map<String, Tag> values = new HashMap<>();
  
              byte tagType;
 -            while ((tagType = input.readByte()) != 0) {
@@ -23,7 +23,7 @@
                  Tag tag = CompoundTag.readNamedTagData(TagTypes.getType(tagType), key, input, accounter);
                  if (values.put(key, tag) == null) {
                      accounter.accountBytes(36L);
-@@ -167,6 +_,15 @@
+@@ -166,6 +_,15 @@
          this(new HashMap<>());
      }
  
@@ -39,7 +39,7 @@
      @Override
      public void write(DataOutput output) throws IOException {
          for (String key : this.tags.keySet()) {
-@@ -221,6 +_,10 @@
+@@ -220,6 +_,10 @@
      }
  
      public @Nullable Tag put(String name, Tag tag) {

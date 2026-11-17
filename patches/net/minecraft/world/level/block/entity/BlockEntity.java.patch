@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -40,15 +_,22 @@
+@@ -41,15 +_,22 @@
  
  import net.neoforged.neoforge.common.extensions.IBlockEntityExtension;
  
@@ -24,7 +24,7 @@
  
      public BlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState) {
          this.type = type;
-@@ -95,6 +_,8 @@
+@@ -96,6 +_,8 @@
      }
  
      protected void loadAdditional(ValueInput input) {
@@ -33,7 +33,7 @@
      }
  
      public final void loadWithComponents(ValueInput input) {
-@@ -107,6 +_,14 @@
+@@ -108,6 +_,14 @@
      }
  
      protected void saveAdditional(ValueOutput output) {
@@ -47,8 +47,8 @@
 +        }
      }
  
-     public final CompoundTag saveWithFullMetadata(HolderLookup.Provider registries) {
-@@ -226,10 +_,15 @@
+     public final CompoundTag saveWithFullMetadata(HolderGetter.Provider registries) {
+@@ -227,10 +_,15 @@
  
      public void setRemoved() {
          this.remove = true;
@@ -64,7 +64,7 @@
      }
  
      public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-@@ -333,6 +_,50 @@
+@@ -334,6 +_,50 @@
  
      @Override
      public void registerDebugValues(ServerLevel level, DebugValueSource.Registration registration) {

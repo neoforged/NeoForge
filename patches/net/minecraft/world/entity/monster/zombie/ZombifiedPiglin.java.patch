@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/zombie/ZombifiedPiglin.java
 +++ b/net/minecraft/world/entity/monster/zombie/ZombifiedPiglin.java
-@@ -167,8 +_,9 @@
+@@ -172,8 +_,9 @@
          this.setTimeToRemainAngry(PERSISTENT_ANGER_TIME.sample(this.random));
      }
  

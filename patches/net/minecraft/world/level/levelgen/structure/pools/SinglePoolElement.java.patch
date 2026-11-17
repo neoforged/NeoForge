@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/structure/pools/SinglePoolElement.java
 +++ b/net/minecraft/world/level/levelgen/structure/pools/SinglePoolElement.java
-@@ -154,6 +_,8 @@
+@@ -157,6 +_,8 @@
  
          for (StructureTemplate.StructureBlockInfo dataMarker : StructureTemplate.processBlockInfos(
              level, position, referencePos, settings, this.getDataMarkers(structureTemplateManager, position, rotation, false)

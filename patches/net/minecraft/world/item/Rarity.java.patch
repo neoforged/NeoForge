@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/Rarity.java
 +++ b/net/minecraft/world/item/Rarity.java
-@@ -11,6 +_,9 @@
+@@ -9,6 +_,9 @@
  
  import net.neoforged.fml.common.asm.enumextension.IExtensibleEnum;
  
@@ -10,7 +10,7 @@
  public enum Rarity implements StringRepresentable, IExtensibleEnum {
      COMMON(0, "common", ChatFormatting.WHITE),
      UNCOMMON(1, "uncommon", ChatFormatting.YELLOW),
-@@ -23,19 +_,40 @@
+@@ -20,19 +_,40 @@
      private final int id;
      private final String name;
      private final ChatFormatting color;

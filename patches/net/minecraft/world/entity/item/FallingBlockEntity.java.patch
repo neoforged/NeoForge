@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -160,7 +_,8 @@
+@@ -156,7 +_,8 @@
              if (this.level() instanceof ServerLevel serverLevel && (this.isAlive() || this.forceTickAfterTeleportToDuplicate)) {
                  BlockPos pos = this.blockPosition();
                  boolean isConcrete = this.blockState.getBlock() instanceof ConcretePowderBlock;
@@ -10,7 +10,7 @@
                  double moveVec = this.getDeltaMovement().lengthSqr();
                  if (isConcrete && moveVec > 1.0) {
                      BlockHitResult clip = this.level()
-@@ -169,7 +_,8 @@
+@@ -165,7 +_,8 @@
                                  new Vec3(this.xo, this.yo, this.zo), this.position(), ClipContext.Block.COLLIDER, ClipContext.Fluid.SOURCE_ONLY, this
                              )
                          );
@@ -20,7 +20,7 @@
                          pos = clip.getBlockPos();
                          isStuckInWater = true;
                      }
-@@ -251,6 +_,9 @@
+@@ -248,6 +_,9 @@
  
              this.setDeltaMovement(this.getDeltaMovement().scale(this.getAirDrag()));
              this.setRequiresPrecisePosition(this.horizontalCollision || this.verticalCollision);

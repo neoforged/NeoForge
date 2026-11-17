@@ -1,6 +1,6 @@
 --- a/net/minecraft/commands/arguments/coordinates/BlockPosArgument.java
 +++ b/net/minecraft/commands/arguments/coordinates/BlockPosArgument.java
-@@ -35,6 +_,15 @@
+@@ -45,6 +_,15 @@
      }
  
      public static BlockPos getLoadedBlockPos(CommandContext<CommandSourceStack> context, ServerLevel level, String name) throws CommandSyntaxException {

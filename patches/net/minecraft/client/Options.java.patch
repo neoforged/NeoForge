@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/Options.java
 +++ b/net/minecraft/client/Options.java
-@@ -1119,7 +_,8 @@
+@@ -1150,7 +_,8 @@
          this.incompatibleResourcePacks.clear();
  
          for (Pack entry : packRepository.getSelectedPacks()) {
@@ -10,7 +10,7 @@
                  this.resourcePacks.add(entry.getId());
                  if (!entry.getCompatibility().isCompatible()) {
                      this.incompatibleResourcePacks.add(entry.getId());
-@@ -1510,6 +_,8 @@
+@@ -1541,6 +_,8 @@
      }
  
      public Options(Minecraft minecraft, File workingDirectory) {
@@ -19,7 +19,7 @@
          this.minecraft = minecraft;
          this.optionsFile = new File(workingDirectory, "options.txt");
          boolean largeDistances = Runtime.getRuntime().maxMemory() >= 1000000000L;
-@@ -1530,6 +_,7 @@
+@@ -1561,6 +_,7 @@
              var1 -> this.setGraphicsPresetToCustom()
          );
          this.syncWrites = Util.getPlatform() == Util.OS.WINDOWS;
@@ -27,7 +27,7 @@
          this.load();
      }
  
-@@ -1665,11 +_,16 @@
+@@ -1698,11 +_,16 @@
          access.process("musicFrequency", this.musicFrequency);
  
          for (KeyMapping keyMapping : this.keyMappings) {
@@ -46,7 +46,7 @@
                  } catch (IllegalArgumentException e) {
                      LOGGER.warn("Invalid keyMapping {} = {}, unbinding", keyMapping.getName(), newValue, e);
                      keyMapping.setKey(InputConstants.UNKNOWN);
-@@ -1967,6 +_,24 @@
+@@ -2001,6 +_,24 @@
          }
  
          repository.setSelected(selected);

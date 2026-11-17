@@ -1,17 +1,15 @@
 --- a/net/minecraft/world/level/material/Fluid.java
 +++ b/net/minecraft/world/level/material/Fluid.java
-@@ -31,6 +_,10 @@
-     protected final StateDefinition<Fluid, FluidState> stateDefinition;
-     private FluidState defaultFluidState;
-     private final Holder.Reference<Fluid> builtInRegistryHolder = BuiltInRegistries.FLUID.createIntrusiveHolder(this);
-+    /// Neo: holds the fluid type representing this fluid for vanilla fluids
-+    private net.neoforged.neoforge.fluids.@Nullable FluidType neoForgeFluidType;
+@@ -44,6 +_,8 @@
+     private final float fallDistanceMultiplier;
+     private final OptionalDouble dripstoneTransferProbability;
+     private final boolean pathfindable;
 +    /// Neo: holds the default resource of this fluid
 +    private net.neoforged.neoforge.transfer.fluid.@Nullable FluidResource defaultResource;
  
-     protected Fluid() {
+     protected Fluid(Fluid.Properties properties) {
          StateDefinition.Builder<Fluid, FluidState> builder = new StateDefinition.Builder<>(this);
-@@ -66,6 +_,10 @@
+@@ -100,6 +_,10 @@
      }
  
      protected void entityInside(Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier) {
@@ -22,18 +20,10 @@
      }
  
      protected @Nullable ParticleOptions getDripParticle() {
-@@ -125,5 +_,28 @@
-     @Deprecated
-     public Holder.Reference<Fluid> builtInRegistryHolder() {
-         return this.builtInRegistryHolder;
-+    }
-+
-+    @Override
-+    public net.neoforged.neoforge.fluids.FluidType getFluidType() {
-+        if (this.neoForgeFluidType == null) {
-+            this.neoForgeFluidType = net.neoforged.neoforge.common.CommonHooks.getVanillaFluidType(this);
-+        }
-+        return this.neoForgeFluidType;
+@@ -178,6 +_,21 @@
+ 
+     public boolean isPathfindable() {
+         return this.pathfindable;
 +    }
 +
 +    /// Neo: do not use, use [net.neoforged.neoforge.transfer.fluid.FluidResource#of] instead.
@@ -50,4 +40,5 @@
 +    public String toString() {
 +        return BuiltInRegistries.FLUID.wrapAsHolder(this).getRegisteredName();
      }
- }
+ 
+     public static class Properties {

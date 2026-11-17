@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/TntBlock.java
 +++ b/net/minecraft/world/level/block/TntBlock.java
-@@ -43,7 +_,8 @@
+@@ -45,7 +_,8 @@
      @Override
      protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
          if (!oldState.is(state.getBlock())) {
@@ -10,7 +10,7 @@
                  level.removeBlock(pos, false);
              }
          }
-@@ -51,7 +_,8 @@
+@@ -53,7 +_,8 @@
  
      @Override
      protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, @Nullable Orientation orientation, boolean movedByPiston) {
@@ -20,7 +20,7 @@
              level.removeBlock(pos, false);
          }
      }
-@@ -59,7 +_,8 @@
+@@ -61,7 +_,8 @@
      @Override
      public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
          if (!level.isClientSide() && !player.getAbilities().instabuild && state.getValue(UNSTABLE)) {
@@ -30,7 +30,7 @@
          }
  
          return super.playerWillDestroy(level, pos, state, player);
-@@ -74,10 +_,14 @@
+@@ -76,10 +_,14 @@
          }
      }
  
@@ -45,7 +45,7 @@
      public static boolean prime(Level level, BlockPos pos, @Nullable LivingEntity source, ItemStack itemStack) {
          if (!(level instanceof ServerLevel serverLevel && serverLevel.getGameRules().get(GameRules.TNT_EXPLODES))) {
              return false;
-@@ -102,7 +_,8 @@
+@@ -104,7 +_,8 @@
              return super.useItemOn(itemStack, state, level, pos, player, hand, hitResult);
          }
  
@@ -55,7 +55,7 @@
              level.setBlock(pos, Blocks.AIR.defaultBlockState(), 11);
              Item item = itemStack.getItem();
              if (itemStack.is(Items.FLINT_AND_STEEL)) {
-@@ -127,9 +_,12 @@
+@@ -131,9 +_,12 @@
              Entity owner = projectile.getOwner();
              if (projectile.isOnFire()
                  && projectile.mayInteract(serverLevel, pos)
@@ -69,7 +69,7 @@
                      owner instanceof LivingEntity livingEntity ? livingEntity : null,
                      projectile instanceof AbstractArrow arr ? arr.getPickupItemStackOrigin() : ItemStack.EMPTY
                  )) {
-@@ -146,5 +_,11 @@
+@@ -150,5 +_,11 @@
      @Override
      protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
          builder.add(UNSTABLE);

@@ -9,7 +9,7 @@
      private static final ImmutableMap<EntityType<?>, Float> ACCEPTABLE_DISTANCE_FROM_HOSTILES = ImmutableMap.<EntityType<?>, Float>builder()
          .put(EntityTypes.DROWNED, 8.0F)
          .put(EntityTypes.EVOKER, 12.0F)
-@@ -28,7 +_,8 @@
+@@ -29,7 +_,8 @@
      }
  
      private boolean isClose(LivingEntity body, LivingEntity mob) {
@@ -19,7 +19,7 @@
          return mob.distanceToSqr(body) <= distThreshold * distThreshold;
      }
  
-@@ -38,6 +_,7 @@
+@@ -39,6 +_,7 @@
      }
  
      private boolean isHostile(LivingEntity entity) {

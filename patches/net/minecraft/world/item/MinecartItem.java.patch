@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/MinecartItem.java
 +++ b/net/minecraft/world/item/MinecartItem.java
-@@ -35,7 +_,8 @@
+@@ -31,7 +_,8 @@
  
          ItemStack itemStack = context.getItemInHand();
          RailShape shape = blockState.getBlock() instanceof BaseRailBlock

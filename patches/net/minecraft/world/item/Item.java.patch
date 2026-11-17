@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/item/Item.java
 +++ b/net/minecraft/world/item/Item.java
-@@ -123,7 +_,7 @@
+@@ -125,7 +_,7 @@
              : DataResult.success(item)
      );
      private static final Logger LOGGER = LogUtils.getLogger();
--    public static final Map<Block, Item> BY_BLOCK = Maps.newHashMap();
+-    public static final Map<Block, Item> BY_BLOCK = new HashMap<>();
 +    public static final Map<Block, Item> BY_BLOCK = net.neoforged.neoforge.registries.GameData.getBlockItemMap();
      public static final Identifier BASE_ATTACK_DAMAGE_ID = Identifier.withDefaultNamespace("base_attack_damage");
      public static final Identifier BASE_ATTACK_SPEED_ID = Identifier.withDefaultNamespace("base_attack_speed");
      public static final int DEFAULT_MAX_STACK_SIZE = 64;
-@@ -134,6 +_,9 @@
+@@ -136,6 +_,9 @@
      private final @Nullable ItemStackTemplate craftingRemainingItem;
      protected final String descriptionId;
      private final FeatureFlagSet requiredFeatures;
@@ -23,10 +23,10 @@
          BuiltInRegistries.DATA_COMPONENT_INITIALIZERS.add(properties.itemIdOrThrow(), componentInitializer);
          this.craftingRemainingItem = properties.craftingRemainingItem;
          this.requiredFeatures = properties.requiredFeatures;
--        if (SharedConstants.IS_RUNNING_IN_IDE) {
+-        if (DevUtil.IS_RUNNING_IN_IDE) {
 +        this.canCombineRepair = properties.canCombineRepair;
 +        // Neo: disable item class name check
-+        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
++        if (DevUtil.IS_RUNNING_IN_IDE && false) {
              String className = this.getClass().getSimpleName();
              if (!className.endsWith("Item")) {
                  LOGGER.error("Item classes should end with Item and {} doesn't.", className);
@@ -87,7 +87,7 @@
      public static class Properties implements IItemPropertiesExtensions {
          private static final DependantName<Item, String> BLOCK_DESCRIPTION_ID = id -> Util.makeDescriptionId("block", id.identifier());
          private static final DependantName<Item, String> ITEM_DESCRIPTION_ID = id -> Util.makeDescriptionId("item", id.identifier());
-@@ -395,6 +_,14 @@
+@@ -393,6 +_,14 @@
          private @Nullable ResourceKey<Item> id;
          private DependantName<Item, String> descriptionId = ITEM_DESCRIPTION_ID;
          private final DependantName<Item, Identifier> model = ResourceKey::identifier;
@@ -100,9 +100,9 @@
 +            return this;
 +        }
  
-         public Item.Properties food(FoodProperties foodProperties) {
-             return this.food(foodProperties, Consumables.DEFAULT_FOOD);
-@@ -702,7 +_,11 @@
+         private static void initDefault(DataComponentMap.Builder builder, HolderLookup.Provider context) {
+             builder.addAll(DataComponents.COMMON_ITEM_COMPONENTS);
+@@ -699,7 +_,11 @@
          }
  
          public <T> Item.Properties delayedHolderComponent(DataComponentType<Holder<T>> type, ResourceKey<T> valueKey) {
@@ -115,7 +115,7 @@
              return this;
          }
  
-@@ -764,7 +_,24 @@
+@@ -769,7 +_,24 @@
  
          boolean isPeaceful();
  
@@ -140,7 +140,7 @@
              return level == null ? EMPTY : new Item.TooltipContext() {
                  @Override
                  public HolderLookup.Provider registries() {
-@@ -784,6 +_,19 @@
+@@ -789,6 +_,19 @@
                  @Override
                  public boolean isPeaceful() {
                      return level.getDifficulty() == Difficulty.PEACEFUL;

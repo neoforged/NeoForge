@@ -2,7 +2,7 @@
 +++ b/net/minecraft/world/level/block/FlowerPotBlock.java
 @@ -30,12 +_,43 @@
  public class FlowerPotBlock extends Block {
-     private static final Map<Block, Block> POTTED_BY_CONTENT = Maps.newHashMap();
+     private static final Map<Block, Block> POTTED_BY_CONTENT = new HashMap<>();
      private static final VoxelShape SHAPE = Block.column(6.0, 0.0, 6.0);
 +    /// Neo: Field accesses are redirected to [#getPotted()] with a coremod.
      private final Block potted;

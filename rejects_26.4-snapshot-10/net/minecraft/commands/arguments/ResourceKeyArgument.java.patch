@@ -1,0 +1,34 @@
+++++ Target missing
+--- a/net/minecraft/commands/arguments/ResourceKeyArgument.java
++++ b/net/minecraft/commands/arguments/ResourceKeyArgument.java
+@@ -46,6 +46,9 @@
+     private static final DynamicCommandExceptionType ERROR_INVALID_ADVANCEMENT = new DynamicCommandExceptionType(
+         value -> Component.translatableEscape("advancement.advancementNotFound", value)
+     );
++    private static final com.mojang.brigadier.exceptions.SimpleCommandExceptionType ERROR_NO_RECIPES_ON_CLIENT = new com.mojang.brigadier.exceptions.SimpleCommandExceptionType(
++            Component.translatable("commands.neoforge.vanilla.resource_key.no_recipes_on_client")
++    );
+     private final ResourceKey<? extends Registry<T>> registryKey;
+     private final Predicate<T> filter;
+ 
+@@ -95,6 +98,10 @@
+     }
+ 
+     public static RecipeHolder<?> getRecipe(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
++        // Neo: deny recipe access in client commands
++        if (context.getSource().getUnsidedLevel().isClientSide()) {
++            throw ERROR_NO_RECIPES_ON_CLIENT.create();
++        }
+         RecipeManager recipeManager = context.getSource().getServer().getRecipeManager();
+         ResourceKey<Recipe<?>> key = getRegistryKey(context, name, Registries.RECIPE, ERROR_INVALID_RECIPE);
+         return recipeManager.byKey(key).filter(r -> !r.value().isSpecial()).orElseThrow(() -> ERROR_INVALID_RECIPE.create(key.identifier()));
+@@ -102,7 +109,8 @@
+ 
+     public static AdvancementHolder getAdvancement(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
+         ResourceKey<Advancement> key = getRegistryKey(context, name, Registries.ADVANCEMENT, ERROR_INVALID_ADVANCEMENT);
+-        AdvancementHolder advancement = context.getSource().getServer().getAdvancements().get(key.identifier());
++        // Neo: defer to command source stack extension for client command support
++        AdvancementHolder advancement = context.getSource().getAdvancement(key.identifier());
+         if (advancement == null) {
+             throw ERROR_INVALID_ADVANCEMENT.create(key.identifier());
+         } else {

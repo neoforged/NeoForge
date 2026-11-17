@@ -9,7 +9,7 @@
  
 +    /// @deprecated Neo: Use [#SavedDataStorage(net.minecraft.server.level.ServerLevel, Path, DataFixer, HolderLookup.Provider)] instead
 +    @Deprecated
-     public SavedDataStorage(Path dataFolder, DataFixer fixerUpper, HolderLookup.Provider registries) {
+     public SavedDataStorage(Path dataFolder, DataFixer fixerUpper, HolderGetter.Provider registries) {
 +        this(null, dataFolder, fixerUpper, registries);
 +    }
 +

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/grower/TreeGrower.java
 +++ b/net/minecraft/world/level/block/grower/TreeGrower.java
-@@ -114,6 +_,11 @@
+@@ -93,6 +_,11 @@
          ResourceKey<Feature> megaFeatureKey = this.getConfiguredMegaFeature(random);
          if (megaFeatureKey != null) {
              Holder<Feature> featureHolder = level.registryAccess().lookupOrThrow(Registries.FEATURE).get(megaFeatureKey).orElse(null);
@@ -12,7 +12,7 @@
              if (featureHolder != null) {
                  Optional<TreeGrower.TwoByTwoSaplingPos> twoByTwoSaplingPos = findTwoByTwoSaplingPos(level, state, pos);
                  if (twoByTwoSaplingPos.isPresent()) {
-@@ -138,6 +_,11 @@
+@@ -117,6 +_,11 @@
          }
  
          Holder<Feature> featureHolder = level.registryAccess().lookupOrThrow(Registries.FEATURE).get(featureKey).orElse(null);

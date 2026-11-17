@@ -1,14 +1,5 @@
 --- a/net/minecraft/client/gui/Hud.java
 +++ b/net/minecraft/client/gui/Hud.java
-@@ -86,6 +_,8 @@
- import org.jspecify.annotations.Nullable;
- 
- import net.neoforged.fml.common.asm.enumextension.IExtensibleEnum;
-+// Neo: Exceptionally add a static wildcard import to make the patch bearable, and comments to avoid the detection by Immaculate rules.
-+/* space for import change */ import static net.neoforged.neoforge.client.gui.VanillaGuiLayers.* /* space for wildcard import */;
- 
- @OnlyIn(Dist.CLIENT)
- public class Hud {
 @@ -181,6 +_,11 @@
      private Pair<Hud.ContextualInfo, ContextualBar> contextualInfoBar = Pair.of(Hud.ContextualInfo.EMPTY, ContextualBar.EMPTY);
      private final Map<Hud.ContextualInfo, Supplier<ContextualBar>> contextualInfoBars;
@@ -30,76 +21,7 @@
      }
  
      public void registerReloadListeners(ReloadableResourceManager resourceManager) {
-@@ -224,28 +_,50 @@
-     public void extractRenderState(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-         this.minecraft.gameRenderer.gameRenderState().guiRenderState.isHudHidden = this.isHidden;
-         if (!(this.minecraft.gui.screen() instanceof LevelLoadingScreen)) {
--            if (!this.isHidden) {
--                this.extractCameraOverlays(graphics, deltaTracker);
--                this.extractCrosshair(graphics, deltaTracker);
--                graphics.nextStratum();
--                this.extractHotbarAndDecorations(graphics, deltaTracker);
--                this.extractEffects(graphics, deltaTracker);
--                this.extractBossOverlay(graphics, deltaTracker);
--            }
--
--            this.extractSleepOverlay(graphics, deltaTracker);
--            if (!this.isHidden) {
--                this.extractDemoOverlay(graphics, deltaTracker);
--                this.extractScoreboardSidebar(graphics, deltaTracker);
--                this.extractOverlayMessage(graphics, deltaTracker);
--                this.extractTitle(graphics, deltaTracker);
--                this.extractChat(graphics, deltaTracker);
--                this.extractTabList(graphics, deltaTracker);
-+            // Neo: render HUD via GuiLayerManager
-+            this.leftHeight = 39;
-+            this.rightHeight = 39;
-+            this.updateContextualBarRenderer();
-+            this.layerManager.render(graphics, deltaTracker);
-+        }
-+    }
-+
-+    /// Neo: register vanilla HUD elements
-+    private void registerVanillaLayers() {
-+        java.util.function.BooleanSupplier hudVisible = () -> !this.isHidden;
-+        java.util.function.BooleanSupplier survivalVisible = () -> this.minecraft.gameMode.canHurtPlayer() && hudVisible.getAsBoolean();
-+
-+        this.layerManager.add(CAMERA_OVERLAYS, this::extractCameraOverlays, hudVisible);
-+        this.layerManager.add(CROSSHAIR, this::extractCrosshair, hudVisible);
-+        this.layerManager.add(AFTER_CAMERA_DECORATIONS, (guiGraphics, _) -> guiGraphics.nextStratum(), hudVisible);
-+        // TODO: Split this up again into its pieces
-+        this.layerManager.add(HOTBAR, this::extractHotbar, hudVisible);
-+        this.layerManager.add(PLAYER_HEALTH, (guiGraphics, _) -> extractHealthLevel(guiGraphics), survivalVisible);
-+        this.layerManager.add(ARMOR_LEVEL, (guiGraphics, _) -> extractArmorLevel(guiGraphics), survivalVisible);
-+        this.layerManager.add(FOOD_LEVEL, (guiGraphics, _) -> extractFoodLevel(guiGraphics), survivalVisible);
-+        this.layerManager.add(VEHICLE_HEALTH, (guiGraphics, _) -> extractVehicleHealth(guiGraphics), hudVisible);
-+        this.layerManager.add(AIR_LEVEL, (guiGraphics, _) -> extractAirLevel(guiGraphics), survivalVisible);
-+        this.layerManager.add(CONTEXTUAL_INFO_BAR_BACKGROUND, this::extractContextualInfoBarBackground, hudVisible);
-+        this.layerManager.add(EXPERIENCE_LEVEL, this::extractExperienceLevel, hudVisible);
-+        this.layerManager.add(CONTEXTUAL_INFO_BAR, this::extractContextualInfoBar, hudVisible);
-+        this.layerManager.add(SELECTED_ITEM_NAME, this::maybeExtractSelectedItemName, hudVisible);
-+        this.layerManager.add(SPECTATOR_TOOLTIP, this::maybeExtractSpectatorTooltip, hudVisible);
-+        this.layerManager.add(EFFECTS, this::extractEffects, hudVisible);
-+        this.layerManager.add(BOSS_OVERLAY, this::extractBossOverlay, hudVisible);
-+        this.layerManager.add(SLEEP_OVERLAY, this::extractSleepOverlay);
-+        this.layerManager.add(DEMO_OVERLAY, this::extractDemoOverlay, hudVisible);
-+        this.layerManager.add(SCOREBOARD_SIDEBAR, this::extractScoreboardSidebar, hudVisible);
-+        this.layerManager.add(OVERLAY_MESSAGE, this::extractOverlayMessage, hudVisible);
-+        this.layerManager.add(TITLE, this::extractTitle, hudVisible);
-+        this.layerManager.add(CHAT, this::extractChat, hudVisible);
-+        this.layerManager.add(TAB_LIST, this::extractTabList, hudVisible);
-+        this.layerManager.add(SUBTITLE_OVERLAY, (graphics, _) -> {
-+            if (!this.isHidden) {
-                 this.extractSubtitleOverlay(graphics, this.minecraft.gui.screen() == null || this.minecraft.gui.screen().isInGameUi());
-             } else if (this.minecraft.gui.screen() != null && this.minecraft.gui.screen().isInGameUi()) {
-                 this.extractSubtitleOverlay(graphics, true);
-             }
--        }
-+        });
-     }
- 
-     private void extractBossOverlay(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-@@ -289,8 +_,13 @@
+@@ -296,8 +_,13 @@
                  for (EquipmentSlot slot : EquipmentSlot.values()) {
                      ItemStack item = player.getItemBySlot(slot);
                      Equippable equippable = item.get(DataComponents.EQUIPPABLE);
@@ -114,7 +36,7 @@
                      }
                  }
              }
-@@ -343,7 +_,11 @@
+@@ -350,7 +_,11 @@
              if (alpha > 0) {
                  graphics.nextStratum();
                  graphics.pose().pushMatrix();
@@ -127,27 +49,7 @@
                  int color;
                  if (this.animateOverlayMessageColor) {
                      color = Mth.hsvToArgb(t / 50.0F, 0.7F, 0.6F, alpha);
-@@ -404,10 +_,19 @@
-     private void extractChat(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-         if (this.minecraft.player != null && !this.chat.isChatFocused()) {
-             Window window = this.minecraft.getWindow();
-+            // Neo: Allow customizing position of chat component
-+            var chatBottomMargin = 40; // See ChatComponent#BOTTOM_MARGIN (used in translate calls in ChatComponent#render)
-+            var event = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(
-+                    new net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.Chat(window, graphics, deltaTracker, 0, graphics.guiHeight() - chatBottomMargin)
-+            );
-+            // Neo: The event is given the absolute Y position; account for chat component's own offsetting here
-+            graphics.pose().pushMatrix();
-+            graphics.pose().translate(event.getPosX(), (event.getPosY() - graphics.guiHeight() + chatBottomMargin) / (float) this.chat.getScale());
-             int mouseX = Mth.floor(this.minecraft.mouseHandler.getScaledXPos(window));
-             int mouseY = Mth.floor(this.minecraft.mouseHandler.getScaledYPos(window));
-             graphics.nextStratum();
-             this.chat.extractRenderState(graphics, this.getFont(), this.tickCount, mouseX, mouseY, ChatComponent.DisplayMode.BACKGROUND, false);
-+            graphics.pose().popMatrix();
-         }
-     }
- 
-@@ -501,6 +_,10 @@
+@@ -492,6 +_,10 @@
              int harmfulCount = 0;
  
              for (MobEffectInstance instance : Ordering.natural().reverse().sortedCopy(activeEffects)) {
@@ -158,7 +60,7 @@
                  Holder<MobEffect> effect = instance.getEffect();
                  if (instance.showIcon()) {
                      int x = graphics.guiWidth();
-@@ -532,6 +_,10 @@
+@@ -523,6 +_,10 @@
                          }
                      }
  
@@ -166,72 +68,10 @@
 +                    if (renderer.extractHudIcon(instance, this, graphics, x + 3, y + 3, 18, 18, ARGB.white(alpha))) {
 +                        continue;
 +                    }
-                     graphics.blitSprite(RenderPipelines.GUI_TEXTURED, getMobEffectSprite(effect), x + 3, y + 3, 18, 18, ARGB.white(alpha));
+                     graphics.blitSprite(GuiPipeline.TEXTURED, getMobEffectSprite(effect), x + 3, y + 3, 18, 18, ARGB.white(alpha));
                  }
              }
-@@ -542,32 +_,52 @@
-         return effect.unwrapKey().map(ResourceKey::identifier).map(id -> id.withPrefix("mob_effect/")).orElseGet(MissingTextureAtlasSprite::getLocation);
-     }
- 
--    private void extractHotbarAndDecorations(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-+    /// Neo: Split off into separate method to wrap in a layer
-+    private void extractHotbar(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-         if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR) {
-             this.spectatorGui.extractHotbar(graphics);
-         } else {
-             this.extractItemHotbar(graphics, deltaTracker);
-         }
--
--        if (this.minecraft.gameMode.canHurtPlayer()) {
--            this.extractPlayerHealth(graphics);
--        }
--
--        this.extractVehicleHealth(graphics);
-+    }
-+
-+    /// Neo: Wrap in a method to call it when re-rendering
-+    private void updateContextualBarRenderer() {
-         Hud.ContextualInfo nextContextualInfo = this.nextContextualInfoState();
-         if (nextContextualInfo != this.contextualInfoBar.getFirst()) {
-             this.contextualInfoBar = Pair.of(nextContextualInfo, this.contextualInfoBars.get(nextContextualInfo).get());
-         }
-+    }
- 
-+    /// Neo: Split off into separate method to wrap in a layer
-+    private void extractContextualInfoBarBackground(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-         this.contextualInfoBar.getSecond().extractBackground(graphics, deltaTracker);
-+    }
-+
-+    /// Neo: Split off into separate method to wrap in a layer
-+    private void extractExperienceLevel(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-         if (this.minecraft.gameMode.hasExperience() && this.minecraft.player.experienceLevel > 0) {
-             ContextualBar.extractExperienceLevel(graphics, this.minecraft.font, this.minecraft.player.experienceLevel);
-         }
-+    }
- 
-+    /// Neo: Split off into separate method to wrap in a layer
-+    private void extractContextualInfoBar(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-         this.contextualInfoBar.getSecond().extractRenderState(graphics, deltaTracker);
-+    }
-+
-+    /// Neo: Split off into separate method to wrap in a layer
-+    private void maybeExtractSelectedItemName(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-         if (this.minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR) {
--            this.extractSelectedItemName(graphics);
--        } else if (this.minecraft.player.isSpectator()) {
-+            // Neo: take height of "bar stacks" into account
-+            this.extractSelectedItemName(graphics, Math.max(this.leftHeight, this.rightHeight));
-+        }
-+    }
-+
-+    /// Neo: Split off into separate method to wrap in a layer
-+    private void maybeExtractSpectatorTooltip(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-+        // Neo: Note this is originally mutually exclusive with the condition in maybeExtractSelectedItemName(), which is why we must query both MultiPlayerGameMode and the player
-+        if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR && this.minecraft.player.isSpectator()) {
-             this.spectatorGui.extractAction(graphics);
-         }
-     }
-@@ -634,15 +_,24 @@
+@@ -620,15 +_,24 @@
      }
  
      private void extractSelectedItemName(GuiGraphicsExtractor graphics) {
@@ -259,7 +99,7 @@
              if (!this.minecraft.gameMode.canHurtPlayer()) {
                  y += 14;
              }
-@@ -653,7 +_,13 @@
+@@ -639,7 +_,13 @@
              }
  
              if (alpha > 0) {
@@ -274,7 +114,7 @@
              }
          }
      }
-@@ -770,7 +_,17 @@
+@@ -756,7 +_,17 @@
          return (int)Math.ceil(hearts / 10.0);
      }
  
@@ -292,8 +132,8 @@
          Player player = this.getCameraPlayer();
          if (player != null) {
              int currentHealth = Mth.ceil(player.getHealth());
-@@ -794,33 +_,72 @@
-             this.random.setSeed(this.tickCount * 312871);
+@@ -765,33 +_,72 @@
+             this.healthExtractionRandom.setSeed(this.tickCount * 312871);
              int xLeft = graphics.guiWidth() / 2 - 91;
              int xRight = graphics.guiWidth() / 2 + 91;
 -            int yLineBase = graphics.guiHeight() - 39;
@@ -373,7 +213,7 @@
              Profiler.get().pop();
          }
      }
-@@ -909,7 +_,7 @@
+@@ -880,7 +_,7 @@
      private void extractAirBubbles(GuiGraphicsExtractor graphics, Player player, int vehicleHearts, int yLineAir, int xRight) {
          int maxAirSupplyTicks = player.getMaxAirSupply();
          int currentAirSupplyTicks = Math.clamp(player.getAirSupply(), 0, maxAirSupplyTicks);
@@ -382,8 +222,8 @@
          if (isUnderWater || currentAirSupplyTicks < maxAirSupplyTicks) {
              yLineAir = this.getAirBubbleYLine(vehicleHearts, yLineAir);
              int fullAirBubbles = getCurrentAirSupplyBubble(currentAirSupplyTicks, maxAirSupplyTicks, -2);
-@@ -933,6 +_,9 @@
-                     graphics.blitSprite(RenderPipelines.GUI_TEXTURED, AIR_EMPTY_SPRITE, airBubbleXPos, yLineAir + wobbleYOffset, 9, 9);
+@@ -904,6 +_,9 @@
+                     graphics.blitSprite(GuiPipeline.TEXTURED, AIR_EMPTY_SPRITE, airBubbleXPos, yLineAir + wobbleYOffset, 9, 9);
                  }
              }
 +
@@ -392,7 +232,7 @@
          }
      }
  
-@@ -1000,7 +_,7 @@
+@@ -971,7 +_,7 @@
              if (hearts != 0) {
                  int currentHealth = (int)Math.ceil(vehicleWithHearts.getHealth());
                  Profiler.get().popPush("mountHealth");
@@ -401,7 +241,7 @@
                  int xRight = graphics.guiWidth() / 2 + 91;
                  int yo = yLine1;
  
-@@ -1021,6 +_,7 @@
+@@ -992,6 +_,7 @@
                      }
  
                      yo -= 10;
@@ -409,18 +249,18 @@
                  }
              }
          }
-@@ -1053,7 +_,9 @@
+@@ -1014,7 +_,9 @@
          int top = (graphics.guiHeight() - height) / 2;
          int right = left + width;
          int bottom = top + height;
--        graphics.blit(RenderPipelines.GUI_TEXTURED, SPYGLASS_SCOPE_LOCATION, left, top, 0.0F, 0.0F, width, height, width, height);
+-        graphics.blit(GuiPipeline.TEXTURED, SPYGLASS_SCOPE_LOCATION, left, top, 0.0F, 0.0F, width, height, width, height);
 +        ItemStack useItem = this.minecraft.player.getUseItem();
 +        var clientItemExtensions = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(useItem);
 +        graphics.blit(RenderPipelines.GUI_TEXTURED, clientItemExtensions.getScopeOverlayTexture(useItem), left, top, 0.0F, 0.0F, width, height, width, height);
-         graphics.fill(RenderPipelines.GUI, 0, bottom, graphics.guiWidth(), graphics.guiHeight(), -16777216);
-         graphics.fill(RenderPipelines.GUI, 0, 0, graphics.guiWidth(), top, -16777216);
-         graphics.fill(RenderPipelines.GUI, 0, top, left, bottom, -16777216);
-@@ -1202,6 +_,8 @@
+         graphics.fill(GuiPipeline.DEFAULT, 0, bottom, graphics.guiWidth(), graphics.guiHeight(), -16777216);
+         graphics.fill(GuiPipeline.DEFAULT, 0, 0, graphics.guiWidth(), top, -16777216);
+         graphics.fill(GuiPipeline.DEFAULT, 0, top, left, bottom, -16777216);
+@@ -1164,6 +_,8 @@
                  this.toolHighlightTimer = 0;
              } else if (this.lastToolHighlight.isEmpty()
                  || !selected.is(this.lastToolHighlight.getItem())
@@ -429,7 +269,7 @@
                  || !selected.getHoverName().equals(this.lastToolHighlight.getHoverName())) {
                  this.toolHighlightTimer = (int)(40.0 * this.minecraft.options.notificationDisplayTime().get());
              } else if (this.toolHighlightTimer > 0) {
-@@ -1479,7 +_,18 @@
+@@ -1463,7 +_,18 @@
                  type = NORMAL;
              }
  

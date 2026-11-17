@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/ProtoChunk.java
 +++ b/net/minecraft/world/level/chunk/ProtoChunk.java
-@@ -137,7 +_,8 @@
+@@ -140,7 +_,8 @@
                  this.lightEngine.updateSectionStatus(pos, isEmpty);
              }
  

@@ -1,9 +1,9 @@
 --- a/net/minecraft/world/level/block/SpawnerBlock.java
 +++ b/net/minecraft/world/level/block/SpawnerBlock.java
-@@ -32,10 +_,14 @@
+@@ -33,10 +_,14 @@
      @Override
-     protected void spawnAfterBreak(BlockState state, ServerLevel level, BlockPos pos, ItemStack tool, boolean dropExperience) {
-         super.spawnAfterBreak(state, level, pos, tool, dropExperience);
+     protected void spawnAfterBreak(BlockState state, ServerLevel level, BlockPos pos, ItemStack tool, boolean dropExperience, @Nullable Entity breaker) {
+         super.spawnAfterBreak(state, level, pos, tool, dropExperience, breaker);
 -        if (dropExperience) {
 -            RandomSource random = level.getRandom();
 -            int magicCount = 15 + random.nextInt(15) + random.nextInt(15);

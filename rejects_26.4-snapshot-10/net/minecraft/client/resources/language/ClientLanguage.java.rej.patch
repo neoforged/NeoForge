@@ -1,0 +1,26 @@
+--- a/net/minecraft/client/resources/language/ClientLanguage.java
++++ b/net/minecraft/client/resources/language/ClientLanguage.java
+@@ -51,13 +63,21 @@
+         }
+ 
+         DeprecatedTranslationsInfo.loadFromDefaultResource().applyToMap(translations);
+-        return new ClientLanguage(Map.copyOf(translations), defaultRightToLeft);
++        return new ClientLanguage(Map.copyOf(translations), defaultRightToLeft, componentMap);
+     }
+ 
++    /// @deprecated Neo: use [#appendFrom(String, List, Map, Map)] instead
++    @Deprecated
+     private static void appendFrom(String languageCode, List<Resource> resources, Map<String, String> translations) {
++        appendFrom(languageCode, resources, translations, new java.util.HashMap<>());
++    }
++
++    /// Neo: overload of [#appendFrom(String, List, Map)] with support for loading full components
++    private static void appendFrom(String languageCode, List<Resource> resources, Map<String, String> translations, Map<String, net.minecraft.network.chat.Component> componentMap) {
+         for (Resource resource : resources) {
+             try (InputStream inputStream = resource.open()) {
+-                Language.loadFromJson(inputStream, translations::put);
++                // Neo: add support for full components in language files
++                Language.loadFromJson(inputStream, translations::put, componentMap::put);
+             } catch (IOException e) {
+                 LOGGER.warn("Failed to load translations for {} from pack {}", languageCode, resource.sourcePackId(), e);
+             }

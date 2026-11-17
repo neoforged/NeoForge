@@ -2,7 +2,7 @@
 +++ b/net/minecraft/world/entity/LightningBolt.java
 @@ -39,6 +_,8 @@
      private @Nullable ServerPlayer cause;
-     private final Set<Entity> hitEntities = Sets.newHashSet();
+     private final Set<Entity> hitEntities = new HashSet<>();
      private int blocksSetOnFire;
 +    /// Neo: holds the damage inflicted by this lightning bolt
 +    private float damage = 5.0F;

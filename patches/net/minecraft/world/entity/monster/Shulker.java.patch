@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/Shulker.java
 +++ b/net/minecraft/world/entity/monster/Shulker.java
-@@ -403,6 +_,13 @@
+@@ -406,6 +_,13 @@
                      && level.getWorldBorder().isWithinBounds(target)
                      && level.noCollision(this, new AABB(target).deflate(1.0E-6))) {
                      Direction attachmentDirection = this.findAttachableSurface(target);

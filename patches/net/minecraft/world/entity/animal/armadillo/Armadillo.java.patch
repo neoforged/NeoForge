@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/armadillo/Armadillo.java
 +++ b/net/minecraft/world/entity/animal/armadillo/Armadillo.java
-@@ -236,8 +_,9 @@
+@@ -234,8 +_,9 @@
          return itemStack.is(ItemTags.ARMADILLO_FOOD);
      }
  
@@ -11,7 +11,7 @@
      ) {
          return level.getBlockState(pos.below()).is(BlockTags.ARMADILLO_SPAWNABLE_ON) && isBrightEnoughToSpawn(level, pos);
      }
-@@ -315,7 +_,7 @@
+@@ -313,7 +_,7 @@
      @Override
      public InteractionResult mobInteract(Player player, InteractionHand hand) {
          ItemStack itemStack = player.getItemInHand(hand);

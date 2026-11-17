@@ -33,7 +33,7 @@
  
              try {
 @@ -165,6 +_,12 @@
-     public <T> Optional<T> visit(FormattedText.StyledContentConsumer<T> output, Style currentStyle) {
+     public <T> Optional<T> visitUnbounded(FormattedText.StyledContentConsumer<T> output, Style currentStyle) {
          this.decompose();
  
 +        if (!net.neoforged.neoforge.common.util.InsertingContents.pushTranslation(this)) {
@@ -43,9 +43,9 @@
 +
 +        try {
          for (FormattedText part : this.decomposedParts) {
-             Optional<T> result = part.visit(output, currentStyle);
+             Optional<T> result = part.visitUnbounded(output, currentStyle);
              if (result.isPresent()) {
-@@ -173,12 +_,21 @@
+@@ -173,6 +_,9 @@
          }
  
          return Optional.empty();
@@ -55,8 +55,9 @@
      }
  
      @Override
-     public <T> Optional<T> visit(FormattedText.ContentConsumer<T> output) {
+@@ -180,6 +_,12 @@
          this.decompose();
+         int decomposedPartsSize = this.decomposedParts.size();
  
 +        if (!net.neoforged.neoforge.common.util.InsertingContents.pushTranslation(this)) {
 +            // Reference cycle.
@@ -64,10 +65,10 @@
 +        }
 +
 +        try {
-         for (FormattedText part : this.decomposedParts) {
-             Optional<T> result = part.visit(output);
+         for (int i = 0; i < decomposedPartsSize; i++) {
+             Optional<T> result = this.decomposedParts.get(i).visitUnbounded(output);
              if (result.isPresent()) {
-@@ -187,6 +_,9 @@
+@@ -188,6 +_,9 @@
          }
  
          return Optional.empty();

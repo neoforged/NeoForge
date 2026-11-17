@@ -52,7 +52,7 @@
 @@ -292,5 +_,17 @@
      @Override
      protected FluidState getFluidState(BlockState state) {
-         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource() : super.getFluidState(state);
 +    }
 +
 +    /// Neo: {@return whether this rail can make curves}

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
 +++ b/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
-@@ -217,7 +_,7 @@
+@@ -228,7 +_,7 @@
          for (StructureTemplate.StructureBlockInfo blockInfo : settings.getRandomPalette(this.palettes, position).blocks(block)) {
              BlockPos blockPos = absolute ? calculateRelativePosition(settings, blockInfo.pos).offset(position) : blockInfo.pos;
              if (boundingBox == null || boundingBox.isInside(blockPos)) {
@@ -9,7 +9,7 @@
              }
          }
  
-@@ -234,6 +_,11 @@
+@@ -245,6 +_,11 @@
          return transform(pos, settings.getMirror(), settings.getRotation(), settings.getRotationPivot());
      }
  
@@ -21,7 +21,7 @@
      public boolean placeInWorld(
          ServerLevelAccessor level,
          BlockPos position,
-@@ -261,7 +_,8 @@
+@@ -272,7 +_,8 @@
              int maxX = Integer.MIN_VALUE;
              int maxY = Integer.MIN_VALUE;
              int maxZ = Integer.MIN_VALUE;
@@ -31,7 +31,7 @@
  
              try (ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(LOGGER)) {
                  for (StructureTemplate.StructureBlockInfo blockInfo : processedBlockInfoList) {
-@@ -291,6 +_,7 @@
+@@ -302,6 +_,7 @@
                                      blockEntity.loadWithComponents(
                                          TagValueInput.create(reporter.forChild(blockEntity.problemPath()), level.registryAccess(), blockInfo.nbt)
                                      );
@@ -39,7 +39,7 @@
                                  }
                              }
  
-@@ -384,6 +_,8 @@
+@@ -395,6 +_,8 @@
                          boundingBox,
                          settings.shouldFinalizeEntities(),
                          reporter
@@ -48,7 +48,7 @@
                      );
                  }
              }
-@@ -418,6 +_,8 @@
+@@ -429,6 +_,8 @@
          });
      }
  
@@ -57,7 +57,7 @@
      public static List<StructureTemplate.StructureBlockInfo> processBlockInfos(
          ServerLevelAccessor level,
          BlockPos position,
-@@ -425,6 +_,10 @@
+@@ -436,6 +_,10 @@
          StructurePlaceSettings settings,
          List<StructureTemplate.StructureBlockInfo> blockInfoList
      ) {
@@ -68,7 +68,7 @@
          List<StructureTemplate.StructureBlockInfo> originalBlockInfoList = new ArrayList<>();
          List<StructureTemplate.StructureBlockInfo> processedBlockInfoList = new ArrayList<>();
          boolean processOnlyInCurrentChunk = true;
-@@ -447,7 +_,8 @@
+@@ -458,7 +_,8 @@
                  Iterator<StructureProcessor> iterator = settings.getProcessors().iterator();
  
                  while (processedBlockInfo != null && iterator.hasNext()) {
@@ -78,7 +78,7 @@
                  }
  
                  if (processedBlockInfo != null) {
-@@ -473,13 +_,14 @@
+@@ -484,13 +_,14 @@
          @Nullable BoundingBox boundingBox,
          boolean finalizeEntities,
          ProblemReporter problemReporter
@@ -97,13 +97,3 @@
                  ListTag posTag = new ListTag();
                  posTag.add(DoubleTag.valueOf(pos.x));
                  posTag.add(DoubleTag.valueOf(pos.y));
-@@ -811,7 +_,8 @@
- 
-     public static final class Palette {
-         private final List<StructureTemplate.StructureBlockInfo> blocks;
--        private final Map<Block, List<StructureTemplate.StructureBlockInfo>> cache = Maps.newHashMap();
-+        // Neo: Fixes MC-271899 - Make the global StructureTemplate's palette caches thread safe for worldgen
-+        private final Map<Block, List<StructureTemplate.StructureBlockInfo>> cache = Maps.newConcurrentMap();
-         private @Nullable List<StructureTemplate.JigsawBlockInfo> cachedJigsaws;
- 
-         private Palette(List<StructureTemplate.StructureBlockInfo> blocks) {

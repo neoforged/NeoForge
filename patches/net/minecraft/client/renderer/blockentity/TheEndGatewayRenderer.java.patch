@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/TheEndGatewayRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/TheEndGatewayRenderer.java
-@@ -59,4 +_,10 @@
+@@ -61,4 +_,10 @@
      public int getViewDistance() {
          return 256;
      }

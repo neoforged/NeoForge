@@ -8,16 +8,7 @@
      implements Nameable,
      EntityAccess,
      ScoreHolder,
-@@ -211,6 +_,8 @@
-     private static final double MAX_MOVEMENT_RESETTING_TRACE_DISTANCE = 8.0;
-     private static final Set<TagKey<Fluid>> FLUIDS_WITH_CURRENT = Set.of(FluidTags.WATER, FluidTags.LAVA);
-     private static double viewScale = 1.0;
-+    /// @deprecated  Neo: Field accesses are redirected to [#getType()] with a coremod.
-+    @Deprecated
-     private final EntityType<?> type;
-     private boolean requiresPrecisePosition;
-     private int id = 0;
-@@ -307,6 +_,15 @@
+@@ -302,6 +_,15 @@
      protected final InsideBlockEffectApplier.StepBasedCollector insideEffectCollector = new InsideBlockEffectApplier.StepBasedCollector();
      protected final InterpolationHandler interpolationHandler;
      private CustomData customData = CustomData.EMPTY;
@@ -33,7 +24,7 @@
  
      public Entity(EntityType<?> type, Level level) {
          this.type = type;
-@@ -329,7 +_,9 @@
+@@ -324,7 +_,9 @@
          this.entityData = entityDataBuilder.build();
          this.interpolationHandler = this.createInterpolationHandler();
          this.setPos(0.0, 0.0, 0.0);
@@ -43,39 +34,7 @@
      }
  
      public boolean isColliding(BlockPos pos, BlockState state) {
-@@ -549,7 +_,7 @@
- 
-         this.wasInPowderSnow = this.isInPowderSnow;
-         this.isInPowderSnow = false;
--        this.wasEyeInWater = this.isEyeInFluid(FluidTags.WATER);
-+        this.wasEyeInWater = this.fluidInteraction.isEyeInFluidMatching(this, (_, type, _) -> type.getIsWaterLike());
-         this.updateFluidInteraction();
-         this.updateSwimming();
-         if (this.level() instanceof ServerLevel serverLevel) {
-@@ -569,7 +_,11 @@
-         }
- 
-         if (this.isInLava()) {
--            this.fallDistance *= 0.5;
-+            // Neo: allow modded entities to control the fall distance modifier
-+            this.fallDistance *= this.getFluidFallDistanceModifier(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
-+        } else if (!this.isInWater()) {
-+            // Neo: allow modded fluids and entities to control the fall distance modifier
-+            this.fallDistance *= this.fluidInteraction.getFallDistanceModifier(this);
-         }
- 
-         this.checkBelowWorld();
-@@ -812,7 +_,8 @@
-                 profiler.pop();
-             } else {
-                 if (this.canSimulateMovement() && (movedVertically && this.verticalCollision || this.horizontalCollision)) {
--                    this.restituteMovementAfterCollisions(effectState, xCollision, zCollision, movement);
-+                    // Neo: pass the bounce position to our extensions
-+                    this.restituteMovementAfterCollisions(effectPos, effectState, xCollision, zCollision, movement);
-                 }
- 
-                 if (!this.level().isClientSide() || this.isLocalInstanceAuthoritative()) {
-@@ -835,7 +_,13 @@
+@@ -808,7 +_,13 @@
          }
      }
  
@@ -89,7 +48,7 @@
          double restitution = this.isSuppressingBounce() ? 0.0 : this.getEntityBounciness();
          Vec3 currentMovement = this.getDeltaMovement();
          Vec3 movementAfterBounce = currentMovement;
-@@ -853,7 +_,7 @@
+@@ -826,7 +_,7 @@
                  restitution = !(-currentMovement.y <= this.getEffectiveGravity())
                          && !this.isSuppressingBounce()
                          && !effectState.is(BlockTags.SUPPRESSES_BOUNCE)
@@ -98,7 +57,7 @@
                      : 0.0;
              }
  
-@@ -881,6 +_,8 @@
+@@ -854,6 +_,8 @@
          this.setDeltaMovement(movementAfterBounce);
      }
  
@@ -107,7 +66,7 @@
      private double getBlockBounciness(Block onBlock) {
          float blockBounciness = onBlock.getBounceRestitution();
          if (!(this instanceof LivingEntity)) {
-@@ -1098,9 +_,8 @@
+@@ -1082,9 +_,8 @@
              }
  
              BlockState belowState = this.level().getBlockState(getOnPos);
@@ -119,39 +78,7 @@
                  ? getOnPos.atY(Mth.floor(this.position.y - offset))
                  : getOnPos;
          } else {
-@@ -1471,20 +_,22 @@
-         return !aboveState.is(BlockTags.INSIDE_STEP_SOUND_BLOCKS) && !aboveState.is(BlockTags.COMBINATION_STEP_SOUND_BLOCKS) ? affectingPos : abovePos;
-     }
- 
--    protected void playCombinationStepSounds(BlockState primaryStepSound, BlockState secondaryStepSound) {
--        SoundType primaryStepSoundType = primaryStepSound.getSoundType();
--        this.playSound(primaryStepSoundType.getStepSound(), primaryStepSoundType.getVolume() * 0.15F, primaryStepSoundType.getPitch());
--        this.playMuffledStepSound(secondaryStepSound);
-+    // Neo: add position context
-+    protected void playCombinationStepSounds(BlockState primaryStepSound, BlockState secondaryStepSound, BlockPos primaryPos, BlockPos secondaryPos) {
-+        // Neo: Allow the blockstate full control over step sounds
-+        primaryStepSound.playStepSound(this.level, primaryPos, this, .15F, 1F);
-+        this.playMuffledStepSound(secondaryStepSound, secondaryPos);
-     }
- 
--    protected void playMuffledStepSound(BlockState blockState) {
--        SoundType secondaryStepSoundType = blockState.getSoundType();
--        this.playSound(secondaryStepSoundType.getStepSound(), secondaryStepSoundType.getVolume() * 0.05F, secondaryStepSoundType.getPitch() * 0.8F);
-+    // Neo: add position context
-+    protected void playMuffledStepSound(BlockState blockState, BlockPos pos) {
-+        // Neo: Allow the blockstate full control over step sounds
-+        blockState.playStepSound(this.level, pos, this, .05F, .8F);
-     }
- 
-     protected void playStepSound(BlockPos pos, BlockState blockState) {
--        SoundType soundType = blockState.getSoundType();
--        this.playSound(soundType.getStepSound(), soundType.getVolume() * 0.15F, soundType.getPitch());
-+        // Neo: Allow the blockstate full control over step sounds
-+        blockState.playStepSound(this.level(), pos, this, .15F, 1F);
-     }
- 
-     private boolean shouldPlayAmethystStepSound(BlockState affectingState) {
-@@ -1644,7 +_,7 @@
+@@ -1649,7 +_,7 @@
      }
  
      public boolean isInShallowWater() {
@@ -159,56 +86,12 @@
 +        return this.isInWater() && !this.isUnderWater() || this.fluidInteraction.isInFluidMatching(this, (entity, type, _) -> entity.canSwimInFluidType(type) && !entity.canStartSwimming());
      }
  
-     public boolean isInClouds() {
-@@ -1663,18 +_,19 @@
- 
-     public void updateSwimming() {
-         if (this.isSwimming()) {
--            this.setSwimming(this.isSprinting() && this.isInWater() && !this.isPassenger());
-+            this.setSwimming(this.isSprinting() && (this.isInWater() || this.fluidInteraction.isInFluidMatching(this, (entity, type, _) -> entity.canSwimInFluidType(type))) && !this.isPassenger());
-         } else {
-             this.setSwimming(
--                this.isSprinting() && this.isUnderWater() && !this.isPassenger() && this.level().getFluidState(this.blockPosition).is(FluidTags.WATER)
-+                // Neo: give modded entities and fluids more control over the ability to swim in a fluid
-+                this.isSprinting() && this.canStartSwimming() && !this.isPassenger()
-             );
-         }
-     }
- 
-     protected boolean updateFluidInteraction() {
--        boolean inAnyFluid = this.fluidInteraction.update(this, !this.isPushedByFluid());
--        boolean inWater = this.fluidInteraction.isInFluid(FluidTags.WATER);
--        boolean inLava = this.fluidInteraction.isInFluid(FluidTags.LAVA);
-+        // Neo: give modded entities and fluids control over which fluids push which entities
-+        boolean inAnyFluid = this.fluidInteraction.update(this, this::isPushedByFluid);
-+        boolean inWater = this.fluidInteraction.isInFluidMatching(this, (_, type, _) -> type.getIsWaterLike());
-         if (inWater) {
-             this.resetFallDistance();
-             if (!this.wasTouchingWater && !this.firstTick) {
-@@ -1683,16 +_,8 @@
-         }
- 
-         this.wasTouchingWater = inWater;
--        if (this.isPushedByFluid()) {
--            if (inWater) {
--                this.fluidInteraction.applyCurrentTo(FluidTags.WATER, this, 0.014);
--            }
--
--            if (inLava) {
--                double lavaFlowScale = this.level.environmentAttributes().getDimensionValue(EnvironmentAttributes.FAST_LAVA) ? 0.007 : 0.0023333333333333335;
--                this.fluidInteraction.applyCurrentTo(FluidTags.LAVA, this, lavaFlowScale);
--            }
--        }
-+        // Neo: unconditionally apply current
-+        this.fluidInteraction.applyCurrentTo(this);
- 
-         return inAnyFluid;
-     }
-@@ -1740,12 +_,17 @@
+     public boolean isUnderWater() {
+@@ -1752,12 +_,17 @@
      }
  
      public boolean canSpawnSprintParticle() {
--        return this.isSprinting() && !this.isInWater() && !this.isSpectator() && !this.isCrouching() && !this.isInLava() && this.isAlive();
+-        return this.isSprinting() && !this.isInLiquid() && !this.isSpectator() && !this.isCrouching() && this.isAlive();
 +        // Neo: take modded fluids into account
 +        return this.isSprinting() && !this.isInWater() && !this.isSpectator() && !this.isCrouching() && !this.isInLava() && this.isAlive() && !this.fluidInteraction.isInAnyFluid();
      }
@@ -223,32 +106,6 @@
          if (blockState.getRenderShape() != RenderShape.INVISIBLE) {
              Vec3 movement = this.getDeltaMovement();
              BlockPos entityPosition = this.blockPosition();
-@@ -1760,16 +_,23 @@
-             }
- 
-             this.level()
--                .addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockState), x, this.getY() + 0.1, z, movement.x * -4.0, 1.5, movement.z * -4.0);
-+                // Neo: sync block position for position-dependent particles
-+                .addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockState, pos), x, this.getY() + 0.1, z, movement.x * -4.0, 1.5, movement.z * -4.0);
-         }
-     }
- 
-+    /// @deprecated Neo: use [#isEyeInFluid(net.neoforged.neoforge.fluids.FluidType)] instead
-+    @Deprecated
-     public boolean isEyeInFluid(TagKey<Fluid> type) {
-         return this.fluidInteraction.isEyeInFluid(type);
-     }
- 
-+    public boolean isEyeInFluid(net.neoforged.neoforge.fluids.FluidType type) {
-+        return this.fluidInteraction.isEyeInFluid(type);
-+    }
-+
-     public boolean isInLava() {
--        return !this.firstTick && this.fluidInteraction.isInFluid(FluidTags.LAVA);
-+        return !this.firstTick && this.fluidInteraction.isInFluid(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
-     }
- 
-     public void moveRelative(float speed, Vec3 input) {
 @@ -2161,6 +_,13 @@
                  output.store("data", CustomData.CODEC, this.customData);
              }
@@ -272,17 +129,6 @@
                  this.tags.clear();
                  input.read("Tags", TAG_LIST_CODEC).ifPresent(this.tags::addAll);
                  input.getString("Team").ifPresent(teamName -> {
-@@ -2286,6 +_,10 @@
- 
-         ItemEntity entity = new ItemEntity(level, this.getX() + offset.x, this.getY() + offset.y, this.getZ() + offset.z, itemStack);
-         entity.setDefaultPickUpDelay();
-+        // Neo: capture drops if requested
-+        if (this.captureDrops() != null) {
-+            this.captureDrops().add(entity);
-+        } else
-         level.addFreshEntity(entity);
-         return entity;
-     }
 @@ -2343,11 +_,11 @@
          }
  
@@ -297,7 +143,7 @@
              && target.canShearEquipment(player)
              && !player.isSecondaryUseActive()
              && target.attemptToShearEquipment(player, hand, heldItem)) {
-@@ -2431,7 +_,11 @@
+@@ -2433,7 +_,11 @@
  
      public void rideTick() {
          this.setDeltaMovement(Vec3.ZERO);
@@ -310,7 +156,7 @@
          if (this.isPassenger()) {
              this.getVehicle().positionRider(this);
          }
-@@ -2496,6 +_,9 @@
+@@ -2498,6 +_,9 @@
              }
          }
  
@@ -320,7 +166,7 @@
          if (force || this.canRide(entityToRide) && entityToRide.canAddPassenger(this)) {
              if (this.isPassenger()) {
                  this.stopRiding();
-@@ -2540,6 +_,9 @@
+@@ -2542,6 +_,9 @@
      public void removeVehicle() {
          if (this.vehicle != null) {
              Entity oldVehicle = this.vehicle;
@@ -330,7 +176,7 @@
              this.vehicle = null;
              oldVehicle.removePassenger(this);
              Entity.RemovalReason removalReason = this.getRemovalReason();
-@@ -2751,6 +_,8 @@
+@@ -2753,6 +_,8 @@
          return !this.passengers.isEmpty();
      }
  
@@ -339,16 +185,16 @@
      public boolean dismountsUnderwater() {
          return this.is(EntityTypeTags.DISMOUNTS_UNDERWATER);
      }
-@@ -2804,7 +_,7 @@
+@@ -2806,7 +_,7 @@
      }
  
      public boolean isVisuallyCrawling() {
--        return this.isVisuallySwimming() && !this.isInWater();
+-        return this.isVisuallySwimming() && !this.isInSwimmableLiquid();
 +        return this.isVisuallySwimming() && !this.isInWater() && !this.fluidInteraction.isInFluidMatching(this, (entity, type, _) -> entity.canSwimInFluidType(type));
      }
  
      public void setSwimming(boolean swimming) {
-@@ -2920,7 +_,8 @@
+@@ -2928,7 +_,8 @@
              this.igniteForSeconds(8.0F);
          }
  
@@ -358,7 +204,7 @@
      }
  
      public void onAboveBubbleColumn(boolean dragDown, BlockPos pos) {
-@@ -3104,10 +_,11 @@
+@@ -3108,10 +_,11 @@
      }
  
      protected final boolean isInvulnerableToBase(DamageSource source) {
@@ -371,7 +217,7 @@
      }
  
      public boolean isInvulnerable() {
-@@ -3146,6 +_,9 @@
+@@ -3150,6 +_,9 @@
      }
  
      public @Nullable Entity teleport(TeleportTransition transition) {
@@ -381,7 +227,7 @@
          if (this.level() instanceof ServerLevel serverLevel && !this.isRemoved()) {
              ServerLevel newLevel = transition.newLevel();
              boolean otherDimension = newLevel.dimension() != serverLevel.dimension();
-@@ -3378,6 +_,8 @@
+@@ -3382,6 +_,8 @@
          return this.stringUUID;
      }
  
@@ -390,7 +236,7 @@
      public boolean isPushedByFluid() {
          return true;
      }
-@@ -3489,6 +_,7 @@
+@@ -3497,6 +_,7 @@
          EntityDimensions oldDim = this.dimensions;
          Pose pose = this.getPose();
          EntityDimensions newDim = this.getDimensions(pose);
@@ -398,7 +244,7 @@
          this.dimensions = newDim;
          this.eyeHeight = newDim.eyeHeight();
          this.reapplyPosition();
-@@ -3786,10 +_,16 @@
+@@ -3807,10 +_,16 @@
          return !this.level().hasChunksAt(x0, z0, x1, z1);
      }
  
@@ -415,7 +261,7 @@
      public double getFluidJumpThreshold() {
          return this.getEyeHeight() < 0.4 ? 0.0 : 0.4;
      }
-@@ -3941,6 +_,10 @@
+@@ -3966,6 +_,10 @@
                  }
              }
          }
@@ -426,7 +272,7 @@
      }
  
      public void checkDespawn() {
-@@ -4223,6 +_,97 @@
+@@ -4241,6 +_,97 @@
  
      protected @Nullable AABB modifyPassengerFluidInteractionBox(AABB passengerBox) {
          return passengerBox;

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/components/BossHealthOverlay.java
 +++ b/net/minecraft/client/gui/components/BossHealthOverlay.java
-@@ -68,13 +_,17 @@
+@@ -69,13 +_,17 @@
              for (LerpingBossEvent event : this.events.values()) {
                  int xLeft = screenWidth / 2 - 91;
                  int yo = yOffset;

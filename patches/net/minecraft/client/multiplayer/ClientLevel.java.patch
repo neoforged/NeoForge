@@ -1,24 +1,14 @@
 --- a/net/minecraft/client/multiplayer/ClientLevel.java
 +++ b/net/minecraft/client/multiplayer/ClientLevel.java
-@@ -159,7 +_,8 @@
-     private final @Nullable EndFlashState endFlashState;
-     private final Minecraft minecraft = Minecraft.getInstance();
-     private final List<AbstractClientPlayer> players = Lists.newArrayList();
--    private final List<EnderDragonPart> dragonParts = Lists.newArrayList();
-+    // Neo: widen generic to support non-dragon part entities
-+    private final List<net.neoforged.neoforge.entity.PartEntity<?>> dragonParts = Lists.newArrayList();
-     private final Map<MapId, MapItemSavedData> mapData = Maps.newHashMap();
-     private int skyFlashTime;
-     private int rainSoundTime;
-@@ -168,6 +_,7 @@
+@@ -169,6 +_,7 @@
          cache.put(BiomeColors.FOLIAGE_COLOR_RESOLVER, new BlockTintCache(pos -> this.calculateBlockTint(pos, BiomeColors.FOLIAGE_COLOR_RESOLVER)));
          cache.put(BiomeColors.DRY_FOLIAGE_COLOR_RESOLVER, new BlockTintCache(pos -> this.calculateBlockTint(pos, BiomeColors.DRY_FOLIAGE_COLOR_RESOLVER)));
          cache.put(BiomeColors.WATER_COLOR_RESOLVER, new BlockTintCache(pos -> this.calculateBlockTint(pos, BiomeColors.WATER_COLOR_RESOLVER)));
 +        net.neoforged.neoforge.client.ColorResolverManager.registerBlockTintCaches(ClientLevel.this, cache);
      });
      private final ClientChunkCache chunkSource;
-     private final Deque<Runnable> lightUpdateQueue = Queues.newArrayDeque();
-@@ -181,6 +_,7 @@
+     private final Deque<Runnable> lightUpdateQueue = new ArrayDeque<>();
+@@ -182,6 +_,7 @@
      private final Long2ObjectMap<SortedSet<BlockDestructionProgress>> destructionProgress = new Long2ObjectOpenHashMap<>();
      private final int seaLevel;
      private static final Set<Item> MARKER_PARTICLE_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
@@ -26,7 +16,7 @@
  
      public void handleBlockChangedAck(int sequence) {
          if (SharedConstants.DEBUG_BLOCK_BREAK) {
-@@ -226,10 +_,15 @@
+@@ -227,10 +_,15 @@
      @Override
      public boolean setBlock(BlockPos pos, BlockState blockState, @Block.UpdateFlags int updateFlags, int updateLimit) {
          if (this.blockStatePredictionHandler.isPredicting()) {
@@ -42,7 +32,7 @@
              }
  
              return success;
-@@ -263,6 +_,7 @@
+@@ -262,6 +_,7 @@
          this.serverSimulationDistance = serverSimulationDistance;
          this.environmentAttributes = this.addEnvironmentAttributeLayers(EnvironmentAttributeSystem.builder()).build();
          this.updateSkyBrightness();
@@ -50,7 +40,7 @@
      }
  
      private EnvironmentAttributeSystem.Builder addEnvironmentAttributeLayers(EnvironmentAttributeSystem.Builder environmentAttributes) {
-@@ -342,6 +_,12 @@
+@@ -341,6 +_,12 @@
      }
  
      public void tickWeatherEffects() {
@@ -63,7 +53,7 @@
          ParticleStatus particleStatus = this.minecraft.options.particles().get();
          int weatherRadius = this.minecraft.options.weatherRadius().get();
          float rainLevel = this.getRainLevel(1.0F);
-@@ -472,8 +_,12 @@
+@@ -471,8 +_,12 @@
  
      public void tickNonPassenger(Entity entity) {
          Profiler.get().push(entity.typeHolder()::getRegisteredName);
@@ -78,7 +68,7 @@
          Profiler.get().pop();
  
          for (Entity passenger : entity.getPassengers()) {
-@@ -528,8 +_,12 @@
+@@ -527,8 +_,12 @@
      }
  
      public void addEntity(Entity entity) {
@@ -91,7 +81,7 @@
      }
  
      public void removeEntity(int id, Entity.RemovalReason reason) {
-@@ -677,6 +_,15 @@
+@@ -676,6 +_,15 @@
      public void playSeededSound(
          @Nullable Entity except, double x, double y, double z, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
@@ -107,7 +97,7 @@
          if (except == this.minecraft.player) {
              this.playSound(x, y, z, sound.value(), source, volume, pitch, false, seed);
          }
-@@ -686,6 +_,14 @@
+@@ -685,6 +_,14 @@
      public void playSeededSound(
          @Nullable Entity except, Entity sourceEntity, Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed
      ) {
@@ -122,7 +112,7 @@
          if (except == this.minecraft.player) {
              this.minecraft.getSoundManager().play(new EntityBoundSoundInstance(sound.value(), source, volume, pitch, sourceEntity, seed));
          }
-@@ -920,7 +_,9 @@
+@@ -919,7 +_,9 @@
          return this.players;
      }
  
@@ -133,7 +123,7 @@
          return this.dragonParts;
      }
  
-@@ -1016,7 +_,7 @@
+@@ -1014,7 +_,7 @@
  
      @Override
      public void addDestroyBlockEffect(BlockPos pos, BlockState blockState) {
@@ -142,7 +132,7 @@
              VoxelShape shape = blockState.getShape(this, pos);
              double density = 0.25;
              shape.forAllBoxes(
-@@ -1042,7 +_,7 @@
+@@ -1040,7 +_,7 @@
                                      .add(
                                          new TerrainParticle(
                                              this, pos.getX() + x, pos.getY() + y, pos.getZ() + z, relX - 0.5, relY - 0.5, relZ - 0.5, blockState, pos
@@ -151,7 +141,7 @@
                                      );
                              }
                          }
-@@ -1055,11 +_,11 @@
+@@ -1053,11 +_,11 @@
      public void addBreakingBlockEffects(BlockPos pos, Direction direction, boolean playSound) {
          BlockState blockState = this.getBlockState(pos);
          if (!blockState.isAir()) {
@@ -165,7 +155,7 @@
                  this.addBreakingParticles(pos, direction, blockState);
              }
          }
-@@ -1098,7 +_,8 @@
+@@ -1096,7 +_,8 @@
              xp = x + shape.maxX + 0.1F;
          }
  
@@ -175,7 +165,7 @@
      }
  
      private void playBreakingSound(BlockPos pos, BlockState blockState) {
-@@ -1223,6 +_,7 @@
+@@ -1224,6 +_,7 @@
          }
  
          public void setDifficulty(Difficulty difficulty) {
@@ -183,7 +173,7 @@
              this.difficulty = difficulty;
          }
  
-@@ -1263,6 +_,10 @@
+@@ -1260,6 +_,10 @@
                      ClientLevel.this.dragonParts.addAll(Arrays.asList(dragon.getSubEntities()));
                      break;
                  default:
@@ -194,7 +184,7 @@
              }
          }
  
-@@ -1276,10 +_,32 @@
+@@ -1273,10 +_,32 @@
                      ClientLevel.this.dragonParts.removeAll(Arrays.asList(dragon.getSubEntities()));
                      break;
                  default:

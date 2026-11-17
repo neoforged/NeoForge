@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/dimension/end/EnderDragonFight.java
 +++ b/net/minecraft/world/level/dimension/end/EnderDragonFight.java
-@@ -587,4 +_,14 @@
+@@ -586,4 +_,14 @@
      public @Nullable UUID dragonUUID() {
          return this.dragonUUID;
      }

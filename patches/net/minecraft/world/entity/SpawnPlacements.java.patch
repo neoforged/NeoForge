@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/entity/SpawnPlacements.java
 +++ b/net/minecraft/world/entity/SpawnPlacements.java
-@@ -50,6 +_,8 @@
+@@ -49,6 +_,8 @@
  public class SpawnPlacements {
-     private static final Map<EntityType<?>, SpawnPlacements.Data> DATA_BY_TYPE = Maps.newHashMap();
+     private static final Map<EntityType<?>, SpawnPlacements.Data> DATA_BY_TYPE = new HashMap<>();
  
 +    /// @deprecated Neo: use [net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent] instead.
 +    @Deprecated
      private static <T extends Mob> void register(
          EntityType<T> type, SpawnPlacementType placementType, Heightmap.Types heightmap, SpawnPlacements.SpawnPredicate<T> spawnPredicate
      ) {
-@@ -81,7 +_,13 @@
+@@ -80,7 +_,13 @@
          }
  
          SpawnPlacements.Data data = DATA_BY_TYPE.get(type);

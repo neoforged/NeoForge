@@ -1,0 +1,73 @@
+--- a/net/minecraft/client/gui/screens/options/controls/KeyBindsScreen.java
++++ b/net/minecraft/client/gui/screens/options/controls/KeyBindsScreen.java
+@@ -77,18 +88,67 @@
+     @Override
+     public boolean keyPressed(KeyEvent event) {
+         if (this.selectedKey != null) {
++            // Neo: capture the pressed key for use in keyReleased to allow combining with a modifier
++            var key = InputConstants.getKey(event);
++            if (this.lastPressedModifier == InputConstants.UNKNOWN && net.neoforged.neoforge.client.settings.KeyModifier.isKeyCodeModifier(key)) {
++                this.lastPressedModifier = key;
++                this.isLastModifierHeldDown = true;
++            } else {
++                this.lastPressedKey = key;
++                this.isLastKeyHeldDown = true;
++            }
++            return true;
++        } else {
++            return super.keyPressed(event);
++        }
++    }
++
++    @Override
++    public boolean keyReleased(KeyEvent event) {
++        // Neo: apply captured key and modifier
++        if (!this.ignoreNextRelease && this.selectedKey != null) {
+             if (event.isEscape()) {
++                this.selectedKey.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.NONE, InputConstants.UNKNOWN);
+                 this.selectedKey.setKey(InputConstants.UNKNOWN);
++                this.lastPressedKey = InputConstants.UNKNOWN;
++                this.lastPressedModifier = InputConstants.UNKNOWN;
++                this.isLastKeyHeldDown = false;
++                this.isLastModifierHeldDown = false;
+             } else {
+-                this.selectedKey.setKey(InputConstants.getKey(event));
+-            }
++                var key = InputConstants.getKey(event);
++                if (this.lastPressedKey.equals(key)) {
++                    this.isLastKeyHeldDown = false;
++                } else if (this.lastPressedModifier.equals(key)) {
++                    this.isLastModifierHeldDown = false;
++                }
+ 
++                if (!this.isLastKeyHeldDown && !this.isLastModifierHeldDown) {
++                    if (!this.lastPressedKey.equals(InputConstants.UNKNOWN)) {
++                        this.selectedKey.setKeyModifierAndCode(
++                                net.neoforged.neoforge.client.settings.KeyModifier.getKeyModifier(this.lastPressedModifier),
++                                this.lastPressedKey
++                        );
++                        this.selectedKey.setKey(this.lastPressedKey);
++                    } else {
++                        this.selectedKey.setKeyModifierAndCode(
++                                net.neoforged.neoforge.client.settings.KeyModifier.NONE,
++                                this.lastPressedModifier
++                        );
++                        this.selectedKey.setKey(this.lastPressedModifier);
++                    }
++                    this.lastPressedKey = InputConstants.UNKNOWN;
++                    this.lastPressedModifier = InputConstants.UNKNOWN;
++                } else {
++                    return true;
++                }
++            }
+             this.selectedKey = null;
+             this.lastKeySelection = Util.getMillis();
+             this.keyBindsList.resetMappingAndUpdateButtons();
+             return true;
+         } else {
+-            return super.keyPressed(event);
++            this.ignoreNextRelease = false;
++            return super.keyReleased(event);
+         }
+     }
+ 

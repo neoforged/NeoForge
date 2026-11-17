@@ -1,0 +1,21 @@
+--- a/net/minecraft/server/level/ChunkMap.java
++++ b/net/minecraft/server/level/ChunkMap.java
+@@ -1422,5 +1447,18 @@
+                 this.updatePlayer(player);
+             }
+         }
++    }
++
++    /// Neo: PR #937
++    /// This is for mainly pre-generation usage such as Neoforge's generate command.
++    /// Use this to schedule chunk load tasks into ChunkTaskPriorityQueueSorter so a chunk is fully finished all of their tasks before scheduling more chunks to load.
++    /// Reason for this is when scheduling a huge ton of Full Status chunk tasks to the server (to load chunks),
++    /// you could cause the server to only process those loading tasks and never reach the two chunk tasks that are
++    /// automatically scheduled to run after the chunk is loaded to Full. As a result of flooding the system with Full Status chunk tasks,
++    /// the queue for the two kind of successor chunk tasks will grow and become a memory leak of lambdas and chunk references.
++    /// Use this method to schedule tasks for loading chunks in your whenCompleteAsync method call so the tasks gets processed properly over time and not leak.
++    /// See [net.neoforged.neoforge.server.command.generation.GenerationTask#enqueueChunks] as an example usage of this method.
++    public void scheduleOnMainThreadMailbox(Runnable runnable) {
++        this.mainThreadExecutor.schedule(runnable);
+     }
+ }

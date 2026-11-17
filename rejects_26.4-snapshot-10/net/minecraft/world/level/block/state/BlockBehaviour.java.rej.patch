@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/block/state/BlockBehaviour.java
++++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
+@@ -385,10 +387,14 @@
+         return this.isRandomlyTicking;
+     }
+
++    /// @deprecated Neo: Use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#getSoundType(LevelReader, BlockPos, Entity)] instead
++    @Deprecated
+     protected SoundType getSoundType(BlockState state) {
+         return this.soundType;
+     }
+@@ -859,6 +893,8 @@
+             return this.getBlock().getSeed(this.asState(), pos);
+         }
+ 
++        /// @deprecated Neo: Use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#getSoundType(LevelReader, BlockPos, Entity)] instead
++        @Deprecated
+         public SoundType getSoundType() {
+             return this.getBlock().getSoundType(this.asState());
+         }

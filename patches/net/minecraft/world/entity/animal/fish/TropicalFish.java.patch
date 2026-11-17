@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/fish/TropicalFish.java
 +++ b/net/minecraft/world/entity/animal/fish/TropicalFish.java
-@@ -258,8 +_,9 @@
+@@ -255,8 +_,9 @@
          return groupData;
      }
  

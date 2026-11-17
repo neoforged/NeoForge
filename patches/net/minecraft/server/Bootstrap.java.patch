@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/Bootstrap.java
 +++ b/net/minecraft/server/Bootstrap.java
-@@ -58,7 +_,10 @@
+@@ -59,7 +_,10 @@
              CauldronInteractions.bootStrap();
              BuiltInRegistries.bootStrap();
              CreativeModeTabs.validate();
@@ -11,7 +11,7 @@
              wrapStreams();
              bootstrapDuration.set(Duration.between(start, Instant.now()).toMillis());
          }
-@@ -121,7 +_,6 @@
+@@ -122,7 +_,6 @@
              Commands.validate();
          }
  

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
-@@ -165,17 +_,17 @@
+@@ -163,17 +_,17 @@
          this.guiRenderer = new GuiRenderer(
              this.gameRenderState.guiRenderState,
              this.featureRenderDispatcher,
@@ -26,7 +26,7 @@
          this.hud3DTarget = new TextureTarget("hud_3d_depth", minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight(), null, GpuFormat.D32_FLOAT);
      }
  
-@@ -236,6 +_,7 @@
+@@ -234,6 +_,7 @@
                  break;
              case null:
              default:
@@ -34,25 +34,15 @@
                  this.clearSpectatedEntityPostEffect();
          }
      }
-@@ -348,6 +_,11 @@
-                 return;
+@@ -343,6 +_,11 @@
              }
  
-+            // Neo: Prevent screen shake if the damage type is tagged as "neoforge:no_flinch"
-+            if (cameraState.entityRenderState.preventFlinch) {
+             if (hurt < 0.0F) {
 +                return;
 +            }
 +
-             hurt /= cameraState.entityRenderState.hurtDuration;
-             hurt = Mth.sin(hurt * hurt * hurt * hurt * (float) Math.PI);
-             float rr = cameraState.entityRenderState.hurtDir;
-@@ -672,6 +_,9 @@
-         this.minecraft
-             .levelRenderer
-             .render(this.resourcePool, renderOutline, cameraState, terrainFog, cameraState.fogData.color, !shouldCreateBossFog, consistentDepthRequired);
-+        profiler.popPush("neoforge_render_after_level");
-+        LevelRenderer levelRenderer = this.minecraft.levelRenderer;
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterLevel(levelRenderer, levelRenderer.levelRenderState, null, cameraState.viewRotationMatrix, levelRenderer.visibleSections()));
-         this.render3dHud(cameraState, playerState, optionsState, consistentDepthRequired);
-     }
++            // Neo: Prevent screen shake if the damage type is tagged as "neoforge:no_flinch"
++            if (cameraState.entityRenderState.preventFlinch) {
+                 return;
+             }
  

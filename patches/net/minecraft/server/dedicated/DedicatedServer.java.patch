@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -88,6 +_,7 @@
+@@ -92,6 +_,7 @@
      private final ServerLinks serverLinks;
      private final Map<String, String> codeOfConductTexts;
      private final @Nullable ManagementServer jsonRpcServer;
@@ -8,7 +8,7 @@
  
      public DedicatedServer(
          Thread serverThread,
-@@ -167,6 +_,9 @@
+@@ -172,6 +_,9 @@
          Thread consoleThread = new Thread("Server console handler") {
              @Override
              public void run() {
@@ -18,7 +18,7 @@
                  BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
  
                  String line;
-@@ -241,11 +_,14 @@
+@@ -245,11 +_,14 @@
          this.tickTimeLogger = new RemoteSampleLogger(TpsDebugDimensions.values().length, this.debugSubscribers(), RemoteDebugSampleType.TICK_TIME);
          long levelNanoTime = Util.getNanos();
          this.services.nameToIdCache().resolveOfflineUsers(!this.usesAuthentication());
@@ -33,7 +33,7 @@
          if (properties.announcePlayerAchievements != null) {
              this.getGameRules().set(GameRules.SHOW_ADVANCEMENT_MESSAGES, properties.announcePlayerAchievements, this);
          }
-@@ -274,6 +_,12 @@
+@@ -278,6 +_,12 @@
  
          this.saveEverything(false, true, true);
          this.notificationManager().serverStarted();
@@ -46,7 +46,7 @@
          return true;
      }
  
-@@ -410,6 +_,12 @@
+@@ -414,6 +_,12 @@
              this.queryThreadGs4.stop();
          }
  
@@ -59,7 +59,7 @@
          if (this.jsonRpcServer != null) {
              try {
                  this.jsonRpcServer.stop(true);
-@@ -720,7 +_,13 @@
+@@ -734,7 +_,13 @@
      @Override
      protected void stopServer() {
          this.notificationManager().serverShuttingDown();

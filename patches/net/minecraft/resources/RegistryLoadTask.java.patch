@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/RegistryLoadTask.java
 +++ b/net/minecraft/resources/RegistryLoadTask.java
-@@ -27,6 +_,11 @@
+@@ -28,6 +_,11 @@
  import net.minecraft.util.StrictJsonParser;
  
  public abstract class RegistryLoadTask<T> {
@@ -12,7 +12,7 @@
      private final Object registryWriteLock = new Object();
      protected final RegistryDataLoader.RegistryData<T> data;
      final WritableRegistry<T> registry;
-@@ -35,8 +_,11 @@
+@@ -36,8 +_,11 @@
      private volatile boolean elementsRegistered;
  
      protected RegistryLoadTask(RegistryDataLoader.RegistryData<T> data, Lifecycle lifecycle, Map<ResourceKey<?>, Exception> loadingErrors) {
@@ -25,7 +25,7 @@
          this.loadingErrors = loadingErrors;
          this.concurrentRegistrationGetter = new ConcurrentHolderGetter<>(this.registryWriteLock, this.registry.createRegistrationLookup());
      }
-@@ -60,7 +_,14 @@
+@@ -61,7 +_,14 @@
              elements.forEach(
                  element -> element.value
                      .ifLeft(value -> this.registry.register(element.key, (T)value, element.registrationInfo))
@@ -41,7 +41,7 @@
              );
              this.elementsRegistered = true;
          }
-@@ -99,7 +_,30 @@
+@@ -100,7 +_,30 @@
          ) {
              try (Reader reader = thunk.openAsReader()) {
                  JsonElement json = StrictJsonParser.parse(reader);

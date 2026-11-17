@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/TagValueInput.java
 +++ b/net/minecraft/world/level/storage/TagValueInput.java
-@@ -115,6 +_,15 @@
+@@ -116,6 +_,15 @@
          return compound != null ? this.wrapChild(name, compound) : this.context.empty();
      }
  
@@ -16,9 +16,9 @@
      @Override
      public Optional<ValueInput.ValueInputList> childrenList(String name) {
          ListTag list = this.getOptionalTypedTag(name, ListTag.TYPE);
-@@ -214,6 +_,12 @@
+@@ -215,6 +_,12 @@
      @Override
-     public HolderLookup.Provider lookup() {
+     public HolderGetter.Provider lookup() {
          return this.context.lookup();
 +    }
 +

@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/server/IntegratedServer.java
 +++ b/net/minecraft/client/server/IntegratedServer.java
-@@ -103,11 +_,13 @@
+@@ -102,11 +_,13 @@
+     protected boolean initServer() {
          LOGGER.info("Starting integrated minecraft server version {}", SharedConstants.getCurrentVersion().name());
          this.setUsesAuthentication(true);
-         this.initializeKeyPair();
 +        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
          this.loadLevel();
          GameProfile host = this.getSingleplayerProfile();
@@ -14,7 +14,7 @@
          return true;
      }
  
-@@ -397,6 +_,10 @@
+@@ -403,6 +_,10 @@
  
      @Override
      public void halt(boolean wait) {
@@ -23,5 +23,5 @@
 +            return;
 +        }
          this.executeBlocking(() -> {
-             for (ServerPlayer player : Lists.newArrayList(this.getPlayerList().getPlayers())) {
+             for (ServerPlayer player : List.copyOf(this.getPlayerList().getPlayers())) {
                  if (!player.getUUID().equals(this.uuid)) {

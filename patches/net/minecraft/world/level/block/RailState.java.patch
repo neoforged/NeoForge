@@ -3,7 +3,7 @@
 @@ -16,14 +_,19 @@
      private BlockState state;
      private final boolean isStraight;
-     private final List<BlockPos> connections = Lists.newArrayList();
+     private final List<BlockPos> connections = new ArrayList<>();
 +    /// Neo: indicates whether the block whose shape is being computed can form slopes
 +    private final boolean canMakeSlopes;
  

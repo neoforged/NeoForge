@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/cow/MushroomCow.java
 +++ b/net/minecraft/world/entity/animal/cow/MushroomCow.java
-@@ -75,8 +_,9 @@
+@@ -73,8 +_,9 @@
          return level.getBlockState(pos.below()).is(Blocks.MYCELIUM) ? 10.0F : level.getPathfindingCostFromLightLevels(pos);
      }
  
@@ -11,7 +11,7 @@
      ) {
          return level.getBlockState(pos.below()).is(BlockTags.MOOSHROOMS_SPAWNABLE_ON) && isBrightEnoughToSpawn(level, pos);
      }
-@@ -187,11 +_,21 @@
+@@ -185,11 +_,21 @@
      @Override
      public void shear(ServerLevel level, SoundSource soundSource, ItemStack tool) {
          level.playSound(null, this, SoundEvents.MOOSHROOM_SHEAR, soundSource, 1.0F, 1.0F);

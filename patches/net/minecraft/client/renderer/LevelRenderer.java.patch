@@ -1,21 +1,6 @@
 --- a/net/minecraft/client/renderer/LevelRenderer.java
 +++ b/net/minecraft/client/renderer/LevelRenderer.java
-@@ -241,10 +_,13 @@
-             this.targets.oitTerrainWithWaterPatchDepth = frame.createInternal("terrain_depth", extraDepthTargetDescriptor);
-         }
- 
--        if (this.frameHasAlwaysOnTopGizmos() && consistentDepthRequired) {
-+        // Neo: also check the FeatureRenderDispatcher.PreparedFrame to ensure non-gizmo always-on-top submits are rendered
-+        if ((this.frameHasAlwaysOnTopGizmos() || featureFrame.hasAnyAlwaysOnTop()) && consistentDepthRequired) {
-             this.targets.alwaysOnTopDepth = frame.createInternal("always_on_top_depth", extraDepthTargetDescriptorCleared);
-         }
- 
-+        net.neoforged.neoforge.client.ClientHooks.fireFrameGraphSetup(frame, this.targets, cameraState, cameraState.viewRotationMatrix, profiler);
-+
-         this.targets.entityOutline = frame.importExternal("entity_outline", this.entityOutlineTarget);
-         FramePass clearPass = frame.addPass("clear");
-         this.targets.main = clearPass.readsAndWrites(this.targets.main);
-@@ -339,6 +_,8 @@
+@@ -336,6 +_,8 @@
              this.submitBlockOutline(poseStack, this.submitNodeStorage, levelRenderState);
          }
  
@@ -24,66 +9,7 @@
          this.finalizeGizmoCollection();
          this.finalizedGizmos.standardPrimitives().submit(submitNodeCollector, levelRenderState.cameraRenderState, false);
          this.finalizedGizmos.alwaysOnTopPrimitives().submit(submitNodeCollector, levelRenderState.cameraRenderState, true);
-@@ -376,7 +_,15 @@
-             if (state.skybox != DimensionType.Skybox.NONE) {
-                 FramePass pass = frame.addPass("sky");
-                 this.targets.main = pass.readsAndWrites(this.targets.main);
--                pass.executes(() -> this.skyRenderer.render(skyFog, state));
-+                pass.executes(() -> {
-+                    // Neo: defer to custom skybox renderer if present
-+                    if (this.levelRenderState.customSkyboxRenderer == null || !this.levelRenderState.customSkyboxRenderer.renderSky(levelRenderState, state, cameraState.viewRotationMatrix, skyFog)) {
-+                        this.skyRenderer.render(skyFog, state);
-+                    }
-+                    Profiler.get().push("neoforge_render_after_sky");
-+                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterSky(this, this.levelRenderState, null, cameraState.viewRotationMatrix, this.visibleSections));
-+                    Profiler.get().pop();
-+                });
-             }
-         }
-     }
-@@ -409,7 +_,8 @@
-             }
-         }
- 
--        boolean hasAlwaysOnTopGizmos = this.frameHasAlwaysOnTopGizmos();
-+        // Neo: also check the FeatureRenderDispatcher.PreparedFrame to ensure non-gizmo always-on-top submits are rendered
-+        boolean hasAlwaysOnTopGizmos = this.frameHasAlwaysOnTopGizmos() || featureFrame.hasAnyAlwaysOnTop();
-         if (hasAlwaysOnTopGizmos && consistentDepthRequired) {
-             this.targets.alwaysOnTopDepth = pass.readsAndWrites(this.targets.alwaysOnTopDepth);
-         }
-@@ -519,8 +_,12 @@
-         chunkSectionsToRender.renderGroup(
-             ChunkSectionLayerGroup.OPAQUE, renderPass, this.chunkLayerSampler, blockAtlas, this.levelRenderState.renderWireframeTerrain
-         );
-+        profiler.popPush("neoforge_render_after_opaque_blocks");
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterOpaqueBlocks(this, this.levelRenderState, null, this.levelRenderState.cameraRenderState.viewRotationMatrix, this.visibleSections, renderPass));
-         profiler.popPush("renderSolidFeatures");
-         featureFrame.executeSolid(renderPass);
-+        profiler.popPush("neoforge_render_after_opaque_features");
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterOpaqueFeatures(this, this.levelRenderState, null, this.levelRenderState.cameraRenderState.viewRotationMatrix, this.visibleSections, renderPass));
-         profiler.pop();
-     }
- 
-@@ -528,6 +_,18 @@
-         CloudStatus cloudStatus = this.optionsRenderState.cloudStatus;
-         boolean shouldRenderClouds = cloudStatus != CloudStatus.OFF && ARGB.alpha(this.levelRenderState.cloudColor) > 0;
-         if (shouldRenderClouds) {
-+            // Neo: let custom cloud renderer prepare, if present
-+            if (this.levelRenderState.customCloudsRenderer != null) {
-+                this.levelRenderState.customCloudsRenderer.prepare(
-+                    this.levelRenderState,
-+                    this.levelRenderState.cameraRenderState.pos,
-+                    cloudStatus,
-+                    this.levelRenderState.cloudColor,
-+                    this.levelRenderState.cloudHeight,
-+                    this.optionsRenderState.cloudRange,
-+                    this.levelRenderState.cameraRenderState.viewRotationMatrix
-+                );
-+            }
-             this.cloudRenderer
-                 .prepare(
-                     this.levelRenderState.cloudColor,
-@@ -545,6 +_,11 @@
+@@ -673,6 +_,11 @@
          this.worldBorderRenderer
              .prepare(this.levelRenderState.worldBorderRenderState, cameraState.pos, renderDistance, this.levelRenderState.cameraRenderState.depthFar);
          this.weatherEffectRenderer.prepare(cameraState.pos, this.levelRenderState.weatherRenderState);
@@ -95,63 +21,7 @@
          RenderSystem.resizeAllAutoStorageIndexBuffers();
      }
  
-@@ -598,7 +_,11 @@
-             try (RenderPass renderPass = OitRenderPassProvider.createRenderPass(stage, () -> "Features, World Border, Weather", params)) {
-                 featureFrame.executeOit(stage, renderPass);
-                 this.worldBorderRenderer.renderOit(this.levelRenderState.worldBorderRenderState, cameraState.pos, renderDistance, stage, renderPass);
-+                // Neo: defer to custom weather renderer, if present
-+                if (this.levelRenderState.customWeatherEffectRenderer == null || !this.levelRenderState.customWeatherEffectRenderer.renderSnowAndRainOit(this.levelRenderState, this.levelRenderState.weatherRenderState, this.levelRenderState.cameraRenderState.pos, stage, renderPass))
-                 this.weatherEffectRenderer.renderOit(stage, this.levelRenderState.weatherRenderState, renderPass);
-+
-+                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.OitTranslucent(this, this.levelRenderState, stage, null, this.levelRenderState.cameraRenderState.viewRotationMatrix, this.visibleSections, renderPass));
-             }
- 
-             if (stage == OitStage.DEPTH_BOUNDS) {
-@@ -608,6 +_,8 @@
-             }
- 
-             if (shouldRenderClouds) {
-+                // Neo: defer to custom cloud renderer, if present
-+                if (this.levelRenderState.customCloudsRenderer == null || !this.levelRenderState.customCloudsRenderer.renderCloudsOit(this.levelRenderState, cloudStatus, this.levelRenderState.cameraRenderState.viewRotationMatrix, stage, mainDepthTextureView, params))
-                 this.cloudRenderer.renderOit(cloudStatus, stage, mainDepthTextureView, cloudParams);
-             }
- 
-@@ -684,20 +_,34 @@
-         int renderDistance = this.optionsRenderState.renderDistance * 16;
-         profiler.push("renderTranslucentFeatures");
-         featureFrame.executeTranslucent(renderPass);
-+        profiler.popPush("neoforge_render_after_translucent_features");
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentFeatures(this, this.levelRenderState, null, this.levelRenderState.cameraRenderState.viewRotationMatrix, this.visibleSections, renderPass));
-         profiler.pop();
-         GpuTextureView blockAtlas = this.textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).getTextureView();
-         profiler.push("translucentTerrain");
-         chunkSectionsToRender.renderGroup(
-             ChunkSectionLayerGroup.TRANSLUCENT, renderPass, this.chunkLayerSampler, blockAtlas, this.levelRenderState.renderWireframeTerrain
-         );
-+        profiler.popPush("neoforge_render_after_translucent_blocks");
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentBlocks(this, this.levelRenderState, null, this.levelRenderState.cameraRenderState.viewRotationMatrix, this.visibleSections, renderPass));
-         profiler.pop();
-         featureFrame.executeTranslucentAfterTerrain(renderPass);
-+        profiler.push("neoforge_render_after_translucent_particles");
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentParticles(this, this.levelRenderState, null, this.levelRenderState.cameraRenderState.viewRotationMatrix, this.visibleSections, renderPass));
-+        profiler.pop();
-         if (shouldRenderClouds) {
-+            // Neo: defer to custom cloud renderer, if present
-+            if (this.levelRenderState.customCloudsRenderer == null || !this.levelRenderState.customCloudsRenderer.renderClouds(this.levelRenderState, cloudStatus, this.levelRenderState.cameraRenderState.viewRotationMatrix, renderPass))
-             this.cloudRenderer.render(cloudStatus, renderPass);
-         }
- 
-         Vec3 cameraPos = this.levelRenderState.cameraRenderState.pos;
-+        // Neo: defer to custom weather renderer, if present
-+        if (this.levelRenderState.customWeatherEffectRenderer == null || !this.levelRenderState.customWeatherEffectRenderer.renderSnowAndRain(this.levelRenderState, this.levelRenderState.weatherRenderState, this.levelRenderState.cameraRenderState.pos, renderPass))
-         this.weatherEffectRenderer.render(this.levelRenderState.weatherRenderState, renderPass);
-+        profiler.push("neoforge_render_after_weather");
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterWeather(this, this.levelRenderState, null, this.levelRenderState.cameraRenderState.viewRotationMatrix, this.visibleSections, renderPass));
-+        profiler.pop();
-         this.worldBorderRenderer.render(this.levelRenderState.worldBorderRenderState, renderPass, cameraPos, renderDistance);
-     }
- 
-@@ -974,10 +_,12 @@
+@@ -1080,10 +_,12 @@
              SectionRenderDispatcher.RenderSection section = this.viewArea.getRenderSection(state.sectionNode());
              if (rebuildSync) {
                  profiler.push("compileSectionSynchronously");
@@ -166,7 +36,7 @@
              }
          }
  
-@@ -1035,8 +_,9 @@
+@@ -1141,8 +_,9 @@
                      poseStack.translate(state.blockState().getOffset(pos));
                      BlockStateModel model = this.modelManager.getBlockStateModelSet().get(state.blockState());
                      random.setSeed(state.blockState().getSeed(pos));
@@ -178,7 +48,7 @@
                      parts.clear();
                      poseStack.popPose();
                  }
-@@ -1071,6 +_,13 @@
+@@ -1177,6 +_,13 @@
      private void submitBlockOutline(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, LevelRenderState levelRenderState) {
          BlockOutlineRenderState state = levelRenderState.blockOutlineRenderState;
          if (state != null) {

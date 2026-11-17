@@ -1,6 +1,6 @@
 --- a/net/minecraft/CrashReportCategory.java
 +++ b/net/minecraft/CrashReportCategory.java
-@@ -138,8 +_,13 @@
+@@ -39,8 +_,13 @@
              return 0;
          }
  
@@ -16,7 +16,7 @@
          return this.stackTrace.length;
      }
  
-@@ -181,16 +_,17 @@
+@@ -82,16 +_,17 @@
  
          if (this.stackTrace.length > 0) {
              builder.append("\nStacktrace:");
@@ -38,4 +38,4 @@
 +        this.stackTrace = stackTrace;
      }
  
-     public static void populateBlockDetails(CrashReportCategory category, LevelHeightAccessor levelHeightAccessor, BlockPos pos, BlockState state) {
+     public record Entry(String key, String value) {

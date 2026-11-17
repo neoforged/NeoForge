@@ -1,25 +1,25 @@
 --- a/net/minecraft/world/level/storage/loot/parameters/LootContextParamSets.java
 +++ b/net/minecraft/world/level/storage/loot/parameters/LootContextParamSets.java
-@@ -16,7 +_,7 @@
- public class LootContextParamSets {
+@@ -20,7 +_,7 @@
      public static final Codec<ContextKeySet> CODEC = BuiltInRegistries.CONTEXT_KEY_SET.byNameCodec();
+     public static final StreamCodec<RegistryFriendlyByteBuf, ContextKeySet> STREAM_CODEC = ByteBufCodecs.registry(Registries.CONTEXT_KEY_SET);
      public static final ContextKeySet EMPTY = register("empty", var0 -> {});
 -    public static final ContextKeySet ALL_PARAMS = register(
 +    public static final ContextKeySet ALL_PARAMS = net.neoforged.neoforge.internal.AllParamsKeySet.wrapAndRegister(
          "generic",
          builder -> builder.required(LootContextParams.THIS_ENTITY)
              .required(LootContextParams.LAST_DAMAGE_PLAYER)
-@@ -35,7 +_,8 @@
+@@ -39,7 +_,8 @@
              .required(LootContextParams.ENCHANTMENT_ACTIVE)
              .required(LootContextParams.ENCHANTMENT_LEVEL)
      );
 -    public static final ContextKeySet CHEST = register("chest", builder -> builder.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY));
 +    // Neo: Chest minecarts can have killer entities
 +    public static final ContextKeySet CHEST = register("chest", builder -> builder.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY).optional(LootContextParams.ATTACKING_ENTITY));
-     public static final ContextKeySet COMMAND = register(
-         "command", builder -> builder.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY)
+     public static final ContextKeySet COMMAND_PREDICATE = register(
+         "command_predicate", builder -> builder.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY)
      );
-@@ -67,7 +_,8 @@
+@@ -74,7 +_,8 @@
              .required(LootContextParams.ADDITIONAL_COST_COMPONENT_ALLOWED)
      );
      public static final ContextKeySet FISHING = register(
@@ -29,7 +29,7 @@
      );
      public static final ContextKeySet ENTITY = register(
          "entity",
-@@ -136,6 +_,8 @@
+@@ -143,6 +_,8 @@
              .required(LootContextParams.BLOCK_STATE)
              .required(LootContextParams.CONTAINER)
              .required(LootContextParams.ORIGIN)

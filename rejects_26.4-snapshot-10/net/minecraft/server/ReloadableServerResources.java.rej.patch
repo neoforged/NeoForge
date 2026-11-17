@@ -1,0 +1,13 @@
+--- a/net/minecraft/server/ReloadableServerResources.java
++++ b/net/minecraft/server/ReloadableServerResources.java
+@@ -45,6 +50,10 @@
+         this.commands = new Commands(commandSelection, CommandBuildContext.simple(loadingContext.lookupWithUpdatedTags(), enabledFeatures));
+         this.advancements = new ServerAdvancementManager(loadingContext.lookupWithUpdatedTags());
+         this.functionLibrary = new ServerFunctionLibrary(functionCompilationPermissions, this.commands.getDispatcher());
++        // Neo: Store registries and create context object
++        this.registryAccess = loadingContext.layers().compositeAccess();
++        this.loadingContext = loadingContext.lookupWithUpdatedTags();
++        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.postponedTags, this.loadingContext, enabledFeatures);
+     }
+ 
+     public ServerFunctionLibrary getFunctionLibrary() {

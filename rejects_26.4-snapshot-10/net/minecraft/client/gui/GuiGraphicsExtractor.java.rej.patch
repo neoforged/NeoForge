@@ -1,0 +1,15 @@
+--- a/net/minecraft/client/gui/GuiGraphicsExtractor.java
++++ b/net/minecraft/client/gui/GuiGraphicsExtractor.java
+@@ -1042,11 +1075,7 @@
+         @Nullable Identifier style,
+         boolean extraSpaceAfterFirstLine
+     ) {
+-        List<ClientTooltipComponent> components = texts.stream()
+-            .map(Component::getVisualOrderText)
+-            .map(ClientTooltipComponent::create)
+-            .collect(Util.toMutableList());
+-        optionalImage.ifPresent(image -> components.add(components.isEmpty() ? 0 : 1, ClientTooltipComponent.create(image)));
++        List<ClientTooltipComponent> components = net.neoforged.neoforge.client.ClientHooks.gatherTooltipComponents(this.tooltipStack, texts, optionalImage, xo, guiWidth(), guiHeight(), font);
+         this.setTooltipForNextFrameInternal(font, components, xo, yo, DefaultTooltipPositioner.INSTANCE, style, false, extraSpaceAfterFirstLine);
+     }
+ 

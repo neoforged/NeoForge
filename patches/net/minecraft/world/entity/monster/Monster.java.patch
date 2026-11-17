@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/Monster.java
 +++ b/net/minecraft/world/entity/monster/Monster.java
-@@ -136,11 +_,12 @@
+@@ -155,11 +_,12 @@
      @Override
      public ItemStack getProjectile(ItemStack heldWeapon) {
          if (heldWeapon.getItem() instanceof ProjectileWeaponItem) {

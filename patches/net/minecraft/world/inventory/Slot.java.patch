@@ -1,16 +1,16 @@
 --- a/net/minecraft/world/inventory/Slot.java
 +++ b/net/minecraft/world/inventory/Slot.java
-@@ -13,6 +_,9 @@
-     public int index;
+@@ -15,6 +_,9 @@
      public final int x;
      public final int y;
+     private final Slot.Section section;
 +    /// Neo: holds the background sprite of this slot
 +    @Nullable
 +    private Identifier backgroundSprite;
  
-     public Slot(Container container, int slot, int x, int y) {
+     public Slot(Container container, int slot, int x, int y, Slot.Section section) {
          this.container = container;
-@@ -79,7 +_,8 @@
+@@ -82,7 +_,8 @@
      }
  
      public @Nullable Identifier getNoItemIcon() {
@@ -19,11 +19,11 @@
 +        return this.backgroundSprite;
      }
  
-     public ItemStack remove(int amount) {
-@@ -167,5 +_,27 @@
- 
-     public boolean isFake() {
-         return false;
+     public @Nullable Component getNarrationName() {
+@@ -190,5 +_,27 @@
+         INVENTORY,
+         HOTBAR,
+         DESTROY_ITEM;
 +    }
 +
 +    /// Neo: {@return the index in the inventory for this slot}

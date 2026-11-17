@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/loot/packs/VanillaEntityLoot.java
 +++ b/net/minecraft/data/loot/packs/VanillaEntityLoot.java
-@@ -1348,4 +_,10 @@
+@@ -1370,4 +_,10 @@
                      .add(LootItem.lootTableItem(Items.TIDE_ARMOR_TRIM_SMITHING_TEMPLATE).setWeight(1))
              );
      }

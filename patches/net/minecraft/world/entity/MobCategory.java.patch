@@ -6,8 +6,8 @@
  
 +@net.neoforged.fml.common.asm.enumextension.NamedEnum
  public enum MobCategory implements StringRepresentable, IExtensibleEnum {
-     MONSTER("monster", "MO", 70, false, false, 128),
-     CREATURE("creature", "C", 10, true, true, 128),
+     MONSTER("monster", "Monsters", 70, false, false, 128),
+     CREATURE("creature", "Creatures", 10, true, true, 128),
 @@ -64,5 +_,9 @@
  
      public int getNoDespawnDistance() {

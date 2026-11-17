@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/inventory/EnchantmentMenu.java
 +++ b/net/minecraft/world/inventory/EnchantmentMenu.java
 @@ -61,6 +_,7 @@
-         this.addSlot(new Slot(this.enchantSlots, 1, 35, 47) {
+         this.addSlot(new Slot(this.enchantSlots, 1, 35, 47, Slot.Section.INPUT) {
              @Override
              public boolean mayPlace(ItemStack itemStack) {
 +                // Neo: TODO - replace with the tag once we have client tags

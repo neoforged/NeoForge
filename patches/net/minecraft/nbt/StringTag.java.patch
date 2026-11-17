@@ -1,6 +1,6 @@
 --- a/net/minecraft/nbt/StringTag.java
 +++ b/net/minecraft/nbt/StringTag.java
-@@ -20,7 +_,8 @@
+@@ -22,7 +_,8 @@
          private static String readAccounted(DataInput input, NbtAccounter accounter) throws IOException {
              accounter.accountBytes(36L);
              String data = input.readUTF();

@@ -1,20 +1,6 @@
 --- a/net/minecraft/world/entity/animal/equine/AbstractHorse.java
 +++ b/net/minecraft/world/entity/animal/equine/AbstractHorse.java
-@@ -343,9 +_,11 @@
-     protected void playStepSound(BlockPos pos, BlockState blockState) {
-         if (!blockState.liquid()) {
-             BlockState aboveState = this.level().getBlockState(pos.above());
--            SoundType soundType = blockState.getSoundType();
-+            // Neo: use level-sensitive sound type getter
-+            SoundType soundType = blockState.getSoundType(this.level(), pos, this);
-             if (aboveState.is(Blocks.SNOW)) {
--                soundType = aboveState.getSoundType();
-+                // Neo: use level-sensitive sound type getter
-+                soundType = aboveState.getSoundType(this.level(), pos, this);
-             }
- 
-             if (this.isVehicle() && this.canGallop) {
-@@ -774,6 +_,7 @@
+@@ -764,6 +_,7 @@
          Vec3 movement = this.getDeltaMovement();
          this.setDeltaMovement(movement.x, impulse, movement.z);
          this.needsSync = true;
@@ -22,7 +8,7 @@
          if (input.z > 0.0) {
              float sin = Mth.sin(this.getYRot() * (float) (Math.PI / 180.0));
              float cos = Mth.cos(this.getYRot() * (float) (Math.PI / 180.0));
-@@ -1041,6 +_,11 @@
+@@ -1031,6 +_,11 @@
  
      public int getInventoryColumns() {
          return 0;

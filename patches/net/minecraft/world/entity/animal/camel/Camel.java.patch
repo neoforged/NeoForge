@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/camel/Camel.java
 +++ b/net/minecraft/world/entity/animal/camel/Camel.java
-@@ -141,7 +_,8 @@
+@@ -139,7 +_,8 @@
          return super.finalizeSpawn(level, difficulty, spawnReason, groupData);
      }
  
@@ -10,7 +10,7 @@
          return level.getBlockState(pos.below()).is(BlockTags.CAMELS_SPAWNABLE_ON) && isBrightEnoughToSpawn(level, pos);
      }
  
-@@ -312,6 +_,7 @@
+@@ -310,6 +_,7 @@
          this.dashCooldown = 55;
          this.setDashing(true);
          this.needsSync = true;

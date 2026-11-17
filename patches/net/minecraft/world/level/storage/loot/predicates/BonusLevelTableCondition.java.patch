@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/predicates/BonusLevelTableCondition.java
 +++ b/net/minecraft/world/level/storage/loot/predicates/BonusLevelTableCondition.java
-@@ -37,6 +_,12 @@
+@@ -41,6 +_,12 @@
      public boolean test(LootContext context) {
          ItemInstance tool = context.getOptional(LootContextParams.TOOL);
          int level = tool != null ? EnchantmentHelper.getItemEnchantmentLevel(this.enchantment, tool) : 0;

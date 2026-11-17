@@ -1,6 +1,6 @@
 --- a/net/minecraft/advancements/Advancement.java
 +++ b/net/minecraft/advancements/Advancement.java
-@@ -225,8 +_,13 @@
+@@ -224,8 +_,13 @@
          }
  
          public AdvancementHolder save(BootstrapContext<Advancement> output, String name) {

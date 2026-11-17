@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/biome/Biome.java
 +++ b/net/minecraft/world/level/biome/Biome.java
-@@ -39,9 +_,9 @@
+@@ -49,9 +_,9 @@
  public final class Biome {
      public static final Codec<Biome> DIRECT_CODEC = RecordCodecBuilder.create(
          i -> i.group(
@@ -13,29 +13,30 @@
                  BiomeGenerationSettings.CODEC.forGetter(b -> b.generationSettings)
              )
              .apply(i, Biome::new)
-@@ -71,9 +_,12 @@
+@@ -81,10 +_,13 @@
      @Deprecated(forRemoval = true)
      public static final Noise BIOME_INFO_NOISE = new SimplexNoise(new WorldgenRandom(new LegacyRandomSource(2345L)), true);
      private static final int TEMPERATURE_CACHE_SIZE = 1024;
 +    /// Neo: Field accesses are redirected to [#getModifiedClimateSettings()] with a coremod.
      private final Biome.ClimateSettings climateSettings;
      private final BiomeGenerationSettings generationSettings;
+     private static final InclusiveRange<Integer> ALLOWED_FEATURE_DOMAIN_XZ = new InclusiveRange<>(-16, 31);
 +    /// Neo: Field accesses are redirected to [#getModifiedEnvironmentAttributes()] with a coremod.
      private final EnvironmentAttributeMap attributes;
 +    /// Neo: Field accesses are redirected to [#getModifiedSpecialEffects()] with a coremod.
      private final BiomeSpecialEffects specialEffects;
      private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> {
          Long2FloatLinkedOpenHashMap map = new Long2FloatLinkedOpenHashMap(1024, 0.25F) {
-@@ -84,6 +_,8 @@
-         map.defaultReturnValue(Float.NaN);
-         return map;
-     });
+@@ -157,6 +_,8 @@
+ 
+         return domain;
+     }
 +    /// Neo: Grant ability to modify Biomes in specific ways such as adding new features or change temperature
 +    private final net.neoforged.neoforge.common.world.ModifiableBiomeInfo modifiableBiomeInfo;
  
      private Biome(
          Biome.ClimateSettings climateSettings,
-@@ -95,6 +_,7 @@
+@@ -168,6 +_,7 @@
          this.attributes = attributes;
          this.specialEffects = specialEffects;
          this.generationSettings = generationSettings;
@@ -43,7 +44,7 @@
      }
  
      public boolean hasPrecipitation() {
-@@ -196,7 +_,8 @@
+@@ -269,7 +_,8 @@
      }
  
      public BiomeGenerationSettings getGenerationSettings() {
@@ -53,7 +54,7 @@
      }
  
      public int getGrassColor(double x, double z) {
-@@ -249,6 +_,29 @@
+@@ -322,6 +_,29 @@
  
      public int getWaterColor() {
          return this.specialEffects.waterColor();

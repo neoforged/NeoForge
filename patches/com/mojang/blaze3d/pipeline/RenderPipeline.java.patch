@@ -1,0 +1,61 @@
+--- a/com/mojang/blaze3d/pipeline/RenderPipeline.java
++++ b/com/mojang/blaze3d/pipeline/RenderPipeline.java
+@@ -124,6 +_,44 @@
+         return this.pushConstantSize;
+     }
+ 
++    /// Neo: Create a [RenderPipeline.Builder] from this [RenderPipeline] to adjust its configuration and
++    /// build a new, modified [RenderPipeline] from it
++    public RenderPipeline.Builder toBuilder() {
++        RenderPipeline.Builder builder = new RenderPipeline.Builder();
++        builder.location = Optional.of(this.location);
++        builder.shaders.putAll(this.shaders);
++        if (!this.shaderDefines.isEmpty()) {
++            ShaderDefines.Builder defBuilder = ShaderDefines.builder();
++            for (Entry<String, String> entry : this.shaderDefines.values().entrySet()) {
++                defBuilder.define(entry.getKey(), entry.getValue());
++            }
++            for (String flag : this.shaderDefines.flags()) {
++                defBuilder.define(flag);
++            }
++            builder.definesBuilder = Optional.of(defBuilder);
++        }
++        if (!this.bindGroupLayouts.isEmpty()) {
++            builder.bindGroupLayouts = Optional.of(new ObjectOpenHashSet<>(this.bindGroupLayouts));
++        }
++        builder.depthStencilState = Optional.ofNullable(this.depthStencilState);
++        builder.polygonMode = Optional.of(this.polygonMode);
++        builder.cull = Optional.of(this.cull);
++        for (int i = 0; i < builder.colorTargetStates.length && i < this.colorTargetStates.size(); i++) {
++            builder.colorTargetStates[i] = this.colorTargetStates.get(i);
++        }
++        for (int i = 0; i < this.colorTargetStates.size(); i++) {
++            if (this.colorTargetStates.get(i) != null) {
++                builder.activeColorTargetStateCount = i + 1;
++            }
++        }
++        for (int i = 0; i < builder.vertexFormatPerBuffer.length && i < this.vertexFormatPerBuffer.size(); i++) {
++            builder.vertexFormatPerBuffer[i] = this.vertexFormatPerBuffer.get(i);
++        }
++        builder.primitiveTopology = Optional.of(this.primitiveTopology);
++        builder.pushConstantSize = this.pushConstantSize;
++        return builder;
++    }
++
+     public static RenderPipeline.Builder builder(RenderPipeline.Snippet... snippets) {
+         RenderPipeline.Builder builder = new RenderPipeline.Builder();
+ 
+@@ -134,6 +_,13 @@
+         return builder;
+     }
+ 
++    /// Neo: overload of [#fromSnippets(String, RenderPipeline.Snippet...)] with support for identifiers
++    public static RenderPipeline fromSnippets(Identifier location, RenderPipeline.Snippet... snippets) {
++        return builder(snippets).withLocation(location).build();
++    }
++
++    /// @deprecated Neo: use [#fromSnippets(Identifier, RenderPipeline.Snippet...)] instead
++    @Deprecated
+     public static RenderPipeline fromSnippets(String location, RenderPipeline.Snippet... snippets) {
+         return builder(snippets).withLocation(location).build();
+     }

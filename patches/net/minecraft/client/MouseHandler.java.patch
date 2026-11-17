@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/MouseHandler.java
 +++ b/net/minecraft/client/MouseHandler.java
-@@ -79,6 +_,10 @@
+@@ -80,6 +_,10 @@
                  this.activeButton = null;
              }
  
@@ -11,7 +11,7 @@
              if (this.minecraft.gui.overlay() == null) {
                  if (pressed
                      && this.minecraft
-@@ -104,10 +_,14 @@
+@@ -105,10 +_,14 @@
                                  && currentTime - this.lastClick.time() < 250L
                                  && this.lastClick.screen() == screen
                                  && this.lastClickButton == event.button();
@@ -28,7 +28,7 @@
                              }
                          } catch (Throwable t) {
                              CrashReport report = CrashReport.forThrowable(t, "mouseClicked event handler");
-@@ -118,8 +_,10 @@
+@@ -119,8 +_,10 @@
                          }
                      } else {
                          try {
@@ -41,7 +41,7 @@
                              }
                          } catch (Throwable t) {
                              CrashReport report = CrashReport.forThrowable(t, "mouseReleased event handler");
-@@ -132,6 +_,10 @@
+@@ -133,6 +_,10 @@
                  }
              }
  
@@ -50,9 +50,9 @@
 +            // vanilla's fallback handle it
 +            if (!screenHandled) {
              if (this.minecraft.gui.screen() == null && this.minecraft.gui.overlay() == null) {
-                 if (rawButtonInfo.button() == 1) {
-                     this.isLeftPressed = pressed;
-@@ -147,6 +_,8 @@
+                 InputConstants.Key mouseKey = InputConstants.Type.MOUSE.getOrCreate(rawButtonInfo.button());
+                 KeyMapping.set(mouseKey, pressed);
+@@ -140,6 +_,8 @@
                      KeyMapping.click(mouseKey);
                  }
              }
@@ -61,7 +61,7 @@
          }
      }
  
-@@ -182,7 +_,11 @@
+@@ -176,7 +_,11 @@
                  if (this.minecraft.gui.screen() != null) {
                      double xm = this.getScaledXPos(this.minecraft.getWindow());
                      double ym = this.getScaledYPos(this.minecraft.getWindow());
@@ -74,7 +74,7 @@
                      this.minecraft.gui.screen().afterMouseAction();
                  } else if (this.minecraft.player != null) {
                      Vector2i wheelXY = this.scrollWheelHandler.onMouseScroll(scaledXOffset, scaledYOffset);
-@@ -191,6 +_,9 @@
+@@ -185,6 +_,9 @@
                      }
  
                      int wheel = wheelXY.y == 0 ? -wheelXY.x : wheelXY.y;
@@ -84,7 +84,7 @@
                      if (this.minecraft.player.isSpectator()) {
                          if (this.minecraft.gui.hud.getSpectatorGui().isMenuActive()) {
                              this.minecraft.gui.hud.getSpectatorGui().onMouseScrolled(-wheel);
-@@ -285,7 +_,12 @@
+@@ -310,7 +_,12 @@
                      double dy = getScaledYPos(window, this.accumulatedDY);
  
                      try {
@@ -98,7 +98,7 @@
                      } catch (Throwable t) {
                          CrashReport report = CrashReport.forThrowable(t, "mouseDragged event handler");
                          CrashReportCategory mouseDetails = report.addCategory("Mouse");
-@@ -323,12 +_,13 @@
+@@ -348,12 +_,13 @@
      }
  
      private void turnPlayer(double mousea) {
@@ -114,10 +114,10 @@
              double dx = this.smoothTurnX.getNewDeltaValue(this.accumulatedDX * sens, mousea * sens);
              double dy = this.smoothTurnY.getNewDeltaValue(this.accumulatedDY * sens, mousea * sens);
              xo = dx;
-@@ -369,6 +_,16 @@
- 
-     public double ypos() {
-         return this.ypos;
+@@ -456,6 +_,16 @@
+         double y = this.getScaledYPos(window) - 8.0;
+         String text = String.format(Locale.ROOT, "%.0f,%.0f", x, y);
+         graphics.text(font, text, (int)x, (int)y, -1);
 +    }
 +
 +    /// Neo: {@return the accumulated mouse movement along the X axis}
@@ -130,4 +130,4 @@
 +        return this.accumulatedDY;
      }
  
-     public void setIgnoreFirstMove() {
+     private record LastClick(long time, Screen screen) {

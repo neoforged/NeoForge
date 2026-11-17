@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/fox/Fox.java
 +++ b/net/minecraft/world/entity/animal/fox/Fox.java
-@@ -331,7 +_,8 @@
+@@ -328,7 +_,8 @@
          return baby;
      }
  
@@ -10,7 +10,7 @@
          return level.getBlockState(pos.below()).is(BlockTags.FOXES_SPAWNABLE_ON) && isBrightEnoughToSpawn(level, pos);
      }
  
-@@ -706,13 +_,19 @@
+@@ -703,13 +_,19 @@
  
      @Override
      protected void dropAllDeathLoot(ServerLevel level, DamageSource source) {
@@ -31,7 +31,7 @@
      }
  
      public static boolean isPathClear(Fox fox, LivingEntity target) {
-@@ -868,6 +_,16 @@
+@@ -865,6 +_,16 @@
          @Override
          protected void breed() {
              Fox offspring = (Fox)this.animal.getBreedOffspring(this.level, this.partner);
@@ -48,7 +48,7 @@
              if (offspring != null) {
                  ServerPlayer animalLoveCause = this.animal.getLoveCause();
                  ServerPlayer partnerLoveCause = this.partner.getLoveCause();
-@@ -945,7 +_,7 @@
+@@ -942,7 +_,7 @@
          }
  
          protected void onReachedTarget() {
@@ -57,11 +57,11 @@
                  BlockState state = Fox.this.level().getBlockState(this.blockPos);
                  if (state.is(Blocks.SWEET_BERRY_BUSH)) {
                      this.pickSweetBerries(state);
-@@ -1004,7 +_,7 @@
+@@ -1001,7 +_,7 @@
  
          @Override
          public boolean canUse() {
--            return Fox.this.isInFluidDeeperThan(0.25, this.fluid) || Fox.this.isInLava();
+-            return Fox.this.getFluidHeight(this.fluid) > 0.25 || Fox.this.isInLava();
 +            return Fox.this.isInFluidDeeperThan(0.25, this.fluid) || Fox.this.isInLava() || Fox.this.getFluidInteraction().isInFluidMatching(Fox.this, (entity, fluidType, height) -> entity.canSwimInFluidType(fluidType) && height > 0.25D);
          }
      }

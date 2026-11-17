@@ -1,6 +1,6 @@
 --- a/net/minecraft/util/datafix/fixes/StructuresBecomeConfiguredFix.java
 +++ b/net/minecraft/util/datafix/fixes/StructuresBecomeConfiguredFix.java
-@@ -178,7 +_,17 @@
+@@ -177,7 +_,17 @@
          String key = dynamicKey.asString("UNKNOWN").toLowerCase(Locale.ROOT);
          StructuresBecomeConfiguredFix.Conversion conversion = CONVERSION_MAP.get(key);
          if (conversion == null) {

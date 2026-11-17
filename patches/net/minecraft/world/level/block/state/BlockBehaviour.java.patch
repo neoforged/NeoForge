@@ -1,9 +1,9 @@
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -163,7 +_,8 @@
+@@ -162,7 +_,8 @@
+     protected void onExplosionHit(BlockState state, ServerLevel level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> onHit) {
          if (!state.isAir() && explosion.getBlockInteraction() != Explosion.BlockInteraction.TRIGGER_BLOCK) {
              Block block = state.getBlock();
-             boolean doDropExperienceHack = explosion.getIndirectSourceEntity() instanceof Player;
 -            if (block.dropFromExplosion(explosion)) {
 +            // Neo: use level-sensitive explosion drop check
 +            if (state.canDropFromExplosion(level, pos, explosion)) {
@@ -32,15 +32,9 @@
 +        return player.getDestroySpeed(state, pos) / destroySpeed / modifier;
      }
  
-     protected void spawnAfterBreak(BlockState state, ServerLevel level, BlockPos pos, ItemStack tool, boolean dropExperience) {
-@@ -385,10 +_,14 @@
-         return this.isRandomlyTicking;
-     }
- 
-+    /// @deprecated Neo: Use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#getSoundType(LevelReader, BlockPos, Entity)] instead
-+    @Deprecated
-     protected SoundType getSoundType(BlockState state) {
-         return this.soundType;
+     protected void spawnAfterBreak(BlockState state, ServerLevel level, BlockPos pos, ItemStack tool, boolean dropExperience, @Nullable Entity breaker) {
+@@ -389,6 +_,8 @@
+         return this.blockSoundSet;
      }
  
 +    /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.IBlockExtension#getCloneItemStack(LevelReader, BlockPos, BlockState, boolean, Player)] instead
@@ -133,21 +127,12 @@
              return this.getBlock().useItemOn(itemStack, this.asState(), level, hitResult.getBlockPos(), player, hand, hitResult);
          }
  
-@@ -859,6 +_,8 @@
-             return this.getBlock().getSeed(this.asState(), pos);
-         }
- 
-+        /// @deprecated Neo: Use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#getSoundType(LevelReader, BlockPos, Entity)] instead
-+        @Deprecated
-         public SoundType getSoundType() {
-             return this.getBlock().getSoundType(this.asState());
-         }
-@@ -1004,7 +_,8 @@
-         private BlockBehaviour.StateArgumentPredicate<EntityType<?>> isValidSpawn = (state, level, pos, entityType) -> state.isFaceSturdy(
-                 level, pos, Direction.UP
-             )
+@@ -1010,7 +_,8 @@
+         private NoteBlockInstrument instrument = NoteBlock.DEFAULT_INSTRUMENT;
+         private boolean replaceable;
+         private BlockBehaviour.StateArgumentPredicate<EntityType<?>> isValidSpawn = (state, level, pos, var3) -> state.isFaceSturdy(level, pos, Direction.UP)
 -            && state.getLightEmission() < 14;
-+            // Neo: use level-sensitive light getter
++                // Neo: use level-sensitive light getter
 +            && state.getLightEmission(level, pos) < 14;
          private BlockBehaviour.StatePredicate isRedstoneConductor = BlockBehaviour.BlockStateBase::isCollisionShapeFullBlock;
          private BlockBehaviour.StatePredicate isSuffocating = (state, level, pos) -> state.is(BlockTags.CAUSES_SUFFOCATION)

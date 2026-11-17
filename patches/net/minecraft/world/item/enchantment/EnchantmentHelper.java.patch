@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/enchantment/EnchantmentHelper.java
 +++ b/net/minecraft/world/item/enchantment/EnchantmentHelper.java
-@@ -46,7 +_,15 @@
+@@ -45,7 +_,15 @@
  import org.jspecify.annotations.Nullable;
  
  public class EnchantmentHelper {
@@ -16,7 +16,7 @@
          ItemEnchantments enchantments = piece.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
          return enchantments.getLevel(enchantment);
      }
-@@ -126,6 +_,12 @@
+@@ -125,6 +_,12 @@
      public static void runIterationOnItem(ItemStack piece, EnchantmentHelper.EnchantmentVisitor method) {
          ItemEnchantments enchantments = piece.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
  
@@ -29,7 +29,7 @@
          for (Entry<Holder<Enchantment>> entry : enchantments.entrySet()) {
              method.accept(entry.getKey(), entry.getIntValue());
          }
-@@ -134,6 +_,10 @@
+@@ -133,6 +_,10 @@
      public static void runIterationOnItem(ItemStack piece, EquipmentSlot slot, LivingEntity owner, EnchantmentHelper.EnchantmentInSlotVisitor method) {
          if (!piece.isEmpty()) {
              ItemEnchantments itemEnchantments = piece.get(DataComponents.ENCHANTMENTS);
@@ -40,7 +40,7 @@
              if (itemEnchantments != null && !itemEnchantments.isEmpty()) {
                  EnchantedItemInUse itemInUse = new EnchantedItemInUse(piece, slot, owner);
  
-@@ -324,7 +_,13 @@
+@@ -323,7 +_,13 @@
          return Math.max(0, modifiedDurability.intValue());
      }
  
@@ -54,7 +54,7 @@
          MutableFloat modifiedChance = new MutableFloat(chance);
          RandomSource random = entity.getRandom();
          runIterationOnEquipment(
-@@ -364,6 +_,9 @@
+@@ -363,6 +_,9 @@
              );
          }
  
@@ -64,7 +64,7 @@
          return modifiedChance.floatValue();
      }
  
-@@ -419,6 +_,12 @@
+@@ -418,6 +_,12 @@
      public static boolean hasTag(ItemStack item, TagKey<Enchantment> tag) {
          ItemEnchantments enchantments = item.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
  
@@ -77,9 +77,9 @@
          for (Entry<Holder<Enchantment>> entry : enchantments.entrySet()) {
              Holder<Enchantment> enchantment = entry.getKey();
              if (enchantment.is(tag)) {
-@@ -573,7 +_,9 @@
+@@ -572,7 +_,9 @@
      public static List<EnchantmentInstance> getAvailableEnchantmentResults(int value, ItemStack itemStack, Stream<Holder<Enchantment>> source) {
-         List<EnchantmentInstance> results = Lists.newArrayList();
+         List<EnchantmentInstance> results = new ArrayList<>();
          boolean isBook = itemStack.is(Items.BOOK);
 -        source.filter(enchantment -> enchantment.value().isPrimaryItem(itemStack) || isBook).forEach(holder -> {
 +        // Neo: Rewrite filter logic to call isPrimaryItemFor instead of hardcoded vanilla logic.

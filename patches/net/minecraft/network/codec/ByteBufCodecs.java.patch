@@ -1,36 +1,26 @@
 --- a/net/minecraft/network/codec/ByteBufCodecs.java
 +++ b/net/minecraft/network/codec/ByteBufCodecs.java
-@@ -613,7 +_,8 @@
+@@ -629,7 +_,8 @@
      }
  
      static <V> StreamCodec.CodecOperation<RegistryFriendlyByteBuf, V, V> registryFriendlyLengthPrefixed(int maxSize) {
--        return lengthPrefixed(maxSize, (parent, child) -> new RegistryFriendlyByteBuf(child, parent.registryAccess()));
+-        return lengthPrefixed(maxSize, (parent, child) -> new RegistryFriendlyByteBuf(child, parent.registries(), parent.ids()));
 +        // Neo: Forward parent's connection type to the newly-created buffer. Failing to do so results in packets getting filtered. See NeoForge#3711
 +        return lengthPrefixed(maxSize, (parent, child) -> new RegistryFriendlyByteBuf(child, parent.registryAccess(), parent.getConnectionType()));
      }
  
      static <T> StreamCodec<ByteBuf, T> idMapper(IntFunction<T> byId, ToIntFunction<T> toId) {
-@@ -639,7 +_,8 @@
-     ) {
-         return new StreamCodec<RegistryFriendlyByteBuf, R>() {
-             private IdMap<R> getRegistryOrThrow(RegistryFriendlyByteBuf input) {
--                return mapExtractor.apply(input.registryAccess().lookupOrThrow(registryKey));
-+                // Neo: ensure the registry is ID-synced
-+                return mapExtractor.apply(getSyncableRegistryOrThrow(input, registryKey));
-             }
- 
-             public R decode(RegistryFriendlyByteBuf input) {
-@@ -669,7 +_,8 @@
+@@ -683,7 +_,8 @@
              private static final int DIRECT_HOLDER_ID = 0;
  
              private IdMap<Holder<T>> getRegistryOrThrow(RegistryFriendlyByteBuf input) {
--                return input.registryAccess().lookupOrThrow(registryKey).asHolderIdMap();
+-                return input.ids().idHolderMapOrThrow(registryKey);
 +                // Neo: ensure the registry is ID-synced
 +                return getSyncableRegistryOrThrow(input, registryKey).asHolderIdMap();
              }
  
              public Holder<T> decode(RegistryFriendlyByteBuf input) {
-@@ -691,13 +_,40 @@
+@@ -705,13 +_,40 @@
          };
      }
  
@@ -69,9 +59,9 @@
 +                    return this.holderSetCodec(net.neoforged.neoforge.registries.NeoForgeRegistries.HOLDER_SET_TYPES.byIdOrThrow(-2 - count)).decode(input);
 +                }
                  if (count == -1) {
-                     Registry<T> registry = input.registryAccess().lookupOrThrow(registryKey);
+                     HolderGetter<T> registry = input.registries().lookupOrThrow(registryKey);
                      return registry.get(TagKey.create(registryKey, Identifier.STREAM_CODEC.decode(input))).orElseThrow();
-@@ -713,6 +_,15 @@
+@@ -727,6 +_,15 @@
              }
  
              public void encode(RegistryFriendlyByteBuf output, HolderSet<T> value) {

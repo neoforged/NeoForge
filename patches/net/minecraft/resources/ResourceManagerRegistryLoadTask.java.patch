@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/ResourceManagerRegistryLoadTask.java
 +++ b/net/minecraft/resources/ResourceManagerRegistryLoadTask.java
-@@ -26,12 +_,23 @@
+@@ -27,12 +_,23 @@
          return new RegistrationInfo(knownPack, lifecycle);
      });
      private final ResourceManager resourceManager;
@@ -24,11 +24,11 @@
      }
  
      @Override
-@@ -40,7 +_,8 @@
+@@ -41,7 +_,8 @@
          return CompletableFuture.<Map<Identifier, Resource>>supplyAsync(() -> lister.listMatchingResources(this.resourceManager), executor)
              .thenCompose(
                  registryResources -> {
--                    RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, context);
+-                    RegistryOps<JsonElement> ops = context.createSerializationContext(JsonOps.INSTANCE);
 +                    var conditionContext = new net.neoforged.neoforge.common.conditions.ConditionContext(pendingTags, context, net.minecraft.world.flag.FeatureFlags.VANILLA_SET);
 +                    RegistryOps<JsonElement> ops = new net.neoforged.neoforge.common.conditions.ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, context), conditionContext);
                      return ParallelMapTransform.schedule(

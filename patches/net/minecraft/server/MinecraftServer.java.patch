@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -290,10 +_,14 @@
+@@ -291,10 +_,14 @@
      private final PacketProcessor packetProcessor;
      private final TimerQueue<MinecraftServer> scheduledEvents;
      private final ServerClockManager clockManager;
@@ -16,7 +16,7 @@
          thread.setUncaughtExceptionHandler((t, e) -> LOGGER.error("Uncaught exception in server thread", e));
          if (Runtime.getRuntime().availableProcessors() > 4) {
              thread.setPriority(8);
-@@ -356,6 +_,8 @@
+@@ -359,6 +_,8 @@
          this.clockManager.init(this);
          this.customBossEvents = this.savedDataStorage.computeIfAbsent(CustomBossEvents.TYPE);
          this.scheduledEvents = this.savedDataStorage.computeIfAbsent(TimerQueue.TYPE);
@@ -25,7 +25,7 @@
      }
  
      protected abstract boolean initServer() throws IOException;
-@@ -431,6 +_,7 @@
+@@ -432,6 +_,7 @@
          this.scoreboard.load(this.savedDataStorage.computeIfAbsent(ScoreboardSaveData.TYPE).getData());
          this.commandStorage = new CommandStorage(this.savedDataStorage);
          this.stopwatches = this.savedDataStorage.computeIfAbsent(Stopwatches.TYPE);
@@ -33,15 +33,7 @@
          if (!levelData.isInitialized()) {
              try {
                  setInitialSpawn(overworld, levelData, worldOptions.generateBonusChest(), isDebug, this.levelLoadListener);
-@@ -465,6 +_,7 @@
-                     this, this.executor, this.storageSource, derivedLevelData, dimension, entry.getValue(), isDebug, biomeZoomSeed, ImmutableList.of(), false
-                 );
-                 this.levels.put(dimension, level);
-+                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Load(levels.get(name)));
-             } else {
-                 level = overworld;
-             }
-@@ -483,6 +_,9 @@
+@@ -486,6 +_,9 @@
              levelData.setSpawn(LevelData.RespawnData.of(level.dimension(), BlockPos.ZERO.above(80), 0.0F, 0.0F));
          } else {
              ServerChunkCache chunkSource = level.getChunkSource();
@@ -51,7 +43,7 @@
              ChunkPos spawnChunk = chunkSource.getGenerator().getOrigin(chunkSource.randomState());
              levelLoadListener.start(LevelLoadListener.Stage.PREPARE_GLOBAL_SPAWN, 0);
              levelLoadListener.updateFocus(level.dimension(), spawnChunk);
-@@ -545,6 +_,7 @@
+@@ -551,6 +_,7 @@
                  TicketStorage savedTickets = level.getDataStorage().get(TicketStorage.TYPE);
                  if (savedTickets != null) {
                      savedTickets.activateAllDeactivatedTickets();
@@ -59,7 +51,7 @@
                  }
              });
          }
-@@ -661,6 +_,7 @@
+@@ -667,6 +_,7 @@
              if (level != null) {
                  try {
                      level.close();
@@ -67,7 +59,7 @@
                  } catch (IOException e) {
                      LOGGER.error("Exception closing the level", e);
                  }
-@@ -707,6 +_,7 @@
+@@ -713,6 +_,7 @@
                  throw new IllegalStateException("Failed to initialize server");
              }
  
@@ -75,7 +67,7 @@
              this.nextTickTimeNanos = Util.getNanos();
              this.statusIcon = this.loadStatusIcon().orElse(null);
              this.status = this.buildServerStatus();
-@@ -763,6 +_,9 @@
+@@ -769,6 +_,9 @@
                  this.isReady = true;
                  JvmProfiler.INSTANCE.onServerTick(this.smoothedTickTimeMillis);
              }
@@ -85,7 +77,7 @@
          } catch (Throwable t) {
              LOGGER.error("Encountered an unexpected exception", t);
              CrashReport report = constructOrExtractCrashReport(t);
-@@ -774,6 +_,8 @@
+@@ -780,6 +_,8 @@
                  LOGGER.error("We were unable to save this crash report to disk.");
              }
  
@@ -94,7 +86,7 @@
              this.onServerCrash(report);
          } finally {
              try {
-@@ -782,6 +_,7 @@
+@@ -788,6 +_,7 @@
              } catch (Throwable t) {
                  LOGGER.error("Exception stopping the server", t);
              } finally {
@@ -102,7 +94,7 @@
                  this.onServerExit();
              }
          }
-@@ -963,6 +_,7 @@
+@@ -969,6 +_,7 @@
          }
  
          this.tickCount++;
@@ -110,7 +102,7 @@
          this.tickRateManager.tick();
          this.tickChildren(haveTime);
          if (nano - this.lastServerStatus >= STATUS_EXPIRE_TIME_NANOS) {
-@@ -985,6 +_,7 @@
+@@ -991,6 +_,7 @@
          this.smoothedTickTimeMillis = this.smoothedTickTimeMillis * 0.8F + (float)tickTime / (float)TimeUtil.NANOSECONDS_PER_MILLISECOND * 0.19999999F;
          this.logTickMethodTime(nano);
          profiler.pop();
@@ -118,15 +110,7 @@
      }
  
      protected void processPacketsAndTick(boolean sprinting) {
-@@ -1047,6 +_,7 @@
-             Optional.of(ServerStatus.Version.current()),
-             Optional.ofNullable(this.statusIcon),
-             this.enforceSecureProfile()
-+            , true //TODO Neo: Possible build a system which indicates what the status of the modded server is.
-         );
-     }
- 
-@@ -1092,8 +_,11 @@
+@@ -1099,8 +_,11 @@
          this.updateEffectiveRespawnData();
  
          for (ServerLevel level : this.getAllLevels()) {
@@ -138,7 +122,7 @@
  
              try {
                  level.tick(haveTime);
-@@ -1102,9 +_,12 @@
+@@ -1109,9 +_,12 @@
                  level.fillReportDetails(report);
                  throw new ReportedException(report);
              }
@@ -151,7 +135,7 @@
          }
  
          profiler.popPush("connection");
-@@ -1113,7 +_,7 @@
+@@ -1120,7 +_,7 @@
          this.playerList.tick();
          profiler.popPush("debugSubscribers");
          this.debugSubscribers.tick();
@@ -160,7 +144,7 @@
              profiler.popPush("gameTests");
              GameTestTicker.SINGLETON.tick();
          }
-@@ -1146,6 +_,9 @@
+@@ -1153,6 +_,9 @@
      }
  
      public void forceGameTimeSynchronization() {
@@ -170,7 +154,7 @@
          ProfilerFiller profiler = Profiler.get();
          profiler.push("timeSync");
          this.playerList.broadcastAll(new ClientboundSetTimePacket(this.overworld().getGameTime(), Map.of()));
-@@ -1199,7 +_,7 @@
+@@ -1206,7 +_,7 @@
      }
  
      public String getServerModName() {
@@ -179,7 +163,7 @@
      }
  
      public ServerClockManager clockManager() {
-@@ -1501,9 +_,9 @@
+@@ -1514,9 +_,9 @@
  
      public CompletableFuture<Void> reloadResources(Collection<String> packsToEnable) {
          CompletableFuture<Void> result = CompletableFuture.<ImmutableList>supplyAsync(
@@ -192,7 +176,7 @@
                      .flatMap(Pack::open)
                      .collect(ImmutableList.toImmutableList()),
                  this
-@@ -1542,6 +_,8 @@
+@@ -1555,6 +_,8 @@
                  this.getPlayerList().reloadResources();
                  this.functionManager.replaceLibrary(this.resources.managers.getFunctionLibrary());
                  this.structureTemplateManager.onResourceManagerReload(this.resources.resourceManager);
@@ -201,7 +185,7 @@
              }, this);
          if (this.isSameThread()) {
              this.managedBlock(result::isDone);
-@@ -1557,8 +_,10 @@
+@@ -1570,8 +_,10 @@
          FeatureFlagSet forcedFeatures = initMode ? FeatureFlagSet.of() : initialDataConfig.enabledFeatures();
          FeatureFlagSet allowedFeatures = initMode ? FeatureFlags.REGISTRY.allFlags() : initialDataConfig.enabledFeatures();
          packRepository.reload();
@@ -212,8 +196,8 @@
 +            return configureRepositoryWithSelection(packRepository, net.neoforged.neoforge.common.CommonHooks.getModDataPacksWithVanilla(), forcedFeatures, false);
          }
  
-         Set<String> selected = Sets.newLinkedHashSet();
-@@ -1605,6 +_,8 @@
+         Set<String> selected = new LinkedHashSet<>();
+@@ -1618,6 +_,8 @@
              selected.add("vanilla");
          }
  
@@ -222,7 +206,7 @@
          return configureRepositoryWithSelection(packRepository, selected, forcedFeatures, true);
      }
  
-@@ -2049,6 +_,14 @@
+@@ -2062,6 +_,14 @@
          return true;
      }
  
@@ -237,7 +221,7 @@
      public void handleCustomClickAction(Identifier id, Optional<Tag> payload) {
          LOGGER.debug("Received custom click action {} with payload {}", id, payload.orElse(null));
      }
-@@ -2108,6 +_,9 @@
+@@ -2121,6 +_,9 @@
          } else if (rule == GameRules.ADVANCE_TIME) {
              this.getPlayerList().broadcastAll(this.clockManager().createFullSyncPacket());
          }
@@ -247,7 +231,7 @@
      }
  
      @Deprecated
-@@ -2202,6 +_,27 @@
+@@ -2220,6 +_,27 @@
  
      public ServerDebugSubscribers debugSubscribers() {
          return this.debugSubscribers;

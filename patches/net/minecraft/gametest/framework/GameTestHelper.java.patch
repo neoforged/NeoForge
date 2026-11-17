@@ -1,6 +1,6 @@
 --- a/net/minecraft/gametest/framework/GameTestHelper.java
 +++ b/net/minecraft/gametest/framework/GameTestHelper.java
-@@ -1043,7 +_,8 @@
+@@ -1061,7 +_,8 @@
  
      public BlockPos relativePos(BlockPos absolutePos) {
          BlockPos testPos = this.testInfo.getTestOrigin();
@@ -10,7 +10,7 @@
          BlockPos absolutePosBeforeTransform = StructureTemplate.transform(absolutePos, Mirror.NONE, inverseRotation, testPos);
          return absolutePosBeforeTransform.subtract(testPos);
      }
-@@ -1067,7 +_,8 @@
+@@ -1085,7 +_,8 @@
  
      public Vec3 relativeVec(Vec3 absoluteVec) {
          Vec3 testPosVec = Vec3.atLowerCornerOf(this.testInfo.getTestOrigin());
