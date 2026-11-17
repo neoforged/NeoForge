@@ -1,16 +1,6 @@
 --- a/net/minecraft/world/item/BlockItem.java
 +++ b/net/minecraft/world/item/BlockItem.java
 @@ -89,18 +89,28 @@
-             updateCustomBlockEntityTag(level, player, pos, itemStack);
-             updateBlockEntityComponents(level, pos, itemStack);
-             placedState.getBlock().setPlacedBy(level, pos, placedState, player, itemStack);
-+            // Neo: add post-placement callback on the block item
-+            this.onBlockPlacedBy(updatedPlaceContext, level, pos, placedState, player, itemStack);
-             if (player instanceof ServerPlayer serverPlayer) {
-                 CriteriaTriggers.PLACED_BLOCK.trigger(serverPlayer, pos, itemStack);
-             }
-         }
- 
 -        SoundType soundType = placedState.getSoundType();
 -        level.playSound(player, pos, this.getPlaceSound(placedState), SoundSource.BLOCKS, (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F);
 +        // Neo: use level-sensitive sound type getter and placement sound resolution method
