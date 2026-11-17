@@ -8,3 +8,11 @@
      }
  
      protected abstract void rewardTradeXp(final MerchantOffer offer);
+@@ -300,6 +_,6 @@
+ 
+     @Override
+     public boolean stillValid(Player player) {
+-        return this.getTradingPlayer() == player && this.isAlive() && player.isWithinEntityInteractionRange(this, 4.0);
++        return this.getTradingPlayer() == player && this.isAlive() && net.neoforged.neoforge.common.CommonHooks.menuRangeValidity(player, this, 4.0);
+     }
+ }

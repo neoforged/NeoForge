@@ -89,6 +89,15 @@
          if (this.level().getDifficulty() == Difficulty.PEACEFUL && !this.getType().isAllowedInPeaceful()) {
              this.discard();
          } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {
+@@ -881,7 +_,7 @@
+ 
+             @Override
+             public boolean stillValid(Player player) {
+-                return player.getVehicle() == Mob.this || player.isWithinEntityInteractionRange(Mob.this, 4.0);
++                return player.getVehicle() == Mob.this || net.neoforged.neoforge.common.CommonHooks.menuRangeValidity(player, Mob.this, 4.0);
+             }
+         };
+     }
 @@ -1078,6 +_,11 @@
          }
      }
