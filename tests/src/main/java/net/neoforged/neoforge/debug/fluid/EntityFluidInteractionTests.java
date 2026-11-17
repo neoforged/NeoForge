@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.debug.fluid;
 
+import java.util.ConcurrentModificationException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -1038,6 +1039,36 @@ public class EntityFluidInteractionTests {
                     })
                     .thenSucceed();
         });
+    }
+
+    @GameTest
+    @EmptyTemplate(value = "5x5x3", floor = true)
+    @TestHolder(description = "Makes sure a CME isn't triggered when updating fluid interactions in a loop.")
+    static void updateFluidInteractionsWhileMatching(final TestHelper helper) {
+        helper.requireDifficulty(Difficulty.NORMAL);
+
+        final BlockPos seedOilPos = new BlockPos(1, 2, 1);
+        final BlockPos awayFromOil = new BlockPos(3, 2, 3);
+        helper.fillFluidColumn(SEED_OIL, seedOilPos);
+
+        final Zombie zombie = helper.spawnZombieWithNoFreeWill(seedOilPos);
+
+        helper.startSequence()
+                .thenExecuteAfter(2, () -> {
+                    try {
+                        zombie.isInFluidType((e, type, height) -> {
+                            // Force entity to not be in original non-water-like fluid.
+                            e.setPos(Vec3.atBottomCenterOf(helper.absolutePos(awayFromOil)));
+                            e.getFluidInteraction().update(e, false);
+                            // Called twice to force tracker removal.
+                            e.getFluidInteraction().update(e, false);
+                            return false;
+                        });
+                        helper.succeed();
+                    } catch (ConcurrentModificationException e) {
+                        helper.fail("Modifying entity fluid interactions while looping triggered a CME.");
+                    }
+                });
     }
 
     private static boolean isBoatEyeInBoatableFluid(Boat boat) {
