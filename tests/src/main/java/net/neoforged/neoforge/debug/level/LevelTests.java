@@ -9,19 +9,33 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderGetter;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.gamerules.GameRule;
 import net.minecraft.world.level.gamerules.GameRuleCategory;
 import net.minecraft.world.level.gamerules.GameRuleType;
 import net.minecraft.world.level.gamerules.GameRules;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.LanguageProvider;
+import net.neoforged.neoforge.common.world.BiomeModifier;
+import net.neoforged.neoforge.common.world.ModifiableBiomeInfo;
 import net.neoforged.neoforge.event.RegisterGameRuleCategoryEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -110,6 +124,71 @@ public class LevelTests {
                     .thenExecute(() -> gameRules.set(doubleGameRule.get(), oldDouble, player.level().getServer()))
                     .thenExecute(() -> gameRules.set(stringGameRule.get(), oldString, player.level().getServer()))
                     .thenSucceed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests the temperature modifier extensible enum")
+    static void temperatureModifierExtensibleEnum(DynamicTest test, RegistrationHelper reg) {
+        final Biome.TemperatureModifier modifier = Biome.TemperatureModifier.valueOf("NEOTESTS_TEMPERATURE_MODIFIER");
+
+        // Create modifier to set temperature
+        record SetTemperatureModifier(HolderSet<Biome> biomes, Biome.TemperatureModifier modifier) implements BiomeModifier {
+            public static final MapCodec<SetTemperatureModifier> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                    Biome.LIST_CODEC.fieldOf("biomes").forGetter(SetTemperatureModifier::biomes),
+                    Biome.TemperatureModifier.CODEC.fieldOf("modifier").forGetter(SetTemperatureModifier::modifier)).apply(instance, SetTemperatureModifier::new));
+
+            @Override
+            public void modify(RegistryAccess registries, Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
+                if (phase == Phase.MODIFY && this.biomes.contains(biome)) {
+                    builder.getClimateSettings().setHasPrecipitation(true);
+                    builder.getClimateSettings().setTemperatureModifier(this.modifier);
+                }
+            }
+
+            @Override
+            public MapCodec<? extends BiomeModifier> codec() {
+                return CODEC;
+            }
+        }
+        reg.register(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, "temperature_modifier", (registry, id) -> Registry.register(registry, id, SetTemperatureModifier.CODEC));
+        reg.registriesForTest(gatherer -> gatherer.add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, bootstrap -> {
+            HolderGetter<Biome> biomeLookup = bootstrap.lookup(Registries.BIOME);
+
+            bootstrap.register(
+                    ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, Identifier.fromNamespaceAndPath(reg.modId(), "temperature_modifier")),
+                    new SetTemperatureModifier(biomeLookup.getOrThrow(Tags.Biomes.IS_OVERWORLD), modifier));
+        }));
+
+        // Check temperature at the desired locations
+        test.onGameTest(helper -> {
+            // Setup rain state
+            float oRainLevel = helper.getLevel().getRainLevel(1f);
+            helper.getLevel().setRainLevel(1f);
+
+            // Check near the test position
+            ChunkPos chunkOfTest = ChunkPos.containing(helper.testInfo.getTestBlockPos());
+            if (helper.getLevel().precipitationAt(chunkOfTest.getBlockAt(0, helper.testInfo.getTestBlockPos().getY(), helper.testInfo.getTestBlockPos().getZ())) != Biome.Precipitation.RAIN) {
+                helper.fail("Expected to see rain at X = 0 within the chunk, instead saw snow");
+            }
+            if (helper.getLevel().precipitationAt(chunkOfTest.getBlockAt(8, helper.testInfo.getTestBlockPos().getY(), helper.testInfo.getTestBlockPos().getZ())) != Biome.Precipitation.SNOW) {
+                helper.fail("Expected to see snow at X = 8 within the chunk, instead saw rain");
+            }
+
+            // Restore rain state
+            helper.getLevel().setRainLevel(oRainLevel);
+
+            helper.succeed();
+        });
+    }
+
+    public static Object getTemperatureModifierParameter(int idx, Class<?> type) {
+        return type.cast(switch (idx) {
+            case 0 -> "neotests:temperature_modifier";
+            // For each chunk, if X offset is less than 8, then set temperature to 2, else -2
+            case 1 -> (Biome.TemperatureModifier.TemperatureOverride) (pos, baseTemperature) -> (pos.getX() & 0xF) < 8 ? 2f : -2f;
+            default -> throw new IllegalArgumentException("Unexpected parameter index: " + idx);
         });
     }
 }

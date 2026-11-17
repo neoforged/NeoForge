@@ -1,0 +1,5 @@
+{
+  "type": "neotests_temperature_modifier_extensible_enum:temperature_modifier",
+  "biomes": "#c:is_overworld",
+  "modifier": "neotests:temperature_modifier"
+}

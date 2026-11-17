@@ -104,6 +104,15 @@
             "name": "NEOTESTS_STRING",
             "constructor": "(Ljava/lang/String;)V",
             "parameters": [ "neotests:string" ]
+        },
+        {
+            "enum": "net/minecraft/world/level/biome/Biome$TemperatureModifier",
+            "name": "NEOTESTS_TEMPERATURE_MODIFIER",
+            "constructor": "(Ljava/lang/String;Lnet/minecraft/world/level/biome/Biome$TemperatureModifier$TemperatureOverride;)V",
+            "parameters": {
+                "class": "net/neoforged/neoforge/debug/level/LevelTests",
+                "method": "getTemperatureModifierParameter"
+            }
         }
     ]
 }
