@@ -27,6 +27,21 @@
      }
  
      @Override
+@@ -357,6 +_,14 @@
+             this.updateControlFlags();
+         }
+ 
++        // Neo: tick armor on animals
++        if (this.canUseSlot(EquipmentSlot.BODY)) {
++            ItemStack stack = this.getBodyArmorItem();
++            if (stack.has(DataComponents.EQUIPPABLE)) {
++                stack.onAnimalArmorTick(level(), this);
++            }
++        }
++
+         this.overrideLookControl = false;
+     }
+ 
 @@ -401,6 +_,9 @@
          if (this.isNoAi()) {
              output.putBoolean("NoAI", this.isNoAi());

@@ -1,20 +1,5 @@
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -346,6 +357,14 @@
-         if (!this.level().isClientSide() && this.tickCount % 5 == 0) {
-             this.updateControlFlags();
-         }
-+
-+        // Neo: tick armor on animals
-+        if (this.canUseSlot(EquipmentSlot.BODY)) {
-+            ItemStack stack = this.getBodyArmorItem();
-+            if (stack.has(DataComponents.EQUIPPABLE)) {
-+                stack.onAnimalArmorTick(level(), this);
-+            }
-+        }
-     }
- 
-     protected void updateControlFlags() {
 @@ -1397,10 +1437,21 @@
          return wasHurt;
      }
