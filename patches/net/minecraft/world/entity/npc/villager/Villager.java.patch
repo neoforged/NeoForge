@@ -1,14 +1,16 @@
 --- a/net/minecraft/world/entity/npc/villager/Villager.java
 +++ b/net/minecraft/world/entity/npc/villager/Villager.java
-@@ -267,7 +_,7 @@
-     @Override
-     public InteractionResult mobInteract(Player player, InteractionHand hand) {
-         ItemStack itemStack = player.getItemInHand(hand);
--        if (itemStack.is(Items.VILLAGER_SPAWN_EGG) || !this.isAlive() || this.isTrading() || this.isSleeping()) {
-+        if (itemStack.is(Items.VILLAGER_SPAWN_EGG) || !this.isAlive() || this.isTrading() || this.isSleeping() || player.isSecondaryUseActive()) {
+@@ -270,6 +_,10 @@
+         if (itemStack.is(Items.VILLAGER_SPAWN_EGG) || !this.isAlive() || this.isTrading() || this.isSleeping()) {
              return super.mobInteract(player, hand);
          }
++        // Neo: allow bypassing villager UI by crouching
++        if (player.isSecondaryUseActive()) {
++            return super.mobInteract(player, hand);
++        }
  
+         if (this.isBaby()) {
+             this.setUnhappy();
 @@ -744,10 +_,11 @@
  
      @Override

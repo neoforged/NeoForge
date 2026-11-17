@@ -9,11 +9,12 @@
              return false;
          } else if (this.nextStartTick > 0) {
              this.nextStartTick--;
-@@ -139,6 +_,6 @@
+@@ -139,6 +_,7 @@
          ChunkAccess chunk = level.getChunk(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()), ChunkStatus.FULL, false);
          return chunk == null
              ? false
 -            : chunk.getBlockState(pos).is(this.blockToRemove) && chunk.getBlockState(pos.above()).isAir() && chunk.getBlockState(pos.above(2)).isAir();
++            // Neo: let the block decide whether it can be destroyed by the mob executing this goal
 +            : chunk.getBlockState(pos).canEntityDestroy(level, pos, this.removerMob) && chunk.getBlockState(pos).is(this.blockToRemove) && chunk.getBlockState(pos.above()).isAir() && chunk.getBlockState(pos.above(2)).isAir();
      }
  }

@@ -1,11 +1,12 @@
 --- a/net/minecraft/server/packs/repository/PackRepository.java
 +++ b/net/minecraft/server/packs/repository/PackRepository.java
-@@ -23,7 +_,7 @@
+@@ -23,7 +_,8 @@
      private List<Pack> selected = ImmutableList.of();
  
      public PackRepository(RepositorySource... sources) {
 -        this.sources = ImmutableSet.copyOf(sources);
-+        this.sources = new java.util.LinkedHashSet<>(List.of(sources)); //Neo: This needs to be a mutable set, so that we can add to it later on.
++        // Neo: This needs to be a mutable set, so that we can add to it later on.
++        this.sources = new java.util.LinkedHashSet<>(List.of(sources));
      }
  
      public static String displayPackList(Collection<Pack> packs) {
@@ -40,30 +41,33 @@
              }
          }
  
-@@ -96,7 +_,7 @@
+@@ -96,7 +_,8 @@
      }
  
      public Collection<String> getAvailableIds() {
 -        return this.available.keySet();
++        // Neo: exclude hidden packs
 +        return this.available.values().stream().filter(p -> !p.isHidden()).map(Pack::getId).collect(ImmutableSet.toImmutableSet());
      }
  
      public Collection<Pack> getAvailablePacks() {
-@@ -104,7 +_,7 @@
+@@ -104,7 +_,8 @@
      }
  
      public Collection<String> getSelectedIds() {
 -        return this.selected.stream().map(Pack::getId).collect(ImmutableSet.toImmutableSet());
++        // Neo: exclude hidden packs
 +        return this.selected.stream().filter(p -> !p.isHidden()).map(Pack::getId).collect(ImmutableSet.toImmutableSet());
      }
  
      public FeatureFlagSet getRequestedFeatureFlags() {
-@@ -125,5 +_,9 @@
+@@ -125,5 +_,10 @@
  
      public List<PackResources> openAllSelected() {
          return this.selected.stream().flatMap(Pack::open).collect(ImmutableList.toImmutableList());
 +    }
 +
++    /// Neo: add the given source to this repository
 +    public synchronized void addPackFinder(RepositorySource packFinder) {
 +        this.sources.add(packFinder);
      }

@@ -34,11 +34,18 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BrushItem;
+import net.minecraft.world.item.FireChargeItem;
+import net.minecraft.world.item.FishingRodItem;
+import net.minecraft.world.item.FlintAndSteelItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ShearsItem;
+import net.minecraft.world.item.SpyglassItem;
+import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -172,6 +179,15 @@ public interface IItemExtension {
         return false;
     }
 
+    /// Called on the client side when an item is ticked within an inventory.
+    /// 
+    /// @param stack The stack being ticked. **Do not modify this stack**
+    /// @param level Client level the item is in.
+    /// @param owner Entity that the item is in the inventory of.
+    /// @param slot  The slot the item is in.
+    /// @see Item#inventoryTick(ItemStack, ServerLevel, Entity, EquipmentSlot) Items ticking on the server.
+    default void clientInventoryTick(ItemStack stack, Level level, Entity owner, @Nullable EquipmentSlot slot) {}
+
     /**
      * ItemStack sensitive version of {@link Item#getCraftingRemainder()} ()}.
      * Returns a full ItemStack instance of the result.
@@ -263,16 +279,17 @@ public interface IItemExtension {
         return entity.isEquippableInSlot(stack, armorType);
     }
 
-    /**
-     * Override this to set a non-default armor slot for an ItemStack, but <em>do
-     * not use this to get the armor slot of said stack; for that, use
-     * {@link LivingEntity#getEquipmentSlotForItem(ItemStack)}..</em>
-     *
-     * @param stack the ItemStack
-     * @return the armor slot of the ItemStack, or {@code null} to let the default
-     *         vanilla logic as per {@code LivingEntity.getSlotForItemStack(stack)}
-     *         decide
-     */
+    /// {@return the equipment slot for the stack, or `null` to use the vanilla logic in [LivingEntity#getEquipmentSlotForItem(ItemStack)]}
+    ///
+    /// Override this to set a non-default armor slot for an ItemStack, but _do
+    /// not_ call this to get the equipment slot of said stack; for that, use
+    /// [LivingEntity#getEquipmentSlotForItem(ItemStack)].
+    ///
+    /// @param stack the stack
+    /// @deprecated To be removed in 26.4. Apply the [net.minecraft.world.item.equipment.Equippable] component to your item instead, such as through the
+    ///             [Item.Properties#equippable(EquipmentSlot)] helper, using [Item.Properties#component(DataComponentType, Object)], or dynamically
+    ///             adding the component.
+    @Deprecated(forRemoval = true, since = "26.3")
     @Nullable
     default EquipmentSlot getEquipmentSlot(ItemStack stack) {
         return null;
@@ -346,7 +363,16 @@ public interface IItemExtension {
         } else if (itemAbility == ItemAbilities.SHOVEL_DOUSE) {
             return stack.is(ItemTags.DOUSES_CAMPFIRES);
         }
-        return false;
+        return switch (stack.typeHolder().value()) {
+            case BrushItem _ -> ItemAbilities.DEFAULT_BRUSH_ACTIONS.contains(itemAbility);
+            case FireChargeItem _ -> ItemAbilities.DEFAULT_FIRECHARGE_ACTIONS.contains(itemAbility);
+            case FishingRodItem _ -> ItemAbilities.DEFAULT_FISHING_ROD_ACTIONS.contains(itemAbility);
+            case FlintAndSteelItem _ -> ItemAbilities.DEFAULT_FLINT_ACTIONS.contains(itemAbility);
+            case ShearsItem _ -> ItemAbilities.DEFAULT_SHEARS_ACTIONS.contains(itemAbility);
+            case SpyglassItem _ -> ItemAbilities.DEFAULT_SPYGLASS_ACTIONS.contains(itemAbility);
+            case TridentItem _ -> ItemAbilities.DEFAULT_TRIDENT_ACTIONS.contains(itemAbility);
+            default -> false;
+        };
     }
 
     /**

@@ -9,29 +9,32 @@
          "generic",
          builder -> builder.required(LootContextParams.THIS_ENTITY)
              .required(LootContextParams.LAST_DAMAGE_PLAYER)
-@@ -35,7 +_,7 @@
+@@ -35,7 +_,8 @@
              .required(LootContextParams.ENCHANTMENT_ACTIVE)
              .required(LootContextParams.ENCHANTMENT_LEVEL)
      );
 -    public static final ContextKeySet CHEST = register("chest", builder -> builder.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY));
-+    public static final ContextKeySet CHEST = register("chest", builder -> builder.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY).optional(LootContextParams.ATTACKING_ENTITY)); //Neo: Chest minecarts can have killer entities
++    // Neo: Chest minecarts can have killer entities
++    public static final ContextKeySet CHEST = register("chest", builder -> builder.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY).optional(LootContextParams.ATTACKING_ENTITY));
      public static final ContextKeySet COMMAND = register(
          "command", builder -> builder.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY)
      );
-@@ -67,7 +_,7 @@
+@@ -67,7 +_,8 @@
              .required(LootContextParams.ADDITIONAL_COST_COMPONENT_ALLOWED)
      );
      public static final ContextKeySet FISHING = register(
 -        "fishing", builder -> builder.required(LootContextParams.ORIGIN).required(LootContextParams.TOOL).optional(LootContextParams.THIS_ENTITY)
-+        "fishing", builder -> builder.required(LootContextParams.ORIGIN).required(LootContextParams.TOOL).optional(LootContextParams.THIS_ENTITY).optional(LootContextParams.ATTACKING_ENTITY) // Neo: Add the fisher as a killer.
++        // Neo: Add the fisher as a killer.
++        "fishing", builder -> builder.required(LootContextParams.ORIGIN).required(LootContextParams.TOOL).optional(LootContextParams.THIS_ENTITY).optional(LootContextParams.ATTACKING_ENTITY)
      );
      public static final ContextKeySet ENTITY = register(
          "entity",
-@@ -136,6 +_,7 @@
+@@ -136,6 +_,8 @@
              .required(LootContextParams.BLOCK_STATE)
              .required(LootContextParams.CONTAINER)
              .required(LootContextParams.ORIGIN)
-+            .optional(net.neoforged.neoforge.common.loot.NeoForgeLootContextParams.QUERIED_STACK) // Neo: add the stack whose data is being queried with the context (i.e. fuel item in a furnace)
++            // Neo: add the stack whose data is being queried with the context (i.e. fuel item in a furnace)
++            .optional(net.neoforged.neoforge.common.loot.NeoForgeLootContextParams.QUERIED_STACK)
      );
      public static final ContextKeySet ENCHANTED_DAMAGE = register(
          "enchanted_damage",

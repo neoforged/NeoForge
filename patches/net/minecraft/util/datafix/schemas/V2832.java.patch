@@ -4,7 +4,7 @@
                      DSL.constType(namespacedString()),
                      DSL.fields(
                          "generator",
-+                        DSL.or(
++                        DSL.or( // Neo: ensure custom generators don't crash the datafixer, causing nether and end to be lost
                          DSL.taggedChoiceLazy(
                              "type",
                              DSL.string(),
@@ -13,7 +13,7 @@
                                  )
                              )
 +                        ),
-+                        DSL.remainder()
++                        DSL.remainder() // Neo: ensure custom generators don't crash the datafixer, causing nether and end to be lost
                          )
                      )
                  )

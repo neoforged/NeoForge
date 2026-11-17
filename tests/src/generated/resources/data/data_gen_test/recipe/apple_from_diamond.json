@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:diamond"
+  ],
+  "result": {
+    "id": "minecraft:apple"
+  }
+}

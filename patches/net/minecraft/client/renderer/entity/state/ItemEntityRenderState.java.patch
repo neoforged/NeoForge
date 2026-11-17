@@ -1,8 +1,9 @@
 --- a/net/minecraft/client/renderer/entity/state/ItemEntityRenderState.java
 +++ b/net/minecraft/client/renderer/entity/state/ItemEntityRenderState.java
-@@ -6,4 +_,5 @@
+@@ -6,4 +_,6 @@
  @OnlyIn(Dist.CLIENT)
  public class ItemEntityRenderState extends ItemClusterRenderState {
      public float bobOffset;
++    /// Neo: indicates whether the item entity should bob up and down
 +    public boolean shouldBob;
  }

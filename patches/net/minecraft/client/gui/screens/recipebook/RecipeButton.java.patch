@@ -1,0 +1,30 @@
+--- a/net/minecraft/client/gui/screens/recipebook/RecipeButton.java
++++ b/net/minecraft/client/gui/screens/recipebook/RecipeButton.java
+@@ -103,17 +_,23 @@
+         }
+ 
+         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, this.getX(), this.getY(), this.width, this.height);
++        // Neo: Make it easier for custom recipe button implementations to override target rendering
++        this.extractDisplayRenderState(graphics, mouseX, mouseY, a, this.hasMultipleRecipes() && this.allRecipesHaveSameResultDisplay);
++        if (shouldAnimate) {
++            graphics.pose().popMatrix();
++        }
++    }
++
++    // Neo: Convenience method to allow custom recipe buttons an easier time when overriding display rendering
++    protected void extractDisplayRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, boolean displayMultiple) {
+         ItemStack currentItemStack = this.getDisplayStack();
+         int offset = 4;
+-        if (this.hasMultipleRecipes() && this.allRecipesHaveSameResultDisplay) {
++        if (displayMultiple) {
+             graphics.item(currentItemStack, this.getX() + offset + 1, this.getY() + offset + 1, 0);
+             offset--;
+         }
+ 
+         graphics.fakeItem(currentItemStack, this.getX() + offset, this.getY() + offset);
+-        if (shouldAnimate) {
+-            graphics.pose().popMatrix();
+-        }
+     }
+ 
+     protected boolean hasMultipleRecipes() {

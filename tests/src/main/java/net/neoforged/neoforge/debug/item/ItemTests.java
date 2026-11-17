@@ -294,7 +294,7 @@ public class ItemTests {
         map.put(ArmorType.CHESTPLATE, 3);
         map.put(ArmorType.HELMET, 1);
         map.put(ArmorType.BODY, 3);
-    }), 15, SoundEvents.AMBIENT_CAVE, 0.0F, 0.0F, Tags.Items.BARRELS, EquipmentAssets.LEATHER);
+    }), 15, SoundEvents.AMBIENT_CAVE, 0.0F, 0.0F, Tags.BlockItems.BARRELS.item(), EquipmentAssets.LEATHER);
 
     @TestHolder(description = "Tests that registries can correctly handle named holder set references.")
     static void toolItem(final DynamicTest test, final RegistrationHelper reg) {

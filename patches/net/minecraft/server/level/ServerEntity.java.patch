@@ -1,13 +1,14 @@
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
-@@ -103,9 +_,9 @@
+@@ -103,9 +_,10 @@
  
          if (this.entity instanceof ItemFrame frame && this.tickCount % 10 == 0) {
              ItemStack itemStack = frame.getItem();
 -            if (itemStack.getItem() instanceof MapItem) {
-+            if (true) {
++            if (true) { // Neo: allow any item to provide map data
                  MapId id = itemStack.get(DataComponents.MAP_ID);
 -                MapItemSavedData data = MapItem.getSavedData(id, this.level);
++                // Neo: give items control over the source of the map data
 +                MapItemSavedData data = MapItem.getSavedData(itemStack, this.level);
                  if (data != null) {
                      for (ServerPlayer player : this.level.players()) {
@@ -20,7 +21,7 @@
      }
  
      public void addPairing(ServerPlayer player) {
-@@ -298,9 +_,10 @@
+@@ -298,9 +_,11 @@
          this.sendPairingData(player, packets::add);
          player.connection.send(new ClientboundBundlePacket(packets));
          this.entity.startSeenByPlayer(player);
@@ -28,14 +29,16 @@
      }
  
 -    public void sendPairingData(ServerPlayer player, Consumer<Packet<ClientGamePacketListener>> broadcast) {
++    // Neo: widen packet generic to support custom payload packets
 +    public void sendPairingData(ServerPlayer player, Consumer<Packet<? super ClientGamePacketListener>> broadcast) {
          this.entity.updateDataBeforeSync();
          if (this.entity.isRemoved()) {
              LOGGER.warn("Fetching packet for removed entity {}", this.entity);
-@@ -308,6 +_,7 @@
+@@ -308,6 +_,8 @@
  
          Packet<ClientGamePacketListener> packet = this.entity.getAddEntityPacket(this);
          broadcast.accept(packet);
++        // Neo: allow entities to send custom packets in the pairing bundle
 +        this.entity.sendPairingData(player, payload -> broadcast.accept(payload.toVanillaClientbound()));
          if (this.trackedDataValues != null) {
              broadcast.accept(new ClientboundSetEntityDataPacket(this.entity.getId(), this.trackedDataValues));

@@ -1,13 +1,14 @@
 --- a/net/minecraft/world/item/crafting/RecipeType.java
 +++ b/net/minecraft/world/item/crafting/RecipeType.java
-@@ -22,4 +_,14 @@
+@@ -22,4 +_,15 @@
              }
          });
      }
 +
-+    public static <T extends Recipe<?>> RecipeType<T> simple(final Identifier name) {
++    /// Neo: {@return a new simple recipe type with the given name}
++    static <T extends Recipe<?>> RecipeType<T> simple(final Identifier name) {
 +        final String toString = name.toString();
-+        return new RecipeType<T>() {
++        return new RecipeType<>() {
 +            @Override
 +            public String toString() {
 +                return toString;

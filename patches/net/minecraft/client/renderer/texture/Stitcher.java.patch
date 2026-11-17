@@ -1,18 +1,20 @@
 --- a/net/minecraft/client/renderer/texture/Stitcher.java
 +++ b/net/minecraft/client/renderer/texture/Stitcher.java
-@@ -12,6 +_,8 @@
+@@ -12,6 +_,9 @@
  
  @OnlyIn(Dist.CLIENT)
  public class Stitcher<T extends Stitcher.Entry> {
++    /// Neo: logger for stitching error details
 +    private static final org.slf4j.Logger LOGGER = com.mojang.logging.LogUtils.getLogger();
 +
      private static final Comparator<Stitcher.Holder<?>> HOLDER_COMPARATOR = Comparator.<Stitcher.Holder<?>, Integer>comparing(h -> -h.height)
          .thenComparing(h -> -h.width)
          .thenComparing(h -> h.entry.name());
-@@ -54,6 +_,14 @@
+@@ -54,6 +_,15 @@
  
          for (Stitcher.Holder<T> holder : holders) {
              if (!this.addToStorage(holder)) {
++                // Neo: log info on the sprite which couldn't be stitched onto the atlas
 +                if (LOGGER.isInfoEnabled()) {
 +                    StringBuilder sb = new StringBuilder();
 +                    sb.append("Unable to fit: ").append(holder.entry().name());

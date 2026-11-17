@@ -9,7 +9,7 @@
          RecipePropertySet.SMITHING_ADDITION,
          recipe -> recipe instanceof SmithingRecipe smithingRecipe ? smithingRecipe.additionIngredient() : Optional.empty(),
          RecipePropertySet.SMITHING_BASE,
-@@ -45,13 +_,14 @@
+@@ -45,13 +_,15 @@
          recipe -> recipe instanceof BrewingRecipe brewingRecipe ? Optional.of(brewingRecipe.getInput().ingredient()) : Optional.empty(),
          RecipePropertySet.BREWING_REAGENTS,
          recipe -> recipe instanceof BrewingRecipe brewingRecipe ? Optional.of(brewingRecipe.getReagent().ingredient()) : Optional.empty()
@@ -21,7 +21,8 @@
      private List<RecipeManager.ServerDisplayInfo> allDisplays = List.of();
      private Map<ResourceKey<Recipe<?>>, List<RecipeManager.ServerDisplayInfo>> recipeToDisplay = Map.of();
      private final Collection<RecipeHolder<?>> learnableRecipes;
-+    private Object2IntMap<ResourceKey<net.minecraft.world.item.crafting.Recipe<?>>> recipePriorities = it.unimi.dsi.fastutil.objects.Object2IntMaps.emptyMap(); // Neo: recipe priorities set from RecipePriorityManager.
++    /// Neo: holds the recipe priorities loaded by RecipePriorityManager
++    private Object2IntMap<ResourceKey<net.minecraft.world.item.crafting.Recipe<?>>> recipePriorities = it.unimi.dsi.fastutil.objects.Object2IntMaps.emptyMap();
  
      public RecipeManager(HolderLookup.Provider registries) {
          HolderLookup.RegistryLookup<Recipe<?>> recipeRegistries = registries.lookupOrThrow(Registries.RECIPE);
@@ -39,12 +40,12 @@
              : Optional.empty();
 +    }
 +
-+    // Neo: expose recipe map
++    /// Neo: {@return the recipe map}
 +    public RecipeMap recipeMap() {
 +        return this.recipes;
 +    }
 +
-+    // Neo: set recipe priority map
++    /// Neo: set recipe priority map
 +    public void setPriorityMap(Object2IntMap<ResourceKey<net.minecraft.world.item.crafting.Recipe<?>>> recipePriorities) {
 +        this.recipePriorities = recipePriorities;
      }

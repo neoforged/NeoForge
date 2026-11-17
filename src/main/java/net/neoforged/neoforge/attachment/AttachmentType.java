@@ -55,6 +55,13 @@ import org.jspecify.annotations.Nullable;
  * <li>Modifications to attachments should be followed by a call to {@link ChunkAccess#markUnsaved}.</li>
  * <li>Serializable attachments are copied from a {@link ProtoChunk} to a {@link LevelChunk} on promotion.</li>
  * </ul>
+ * <h3>{@link SessionData}-exclusive behavior:</h3>
+ * <ul>
+ * <li>Server: Serializable attachments are saved to {@code <world>/data/neoforge/session_attachments.dat}; synced attachments are sent on login and on change.</li>
+ * <li>Client: attachments with a serializer and no sync handler are client-local, saved per world ({@code <world>/data/neoforge/client_session_attachments.dat})
+ * or per server ({@code <game directory>/neoforge/client_session_attachments/<key>.dat}). Attachments with a sync handler are never persisted on the client.</li>
+ * <li>Deserialization runs before any level exists, on both sides. Registries and tags are already available.</li>
+ * </ul>
  */
 public final class AttachmentType<T> {
     final Function<IAttachmentHolder, T> defaultValueSupplier;

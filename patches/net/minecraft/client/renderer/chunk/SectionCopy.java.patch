@@ -1,12 +1,14 @@
 --- a/net/minecraft/client/renderer/chunk/SectionCopy.java
 +++ b/net/minecraft/client/renderer/chunk/SectionCopy.java
-@@ -25,8 +_,10 @@
+@@ -25,8 +_,12 @@
      private final @Nullable PalettedContainer<BlockState> section;
      private final boolean debug;
      private final LevelHeightAccessor levelHeightAccessor;
++    /// Neo: holds the chunk this section copy was built from
 +    final LevelChunk wrapped;
  
      public SectionCopy(LevelChunk levelChunk, int sectionIndex) {
++        // Neo: retain the chunk this section copy is built from
 +        this.wrapped = levelChunk;
          this.levelHeightAccessor = levelChunk;
          this.debug = levelChunk.getLevel().isDebug();

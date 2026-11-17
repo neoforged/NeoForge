@@ -8,10 +8,11 @@
          this.ensureMapOwnership();
          T defaultValue = this.prototype.get(type);
          Object lastValue;
-@@ -199,6 +_,10 @@
+@@ -199,6 +_,11 @@
          return size;
      }
  
++    /// Neo: {@return whether the patch backing this component map is empty}
 +    public boolean isPatchEmpty() {
 +        return this.patch.isEmpty();
 +    }
@@ -19,13 +20,11 @@
      public DataComponentPatch asPatch() {
          if (this.patch.isEmpty()) {
              return DataComponentPatch.EMPTY;
-@@ -217,6 +_,13 @@
+@@ -217,6 +_,11 @@
          return this.patch.isEmpty() ? this.prototype : this.copy();
      }
  
-+    /**
-+     * {@return true if the contained patch equals the given patch.}
-+     */
++    /// Neo: {@return whether the contained patch equals the given patch}
 +    public boolean patchEquals(DataComponentPatch patch) {
 +        return this.patch.equals(patch.map);
 +    }
@@ -33,7 +32,7 @@
      @Override
      public boolean equals(Object obj) {
          return this == obj
-@@ -226,7 +_,24 @@
+@@ -226,7 +_,31 @@
  
      @Override
      public int hashCode() {
@@ -41,16 +40,23 @@
 +        return this.prototype.hashCode() + hashPatch(this.patch) * 31;
 +    }
 +
++    /// Neo: compute the hash of the given patch with the identity hash code of the component types
++    private static int hashPatch(Reference2ObjectMap<DataComponentType<?>, Object> patch) {
++        return hashPatch(patch, System::identityHashCode);
++    }
++
 +    // Neo: Change implementation of hashCode to reduce collisions.
 +    // For a map, hashCode is specified as the sum of the hash codes of its entries.
 +    // We do that, but change the entry hash code to 8191^<key hash> * <value hash>,
 +    // where <key hash> is the lower bits of the identity hash code of the key.
-+    private static int hashPatch(Reference2ObjectMap<DataComponentType<?>, Object> patch) {
++    @org.jetbrains.annotations.VisibleForTesting
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public static int hashPatch(Reference2ObjectMap<DataComponentType<?>, Object> patch, java.util.function.ToIntFunction<DataComponentType<?>> hashCode) {
 +        int h = 0, n = patch.size();
 +        var iterator = it.unimi.dsi.fastutil.objects.Reference2ObjectMaps.fastIterator(patch);
 +        while (n-- != 0) {
 +            var entry = iterator.next();
-+            int exponent = System.identityHashCode(entry.getKey()) & 0xff;
++            int exponent = hashCode.applyAsInt(entry.getKey()) & 0xff;
 +            // Use 8191 instead of the usual 31, as 31 can produce many collisions with typical integer component ranges (0-255) if the exponent difference is only 1
 +            int entryHash = com.google.common.math.IntMath.pow(8191, exponent) * entry.getValue().hashCode();
 +            h += entryHash;

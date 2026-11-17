@@ -10,6 +10,7 @@ import static net.minecraft.commands.Commands.literal;
 import com.mojang.brigadier.Command;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.io.IOException;
 import java.util.Objects;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -17,6 +18,10 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.permissions.LevelBasedPermissionSet;
 import net.minecraft.util.ProblemReporter;
@@ -27,6 +32,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
@@ -35,6 +41,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.attachment.ServerSessionData;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -219,5 +226,37 @@ public class AttachmentTests {
 
             test.pass();
         }));
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Ensures that serializable session attachments are written to the server's saved data and can be read back.")
+    static void sessionAttachmentPersistence(DynamicTest test, RegistrationHelper reg) {
+        var persisted = reg.attachments()
+                .register("session_persisted", () -> AttachmentType.builder(() -> 0).serialize(Codec.INT.fieldOf("value")).build());
+
+        test.onGameTest(helper -> {
+            var server = helper.getLevel().getServer();
+            var session = server.getSessionData();
+            int value = 1234;
+            session.setData(persisted, value);
+            server.getDataStorage().saveAndJoin();
+
+            // Decode the saved file through the codec of a fresh holder, as the next server start would
+            var file = server.getWorldPath(LevelResource.DATA).resolve("neoforge/session_attachments.dat");
+            CompoundTag data;
+            try {
+                data = NbtIo.readCompressed(file, NbtAccounter.unlimitedHeap()).getCompoundOrEmpty("data");
+            } catch (IOException exception) {
+                throw new RuntimeException("Failed to read " + file, exception);
+            }
+            var fresh = new ServerSessionData(server);
+            var ops = server.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+            fresh.savedDataType().codecFactory().create(null).parse(ops, data).getOrThrow();
+            helper.assertTrue(Integer.valueOf(value).equals(fresh.getExistingDataOrNull(persisted)), "Expected the session attachment value to be read back from the saved data");
+
+            session.removeData(persisted);
+            helper.succeed();
+        });
     }
 }

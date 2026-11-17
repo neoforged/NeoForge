@@ -1,8 +1,10 @@
 --- a/net/minecraft/world/entity/animal/armadillo/Armadillo.java
 +++ b/net/minecraft/world/entity/animal/armadillo/Armadillo.java
-@@ -237,7 +_,7 @@
+@@ -236,8 +_,9 @@
+         return itemStack.is(ItemTags.ARMADILLO_FOOD);
      }
  
++    // Neo: widen generic to support subclasses
      public static boolean checkArmadilloSpawnRules(
 -        EntityType<Armadillo> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
 +        EntityType<? extends Armadillo> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random

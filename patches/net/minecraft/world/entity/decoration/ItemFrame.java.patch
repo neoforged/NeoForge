@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/entity/decoration/ItemFrame.java
 +++ b/net/minecraft/world/entity/decoration/ItemFrame.java
-@@ -247,7 +_,7 @@
+@@ -247,7 +_,8 @@
      private void removeFramedMap(ItemStack itemStack) {
          MapId mapId = this.getFramedMapId(itemStack);
          if (mapId != null) {
 -            MapItemSavedData mapItemSavedData = MapItem.getSavedData(mapId, this.level());
++            // Neo: give items control over the source of the map data
 +            MapItemSavedData mapItemSavedData = MapItem.getSavedData(itemStack, this.level());
              if (mapItemSavedData != null) {
                  mapItemSavedData.removedFromFrame(this.pos, this.getId());

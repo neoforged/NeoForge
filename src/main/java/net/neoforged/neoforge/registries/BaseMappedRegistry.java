@@ -95,14 +95,12 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
 
     @Override
     public int getId(ResourceKey<T> key) {
-        T value = this.getValue(key);
-        return value == null ? -1 : this.getId(value);
+        return this.getId(this.getValue(key));
     }
 
     @Override
     public int getId(Identifier name) {
-        T value = this.getValue(name);
-        return value == null ? -1 : this.getId(value);
+        return this.getId(this.getValue(name));
     }
 
     protected void clear(boolean full) {

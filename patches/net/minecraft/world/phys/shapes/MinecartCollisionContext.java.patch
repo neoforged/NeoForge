@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/phys/shapes/MinecartCollisionContext.java
 +++ b/net/minecraft/world/phys/shapes/MinecartCollisionContext.java
-@@ -23,7 +_,7 @@
+@@ -23,7 +_,8 @@
          boolean onRails = BaseRailBlock.isRail(currentState);
          if (onRails) {
              this.ingoreBelow = currentRailPos.below();
 -            RailShape shape = currentState.getValue(((BaseRailBlock)currentState.getBlock()).getShapeProperty());
++            // Neo: give modded rails more control over their shape
 +            RailShape shape = ((BaseRailBlock)currentState.getBlock()).getRailDirection(currentState, entity.level(), currentRailPos, entity);
              if (shape.isSlope()) {
                  this.slopeIgnore = switch (shape) {

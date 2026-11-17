@@ -6,7 +6,7 @@
      default boolean is(Holder<T> type) {
 -        return this.typeHolder() == type;
 +        // Neo: Fix comparing for custom holders such as DeferredHolders
-+        return is(type.value());
++        return this.is(type.value());
      }
  
      default boolean is(ResourceKey<T> type) {

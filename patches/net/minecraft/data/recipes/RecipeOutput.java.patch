@@ -6,7 +6,7 @@
  public interface RecipeOutput extends BootstrapContextAccess, IRecipeOutputExtension {
 -    void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancement);
 +    default void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancement) {
-+        accept(id, recipe, advancement, new net.neoforged.neoforge.common.conditions.ICondition[0]);
++        this.accept(id, recipe, advancement, new net.neoforged.neoforge.common.conditions.ICondition[0]);
 +    }
  
      Advancement.Builder advancement();

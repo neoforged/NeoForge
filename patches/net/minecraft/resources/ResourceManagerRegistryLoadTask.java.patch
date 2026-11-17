@@ -1,9 +1,10 @@
 --- a/net/minecraft/resources/ResourceManagerRegistryLoadTask.java
 +++ b/net/minecraft/resources/ResourceManagerRegistryLoadTask.java
-@@ -26,12 +_,22 @@
+@@ -26,12 +_,23 @@
          return new RegistrationInfo(knownPack, lifecycle);
      });
      private final ResourceManager resourceManager;
++    /// Neo: holds the pending tags for use in loading conditions
 +    private final List<net.minecraft.core.Registry.PendingTags<?>> pendingTags;
  
 +    /// @deprecated Neo: use [#ResourceManagerRegistryLoadTask(RegistryDataLoader.RegistryData, Lifecycle, Map, ResourceManager, List)] instead

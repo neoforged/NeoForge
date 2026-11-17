@@ -5,7 +5,7 @@
  public record WorldDimensions(Map<ResourceKey<LevelStem>, LevelStem> dimensions) {
      public static final MapCodec<WorldDimensions> CODEC = RecordCodecBuilder.mapCodec(
 -        i -> i.group(Codec.unboundedMap(ResourceKey.codec(Registries.LEVEL_STEM), LevelStem.CODEC).fieldOf("dimensions").forGetter(WorldDimensions::dimensions))
-+        // FORGE: Fix MC-197860
++        // Neo: Fix MC-197860
 +        i -> i.group(new net.neoforged.neoforge.common.LenientUnboundedMapCodec<>(ResourceKey.codec(Registries.LEVEL_STEM), LevelStem.CODEC).fieldOf("dimensions").forGetter(WorldDimensions::dimensions))
              .apply(i, i.stable(WorldDimensions::new))
      );

@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.network.payload;
 
 import com.mojang.logging.LogUtils;
+import io.netty.handler.codec.DecoderException;
 import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.network.FriendlyByteBuf;
@@ -20,6 +21,8 @@ import org.slf4j.Logger;
 @ApiStatus.Internal
 public final class DinnerboneProtocolUtils {
     public static final Logger LOGGER = LogUtils.getLogger();
+
+    private static final int MAX_IDENTIFIER_LENGTH = 32767;
 
     private DinnerboneProtocolUtils() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
@@ -56,6 +59,10 @@ public final class DinnerboneProtocolUtils {
     }
 
     private static void parseAndAddChannel(StringBuilder builder, Set<Identifier> channels) {
+        if (builder.length() > MAX_IDENTIFIER_LENGTH) {
+            throw new DecoderException("Identifier too big " + builder.length() + " > " + MAX_IDENTIFIER_LENGTH + ".");
+        }
+
         if (builder.isEmpty()) {
             return;
         }

@@ -8,6 +8,8 @@ package net.neoforged.neoforge.attachment;
 import java.util.function.Predicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -61,6 +63,16 @@ public final class AttachmentInternals {
     @SubscribeEvent
     public static void onLivingConvert(LivingConversionEvent.Post event) {
         event.getOutcome().copyAttachmentsFrom(event.getEntity(), true);
+    }
+
+    /// Serializes attachments that have no sync handler; used for client-local session data.
+    public static void serializeNonSyncedAttachments(AttachmentHolder holder, ValueOutput output) {
+        holder.serializeAttachments(output, type -> type.syncHandler == null);
+    }
+
+    /// Counterpart of [#serializeNonSyncedAttachments]; synced types in the input are ignored.
+    public static void deserializeNonSyncedAttachments(AttachmentHolder holder, ValueInput input) {
+        holder.deserializeAttachments(input, type -> type.syncHandler == null);
     }
 
     private AttachmentInternals() {}

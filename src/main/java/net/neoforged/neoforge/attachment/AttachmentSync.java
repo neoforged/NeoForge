@@ -8,6 +8,8 @@ package net.neoforged.neoforge.attachment;
 import io.netty.buffer.Unpooled;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
@@ -17,8 +19,10 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBundlePacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -74,6 +78,7 @@ public final class AttachmentSync {
             case AttachmentHolder.AsField asField when asField.getExposedHolder() instanceof LevelChunk chunk -> new SyncAttachmentsPayload.ChunkTarget(chunk.getPos());
             case Entity entity -> new SyncAttachmentsPayload.EntityTarget(entity.getId());
             case Level ignored -> new SyncAttachmentsPayload.LevelTarget();
+            case SessionData ignored -> new SyncAttachmentsPayload.SessionTarget();
             default -> throw new UnsupportedOperationException("Attachment holder class is not supported: " + holder);
         };
     }
@@ -155,41 +160,54 @@ public final class AttachmentSync {
         syncUpdate(level, type, level.players());
     }
 
+    public static void syncSessionUpdate(MinecraftServer server, SessionData holder, AttachmentType<?> type) {
+        if (type.syncHandler == null) {
+            return;
+        }
+        // Null during the MinecraftServer constructor, when the saved data is loaded
+        PlayerList playerList = server.getPlayerList();
+        if (playerList == null) {
+            return;
+        }
+        syncUpdate(holder, type, playerList.getPlayers());
+    }
+
     /**
      * Constructs a payload to sync all syncable attachments to a player, if any.
      */
     @Nullable
     private static SyncAttachmentsPayload syncInitialAttachments(AttachmentHolder holder, ServerPlayer to) {
-        if (holder.attachments == null) {
+        Map<AttachmentType<?>, Object> attachments = holder.attachments;
+        if (attachments == null) {
             return null;
         }
         if (!to.connection.hasChannel(SyncAttachmentsPayload.TYPE)) {
             return null;
         }
-        boolean anySyncableAttachment = false;
-        for (var attachment : holder.attachments.keySet()) {
-            anySyncableAttachment = anySyncableAttachment | attachment.syncHandler != null;
+        List<AttachmentType<?>> syncableTypes = new ArrayList<>();
+        for (AttachmentType<?> type : attachments.keySet()) {
+            if (type.syncHandler != null && type.syncHandler.sendToPlayer(holder, to)) {
+                syncableTypes.add(type);
+            }
         }
-        if (!anySyncableAttachment) {
+        if (syncableTypes.isEmpty()) {
             return null;
         }
-        List<AttachmentType<?>> syncedTypes = new ArrayList<>();
-        var data = FriendlyByteBufUtil.writeCustomData(buf -> {
-            for (var entry : holder.attachments.entrySet()) {
-                AttachmentType<?> type = entry.getKey();
+        List<AttachmentType<?>> syncedTypes = new ArrayList<>(syncableTypes.size());
+        byte[] data = FriendlyByteBufUtil.writeCustomData(buf -> {
+            for (AttachmentType<?> type : syncableTypes) {
                 @SuppressWarnings("unchecked")
-                var syncHandler = (AttachmentSyncHandler<Object>) type.syncHandler;
-                if (syncHandler != null) {
-                    int indexBefore = buf.writerIndex();
-                    buf.writeBoolean(true);
-                    int indexBetween = buf.writerIndex();
-                    syncHandler.write(buf, entry.getValue(), true);
-                    if (indexBetween < buf.writerIndex()) {
-                        // Actually wrote something
-                        syncedTypes.add(type);
-                    } else {
-                        buf.writerIndex(indexBefore);
-                    }
+                var syncHandler = (AttachmentSyncHandler<Object>) Objects.requireNonNull(type.syncHandler);
+
+                int indexBefore = buf.writerIndex();
+                buf.writeBoolean(true);
+                int indexBetween = buf.writerIndex();
+                syncHandler.write(buf, attachments.get(type), true);
+                if (indexBetween < buf.writerIndex()) {
+                    // Actually wrote something
+                    syncedTypes.add(type);
+                } else {
+                    buf.writerIndex(indexBefore);
                 }
             }
         }, to.registryAccess());
@@ -244,6 +262,15 @@ public final class AttachmentSync {
         var packet = syncInitialAttachments(level, to);
         if (packet != null) {
             to.connection.send(packet.toVanillaClientbound());
+        }
+    }
+
+    /// Handles initial syncing of session attachments. Only needs to be called for login,
+    /// since the client's session survives respawns and teleports.
+    public static void syncInitialSessionAttachments(ServerPlayer player) {
+        var packet = syncInitialAttachments(player.level().getServer().getSessionData(), player);
+        if (packet != null) {
+            player.connection.send(packet.toVanillaClientbound());
         }
     }
 

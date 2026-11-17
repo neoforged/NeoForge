@@ -91,8 +91,8 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
 
         ColorCollection.zipApply(Items.DYE, ColorCollection.VALUES.map(DyeColor::getTag), this::replace);
 
-        replace(Blocks.COBBLESTONE, Tags.Items.COBBLESTONES_NORMAL);
-        replace(Blocks.COBBLED_DEEPSLATE, Tags.Items.COBBLESTONES_DEEPSLATE);
+        replace(Blocks.COBBLESTONE, Tags.BlockItems.COBBLESTONES_NORMAL.item());
+        replace(Blocks.COBBLED_DEEPSLATE, Tags.BlockItems.COBBLESTONES_DEEPSLATE.item());
 
         replace(Items.EGG, Tags.Items.EGGS);
         replace(Items.STRING, Tags.Items.STRINGS);
@@ -116,7 +116,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         exclude(Blocks.COBBLED_DEEPSLATE_SLAB);
         exclude(Blocks.COBBLED_DEEPSLATE_WALL);
 
-        output.specialReplacements.put(Items.CHEST, DifferenceIngredient.of(tag(Tags.Items.CHESTS_WOODEN), tag(Tags.Items.CHESTS_TRAPPED)));
+        output.specialReplacements.put(Items.CHEST, DifferenceIngredient.of(tag(Tags.BlockItems.CHESTS_WOODEN.item()), tag(Tags.BlockItems.CHESTS_TRAPPED.item())));
 
         super.buildRecipes();
     }

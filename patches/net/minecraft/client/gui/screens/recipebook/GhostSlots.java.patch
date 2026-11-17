@@ -1,10 +1,11 @@
 --- a/net/minecraft/client/gui/screens/recipebook/GhostSlots.java
 +++ b/net/minecraft/client/gui/screens/recipebook/GhostSlots.java
-@@ -68,7 +_,7 @@
+@@ -68,7 +_,8 @@
              if (hoveredGhostSlot != null) {
                  ItemStack hoveredItem = hoveredGhostSlot.getItem(this.slotSelectTime.currentIndex());
                  graphics.setComponentTooltipForNextFrame(
 -                    minecraft.font, Screen.getTooltipFromItem(minecraft, hoveredItem), mouseX, mouseY, hoveredItem.get(DataComponents.TOOLTIP_STYLE)
++                    // Neo: include hovered stack in tooltip context
 +                    minecraft.font, Screen.getTooltipFromItem(minecraft, hoveredItem), mouseX, mouseY, hoveredItem, hoveredItem.get(DataComponents.TOOLTIP_STYLE)
                  );
              }

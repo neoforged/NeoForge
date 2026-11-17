@@ -26,7 +26,7 @@ class StackItemAccess implements ItemAccess {
 
     public StackItemAccess(ItemStack stack) {
         item = stack.getItem();
-        wrapper = VanillaContainerWrapper.of(new SimpleContainer(stack) {
+        wrapper = VanillaContainerWrapper.ofUncached(new SimpleContainer(stack) {
             // Override to avoid clamping oversized stacks to their max stack size, just in case.
             @Override
             public void setItem(int slot, ItemStack stack, boolean performSideEffects) {

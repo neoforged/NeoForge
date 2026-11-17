@@ -43,7 +43,7 @@ public class DatapackBuiltinEntriesProvider extends RegistriesDatapackGenerator 
     }
 
     public static DatapackBuiltinEntriesProvider forReloadableLayer(PackOutput output, String name, CompletableFuture<HolderLookup.Provider> worldRegistries, CompletableFuture<HolderLookup.Provider> reloadableRegistries, RegistrySetBuilder entriesBuilder, @Nullable Set<String> modIds) {
-        return new DatapackBuiltinEntriesProvider(output, name, DataPackRegistriesHooks.getReloadableRegistries(), RegistryPatchGenerator.createReloadableLookup(worldRegistries, reloadableRegistries, entriesBuilder), modIds);
+        return new DatapackBuiltinEntriesProvider(output, name, RegistryDataLoader.RELOADABLE_REGISTRIES, RegistryPatchGenerator.createReloadableLookup(worldRegistries, reloadableRegistries, entriesBuilder), modIds);
     }
 
     /**
