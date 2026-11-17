@@ -1,5 +1,15 @@
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
+@@ -162,7 +_,8 @@
+     protected void onExplosionHit(BlockState state, ServerLevel level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> onHit) {
+         if (!state.isAir() && explosion.getBlockInteraction() != Explosion.BlockInteraction.TRIGGER_BLOCK) {
+             Block block = state.getBlock();
+-            if (block.dropFromExplosion(explosion)) {
++            // Neo: use level-sensitive explosion drop check
++            if (state.canDropFromExplosion(level, pos, explosion)) {
+                 BlockEntity blockEntity = state.hasBlockEntity() ? level.getBlockEntity(pos) : null;
+                 LootParams.Builder params = new LootParams.Builder(level)
+                     .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
 @@ -178,8 +_,8 @@
                  state.getDrops(params).forEach(stack -> onHit.accept(stack, pos));
              }
@@ -23,6 +33,15 @@
      }
  
      protected void spawnAfterBreak(BlockState state, ServerLevel level, BlockPos pos, ItemStack tool, boolean dropExperience, @Nullable Entity breaker) {
+@@ -389,6 +_,8 @@
+         return this.blockSoundSet;
+     }
+ 
++    /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.IBlockExtension#getCloneItemStack(LevelReader, BlockPos, BlockState, boolean, Player)] instead
++    @Deprecated
+     protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
+         return new ItemStack(this.asItem());
+     }
 @@ -405,6 +_,11 @@
          return this.properties.destroyTime;
      }
@@ -108,3 +127,13 @@
              return this.getBlock().useItemOn(itemStack, this.asState(), level, hitResult.getBlockPos(), player, hand, hitResult);
          }
  
+@@ -1010,7 +_,8 @@
+         private NoteBlockInstrument instrument = NoteBlock.DEFAULT_INSTRUMENT;
+         private boolean replaceable;
+         private BlockBehaviour.StateArgumentPredicate<EntityType<?>> isValidSpawn = (state, level, pos, var3) -> state.isFaceSturdy(level, pos, Direction.UP)
+-            && state.getLightEmission() < 14;
++                // Neo: use level-sensitive light getter
++            && state.getLightEmission(level, pos) < 14;
+         private BlockBehaviour.StatePredicate isRedstoneConductor = BlockBehaviour.BlockStateBase::isCollisionShapeFullBlock;
+         private BlockBehaviour.StatePredicate isSuffocating = (state, level, pos) -> state.is(BlockTags.CAUSES_SUFFOCATION)
+             && state.isCollisionShapeFullBlock(level, pos);
