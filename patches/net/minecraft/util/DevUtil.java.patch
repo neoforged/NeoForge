@@ -6,7 +6,7 @@
  public class DevUtil {
 -    public static boolean IS_RUNNING_IN_IDE;
 +    public static boolean IS_RUNNING_IN_IDE = !net.neoforged.fml.loading.FMLEnvironment.isProduction();
-+    /// Neo: separate flag for debugger detection, used for pause helpers in [net.minecraft.util.Util] in place of [#IS_RUNNING_IN_IDE]
++    /// Neo: separate flag for debugger detection, used for pause helpers in [DevUtil] in place of [#IS_RUNNING_IN_IDE]
 +    public static final boolean IS_RUNNING_WITH_JDWP = java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().stream().anyMatch(str -> str.startsWith("-agentlib:jdwp"));
      private static Logger LOGGER = LogUtils.getLogger();
      private static Consumer<String> thePauser = msg -> {};
