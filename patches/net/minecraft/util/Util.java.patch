@@ -8,7 +8,7 @@
 -            if (DevUtil.IS_RUNNING_IN_IDE) {
 +            // Neo: silence datafixer errors for modded entity types
 +            LOGGER.debug("No data fixer registered for {}", name);
-+            if (SharedConstants.IS_RUNNING_IN_IDE && false) {
++            if (DevUtil.IS_RUNNING_IN_IDE && false) {
                  throw e;
              }
          }
