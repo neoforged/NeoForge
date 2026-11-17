@@ -26,3 +26,4 @@
 +                    } else if (piece instanceof PoolElementStructurePiece poolPiece) {
                          StructureTemplatePool.Projection projection = poolPiece.getElement().getProjection();
                          if (projection == StructureTemplatePool.Projection.RIGID) {
+                             rigids.add(new Beardifier.Rigid(poolPiece.getBoundingBox(), terrainAdjustment, poolPiece.getGroundLevelDelta()));
