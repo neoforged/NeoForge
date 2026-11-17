@@ -4,9 +4,8 @@
                  break;
              case 2001:
                  BlockState blockState = Block.stateById(data);
--                if (!blockState.isAir()) {
+                 if (!blockState.isAir() && !net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(blockState).playBreakSound(blockState, this.level, pos)) {
 -                    SoundType soundType = blockState.getSoundType();
-+                if (!blockState.isAir() && !net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(blockState).playBreakSound(blockState, this.level, pos)) {
 +                    SoundType soundType = blockState.getSoundType(this.level, pos, null);
                      this.level
                          .playLocalSound(

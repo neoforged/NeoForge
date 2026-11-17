@@ -1,5 +1,48 @@
 --- a/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
+@@ -315,21 +_,39 @@
+             }
+         }
+ 
++        /// @deprecated Neo: use [#createCompileTask(RenderSectionRegion, java.util.List)] instead
++        @Deprecated
+         private SectionRenderDispatcher.RenderSection.SectionTask createCompileTask(RenderSectionRegion region) {
++            return this.createCompileTask(region, java.util.List.of());
++        }
++
++        private SectionRenderDispatcher.RenderSection.SectionTask createCompileTask(RenderSectionRegion region, java.util.List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers) {
+             this.cancelTasks();
+             boolean isRecompile = this.sectionMesh.get() != CompiledSectionMesh.UNCOMPILED;
+-            SectionRenderDispatcher.RenderSection.CompileTask task = new SectionRenderDispatcher.RenderSection.CompileTask(region, isRecompile);
++            SectionRenderDispatcher.RenderSection.CompileTask task = new SectionRenderDispatcher.RenderSection.CompileTask(region, isRecompile, additionalRenderers);
+             this.currentCompileTask.set(task);
+             return task;
+         }
+ 
++        /// @deprecated Neo: use [#compileAsync(RenderSectionRegion, java.util.List)] instead
++        @Deprecated
+         public void compileAsync(RenderSectionRegion region) {
+-            SectionRenderDispatcher.RenderSection.SectionTask task = this.createCompileTask(region);
++            this.compileAsync(region, java.util.List.of());
++        }
++
++        public void compileAsync(RenderSectionRegion region, java.util.List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers) {
++            SectionRenderDispatcher.RenderSection.SectionTask task = this.createCompileTask(region, additionalRenderers);
+             SectionRenderDispatcher.this.schedule(task);
+         }
+ 
++        /// @deprecated Neo: use [#compileSync(RenderSectionRegion, java.util.List)] instead
++        @Deprecated
+         public void compileSync(RenderSectionRegion region) {
+-            SectionRenderDispatcher.RenderSection.SectionTask task = this.createCompileTask(region);
++            this.compileSync(region, java.util.List.of());
++        }
++
++        public void compileSync(RenderSectionRegion region, java.util.List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers) {
++            SectionRenderDispatcher.RenderSection.SectionTask task = this.createCompileTask(region, additionalRenderers);
+             task.runTask(SectionRenderDispatcher.this.fixedBuffers);
+         }
+ 
 @@ -425,14 +_,28 @@
              return success;
          }

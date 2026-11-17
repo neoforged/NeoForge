@@ -129,7 +129,7 @@
                          }
                      }
                  }
-@@ -471,7 +_,13 @@
+@@ -471,16 +_,22 @@
          }
      }
  
@@ -143,6 +143,17 @@
          if (player.noPhysics) {
              return null;
          }
+ 
+         AABB nearPlaneBB = frustum.getNearPlaneBounds().move(frustum.getCamX(), frustum.getCamY(), frustum.getCamZ());
+-        MutableObject<BlockState> outState = new MutableObject<>();
++        MutableObject<org.apache.commons.lang3.tuple.Pair<BlockState, BlockPos>> outState = new MutableObject<>();
+         player.level().findBlocksIn(nearPlaneBB).filterState(state -> state.getRenderShape() != RenderShape.INVISIBLE).forEachUntil((pos, state) -> {
+             if (state.isViewBlocking(player.level(), pos, nearPlaneBB)) {
+-                outState.setValue(state);
++                outState.setValue(org.apache.commons.lang3.tuple.Pair.of(state, pos.immutable()));
+                 return Continuation.ABORT;
+             } else {
+                 return Continuation.CONTINUE;
 @@ -609,6 +_,14 @@
          }
  

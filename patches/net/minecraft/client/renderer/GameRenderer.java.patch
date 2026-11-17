@@ -34,15 +34,25 @@
                  this.clearSpectatedEntityPostEffect();
          }
      }
-@@ -343,6 +_,11 @@
+@@ -346,6 +_,11 @@
+                 return;
              }
  
-             if (hurt < 0.0F) {
++            // Neo: Prevent screen shake if the damage type is tagged as "neoforge:no_flinch"
++            if (cameraState.entityRenderState.preventFlinch) {
 +                return;
 +            }
 +
-+            // Neo: Prevent screen shake if the damage type is tagged as "neoforge:no_flinch"
-+            if (cameraState.entityRenderState.preventFlinch) {
-                 return;
-             }
+             hurt /= cameraState.entityRenderState.hurtDuration;
+             hurt = Mth.sin(hurt * hurt * hurt * hurt * (float) Math.PI);
+             float rr = cameraState.entityRenderState.hurtDir;
+@@ -667,6 +_,9 @@
+         profiler.popPush("level");
+         boolean consistentDepthRequired = !this.appliedPostEffects.isEmpty();
+         this.minecraft.levelRenderer.render(this.resourcePool, renderOutline, cameraState, fogBuffer, consistentDepthRequired);
++        profiler.popPush("neoforge_render_after_level");
++        LevelRenderer levelRenderer = this.minecraft.levelRenderer;
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterLevel(levelRenderer, levelRenderer.levelRenderState, null, cameraState.viewRotationMatrix, levelRenderer.visibleSections()));
+         this.render3dHud(cameraState, playerState, optionsState, consistentDepthRequired);
+     }
  

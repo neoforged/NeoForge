@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.state.level.WeatherRenderState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
 import net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRendererEvent;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A custom renderer for snow and rain that can be registered using {@link RegisterCustomEnvironmentEffectRendererEvent#registerWeatherEffectRenderer}
@@ -27,8 +28,7 @@ import net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRender
  * @see net.neoforged.neoforge.common.world.NeoForgeEnvironmentAttributes#CUSTOM_WEATHER_EFFECTS
  */
 public interface CustomWeatherEffectRenderer {
-    /// Prepare the geometry and other buffers to be rendered in [#renderSnowAndRain(LevelRenderState, WeatherRenderState, Vec3, RenderPass)]
-    /// or [#renderSnowAndRainOit(LevelRenderState, WeatherRenderState, Vec3, OitStage, RenderPass)].
+    /// Prepare the geometry and other buffers to be rendered in [#renderSnowAndRain(LevelRenderState, WeatherRenderState, Vec3, OitStage, RenderPass)].
     ///
     /// @see WeatherEffectRenderer#prepare(Vec3, WeatherRenderState)
     default void prepare(LevelRenderState levelRenderState, WeatherRenderState weatherRenderState, Vec3 camPos) {}
@@ -37,17 +37,8 @@ public interface CustomWeatherEffectRenderer {
     ///
     /// @return true to prevent vanilla snow and rain rendering
     ///
-    /// @see WeatherEffectRenderer#render(WeatherRenderState, RenderPass)
-    default boolean renderSnowAndRain(LevelRenderState levelRenderState, WeatherRenderState weatherRenderState, Vec3 camPos, RenderPass renderPass) {
-        return false;
-    }
-
-    /// Renders the snow and rain effects of this dimension with order-independent translucency.
-    ///
-    /// @return true to prevent vanilla snow and rain rendering
-    ///
-    /// @see WeatherEffectRenderer#renderOit(OitStage, WeatherRenderState, RenderPass)
-    default boolean renderSnowAndRainOit(LevelRenderState levelRenderState, WeatherRenderState weatherRenderState, Vec3 camPos, OitStage stage, RenderPass renderPass) {
+    /// @see WeatherEffectRenderer#render(WeatherRenderState, RenderPass, OitStage)
+    default boolean renderSnowAndRain(LevelRenderState levelRenderState, WeatherRenderState weatherRenderState, Vec3 camPos, @Nullable OitStage stage, RenderPass renderPass) {
         return false;
     }
 
