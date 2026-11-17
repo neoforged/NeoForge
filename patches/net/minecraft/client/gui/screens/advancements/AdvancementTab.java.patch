@@ -1,14 +1,15 @@
 --- a/net/minecraft/client/gui/screens/advancements/AdvancementTab.java
 +++ b/net/minecraft/client/gui/screens/advancements/AdvancementTab.java
-@@ -38,6 +_,7 @@
+@@ -38,6 +_,8 @@
      private float fade;
      private boolean centered;
      private @Nullable AdvancementWidget hovered;
++    /// Neo: holds the page of the advancements screen this tab is on
 +    private int page;
  
      public AdvancementTab(
          Minecraft minecraft,
-@@ -60,6 +_,25 @@
+@@ -60,6 +_,26 @@
          this.addWidget(root);
      }
  
@@ -27,19 +28,21 @@
 +        this.page = page;
 +    }
 +
++    /// Neo: {@return the page of the advancements screen this tab is on}
 +    public int getPage() {
-+        return page;
++        return this.page;
 +    }
 +
      public void copyPosition(AdvancementTab source) {
          this.scrollX = source.scrollX;
          this.scrollY = source.scrollY;
-@@ -179,8 +_,8 @@
+@@ -179,8 +_,9 @@
          Identifier background = rootDisplay.background().get().texturePath();
  
          for (AdvancementTabType type : AdvancementTabType.values()) {
 -            if (index < type.getMax()) {
 -                return new AdvancementTab(minecraft, screen, type, index, rootWidget, rootDisplay.icon(), rootDisplay.title(), background);
++            // Neo: spread advancement tabs over multiple pages if necessary
 +            if ((index % AdvancementTabType.MAX_TABS) < type.getMax()) {
 +                return new AdvancementTab(minecraft, screen, type, index % AdvancementTabType.MAX_TABS, index / AdvancementTabType.MAX_TABS, rootWidget, rootDisplay.icon(), rootDisplay.title(), background);
              }

@@ -9,16 +9,14 @@
      private final Thread runningThread;
      private boolean closed;
  
-@@ -31,6 +_,19 @@
+@@ -31,6 +_,17 @@
          }
  
          this.packetsToBeHandled.add(new PacketProcessor.ListenerAndPacket<>(listener, packet));
 +    }
 +
-+    /**
-+     * Neo: Enqueue a main thread task from a custom payload packet handler.
-+     * Use via {@link net.neoforged.neoforge.network.handling.IPayloadContext#enqueueWork}
-+     */
++    /// Neo: Enqueue a main thread task from a custom payload packet handler.
++    /// Use via [net.neoforged.neoforge.network.handling.IPayloadContext#enqueueWork]
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public void scheduleIfPossible(Runnable task) {
 +        if (this.closed) {

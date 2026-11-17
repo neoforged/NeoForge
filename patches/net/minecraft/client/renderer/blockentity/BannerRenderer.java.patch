@@ -1,10 +1,11 @@
 --- a/net/minecraft/client/renderer/blockentity/BannerRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/BannerRenderer.java
-@@ -250,4 +_,11 @@
+@@ -250,4 +_,12 @@
      private static Transformation createWallTransformation(Direction direction) {
          return modelTransformation(direction.toYRot());
      }
 +
++    /// Neo: {@return the render bounding box of this BER for frustum culling}
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(BannerBlockEntity blockEntity) {
 +        BlockPos pos = blockEntity.getBlockPos();

@@ -1,11 +1,14 @@
 --- a/net/minecraft/world/entity/vehicle/minecart/MinecartFurnace.java
 +++ b/net/minecraft/world/entity/vehicle/minecart/MinecartFurnace.java
-@@ -107,6 +_,8 @@
+@@ -107,6 +_,11 @@
  
      @Override
      public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
-+        InteractionResult ret = super.interact(player, hand, location);
-+        if (ret.consumesAction()) return ret;
++        // Neo: enable standard entity interactions on furnace minecarts
++        InteractionResult result = super.interact(player, hand, location);
++        if (result.consumesAction()) {
++            return result;
++        }
          ItemStack itemStack = player.getItemInHand(hand);
          if (this.addFuel(player.position(), itemStack)) {
              itemStack.consume(1, player);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/dispenser/BoatDispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/BoatDispenseItemBehavior.java
-@@ -29,27 +_,36 @@
+@@ -29,27 +_,39 @@
          double spawnY = center.y() + direction.getStepY() * 1.125F;
          double spawnZ = center.z() + direction.getStepZ() * justOutsideDispenser;
          BlockPos frontPos = source.pos().relative(direction);
@@ -13,10 +13,12 @@
 +        }
          double yOffset;
 -        if (level.getFluidState(frontPos).is(FluidTags.WATER)) {
++        // Neo: check whether the fluid in front of the dispenser supports boating
 +        if (canBoatInFluid(boat, level.getFluidState(frontPos))) {
              yOffset = 1.0;
          } else {
 -            if (!level.getBlockState(frontPos).isAir() || !level.getFluidState(frontPos.below()).is(FluidTags.WATER)) {
++            // Neo: check whether the fluid below the block in front of the dispenser supports boating
 +            if (!level.getBlockState(frontPos).isAir() || !canBoatInFluid(boat, level.getFluidState(frontPos.below()))) {
                  return this.defaultDispenseItemBehavior.dispense(source, dispensed);
              }
@@ -37,6 +39,7 @@
          return dispensed;
 +    }
 +
++    /// Neo: {@return whether the given fluid supports boating with the given boat}
 +    private static boolean canBoatInFluid(@org.jspecify.annotations.Nullable AbstractBoat boat, net.minecraft.world.level.material.FluidState fluid) {
 +        return boat != null ? boat.canBoatInFluid(fluid) : fluid.is(FluidTags.WATER);
      }

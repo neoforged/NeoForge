@@ -1,45 +1,51 @@
 --- a/net/minecraft/server/network/ServerConnectionListener.java
 +++ b/net/minecraft/server/network/ServerConnectionListener.java
-@@ -43,6 +_,7 @@
+@@ -43,6 +_,8 @@
  
  public class ServerConnectionListener {
      private static final Logger LOGGER = LogUtils.getLogger();
++    // Neo: make the timeout configurable
 +    private static final int READ_TIMEOUT = Integer.parseInt(System.getProperty("neoforge.readTimeout", "30"));
      private final MinecraftServer server;
      public volatile boolean running;
      private volatile @Nullable UUID sessionId;
-@@ -56,6 +_,8 @@
+@@ -56,6 +_,10 @@
      }
  
      public void startTcpServerListener(@Nullable InetAddress address, int port) throws IOException {
-+        if (address == null) address = new java.net.InetSocketAddress(port).getAddress();
++        if (address == null) {
++            address = new java.net.InetSocketAddress(port).getAddress();
++        }
 +        net.neoforged.neoforge.network.DualStackUtils.checkIPv6(address);
          synchronized (this.channels) {
              EventLoopGroupHolder eventLoopGroupHolder = EventLoopGroupHolder.remote(this.server.useNativeTransport());
              this.channels
-@@ -71,7 +_,7 @@
+@@ -71,7 +_,8 @@
                                      } catch (ChannelException var5) {
                                      }
  
 -                                    ChannelPipeline pipeline = channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30));
++                                    // Neo: make the timeout configurable
 +                                    ChannelPipeline pipeline = channel.pipeline().addLast("timeout", new ReadTimeoutHandler(READ_TIMEOUT));
                                      if (ServerConnectionListener.this.server.repliesToStatus()) {
                                          pipeline.addLast("legacy_query", new LegacyQueryHandler(ServerConnectionListener.this.getServer()));
                                      }
-@@ -89,7 +_,7 @@
+@@ -89,7 +_,8 @@
                                  }
                              }
                          )
 -                        .group(eventLoopGroupHolder.eventLoopGroup())
++                        // Neo: use dedicated event group for thread identification
 +                        .group(eventLoopGroupHolder.serverEventLoopGroup())
                          .localAddress(address, port)
                          .bind()
                          .syncUninterruptibly()
-@@ -124,7 +_,7 @@
+@@ -124,7 +_,8 @@
                          }
                      }
                  )
 -                .group(EventLoopGroupHolder.local().eventLoopGroup())
++                // Neo: use dedicated event group for thread identification
 +                .group(EventLoopGroupHolder.local().serverEventLoopGroup())
                  .localAddress(LocalAddress.ANY)
                  .bind()

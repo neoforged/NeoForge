@@ -437,12 +437,20 @@ public class VanillaHandlersTests {
         helper.setBlock(pos, Blocks.FURNACE.defaultBlockState());
         FurnaceBlockEntity furnace = helper.getBlockEntity(pos, FurnaceBlockEntity.class);
         var furnaceWrapper = VanillaContainerWrapper.of(furnace);
+        var bucket = ItemResource.of(Items.BUCKET);
 
         try (Transaction tx = Transaction.openRoot()) {
-            if (furnaceWrapper.insert(1, ItemResource.of(Items.BUCKET), 2, tx) != 1) {
+            if (furnaceWrapper.insert(1, bucket, 2, tx) != 1) {
                 throw helper.assertionException("Exactly 1 bucket should have been inserted");
             }
         }
+
+        // Capacity of the fuel slot should be 1, irregardless of whether a bucket is in the slot.
+        helper.assertTrue(furnaceWrapper.isValid(1, bucket), "bucket is valid for empty slot");
+        helper.assertValueEqual(furnaceWrapper.getCapacityAsLong(1, bucket), 1L, "capacity of empty slot");
+        furnace.setItem(1, bucket.toStack());
+        helper.assertTrue(furnaceWrapper.isValid(1, bucket), "bucket is valid for occupied slot");
+        helper.assertValueEqual(furnaceWrapper.getCapacityAsLong(1, bucket), 1L, "capacity of occupied slot");
 
         helper.succeed();
     }
@@ -485,6 +493,13 @@ public class VanillaHandlersTests {
                 }
             }
         }
+
+        // Capacity of the bottle slots should be 1, irregardless of whether an item is in the slot.
+        helper.assertTrue(brewingStandWrapper.isValid(0, glassBottle), "bottle is valid for empty slot");
+        helper.assertValueEqual(brewingStandWrapper.getCapacityAsLong(0, glassBottle), 1L, "capacity of empty slot");
+        brewingStand.setItem(0, glassBottle.toStack());
+        helper.assertTrue(brewingStandWrapper.isValid(0, glassBottle), "bottle is valid for occupied slot");
+        helper.assertValueEqual(brewingStandWrapper.getCapacityAsLong(0, glassBottle), 1L, "capacity of occupied slot");
 
         helper.succeed();
     }

@@ -1,25 +1,28 @@
 --- a/net/minecraft/client/renderer/block/BlockModelRenderState.java
 +++ b/net/minecraft/client/renderer/block/BlockModelRenderState.java
-@@ -31,8 +_,10 @@
+@@ -31,8 +_,12 @@
      private @Nullable IntList tintLayers;
      public int blockLightCoords;
      private @Nullable RandomSource randomSource;
++    /// Neo: stores whether any of the model parts have translucency
 +    private boolean hasTranslucency;
  
      public void clear() {
++        // Neo: clear translucency flag
 +        this.hasTranslucency = false;
          this.modelParts = null;
          this.transformation = null;
          this.renderType = null;
-@@ -60,6 +_,7 @@
+@@ -60,6 +_,8 @@
      public List<BlockStateModelPart> setupModel(Matrix4fc transformation, boolean hasTranslucency) {
          this.transformation = identityToNull(transformation);
          this.renderType = hasTranslucency ? Sheets.translucentBlockItemSheet() : Sheets.cutoutBlockItemSheet();
++        // Neo: capture translucency flag
 +        this.hasTranslucency = hasTranslucency;
          if (this.modelParts == null) {
              this.modelParts = new ObjectArrayList<>();
          } else {
-@@ -71,6 +_,33 @@
+@@ -71,6 +_,34 @@
  
      public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int externalLightCoords, int overlayCoords, int outlineColor) {
          this.submitModel(this.renderType, poseStack, submitNodeCollector, externalLightCoords, overlayCoords, outlineColor);
@@ -40,15 +43,16 @@
 +            if (this.transformation != null) {
 +                poseStack.pushPose();
 +                poseStack.mulPose(this.transformation);
-+                submitNodeCollector.submitMultiLayerBlockModel(poseStack, modelPartsCopy, hasTranslucency, tints, externalLightCoords, overlayCoords, outlineColor);
++                submitNodeCollector.submitMultiLayerBlockModel(poseStack, modelPartsCopy, this.hasTranslucency, tints, externalLightCoords, overlayCoords, outlineColor);
 +                poseStack.popPose();
 +            } else {
-+                submitNodeCollector.submitMultiLayerBlockModel(poseStack, modelPartsCopy, hasTranslucency, tints, externalLightCoords, overlayCoords, outlineColor);
++                submitNodeCollector.submitMultiLayerBlockModel(poseStack, modelPartsCopy, this.hasTranslucency, tints, externalLightCoords, overlayCoords, outlineColor);
 +            }
 +        }
 +        this.submitSpecialRenderer(poseStack, submitNodeCollector, externalLightCoords, overlayCoords, outlineColor);
 +    }
 +
++    /// Neo: extract special renderer submission from [#submit] for re-use in [#submitMultiLayer]
 +    private void submitSpecialRenderer(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int externalLightCoords, int overlayCoords, int outlineColor) {
          if (this.specialRenderer != null) {
              int lightCoords = LightCoordsUtil.max(externalLightCoords, this.blockLightCoords);

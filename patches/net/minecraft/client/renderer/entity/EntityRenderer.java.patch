@@ -24,10 +24,11 @@
          return state;
      }
  
-@@ -167,6 +_,7 @@
+@@ -167,6 +_,8 @@
          state.y = Mth.lerp(partialTicks, entity.yOld, entity.getY());
          state.z = Mth.lerp(partialTicks, entity.zOld, entity.getZ());
          state.isInvisible = entity.isInvisible();
++        // Neo: store partial tick in render state
 +        state.partialTick = partialTicks;
          state.ageInTicks = entity.tickCount + partialTicks;
          state.boundingBoxWidth = entity.getBbWidth();

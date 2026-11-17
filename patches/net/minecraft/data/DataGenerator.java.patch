@@ -1,64 +1,64 @@
 --- a/net/minecraft/data/DataGenerator.java
 +++ b/net/minecraft/data/DataGenerator.java
-@@ -18,6 +_,7 @@
-     protected final PackOutput vanillaPackOutput;
-     protected final Set<String> allProviderIds = new HashSet<>();
-     protected final Map<String, DataProvider> providersToRun = new LinkedHashMap<>();
-+    private final Map<String, DataProvider> providersView = java.util.Collections.unmodifiableMap(this.providersToRun);
- 
-     public DataGenerator(Path output) {
-         this.vanillaPackOutput = new PackOutput(output);
-@@ -34,6 +_,59 @@
+@@ -34,6 +_,67 @@
          return new DataGenerator.PackGenerator(toRun, packId, new PackOutput(packOutputDir));
      }
  
-+    public PackGenerator getBuiltinDatapack(boolean run, String namespace, String path) {
-+        var packPath = vanillaPackOutput.getOutputFolder(PackOutput.Target.DATA_PACK).resolve(namespace).resolve("datapacks").resolve(path);
-+        return new PackGenerator(run, namespace + '_' + path, new PackOutput(packPath));
++    /// Neo: {@return a pack generator for a builtin datapack with the given pack ID under the given namespace}
++    public PackGenerator getBuiltinDatapack(boolean run, String namespace, String packId) {
++        Path packPath = this.vanillaPackOutput.getOutputFolder(PackOutput.Target.DATA_PACK).resolve(namespace).resolve("datapacks").resolve(packId);
++        return new PackGenerator(run, namespace + '_' + packId, new PackOutput(packPath));
 +    }
 +
++    /// Neo: {@return an unmodifiable view of the data providers to be run}
 +    public Map<String, DataProvider> getProvidersView() {
-+         return this.providersView;
++        return java.util.Collections.unmodifiableMap(this.providersToRun);
 +    }
 +
++    /// Neo: {@return the default pack output}
 +    public PackOutput getPackOutput() {
 +        return this.vanillaPackOutput;
 +    }
 +
++    /// Neo: {@return a pack output for the given path}
 +    public PackOutput getPackOutput(String path) {
-+        return new PackOutput(vanillaPackOutput.getOutputFolder().resolve(path));
++        return new PackOutput(this.vanillaPackOutput.getOutputFolder().resolve(path));
 +    }
 +
++    /// Neo: {@return a pack generator with the given provider prefix, writing to the given path}
 +    public PackGenerator getPackGenerator(boolean run, String providerPrefix, String path) {
-+        return getPackGenerator(run, providerPrefix, getPackOutput(path));
++        return this.getPackGenerator(run, providerPrefix, this.getPackOutput(path));
 +    }
 +
++    /// Neo: {@return a pack generator with the given provider prefix, writing to the given output}
 +    public PackGenerator getPackGenerator(boolean run, String providerPrefix, PackOutput output) {
 +        return new PackGenerator(run, providerPrefix, output);
 +    }
 +
++    /// Neo: add the data provider created with the default pack output by the given factory
 +    public <T extends DataProvider> T addProvider(boolean run, DataProvider.Factory<T> factory) {
-+        return addProvider(run, factory.create(this.vanillaPackOutput));
++        return this.addProvider(run, factory.create(this.vanillaPackOutput));
 +    }
 +
++    /// Neo: add the given data provider
 +    public <T extends DataProvider> T addProvider(boolean run, T provider) {
 +        String id = provider.getName();
-+
-+        if (!DataGenerator.this.allProviderIds.add(id))
++        if (!DataGenerator.this.allProviderIds.add(id)) {
 +            throw new IllegalStateException("Duplicate provider: " + id);
-+
-+        if (run)
++        }
++        if (run) {
 +            DataGenerator.this.providersToRun.put(id, provider);
-+
++        }
 +        return provider;
 +    }
 +
++    /// Neo: merge the given data generator into this one
 +    public void merge(DataGenerator other) {
 +        other.providersToRun.forEach((id, provider) -> {
-+            if(!allProviderIds.add(id))
++            if (!this.allProviderIds.add(id)) {
 +                throw new IllegalStateException("Duplicate provider: " + id);
-+
-+            providersToRun.put(id, provider);
++            }
++            this.providersToRun.put(id, provider);
 +        });
 +
 +        other.providersToRun.clear();
@@ -68,19 +68,3 @@
      static {
          Bootstrap.bootStrap();
      }
-@@ -60,6 +_,7 @@
-                     DataGenerator.LOGGER.debug("Generator {} already run for version {}", providerId, this.version.name());
-                 } else {
-                     DataGenerator.LOGGER.info("Starting provider: {}", providerId);
-+                    net.neoforged.fml.loading.progress.StartupNotificationManager.addModMessage("Generating: " + providerId);
-                     stopwatch.start();
-                     cache.applyUpdate(cache.generateUpdate(providerId, provider::run).join());
-                     stopwatch.stop();
-@@ -109,6 +_,7 @@
-             Stopwatch stopwatch = Stopwatch.createUnstarted();
-             this.providersToRun.forEach((providerId, provider) -> {
-                 DataGenerator.LOGGER.info("Starting uncached provider: {}", providerId);
-+                net.neoforged.fml.loading.progress.StartupNotificationManager.addModMessage("Generating: " + providerId);
-                 stopwatch.start();
-                 provider.run(CachedOutput.NO_CACHE).join();
-                 stopwatch.stop();

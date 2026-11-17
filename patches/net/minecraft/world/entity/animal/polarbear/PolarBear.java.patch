@@ -1,8 +1,10 @@
 --- a/net/minecraft/world/entity/animal/polarbear/PolarBear.java
 +++ b/net/minecraft/world/entity/animal/polarbear/PolarBear.java
-@@ -108,7 +_,7 @@
+@@ -107,8 +_,9 @@
+             .add(Attributes.ATTACK_DAMAGE, 6.0);
      }
  
++    // Neo: widen generic to support subclasses
      public static boolean checkPolarBearSpawnRules(
 -        EntityType<PolarBear> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
 +        EntityType<? extends PolarBear> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random

@@ -1,11 +1,14 @@
 --- a/net/minecraft/world/level/block/SmallDripleafBlock.java
 +++ b/net/minecraft/world/level/block/SmallDripleafBlock.java
-@@ -80,6 +_,8 @@
+@@ -80,6 +_,11 @@
  
          BlockPos belowPos = pos.below();
          BlockState belowState = level.getBlockState(belowPos);
++        // Neo: let the block decide whether it can sustain this plant
 +        var soilDecision = belowState.canSustainPlant(level, belowPos, Direction.UP, state);
-+        if (!soilDecision.isDefault()) return soilDecision.isTrue();
++        if (!soilDecision.isDefault()) {
++            return soilDecision.isTrue();
++        }
          return this.mayPlaceOn(belowState, level, belowPos);
      }
  

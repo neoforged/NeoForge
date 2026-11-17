@@ -50,13 +50,11 @@
              recalculateWinding(vertexPositions, vertexPackedUvs, finalDirection);
          }
  
-@@ -124,7 +_,9 @@
-             vertexPackedUvs[2],
+@@ -125,6 +_,8 @@
              vertexPackedUvs[3],
              Objects.requireNonNullElse(finalDirection, Direction.UP),
--            materialInfo
-+            materialInfo,
-+            interner.normals(net.neoforged.neoforge.client.model.quad.BakedNormals.of(net.neoforged.neoforge.client.model.quad.BakedNormals.computeQuadNormal(vertexPositions[0], vertexPositions[1], vertexPositions[2], vertexPositions[3]))),
+             materialInfo
++            , interner.normals(net.neoforged.neoforge.client.model.quad.BakedNormals.of(net.neoforged.neoforge.client.model.quad.BakedNormals.computeQuadNormal(vertexPositions[0], vertexPositions[1], vertexPositions[2], vertexPositions[3]))),
 +            interner.colors(net.neoforged.neoforge.client.model.quad.BakedColors.of(faceData.color()))
          );
      }

@@ -1,20 +1,22 @@
 --- a/net/minecraft/client/renderer/blockentity/SkullBlockRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/SkullBlockRenderer.java
-@@ -67,7 +_,7 @@
+@@ -67,7 +_,8 @@
                  case PIGLIN -> new PiglinHeadModel(modelSet.bakeLayer(ModelLayers.PIGLIN_HEAD));
              };
          } else {
 -            return null;
-+            return net.neoforged.neoforge.client.ClientHooks.getModdedSkullModel(modelSet, type); // Neo: Lookup model for modded skull types
++            // Neo: Lookup model for modded skull types
++            return net.neoforged.neoforge.client.ClientHooks.getModdedSkullModel(modelSet, type);
          }
      }
  
-@@ -166,5 +_,15 @@
+@@ -166,5 +_,16 @@
          return new Transformation(
              new Matrix4f().translation(0.5F, 0.0F, 0.5F).rotate(Axis.YP.rotationDegrees(-RotationSegment.convertToDegrees(segment))).scale(-1.0F, -1.0F, 1.0F)
          );
 +    }
 +
++    /// Neo: {@return the render bounding box of this BER for frustum culling}
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(SkullBlockEntity blockEntity) {
 +        SkullBlock.Type type = ((AbstractSkullBlock) blockEntity.getBlockState().getBlock()).getType();

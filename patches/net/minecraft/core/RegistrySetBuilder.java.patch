@@ -1,9 +1,10 @@
 --- a/net/minecraft/core/RegistrySetBuilder.java
 +++ b/net/minecraft/core/RegistrySetBuilder.java
-@@ -65,6 +_,10 @@
+@@ -65,6 +_,11 @@
          return this;
      }
  
++    /// Neo: {@return the keys of all registries modified by this builder}
 +    public List<? extends ResourceKey<? extends Registry<?>>> getEntryKeys() {
 +        return this.entries.stream().flatMap(RegistrySetBuilder.RegistryStub::requiredRegistries).toList();
 +    }
@@ -77,11 +78,12 @@
                  public Holder.Reference<T> register(ResourceKey<T> key, T value) {
                      T previousValue = BootstrappedRegistryState.this.registeredValues.put(key, value);
                      if (previousValue != null) {
-@@ -155,6 +_,11 @@
+@@ -155,6 +_,12 @@
                  public <S> Stream<Holder.Reference<S>> listContextElements(ResourceKey<? extends Registry<? extends S>> key) {
                      return state.contextRegistries.lookupOrThrow(key).listElements();
                  }
 +
++                /// Neo: {@return the lookup of the given registry, if available}
 +                @Override
 +                public <S> java.util.Optional<HolderLookup<S>> holderLookup(ResourceKey<? extends Registry<? extends S>> registry) {
 +                    return state.allRegistries.lookup(registry).map(lookup -> (HolderLookup<S>) lookup);
@@ -112,7 +114,7 @@
 +        }
 +
 +        public net.neoforged.neoforge.common.data.RegistriesWithConditions patchesWithConditions() {
-+            return new net.neoforged.neoforge.common.data.RegistriesWithConditions(patches, conditionsByRegistry);
++            return new net.neoforged.neoforge.common.data.RegistriesWithConditions(this.patches, this.conditionsByRegistry);
 +        }
      }
  

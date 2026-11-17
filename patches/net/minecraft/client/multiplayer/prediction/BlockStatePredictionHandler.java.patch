@@ -4,34 +4,30 @@
                  BlockPos pos = BlockPos.of(next.getLongKey());
                  stateIterator.remove();
                  clientLevel.syncBlockState(pos, serverVerifiedState.blockState, this.lastTeleportSequence < sequence ? serverVerifiedState.playerPos : null);
-+                // Neo: Restore the BlockEntity if one was present before the break was cancelled.
++                // Neo: Restore the BlockEntity if one was present before the break was canceled.
 +                // Fixes MC-36093 and permits correct server-side only cancellation of block changes.
 +                if (serverVerifiedState.snapshot != null && serverVerifiedState.blockState == serverVerifiedState.snapshot.getState()) {
 +                    if (serverVerifiedState.snapshot.restoreBlockEntity(clientLevel, pos)) {
 +                        // Attempt a re-render if BE data was loaded, since some blocks may depend on it.
-+                        clientLevel.sendBlockUpdated(pos, serverVerifiedState.blockState, serverVerifiedState.blockState, 3);
++                        clientLevel.sendBlockUpdated(pos, serverVerifiedState.blockState, serverVerifiedState.blockState, net.minecraft.world.level.block.Block.UPDATE_ALL);
 +                    }
 +                }
              }
          }
      }
-@@ -75,7 +_,19 @@
+@@ -75,7 +_,15 @@
          return this.isPredicting;
      }
  
-+    /**
-+     * Sets the stored BlockSnapshot on the ServerVerifiedState for the given position.
-+     * This method is only called after {@link #retainKnownServerState}, so we are certain a map entry exists.
-+     */
++    /// Neo: Sets the stored `BlockSnapshot` on the [ServerVerifiedState] for the given position.
++    /// This method is only called after [#retainKnownServerState], so we are certain a map entry exists.
 +    public void retainSnapshot(BlockPos pos, net.neoforged.neoforge.common.util.BlockSnapshot snapshot) {
 +        this.serverVerifiedStates.get(pos.asLong()).snapshot = snapshot;
 +    }
 +
      private static class ServerVerifiedState {
-+        /**
-+         * Neo: Used to hold all data necessary for clientside restoration during break denial.
-+         */
-+        net.neoforged.neoforge.common.util.BlockSnapshot snapshot;
++        /// Neo: Used to hold all data necessary for clientside restoration during break denial.
++        net.neoforged.neoforge.common.util.@org.jspecify.annotations.Nullable BlockSnapshot snapshot;
          private final Vec3 playerPos;
          private int sequence;
          private BlockState blockState;

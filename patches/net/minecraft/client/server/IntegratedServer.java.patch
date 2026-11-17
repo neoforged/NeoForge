@@ -14,11 +14,14 @@
          return true;
      }
  
-@@ -397,6 +_,7 @@
+@@ -397,6 +_,10 @@
  
      @Override
      public void halt(boolean wait) {
-+        if (isRunning())
++        // Neo: guard against repeated halt calls
++        if (!this.isRunning()) {
++            return;
++        }
          this.executeBlocking(() -> {
              for (ServerPlayer player : Lists.newArrayList(this.getPlayerList().getPlayers())) {
                  if (!player.getUUID().equals(this.uuid)) {

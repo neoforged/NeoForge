@@ -1,8 +1,10 @@
 --- a/net/minecraft/world/entity/animal/fish/TropicalFish.java
 +++ b/net/minecraft/world/entity/animal/fish/TropicalFish.java
-@@ -259,7 +_,7 @@
+@@ -258,8 +_,9 @@
+         return groupData;
      }
  
++    // Neo: widen generic to support subclasses
      public static boolean checkTropicalFishSpawnRules(
 -        EntityType<TropicalFish> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
 +        EntityType<? extends TropicalFish> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
