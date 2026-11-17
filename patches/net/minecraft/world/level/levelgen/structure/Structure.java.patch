@@ -26,3 +26,23 @@
      }
  
      public HolderSet<Biome> biomes() {
+@@ -209,6 +_,19 @@
+     }
+ 
+     public abstract StructureType<?> type();
++
++    /// Neo: {@return Cache of original structure data and structure data modified by structure modifiers}
++    ///
++    /// Modified structure data is set by server after datapacks and serverconfigs load.
++    /// Settings field reads are coremodded to redirect to this.
++    public net.neoforged.neoforge.common.world.ModifiableStructureInfo modifiableStructureInfo() {
++        return this.modifiableStructureInfo;
++    }
++
++    /// Neo: {@return The structure's settings, with modifications if called after modifiers are applied in server init.}
++    public StructureSettings getModifiedStructureSettings() {
++        return this.modifiableStructureInfo().get().structureSettings();
++    }
+ 
+     public record GenerationContext(
+         HolderGetter.Provider registryAccess,
