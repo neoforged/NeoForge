@@ -362,6 +362,7 @@ public class ModListScreen extends Screen {
             super.setSelected(selectedEntry);
             assert ModListScreen.this.displayPanel != null;
             ModListScreen.this.displayPanel.updateSelected(selectedEntry);
+            this.refreshScrollAmount();
         }
 
         class Entry extends ObjectSelectionList.Entry<ModsList.Entry> {
