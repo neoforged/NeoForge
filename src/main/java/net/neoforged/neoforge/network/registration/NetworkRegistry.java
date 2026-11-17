@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.AttributeKey;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,6 +22,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.network.Connection;
@@ -36,7 +39,6 @@ import net.minecraft.network.protocol.common.ClientCommonPacketListener;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.ServerCommonPacketListener;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
-import net.minecraft.network.protocol.common.custom.BrandPayload;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.common.custom.DiscardedPayload;
 import net.minecraft.network.protocol.configuration.ClientConfigurationPacketListener;
@@ -94,6 +96,8 @@ public class NetworkRegistry {
     public static final List<Integer> SUPPORTED_COMMON_NETWORKING_VERSIONS = List.of(1);
 
     private static final Logger LOGGER = LogUtils.getLogger();
+    private static final AttributeKey<Lock> CLIENT_CONNECTION_INITIALIZATION_LOCK = AttributeKey.valueOf("neoforge:client_connection_initialization_lock");
+    private static final AttributeKey<Boolean> CLIENT_CONNECTION_INITIALIZED = AttributeKey.valueOf("neoforge:client_connection_initialized");
 
     /**
      * Map of NeoForge payloads that may be sent before channel negotiation.
@@ -507,11 +511,14 @@ public class NetworkRegistry {
      * <p>
      * Invoked on the network thread.
      *
-     * @param listener      The listener which received the payload.
-     * @param configuration The configuration channels that were negotiated.
-     * @param play          The play channels that were negotiated.
+     * @param listener The listener which received the payload.
+     * @param setup    The network channels that were negotiated.
      */
     public static void initializeNeoForgeConnection(ClientConfigurationPacketListener listener, NetworkPayloadSetup setup) {
+        runClientConnectionInitialization(listener.getConnection(), () -> configureNeoForgeConnection(listener, setup));
+    }
+
+    private static void configureNeoForgeConnection(ClientConfigurationPacketListener listener, NetworkPayloadSetup setup) {
         ChannelAttributes.setPayloadSetup(listener.getConnection(), setup);
         ChannelAttributes.setConnectionType(listener.getConnection(), listener.getConnectionType());
 
@@ -525,19 +532,28 @@ public class NetworkRegistry {
     }
 
     /**
-     * Invoked by the client when no {@link ModdedNetworkQueryPayload} has been received, but instead a {@link BrandPayload} has been received as the first packet during negotiation in the configuration phase.
+     * Initializes the client-side network state for a server that is not running NeoForge.
      * <p>
-     * If this happens then the client will do a negotiation of its own internal channel configuration, to check if any mods are installed that require a modded connection to the server.
-     * If those are found then the connection is aborted and the client disconnects from the server.
-     * <p>
-     * This method should never be invoked on a connection where the server is {@link ConnectionType#NEOFORGE}.
-     * <p>
-     * Invoked on the network thread.
+     * The client checks its registered channels for vanilla compatibility and disconnects if any require a modded server.
+     * Initialization is performed once per connection on the network thread. If the connection has since been identified as {@link ConnectionType#NEOFORGE}, this method does nothing.
      *
-     * @param listener The listener which received the brand payload.
-     * @return True if the vanilla connection should be handled by the client, false otherwise.
+     * @param listener the active configuration listener
      */
     public static void initializeOtherConnection(ClientConfigurationPacketListener listener) {
+        var eventLoop = listener.getConnection().channel().eventLoop();
+        if (!eventLoop.inEventLoop()) {
+            eventLoop.submit(() -> initializeOtherConnection(listener)).syncUninterruptibly();
+            return;
+        }
+
+        if (!listener.getConnectionType().isOther()) {
+            return;
+        }
+
+        runClientConnectionInitialization(listener.getConnection(), () -> configureOtherConnection(listener));
+    }
+
+    private static void configureOtherConnection(ClientConfigurationPacketListener listener) {
         // Because we are in vanilla land, no matter what we are not able to support any custom channels.
         ChannelAttributes.setPayloadSetup(listener.getConnection(), NetworkPayloadSetup.empty());
         ChannelAttributes.setConnectionType(listener.getConnection(), listener.getConnectionType());
@@ -578,6 +594,35 @@ public class NetworkRegistry {
                 .filter(registration -> registration.getValue().optional())
                 .forEach(registration -> nowListeningOn.add(registration.getKey()));
         listener.send(new MinecraftRegisterPayload(nowListeningOn.build()));
+    }
+
+    // Vanilla and NeoForge initialization can race between the render and network threads.
+    // Keep the initialization check and filter injection atomic, and wait for an in-progress initialization.
+    private static void runClientConnectionInitialization(Connection connection, Runnable initialization) {
+        Lock lock = getClientConnectionInitializationLock(connection);
+        lock.lock();
+        try {
+            if (Boolean.TRUE.equals(connection.channel().attr(CLIENT_CONNECTION_INITIALIZED).get())) {
+                return;
+            }
+
+            connection.channel().attr(CLIENT_CONNECTION_INITIALIZED).set(true);
+            initialization.run();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private static Lock getClientConnectionInitializationLock(Connection connection) {
+        var attribute = connection.channel().attr(CLIENT_CONNECTION_INITIALIZATION_LOCK);
+        Lock lock = attribute.get();
+        if (lock != null) {
+            return lock;
+        }
+
+        Lock newLock = new ReentrantLock();
+        Lock existingLock = attribute.setIfAbsent(newLock);
+        return existingLock != null ? existingLock : newLock;
     }
 
     /**
