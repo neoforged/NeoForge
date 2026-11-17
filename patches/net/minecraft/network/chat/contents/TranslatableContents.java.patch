@@ -45,6 +45,29 @@
          for (FormattedText part : this.decomposedParts) {
              Optional<T> result = part.visitUnbounded(output, currentStyle);
              if (result.isPresent()) {
+@@ -173,6 +_,9 @@
+         }
+ 
+         return Optional.empty();
++        } finally {
++            net.neoforged.neoforge.common.util.InsertingContents.popTranslation();
++        }
+     }
+ 
+     @Override
+@@ -180,6 +_,12 @@
+         this.decompose();
+         int decomposedPartsSize = this.decomposedParts.size();
+ 
++        if (!net.neoforged.neoforge.common.util.InsertingContents.pushTranslation(this)) {
++            // Reference cycle.
++            return Optional.empty();
++        }
++
++        try {
+         for (int i = 0; i < decomposedPartsSize; i++) {
+             Optional<T> result = this.decomposedParts.get(i).visitUnbounded(output);
+             if (result.isPresent()) {
 @@ -188,6 +_,9 @@
          }
  
