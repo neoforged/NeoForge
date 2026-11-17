@@ -87,6 +87,21 @@
      public static class Properties implements IItemPropertiesExtensions {
          private static final DependantName<Item, String> BLOCK_DESCRIPTION_ID = id -> Util.makeDescriptionId("block", id.identifier());
          private static final DependantName<Item, String> ITEM_DESCRIPTION_ID = id -> Util.makeDescriptionId("item", id.identifier());
+@@ -393,6 +_,14 @@
+         private @Nullable ResourceKey<Item> id;
+         private DependantName<Item, String> descriptionId = ITEM_DESCRIPTION_ID;
+         private final DependantName<Item, Identifier> model = ResourceKey::identifier;
++        /// Neo: indicates whether this item can be repaired in a grindstone or `RepairItemRecipe`
++        private boolean canCombineRepair = true;
++
++        /// Neo: mark this item as not being repairable by combining two in a grindstone or `RepairItemRecipe`
++        public Item.Properties setNoCombineRepair() {
++            this.canCombineRepair = false;
++            return this;
++        }
+ 
+         private static void initDefault(DataComponentMap.Builder builder, HolderLookup.Provider context) {
+             builder.addAll(DataComponents.COMMON_ITEM_COMPONENTS);
 @@ -699,7 +_,11 @@
          }
  
