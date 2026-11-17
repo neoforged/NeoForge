@@ -92,14 +92,16 @@
      public enum TemperatureModifier implements StringRepresentable, IExtensibleEnum {
          NONE("none") {
              @Override
-@@ -406,11 +_,20 @@
+@@ -406,11 +_,22 @@
          };
  
          private final String name;
++        /// Neo: holds the temperature override to apply
 +        private final TemperatureOverride delegate;
          public static final Codec<Biome.TemperatureModifier> CODEC = StringRepresentable.fromEnum(Biome.TemperatureModifier::values);
  
 -        public abstract float modifyTemperature(final BlockPos pos, final float baseTemperature);
++        // Neo: make non-abstract and defer to delegate modifier
 +        public float modifyTemperature(final BlockPos pos, final float baseTemperature) {
 +            return delegate.modifyTemperature(pos, baseTemperature);
 +        }
@@ -114,7 +116,7 @@
              this.name = name;
          }
  
-@@ -421,6 +_,15 @@
+@@ -421,6 +_,16 @@
          @Override
          public String getSerializedName() {
              return this.name;
@@ -124,6 +126,7 @@
 +            return net.neoforged.fml.common.asm.enumextension.ExtensionInfo.nonExtended(Biome.TemperatureModifier.class);
 +        }
 +
++        /// Neo: functional interface representing a modifier to apply to the biome's temperature
 +        @FunctionalInterface
 +        public interface TemperatureOverride {
 +            float modifyTemperature(BlockPos pos, float baseTemperature);
