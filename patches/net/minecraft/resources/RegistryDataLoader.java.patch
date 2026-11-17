@@ -34,6 +34,50 @@
          new RegistryDataLoader.RegistryData<>(Registries.BIOME, Biome.NETWORK_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.CHAT_TYPE, ChatType.DIRECT_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.TRIM_PATTERN, TrimPattern.DIRECT_CODEC),
+@@ -203,7 +_,7 @@
+         new RegistryDataLoader.RegistryData<>(Registries.BLOCK_STATE_PROVIDER, BlockStateProvider.DIRECT_CODEC),
+         new RegistryDataLoader.RegistryData<>(Registries.BLOCK_SOUND_SET, BlockSoundSet.DIRECT_CODEC),
+         new RegistryDataLoader.RegistryData<>(Registries.DISPENSE_BEHAVIOR, DispenseBehavior.LIST_CODEC)
+-    );
++    )); // Neo: Keep the list so custom registries can be added later
+ 
+     public static Stream<ResourceKey<? extends Registry<?>>> allLoadableRegistries() {
+         return Stream.of(WORLD_REGISTRIES, DIMENSION_REGISTRIES, RELOADABLE_REGISTRIES).flatMap(Collection::stream).map(RegistryDataLoader.RegistryData::key);
+@@ -213,19 +_,32 @@
+         return Stream.concat(BuiltInRegistries.REGISTRY.listElementIds(), allLoadableRegistries());
+     }
+ 
++    /// @deprecated Neo: use [#load(ResourceManager, List, List, Executor, List)] instead
++    @Deprecated
+     public static CompletableFuture<RegistryAccess.Frozen> load(
+         ResourceManager resourceManager,
+         List<HolderLookup.RegistryLookup<?>> contextRegistries,
+         List<RegistryDataLoader.RegistryData<?>> registriesToLoad,
+         Executor executor
+     ) {
++        return load(resourceManager, contextRegistries, registriesToLoad, executor, List.of());
++    }
++
++    public static CompletableFuture<RegistryAccess.Frozen> load(
++            ResourceManager resourceManager,
++            List<HolderLookup.RegistryLookup<?>> contextRegistries,
++            List<RegistryDataLoader.RegistryData<?>> registriesToLoad,
++            Executor executor,
++            List<Registry.PendingTags<?>> pendingTags
++    ) {
+         RegistryDataLoader.LoaderFactory loaderFactory = new RegistryDataLoader.LoaderFactory() {
+             @Override
+             public <T> RegistryLoadTask<T> create(RegistryDataLoader.RegistryData<T> data, Map<ResourceKey<?>, Exception> loadingErrors) {
+-                return new ResourceManagerRegistryLoadTask<>(data, Lifecycle.stable(), loadingErrors, resourceManager);
++                // Neo: add pending tags for use in loading conditions
++                return new ResourceManagerRegistryLoadTask<>(data, Lifecycle.stable(), loadingErrors, resourceManager, pendingTags);
+             }
+         };
+-        return load(loaderFactory, contextRegistries, registriesToLoad, executor);
++        return load(loaderFactory, contextRegistries, registriesToLoad, executor, true);
+     }
+ 
+     public static CompletableFuture<RegistryAccess.Frozen> load(
 @@ -241,14 +_,16 @@
                  return new NetworkRegistryLoadTask<>(data, Lifecycle.stable(), loadingErrors, entries, knownDataSource);
              }

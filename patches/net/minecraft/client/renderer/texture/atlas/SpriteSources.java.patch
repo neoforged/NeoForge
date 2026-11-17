@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/texture/atlas/SpriteSources.java
++++ b/net/minecraft/client/renderer/texture/atlas/SpriteSources.java
+@@ -17,7 +_,7 @@
+ @OnlyIn(Dist.CLIENT)
+ public class SpriteSources {
+     public static final Codec<SpriteSource> CODEC = BuiltInClientRegistries.SPRITE_SOURCE_TYPE.byNameCodec().dispatch(SpriteSource::codec, c -> c);
+-    public static final Codec<List<SpriteSource>> FILE_CODEC = CODEC.listOf().fieldOf("sources").codec();
++    public static final Codec<List<SpriteSource>> FILE_CODEC = net.neoforged.neoforge.common.conditions.ConditionalOps.decodeListWithElementConditions(CODEC).fieldOf("sources").codec();
+ 
+     public static void bootstrap(WritableRegistry<MapCodec<? extends SpriteSource>> registry) {
+         Registry.register(registry, "single", SingleFile.MAP_CODEC);

@@ -17,8 +17,23 @@
          this.demo = gameConfig.game.demo;
          this.allowsMultiplayer = !gameConfig.game.disableMultiplayer;
          this.allowsChat = !gameConfig.game.disableChat;
-@@ -493,7 +_,8 @@
-                         gameConfig.game.renderDebugLabels,
+@@ -477,6 +_,8 @@
+         PreferredGraphicsApi preferredGraphicsBackend = forcedGraphicsApi == null ? this.options.preferredGraphicsBackend().get() : forcedGraphicsApi;
+         GpuBackend[] backendsToTry = preferredGraphicsBackend.getBackendsToTry();
+         String initialWindowTitle = this.createTitle();
++        // Neo: Enable GL debug labels and synchronous GL debug output via FML config
++        boolean enableGlDebug = net.neoforged.fml.loading.FMLConfig.getBoolConfigValue(net.neoforged.fml.loading.FMLConfig.ConfigValue.DEBUG_OPENGL);
+ 
+         for (GpuBackend backendToTry : backendsToTry) {
+             boolean libraryLoaded = false;
+@@ -489,11 +_,12 @@
+                     SharedConstants.getCurrentVersion().dataVersion().version(),
+                     new GpuDebugOptions(
+                         this.options.glDebugVerbosity,
+-                        SharedConstants.DEBUG_SYNCHRONOUS_GL_LOGS,
+-                        gameConfig.game.renderDebugLabels,
++                        SharedConstants.DEBUG_SYNCHRONOUS_GL_LOGS || enableGlDebug,
++                        gameConfig.game.renderDebugLabels || enableGlDebug,
                          gameConfig.game.vulkanValidation,
                          SharedConstants.IS_RENDERDOC_ATTACHED,
 -                        DevUtil.IS_RUNNING_IN_IDE
@@ -35,6 +50,14 @@
          int maxSize = deviceInfo.limits().maxTextureSizeForFormat(GpuFormat.RGBA8_UNORM);
          this.window = new Window(
              this,
+@@ -547,6 +_,7 @@
+         );
+         this.window.setNeedsBorderlessFullscreenPadding(Util.getPlatform() == Util.OS.WINDOWS && !this.windowSurface.isDXGI());
+         this.sdlEventHandler = new SDLEventHandler(this, this.window);
++        net.neoforged.neoforge.client.loading.earlydisplay.EarlyWindowHandoff.completeWindowHandoff(this.window);
+         this.textInputManager = new TextInputManager(this.window);
+         this.sdlEventHandler.flushInputEvents();
+         this.window
 @@ -570,6 +_,9 @@
          this.keyboardHandler = new KeyboardHandler(this);
          this.options.applyGraphicsPreset(this.options.graphicsPreset().get());
@@ -89,7 +112,7 @@
          GameLoadCookie loadCookie = new GameLoadCookie(realmsClient, gameConfig.quickPlay);
          this.gui.setOverlay(new LoadingOverlay(this, reloadInstance, maybeT -> Util.ifElse(maybeT, t -> this.rollbackResourcePacks(t, loadCookie), () -> {
 -            if (DevUtil.IS_RUNNING_IN_IDE) {
-+            if (SharedConstants.IS_RUNNING_IN_IDE && false /* Neo: Disable self-test */) {
++            if (DevUtil.IS_RUNNING_IN_IDE && false /* Neo: Disable self-test */) {
                  this.selfTest();
              }
  
@@ -101,15 +124,14 @@
          if (!this.gameLoadFinished) {
              this.gameLoadFinished = true;
              this.onGameLoadFinished(loadCookie);
-@@ -821,7 +_,7 @@
+@@ -821,6 +_,7 @@
      private String createTitle() {
          StringBuilder builder = new StringBuilder("Minecraft");
          if (checkModStatus().shouldReportAsModified()) {
--            builder.append("*");
-+            builder.append(' ').append(net.neoforged.neoforge.internal.BrandingControl.BRANDING_NAME).append('*');
++            builder.append(' ').append(net.neoforged.neoforge.internal.BrandingControl.BRANDING_NAME);
+             builder.append("*");
          }
  
-         builder.append(" ");
 @@ -861,7 +_,8 @@
      }
  

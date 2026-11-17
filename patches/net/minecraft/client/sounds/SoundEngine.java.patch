@@ -8,6 +8,14 @@
      }
  
      public void reload() {
+@@ -93,6 +_,7 @@
+         });
+         this.destroy();
+         this.loadLibrary();
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.sound.SoundEngineLoadEvent(this));
+     }
+ 
+     private synchronized void loadLibrary() {
 @@ -355,6 +_,15 @@
              return SoundEngine.PlayResult.NOT_STARTED;
          }
