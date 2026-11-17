@@ -25,6 +25,14 @@
                  if (!entity.ignoreExplosion(this)) {
                      double dist = Math.sqrt(entity.distanceToSqr(this.center)) / doubleRadius;
                      if (!(dist > 1.0)) {
+@@ -196,6 +_,7 @@
+                                 : 0.0;
+                             double knockbackPower = (1.0 - dist) * exposure * knockbackMultiplier * (1.0 - knockbackResistance);
+                             Vec3 knockback = direction.scale(knockbackPower);
++                            knockback = net.neoforged.neoforge.event.EventHooks.getExplosionKnockback(this.level, this, entity, knockback, blocks);
+                             if (entity.getControllingPassengerOrSelf() instanceof ServerPlayer serverPlayer) {
+                                 serverPlayer.connection.send(new ClientboundAddEntityMotionPacket(entity.getId(), knockback));
+                             } else {
 @@ -238,7 +_,8 @@
      public int explode() {
          this.level.gameEvent(this.source, GameEvent.EXPLODE, this.center);
