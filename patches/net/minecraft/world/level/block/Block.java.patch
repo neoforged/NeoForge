@@ -17,7 +17,7 @@
          this.registerDefaultState(this.stateDefinition.any());
 -        if (DevUtil.IS_RUNNING_IN_IDE) {
 +        // Neo: disable block class name check
-+        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
++        if (DevUtil.IS_RUNNING_IN_IDE && false) {
              String className = this.getClass().getSimpleName();
              if (!className.endsWith("Block")) {
                  LOGGER.error("Block classes should end with Block and {} doesn't.", className);

@@ -6,7 +6,7 @@
      public static final String MANAGEMENT_SERVER_TLS_KEYSTORE_PASSWORD_KEY = "management-server-tls-keystore-password";
 -    public final boolean onlineMode = this.get("online-mode", true);
 +    // Neo: default online-mode to false in dev environments
-+    public final boolean onlineMode = this.get("online-mode", !net.minecraft.SharedConstants.IS_RUNNING_IN_IDE);
++    public final boolean onlineMode = this.get("online-mode", !net.minecraft.util.DevUtil.IS_RUNNING_IN_IDE);
      public final boolean preventProxyConnections = this.get("prevent-proxy-connections", false);
      public final String serverIp = this.get("server-ip", "");
      public final Settings<DedicatedServerProperties>.MutableValue<Boolean> allowFlight = this.getMutable("allow-flight", false);

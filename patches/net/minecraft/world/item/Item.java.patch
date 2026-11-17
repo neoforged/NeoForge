@@ -26,7 +26,7 @@
 -        if (DevUtil.IS_RUNNING_IN_IDE) {
 +        this.canCombineRepair = properties.canCombineRepair;
 +        // Neo: disable item class name check
-+        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
++        if (DevUtil.IS_RUNNING_IN_IDE && false) {
              String className = this.getClass().getSimpleName();
              if (!className.endsWith("Item")) {
                  LOGGER.error("Item classes should end with Item and {} doesn't.", className);
