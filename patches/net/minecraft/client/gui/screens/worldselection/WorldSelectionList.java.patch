@@ -8,6 +8,15 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final Component FROM_NEWER_TOOLTIP_1 = Component.translatable("selectWorld.tooltip.fromNewerVersion1").withStyle(ChatFormatting.RED);
      private static final Component FROM_NEWER_TOOLTIP_2 = Component.translatable("selectWorld.tooltip.fromNewerVersion2").withStyle(ChatFormatting.RED);
+@@ -501,6 +_,8 @@
+             this.infoText.setPosition(textX, this.getContentY() + 9 + 9 + 3);
+             this.infoText.extractRenderState(graphics);
+             graphics.blit(GuiPipeline.TEXTURED, this.icon.textureLocation(), this.getContentX(), this.getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);
++            // Neo: render icon on list entry indication experimental state
++            this.renderExperimentalWarning(graphics, hovered);
+             if (this.list.entryType == WorldSelectionList.EntryType.SINGLEPLAYER && hovered) {
+                 graphics.fill(this.getContentX(), this.getContentY(), this.getContentX() + 32, this.getContentY() + 32, -1601138544);
+                 int relX = graphics.mouseX() - this.getContentX();
 @@ -787,6 +_,19 @@
          @Override
          public LevelSummary getLevelSummary() {
@@ -15,14 +24,14 @@
 +        }
 +
 +        // Neo: add experimental warning icon for worlds in the world selection screen
-+        private void renderExperimentalWarning(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean hovered) {
++        private void renderExperimentalWarning(GuiGraphicsExtractor graphics, boolean hovered) {
 +            if (this.summary.getSettings() != null && this.summary.getSettings().lifecycle().equals(com.mojang.serialization.Lifecycle.experimental())) {
 +                int leftStart = this.getContentX() + this.getContentWidth();
-+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, WorldSelectionList.NEO_EXPERIMENTAL_WARNING_ICON, leftStart - 36, this.getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);
-+                if (hovered && mouseX > leftStart - 36 && mouseX < leftStart) {
++                graphics.blit(GuiPipeline.TEXTURED, WorldSelectionList.NEO_EXPERIMENTAL_WARNING_ICON, leftStart - 36, this.getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);
++                if (hovered && graphics.mouseX() > leftStart - 36 && graphics.mouseX() < leftStart) {
 +                    var font = Minecraft.getInstance().font;
 +                    List<net.minecraft.util.FormattedCharSequence> tooltip = font.split(Component.translatable("neoforge.experimentalsettings.tooltip"), 200);
-+                    guiGraphics.setTooltipForNextFrame(font, tooltip, mouseX, mouseY);
++                    graphics.setTooltipForNextFrame(font, tooltip, graphics.mouseX(), graphics.mouseY());
 +                }
 +            }
          }

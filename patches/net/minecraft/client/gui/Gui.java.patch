@@ -9,6 +9,57 @@
  
      public Gui(Minecraft minecraft, Hud hud, GuiRenderState guiRenderState) {
          this.minecraft = minecraft;
+@@ -200,7 +_,8 @@
+             profiler.push("screen");
+ 
+             try {
+-                this.screen.extractRenderStateWithTooltipAndSubtitles(graphics);
++                // Neo: Wrap Screen#extractRenderStateWithTooltipAndSubtitles() to allow for screen Layers and ScreenEvent.Render.[Pre/Post]
++                net.neoforged.neoforge.client.ClientHooks.extractScreen(this.screen, this.screenLayers, graphics);
+             } catch (Throwable t) {
+                 CrashReport report = CrashReport.forThrowable(t, "Rendering screen");
+                 CrashReportCategory category = report.addCategory("Screen render details");
+@@ -256,14 +_,8 @@
+             this.screenTracySection = null;
+         }
+ 
+-        if (hadScreenOpen) {
+-            if (oldScreen.isInputCaptured()) {
+-                oldScreen.clearFocus();
+-            }
+-
+-            this.minecraft.textInputManager().stopTextInput();
+-            oldScreen.removed();
+-        } else {
++        // Neo: move screen teardown after ScreenEvent.Opening dispatch
++        if (!hadScreenOpen) {
+             this.minecraft.setLastInputType(InputType.NONE);
+         }
+ 
+@@ -287,6 +_,23 @@
+             this.minecraft.gameMode.stopDestroyBlock();
+         }
+ 
++        this.clearScreenLayers();
++        if (newScreen != null) {
++            var event = new net.neoforged.neoforge.client.event.ScreenEvent.Opening(oldScreen, newScreen);
++            if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) {
++                return;
++            }
++            newScreen = event.getNewScreen();
++        }
++        if (oldScreen != null && newScreen != oldScreen) {
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Closing(oldScreen));
++            if (oldScreen.isInputCaptured()) {
++                oldScreen.clearFocus();
++            }
++            this.minecraft.textInputManager().stopTextInput();
++            oldScreen.removed();
++        }
++
+         this.screen = newScreen;
+         if (newScreen != null) {
+             newScreen.added();
 @@ -424,6 +_,8 @@
              nextStep = () -> this.setScreen(screen);
          }

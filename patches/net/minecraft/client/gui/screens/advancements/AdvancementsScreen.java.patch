@@ -41,6 +41,19 @@
                  if (tab.isMouseOver(xo, yo, event.x(), event.y())) {
                      this.advancements.setSelectedTab(tab.getRootAdvancement(), true);
                      break;
+@@ -147,6 +_,12 @@
+     @Override
+     public void extractRenderState(GuiGraphicsExtractor graphics) {
+         super.extractRenderState(graphics);
++        // Neo: render page indicator
++        if (this.maxPages != 0) {
++            net.minecraft.network.chat.Component page = Component.literal(String.format("%d / %d", this.tabPage + 1, this.maxPages + 1));
++            int width = this.font.width(page);
++            graphics.text(this.font, page.getVisualOrderText(), this.leftPos + (WINDOW_WIDTH / 2) - (width / 2), this.topPos - 44, -1);
++        }
+         graphics.nextStratum();
+         this.extractInside(graphics);
+         graphics.nextStratum();
 @@ -212,10 +_,18 @@
          graphics.blit(GuiPipeline.TEXTURED, WINDOW_LOCATION, this.leftPos, this.topPos, 0.0F, 0.0F, 252, 140, 256, 256);
          if (this.tabs.size() > 1) {
@@ -60,3 +73,14 @@
                  tab.extractIcon(graphics, this.leftPos, this.topPos);
              }
          }
+@@ -234,6 +_,10 @@
+ 
+         if (this.tabs.size() > 1) {
+             for (AdvancementTab tab : this.tabs.values()) {
++                // Neo: only render tooltips for tabs of the active page
++                if (tab.getPage() != this.tabPage) {
++                    continue;
++                }
+                 if (tab.isMouseOver(this.leftPos, this.topPos, graphics.mouseX(), graphics.mouseY())) {
+                     graphics.setTooltipForNextFrame(this.font, tab.getTitle(), graphics.mouseX(), graphics.mouseY());
+                 }

@@ -1,5 +1,18 @@
 --- a/net/minecraft/client/gui/screens/Screen.java
 +++ b/net/minecraft/client/gui/screens/Screen.java
+@@ -114,8 +_,12 @@
+     public final void extractRenderStateWithTooltipAndSubtitles(GuiGraphicsExtractor graphics) {
+         graphics.nextStratum();
+         this.extractBackground(graphics);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Render.Background(this, graphics));
+         graphics.nextStratum();
+         this.extractRenderState(graphics);
++        if (!(this instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>)) {
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Render.Foreground(this, graphics));
++        }
+         graphics.extractDeferredElements();
+     }
+ 
 @@ -208,7 +_,8 @@
      }
  

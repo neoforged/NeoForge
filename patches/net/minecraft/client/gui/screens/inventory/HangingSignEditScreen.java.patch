@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/gui/screens/inventory/HangingSignEditScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/HangingSignEditScreen.java
-@@ -17,7 +17,8 @@
-     private static final Vector3fc TEXT_SCALE = new Vector3f(1.0F, 1.0F, 1.0F);
-     private static final int TEXTURE_WIDTH = 16;
+@@ -16,7 +_,8 @@
      private static final int TEXTURE_HEIGHT = 16;
+     private static final int TEXT_Y_OFFSET = -22;
+     private static final int TEXT_SPACING = 9;
 -    private final Identifier texture = Identifier.withDefaultNamespace("textures/gui/hanging_signs/" + this.woodType.name() + ".png");
 +    // Neo: take namespace from wood type name into account
 +    private final Identifier texture = Identifier.parse(this.woodType.name() + ".png").withPrefix("textures/gui/hanging_signs/");

@@ -1,0 +1,25 @@
+--- a/net/minecraft/client/gui/screens/recipebook/RecipeBookPage.java
++++ b/net/minecraft/client/gui/screens/recipebook/RecipeBookPage.java
+@@ -68,11 +_,21 @@
+     public RecipeBookPage(
+         RecipeBookComponent<?> parent, SlotSelectTime slotSelectTime, RecipeBookComponent.RecipePlacer recipePlacer, Predicate<RecipeButton> tryOpenOverlay
+     ) {
++        this(parent, slotSelectTime, recipePlacer, tryOpenOverlay, RecipeButton::new);
++    }
++
++    public RecipeBookPage(
++        RecipeBookComponent<?> parent,
++        SlotSelectTime slotSelectTime,
++        RecipeBookComponent.RecipePlacer recipePlacer,
++        Predicate<RecipeButton> tryOpenOverlay,
++        net.neoforged.neoforge.client.recipebook.RecipeButtonCreator recipeButtonCreator
++    ) {
+         super(0, 0, 125, 126, CommonComponents.EMPTY);
+         this.parent = parent;
+ 
+         for (int i = 0; i < 20; i++) {
+-            this.buttons.add(new RecipeButton(slotSelectTime, recipePlacer, tryOpenOverlay));
++            this.buttons.add(recipeButtonCreator.create(slotSelectTime, recipePlacer, tryOpenOverlay));
+         }
+     }
+ 

@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/gui/screens/inventory/AbstractRecipeBookScreen.java
++++ b/net/minecraft/client/gui/screens/inventory/AbstractRecipeBookScreen.java
+@@ -89,6 +_,7 @@
+ 
+         graphics.nextStratum();
+         this.recipeBookComponent.extractRenderState(graphics);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Render.Foreground(this, graphics));
+         graphics.nextStratum();
+         this.extractCarriedItem(graphics);
+     }

@@ -1,0 +1,30 @@
+--- a/net/minecraft/client/gui/screens/recipebook/OverlayRecipeComponent.java
++++ b/net/minecraft/client/gui/screens/recipebook/OverlayRecipeComponent.java
+@@ -65,8 +_,15 @@
+     private final SlotSelectTime slotSelectTime;
+     private final boolean isFurnaceMenu;
+     private final RecipeBookComponent.RecipePlacer recipePlacer;
++    /// Neo: Make it possible for modded recipe books to have custom recipe book overlays.
++    private final net.neoforged.neoforge.client.recipebook.@Nullable RecipeOverlayButtonCreator overlayButtonCreator;
+ 
+     public OverlayRecipeComponent(SlotSelectTime slotSelectTime, boolean isFurnaceMenu, RecipeBookComponent.RecipePlacer recipePlacer) {
++        this(slotSelectTime, isFurnaceMenu, recipePlacer, null);
++    }
++
++    public OverlayRecipeComponent(SlotSelectTime slotSelectTime, boolean isFurnaceMenu, RecipeBookComponent.RecipePlacer recipePlacer, net.neoforged.neoforge.client.recipebook.@Nullable RecipeOverlayButtonCreator overlayButtonCreator) {
++        this.overlayButtonCreator = overlayButtonCreator;
+         super(0, 0, 0, 0, CommonComponents.EMPTY);
+         this.slotSelectTime = slotSelectTime;
+         this.isFurnaceMenu = isFurnaceMenu;
+@@ -118,6 +_,11 @@
+             int overlayButtonX = this.getX() + 4 + 25 * (i % maxRow);
+             int overlayButtonY = this.getY() + 4 + 1 + 25 * (i / maxRow);
+             ItemStack result = recipe.display().result().resolveForFirstStack(context);
++            // Neo: use custom button creator, if present
++            if (this.overlayButtonCreator != null) {
++                this.recipeButtons.add(this.overlayButtonCreator.create(this, x, y, recipe.id(), recipe.display(), context, canCraft));
++                continue;
++            }
+             if (this.isFurnaceMenu) {
+                 this.recipeButtons
+                     .add(

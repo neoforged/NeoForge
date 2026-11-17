@@ -1,10 +1,42 @@
 --- a/net/minecraft/client/gui/screens/debug/DebugOptionsScreen.java
 +++ b/net/minecraft/client/gui/screens/debug/DebugOptionsScreen.java
-@@ -310,6 +_,7 @@
+@@ -172,7 +_,8 @@
+             this.key = key;
+             DebugScreenEntry entry = BuiltInClientRegistries.DEBUG_SCREEN_ENTRY.getValue(key);
+             this.isAllowed = entry != null && entry.isAllowed(DebugOptionsScreen.this.minecraft.showOnlyReducedInfo());
+-            String name = key.identifier().getPath();
++            // Neo: Display the full ID for modded entries
++            String name = key.identifier().toShortString();
+             if (this.isAllowed) {
+                 this.name = name;
+             } else {
+@@ -233,8 +_,10 @@
+         public void extractContent(GuiGraphicsExtractor graphics, boolean hovered) {
+             int x = this.getContentX();
+             int y = this.getContentY();
+-            graphics.text(DebugOptionsScreen.this.minecraft.font, this.name, x, y + 5, this.isAllowed ? -1 : -8355712);
++            // Neo: Moved 'buttonsStartX' up for 'maxX' calculation for scrolling string render
+             int buttonsStartX = x + this.getContentWidth() - this.never.getWidth() - this.overlay.getWidth() - this.always.getWidth();
++            // Neo: Scroll entry names that go out of bounds
++            graphics.drawScrollingString(graphics.textRenderer(), DebugOptionsScreen.this.minecraft.font, Component.literal(this.name).withColor(this.isAllowed ? -1 : -8355712), x, buttonsStartX, y + 5);
+             if (!this.isAllowed && hovered && graphics.mouseX() < buttonsStartX) {
+                 graphics.setTooltipForNextFrame(DebugOptionsScreen.NOT_ALLOWED_TOOLTIP, graphics.mouseX(), graphics.mouseY());
+             }
+@@ -296,6 +_,9 @@
+ 
+         public void updateSearch(String value) {
+             this.clearEntries();
++            // Neo: Custom entry appending logic to better handle searching, categories and sorting
++            net.neoforged.neoforge.client.ClientHooks.updateDebugScreenEntriesForSearch(value, category -> addEntry(new CategoryEntry(category.label())), holder -> addEntry(new OptionEntry(holder.key())));
++            if (false) {
+             List<Holder.Reference<DebugScreenEntry>> all = BuiltInClientRegistries.DEBUG_SCREEN_ENTRY.listElements().sorted(COMPARATOR).toList();
+             DebugEntryCategory currentCategory = null;
+ 
+@@ -309,6 +_,7 @@
+ 
                      this.addEntry(DebugOptionsScreen.this.new OptionEntry(holder.key()));
                  }
-             }
 +            }
+             }
  
              this.notifyListUpdated();
-         }

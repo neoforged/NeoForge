@@ -1,8 +1,8 @@
 --- a/net/minecraft/client/gui/screens/inventory/SignEditScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/SignEditScreen.java
-@@ -20,7 +20,8 @@
-     private static final int POST_HEIGHT = 14;
-     private static final Vector3fc TEXT_SCALE = new Vector3f(0.9765628F, 0.9765628F, 0.9765628F);
+@@ -18,7 +_,8 @@
+     private static final int TEXT_Y_OFFSET = -26;
+     private static final int TEXT_SPACING = 10;
      private final int displayedHeight;
 -    private final Identifier texture = Identifier.withDefaultNamespace("textures/gui/signs/" + this.woodType.name() + ".png");
 +    // Neo: take namespace from wood type name into account

@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.client.event;
 
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -22,20 +21,14 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public abstract class RenderGuiEvent extends Event {
     private final GuiGraphicsExtractor guiGraphics;
-    private final DeltaTracker partialTick;
 
     @ApiStatus.Internal
-    protected RenderGuiEvent(GuiGraphicsExtractor guiGraphics, DeltaTracker partialTick) {
+    protected RenderGuiEvent(GuiGraphicsExtractor guiGraphics) {
         this.guiGraphics = guiGraphics;
-        this.partialTick = partialTick;
     }
 
     public GuiGraphicsExtractor getGuiGraphics() {
         return guiGraphics;
-    }
-
-    public DeltaTracker getPartialTick() {
-        return partialTick;
     }
 
     /**
@@ -52,8 +45,8 @@ public abstract class RenderGuiEvent extends Event {
      */
     public static class Pre extends RenderGuiEvent implements ICancellableEvent {
         @ApiStatus.Internal
-        public Pre(GuiGraphicsExtractor guiGraphics, DeltaTracker partialTick) {
-            super(guiGraphics, partialTick);
+        public Pre(GuiGraphicsExtractor guiGraphics) {
+            super(guiGraphics);
         }
     }
 
@@ -67,8 +60,8 @@ public abstract class RenderGuiEvent extends Event {
      */
     public static class Post extends RenderGuiEvent {
         @ApiStatus.Internal
-        public Post(GuiGraphicsExtractor guiGraphics, DeltaTracker partialTick) {
-            super(guiGraphics, partialTick);
+        public Post(GuiGraphicsExtractor guiGraphics) {
+            super(guiGraphics);
         }
     }
 }

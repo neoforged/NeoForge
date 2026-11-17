@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.platform.Window;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.neoforged.bus.api.Event;
@@ -24,13 +23,11 @@ import org.jetbrains.annotations.ApiStatus;
 public abstract class CustomizeGuiOverlayEvent extends Event {
     private final Window window;
     private final GuiGraphicsExtractor guiGraphics;
-    private final DeltaTracker partialTick;
 
     @ApiStatus.Internal
-    protected CustomizeGuiOverlayEvent(Window window, GuiGraphicsExtractor guiGraphics, DeltaTracker partialTick) {
+    protected CustomizeGuiOverlayEvent(Window window, GuiGraphicsExtractor guiGraphics) {
         this.window = window;
         this.guiGraphics = guiGraphics;
-        this.partialTick = partialTick;
     }
 
     public Window getWindow() {
@@ -39,10 +36,6 @@ public abstract class CustomizeGuiOverlayEvent extends Event {
 
     public GuiGraphicsExtractor getGuiGraphics() {
         return guiGraphics;
-    }
-
-    public DeltaTracker getPartialTick() {
-        return partialTick;
     }
 
     /// Fired **before** a boss health bar is rendered to the screen.
@@ -59,8 +52,8 @@ public abstract class CustomizeGuiOverlayEvent extends Event {
         private int increment;
 
         @ApiStatus.Internal
-        public BossEventProgress(Window window, GuiGraphicsExtractor guiGraphics, DeltaTracker partialTick, LerpingBossEvent bossEvent, int x, int y, int increment) {
-            super(window, guiGraphics, partialTick);
+        public BossEventProgress(Window window, GuiGraphicsExtractor guiGraphics, LerpingBossEvent bossEvent, int x, int y, int increment) {
+            super(window, guiGraphics);
             this.bossEvent = bossEvent;
             this.x = x;
             this.y = y;
@@ -109,8 +102,8 @@ public abstract class CustomizeGuiOverlayEvent extends Event {
         private int posY;
 
         @ApiStatus.Internal
-        public Chat(Window window, GuiGraphicsExtractor guiGraphics, DeltaTracker partialTick, int posX, int posY) {
-            super(window, guiGraphics, partialTick);
+        public Chat(Window window, GuiGraphicsExtractor guiGraphics, int posX, int posY) {
+            super(window, guiGraphics);
             this.setPosX(posX);
             this.setPosY(posY);
         }

@@ -1,0 +1,153 @@
+--- a/net/minecraft/client/gui/screens/inventory/AbstractContainerScreen.java
++++ b/net/minecraft/client/gui/screens/inventory/AbstractContainerScreen.java
+@@ -180,6 +_,7 @@
+     @Override
+     public void extractRenderState(GuiGraphicsExtractor graphics) {
+         this.extractContents(graphics);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Render.Foreground(this, graphics));
+         this.extractCarriedItem(graphics);
+     }
+ 
+@@ -256,7 +_,8 @@
+ 
+     private void extractFloatingItem(GuiGraphicsExtractor graphics, ItemStack carried, int x, int y) {
+         graphics.item(carried, x, y);
+-        graphics.itemDecorations(this.font, carried, x, y);
++        var font = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(carried).getFont(carried, net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.FontContext.ITEM_COUNT);
++        graphics.itemDecorations(font != null ? font : this.font, carried, x, y);
+     }
+ 
+     protected void extractLabels(GuiGraphicsExtractor graphics) {
+@@ -341,7 +_,8 @@
+     @Override
+     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+         boolean mouseClickedResult = super.mouseClicked(event, doubleClick);
+-        boolean cloning = this.minecraft.options.keyPickItem.matchesMouse(event) && this.minecraft.player.hasInfiniteMaterials();
++        // Neo: also check conflict context
++        boolean cloning = this.minecraft.options.keyPickItem.isActiveAndMatchesMouse(event) && this.minecraft.player.hasInfiniteMaterials();
+         SlotWidget slotWidget = this.getHoveredSlot();
+         this.doubleclick = this.lastClickSlotWidget == slotWidget && doubleClick;
+         this.lastClickSlotWidget = slotWidget;
+@@ -355,7 +_,8 @@
+         }
+ 
+         int slotId;
+-        if (this.hasClickedOutside(event.x(), event.y())) {
++        // Neo: prevent dropping of items through slots outside of GUI boundaries
++        if (this.hasClickedOutside(event.x(), event.y()) && slotWidget == null) {
+             slotId = -999;
+         } else {
+             if (slotWidget == null) {
+@@ -452,9 +_,13 @@
+ 
+     @Override
+     public boolean mouseReleased(MouseButtonEvent event) {
++        // Neo: call parent to release buttons
++        super.mouseReleased(event);
++
+         SlotWidget slotWidget = this.getHoveredSlot();
+         int slotId;
+-        if (this.hasClickedOutside(event.x(), event.y())) {
++        // Neo: prevent dropping of items through slots outside of GUI boundaries
++        if (this.hasClickedOutside(event.x(), event.y()) && slotWidget == null) {
+             slotId = -999;
+         } else if (slotWidget != null) {
+             slotId = slotWidget.slot().index;
+@@ -484,7 +_,8 @@
+             this.quickCraftToSlots();
+         } else if (!this.menu.getCarried().isEmpty()) {
+             this.releaseCarriedItem(
+-                slotWidget, slotId, getContainerClickButton(event), this.minecraft.options.keyPickItem.matchesMouse(event), event.hasShiftDown()
++                // Neo: also check conflict context
++                slotWidget, slotId, getContainerClickButton(event), this.minecraft.options.keyPickItem.isActiveAndMatchesMouse(event), event.hasShiftDown()
+             );
+         }
+ 
+@@ -503,7 +_,8 @@
+                         Slot target = targetWidget.slot();
+                         if (target.mayPickup(this.minecraft.player)
+                             && target.hasItem()
+-                            && target.container == slotWidget.slot().container
++                            // Neo: allow custom slots to override comparison of their backing inventory
++                            && target.isSameInventory(slotWidget.slot())
+                             && AbstractContainerMenu.canItemQuickReplace(target, this.lastQuickMoved, true)) {
+                             this.slotClicked(targetWidget, target.index, button, ContainerInput.QUICK_MOVE);
+                         }
+@@ -566,12 +_,14 @@
+         }
+ 
+         boolean keyPressedResult = super.keyPressed(event);
+-        if (this.minecraft.options.keyInventory.matches(event)) {
++        // Neo: also check conflict context
++        if (this.minecraft.options.keyInventory.isActiveAndMatches(event)) {
+             this.onClose();
+             return true;
+         }
+ 
+-        this.checkHotbarKeyPressed(event);
++        // Neo: Needs to return true when the key is handled (MC-146650)
++        keyPressedResult |= this.checkHotbarKeyPressed(event);
+         boolean selectionPressed = event.isSelection() && !event.repeat();
+         if (selectionPressed) {
+             this.skipNextRelease = false;
+@@ -611,11 +_,17 @@
+         }
+ 
+         if (slotWidget != null) {
+-            if (this.minecraft.options.keyPickItem.matches(event) && this.minecraft.player.hasInfiniteMaterials()) {
++            // Neo: also check conflict context
++            if (this.minecraft.options.keyPickItem.isActiveAndMatches(event) && this.minecraft.player.hasInfiniteMaterials()) {
+                 this.slotClicked(slotWidget, slotWidget.slot().index, 0, ContainerInput.CLONE);
+-            } else if (this.minecraft.options.keyDrop.matches(event)) {
++                keyPressedResult = true;
++            } else if (this.minecraft.options.keyDrop.isActiveAndMatches(event)) {
+                 this.slotClicked(slotWidget, slotWidget.slot().index, getContainerClickButton(event), ContainerInput.THROW);
++                keyPressedResult = true;
+             }
++        } else if (this.minecraft.options.keyDrop.isActiveAndMatches(event)) { // Neo: also check conflict context
++            // Neo: Emulate MC bug, so we don't drop from hotbar when pressing drop without hovering over an item (MC-146650)
++            keyPressedResult = true;
+         }
+ 
+         return keyPressedResult;
+@@ -652,7 +_,8 @@
+     }
+ 
+     protected boolean checkHotbarKeyPressed(KeyEvent event) {
+-        return this.checkHotbarSwap(keyMapping -> keyMapping.matches(event));
++        // Neo: also check conflict context
++        return this.checkHotbarSwap(keyMapping -> keyMapping.isActiveAndMatches(event));
+     }
+ 
+     protected @Nullable SlotWidget getFocusedSlotWidget() {
+@@ -731,5 +_,30 @@
+ 
+         this.minecraft.player.closeContainer();
+         super.onClose();
++    }
++
++    /// Neo: {@return the currently hovered slot}
++    public @Nullable Slot getRawHoveredSlot() {
++        return net.minecraft.Optionull.map(this.getHoveredSlot(), SlotWidget::slot);
++    }
++
++    /// Neo: {@return the X coordinate of this container screen's content}
++    public int getLeftPos() {
++        return this.leftPos;
++    }
++
++    /// Neo: {@return the Y coordinate of this container screen's content}
++    public int getTopPos() {
++        return this.topPos;
++    }
++
++    /// Neo: {@return the width of this container screen's content}
++    public int getImageWidth() {
++        return this.imageWidth;
++    }
++
++    /// Neo: {@return the height of this container screen's content}
++    public int getImageHeight() {
++        return this.imageHeight;
+     }
+ }

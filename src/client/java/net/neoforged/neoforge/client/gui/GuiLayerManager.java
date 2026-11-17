@@ -8,8 +8,6 @@ package net.neoforged.neoforge.client.gui;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
@@ -38,15 +36,10 @@ public class GuiLayerManager {
         return this;
     }
 
-    public GuiLayerManager add(Identifier name, Consumer<GuiGraphicsExtractor> layer, BooleanSupplier shouldRender) {
-        add(name, (guiGraphics, deltaTracker) -> layer.accept(guiGraphics), shouldRender);
-        return this;
-    }
-
     public GuiLayerManager add(Identifier name, GuiLayer layer, BooleanSupplier shouldRender) {
-        this.layers.add(new NamedLayer(name, (guiGraphics, deltaTracker) -> {
+        this.layers.add(new NamedLayer(name, graphics -> {
             if (shouldRender.getAsBoolean()) {
-                layer.render(guiGraphics, deltaTracker);
+                layer.render(graphics);
             }
         }));
         return this;
@@ -60,21 +53,21 @@ public class GuiLayerManager {
         return this;
     }
 
-    public void render(GuiGraphicsExtractor guiGraphics, DeltaTracker partialTick) {
-        if (NeoForge.EVENT_BUS.post(new RenderGuiEvent.Pre(guiGraphics, partialTick)).isCanceled()) {
+    public void render(GuiGraphicsExtractor guiGraphics) {
+        if (NeoForge.EVENT_BUS.post(new RenderGuiEvent.Pre(guiGraphics)).isCanceled()) {
             return;
         }
 
-        renderInner(guiGraphics, partialTick);
+        renderInner(guiGraphics);
 
-        NeoForge.EVENT_BUS.post(new RenderGuiEvent.Post(guiGraphics, partialTick));
+        NeoForge.EVENT_BUS.post(new RenderGuiEvent.Post(guiGraphics));
     }
 
-    private void renderInner(GuiGraphicsExtractor guiGraphics, DeltaTracker partialTick) {
+    private void renderInner(GuiGraphicsExtractor guiGraphics) {
         for (var layer : this.layers) {
-            if (!NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Pre(guiGraphics, partialTick, layer.name(), layer.layer())).isCanceled()) {
-                layer.layer().render(guiGraphics, partialTick);
-                NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Post(guiGraphics, partialTick, layer.name(), layer.layer()));
+            if (!NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Pre(guiGraphics, layer.name(), layer.layer())).isCanceled()) {
+                layer.layer().render(guiGraphics);
+                NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Post(guiGraphics, layer.name(), layer.layer()));
             }
         }
     }

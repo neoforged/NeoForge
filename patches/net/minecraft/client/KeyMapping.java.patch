@@ -7,7 +7,7 @@
 -    private static final Map<String, KeyMapping> ALL = new HashMap<>();
 -    private static final Map<InputConstants.Key, List<KeyMapping>> MAP = new HashMap<>();
 +    // Neo: make key mapping instantiation thread-safe
-+    private static final Map<String, KeyMapping> ALL = Maps.newConcurrentMap();
++    private static final Map<String, KeyMapping> ALL = new java.util.concurrent.ConcurrentHashMap<>();
 +    // Neo: replace key mapping storage for key modifier support
 +    private static final net.neoforged.neoforge.client.settings.KeyMappingLookup MAP = new net.neoforged.neoforge.client.settings.KeyMappingLookup();
      private final String name;
@@ -35,15 +35,15 @@
      }
  
      private static void forAllKeyMappings(InputConstants.Key key, Consumer<KeyMapping> operation) {
-         if (!key.equals(InputConstants.UNKNOWN)) {
--            List<KeyMapping> keyMappings = MAP.get(key);
 +        forAllKeyMappings(key, operation, false);
 +    }
 +
 +    /// Neo: extracted from [#forAllKeyMappings(InputConstants.Key, Consumer)] to allow indicating whether the key is being released
 +    private static void forAllKeyMappings(InputConstants.Key key, Consumer<KeyMapping> operation, boolean releasing) {
-+        // Neo: use custom key mapping storage
-+        List<KeyMapping> keyMappings = MAP.getAll(key, releasing);
+         if (!key.equals(InputConstants.UNKNOWN)) {
+-            List<KeyMapping> keyMappings = MAP.get(key);
++            // Neo: use custom key mapping storage
++            List<KeyMapping> keyMappings = MAP.getAll(key, releasing);
              if (keyMappings != null && !keyMappings.isEmpty()) {
                  for (KeyMapping keyMapping : keyMappings) {
                      operation.accept(keyMapping);

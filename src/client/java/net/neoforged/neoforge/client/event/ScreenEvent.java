@@ -151,17 +151,11 @@ public abstract class ScreenEvent extends Event {
      */
     public static abstract class Render extends ScreenEvent {
         private final GuiGraphicsExtractor guiGraphics;
-        private final int mouseX;
-        private final int mouseY;
-        private final float partialTick;
 
         @ApiStatus.Internal
-        protected Render(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        protected Render(Screen screen, GuiGraphicsExtractor guiGraphics) {
             super(screen);
             this.guiGraphics = guiGraphics;
-            this.mouseX = mouseX;
-            this.mouseY = mouseY;
-            this.partialTick = partialTick;
         }
 
         /**
@@ -169,27 +163,6 @@ public abstract class ScreenEvent extends Event {
          */
         public GuiGraphicsExtractor getGuiGraphics() {
             return guiGraphics;
-        }
-
-        /**
-         * {@return the X coordinate of the mouse pointer}
-         */
-        public int getMouseX() {
-            return mouseX;
-        }
-
-        /**
-         * {@return the Y coordinate of the mouse pointer}
-         */
-        public int getMouseY() {
-            return mouseY;
-        }
-
-        /**
-         * {@return the partial tick}
-         */
-        public float getPartialTick() {
-            return partialTick;
         }
 
         /**
@@ -203,8 +176,8 @@ public abstract class ScreenEvent extends Event {
          */
         public static class Pre extends Render implements ICancellableEvent {
             @ApiStatus.Internal
-            public Pre(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-                super(screen, guiGraphics, mouseX, mouseY, partialTick);
+            public Pre(Screen screen, GuiGraphicsExtractor guiGraphics) {
+                super(screen, guiGraphics);
             }
         }
 
@@ -221,8 +194,8 @@ public abstract class ScreenEvent extends Event {
          */
         public static class Background extends ScreenEvent.Render {
             @ApiStatus.Internal
-            public Background(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-                super(screen, guiGraphics, mouseX, mouseY, partialTick);
+            public Background(Screen screen, GuiGraphicsExtractor guiGraphics) {
+                super(screen, guiGraphics);
             }
         }
 
@@ -234,8 +207,8 @@ public abstract class ScreenEvent extends Event {
         /// only on the [logical client][LogicalSide#CLIENT].
         public static class Foreground extends Render {
             @ApiStatus.Internal
-            public Foreground(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-                super(screen, guiGraphics, mouseX, mouseY, partialTick);
+            public Foreground(Screen screen, GuiGraphicsExtractor guiGraphics) {
+                super(screen, guiGraphics);
             }
         }
 
@@ -249,8 +222,8 @@ public abstract class ScreenEvent extends Event {
          */
         public static class Post extends Render {
             @ApiStatus.Internal
-            public Post(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-                super(screen, guiGraphics, mouseX, mouseY, partialTick);
+            public Post(Screen screen, GuiGraphicsExtractor guiGraphics) {
+                super(screen, guiGraphics);
             }
         }
     }

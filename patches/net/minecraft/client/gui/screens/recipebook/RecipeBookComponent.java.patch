@@ -1,0 +1,40 @@
+--- a/net/minecraft/client/gui/screens/recipebook/RecipeBookComponent.java
++++ b/net/minecraft/client/gui/screens/recipebook/RecipeBookComponent.java
+@@ -121,13 +_,26 @@
+     private TabNavigationBar tabBar;
+ 
+     public RecipeBookComponent(T menu, List<RecipeBookComponent.TabInfo> tabInfos) {
++        this(menu, tabInfos, null);
++    }
++
++    public RecipeBookComponent(T menu, List<RecipeBookComponent.TabInfo> tabInfos, net.neoforged.neoforge.client.recipebook.@Nullable RecipeOverlayButtonCreator overlayButtonCreator) {
++        this(menu, tabInfos, RecipeButton::new, overlayButtonCreator);
++    }
++
++    public RecipeBookComponent(
++        T menu,
++        List<RecipeBookComponent.TabInfo> tabInfos,
++        net.neoforged.neoforge.client.recipebook.RecipeButtonCreator recipeButtonCreator,
++        net.neoforged.neoforge.client.recipebook.@Nullable RecipeOverlayButtonCreator overlayButtonCreator
++    ) {
+         super(0, 0, 147, 166, CommonComponents.EMPTY);
+         this.menu = menu;
+         this.tabInfos = tabInfos;
+         SlotSelectTime slotSelectTime = () -> Mth.floor(this.time / 30.0F);
+         this.ghostSlots = new GhostSlots(slotSelectTime);
+-        this.overlay = new OverlayRecipeComponent(slotSelectTime, menu instanceof AbstractFurnaceMenu, this::tryPlaceRecipe);
+-        this.recipeBookPage = new RecipeBookPage(this, slotSelectTime, this::tryPlaceRecipe, this::tryOpenOverlay);
++        this.overlay = new OverlayRecipeComponent(slotSelectTime, menu instanceof AbstractFurnaceMenu, this::tryPlaceRecipe, overlayButtonCreator);
++        this.recipeBookPage = new RecipeBookPage(this, slotSelectTime, this::tryPlaceRecipe, this::tryOpenOverlay, recipeButtonCreator);
+     }
+ 
+     public void init(int screenWidth, int screenHeight, Minecraft minecraft) {
+@@ -327,7 +_,7 @@
+         );
+ 
+         for (RecipeBookComponent.TabInfo tabInfo : this.tabInfos) {
+-            if (tabInfo.category() instanceof SearchRecipeBookCategory || this.hasSelectedRecipes(tabInfo.category())) {
++            if (tabInfo.category() instanceof SearchRecipeBookCategory || net.neoforged.neoforge.client.RecipeBookManager.getSearchCategories().containsKey(tabInfo.category()) || this.hasSelectedRecipes(tabInfo.category())) {
+                 ItemTabButton.Builder buttonBuilder = ItemTabButton.builder(this.tabManager, tabInfo, TAB_SPRITES)
+                     .size(35, 27)
+                     .message(tabInfo.name())

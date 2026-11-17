@@ -32,19 +32,34 @@
 +            // Neo: Re-align coordinates the same way as vanilla extractText does
 +            if (!renderer.extractInventoryText(effect, screen, graphics, x0 + 32, y0 + 7, textureWidth - 32 - 7, net.minecraft.util.CommonColors.WHITE))
 +            // Neo: provide effect being displayed
-+            this.extractText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, mouseX, mouseY, effect);
++            this.extractText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, effect);
 +            // Neo: Re-align coordinates the same way as vanilla call to blitSprite
 +            if (!renderer.extractInventoryIcon(effect, screen, graphics, x0 + 7, y0 + 7, 18, 18, net.minecraft.util.CommonColors.WHITE))
              graphics.blitSprite(GuiPipeline.TEXTURED, Hud.getMobEffectSprite(effect.getEffect()), x0 + 7, y0 + 7, 18, 18);
              y0 += yStep;
          }
+@@ -85,7 +_,14 @@
+         return textureWidth;
+     }
+ 
++    /// @deprecated Neo: use [#extractText(GuiGraphicsExtractor, Component, Component, Font, int, int, int, int, MobEffectInstance)] instead
++    @Deprecated
+     private void extractText(GuiGraphicsExtractor graphics, Component effectText, Component duration, Font font, int x0, int y0, int textureWidth, int yStep) {
++        extractText(graphics, effectText, duration, font, x0, y0, textureWidth, yStep, null);
++    }
++
++    /// Neo: overload of [#extractText(GuiGraphicsExtractor, Component, Component, Font, int, int, int, int)] providing the effect whose text is being displayed
++    private void extractText(GuiGraphicsExtractor graphics, Component effectText, Component duration, Font font, int x0, int y0, int textureWidth, int yStep, @org.jspecify.annotations.Nullable MobEffectInstance effectInstance) {
+         int textX = x0 + 32;
+         int textY = y0 + 7;
+         int maxTextWidth = textureWidth - 32 - 7;
 @@ -100,8 +_,16 @@
              isCompact = true;
          }
  
 -        if (isCompact && graphics.mouseX() >= x0 && graphics.mouseX() <= x0 + textureWidth && graphics.mouseY() >= y0 && graphics.mouseY() <= y0 + yStep) {
 -            graphics.setTooltipForNextFrame(this.screen.getFont(), List.of(effectText, duration), Optional.empty(), graphics.mouseX(), graphics.mouseY());
-+        if (mouseX >= x0 && mouseX <= x0 + textureWidth && mouseY >= y0 && mouseY <= y0 + yStep) {
++        if (graphics.mouseX() >= x0 && graphics.mouseX() <= x0 + textureWidth && graphics.mouseY() >= y0 && graphics.mouseY() <= y0 + yStep) {
 +            // Neo: Allow mods to create or adjust the tooltip shown when hovering over a mob effect.
 +            List<Component> list = isCompact ? List.of(effectText, duration) : List.of();
 +            if (effectInstance != null) {
@@ -53,7 +68,7 @@
 +            if (list.isEmpty()) {
 +                return;
 +            }
-+            graphics.setTooltipForNextFrame(this.screen.getFont(), list, Optional.empty(), mouseX, mouseY);
++            graphics.setTooltipForNextFrame(this.screen.getFont(), list, Optional.empty(), graphics.mouseX(), graphics.mouseY());
          }
      }
  

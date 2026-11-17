@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/gui/components/AbstractButton.java
 +++ b/net/minecraft/client/gui/components/AbstractButton.java
-@@ -40,7 +40,14 @@
-     protected abstract void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a);
+@@ -40,7 +_,13 @@
+     protected abstract void extractContents(GuiGraphicsExtractor graphics);
  
      protected void extractDefaultLabel(ActiveTextCollector output) {
 -        this.extractScrollingStringOverContents(output, this.getMessage(), 2);
@@ -11,7 +11,6 @@
 +            int labelTextColor = this.labelTextColor; // Unbox ahead of time so no warning about unboxing in withStyle's lambda
 +            message = message.copy().withStyle(style -> style.withColor(labelTextColor));
 +        }
-+
 +        this.extractScrollingStringOverContents(output, message, 2);
      }
  

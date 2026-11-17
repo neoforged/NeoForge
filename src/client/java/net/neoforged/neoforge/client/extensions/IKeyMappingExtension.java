@@ -7,6 +7,8 @@ package net.neoforged.neoforge.client.extensions;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.client.settings.IKeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
@@ -24,8 +26,22 @@ public interface IKeyMappingExtension {
     /**
      * {@return true if the key conflict context and modifier are active and the keyCode matches this binding, false otherwise}
      */
+    default boolean isActiveAndMatches(KeyEvent event) {
+        return self().matches(event) && getKeyConflictContext().isActive() && getKeyModifier().isActive(getKeyConflictContext());
+    }
+
+    /**
+     * {@return true if the key conflict context and modifier are active and the keyCode matches this binding, false otherwise}
+     */
+    default boolean isActiveAndMatchesMouse(MouseButtonEvent event) {
+        return self().matchesMouse(event) && getKeyConflictContext().isActive() && getKeyModifier().isActive(getKeyConflictContext());
+    }
+
+    /**
+     * {@return true if the key conflict context and modifier are active and the keyCode matches this binding, false otherwise}
+     */
     default boolean isActiveAndMatches(InputConstants.Key keyCode) {
-        return keyCode != InputConstants.UNKNOWN && keyCode.equals(getKey()) && getKeyConflictContext().isActive() && getKeyModifier().isActive(getKeyConflictContext());
+        return self().matches(keyCode) && getKeyConflictContext().isActive() && getKeyModifier().isActive(getKeyConflictContext());
     }
 
     public default void setToDefault() {

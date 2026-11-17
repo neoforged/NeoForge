@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client.extensions.common;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
@@ -157,7 +156,7 @@ public interface IClientItemExtensions {
      * @param guiGraphics   The gui graphics
      * @param deltaTracker  The delta tracker
      */
-    default void renderFirstPersonOverlay(ItemStack stack, EquipmentSlot equipmentSlot, Player player, GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker) {}
+    default void renderFirstPersonOverlay(ItemStack stack, EquipmentSlot equipmentSlot, Player player, GuiGraphicsExtractor guiGraphics) {}
 
     /**
      * {@return Whether the item should bob when rendered in the world as an entity}

@@ -9,3 +9,13 @@
          this.codec = DataFixTypes.DEBUG_PROFILE.wrapCodec(DebugScreenEntryList.SerializedOptions.CODEC, dataFixer, 4649);
          this.load();
      }
+@@ -167,7 +_,8 @@
+                 }
+             }
+         });
+-        this.currentlyEnabled.sort(Comparator.comparing(ResourceKey::identifier, Comparator.naturalOrder()));
++        // Neo: Sort enabled debug entries to match order displayed in config screen
++        this.currentlyEnabled.sort(Comparator.comparing(ResourceKey::identifier, net.neoforged.neoforge.common.CommonHooks.CMP_BY_NAMESPACE_VANILLA_FIRST));
+         this.currentlyEnabledVersion++;
+     }
+ 
