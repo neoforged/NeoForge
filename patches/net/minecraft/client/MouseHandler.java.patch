@@ -41,6 +41,17 @@
                              }
                          } catch (Throwable t) {
                              CrashReport report = CrashReport.forThrowable(t, "mouseReleased event handler");
+@@ -133,6 +_,10 @@
+                 }
+             }
+ 
++            // Neo: we patch out the returns in the screen handler code to fire the mouse button post event
++            // therefore we add a boolean to check whether the screen handled the click and if not we let
++            // vanilla's fallback handle it
++            if (!screenHandled) {
+             if (this.minecraft.gui.screen() == null && this.minecraft.gui.overlay() == null) {
+                 InputConstants.Key mouseKey = InputConstants.Type.MOUSE.getOrCreate(rawButtonInfo.button());
+                 KeyMapping.set(mouseKey, pressed);
 @@ -140,6 +_,8 @@
                      KeyMapping.click(mouseKey);
                  }
@@ -103,3 +114,20 @@
              double dx = this.smoothTurnX.getNewDeltaValue(this.accumulatedDX * sens, mousea * sens);
              double dy = this.smoothTurnY.getNewDeltaValue(this.accumulatedDY * sens, mousea * sens);
              xo = dx;
+@@ -456,6 +_,16 @@
+         double y = this.getScaledYPos(window) - 8.0;
+         String text = String.format(Locale.ROOT, "%.0f,%.0f", x, y);
+         graphics.text(font, text, (int)x, (int)y, -1);
++    }
++
++    /// Neo: {@return the accumulated mouse movement along the X axis}
++    public double getXVelocity() {
++        return this.accumulatedDX;
++    }
++
++    /// Neo: {@return the accumulated mouse movement along the Y axis}
++    public double getYVelocity() {
++        return this.accumulatedDY;
+     }
+ 
+     private record LastClick(long time, Screen screen) {
