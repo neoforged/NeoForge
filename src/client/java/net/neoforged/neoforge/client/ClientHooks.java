@@ -370,6 +370,14 @@ public class ClientHooks {
         return e.getMusic();
     }
 
+    /// {@return an arrow component for a page button}
+    /// This accounts for bidirectional text mirroring in the current language.
+    ///
+    /// @param left whether the arrow should point left on screen
+    public static Component getPageButtonComponent(boolean left) {
+        return Component.literal(left != Language.getInstance().isDefaultRightToLeft() ? "<" : ">");
+    }
+
     public static void extractScreen(Screen screen, Stack<Screen> backgroundLayers, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         for (Screen layer : backgroundLayers) {
             // Prevent the background layers from thinking the mouse is over their controls and showing them as highlighted.

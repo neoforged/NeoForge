@@ -19,9 +19,9 @@
 +        if (this.tabs.size() > AdvancementTabType.MAX_TABS) {
 +            int guiLeft = (this.width - 252) / 2;
 +            int guiTop = (this.height - 140) / 2;
-+            this.addRenderableWidget(Button.builder(Component.literal("<"), _ -> this.tabPage = Math.max(this.tabPage - 1, 0))
++            this.addRenderableWidget(Button.builder(net.neoforged.neoforge.client.ClientHooks.getPageButtonComponent(true), _ -> this.tabPage = Math.max(this.tabPage - 1, 0))
 +                    .pos(guiLeft, guiTop - 50).size(20, 20).build());
-+            this.addRenderableWidget(Button.builder(Component.literal(">"), _ -> this.tabPage = Math.min(this.tabPage + 1, this.maxPages))
++            this.addRenderableWidget(Button.builder(net.neoforged.neoforge.client.ClientHooks.getPageButtonComponent(false), _ -> this.tabPage = Math.min(this.tabPage + 1, this.maxPages))
 +                    .pos(guiLeft + WINDOW_WIDTH - 20, guiTop - 50).size(20, 20).build());
 +            this.maxPages = (this.tabs.size() - 1) / AdvancementTabType.MAX_TABS;
 +            this.tabPage = Math.clamp(this.tabPage, 0, this.maxPages);
