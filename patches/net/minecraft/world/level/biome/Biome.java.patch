@@ -27,6 +27,15 @@
      private final BiomeSpecialEffects specialEffects;
      private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> {
          Long2FloatLinkedOpenHashMap map = new Long2FloatLinkedOpenHashMap(1024, 0.25F) {
+@@ -157,6 +_,8 @@
+ 
+         return domain;
+     }
++    /// Neo: Grant ability to modify Biomes in specific ways such as adding new features or change temperature
++    private final net.neoforged.neoforge.common.world.ModifiableBiomeInfo modifiableBiomeInfo;
+ 
+     private Biome(
+         Biome.ClimateSettings climateSettings,
 @@ -168,6 +_,7 @@
          this.attributes = attributes;
          this.specialEffects = specialEffects;
