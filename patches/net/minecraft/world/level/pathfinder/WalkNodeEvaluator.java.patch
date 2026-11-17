@@ -18,3 +18,39 @@
                          if (pathType == PathType.DAMAGING) {
                              return PathType.DAMAGING_IN_NEIGHBOR;
                          }
+@@ -499,6 +_,11 @@
+ 
+     protected static PathType getPathTypeFromState(BlockGetter level, BlockPos pos) {
+         BlockState blockState = level.getBlockState(pos);
++        // Neo: let the block declare its path type
++        PathType type = blockState.getBlockPathType(level, pos, null);
++        if (type != null) {
++            return type;
++        }
+         Block block = blockState.getBlock();
+ 
+         for (PathType pathType : PathType.values()) {
+@@ -508,6 +_,11 @@
+         }
+ 
+         FluidState fluidState = blockState.getFluidState();
++        // Neo: let the fluid declare its non-fluid-loggable path type
++        PathType nonLoggableFluidPathType = fluidState.getBlockPathType(level, pos, null, false);
++        if (nonLoggableFluidPathType != null) {
++            return nonLoggableFluidPathType;
++        }
+         if (fluidState.is(FluidTags.LAVA)) {
+             return PathType.LAVA;
+         }
+@@ -528,6 +_,11 @@
+             if (!blockState.isPathfindable(PathComputationType.LAND)) {
+                 return PathType.BLOCKED;
+             } else {
++                // Neo: let the fluid declare its fluid-loggable path type
++                PathType loggableFluidPathType = fluidState.getBlockPathType(level, pos, null, true);
++                if (loggableFluidPathType != null) {
++                    return loggableFluidPathType;
++                }
+                 return fluidState.is(FluidTags.WATER) ? PathType.WATER : PathType.OPEN;
+             }
+         } else {
