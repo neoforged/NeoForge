@@ -9,6 +9,38 @@
  ) {
      private static final Codec<List<SavedTick<Block>>> BLOCK_TICKS_CODEC = SavedTick.codec(BuiltInRegistries.BLOCK.byNameCodec()).listOf();
      private static final Codec<List<SavedTick<Fluid>>> FLUID_TICKS_CODEC = SavedTick.codec(BuiltInRegistries.FLUID.byNameCodec()).listOf();
+@@ -125,6 +_,31 @@
+     private static final String STRUCTURES_TAG = "structures";
+     private static final String STRUCTURE_STARTS_TAG = "starts";
+ 
++    /// @deprecated Neo: use constructor with additional data instead
++    @Deprecated
++    SerializableChunkData(
++            PalettedContainerFactory containerFactory,
++            ChunkPos chunkPos,
++            int minSectionY,
++            long lastUpdateTime,
++            long inhabitedTime,
++            ChunkStatus chunkStatus,
++            BlendingData.@Nullable Packed blendingData,
++            @Nullable RetroGen retroGen,
++            UpgradeData upgradeData,
++            Map<Heightmap.Types, long[]> heightmaps,
++            ChunkAccess.PackedTicks packedTicks,
++            @Nullable ShortList[] postProcessingSections,
++            boolean lightCorrect,
++            List<SerializableChunkData.SectionData> sectionData,
++            @Nullable NoiseBiomeChunk noiseBiomeChunk,
++            List<CompoundTag> entities,
++            List<CompoundTag> blockEntities,
++            CompoundTag structureData
++    ) {
++        this(containerFactory, chunkPos, minSectionY, lastUpdateTime, inhabitedTime, chunkStatus, blendingData, retroGen, upgradeData, heightmaps, packedTicks, postProcessingSections, lightCorrect, sectionData, noiseBiomeChunk, entities, blockEntities, structureData, null, null);
++    }
++
+     public static SerializableChunkData parse(LevelHeightAccessor levelHeight, PalettedContainerFactory containerFactory, CompoundTag chunkData) {
+         if (chunkData.getString("status").isEmpty()) {
+             return null;
 @@ -213,6 +_,9 @@
          }
  
