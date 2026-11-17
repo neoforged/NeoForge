@@ -1,16 +1,14 @@
 --- a/net/minecraft/advancements/AdvancementHolder.java
 +++ b/net/minecraft/advancements/AdvancementHolder.java
-@@ -13,7 +13,12 @@
-     );
+@@ -21,6 +_,11 @@
+         output.register(ResourceKey.create(Registries.ADVANCEMENT, this.id), this.value);
+     }
  
-     public void register(BootstrapContext<Advancement> output) {
--        output.register(ResourceKey.create(Registries.ADVANCEMENT, this.id), this.value);
-+        this.register(output, new net.neoforged.neoforge.common.conditions.ICondition[0]);
-+    }
-+
 +    /// Neo: add support for NeoForge loading conditions
 +    public void register(BootstrapContext<Advancement> output, net.neoforged.neoforge.common.conditions.ICondition... conditions) {
 +        output.register(ResourceKey.create(Registries.ADVANCEMENT, this.id), this.value, conditions);
-     }
- 
++    }
++
      @Override
+     public boolean equals(Object obj) {
+         return this == obj ? true : obj instanceof AdvancementHolder holder && this.id.equals(holder.id);
