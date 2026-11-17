@@ -8,6 +8,16 @@
  
      public static SamplerCache getSamplerCache() {
          return samplerCache;
+@@ -105,6 +_,9 @@
+     }
+ 
+     public static @Nullable CompiledRenderPipeline getCompiledPipelineNullable(RenderPipeline pipeline, RenderPassLayout.Subpass subpass) {
++        // Neo: apply pipeline modifiers before resolving the compiled pipeline
++        pipeline = PIPELINE_MODIFIERS.apply(pipeline);
++
+         if (currentPipelineCache != null) {
+             CompiledRenderPipeline cachedPipeline = currentPipelineCache.get(pipeline, subpass);
+             if (cachedPipeline != null) {
 @@ -500,5 +_,29 @@
      }
  

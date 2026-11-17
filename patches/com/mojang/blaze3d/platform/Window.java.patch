@@ -10,3 +10,14 @@
          if (windowHandle == 0L) {
              throw new IllegalStateException("Failed to create window: " + Objects.requireNonNullElse(SDLError.SDL_GetError(), "<no error>"));
          }
+@@ -361,6 +_,10 @@
+ 
+     private void refreshMouseState() {
+         this.updateWindowMouseGrab();
++        // Neo: prevent crash during ELS handover
++        if (Minecraft.getInstance().mouseHandler == null) {
++            return;
++        }
+         Minecraft.getInstance().mouseHandler.refreshMouseState();
+     }
+ 

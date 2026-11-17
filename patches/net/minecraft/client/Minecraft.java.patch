@@ -17,6 +17,16 @@
          this.demo = gameConfig.game.demo;
          this.allowsMultiplayer = !gameConfig.game.disableMultiplayer;
          this.allowsChat = !gameConfig.game.disableChat;
+@@ -493,7 +_,8 @@
+                         gameConfig.game.renderDebugLabels,
+                         gameConfig.game.vulkanValidation,
+                         SharedConstants.IS_RENDERDOC_ATTACHED,
+-                        DevUtil.IS_RUNNING_IN_IDE
++                        // Neo: add ability to disable strict validation without disabling other features bound to DevUtil.IS_RUNNING_IN_IDE
++                        DevUtil.IS_RUNNING_IN_IDE && !Boolean.getBoolean("neoforge.disableRenderPearlValidation")
+                     )
+                 );
+                 backend = backendToTry;
 @@ -524,6 +_,7 @@
          LOGGER.info("Using graphics backend {}, using drivers: {}", deviceInfo.backendName(), deviceInfo.driverInfo());
          LOGGER.info("Using graphics device: {} ({})", deviceInfo.name(), deviceInfo.vendorName());
