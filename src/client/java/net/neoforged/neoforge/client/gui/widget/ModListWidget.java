@@ -52,8 +52,8 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
         this.clearEntries();
         parent.buildModList(this::addEntry, mod -> new ModEntry(mod, this.parent));
         // Entries are placed relative to the old scroll amount, which may be past the end of the new, shorter list.
-        // Clamp it so that the entries are repositioned into view.
-        this.setScrollAmount(this.scrollAmount());
+        // Re-clamp it so that the entries are repositioned into view.
+        this.refreshScrollAmount();
     }
 
     public class ModEntry extends ObjectSelectionList.Entry<ModEntry> {
