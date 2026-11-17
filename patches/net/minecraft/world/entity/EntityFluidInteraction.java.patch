@@ -1,12 +1,12 @@
 --- a/net/minecraft/world/entity/EntityFluidInteraction.java
 +++ b/net/minecraft/world/entity/EntityFluidInteraction.java
-@@ -26,17 +_,31 @@
+@@ -26,17 +_,32 @@
  
  public class EntityFluidInteraction {
      private final List<EntityFluidInteraction.Tracker> fluidTrackers = new ArrayList<>();
 -    private final Reference2ObjectMap<TagKey<Fluid>, EntityFluidInteraction.CurrentAccumulator> currentAccumulators = new Reference2ObjectArrayMap<>();
 +    private final Reference2ObjectMap<net.neoforged.neoforge.fluids.FluidType, EntityFluidInteraction.CurrentAccumulator> currentAccumulators = new Reference2ObjectArrayMap<>();
-+    // Neo: Keep track of depth in predicate call
++    /// Neo: Keep track of depth in predicate call
 +    private int predicateDepth = 0;
  
      public EntityFluidInteraction(Set<TagKey<Fluid>> fluidsWithCurrent) {
@@ -25,6 +25,7 @@
 +
 +    /// Neo: overload of [#update(Entity, boolean)] supporting per-fluid sensitivity for fluid pushing
 +    public boolean update(Entity entity, java.util.function.Predicate<net.neoforged.neoforge.fluids.FluidType> typePushPredicate) {
++        // Neo: only clean up stale trackers and accumulators when they are not being iterated over by a predicated helper
 +        if (this.predicateDepth == 0) {
 +            this.fluidTrackers.removeIf(EntityFluidInteraction.Tracker::reset);
 +            // Neo: remove stale current accumulators
