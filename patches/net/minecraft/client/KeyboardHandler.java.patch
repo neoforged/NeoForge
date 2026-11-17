@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/KeyboardHandler.java
 +++ b/net/minecraft/client/KeyboardHandler.java
-@@ -478,7 +_,11 @@
+@@ -478,7 +_,12 @@
                  if (screen != null) {
                      try {
                          if (action != 1 && action != 2) {
@@ -10,6 +10,7 @@
 +                                screen.keyReleased(event) ||
 +                                net.neoforged.neoforge.client.ClientHooks.onScreenKeyReleasedPost(screen, event))
 +                            ) {
++                                net.neoforged.neoforge.client.ClientHooks.updateKeyMappingForScreenInput(event, false);
                                  if (options.keyDebugModifier.matches(event)) {
                                      this.usedDebugKeyAsModifier = false;
                                  }
@@ -26,7 +27,12 @@
                                  if (this.minecraft.gui.screen() == null) {
                                      InputConstants.Key key = InputConstants.getKey(event);
                                      KeyMapping.set(key, false);
-@@ -562,6 +_,7 @@
+@@ -559,9 +_,12 @@
+                         }
+                     } else if (key == options.keyDebugModifier.key) {
+                         options.keyDebugModifier.setDown(!didDebugAction);
++                    } else if (!didDebugAction) {
++                        net.neoforged.neoforge.client.ClientHooks.updateKeyMappingForScreenInput(event, true);
                      }
                  }
              }

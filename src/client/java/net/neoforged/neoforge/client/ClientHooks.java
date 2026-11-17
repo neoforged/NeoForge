@@ -11,6 +11,7 @@ import com.google.common.collect.MultimapBuilder;
 import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.pipeline.MainTarget;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.resource.RenderTargetDescriptor;
@@ -537,6 +538,14 @@ public class ClientHooks {
     public static boolean onScreenKeyReleasedPost(Screen guiScreen, KeyEvent keyEvent) {
         var event = new ScreenEvent.KeyReleased.Post(guiScreen, keyEvent);
         return NeoForge.EVENT_BUS.post(event).isCanceled();
+    }
+
+    public static void updateKeyMappingForScreenInput(KeyEvent keyEvent, boolean down) {
+        InputConstants.Key key = InputConstants.getKey(keyEvent);
+        KeyMapping.set(key, down);
+        if (down) {
+            KeyMapping.click(key);
+        }
     }
 
     public static boolean onScreenCharTypedPre(Screen guiScreen, CharacterEvent charEvent) {

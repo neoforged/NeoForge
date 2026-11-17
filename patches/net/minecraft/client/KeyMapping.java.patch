@@ -124,27 +124,15 @@
      }
  
      public KeyMapping.Category getCategory() {
-@@ -159,6 +_,20 @@
+@@ -159,7 +_,7 @@
      }
  
      public boolean same(KeyMapping that) {
-+        if (getKeyConflictContext().conflicts(that.getKeyConflictContext()) || that.getKeyConflictContext().conflicts(getKeyConflictContext())) {
-+            net.neoforged.neoforge.client.settings.KeyModifier keyModifier = getKeyModifier();
-+            net.neoforged.neoforge.client.settings.KeyModifier otherKeyModifier = that.getKeyModifier();
-+            if (keyModifier.matches(that.getKey()) || otherKeyModifier.matches(getKey())) {
-+                return true;
-+            } else if (getKey().equals(that.getKey())) {
-+                // IN_GAME key contexts have a conflict when at least one modifier is NONE.
-+                // For example: If you hold shift to crouch, you can still press E to open your inventory. This means that a Shift+E hotkey is in conflict with E.
-+                // GUI and other key contexts do not have this limitation.
-+                return keyModifier == otherKeyModifier ||
-+                    (getKeyConflictContext().conflicts(net.neoforged.neoforge.client.settings.KeyConflictContext.IN_GAME) &&
-+                    (keyModifier == net.neoforged.neoforge.client.settings.KeyModifier.NONE || otherKeyModifier == net.neoforged.neoforge.client.settings.KeyModifier.NONE));
-+            }
-+        }
-         return this.key.equals(that.key);
+-        return this.key.equals(that.key);
++        return net.neoforged.neoforge.client.extensions.KeyMappingModifierHelper.hasKeyMappingConflict(this, that);
      }
  
+     public boolean isUnbound() {
 @@ -181,11 +_,13 @@
      }
  
