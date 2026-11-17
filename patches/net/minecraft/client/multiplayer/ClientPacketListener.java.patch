@@ -33,6 +33,14 @@
          this.minecraft.player.setId(packet.playerId());
          this.level.addEntity(this.minecraft.player);
          this.minecraft.player.input = new KeyboardInput(this.minecraft.options);
+@@ -912,6 +_,7 @@
+                         this.seenPlayers,
+                         this.seenInsecureChatWarning,
+                         this.commandSuggestions
++                        , this.connectionType // Neo: retain connection type across protocol changes
+                     )
+                 )
+             );
 @@ -1250,7 +_,8 @@
          }
  
@@ -120,6 +128,30 @@
          Instant timeStamp = Instant.now();
          long salt = SigningCryptoUtils.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastSeenUpdate = this.lastSeenMessages.generateAndApplyUpdate();
+@@ -2607,6 +_,11 @@
+     }
+ 
+     public void sendCommand(String command) {
++        // Neo: Dispatch client commands for chat inputs.
++        if (net.neoforged.neoforge.client.ClientCommandHandler.runCommand(command)) {
++            return;
++        }
++
+         SignableCommand<?> signableCommand = this.commandSuggestions.parse(command, this.suggestionsProvider).signables();
+         if (signableCommand.arguments().isEmpty()) {
+             this.send(new ServerboundChatCommandPacket(command));
+@@ -2623,6 +_,11 @@
+     }
+ 
+     public void sendUnattendedCommand(String command, @Nullable Screen screenAfterCommand) {
++        // Neo: Dispatch client commands for text component click actions.
++        if (net.neoforged.neoforge.client.ClientCommandHandler.runCommand(command)) {
++            return;
++        }
++
+         switch (this.commandSuggestions.verifyCommand(command, this.suggestionsProvider, this.restrictedSuggestionsProvider)) {
+             case NO_ISSUES:
+                 this.send(new ServerboundChatCommandPacket(command));
 @@ -2709,6 +_,8 @@
          }
  
@@ -129,3 +161,19 @@
          if (this.levelLoadTracker != null) {
              this.levelLoadTracker.tickClientLoad();
              if (this.levelLoadTracker.isLevelReady()) {
+@@ -2803,5 +_,15 @@
+ 
+     public ClientClockManager clockManager() {
+         return this.clockManager;
++    }
++
++    @Override
++    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {
++        return this.connectionType;
++    }
++
++    @Override
++    public net.neoforged.neoforge.attachment.SessionData getSessionData() {
++        return this.sessionData;
+     }
+ }

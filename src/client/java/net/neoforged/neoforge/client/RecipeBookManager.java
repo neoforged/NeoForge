@@ -13,9 +13,9 @@ import java.util.Map;
 import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.recipebook.RecipeCollection;
-import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -49,8 +49,9 @@ public final class RecipeBookManager {//TODO - 26.4: Move this to the recipebook
         var event = new RegisterRecipeBookSearchCategoriesEvent(searchCategories, recipeDisplaySearchInfo);
         //Add vanilla's default tooltip handling for items, optimized to only have to look up the item registry once
         event.registerResultIndexer(RecipeDisplayResultTooltipExtractor.forStack(ItemStackContentsFactory.INSTANCE, ItemStack::getTooltipLines),
-                (result, _, registry, recipeContext) -> result.resolve(recipeContext, ItemStackContentsFactory.INSTANCE)
-                        .<Identifier>map(stack -> registry.getKey(stack.typeHolder().value())));
+                (result, _, recipeContext) -> result.resolve(recipeContext, ItemStackContentsFactory.INSTANCE)
+                        .flatMap(stack -> stack.typeHolder().unwrapKey().stream())
+                        .map(ResourceKey::identifier));
         ModLoader.postEvent(event);
         RecipeBookManager.searchCategories = Collections.unmodifiableMap(searchCategories);
         RecipeBookManager.recipeDisplaySearchInfo = Collections.unmodifiableList(recipeDisplaySearchInfo);
@@ -68,9 +69,9 @@ public final class RecipeBookManager {//TODO - 26.4: Move this to the recipebook
     }
 
     @ApiStatus.Internal
-    public static Stream<Identifier> getResultIds(RecipeDisplayEntry entry, RegistryAccess registryAccess, Registry<Item> itemRegistries, ContextMap recipeContext) {
+    public static Stream<Identifier> getResultIds(RecipeDisplayEntry entry, HolderLookup.Provider registryAccess, ContextMap recipeContext) {
         SlotDisplay result = entry.display().result();
-        return recipeDisplaySearchInfo.stream().flatMap(info -> info.idExtractor.extract(result, registryAccess, itemRegistries, recipeContext));
+        return recipeDisplaySearchInfo.stream().flatMap(info -> info.idExtractor.extract(result, registryAccess, recipeContext));
     }
 
     @ApiStatus.Internal

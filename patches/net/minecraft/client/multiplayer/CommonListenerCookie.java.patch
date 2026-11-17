@@ -1,12 +1,12 @@
 --- a/net/minecraft/client/multiplayer/CommonListenerCookie.java
 +++ b/net/minecraft/client/multiplayer/CommonListenerCookie.java
-@@ -30,5 +30,27 @@
-     ServerLinks serverLinks,
+@@ -32,5 +_,28 @@
      Map<UUID, PlayerInfo> seenPlayers,
-     boolean seenInsecureChatWarning
+     boolean seenInsecureChatWarning,
+     SuggestionBox commandSuggestions
 +    , net.neoforged.neoforge.network.connection.ConnectionType connectionType
  ) {
-+    /// @deprecated Neo: Use [#CommonListenerCookie(LevelLoadTracker, GameProfile, WorldSessionTelemetryManager, RegistryAccess.Frozen, FeatureFlagSet, String, ServerData, Screen, Map, ChatComponent.State, Map, ServerLinks, Map, boolean, net.neoforged.neoforge.network.connection.ConnectionType)]
++    /// @deprecated Neo: Use [#CommonListenerCookie(LevelLoadTracker, GameProfile, WorldSessionTelemetryManager, RegistryAccess.Frozen, FeatureFlagSet, String, ServerData, Screen, Map, ChatComponent.State, Map, ServerLinks, Map, boolean, SuggestionBox, net.neoforged.neoforge.network.connection.ConnectionType)]
 +    /// instead, to indicate whether the connection is modded.
 +    @Deprecated
 +    public CommonListenerCookie(
@@ -23,8 +23,9 @@
 +        Map<String, String> customReportDetails,
 +        ServerLinks serverLinks,
 +        Map<UUID, PlayerInfo> seenPlayers,
-+        boolean seenInsecureChatWarning
++        boolean seenInsecureChatWarning,
++        SuggestionBox commandSuggestions
 +    ) {
-+        this(levelLoadTracker, localGameProfile, telemetryManager, receivedRegistries, enabledFeatures, serverBrand, serverData, postDisconnectScreen, serverCookies, chatState, customReportDetails, serverLinks, seenPlayers, seenInsecureChatWarning, net.neoforged.neoforge.network.connection.ConnectionType.OTHER);
++        this(levelLoadTracker, localGameProfile, telemetryManager, receivedRegistries, enabledFeatures, serverBrand, serverData, postDisconnectScreen, serverCookies, chatState, customReportDetails, serverLinks, seenPlayers, seenInsecureChatWarning, commandSuggestions, net.neoforged.neoforge.network.connection.ConnectionType.OTHER);
 +    }
  }

@@ -1,5 +1,28 @@
 --- a/net/minecraft/client/multiplayer/SessionSearchTrees.java
 +++ b/net/minecraft/client/multiplayer/SessionSearchTrees.java
+@@ -60,18 +_,16 @@
+                 HolderLookup.Provider registryAccess = level.registryAccess();
+                 Item.TooltipContext tooltipContext = Item.TooltipContext.of(registryAccess);
+                 ContextMap recipeContext = SlotDisplayContext.fromLevel(level);
+-                TooltipFlag tooltipFlag = TooltipFlag.Default.NORMAL;
++                TooltipFlag tooltipFlag = net.neoforged.neoforge.client.ClientTooltipFlag.of(TooltipFlag.Default.NORMAL);
+                 CompletableFuture<?> previous = this.recipeSearch;
+                 this.recipeSearch = CompletableFuture.supplyAsync(
+                     () -> new FullTextSearchTree<>(
+-                        collection -> getTooltipLines(
+-                            collection.getRecipes().stream().flatMap(e -> e.resultItems(recipeContext).stream()), tooltipContext, tooltipFlag
++                        collection -> net.neoforged.neoforge.client.RecipeBookManager.getTooltipLines(
++                            collection, recipeContext, tooltipContext, tooltipFlag
+                         ),
+                         collection -> collection.getRecipes()
+                             .stream()
+-                            .flatMap(e -> e.resultItems(recipeContext).stream())
+-                            .flatMap(stack -> stack.typeHolder().unwrapKey().stream())
+-                            .map(ResourceKey::identifier),
++                            .flatMap(e -> net.neoforged.neoforge.client.RecipeBookManager.getResultIds(e, registryAccess, recipeContext)),
+                         recipes
+                     ),
+                     Util.backgroundExecutor()
 @@ -86,44 +_,64 @@
      }
  

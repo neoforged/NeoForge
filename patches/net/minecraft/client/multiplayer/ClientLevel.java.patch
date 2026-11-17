@@ -1,5 +1,15 @@
 --- a/net/minecraft/client/multiplayer/ClientLevel.java
 +++ b/net/minecraft/client/multiplayer/ClientLevel.java
+@@ -160,7 +_,8 @@
+     private final @Nullable EndFlashState endFlashState;
+     private final Minecraft minecraft = Minecraft.getInstance();
+     private final List<AbstractClientPlayer> players = new ArrayList<>();
+-    private final List<EnderDragonPart> dragonParts = new ArrayList<>();
++    // Neo: widen generic to support non-dragon part entities
++    private final List<net.neoforged.neoforge.entity.PartEntity<?>> dragonParts = new ArrayList<>();
+     private final Map<MapId, MapItemSavedData> mapData = new HashMap<>();
+     private int skyFlashTime;
+     private int rainSoundTime;
 @@ -169,6 +_,7 @@
          cache.put(BiomeColors.FOLIAGE_COLOR_RESOLVER, new BlockTintCache(pos -> this.calculateBlockTint(pos, BiomeColors.FOLIAGE_COLOR_RESOLVER)));
          cache.put(BiomeColors.DRY_FOLIAGE_COLOR_RESOLVER, new BlockTintCache(pos -> this.calculateBlockTint(pos, BiomeColors.DRY_FOLIAGE_COLOR_RESOLVER)));

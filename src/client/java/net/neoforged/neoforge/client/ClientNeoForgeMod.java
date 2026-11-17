@@ -222,7 +222,7 @@ public class ClientNeoForgeMod {
     static void onRegisterRecipeSearch(RegisterRecipeBookSearchCategoriesEvent event) {
         //As many mods might add recipes that produce fluids, register a result search provider for fluid displays
         event.registerResultIndexer(RecipeDisplayResultTooltipExtractor.forStack(FluidStackContentsFactory.INSTANCE, FluidStack::getTooltipLines),
-                RecipeDisplayResultIdExtractor.forRegisteredType(FluidStackContentsFactory.INSTANCE, Registries.FLUID));
+                RecipeDisplayResultIdExtractor.forRegisteredType(FluidStackContentsFactory.INSTANCE));
     }
 
     @SubscribeEvent
