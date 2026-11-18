@@ -1,5 +1,20 @@
 --- a/net/minecraft/world/entity/animal/equine/AbstractHorse.java
 +++ b/net/minecraft/world/entity/animal/equine/AbstractHorse.java
+@@ -344,9 +_,12 @@
+     @Override
+     protected void playStepSound(BlockPos pos, BlockState blockState) {
+         if (!blockState.liquid()) {
+-            BlockState aboveState = this.level().getBlockState(pos.above());
++            BlockPos abovePos = pos.above();
++            BlockState aboveState = this.level().getBlockState(abovePos);
+             BlockState stepSoundBlockState = aboveState.is(Blocks.SNOW) ? aboveState : blockState;
+-            Optional<Holder<BlockSoundSet>> blockSoundSetHolder = stepSoundBlockState.getSoundsAsHolder(this.level());
++            BlockPos stepSoundPos = aboveState.is(Blocks.SNOW) ? abovePos : pos;
++            // Neo: use level-sensitive sound set getter
++            Optional<Holder<BlockSoundSet>> blockSoundSetHolder = stepSoundBlockState.getSoundsAsHolder(this.level(), stepSoundPos, this);
+             BlockSoundSet blockSoundSet = blockSoundSetHolder.map(Holder::value).orElse(BlockSoundSet.EMPTY);
+             if (this.isVehicle() && this.canGallop) {
+                 this.gallopSoundCounter++;
 @@ -764,6 +_,7 @@
          Vec3 movement = this.getDeltaMovement();
          this.setDeltaMovement(movement.x, impulse, movement.z);

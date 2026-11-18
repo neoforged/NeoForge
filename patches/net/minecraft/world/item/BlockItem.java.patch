@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/BlockItem.java
 +++ b/net/minecraft/world/item/BlockItem.java
-@@ -90,6 +_,8 @@
+@@ -90,13 +_,16 @@
              updateCustomBlockEntityTag(level, player, pos, itemStack);
              updateBlockEntityComponents(level, pos, itemStack);
              placedState.getBlock().setPlacedBy(level, pos, placedState, player, itemStack);
@@ -9,3 +9,27 @@
              if (player instanceof ServerPlayer serverPlayer) {
                  CriteriaTriggers.PLACED_BLOCK.trigger(serverPlayer, pos, itemStack);
              }
+         }
+ 
+-        BlockSoundSet blockSoundSet = placedState.getSounds(level);
+-        Holder<SoundEvent> placeSound = this.getPlaceSound(blockSoundSet);
++        // Neo: use level-sensitive sound type getter and placement sound resolution method
++        BlockSoundSet blockSoundSet = placedState.getSounds(level, pos, player);
++        Holder<SoundEvent> placeSound = this.getPlaceSound(placedState, level, pos, player);
+         if (placeSound != null) {
+             level.playSound(player, pos, placeSound, SoundSource.BLOCKS, (blockSoundSet.volume() + 1.0F) / 2.0F, blockSoundSet.pitch() * 0.8F);
+         }
+@@ -106,6 +_,13 @@
+         return InteractionResult.SUCCESS;
+     }
+ 
++    /// Neo: level-sensitive overload of [#getPlaceSound(BlockSoundSet)]
++    protected @Nullable Holder<SoundEvent> getPlaceSound(BlockState state, Level level, BlockPos pos, @Nullable Player player) {
++        return state.getSounds(level, pos, player).placeSound().orElse(null);
++    }
++
++    /// Neo: use [#getPlaceSound(BlockState, Level, BlockPos, Player)] instead
++    @Deprecated
+     protected @Nullable Holder<SoundEvent> getPlaceSound(BlockSoundSet blockSoundSet) {
+         return blockSoundSet.placeSound().orElse(null);
+     }

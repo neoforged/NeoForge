@@ -22,38 +22,6 @@
          }
  
          this.checkBelowWorld();
-@@ -1471,20 +1497,22 @@
-         return !aboveState.is(BlockTags.INSIDE_STEP_SOUND_BLOCKS) && !aboveState.is(BlockTags.COMBINATION_STEP_SOUND_BLOCKS) ? affectingPos : abovePos;
-     }
- 
--    protected void playCombinationStepSounds(BlockState primaryStepSound, BlockState secondaryStepSound) {
--        SoundType primaryStepSoundType = primaryStepSound.getSoundType();
--        this.playSound(primaryStepSoundType.getStepSound(), primaryStepSoundType.getVolume() * 0.15F, primaryStepSoundType.getPitch());
--        this.playMuffledStepSound(secondaryStepSound);
-+    // Neo: add position context
-+    protected void playCombinationStepSounds(BlockState primaryStepSound, BlockState secondaryStepSound, BlockPos primaryPos, BlockPos secondaryPos) {
-+        // Neo: Allow the blockstate full control over step sounds
-+        primaryStepSound.playStepSound(this.level, primaryPos, this, .15F, 1F);
-+        this.playMuffledStepSound(secondaryStepSound, secondaryPos);
-     }
- 
--    protected void playMuffledStepSound(BlockState blockState) {
--        SoundType secondaryStepSoundType = blockState.getSoundType();
--        this.playSound(secondaryStepSoundType.getStepSound(), secondaryStepSoundType.getVolume() * 0.05F, secondaryStepSoundType.getPitch() * 0.8F);
-+    // Neo: add position context
-+    protected void playMuffledStepSound(BlockState blockState, BlockPos pos) {
-+        // Neo: Allow the blockstate full control over step sounds
-+        blockState.playStepSound(this.level, pos, this, .05F, .8F);
-     }
- 
-     protected void playStepSound(BlockPos pos, BlockState blockState) {
--        SoundType soundType = blockState.getSoundType();
--        this.playSound(soundType.getStepSound(), soundType.getVolume() * 0.15F, soundType.getPitch());
-+        // Neo: Allow the blockstate full control over step sounds
-+        blockState.playStepSound(this.level(), pos, this, .15F, 1F);
-     }
- 
-     private boolean shouldPlayAmethystStepSound(BlockState affectingState) {
 @@ -1663,18 +1691,19 @@
  
      public void updateSwimming() {

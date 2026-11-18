@@ -425,6 +425,22 @@
          boolean damaged = super.causeFallDamage(effectiveFallDistance, damageModifier, damageSource);
          int dmg = this.calculateFallDamage(effectiveFallDistance, damageModifier);
          if (dmg > 0) {
+@@ -1880,11 +_,11 @@
+             int xx = Mth.floor(this.getX());
+             int yy = Mth.floor(this.getY() - 0.2F);
+             int zz = Mth.floor(this.getZ());
+-            BlockState state = this.level().getBlockState(new BlockPos(xx, yy, zz));
++            BlockPos pos = new BlockPos(xx, yy, zz);
++            BlockState state = this.level().getBlockState(pos);
+             if (!state.isAir()) {
+-                BlockSoundSet blockSoundSet = state.getSounds(this.level());
+-                blockSoundSet.fallSound()
+-                    .ifPresent(fallSound -> this.playSound((Holder<SoundEvent>)fallSound, blockSoundSet.volume() * 0.5F, blockSoundSet.pitch() * 0.75F));
++                // Neo: let the block control the fall sound
++                state.playFallSound(this.level(), pos, this);
+             }
+         }
+     }
 @@ -1909,6 +_,11 @@
          if (!(damage <= 0.0F)) {
              int durabilityDamage = (int)Math.max(1.0F, damage / 4.0F);

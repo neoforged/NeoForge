@@ -33,7 +33,13 @@
      }
  
      protected void spawnAfterBreak(BlockState state, ServerLevel level, BlockPos pos, ItemStack tool, boolean dropExperience, @Nullable Entity breaker) {
-@@ -389,6 +_,8 @@
+@@ -385,10 +_,14 @@
+         return this.isRandomlyTicking;
+     }
+ 
++    /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.IBlockExtension#getSounds(BlockState, LevelReader, BlockPos, Entity)] instead
++    @Deprecated
+     protected Optional<ResourceKey<BlockSoundSet>> getSounds(BlockState state) {
          return this.blockSoundSet;
      }
  
@@ -127,6 +133,27 @@
              return this.getBlock().useItemOn(itemStack, this.asState(), level, hitResult.getBlockPos(), player, hand, hitResult);
          }
  
+@@ -859,14 +_,20 @@
+             return this.getBlock().getSeed(this.asState(), pos);
+         }
+ 
++        /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#getSoundsKey(LevelReader, BlockPos, Entity)] instead
++        @Deprecated
+         public Optional<ResourceKey<BlockSoundSet>> getSounds() {
+             return this.getBlock().getSounds(this.asState());
+         }
+ 
++        /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#getSoundsAsHolder(LevelReader, BlockPos, Entity)] instead
++        @Deprecated
+         public Optional<Holder<BlockSoundSet>> getSoundsAsHolder(LevelReader level) {
+             return this.getSounds().flatMap(level.registryAccess()::get);
+         }
+ 
++        /// @deprecated Neo: use [net.neoforged.neoforge.common.extensions.IBlockStateExtension#getSounds(LevelReader, BlockPos, Entity)] instead
++        @Deprecated
+         public BlockSoundSet getSounds(LevelReader level) {
+             return this.getSoundsAsHolder(level).map(Holder::value).orElse(BlockSoundSet.EMPTY);
+         }
 @@ -1010,7 +_,8 @@
          private NoteBlockInstrument instrument = NoteBlock.DEFAULT_INSTRUMENT;
          private boolean replaceable;

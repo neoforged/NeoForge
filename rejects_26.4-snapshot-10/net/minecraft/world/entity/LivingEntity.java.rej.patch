@@ -1,20 +1,5 @@
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -1851,10 +1959,11 @@
-             int xx = Mth.floor(this.getX());
-             int yy = Mth.floor(this.getY() - 0.2F);
-             int zz = Mth.floor(this.getZ());
--            BlockState state = this.level().getBlockState(new BlockPos(xx, yy, zz));
-+            var pos = new BlockPos(xx, yy, zz);
-+            BlockState state = this.level().getBlockState(pos);
-             if (!state.isAir()) {
--                SoundType soundType = state.getSoundType();
--                this.playSound(soundType.getFallSound(), soundType.getVolume() * 0.5F, soundType.getPitch() * 0.75F);
-+                // Neo: let the block control the fall sound
-+                state.playFallSound(this.level(), pos, this);
-             }
-         }
-     }
 @@ -2368,15 +2517,20 @@
          }
      }

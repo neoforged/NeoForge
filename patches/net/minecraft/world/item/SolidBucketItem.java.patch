@@ -6,8 +6,8 @@
  
 +    /// Neo: {@return the placement sound of this block item}
 +    @Override
-+    protected SoundEvent getPlaceSound(BlockState state, Level level, BlockPos pos, Player player) {
-+        return this.getPlaceSound(state);
++    protected Holder<SoundEvent> getPlaceSound(net.minecraft.world.level.block.state.BlockState state, Level level, BlockPos pos, @Nullable Player player) {
++        return this.placeSound;
 +    }
 +
      @Override

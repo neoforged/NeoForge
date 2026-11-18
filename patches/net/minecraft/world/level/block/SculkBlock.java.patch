@@ -1,0 +1,12 @@
+--- a/net/minecraft/world/level/block/SculkBlock.java
++++ b/net/minecraft/world/level/block/SculkBlock.java
+@@ -35,7 +_,8 @@
+                 if (random.nextInt(xpPerGrowthSpawn) < charge) {
+                     BlockPos growthPlacement = chargePos.above();
+                     BlockState growthState = this.getRandomGrowthState(level, growthPlacement, random, spreader);
+-                    BlockSoundSet blockSoundSet = growthState.getSounds(level);
++                    // Neo: use level-sensitive sound set getter
++                    BlockSoundSet blockSoundSet = growthState.getSounds(level, growthPlacement, null);
+                     level.setBlockAndUpdate(growthPlacement, growthState);
+                     blockSoundSet.placeSound()
+                         .ifPresent(placeSound -> level.playSound(null, chargePos, (Holder<SoundEvent>)placeSound, SoundSource.BLOCKS, 1.0F, 1.0F));

@@ -9,6 +9,8 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
@@ -33,8 +35,9 @@ import net.minecraft.world.level.SignalGetter;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.sounds.BlockSoundSet;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
 import net.minecraft.world.level.material.FluidState;
@@ -383,16 +386,34 @@ public interface IBlockStateExtension {
         return self().getBlock().getWeakChanges(self(), level, pos);
     }
 
-    /**
-     * Sensitive version of getSoundType
-     *
-     * @param level  The level
-     * @param pos    The position. Note that the level may not necessarily have {@code state} here!
-     * @param entity The entity that is breaking/stepping on/placing/hitting/falling on this block, or null if no entity is in this context
-     * @return A SoundType to use
-     */
-    default SoundType getSoundType(LevelReader level, BlockPos pos, @Nullable Entity entity) {
-        return self().getBlock().getSoundType(self(), level, pos, entity);
+    /// Level-sensitive overload of [BlockBehaviour.BlockStateBase#getSounds()].
+    ///
+    /// @param level  The level
+    /// @param pos    The position. Note that the level may not necessarily have `state` here!
+    /// @param entity The entity that is breaking/stepping on/placing/hitting/falling on this block, or null if no entity is in this context
+    /// @return the sound set to use
+    default Optional<ResourceKey<BlockSoundSet>> getSoundsKey(LevelReader level, BlockPos pos, @Nullable Entity entity) {
+        return self().getBlock().getSounds(self(), level, pos, entity);
+    }
+
+    /// Level-sensitive overload of [BlockBehaviour.BlockStateBase#getSoundsAsHolder(LevelReader)].
+    ///
+    /// @param level  The level
+    /// @param pos    The position. Note that the level may not necessarily have `state` here!
+    /// @param entity The entity that is breaking/stepping on/placing/hitting/falling on this block, or null if no entity is in this context
+    /// @return the sound set to use
+    default Optional<Holder<BlockSoundSet>> getSoundsAsHolder(LevelReader level, BlockPos pos, @Nullable Entity entity) {
+        return this.getSoundsKey(level, pos, entity).flatMap(level.registryAccess()::get);
+    }
+
+    /// Level-sensitive overload of [BlockBehaviour.BlockStateBase#getSounds(LevelReader)].
+    ///
+    /// @param level  The level
+    /// @param pos    The position. Note that the level may not necessarily have `state` here!
+    /// @param entity The entity that is breaking/stepping on/placing/hitting/falling on this block, or null if no entity is in this context
+    /// @return the sound set to use
+    default BlockSoundSet getSounds(LevelReader level, BlockPos pos, @Nullable Entity entity) {
+        return this.getSoundsAsHolder(level, pos, entity).map(Holder::value).orElse(BlockSoundSet.EMPTY);
     }
 
     /**

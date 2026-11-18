@@ -165,7 +165,7 @@
                  this.addBreakingParticles(pos, direction, blockState);
              }
          }
-@@ -1096,7 +_,8 @@
+@@ -1096,11 +_,13 @@
              xp = x + shape.maxX + 0.1F;
          }
  
@@ -175,6 +175,12 @@
      }
  
      private void playBreakingSound(BlockPos pos, BlockState blockState) {
+-        BlockSoundSet blockSoundSet = blockState.getSounds(this);
++        // Neo: use level-sensitive sound set getter
++        BlockSoundSet blockSoundSet = blockState.getSounds(this, pos, null);
+         blockSoundSet.hitSound()
+             .ifPresent(
+                 hitSound -> this.minecraft
 @@ -1224,6 +_,7 @@
          }
  

@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -52,9 +53,9 @@ import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.LadderBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.sounds.BlockSoundSet;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -336,8 +337,8 @@ public interface IBlockExtension {
      * @param entity The entity falling onto the block
      */
     default void playFallSound(BlockState state, Level level, BlockPos pos, LivingEntity entity) {
-        SoundType soundType = state.getSoundType(level, pos, entity);
-        entity.playSound(soundType.getFallSound(), soundType.getVolume() * .5F, soundType.getPitch() * .75F);
+        BlockSoundSet soundSet = state.getSounds(level, pos, entity);
+        soundSet.fallSound().ifPresent(fallSound -> entity.playSound(fallSound, soundSet.volume() * 0.5F, soundSet.pitch() * 0.75F));
     }
 
     /**
@@ -348,7 +349,7 @@ public interface IBlockExtension {
      * <li>{@link Entity#playStepSound(BlockPos, BlockState)} (simple step sound)</li>
      * </ul>
      * The volume and pitch of any sound played in this method should be multiplied with the provided multipliers to
-     * replicate the behaviour of the callers.
+     * replicate the behavior of the callers.
      *
      * @param state            The block being stepped on
      * @param level            The level which the block is in
@@ -358,8 +359,8 @@ public interface IBlockExtension {
      * @param pitchMultiplier  The pitch multiplier to apply to the step sound being played
      */
     default void playStepSound(BlockState state, Level level, BlockPos pos, Entity entity, float volumeMultiplier, float pitchMultiplier) {
-        SoundType soundType = state.getSoundType(level, pos, entity);
-        entity.playSound(soundType.getStepSound(), soundType.getVolume() * volumeMultiplier, soundType.getPitch() * pitchMultiplier);
+        BlockSoundSet soundSet = state.getSounds(level, pos, entity);
+        soundSet.stepSound().ifPresent(stepSound -> entity.playSound(stepSound, soundSet.volume() * volumeMultiplier, soundSet.pitch() * pitchMultiplier));
     }
 
     /**
@@ -483,17 +484,15 @@ public interface IBlockExtension {
         return state.is(Blocks.COMPARATOR);
     }
 
-    /**
-     * Sensitive version of getSoundType
-     *
-     * @param state  The state
-     * @param level  The level
-     * @param pos    The position. Note that the level may not necessarily have {@code state} here!
-     * @param entity The entity that is breaking/stepping on/placing/hitting/falling on this block, or null if no entity is in this context
-     * @return A SoundType to use
-     */
-    default SoundType getSoundType(BlockState state, LevelReader level, BlockPos pos, @Nullable Entity entity) {
-        return state.getSoundType();
+    /// Level-sensitive overload of [BlockBehaviour#getSounds(BlockState)]
+    ///
+    /// @param state  The state
+    /// @param level  The level
+    /// @param pos    The position. Note that the level may not necessarily have `state` here!
+    /// @param entity The entity that is breaking/stepping on/placing/hitting/falling on this block, or null if no entity is in this context
+    /// @return the sound set to use
+    default Optional<ResourceKey<BlockSoundSet>> getSounds(BlockState state, LevelReader level, BlockPos pos, @Nullable Entity entity) {
+        return state.getSounds();
     }
 
     /**

@@ -97,6 +97,40 @@
                  ? getOnPos.atY(Mth.floor(this.position.y - offset))
                  : getOnPos;
          } else {
+@@ -1461,22 +_,22 @@
+         return !aboveState.is(BlockTags.INSIDE_STEP_SOUND_BLOCKS) && !aboveState.is(BlockTags.COMBINATION_STEP_SOUND_BLOCKS) ? affectingPos : abovePos;
+     }
+ 
+-    protected void playCombinationStepSounds(BlockState primaryStepSound, BlockState secondaryStepSound) {
+-        BlockSoundSet primaryStepSoundSet = primaryStepSound.getSounds(this.level());
+-        primaryStepSoundSet.stepSound()
+-            .ifPresent(stepSound -> this.playSound((Holder<SoundEvent>)stepSound, primaryStepSoundSet.volume() * 0.15F, primaryStepSoundSet.pitch()));
+-        this.playMuffledStepSound(secondaryStepSound);
++    // Neo: add position context
++    protected void playCombinationStepSounds(BlockState primaryStepSound, BlockState secondaryStepSound, BlockPos primaryPos, BlockPos secondaryPos) {
++        // Neo: Allow the blockstate full control over step sounds
++        primaryStepSound.playStepSound(this.level, primaryPos, this, .15F, 1F);
++        this.playMuffledStepSound(secondaryStepSound, secondaryPos);
+     }
+ 
+-    protected void playMuffledStepSound(BlockState blockState) {
+-        BlockSoundSet secondaryStepSoundSet = blockState.getSounds(this.level());
+-        secondaryStepSoundSet.stepSound()
+-            .ifPresent(stepSound -> this.playSound((Holder<SoundEvent>)stepSound, secondaryStepSoundSet.volume() * 0.05F, secondaryStepSoundSet.pitch() * 0.8F));
++    // Neo: add position context
++    protected void playMuffledStepSound(BlockState blockState, BlockPos pos) {
++        // Neo: Allow the blockstate full control over step sounds
++        blockState.playStepSound(this.level, pos, this, .05F, .8F);
+     }
+ 
+     protected void playStepSound(BlockPos pos, BlockState blockState) {
+-        BlockSoundSet blockSoundSet = blockState.getSounds(this.level());
+-        blockSoundSet.stepSound().ifPresent(stepSound -> this.playSound((Holder<SoundEvent>)stepSound, blockSoundSet.volume() * 0.15F, blockSoundSet.pitch()));
++        // Neo: Allow the blockstate full control over step sounds
++        blockState.playStepSound(this.level(), pos, this, .15F, 1F);
+     }
+ 
+     private boolean shouldPlayAmethystStepSound(BlockState affectingState) {
 @@ -1649,7 +_,7 @@
      }
  

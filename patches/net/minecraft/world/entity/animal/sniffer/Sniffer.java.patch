@@ -1,0 +1,12 @@
+--- a/net/minecraft/world/entity/animal/sniffer/Sniffer.java
++++ b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
+@@ -306,7 +_,8 @@
+                 }
+ 
+                 if (this.tickCount % 10 == 0) {
+-                    BlockSoundSet blockSoundSet = stateBelow.getSounds(this.level());
++                    // Neo: use level-sensitive sound set getter
++                    BlockSoundSet blockSoundSet = stateBelow.getSounds(this.level(), head.below(), this);
+                     blockSoundSet.hitSound()
+                         .ifPresent(hitSound -> this.level().playLocalSound(this, (Holder<SoundEvent>)hitSound, this.getSoundSource(), 0.5F, 0.5F));
+                 }
