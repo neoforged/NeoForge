@@ -7,13 +7,16 @@ package net.neoforged.neoforge.debug.entity.player;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.ServerboundClientInformationPacket;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.LevelBasedPermissionSet;
 import net.minecraft.stats.ServerStatsCounter;
@@ -41,6 +44,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.event.StatAwardEvent;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
+import net.neoforged.neoforge.event.entity.player.ClientInformationUpdatedEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -320,5 +324,44 @@ public class PlayerEventTests {
                 .thenExecute(player -> Objects.requireNonNull(player.level().getServer()).getPlayerList().respawn(player, false, Entity.RemovalReason.KILLED))
                 .thenExecute(() -> helper.assertEntityIsHolding(new BlockPos(0, 1, 1), EntityTypes.PLAYER, Items.APPLE))
                 .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if the ClientInformationUpdatedEvent fires with the old and the new information when a player updates their client options")
+    static void clientInformationUpdatedEvent(final DynamicTest test) {
+        AtomicReference<GameTestPlayer> expectedPlayer = new AtomicReference<>();
+        AtomicReference<ClientInformationUpdatedEvent> fired = new AtomicReference<>();
+        test.eventListeners().forge().addListener((final ClientInformationUpdatedEvent event) -> {
+            if (event.getEntity() == expectedPlayer.get()) {
+                fired.set(event);
+            }
+        });
+
+        test.onGameTest(helper -> {
+            GameTestPlayer player = helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL);
+            expectedPlayer.set(player);
+            ClientInformation oldInformation = player.clientInformation();
+            ClientInformation newInformation = new ClientInformation(
+                    "fr_fr",
+                    oldInformation.viewDistance() + 1,
+                    oldInformation.chatVisibility(),
+                    oldInformation.chatColors(),
+                    oldInformation.modelCustomisation(),
+                    oldInformation.mainHand(),
+                    oldInformation.textFilteringEnabled(),
+                    oldInformation.allowsListing(),
+                    oldInformation.particleStatus());
+
+            // The same path as a client sending its updated options
+            player.connection.handleClientInformation(new ServerboundClientInformationPacket(newInformation));
+
+            ClientInformationUpdatedEvent event = fired.get();
+            helper.assertNotNull(event, "Event should fire when the client information is updated");
+            helper.assertValueEqual(event.getOldInformation(), oldInformation, "Expected the previous information; old is " + event.getOldInformation());
+            helper.assertValueEqual(event.getUpdatedInformation(), newInformation, "Expected the sent information; updated is " + event.getUpdatedInformation());
+            helper.assertValueEqual(player.clientInformation(), newInformation, "Expected the new information to be applied; information is " + player.clientInformation());
+            helper.succeed();
+        });
     }
 }
