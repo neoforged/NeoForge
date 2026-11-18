@@ -11,7 +11,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.data.worldgen.features.TreeFeatures;
+import net.minecraft.network.protocol.common.ServerboundClientInformationPacket;
+import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityTypes;
@@ -21,6 +24,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -32,11 +36,13 @@ import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent;
 import net.neoforged.neoforge.event.level.BlockGrowFeatureEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
+import net.neoforged.testframework.gametest.GameTestPlayer;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 
 @ForEachTest(groups = { LevelTests.GROUP + ".event", "event" })
@@ -170,6 +176,48 @@ public class LevelEventTests {
                     .thenExecute(() -> {
                         level.getChunk(pos.x(), pos.z());
                         helper.assertValueEqual(loads, List.of(true, false), "Expected a second load event, not for a new chunk; events are " + loads);
+                    })
+                    .thenSucceed();
+        });
+    }
+
+    private static boolean hasWatchEvent(final List<? extends ChunkWatchEvent> events, final ServerPlayer player, final ChunkPos pos) {
+        return events.stream().anyMatch(event -> event.getPlayer() == player && event.getPos().equals(pos));
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if the ChunkWatchEvent fires when a player starts watching a chunk, when it is sent to them and when they stop watching it")
+    static void chunkWatchEvent(final DynamicTest test) {
+        List<ChunkWatchEvent.Watch> watched = new ArrayList<>();
+        List<ChunkWatchEvent.Sent> sent = new ArrayList<>();
+        List<ChunkWatchEvent.UnWatch> unwatched = new ArrayList<>();
+        test.eventListeners().forge().addListener((final ChunkWatchEvent.Watch event) -> watched.add(event));
+        test.eventListeners().forge().addListener((final ChunkWatchEvent.Sent event) -> sent.add(event));
+        test.eventListeners().forge().addListener((final ChunkWatchEvent.UnWatch event) -> unwatched.add(event));
+
+        test.onGameTest(helper -> {
+            ChunkPos testChunk = ChunkPos.containing(helper.absolutePos(BlockPos.ZERO));
+            GameTestPlayer player = helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL).moveToCentre();
+            helper.assertTrue(hasWatchEvent(watched, player, testChunk), "Expected the player to start watching the chunk of the test");
+
+            helper.startSequence()
+                    .thenWaitUntil(() -> helper.assertTrue(hasWatchEvent(sent, player, testChunk), "Expected the chunk of the test to be sent to the player"))
+                    .thenExecute(() -> {
+                        // Shrink the view distance to its minimum and move six chunks away, which is further than the view distance and the border ring of chunks tracked around it
+                        ClientInformation information = player.clientInformation();
+                        player.connection.handleClientInformation(new ServerboundClientInformationPacket(new ClientInformation(
+                                information.language(),
+                                2,
+                                information.chatVisibility(),
+                                information.chatColors(),
+                                information.modelCustomisation(),
+                                information.mainHand(),
+                                information.textFilteringEnabled(),
+                                information.allowsListing(),
+                                information.particleStatus())));
+                        player.snapTo(player.getX() + 6 * 16, player.getY(), player.getZ());
+                        helper.assertTrue(hasWatchEvent(unwatched, player, testChunk), "Expected the player to stop watching the chunk of the test");
                     })
                     .thenSucceed();
         });
