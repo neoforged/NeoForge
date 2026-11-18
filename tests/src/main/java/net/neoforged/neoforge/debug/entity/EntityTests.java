@@ -20,9 +20,22 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
+import net.minecraft.world.entity.ai.goal.RangedCrossbowAttackGoal;
+import net.minecraft.world.entity.ai.goal.WrappedGoal;
+import net.minecraft.world.entity.monster.illager.Pillager;
+import net.minecraft.world.entity.monster.skeleton.Skeleton;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.CrossbowItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
@@ -171,5 +184,42 @@ public class EntityTests {
         public CustomPacketPayload.Type<CustomSyncPayload> type() {
             return TYPE;
         }
+    }
+
+    private static boolean hasGoal(final Mob mob, final Class<? extends Goal> type) {
+        return mob.goalSelector.getAvailableGoals().stream().anyMatch(goal -> type.isInstance(goal.getGoal()));
+    }
+
+    private static boolean canUseGoal(final Mob mob, final Class<? extends Goal> type) {
+        return mob.goalSelector.getAvailableGoals().stream().filter(goal -> type.isInstance(goal.getGoal())).anyMatch(WrappedGoal::canUse);
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests if ranged mobs use modded bows and crossbows, and not only the vanilla ones")
+    static void rangedMobsUseModdedWeapons(final DynamicTest test, final RegistrationHelper reg) {
+        final var moddedBow = reg.items().registerItem("modded_bow", properties -> new BowItem(properties.durability(384))).withLang("Modded bow");
+        final var moddedCrossbow = reg.items().registerItem("modded_crossbow", properties -> new CrossbowItem(properties.durability(326))).withLang("Modded crossbow");
+
+        test.onGameTest(helper -> {
+            Skeleton skeleton = helper.spawnWithNoFreeWill(EntityTypes.SKELETON, 1, 2, 1);
+            skeleton.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.STICK));
+            skeleton.reassessWeaponGoal();
+            helper.assertFalse(hasGoal(skeleton, RangedBowAttackGoal.class), "Expected a skeleton without a bow not to use bow attacks");
+            skeleton.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(moddedBow.get()));
+            skeleton.reassessWeaponGoal();
+            helper.assertTrue(hasGoal(skeleton, RangedBowAttackGoal.class), "Expected a skeleton holding a modded bow to use bow attacks");
+
+            // Spawned with its goals, as removing the free will of a mob clears them; the crossbow goal also needs a valid target
+            Pillager pillager = helper.spawn(EntityTypes.PILLAGER, 1, 2, 1);
+            pillager.setTarget(helper.makeMockPlayer(GameType.SURVIVAL));
+            pillager.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.STICK));
+            helper.assertFalse(canUseGoal(pillager, RangedCrossbowAttackGoal.class), "Expected a pillager without a crossbow not to use crossbow attacks");
+            pillager.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(moddedCrossbow.get()));
+            helper.assertTrue(canUseGoal(pillager, RangedCrossbowAttackGoal.class), "Expected a pillager holding a modded crossbow to use crossbow attacks");
+
+            helper.killAllEntities();
+            helper.succeed();
+        });
     }
 }
