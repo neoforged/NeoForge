@@ -11,6 +11,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
@@ -19,6 +20,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.level.ChunkPos;
@@ -32,6 +34,9 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.ModifiableBiomeInfo;
+import net.neoforged.neoforge.common.world.chunk.ForcedChunkManager;
+import net.neoforged.neoforge.common.world.chunk.RegisterTicketControllersEvent;
+import net.neoforged.neoforge.common.world.chunk.TicketController;
 import net.neoforged.neoforge.event.RegisterGameRuleCategoryEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -189,6 +194,34 @@ public class LevelTests {
             // For each chunk, if X offset is less than 8, then set temperature to 2, else -2
             case 1 -> (Biome.TemperatureModifier.TemperatureOverride) (pos, baseTemperature) -> (pos.getX() & 0xF) < 8 ? 2f : -2f;
             default -> throw new IllegalArgumentException("Unexpected parameter index: " + idx);
+        });
+    }
+
+    private static final TicketController CHUNK_TICKETS = new TicketController(Identifier.fromNamespaceAndPath("neotests", "forced_chunk_tickets"));
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if a ticket controller registered through the RegisterTicketControllersEvent can force a chunk to be loaded, and release it", enabledByDefault = true)
+    static void forcedChunkTickets(final DynamicTest test) {
+        // Controllers are registered during mod loading, so this test is enabled by default to have its listener in place
+        test.eventListeners().mod().addListener((final RegisterTicketControllersEvent event) -> event.register(CHUNK_TICKETS));
+
+        test.onGameTest(helper -> {
+            ServerLevel level = helper.getLevel();
+            BlockPos owner = helper.absolutePos(BlockPos.ZERO);
+            // A chunk far enough from the test to never have been loaded before
+            ChunkPos testChunk = ChunkPos.containing(owner);
+            ChunkPos pos = new ChunkPos(testChunk.x() + 300, testChunk.z() + 300);
+            helper.assertFalse(level.getChunkSource().hasChunk(pos.x(), pos.z()), "Expected the far chunk not to be loaded yet");
+
+            helper.assertTrue(CHUNK_TICKETS.forceChunk(level, owner, pos.x(), pos.z(), true, false), "Expected the chunk to be forced");
+            helper.assertTrue(ForcedChunkManager.hasForcedChunks(level), "Expected the level to have forced chunks");
+
+            helper.startSequence()
+                    .thenWaitUntil(() -> helper.assertTrue(level.getChunkSource().hasChunk(pos.x(), pos.z()), "Expected the forced chunk to be loaded"))
+                    .thenExecute(() -> helper.assertTrue(CHUNK_TICKETS.forceChunk(level, owner, pos.x(), pos.z(), false, false), "Expected the chunk to be released"))
+                    .thenWaitUntil(() -> helper.assertFalse(level.getChunkSource().hasChunk(pos.x(), pos.z()), "Expected the released chunk to be unloaded"))
+                    .thenSucceed();
         });
     }
 }
