@@ -11,25 +11,31 @@ import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.animal.cow.Cow;
 import net.minecraft.world.entity.animal.pig.Pig;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityMountEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
+import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.level.ExplosionKnockbackEvent;
 import net.neoforged.testframework.DynamicTest;
@@ -37,6 +43,7 @@ import net.neoforged.testframework.Test;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.gametest.GameTestPlayer;
 import net.neoforged.testframework.registration.RegistrationHelper;
@@ -251,5 +258,72 @@ public class EntityEventTests {
                 .thenIdle(20)
                 .thenExecute(helper::killAllEntities)
                 .thenSucceed());
+    }
+
+    /** Creates a fishing hook owned by {@code player}, one block west of {@code target} and flying towards it. */
+    private static FishingHook castHookTowards(final ExtendedGameTestHelper helper, final Player player, final Entity target) {
+        FishingHook hook = new FishingHook(EntityTypes.FISHING_BOBBER, helper.getLevel());
+        hook.setOwner(player);
+        hook.setPos(target.getX() - 1.0, target.getY(0.5), target.getZ());
+        hook.setDeltaMovement(1.5, 0.0, 0.0);
+        helper.getLevel().addFreshEntity(hook);
+        return hook;
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests if the ProjectileImpactEvent fires when a fishing hook hits an entity")
+    static void projectileImpactEvent(final DynamicTest test) {
+        AtomicReference<FishingHook> hook = new AtomicReference<>();
+        AtomicReference<ProjectileImpactEvent> fired = new AtomicReference<>();
+        test.eventListeners().forge().addListener((final ProjectileImpactEvent event) -> {
+            if (event.getProjectile() == hook.get()) {
+                fired.set(event);
+            }
+        });
+
+        test.onGameTest(helper -> {
+            GameTestPlayer player = helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL);
+            player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.FISHING_ROD));
+            Pig pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, 1, 2, 1);
+            hook.set(castHookTowards(helper, player, pig));
+
+            helper.startSequence()
+                    .thenWaitUntil(() -> helper.assertTrue(fired.get() != null, "Expected the event to fire when the hook reaches the pig"))
+                    .thenExecute(() -> {
+                        ProjectileImpactEvent event = fired.get();
+                        helper.assertTrue(event.getEntity() == hook.get(), "Expected the hook as the event entity; entity is " + event.getEntity());
+                        helper.assertTrue(event.getRayTraceResult() instanceof EntityHitResult hit && hit.getEntity() == pig, "Expected the pig to be hit; hit result is " + event.getRayTraceResult());
+                        helper.assertTrue(hook.get().getHookedIn() == pig, "Expected the hook to hook the pig; hooked is " + hook.get().getHookedIn());
+                    })
+                    .thenSucceed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests if cancelling the ProjectileImpactEvent prevents a fishing hook from hooking an entity")
+    static void projectileImpactEventCancel(final DynamicTest test) {
+        AtomicReference<FishingHook> hook = new AtomicReference<>();
+        AtomicInteger fireCount = new AtomicInteger();
+        test.eventListeners().forge().addListener((final ProjectileImpactEvent event) -> {
+            if (event.getProjectile() == hook.get()) {
+                fireCount.incrementAndGet();
+                event.setCanceled(true);
+            }
+        });
+
+        test.onGameTest(helper -> {
+            GameTestPlayer player = helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL);
+            player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.FISHING_ROD));
+            Pig pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, 1, 2, 1);
+            hook.set(castHookTowards(helper, player, pig));
+
+            helper.startSequence()
+                    .thenWaitUntil(() -> helper.assertTrue(fireCount.get() > 0, "Expected the event to fire when the hook reaches the pig"))
+                    // Leave the hook a few more ticks to make sure it never hooks the pig
+                    .thenExecuteAfter(3, () -> helper.assertTrue(hook.get().getHookedIn() == null, "Expected the cancelled impact not to hook the pig; hooked is " + hook.get().getHookedIn()))
+                    .thenSucceed();
+        });
     }
 }
