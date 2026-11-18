@@ -35,6 +35,7 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent;
 import net.neoforged.neoforge.event.level.BlockGrowFeatureEvent;
+import net.neoforged.neoforge.event.level.ChunkDataEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.testframework.DynamicTest;
@@ -218,6 +219,39 @@ public class LevelEventTests {
                                 information.particleStatus())));
                         player.snapTo(player.getX() + 6 * 16, player.getY(), player.getZ());
                         helper.assertTrue(hasWatchEvent(unwatched, player, testChunk), "Expected the player to stop watching the chunk of the test");
+                    })
+                    .thenSucceed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if the ChunkDataEvent.Save event fires with the level of the chunk when chunks are saved")
+    static void chunkSaveEvent(final DynamicTest test) {
+        AtomicReference<ChunkPos> target = new AtomicReference<>();
+        AtomicReference<ChunkDataEvent.Save> fired = new AtomicReference<>();
+        test.eventListeners().forge().addListener((final ChunkDataEvent.Save event) -> {
+            if (event.getChunk().getPos().equals(target.get())) {
+                fired.set(event);
+            }
+        });
+
+        test.onGameTest(helper -> {
+            ServerLevel level = helper.getLevel();
+            // A chunk far enough from the test to never have been loaded before
+            ChunkPos testChunk = ChunkPos.containing(helper.absolutePos(BlockPos.ZERO));
+            ChunkPos pos = new ChunkPos(testChunk.x() - 200, testChunk.z() - 200);
+            target.set(pos);
+            // Load the chunk and modify it, so it is saved once the temporary ticket of getChunk expires and it unloads
+            level.getChunk(pos.x(), pos.z());
+            level.setBlockAndUpdate(pos.getWorldPosition().atY(level.getMinY() + 1), Blocks.STONE.defaultBlockState());
+
+            helper.startSequence()
+                    .thenWaitUntil(() -> helper.assertTrue(fired.get() != null, "Expected the far chunk to be saved once unloaded"))
+                    .thenExecute(() -> {
+                        ChunkDataEvent.Save event = fired.get();
+                        helper.assertTrue(event.getLevel() == level, "Expected the level of the chunk; level is " + event.getLevel());
+                        helper.assertNotNull(event.getData(), "Expected the serialized data of the chunk");
                     })
                     .thenSucceed();
         });
