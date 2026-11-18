@@ -1,45 +1,5 @@
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -1032,6 +1068,11 @@
-         return changed;
-     }
- 
-+    /// Neo: Override-Only. Call via [net.neoforged.neoforge.common.CommonHooks#canMobEffectBeApplied(LivingEntity, MobEffectInstance, Entity)]
-+    ///
-+    /// @param newEffect A mob effect instance
-+    /// @return If the mob effect instance can be applied to this entity
-+    @org.jetbrains.annotations.ApiStatus.OverrideOnly
-     public boolean canBeAffected(MobEffectInstance newEffect) {
-         if (this.is(EntityTypeTags.IMMUNE_TO_INFESTED)) {
-             return !newEffect.is(MobEffects.INFESTED);
-@@ -1321,7 +1394,8 @@
-         }
- 
-         BlocksAttacks blocksAttacks = blockingWith.get(DataComponents.BLOCKS_ATTACKS);
--        if (blocksAttacks != null && !blocksAttacks.bypassedBy().map(t -> t.contains(source.typeHolder())).orElse(false)) {
-+        // Neo: move blocking checks into event dispatch
-+        if (blocksAttacks != null) {
-             if (source.getDirectEntity() instanceof AbstractArrow abstractArrow && abstractArrow.getPierceLevel() > 0) {
-                 return 0.0F;
-             } else {
-@@ -1337,7 +1411,16 @@
-                 }
- 
-                 float damageBlocked = blocksAttacks.resolveBlockedDamage(source, damage, angle);
--                blocksAttacks.hurtBlockingItem(this.level(), blockingWith, this, this.getUsedItemHand(), damageBlocked);
-+                var damageContainer = this.damageContainers.empty() ? new net.neoforged.neoforge.common.damagesource.DamageContainer(source, damage) : this.damageContainers.peek();
-+                var event = net.neoforged.neoforge.common.CommonHooks.onDamageBlock(this, damageContainer, damageBlocked, !blocksAttacks.bypassedBy().map(t -> t.contains(source.typeHolder())).orElse(false));
-+                if (!event.getBlocked()) {
-+                    return 0.0F;
-+                }
-+
-+                damageBlocked = event.getBlockedDamage();
-+                damageContainer.setBlockedDamage(event);
-+                blocksAttacks.hurtBlockingItem(this.level(), blockingWith, this, this.getUsedItemHand(), damageBlocked, event.shieldDamage());
-+
-                 if (damageBlocked > 0.0F && !source.is(DamageTypeTags.IS_PROJECTILE) && source.getDirectEntity() instanceof LivingEntity livingEntity) {
-                     this.blockUsingItem(level, livingEntity, source, damage, damageBlocked >= damage);
-                 }
 @@ -1851,10 +1959,11 @@
              int xx = Mth.floor(this.getX());
              int yy = Mth.floor(this.getY() - 0.2F);
@@ -56,10 +16,6 @@
          }
      }
 @@ -2368,15 +2517,20 @@
-             }
- 
-             this.needsSync = true;
-+            net.neoforged.neoforge.common.CommonHooks.onLivingJump(this);
          }
      }
  
@@ -78,14 +34,6 @@
      }
  
      protected float getWaterSlowDown() {
-@@ -2929,6 +3087,7 @@
-             ItemStack previous = lastEquipmentItems.get(slot);
-             ItemStack current = this.getItemBySlot(slot);
-             if (this.equipmentHasChanged(previous, current)) {
-+                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent(this, slot, previous, current));
-                 if (changedItems == null) {
-                     changedItems = Maps.newEnumMap(EquipmentSlot.class);
-                 }
 @@ -3066,6 +3225,10 @@
          profiler.push("jump");
          if (this.jumping && this.isAffectedByFluids()) {

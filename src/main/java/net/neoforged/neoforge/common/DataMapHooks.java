@@ -10,13 +10,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.BlockTransformer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.component.BlockTransformers;
 import net.minecraft.world.level.block.Block;
@@ -42,6 +45,9 @@ public class DataMapHooks {
     public static final Map<Block, Block> INVERSE_WAXABLES_DATAMAP = Collections.unmodifiableMap(INVERSE_WAXABLES_DATAMAP_INTERNAL);
 
     private static final Map<ResourceKey<BlockTransformer>, List<BlockTransformer.BlockTransformData>> DATAMAP_BLOCK_TRANSFORMERS = new IdentityHashMap<>();
+
+    private static final List<SoundEvent> PARROT_IMMITATEABLE_SOUNDS_INTERNAL = new ArrayList<>();
+    public static final List<SoundEvent> PARROT_IMMITATEABLE_SOUNDS = Collections.unmodifiableList(PARROT_IMMITATEABLE_SOUNDS_INTERNAL);
 
     @Nullable
     @SuppressWarnings("deprecation")
@@ -139,6 +145,16 @@ public class DataMapHooks {
             for (Transformable transformable : registry.getDataMap(NeoForgeDataMaps.TRANSFORMABLES).values()) {
                 transformable.transformers().forEach(DataMapHooks::addTransformer);
             }
+        });
+
+        event.ifRegistry(Registries.ENTITY_TYPE, registry -> {
+            PARROT_IMMITATEABLE_SOUNDS_INTERNAL.clear();
+
+            Set<SoundEvent> sounds = new LinkedHashSet<>();
+            registry.getDataMap(NeoForgeDataMaps.PARROT_IMITATIONS).values().forEach(imitation -> {
+                sounds.add(imitation.sound());
+            });
+            PARROT_IMMITATEABLE_SOUNDS_INTERNAL.addAll(sounds);
         });
     }
 

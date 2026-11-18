@@ -1,5 +1,28 @@
 --- a/net/minecraft/world/entity/animal/parrot/Parrot.java
 +++ b/net/minecraft/world/entity/animal/parrot/Parrot.java
+@@ -74,9 +_,11 @@
+     private static final EntityDataAccessor<Integer> DATA_VARIANT_ID = SynchedEntityData.defineId(Parrot.class, EntityDataSerializers.INT);
+     private static final Predicate<Mob> PARROT_CAN_IMITATE_SOUND = new Predicate<Mob>() {
+         public boolean test(Mob input) {
+-            return !input.isSilent() && Parrot.MOB_SOUND_MAP.containsKey(input.getType());
++            return !input.isSilent() && input.getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.PARROT_IMITATIONS) != null;
+         }
+     };
++    /// @deprecated Neo: use the [`data map`][net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#PARROT_IMITATIONS] instead
++    @Deprecated
+     private static final Map<EntityType<?>, SoundEvent> MOB_SOUND_MAP = ImmutableMap.<EntityType<?>, SoundEvent>builder()
+         .put(EntityTypes.BLAZE, SoundEvents.PARROT_IMITATE_BLAZE)
+         .put(EntityTypes.BOGGED, SoundEvents.PARROT_IMITATE_BOGGED)
+@@ -232,7 +_,8 @@
+             List<Mob> mobsToImitate = level.getEntitiesOfClass(Mob.class, entity.getBoundingBox().inflate(20.0), PARROT_CAN_IMITATE_SOUND);
+             if (!mobsToImitate.isEmpty()) {
+                 Mob mob = Util.getRandom(mobsToImitate, random);
+-                SoundEvent soundEvent = MOB_SOUND_MAP.get(mob.getType());
++                var imitation = mob.getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.PARROT_IMITATIONS);
++                SoundEvent soundEvent = imitation != null ? imitation.sound() : SoundEvents.PARROT_AMBIENT;
+                 level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), soundEvent, entity.getSoundSource(), 0.7F, getPitch(random));
+                 return true;
+             } else {
 @@ -263,7 +_,7 @@
              }
  
@@ -19,3 +42,12 @@
          return level.getBlockState(pos.below()).is(BlockTags.PARROTS_SPAWNABLE_ON) && isBrightEnoughToSpawn(level, pos);
      }
  
+@@ -323,7 +_,7 @@
+ 
+     public static SoundEvent getAmbient(Level level, RandomSource random) {
+         if (level.getDifficulty() != Difficulty.PEACEFUL && random.nextInt(1000) == 0) {
+-            List<SoundEvent> values = List.copyOf(MOB_SOUND_MAP.values());
++            List<SoundEvent> values = net.neoforged.neoforge.common.DataMapHooks.PARROT_IMMITATEABLE_SOUNDS;
+             return Util.getRandom(values, random);
+         } else {
+             return SoundEvents.PARROT_AMBIENT;

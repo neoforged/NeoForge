@@ -8,6 +8,15 @@
      implements Nameable,
      EntityAccess,
      ScoreHolder,
+@@ -207,6 +_,8 @@
+     private static final int MAX_BLOCK_ITERATIONS_ALONG_TRAVEL_PER_TICK = 16;
+     private static final double MAX_MOVEMENT_RESETTING_TRACE_DISTANCE = 8.0;
+     private static double viewScale = 1.0;
++    /// @deprecated  Neo: Field accesses are redirected to [#getType()] with a coremod.
++    @Deprecated
+     private final EntityType<?> type;
+     private boolean requiresPrecisePosition;
+     private int id = 0;
 @@ -302,6 +_,15 @@
      protected final InsideBlockEffectApplier.StepBasedCollector insideEffectCollector = new InsideBlockEffectApplier.StepBasedCollector();
      protected final InterpolationHandler interpolationHandler;
@@ -34,6 +43,16 @@
      }
  
      public boolean isColliding(BlockPos pos, BlockState state) {
+@@ -786,7 +_,8 @@
+             BlockPos effectPos = this.getOnPosLegacy();
+             BlockState effectState = this.level().getBlockState(effectPos);
+             if (this.canSimulateMovement() && (movedVertically && this.verticalCollision || this.horizontalCollision)) {
+-                this.restituteMovementAfterCollisions(effectState, xCollision, zCollision, movement);
++                // Neo: pass the bounce position to our extensions
++                this.restituteMovementAfterCollisions(effectPos, effectState, xCollision, zCollision, movement);
+             }
+ 
+             if (!this.level().isClientSide() || this.isLocalInstanceAuthoritative()) {
 @@ -808,7 +_,13 @@
          }
      }
@@ -106,6 +125,15 @@
          if (blockState.getRenderShape() != RenderShape.INVISIBLE) {
              Vec3 movement = this.getDeltaMovement();
              BlockPos entityPosition = this.blockPosition();
+@@ -1772,7 +_,7 @@
+             }
+ 
+             this.level()
+-                .addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockState), x, this.getY() + 0.1, z, movement.x * -4.0, 1.5, movement.z * -4.0);
++                .addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockState, pos), x, this.getY() + 0.1, z, movement.x * -4.0, 1.5, movement.z * -4.0);
+         }
+     }
+ 
 @@ -2161,6 +_,13 @@
                  output.store("data", CustomData.CODEC, this.customData);
              }
@@ -129,6 +157,17 @@
                  this.tags.clear();
                  input.read("Tags", TAG_LIST_CODEC).ifPresent(this.tags::addAll);
                  input.getString("Team").ifPresent(teamName -> {
+@@ -2283,6 +_,10 @@
+         if (!itemStack.isEmpty() && !itemStack.isBroken()) {
+             ItemEntity entity = new ItemEntity(level, this.getX() + offset.x, this.getY() + offset.y, this.getZ() + offset.z, itemStack);
+             entity.setDefaultPickUpDelay();
++            // Neo: capture drops if requested
++            if (this.captureDrops() != null) {
++                this.captureDrops().add(entity);
++            } else
+             level.addFreshEntity(entity);
+             return entity;
+         } else {
 @@ -2343,11 +_,11 @@
          }
  

@@ -11,3 +11,11 @@
      ) {
          return level.getDifficulty() != Difficulty.PEACEFUL;
      }
+@@ -97,6 +_,7 @@
+         float sizeJumpBoostPower = this.getSize() * 0.1F;
+         this.setDeltaMovement(movement.x, this.getJumpPower() + sizeJumpBoostPower, movement.z);
+         this.needsSync = true;
++        net.neoforged.neoforge.common.CommonHooks.onLivingJump(this);
+     }
+ 
+     @Override

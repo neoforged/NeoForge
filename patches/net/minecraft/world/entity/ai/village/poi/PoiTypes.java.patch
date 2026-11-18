@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/ai/village/poi/PoiTypes.java
 +++ b/net/minecraft/world/entity/ai/village/poi/PoiTypes.java
+@@ -19,7 +_,7 @@
+ import net.minecraft.world.level.block.state.properties.BedPart;
+ 
+ public class PoiTypes {
+-    private static final Map<BlockState, Holder<PoiType>> TYPE_BY_STATE = new HashMap<>();
++    private static final Map<BlockState, Holder<PoiType>> TYPE_BY_STATE = net.neoforged.neoforge.registries.GameData.getBlockStatePointOfInterestTypeMap();
+     private static final Set<BlockState> BEDS = Blocks.BED
+         .asList()
+         .stream()
 @@ -69,6 +_,7 @@
      }
  

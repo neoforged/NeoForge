@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -211,6 +212,8 @@
-     private static final double MAX_MOVEMENT_RESETTING_TRACE_DISTANCE = 8.0;
-     private static final Set<TagKey<Fluid>> FLUIDS_WITH_CURRENT = Set.of(FluidTags.WATER, FluidTags.LAVA);
-     private static double viewScale = 1.0;
-+    /// @deprecated  Neo: Field accesses are redirected to [#getType()] with a coremod.
-+    @Deprecated
-     private final EntityType<?> type;
-     private boolean requiresPrecisePosition;
-     private int id = 0;
 @@ -549,7 +563,7 @@
  
          this.wasInPowderSnow = this.isInPowderSnow;
@@ -31,16 +22,6 @@
          }
  
          this.checkBelowWorld();
-@@ -812,7 +830,8 @@
-                 profiler.pop();
-             } else {
-                 if (this.canSimulateMovement() && (movedVertically && this.verticalCollision || this.horizontalCollision)) {
--                    this.restituteMovementAfterCollisions(effectState, xCollision, zCollision, movement);
-+                    // Neo: pass the bounce position to our extensions
-+                    this.restituteMovementAfterCollisions(effectPos, effectState, xCollision, zCollision, movement);
-                 }
- 
-                 if (!this.level().isClientSide() || this.isLocalInstanceAuthoritative()) {
 @@ -1471,20 +1497,22 @@
          return !aboveState.is(BlockTags.INSIDE_STEP_SOUND_BLOCKS) && !aboveState.is(BlockTags.COMBINATION_STEP_SOUND_BLOCKS) ? affectingPos : abovePos;
      }
@@ -118,12 +99,6 @@
          return inAnyFluid;
      }
 @@ -1760,16 +1786,23 @@
-             }
- 
-             this.level()
--                .addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockState), x, this.getY() + 0.1, z, movement.x * -4.0, 1.5, movement.z * -4.0);
-+                // Neo: sync block position for position-dependent particles
-+                .addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockState, pos), x, this.getY() + 0.1, z, movement.x * -4.0, 1.5, movement.z * -4.0);
          }
      }
  
@@ -143,14 +118,3 @@
      }
  
      public void moveRelative(float speed, Vec3 input) {
-@@ -2286,6 +2328,10 @@
- 
-         ItemEntity entity = new ItemEntity(level, this.getX() + offset.x, this.getY() + offset.y, this.getZ() + offset.z, itemStack);
-         entity.setDefaultPickUpDelay();
-+        // Neo: capture drops if requested
-+        if (this.captureDrops() != null) {
-+            this.captureDrops().add(entity);
-+        } else
-         level.addFreshEntity(entity);
-         return entity;
-     }

@@ -4,7 +4,7 @@
          float sizeJumpBoostPower = this.getSize() * 0.1F;
          this.setDeltaMovement(movement.x, this.getJumpPower() + sizeJumpBoostPower, movement.z);
          this.needsSync = true;
-+        net.neoforged.neoforge.common.CommonHooks.onLivingJump(this);
+         net.neoforged.neoforge.common.CommonHooks.onLivingJump(this);
      }
  
 +    /// @deprecated Neo: use [#jumpInFluid] instead
