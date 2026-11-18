@@ -39,6 +39,32 @@
                      hasAnyTranslations = true;
                  }
              }
+@@ -54,10 +_,15 @@
+         }
+ 
+         DeprecatedTranslationsInfo.loadFromDefaultResource().applyToMap(translations);
+-        return new ClientLanguage(Map.copyOf(translations), defaultRightToLeft);
++        return new ClientLanguage(Map.copyOf(translations), defaultRightToLeft, componentMap);
+     }
+ 
+     private static void appendFrom(String languageCode, List<Resource> resources, Map<String, String> translations) {
++        appendFrom(languageCode, resources, translations, new java.util.HashMap<>());
++    }
++
++    /// Neo: overload of [#appendFrom(String, List, Map)] with support for loading full components
++    private static void appendFrom(String languageCode, List<Resource> resources, Map<String, String> translations, Map<String, net.minecraft.network.chat.Component> componentMap) {
+         for (Resource resource : resources) {
+             try (InputStream inputStream = resource.open()) {
+                 boolean isBuiltIn = resource.knownPackInfo().map(KnownPack::isVanilla).orElse(false);
+@@ -67,7 +_,7 @@
+                     } else {
+                         translations.put(key, value);
+                     }
+-                });
++                }, componentMap::put); // Neo: add support for full components in language files
+             } catch (IOException e) {
+                 LOGGER.warn("Failed to load translations for {} from pack {}", languageCode, resource.sourcePackId(), e);
+             }
 @@ -92,5 +_,17 @@
      @Override
      public FormattedCharSequence getVisualOrder(FormattedText logicalOrderText) {
