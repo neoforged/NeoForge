@@ -153,3 +153,13 @@
              );
      }
  
+@@ -2255,7 +_,8 @@
+ 
+     @Override
+     public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {
+-        PacketUtils.ensureRunningOnSameThread(packet, this, this.server.packetProcessor());
++        // Neo: disable main-thread scheduling to allow network-thread handling of modded payloads
++        //PacketUtils.ensureRunningOnSameThread(packet, this, this.server.packetProcessor());
+         super.handleCustomPayload(packet);
+     }
+ 

@@ -18,6 +18,50 @@
      }
  
      private void close() {
+@@ -101,6 +_,33 @@
+ 
+     @Override
+     public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {
++        switch (packet.payload()) {
++            // Neo: Unconditionally handle register/unregister payloads.
++            case net.neoforged.neoforge.network.payload.MinecraftRegisterPayload(var newChannels) -> {
++                net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftRegister(this.getConnection(), newChannels);
++                return;
++            }
++            case net.neoforged.neoforge.network.payload.MinecraftUnregisterPayload(var forgottenChannels) -> {
++                net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftUnregister(this.getConnection(), forgottenChannels);
++                return;
++            }
++            case net.neoforged.neoforge.network.payload.CommonVersionPayload commonVersionPayload -> {
++                net.neoforged.neoforge.network.registration.NetworkRegistry.checkCommonVersion(this, commonVersionPayload);
++                return;
++            }
++            case net.neoforged.neoforge.network.payload.CommonRegisterPayload commonRegisterPayload -> {
++                net.neoforged.neoforge.network.registration.NetworkRegistry.onCommonRegister(this, commonRegisterPayload);
++                return;
++            }
++            // Neo: Handle modded payloads. Vanilla payloads do not get sent to the modded handling pass. Additional payloads cannot be registered in the minecraft domain.
++            default -> {
++                if (net.neoforged.neoforge.network.registration.NetworkRegistry.isModdedPayload(packet.payload())) {
++                    net.neoforged.neoforge.network.registration.NetworkRegistry.handleModdedPayload(this, packet);
++                    return;
++                }
++            }
++        }
++
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.server.packetProcessor());
+         switch (packet.payload()) {
+             case BrandPayload(String brand):
+@@ -116,7 +_,8 @@
+     @Override
+     public void handleCustomClickAction(ServerboundCustomClickActionPacket packet) {
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.server.packetProcessor());
+-        this.server.handleCustomClickAction(packet.id(), packet.payload());
++        // Neo: provide source player to click action handler, if available
++        this.server.handleCustomClickAction(packet.id(), packet.payload(), this instanceof ServerGamePacketListenerImpl gamePacketListener ? gamePacketListener.getPlayer() : null, this.playerProfile());
+     }
+ 
+     @Override
 @@ -175,7 +_,10 @@
          this.send(packet, null);
      }
@@ -45,7 +89,7 @@
 +    /// @param connectionType    Whether the connection is modded.
 +    /// @return the cookie.
 +    protected CommonListenerCookie createCookie(ClientInformation clientInformation, net.neoforged.neoforge.network.connection.ConnectionType connectionType) {
-+        return new CommonListenerCookie(this.playerProfile(), this.latency, clientInformation, this.transferred, connectionType);
++        return new CommonListenerCookie(this.playerProfile(), this.latency, clientInformation, this.transferred, this.debugInfo, connectionType);
 +    }
 +
 +    @Override

@@ -12,6 +12,17 @@
  
      private ReloadableServerResources(
          ReloadableServerRegistries.LoadResult loadingContext,
+@@ -47,6 +_,10 @@
+         this.commands = Commands.createVanilla(commandSelection, CommandBuildContext.simple(enabledFeatures));
+         this.advancements = new ServerAdvancementManager(fullRegistries);
+         this.functionLibrary = new ServerFunctionLibrary(functionCompilationPermissions, fullRegistries, enabledFeatures, this.commands.parseBox());
++        // Neo: Store registries and create context object
++        this.registryAccess = loadingContext.layers().compositeAccess();
++        this.loadingContext = loadingContext.lookupWithUpdatedTags();
++        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.postponedTags, this.loadingContext, enabledFeatures);
+     }
+ 
+     public ServerFunctionLibrary getFunctionLibrary() {
 @@ -73,6 +_,29 @@
          return List.of(this.functionLibrary);
      }

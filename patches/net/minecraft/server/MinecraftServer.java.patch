@@ -5,7 +5,7 @@
      private final TimerQueue<MinecraftServer> scheduledEvents;
      private final ServerClockManager clockManager;
 +    /// Neo: stores how much time each dimension took per tick over the last 100 ticks
-+    private final Map<ResourceKey<Level>, long[]> perDimensionTickTimes = Maps.newIdentityHashMap();
++    private final Map<ResourceKey<Level>, long[]> perDimensionTickTimes = new java.util.IdentityHashMap<>();
 +    /// Neo: data attachments scoped to this server
 +    private final net.neoforged.neoforge.attachment.ServerSessionData sessionData;
  
@@ -33,6 +33,14 @@
          if (!levelData.isInitialized()) {
              try {
                  setInitialSpawn(overworld, levelData, worldOptions.generateBonusChest(), isDebug, this.levelLoadListener);
+@@ -468,6 +_,7 @@
+                 DerivedLevelData derivedLevelData = new DerivedLevelData(this.worldData, levelData);
+                 level = new ServerLevel(this, this.executor, this.storageSource, derivedLevelData, dimension, entry.getValue(), ImmutableList.of(), false);
+                 this.levels.put(dimension, level);
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Load(levels.get(name)));
+             } else {
+                 level = overworld;
+             }
 @@ -486,6 +_,9 @@
              levelData.setSpawn(LevelData.RespawnData.of(level.dimension(), BlockPos.ZERO.above(80), 0.0F, 0.0F));
          } else {
@@ -110,6 +118,14 @@
      }
  
      protected void processPacketsAndTick(boolean sprinting) {
+@@ -1054,6 +_,7 @@
+             Optional.ofNullable(this.statusIcon),
+             this.enforceSecureProfile(),
+             Optional.ofNullable(this.statusContactDetails())
++            , true //TODO Neo: Possible build a system which indicates what the status of the modded server is.
+         );
+     }
+ 
 @@ -1099,8 +_,11 @@
          this.updateEffectiveRespawnData();
  

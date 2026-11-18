@@ -20,6 +20,16 @@
          synchronized (this.channels) {
              EventLoopGroupHolder eventLoopGroupHolder = EventLoopGroupHolder.remote(this.server.useNativeTransport());
              this.channels
+@@ -71,7 +_,8 @@
+                                     } catch (ChannelException var5) {
+                                     }
+ 
+-                                    ChannelPipeline pipeline = channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30));
++                                    // Neo: make the timeout configurable
++                                    ChannelPipeline pipeline = channel.pipeline().addLast("timeout", new ReadTimeoutHandler(READ_TIMEOUT));
+                                     int rateLimitPacketsPerSecond = ServerConnectionListener.this.server.getRateLimitPacketsPerSecond();
+                                     Connection connection = rateLimitPacketsPerSecond > 0
+                                         ? new RateKickingConnection(rateLimitPacketsPerSecond)
 @@ -89,7 +_,8 @@
                                  }
                              }
