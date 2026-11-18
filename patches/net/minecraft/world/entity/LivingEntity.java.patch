@@ -749,12 +749,12 @@
      private boolean checkPositionAndTeleport(
          double x, double y, double z, boolean showParticles, Predicate<BlockState> isInvalidPosition, BlockState state, Level level
      ) {
-+        return checkPositionAndTeleport(xx, y, zz, showParticles, isInvalidPosition, state, level, ItemStack.EMPTY);
++        return checkPositionAndTeleport(x, y, z, showParticles, isInvalidPosition, state, level, ItemStack.EMPTY);
 +    }
 +
 +    /// Neo: overload of [#checkPositionAndTeleport(double, double, double, boolean, Predicate, BlockState, Level)] providing the consumed item causing the random teleport
 +    private boolean checkPositionAndTeleport(
-+        double xx, double y, double zz, boolean showParticles, Predicate<BlockState> isInvalidPosition, BlockState state, Level level, ItemStack consumedStack
++        double x, double y, double z, boolean showParticles, Predicate<BlockState> isInvalidPosition, BlockState state, Level level, ItemStack consumedStack
 +    ) {
          if (isInvalidPosition.test(state)) {
              return false;
@@ -766,17 +766,17 @@
 +                // Neo: Fire event for either item consumption or EnderMan teleport, to get the actual final position being teleported to
 +                net.neoforged.neoforge.event.entity.EntityTeleportEvent event = null;
 +                if (!consumedStack.isEmpty()) {
-+                    event = net.neoforged.neoforge.event.EventHooks.onItemConsumptionTeleport(this, consumedStack, xx, y, zz);
++                    event = net.neoforged.neoforge.event.EventHooks.onItemConsumptionTeleport(this, consumedStack, x, y, z);
 +                } else if (this instanceof net.minecraft.world.entity.monster.Enderman) {
-+                    event = net.neoforged.neoforge.event.EventHooks.onEnderTeleport(this, xx, y, zz);
++                    event = net.neoforged.neoforge.event.EventHooks.onEnderTeleport(this, x, y, z);
 +                }
 +                if (event != null) {
 +                    if (event.isCanceled()) {
 +                        return false;
 +                    }
-+                    xx = event.getTargetX();
++                    x = event.getTargetX();
 +                    y = event.getTargetY();
-+                    zz = event.getTargetZ();
++                    z = event.getTargetZ();
 +                }
 +
                  this.teleportTo(x, y, z);

@@ -27,7 +27,6 @@ import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.SolidDebugger;
-import net.minecraft.world.level.levelgen.DebugLevelSource;
 import net.neoforged.neoforge.registries.callback.AddCallback;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
 import net.neoforged.neoforge.registries.callback.ClearCallback;
@@ -76,8 +75,6 @@ class NeoForgeRegistryCallbacks {
                     EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE.put(potBlock.getEmptyPot(), potBlock.getPotted(), potBlock);
                 }
             }
-
-            DebugLevelSource.initValidStates();
         }
 
         private static class ClearableObjectIntIdentityMap<T> extends IdMapper<T> {

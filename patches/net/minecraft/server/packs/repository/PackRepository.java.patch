@@ -16,11 +16,11 @@
      private Map<String, Pack> discoverAvailable() {
 -        Map<String, Pack> discovered = new TreeMap<>();
 +        // Neo: sort packs within a source by name, between sources according to source order
-+        Map<String, Pack> discovered = Maps.newLinkedHashMap();
++        Map<String, Pack> discovered = new java.util.LinkedHashMap<>();
  
          for (RepositorySource source : this.sources) {
 -            source.loadPacks(pack -> discovered.put(pack.getId(), pack));
-+            Map<String, Pack> sourceMap = Maps.newTreeMap();
++            Map<String, Pack> sourceMap = new TreeMap<>();
 +            source.loadPacks(pack -> pack.streamSelfAndChildren().forEach(p -> sourceMap.put(p.getId(), p)));
 +            discovered.putAll(sourceMap);
          }

@@ -7,7 +7,7 @@
 +    /// Neo: add copy constructor for wrapping an incoming [RegistryOps] in a custom subclass
 +    protected RegistryOps(RegistryOps<T> other) {
 +        super(other);
-+        this.lookupProvider = other.lookupProvider;
++        this.getterProvider = other.getterProvider;
 +    }
 +
      public <U> RegistryOps<U> withParent(DynamicOps<U> parent) {

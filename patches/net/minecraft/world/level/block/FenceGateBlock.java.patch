@@ -14,7 +14,7 @@
      public FenceGateBlock(WoodType type, BlockBehaviour.Properties properties) {
 -        super(properties.sound(type.blockSoundSet()));
 -        this.type = type;
-+        this(java.util.Optional.of(type), properties.sound(type.soundType()), java.util.Optional.of(type.fenceGateOpen()), java.util.Optional.of(type.fenceGateClose()));
++        this(java.util.Optional.of(type), properties.sound(type.blockSoundSet()), java.util.Optional.of(type.fenceGateOpen()), java.util.Optional.of(type.fenceGateClose()));
 +    }
 +
 +    /// Neo: overload of [#FenceGateBlock(WoodType, BlockBehaviour.Properties)] to allow non-wooden fence gates

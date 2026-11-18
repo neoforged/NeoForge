@@ -87,7 +87,7 @@
 +        ProblemReporter.Collector reporter = new ProblemReporter.Collector();
 +        var tag = net.minecraft.world.level.storage.TagValueOutput.createWithContext(reporter, provider);
 +        this.getAttachmentHolder().serializeAttachments(tag);
-+        if (!reporter.isEmpty()) {
++        if (reporter.hasAnyProblems()) {
 +            throw new IllegalArgumentException("Attachments failed to serialise: " + reporter.getReport());
 +        }
 +        return tag.isEmpty() ? null : tag.buildResult();
@@ -101,7 +101,7 @@
 +        ProblemReporter.Collector reporter = new ProblemReporter.Collector();
 +        var input = net.minecraft.world.level.storage.TagValueInput.create(reporter, provider, tag);
 +        this.getAttachmentHolder().deserializeInternal(provider, input);
-+        if (!reporter.isEmpty()) {
++        if (reporter.hasAnyProblems()) {
 +            throw new IllegalArgumentException("Attachments failed to deserialise: " + reporter.getReport());
 +        }
 +    }

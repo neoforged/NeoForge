@@ -5,7 +5,7 @@
  public class PacketProcessor implements AutoCloseable {
      private static final Logger LOGGER = LogUtils.getLogger();
 -    private final Queue<PacketProcessor.ListenerAndPacket<?>> packetsToBeHandled = new ConcurrentLinkedQueue<>();
-+    private final Queue<net.neoforged.neoforge.network.handling.QueuedPacket> packetsToBeHandled = Queues.newConcurrentLinkedQueue();
++    private final Queue<net.neoforged.neoforge.network.handling.QueuedPacket> packetsToBeHandled = new ConcurrentLinkedQueue<>();
      private final Thread runningThread;
      private boolean closed;
  

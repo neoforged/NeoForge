@@ -29,7 +29,7 @@
              .thenCompose(
                  registryResources -> {
 -                    RegistryOps<JsonElement> ops = context.createSerializationContext(JsonOps.INSTANCE);
-+                    var conditionContext = new net.neoforged.neoforge.common.conditions.ConditionContext(pendingTags, context, net.minecraft.world.flag.FeatureFlags.VANILLA_SET);
++                    var conditionContext = new net.neoforged.neoforge.common.conditions.ConditionContext(this.pendingTags, context, net.minecraft.world.flag.FeatureFlags.VANILLA_SET);
 +                    RegistryOps<JsonElement> ops = new net.neoforged.neoforge.common.conditions.ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, context), conditionContext);
                      return ParallelMapTransform.schedule(
                          (Map<Identifier, Resource>)registryResources,

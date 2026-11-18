@@ -31,7 +31,7 @@
          this.randomSequence = randomSequence;
 -        this.pools = pools;
 +        // Neo: keep pools list mutable
-+        this.pools = Lists.newArrayList(pools);
++        this.pools = new ArrayList<>(pools);
          this.modifier = modifier;
      }
  
@@ -157,7 +157,7 @@
          private final ImmutableList.Builder<Holder<LootItemFunction>> functions = ImmutableList.builder();
          private ContextKeySet paramSet = LootTable.DEFAULT_PARAM_SET;
          private Optional<Identifier> randomSequence = Optional.empty();
-+        private final List<net.neoforged.neoforge.common.conditions.ICondition> conditions = Lists.newArrayList();
++        private final List<net.neoforged.neoforge.common.conditions.ICondition> conditions = new ArrayList<>();
  
          public LootTable.Builder withPool(LootPool.Builder pool) {
              this.pools.add(pool.build());
