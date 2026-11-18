@@ -245,8 +245,8 @@ public class FluidTests {
     }
 
     @GameTest
-    @EmptyTemplate(value = "6x3x3", floor = true)
-    @TestHolder(description = "Tests the interactions between two fluids.", enabledByDefault = true)
+    @EmptyTemplate(value = "6x3x3")
+    @TestHolder(description = "Tests the interactions between two fluids", enabledByDefault = true)
     static void fluidInteractions(final DynamicTest test, final RegistrationHelper reg) {
         // Register fluid types
         DeferredRegister<FluidType> fluidTypes = reg.registrar(NeoForgeRegistries.Keys.FLUID_TYPES);
@@ -290,7 +290,7 @@ public class FluidTests {
                 // Fill in test space and hollow out
                 .thenExecute(() -> {
                     BlockPos.betweenClosed(helper.testInfo.getStructureBounds().contract(1, 1, 1))
-                            .forEach(pos -> helper.setBlock(helper.relativePos(pos), Blocks.STONE));
+                            .forEach(pos -> helper.setBlock(helper.relativePos(pos), Blocks.GLASS));
 
                     helper.setBlock(2, 2, 1, Blocks.AIR);
                     helper.setBlock(2, 1, 1, Blocks.AIR);
