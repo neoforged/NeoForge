@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.registries;
 
 import com.mojang.logging.LogUtils;
+import io.netty.handler.codec.CodecException;
 import io.netty.util.AttributeKey;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -267,10 +268,10 @@ public class RegistryManager {
         context.finishCurrentTask(RegistryDataMapNegotiation.TYPE);
     }
 
-    public static boolean isNonSyncedBuiltInRegistry(Registry<?> registry) {
-        if (!BuiltInRegistries.REGISTRY.containsKey((ResourceKey) registry.key())) {
-            return false; // Dynamic registry
+    public static void assertIsSyncedBuiltInRegistry(ResourceKey<? extends Registry<?>> registryKey) {
+        Registry<?> value = BuiltInRegistries.REGISTRY.getValue((ResourceKey) registryKey);
+        if (value != null && !value.doesSync()) {
+            throw new CodecException("Cannot use ID syncing for non-synced built-in registry: " + registryKey.identifier());
         }
-        return !registry.doesSync();
     }
 }

@@ -1,5 +1,14 @@
 --- a/net/minecraft/network/protocol/status/ServerStatus.java
 +++ b/net/minecraft/network/protocol/status/ServerStatus.java
+@@ -21,6 +_,8 @@
+     Optional<ServerStatus.Favicon> favicon,
+     boolean enforcesSecureChat,
+     Optional<String> contact
++    // Neo: add flag indicating that the server is modded
++    , boolean isModded
+ ) {
+     public static final Codec<ServerStatus> CODEC = RecordCodecBuilder.create(
+         i -> i.group(
 @@ -30,9 +_,17 @@
                  ServerStatus.Favicon.CODEC.lenientOptionalFieldOf("favicon").forGetter(ServerStatus::favicon),
                  Codec.BOOL.lenientOptionalFieldOf("enforcesSecureChat", false).forGetter(ServerStatus::enforcesSecureChat),
@@ -10,10 +19,10 @@
              .apply(i, ServerStatus::new)
      );
 +
-+    /// @deprecated Neo: Use [#ServerStatus(Component, Optional, Optional, Optional, boolean, boolean)] instead
++    /// @deprecated Neo: Use [#ServerStatus(Component, Optional, Optional, Optional, boolean, Optional, boolean)] instead
 +    @Deprecated
-+    public ServerStatus(Component description, Optional<Players> players, Optional<Version> version, Optional<Favicon> favicon, boolean enforcesSecureChat) {
-+        this(description, players, version, favicon, enforcesSecureChat, false);
++    public ServerStatus(Component description, Optional<Players> players, Optional<Version> version, Optional<Favicon> favicon, boolean enforcesSecureChat, Optional<String> contact) {
++        this(description, players, version, favicon, enforcesSecureChat, contact, false);
 +    }
  
      public record Favicon(byte[] iconBytes) {

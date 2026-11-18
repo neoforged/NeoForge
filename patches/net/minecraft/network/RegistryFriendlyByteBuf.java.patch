@@ -1,22 +1,31 @@
 --- a/net/minecraft/network/RegistryFriendlyByteBuf.java
 +++ b/net/minecraft/network/RegistryFriendlyByteBuf.java
-@@ -6,16 +6,36 @@
- 
+@@ -9,15 +_,33 @@
  public class RegistryFriendlyByteBuf extends FriendlyByteBuf {
-     private final RegistryAccess registryAccess;
+     private final HolderGetter.Provider registries;
+     private final IdMapProvider ids;
 +    private final net.neoforged.neoforge.network.connection.ConnectionType connectionType;
  
 +    /// @deprecated Neo: use [#RegistryFriendlyByteBuf(ByteBuf, RegistryAccess, net.neoforged.neoforge.network.connection.ConnectionType)] instead
 +    @Deprecated
      public RegistryFriendlyByteBuf(ByteBuf source, RegistryAccess registryAccess) {
-         super(source);
-         this.registryAccess = registryAccess;
-+        this.connectionType = net.neoforged.neoforge.network.connection.ConnectionType.OTHER;
+         this(source, registryAccess, registryAccess);
+     }
+ 
++    public RegistryFriendlyByteBuf(ByteBuf source, RegistryAccess registryAccess, net.neoforged.neoforge.network.connection.ConnectionType connectionType) {
++        this(source, registryAccess, registryAccess, connectionType);
 +    }
 +
-+    public RegistryFriendlyByteBuf(ByteBuf source, RegistryAccess registryAccess, net.neoforged.neoforge.network.connection.ConnectionType connectionType) {
-+        super(source);
-+        this.registryAccess = registryAccess;
++    /// @deprecated Neo: use [#RegistryFriendlyByteBuf(ByteBuf, HolderGetter.Provider, IdMapProvider, net.neoforged.neoforge.network.connection.ConnectionType)] instead
++    @Deprecated
+     public RegistryFriendlyByteBuf(ByteBuf source, HolderGetter.Provider registries, IdMapProvider ids) {
++        this(source, registries, ids, net.neoforged.neoforge.network.connection.ConnectionType.OTHER);
++    }
++
++    public RegistryFriendlyByteBuf(ByteBuf source, HolderGetter.Provider registries, IdMapProvider ids, net.neoforged.neoforge.network.connection.ConnectionType connectionType) {
+         super(source);
+         this.registries = registries;
+         this.ids = ids;
 +        this.connectionType = connectionType;
 +    }
 +
@@ -24,8 +33,9 @@
 +        return this.connectionType;
      }
  
-     public RegistryAccess registryAccess() {
-         return this.registryAccess;
+     public HolderGetter.Provider registries() {
+@@ -28,6 +_,12 @@
+         return this.ids;
      }
  
 +    public static Function<ByteBuf, RegistryFriendlyByteBuf> decorator(RegistryAccess registryAccess, net.neoforged.neoforge.network.connection.ConnectionType connectionType) {
