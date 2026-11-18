@@ -5,9 +5,13 @@
 
 package net.neoforged.neoforge.debug.level;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.data.worldgen.features.TreeFeatures;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityTypes;
@@ -16,6 +20,7 @@ import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -26,6 +31,7 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent;
 import net.neoforged.neoforge.event.level.BlockGrowFeatureEvent;
+import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -132,5 +138,40 @@ public class LevelEventTests {
                 .thenExecute(() -> helper.killAllEntitiesOfClass(Sheep.class, ItemEntity.class))
 
                 .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if the ChunkEvent.Load event tells freshly generated chunks apart from chunks loaded again")
+    static void chunkLoadEvent(final DynamicTest test) {
+        AtomicReference<ChunkPos> target = new AtomicReference<>();
+        List<Boolean> loads = new ArrayList<>();
+        test.eventListeners().forge().addListener((final ChunkEvent.Load event) -> {
+            if (event.getLevel() instanceof ServerLevel && event.getChunk().getPos().equals(target.get())) {
+                loads.add(event.isNewChunk());
+            }
+        });
+
+        test.onGameTest(helper -> {
+            ServerLevel level = helper.getLevel();
+            // A chunk far enough from the test to never have been generated before
+            ChunkPos testChunk = ChunkPos.containing(helper.absolutePos(BlockPos.ZERO));
+            ChunkPos pos = new ChunkPos(testChunk.x() + 200, testChunk.z() + 200);
+            target.set(pos);
+            helper.assertFalse(level.getChunkSource().hasChunk(pos.x(), pos.z()), "Expected the far chunk not to be loaded yet");
+
+            helper.startSequence()
+                    .thenExecute(() -> {
+                        level.getChunk(pos.x(), pos.z());
+                        helper.assertValueEqual(loads, List.of(true), "Expected a single load event, for a new chunk; events are " + loads);
+                    })
+                    // The temporary ticket of getChunk expires, which lets the chunk go
+                    .thenWaitUntil(() -> helper.assertFalse(level.getChunkSource().hasChunk(pos.x(), pos.z()), "Expected the far chunk to be unloaded again"))
+                    .thenExecute(() -> {
+                        level.getChunk(pos.x(), pos.z());
+                        helper.assertValueEqual(loads, List.of(true, false), "Expected a second load event, not for a new chunk; events are " + loads);
+                    })
+                    .thenSucceed();
+        });
     }
 }
