@@ -5,9 +5,12 @@
 
 package net.neoforged.neoforge.debug.level;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BooleanSupplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.data.worldgen.features.TreeFeatures;
@@ -15,9 +18,12 @@ import net.minecraft.network.protocol.common.ServerboundClientInformationPacket;
 import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.random.Weighted;
+import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.Shearable;
 import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -26,18 +32,24 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.NaturalSpawner;
+import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent;
 import net.neoforged.neoforge.event.level.BlockGrowFeatureEvent;
 import net.neoforged.neoforge.event.level.ChunkDataEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -254,6 +266,45 @@ public class LevelEventTests {
                         helper.assertNotNull(event.getData(), "Expected the serialized data of the chunk");
                     })
                     .thenSucceed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if the LevelEvent.PotentialSpawns event can add spawns to what the natural spawner considers, and cancel them")
+    static void potentialSpawnsEvent(final DynamicTest test) {
+        final MobSpawnSettings.SpawnerData pigSpawn = new MobSpawnSettings.SpawnerData(EntityTypes.PIG, ConstantInt.of(1));
+        AtomicReference<BlockPos> expectedPos = new AtomicReference<>();
+        AtomicBoolean cancel = new AtomicBoolean(false);
+        AtomicReference<LevelEvent.PotentialSpawns> fired = new AtomicReference<>();
+        test.eventListeners().forge().addListener((final LevelEvent.PotentialSpawns event) -> {
+            if (event.getMobCategory() == MobCategory.MONSTER && event.getPos().equals(expectedPos.get())) {
+                fired.set(event);
+                if (cancel.get()) {
+                    event.setCanceled(true);
+                } else {
+                    event.addSpawnerData(new Weighted<>(pigSpawn, 10));
+                }
+            }
+        });
+
+        test.onGameTest(helper -> {
+            ServerLevel level = helper.getLevel();
+            BlockPos pos = helper.absolutePos(new BlockPos(1, 1, 1));
+            expectedPos.set(pos);
+            // The natural spawner asks for the potential spawns of a position through this method, when picking a mob to spawn
+            Method canSpawnMobAt = helper.catchException(() -> ObfuscationReflectionHelper.findMethod(NaturalSpawner.class, "canSpawnMobAt", ServerLevel.class, StructureManager.class, ChunkGenerator.class, MobCategory.class, MobSpawnSettings.SpawnerData.class, BlockPos.class));
+            BooleanSupplier pigCanSpawn = () -> helper.catchException(() -> (boolean) canSpawnMobAt.invoke(null, level, level.structureManager(), level.getChunkSource().getGenerator(), MobCategory.MONSTER, pigSpawn, pos));
+
+            helper.assertTrue(pigCanSpawn.getAsBoolean(), "Expected the pig spawn added by the event to be a potential monster spawn");
+            LevelEvent.PotentialSpawns event = fired.get();
+            helper.assertNotNull(event, "Event should fire when the natural spawner looks the potential spawns up");
+            helper.assertTrue(event.getLevel() == level, "Expected the level of the spawn; level is " + event.getLevel());
+            helper.assertTrue(event.getSpawnerDataList().stream().anyMatch(data -> data.value().equals(pigSpawn)), "Expected the added spawn in the list; list is " + event.getSpawnerDataList());
+
+            cancel.set(true);
+            helper.assertFalse(pigCanSpawn.getAsBoolean(), "Expected no potential spawns when the event is cancelled");
+            helper.succeed();
         });
     }
 }
