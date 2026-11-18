@@ -1,0 +1,24 @@
+--- a/net/minecraft/core/dispenser/InsertIntoContainerDispenseBehavior.java
++++ b/net/minecraft/core/dispenser/InsertIntoContainerDispenseBehavior.java
+@@ -21,11 +_,18 @@
+         ServerLevel level = source.level();
+         BlockPos pos = source.pos();
+         Direction direction = level.getBlockState(pos).getValue(DropperBlock.FACING);
+-        Container into = HopperBlockEntity.getContainerAt(level, pos.relative(direction));
+-        if (into == null) {
++        // Neo: support both containers and resource handlers
++        var containerOrHandler = HopperBlockEntity.getContainerOrHandlerAt(level, pos.relative(direction), direction.getOpposite());
++        Container into = containerOrHandler.container();
++        if (containerOrHandler.isEmpty()) {
+             return DispenseBehavior.DispenseResult.failure();
+         } else {
+-            ItemStack remaining = HopperBlockEntity.addItem(source.blockEntity(), into, dispensed.copyWithCount(1), direction.getOpposite());
++            ItemStack remaining;
++            if (into == null) {
++                remaining = net.neoforged.neoforge.transfer.item.ItemUtil.insertItemReturnRemaining(containerOrHandler.itemHandler(), dispensed.copyWithCount(1), false, null);
++            } else {
++                remaining = HopperBlockEntity.addItem(source.blockEntity(), into, dispensed.copyWithCount(1), direction.getOpposite());
++            }
+             if (remaining.isEmpty()) {
+                 remaining = dispensed.copy();
+                 remaining.shrink(1);

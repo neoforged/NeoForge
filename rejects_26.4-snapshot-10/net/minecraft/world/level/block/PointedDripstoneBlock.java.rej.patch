@@ -1,41 +1,5 @@
 --- a/net/minecraft/world/level/block/PointedDripstoneBlock.java
 +++ b/net/minecraft/world/level/block/PointedDripstoneBlock.java
-@@ -79,7 +79,7 @@
- 
-     @VisibleForTesting
-     public static void maybeTransferFluid(BlockState state, ServerLevel level, BlockPos pos, float randomValue) {
--        if (!(randomValue > 0.17578125F) || !(randomValue > 0.05859375F)) {
-+        if (true) { //Neo: remove the water and lava drip chance checks to allow modded fluids to drip into cauldrons
-             if (isStalactiteStartPos(state, level, pos)) {
-                 Optional<PointedDripstoneBlock.FluidInfo> fluidInfo = getFluidAboveStalactite(level, pos, state);
-                 if (!fluidInfo.isEmpty()) {
-@@ -88,14 +88,12 @@
-                     if (fluid == Fluids.WATER) {
-                         transferProbability = 0.17578125F;
-                     } else {
--                        if (fluid != Fluids.LAVA) {
--                            return;
--                        }
- 
-                         transferProbability = 0.05859375F;
-                     }
- 
--                    if (!(randomValue >= transferProbability)) {
-+                    net.neoforged.neoforge.fluids.FluidType.DripstoneDripInfo dripInfo = fluid.getFluidType().getDripInfo();
-+                    if (dripInfo != null && !(randomValue >= dripInfo.chance())) {
-                         BlockPos stalactiteTipPos = findTip(state, level, pos, 11, false);
-                         if (stalactiteTipPos != null) {
-                             if (fluidInfo.get().sourceState.is(Blocks.MUD) && fluid == Fluids.WATER) {
-@@ -180,7 +178,8 @@
-     }
- 
-     private static boolean canFillCauldron(Fluid fluidAbove) {
--        return fluidAbove == Fluids.LAVA || fluidAbove == Fluids.WATER;
-+        // Neo: defer to fluid type's drip info
-+        return fluidAbove.getFluidType().getDripInfo() != null;
-     }
- 
-     @Override
 @@ -193,7 +192,12 @@
          if (fluidAbove.isSame(Fluids.EMPTY)) {
              return level.environmentAttributes().getValue(EnvironmentAttributes.DEFAULT_DRIPSTONE_PARTICLE, posAbove);

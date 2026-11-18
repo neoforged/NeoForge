@@ -128,3 +128,14 @@
          return tag;
      }
  
+@@ -539,6 +_,10 @@
+ 
+         for (Entry<Structure, StructureStart> entry : starts.entrySet()) {
+             Identifier key = structuresRegistry.getKey(entry.getKey());
++            // Neo: throw a more friendly error instead of the NPE on toString() below
++            if (key == null) {
++                throw new RuntimeException("StructureStart \"" + entry.getValue().getClass().getName() + "\": \"" + entry.getKey() + "\" unregistered, serializing impossible.");
++            }
+             startsTag.put(key.toString(), entry.getValue().createTag(context, pos));
+         }
+ 
