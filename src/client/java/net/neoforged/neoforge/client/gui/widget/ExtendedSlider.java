@@ -8,10 +8,10 @@ package net.neoforged.neoforge.client.gui.widget;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import java.text.DecimalFormat;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -112,6 +112,7 @@ public class ExtendedSlider extends AbstractSliderButton {
     /**
      * @param value The new slider value
      */
+    @Override
     public void setValue(double value) {
         setFractionalValue((value - this.minValue) / (this.maxValue - this.minValue));
     }
@@ -173,16 +174,16 @@ public class ExtendedSlider extends AbstractSliderButton {
      */
     private double snapToNearest(double value) {
         if (stepSize <= 0D)
-            return Mth.clamp(value, 0D, 1D);
+            return Math.clamp(value, 0D, 1D);
 
-        value = Mth.lerp(Mth.clamp(value, 0D, 1D), this.minValue, this.maxValue);
+        value = Mth.lerp(Math.clamp(value, 0D, 1D), this.minValue, this.maxValue);
 
         value = (stepSize * Math.round(value / stepSize));
 
         if (this.minValue > this.maxValue) {
-            value = Mth.clamp(value, this.maxValue, this.minValue);
+            value = Math.clamp(value, this.maxValue, this.minValue);
         } else {
-            value = Mth.clamp(value, this.minValue, this.maxValue);
+            value = Math.clamp(value, this.minValue, this.maxValue);
         }
 
         return Mth.map(value, this.minValue, this.maxValue, 0D, 1D);
@@ -201,9 +202,9 @@ public class ExtendedSlider extends AbstractSliderButton {
     protected void applyValue() {}
 
     @Override
-    public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, this.getSprite(), this.getX(), this.getY(), this.getWidth(), this.getHeight(), ARGB.white(this.alpha));
-        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, this.getHandleSprite(), this.getX() + (int) (this.value * (double) (this.width - 8)), this.getY(), 8, this.getHeight(), ARGB.white(this.alpha));
+    public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics) {
+        guiGraphics.blitSprite(GuiPipeline.TEXTURED, this.getSprite(), this.getX(), this.getY(), this.getWidth(), this.getHeight(), ARGB.white(this.alpha));
+        guiGraphics.blitSprite(GuiPipeline.TEXTURED, this.getHandleSprite(), this.getX() + (int) (this.value * (double) (this.width - 8)), this.getY(), 8, this.getHeight(), ARGB.white(this.alpha));
         int i = this.active ? 16777215 : 10526880;
         var message = getMessage().copy().withStyle(style -> style.withColor(i)); // TODO 1.21.11: Inefficient, check how Vanilla does this
         this.extractScrollingStringOverContents(guiGraphics.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE), message, 2);

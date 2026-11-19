@@ -28,8 +28,11 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
+
+import com.mojang.renderpearl.api.textures.GpuSampler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.components.AbstractStringWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
@@ -51,10 +54,10 @@ import net.minecraft.client.gui.layouts.LinearLayout.Orientation;
 import net.minecraft.client.gui.layouts.SpacerElement;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.ExternalTextureProvider;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.TextureResources;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.CommonComponents;
@@ -304,13 +307,8 @@ public class ModListScreen extends Screen {
 
         final TextureManager textureManager = this.minecraft.getTextureManager();
         final Identifier sprite = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "mod/" + type + "/" + modId);
-        textureManager.register(sprite, new DynamicTexture(sprite::toString, image) {
-            @Override
-            public void upload() {
-                sampler = RenderSystem.getSamplerCache().getClampToEdge(blurred ? FilterMode.LINEAR : FilterMode.NEAREST);
-                super.upload();
-            }
-        });
+        GpuSampler sampler = RenderSystem.getSamplerCache().getClampToEdge(blurred ? FilterMode.LINEAR : FilterMode.NEAREST);
+        textureManager.registerProvider(sprite, new ExternalTextureProvider(TextureResources.from2dImage(sprite::toString, image, sampler)));
 
         return new ImageData(sprite, image.getWidth(), image.getHeight());
     }
@@ -380,7 +378,7 @@ public class ModListScreen extends Screen {
             }
 
             @Override
-            public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
+            public void extractContent(GuiGraphicsExtractor graphics, boolean hovered) {
                 int left = this.getContentX();
                 int top = this.getContentY();
                 int textLeft = left + 2;
@@ -392,7 +390,7 @@ public class ModListScreen extends Screen {
                 int maxTextWidth = getRowWidth() - textLeft + left - 4;
 
                 if (checkResult != null && checkResult.status().shouldDraw() && VersionChecker.isEnabled()) {
-                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED,
+                    graphics.blitSprite(GuiPipeline.TEXTURED,
                             UPDATE_INDICATOR_ICON,
                             this.getContentRight() - 10,
                             this.getContentYMiddle() - (8 / 2),
@@ -599,7 +597,7 @@ public class ModListScreen extends Screen {
             hideTextWidget(this.displayNameWidget);
             hideTextWidget(this.idAndVersionWidget);
             hideTextWidget(this.newerVersionWidget);
-            this.newerVersionButton.visible = this.newerVersionButton.active = false;
+            this.newerVersionButton.setVisible(this.newerVersionButton.active = false);
             this.newerVersionButton.setHeight(0);
             hideTextWidget(this.licenseWidget);
             hideTextWidget(this.authorsWidget);
@@ -609,15 +607,15 @@ public class ModListScreen extends Screen {
             this.issuesButton.active = false;
             this.configScreenFactory = null;
             this.configButton.active = false;
-            this.separator.visible = false;
+            this.separator.setVisible(false);
             hideTextWidget(this.descriptionWidget);
 
-            this.squirr.visible = false;
+            this.squirr.setVisible(false);
         }
 
         private void hideTextWidget(AbstractStringWidget widget) {
             widget.setMessage(Component.empty());
-            widget.visible = false;
+            widget.setVisible(false);
             widget.setHeight(0);
         }
 
@@ -649,7 +647,7 @@ public class ModListScreen extends Screen {
             }
 
             this.displayNameWidget.setMessage(displayInfo.displayName());
-            this.displayNameWidget.visible = true;
+            this.displayNameWidget.setVisible(true);
             this.idAndVersionWidget.setMessage(Component.translatable(
                     "neoforge.screen.mods.info.subtitle",
                     Component.literal(displayInfo.id()).withStyle(style -> style
@@ -660,7 +658,7 @@ public class ModListScreen extends Screen {
                             .withHoverEvent(new HoverEvent.ShowText(Component.translatable("neoforge.screen.mods.info.subtitle.version.click")))
                             .withClickEvent(new ClickEvent.CopyToClipboard(displayInfo.version()))))
                     .withStyle(ChatFormatting.GRAY));
-            this.idAndVersionWidget.visible = true;
+            this.idAndVersionWidget.setVisible(true);
             VersionChecker.CheckResult checkResult = this.selected.checkResult;
             if (checkResult != null) {
                 this.newerVersionWidget.setMessage(Component.translatable(
@@ -668,27 +666,27 @@ public class ModListScreen extends Screen {
                         Component.literal(Objects.toString(checkResult.target()))
                                 .withStyle(style -> style.withItalic(false)))
                         .withStyle(style -> style.withItalic(true)));
-                this.newerVersionWidget.visible = true;
+                this.newerVersionWidget.setVisible(true);
 
                 this.newerVersionButton.setHeight(Button.DEFAULT_HEIGHT);
-                this.newerVersionButton.visible = this.newerVersionButton.active = true;
+                this.newerVersionButton.setVisible(this.newerVersionButton.active = true);
             }
 
             this.licenseWidget.setMessage(Component.translatable(
                     "neoforge.screen.mods.info.license",
                     displayInfo.license().copy().withStyle(ChatFormatting.WHITE).withStyle(style -> style.withBold(false))).withStyle(ChatFormatting.GRAY).withStyle(style -> style.withBold(true)));
-            this.licenseWidget.visible = true;
+            this.licenseWidget.setVisible(true);
             if (containsText(displayInfo.authors())) {
                 this.authorsWidget.setMessage(Component.translatable(
                         "neoforge.screen.mods.info.authors",
                         displayInfo.authors().copy().withStyle(ChatFormatting.WHITE).withStyle(style -> style.withBold(false))).withStyle(ChatFormatting.GRAY).withStyle(style -> style.withBold(true)));
-                this.authorsWidget.visible = true;
+                this.authorsWidget.setVisible(true);
             }
             if (containsText(displayInfo.credits())) {
                 this.creditsWidget.setMessage(Component.translatable(
                         "neoforge.screen.mods.info.credits",
                         displayInfo.credits().copy().withStyle(ChatFormatting.WHITE).withStyle(style -> style.withBold(false))).withStyle(ChatFormatting.GRAY).withStyle(style -> style.withBold(true)));
-                this.creditsWidget.visible = true;
+                this.creditsWidget.setVisible(true);
             }
 
             this.homepageButton.active = displayInfo.displayUrl() != null;
@@ -698,13 +696,13 @@ public class ModListScreen extends Screen {
 
             // Hardcoded case from ModInfo
             if (containsText(displayInfo.description()) && !displayInfo.description().getString().equals("MISSING DESCRIPTION")) {
-                this.separator.visible = true;
+                this.separator.setVisible(true);
                 this.descriptionWidget.setMessage(displayInfo.description());
-                this.descriptionWidget.visible = true;
+                this.descriptionWidget.setVisible(true);
             }
 
             if (displayInfo.id().equals(NeoForgeMod.MOD_ID) && SpecialDates.dayNow().equals(APRIL_FOOLS)) {
-                this.squirr.visible = true;
+                this.squirr.setVisible(true);
             }
         }
 

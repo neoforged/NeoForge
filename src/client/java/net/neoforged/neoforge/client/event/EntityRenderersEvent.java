@@ -18,13 +18,9 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.object.skull.SkullModel;
 import net.minecraft.client.model.object.skull.SkullModelBase;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.resources.Identifier;
@@ -32,8 +28,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.PlayerModelType;
 import net.minecraft.world.level.block.SkullBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -78,41 +72,6 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          */
         public void registerLayerDefinition(ModelLayerLocation layerLocation, Supplier<LayerDefinition> supplier) {
             ClientHooks.registerLayerDefinition(layerLocation, supplier);
-        }
-    }
-
-    /**
-     * Fired for registering entity and block entity renderers at the appropriate time.
-     * For registering entity renderer layers to existing entity renderers (whether vanilla or registered through this
-     * event), listen for the {@link AddLayers} event instead.
-     *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
-     *
-     * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
-     */
-    public static class RegisterRenderers extends EntityRenderersEvent {
-        @ApiStatus.Internal
-        public RegisterRenderers() {}
-
-        /**
-         * Registers an entity renderer for the given entity type.
-         *
-         * @param entityType             the entity type to register a renderer for
-         * @param entityRendererProvider the renderer provider
-         */
-        public <T extends Entity> void registerEntityRenderer(EntityType<? extends T> entityType, EntityRendererProvider<T> entityRendererProvider) {
-            EntityRenderers.register(entityType, entityRendererProvider);
-        }
-
-        /**
-         * Registers a block entity renderer for the given block entity type.
-         *
-         * @param blockEntityType             the block entity type to register a renderer for
-         * @param blockEntityRendererProvider the renderer provider
-         */
-        public <T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderer(
-                BlockEntityType<? extends T> blockEntityType, BlockEntityRendererProvider<T, S> blockEntityRendererProvider) {
-            BlockEntityRenderers.register(blockEntityType, blockEntityRendererProvider);
         }
     }
 

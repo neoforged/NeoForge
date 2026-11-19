@@ -99,8 +99,8 @@ public class ModMismatchDisconnectedScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics) {
+        super.extractRenderState(guiGraphics);
         guiGraphics.centeredText(this.font, this.title, this.width / 2, (this.height - this.listHeight) / 2 - this.textHeight - 9 * 4, 0xFFAAAAAA);
         this.message.visitLines(TextAlignment.CENTER, this.width / 2, (this.height - this.listHeight) / 2 - this.textHeight - 9 * 2, font.lineHeight, guiGraphics.textRenderer());
     }
@@ -233,7 +233,7 @@ public class ModMismatchDisconnectedScreen extends Screen {
         }
 
         @Override
-        protected void drawPanel(GuiGraphicsExtractor guiGraphics, int entryRight, int relativeY, int mouseX, int mouseY) {
+        protected void drawPanel(GuiGraphicsExtractor guiGraphics, int entryRight, int relativeY) {
             int i = 0;
 
             for (Pair<FormattedCharSequence, FormattedCharSequence> line : lineTable) {
@@ -260,11 +260,11 @@ public class ModMismatchDisconnectedScreen extends Screen {
         }
 
         @Override
-        public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-            super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
-            Style style = getComponentStyleAt(mouseX, mouseY);
+        public void extractRenderState(GuiGraphicsExtractor graphics) {
+            super.extractRenderState(graphics);
+            Style style = getComponentStyleAt(graphics.mouseX(), graphics.mouseY());
             if (style != null && style.getHoverEvent() != null) {
-                guiGraphics.componentHoverEffect(font, style, mouseX, mouseY);
+                graphics.componentHoverEffect(font, style, graphics.mouseX(), graphics.mouseY());
             }
         }
 

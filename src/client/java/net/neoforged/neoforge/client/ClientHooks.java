@@ -82,7 +82,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.multiplayer.PlayerInfo;
-import net.minecraft.client.particle.ParticleResources;
 import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
@@ -171,7 +170,6 @@ import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.client.event.PlayerHeartTypeEvent;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterTextureAtlasesEvent;
 import net.neoforged.neoforge.client.event.RenderArmEvent;
@@ -621,10 +619,6 @@ public class ClientHooks {
         NeoForge.EVENT_BUS.post(new ClientPlayerNetworkEvent.Clone(pc, oldPlayer, newPlayer, networkManager));
     }
 
-    public static void onRegisterParticleProviders(ParticleResources particleResources) {
-        ModLoader.postEvent(new RegisterParticleProvidersEvent(particleResources));
-    }
-
     @ApiStatus.Internal
     public static void onRegisterKeyMappings(Options options, List<KeyMapping.Category> categories) {
         RegisterKeyMappingsEvent event = new RegisterKeyMappingsEvent(options);
@@ -813,7 +807,6 @@ public class ClientHooks {
 
         ModLoader.postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
         ModLoader.postEvent(new EntityRenderersEvent.CreateSkullModels(skullModelsByType, SkullBlockRenderer.SKIN_BY_TYPE));
-        ModLoader.postEvent(new EntityRenderersEvent.RegisterRenderers());
         ModLoader.postEvent(new RegisterRenderStateModifiersEvent());
         ClientTooltipComponentManager.init();
         EntitySpectatorShaderManager.init();

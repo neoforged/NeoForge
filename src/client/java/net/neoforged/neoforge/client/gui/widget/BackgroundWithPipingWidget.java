@@ -8,11 +8,11 @@ package net.neoforged.neoforge.client.gui.widget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -41,15 +41,15 @@ public class BackgroundWithPipingWidget extends AbstractWidget {
     }
 
     @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics) {
         Identifier headerSeparator = this.minecraft == null || this.minecraft.level == null ? Screen.INWORLD_HEADER_SEPARATOR : Screen.HEADER_SEPARATOR;
         Identifier footerSeparator = this.minecraft == null || this.minecraft.level == null ? Screen.INWORLD_FOOTER_SEPARATOR : Screen.FOOTER_SEPARATOR;
-        graphics.blit(RenderPipelines.GUI_TEXTURED, headerSeparator, this.getX(), this.getY() - 2, 0.0F, 0.0F, this.getWidth(), 2, 32, 2);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, footerSeparator, this.getX(), this.getBottom(), 0.0F, 0.0F, this.getWidth(), 2, 32, 2);
+        graphics.blit(GuiPipeline.TEXTURED, headerSeparator, this.getX(), this.getY() - 2, 0.0F, 0.0F, this.getWidth(), 2, 32, 2);
+        graphics.blit(GuiPipeline.TEXTURED, footerSeparator, this.getX(), this.getBottom(), 0.0F, 0.0F, this.getWidth(), 2, 32, 2);
 
         Identifier menuListBackground = this.minecraft == null || this.minecraft.level == null ? INWORLD_MENU_LIST_BACKGROUND : MENU_LIST_BACKGROUND;
         graphics.blit(
-                RenderPipelines.GUI_TEXTURED,
+                GuiPipeline.TEXTURED,
                 menuListBackground,
                 this.getX(),
                 this.getY(),

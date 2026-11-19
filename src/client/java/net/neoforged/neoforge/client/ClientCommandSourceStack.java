@@ -5,15 +5,14 @@
 
 package net.neoforged.neoforge.client;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -54,22 +53,6 @@ public class ClientCommandSourceStack extends CommandSourceStack {
     }
 
     /**
-     * {@return the list of teams from the client side}
-     */
-    @Override
-    public Collection<String> getAllTeams() {
-        return getScoreboard().getTeamNames();
-    }
-
-    /**
-     * {@return the list of online player names from the client side}
-     */
-    @Override
-    public Collection<String> getOnlinePlayerNames() {
-        return connection().getOnlinePlayers().stream().map(player -> player.getProfile().name()).collect(Collectors.toList());
-    }
-
-    /**
      * {@return a set of {@link ResourceKey} for levels from the client side}
      */
     @Override
@@ -81,7 +64,7 @@ public class ClientCommandSourceStack extends CommandSourceStack {
      * {@return the {@link RegistryAccess} from the client side}
      */
     @Override
-    public RegistryAccess registryAccess() {
+    public HolderLookup.Provider holderLookups() {
         return connection().registryAccess();
     }
 

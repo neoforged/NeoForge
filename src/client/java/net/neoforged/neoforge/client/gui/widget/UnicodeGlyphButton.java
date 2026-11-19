@@ -7,7 +7,7 @@ package net.neoforged.neoforge.client.gui.widget;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -26,9 +26,9 @@ public class UnicodeGlyphButton extends ExtendedButton {
     }
 
     @Override
-    public void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void extractContents(GuiGraphicsExtractor guiGraphics) {
         Minecraft mc = Minecraft.getInstance();
-        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPRITES.get(this.active, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
+        guiGraphics.blitSprite(GuiPipeline.TEXTURED, SPRITES.get(this.active, this.isHighlighted()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
 
         Component buttonText = this.createNarrationMessage();
         int glyphWidth = (int) (mc.font.width(glyph) * glyphScale);
@@ -37,7 +37,7 @@ public class UnicodeGlyphButton extends ExtendedButton {
         int totalWidth = strWidth + glyphWidth;
 
         if (totalWidth > width - 6 && totalWidth > ellipsisWidth)
-            buttonText = Component.literal(mc.font.substrByWidth(buttonText, width - 6 - ellipsisWidth).getString().trim() + "...");
+            buttonText = Component.literal(mc.font.substrByWidth(buttonText, width - 6 - ellipsisWidth).getString(Component.STRING_SIZE_LIMIT).trim() + "...");
 
         strWidth = mc.font.width(buttonText);
         totalWidth = glyphWidth + strWidth;

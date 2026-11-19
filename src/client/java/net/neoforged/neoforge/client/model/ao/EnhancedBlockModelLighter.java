@@ -114,7 +114,7 @@ public class EnhancedBlockModelLighter extends BlockModelLighter {
         for (int vertex = 0; vertex < 4; ++vertex) {
             Vector3fc vertPos = quad.position(vertex);
             aoFace.computeCornerWeights(weights, vertPos.x(), vertPos.y(), vertPos.z());
-            outputInstance.setColor(vertex, ARGB.gray(interpolateBrightness(fullFace, weights)));
+            outputInstance.setBrightness(vertex, (short) ARGB.as8BitChannel(interpolateBrightness(fullFace, weights)));
             outputInstance.setLightCoords(vertex, interpolateLightmap(fullFace, weights));
         }
 
@@ -127,7 +127,7 @@ public class EnhancedBlockModelLighter extends BlockModelLighter {
             super.prepareQuadAmbientOcclusion(level, state, pos, quad, vanilla);
 
             for (int vertex = 0; vertex < 4; ++vertex) {
-                if (!Mth.equal(vanilla.getColor(vertex), outputInstance.getColor(vertex)) || vanilla.getLightCoords(vertex) != outputInstance.getLightCoords(vertex)) {
+                if (!Mth.equal(vanilla.getBrightness(vertex), outputInstance.getBrightness(vertex)) || vanilla.getLightCoords(vertex) != outputInstance.getLightCoords(vertex)) {
                     LOGGER.warn("Emulated vanilla AO differs from actual AO at vertex {} of face {}, while lighting {}@{}\n"
                             + "Vanilla: lightmap = {}, brightness = {}\n"
                             + "Emulated: lightmap = {}, brightness = {}\n",
@@ -136,9 +136,9 @@ public class EnhancedBlockModelLighter extends BlockModelLighter {
                             state.getBlock(),
                             pos,
                             Integer.toHexString(vanilla.getLightCoords(vertex)),
-                            Integer.toHexString(vanilla.getColor(vertex)),
+                            Integer.toHexString(vanilla.getBrightness(vertex)),
                             Integer.toHexString(outputInstance.getLightCoords(vertex)),
-                            Integer.toHexString(outputInstance.getColor(vertex)));
+                            Integer.toHexString(outputInstance.getBrightness(vertex)));
                     break;
                 }
             }
@@ -216,7 +216,7 @@ public class EnhancedBlockModelLighter extends BlockModelLighter {
 
             // Do an average between the max and the weighted average.
             // Using only the weighted average looks a bit too dark.
-            outputInstance.setColor(vertex, ARGB.gray(Math.clamp(weightedBrightness * AVERAGE_WEIGHT + maxBrightness * MAX_WEIGHT, 0.0F, 1.0F)));
+            outputInstance.setBrightness(vertex, (short) ARGB.as8BitChannel(Math.clamp(weightedBrightness * AVERAGE_WEIGHT + maxBrightness * MAX_WEIGHT, 0.0F, 1.0F)));
             outputInstance.setLightCoords(vertex, lerpLightmap(weightedLightmap, AVERAGE_WEIGHT, maxLightmap, MAX_WEIGHT));
         }
     }
@@ -270,7 +270,7 @@ public class EnhancedBlockModelLighter extends BlockModelLighter {
                 float axisWeight = normalComponent * normalComponent;
                 weightedBrightness += cardinalLighting.byFace(direction) * axisWeight;
             }
-            outputInstance.setColor(vertex, ARGB.gray(Math.min(weightedBrightness, 1F)));
+            outputInstance.setBrightness(vertex, (short) ARGB.as8BitChannel(Math.min(weightedBrightness, 1F)));
         }
     }
 

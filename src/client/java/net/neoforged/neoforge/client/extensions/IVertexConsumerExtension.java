@@ -8,7 +8,7 @@ package net.neoforged.neoforge.client.extensions;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.QuadInstance;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.renderpearl.api.vertex.VertexFormatElement;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
 import net.minecraft.client.model.geom.builders.UVPair;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.util.ARGB;
@@ -47,7 +47,9 @@ public interface IVertexConsumerExtension {
 
         for (int vertex = 0; vertex < 4; vertex++) {
             long packedUv = quad.packedUv(vertex);
-            int vertexColor = ARGB.multiply(instance.getColor(vertex), quad.color(vertex));
+            short brightness = instance.getBrightness(vertex);
+            int tint = instance.getColor();
+            int vertexColor = ARGB.scaleRGB(ARGB.multiply(tint, quad.color(vertex)), brightness);
             int light = instance.getLightCoordsWithEmission(vertex, lightEmission);
             Vector3f pos = matrix.transformPosition(quad.x(vertex), quad.y(vertex), quad.z(vertex), new Vector3f());
             float u = UVPair.unpackU(packedUv);

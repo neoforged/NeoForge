@@ -20,12 +20,13 @@ import java.util.Optional;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.multiplayer.ClientSuggestionProvider;
+import net.minecraft.client.multiplayer.ClientSuggestionContext;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.synchronization.SuggestionProviders;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.ParseBox;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
@@ -64,7 +65,7 @@ public class ClientCommandHandler {
      * with server commands in suggestions
      */
     @ApiStatus.Internal
-    public static CommandDispatcher<ClientSuggestionProvider> mergeServerCommands(CommandDispatcher<ClientSuggestionProvider> serverCommands, CommandBuildContext buildContext) {
+    public static CommandDispatcher<ClientSuggestionContext> mergeServerCommands(CommandDispatcher<ClientSuggestionContext> serverCommands, CommandBuildContext buildContext) {
         CommandDispatcher<CommandSourceStack> commandsTemp = new CommandDispatcher<>();
         NeoForge.EVENT_BUS.post(new RegisterClientCommandsEvent(commandsTemp, buildContext));
 
@@ -73,16 +74,16 @@ public class ClientCommandHandler {
         copy(commandsTemp.getRoot(), commands.getRoot());
 
         // Copies the server commands into another RootCommandNode so that redirects can't be used with client commands
-        RootCommandNode<ClientSuggestionProvider> serverCommandsRoot = serverCommands.getRoot();
-        CommandDispatcher<ClientSuggestionProvider> newServerCommands = new CommandDispatcher<>();
+        RootCommandNode<ClientSuggestionContext> serverCommandsRoot = serverCommands.getRoot();
+        CommandDispatcher<ClientSuggestionContext> newServerCommands = new CommandDispatcher<>();
         copy(serverCommandsRoot, newServerCommands.getRoot());
 
         // Copies the client side commands into the server side commands to be used for suggestions
         CommandHelper.mergeCommandNode(commands.getRoot(), newServerCommands.getRoot(), new IdentityHashMap<>(), getSource(), (context) -> 0, (suggestions) -> {
             Identifier id = SuggestionProviders.getName(suggestions);
-            SuggestionProvider<ClientSuggestionProvider> suggestionProvider;
+            SuggestionProvider<ClientSuggestionContext> suggestionProvider;
             if (id.equals(ASK_SERVER_ID)) {
-                suggestionProvider = (context, builder) -> {
+                suggestionProvider = (context, _) -> {
                     ClientCommandSourceStack source = getSource();
                     StringReader reader = new StringReader(context.getInput());
                     if (reader.canRead() && reader.peek() == '/') {
@@ -169,7 +170,7 @@ public class ClientCommandHandler {
      * Always try to execute the cached parsing of a typed command as a clientside command. Requires that the execute field of the commands to be set to send to server so that they aren't
      * treated as client command's that do nothing.
      *
-     * {@link net.minecraft.commands.Commands#performCommand(ParseResults, String)} for reference
+     * {@link Commands#performCommand(CommandSourceStack, ParseBox.Result, String)} for reference
      *
      * @param command the full command to execute, no preceding slash
      * @return {@code false} leaves the message to be sent to the server, while {@code true} means it should be caught before LocalPlayer#sendCommand

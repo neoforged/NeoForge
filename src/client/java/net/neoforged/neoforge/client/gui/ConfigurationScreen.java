@@ -59,7 +59,6 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.util.Mth;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfig.Type;
@@ -690,7 +689,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             box.setEditable(true);
             // no filter or the user wouldn't be able to type
             box.setTooltip(Tooltip.create(getTooltipComponent(key, null)));
-            box.setMaxLength(Mth.clamp(source.get().length() + 5, 128, 192));
+            box.setMaxLength(Math.clamp(source.get().length() + 5, 128, 192));
             box.setValue(source.get());
             box.setResponder(newValue -> {
                 if (newValue != null && tester.test(newValue)) {
@@ -746,16 +745,18 @@ public final class ConfigurationScreen extends OptionsSubScreen {
          */
         public record Custom<T>(List<T> values) implements OptionInstance.ValueSet<T> {
             @Override
-            public Function<OptionInstance<T>, AbstractWidget> createButton(OptionInstance.TooltipSupplier<T> tooltip, Options options, int x, int y, int width, OptionInstance.ValueUpdateListener<? super T> target) {
-                return optionsInstance -> CycleButton.builder(optionsInstance.toString, (Supplier<T>) optionsInstance::get)
-                        .withValues(CycleButton.ValueListSupplier.create(this.values))
-                        .withTooltip(tooltip)
-                        .displayOnlyValue()
-                        .create(x, y, width, 20, optionsInstance.caption, (_, newValue) -> {
-                            optionsInstance.set(newValue);
-                            options.save();
-                            target.valueChanged(newValue);
-                        });
+            public OptionInstance.ButtonFactory<T> buttonFactory() {
+                return (optionsInstance, tooltip, options, x, y, width, target) -> {
+                    return CycleButton.builder(optionsInstance.toString, (Supplier<T>) optionsInstance::get)
+                            .withValues(CycleButton.ValueListSupplier.create(this.values))
+                            .withTooltip(tooltip)
+                            .displayOnlyValue()
+                            .create(x, y, width, 20, optionsInstance.caption, (_, newValue) -> {
+                                optionsInstance.set(newValue);
+                                options.save();
+                                target.valueChanged(newValue);
+                            });
+                };
             }
 
             @Override
@@ -907,10 +908,10 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         @Override
-        public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        public void extractRenderState(GuiGraphicsExtractor graphics) {
             setUndoButtonstate(undoManager.canUndo()); // in render()? Really? --- Yes! This is how vanilla does it.
             setResetButtonstate(isAnyNondefault());
-            super.extractRenderState(graphics, mouseX, mouseY, a);
+            super.extractRenderState(graphics);
         }
 
         @Override
@@ -1206,9 +1207,9 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         @Override
-        public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        public void extractRenderState(GuiGraphicsExtractor graphics) {
             doneButton.active = spec.test(cfgList);
-            super.extractRenderState(graphics, mouseX, mouseY, a);
+            super.extractRenderState(graphics);
         }
 
         @Override
@@ -1330,22 +1331,22 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             }
 
             @Override
-            protected void extractWidgetRenderState(final GuiGraphicsExtractor pGuiGraphics, final int pMouseX, final int pMouseY, final float pPartialTick) {
+            protected void extractWidgetRenderState(final GuiGraphicsExtractor graphics) {
                 checkButtons();
-                label.extractRenderState(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+                label.extractRenderState(graphics);
                 if (!isFirst) {
-                    upButton.extractRenderState(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+                    upButton.extractRenderState(graphics);
                 }
                 if (!isLast) {
-                    downButton.extractRenderState(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+                    downButton.extractRenderState(graphics);
                 }
-                delButton.extractRenderState(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+                delButton.extractRenderState(graphics);
             }
 
             protected void checkButtons() {
-                upButton.visible = !isFirst;
+                upButton.setVisible(!isFirst);
                 upButton.active = !isFirst && swap(idx - 1, true);
-                downButton.visible = !isLast;
+                downButton.setVisible(!isLast);
                 downButton.active = !isLast && swap(idx, true);
                 Range<Integer> sizeRange = spec.getSizeRange();
                 delButton.active = !cfgList.isEmpty() && (sizeRange == null || sizeRange.test(cfgList.size() - 1)) && del(idx, true);

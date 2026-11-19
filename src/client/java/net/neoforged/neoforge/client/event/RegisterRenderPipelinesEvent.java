@@ -5,8 +5,7 @@
 
 package net.neoforged.neoforge.client.event;
 
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-import net.minecraft.client.renderer.oit.OitPipelineSet;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;

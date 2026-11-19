@@ -109,7 +109,7 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
     /**
      * Draws the background of the scroll panel. This runs AFTER Scissors are enabled.
      */
-    protected void drawBackground(GuiGraphicsExtractor guiGraphics, float partialTick) {
+    protected void drawBackground(GuiGraphicsExtractor guiGraphics) {
         Screen.extractMenuBackgroundTexture(guiGraphics, Screen.MENU_BACKGROUND, this.left, this.top, 0f, 0f, this.width, this.height);
     }
 
@@ -117,7 +117,7 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * Draw anything special on the screen. Scissor (RenderSystem.enableScissor) is enabled
      * for anything that is rendered outside the view box. Do not mess with Scissor unless you support this.
      */
-    protected abstract void drawPanel(GuiGraphicsExtractor guiGraphics, int entryRight, int relativeY, int mouseX, int mouseY);
+    protected abstract void drawPanel(GuiGraphicsExtractor guiGraphics, int entryRight, int relativeY);
 
     protected boolean clickPanel(double mouseX, double mouseY, MouseButtonEvent event) {
         return false;
@@ -212,13 +212,13 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics) {
         guiGraphics.enableScissor(this.left, this.top, this.right, this.bottom);
 
-        this.drawBackground(guiGraphics, partialTick);
+        this.drawBackground(guiGraphics);
 
         int baseY = this.top + border - (int) this.scrollDistance;
-        this.drawPanel(guiGraphics, right, baseY, mouseX, mouseY);
+        this.drawPanel(guiGraphics, right, baseY);
 
         int extraHeight = (this.getContentHeight() + border) - height;
         if (extraHeight > 0) {

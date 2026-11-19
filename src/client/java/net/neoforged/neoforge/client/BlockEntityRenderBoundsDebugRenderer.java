@@ -14,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.commands.CommandPermissionLevels;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
@@ -90,7 +91,7 @@ public final class BlockEntityRenderBoundsDebugRenderer {
         event.getDispatcher().register(
                 Commands.literal("neoforge")
                         .then(Commands.literal("debug_blockentity_renderbounds")
-                                .requires(Commands.hasPermission(Commands.LEVEL_ADMINS))
+                                .requires(Commands.hasPermission(CommandPermissionLevels.LEVEL_ADMINS))
                                 .then(Commands.argument("enable", BoolArgumentType.bool())
                                         .executes(ctx -> {
                                             enabled = BoolArgumentType.getBool(ctx, "enable");

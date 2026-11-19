@@ -8,7 +8,7 @@ package net.neoforged.neoforge.client.extensions;
 import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
@@ -62,6 +62,6 @@ public interface GuiGraphicsExtractorExtension {
             if (centerX) x += (w - boundsWidth) / 2;
         }
 
-        self().blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 0, 0, boundsWidth, boundsHeight, rectWidth, rectHeight, rectWidth, rectHeight);
+        self().blit(GuiPipeline.TEXTURED, texture, x, y, 0, 0, boundsWidth, boundsHeight, rectWidth, rectHeight, rectWidth, rectHeight);
     }
 }

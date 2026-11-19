@@ -156,12 +156,13 @@ final class ClientPayloadHandler {
     }
 
     private static <T extends AbstractContainerMenu> void createMenuScreen(Component name, MenuType<T> menuType, int windowId, RegistryFriendlyByteBuf buf) {
-        Minecraft mc = Minecraft.getInstance();
-        MenuScreens.getScreenFactory(menuType).ifPresent(f -> {
-            Screen s = f.create(menuType.create(windowId, mc.player.getInventory(), buf), mc.player.getInventory(), name);
-            mc.player.containerMenu = ((MenuAccess<?>) s).getMenu();
-            mc.gui.setScreen(s);
-        });
+        MenuScreens.ScreenConstructor<T, ?> constructor = MenuScreens.getConstructor(menuType);
+        if (constructor != null) {
+            Minecraft mc = Minecraft.getInstance();
+            Screen screen = constructor.create(menuType.create(windowId, mc.player.getInventory(), buf), mc.player.getInventory(), name);
+            mc.player.containerMenu = ((MenuAccess<?>) screen).getMenu();
+            mc.gui.setScreen(screen);
+        }
     }
 
     private static void handle(AuxiliaryLightDataPayload msg, IPayloadContext context) {

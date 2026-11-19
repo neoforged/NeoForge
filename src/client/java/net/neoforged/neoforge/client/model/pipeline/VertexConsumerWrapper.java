@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.model.pipeline;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.renderpearl.api.vertex.VertexFormatElement;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
 
 /**
  * Wrapper for {@link VertexConsumer} which delegates all operations to its parent.

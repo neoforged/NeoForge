@@ -6,8 +6,11 @@
 package net.neoforged.neoforge.client.loading.earlydisplay;
 
 import com.mojang.blaze3d.pipeline.PipelineCache;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.pipeline.ShaderSource;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.logging.LogUtils;
 import com.mojang.renderpearl.api.GpuFormat;
 import com.mojang.renderpearl.api.buffers.GpuBuffer;
@@ -20,23 +23,22 @@ import com.mojang.renderpearl.api.pipeline.BlendFunction;
 import com.mojang.renderpearl.api.pipeline.ColorTargetState;
 import com.mojang.renderpearl.api.pipeline.CompiledRenderPipeline;
 import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-import com.mojang.renderpearl.api.pipeline.ShaderSource;
 import com.mojang.renderpearl.api.pipeline.ShaderType;
 import com.mojang.renderpearl.api.pipeline.UniformType;
 import com.mojang.renderpearl.api.textures.FilterMode;
 import com.mojang.renderpearl.api.textures.GpuSampler;
 import com.mojang.renderpearl.api.textures.GpuTexture;
 import com.mojang.renderpearl.api.textures.GpuTextureView;
-import com.mojang.renderpearl.api.vertex.VertexFormat;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.Set;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderPassLayouts;
 import net.minecraft.resources.Identifier;
 import net.neoforged.fml.earlydisplay.render.ElementShader;
 import net.neoforged.fml.earlydisplay.render.backend.ELSBuffer;
@@ -100,8 +102,8 @@ public final class RenderPearlRenderBackend extends ELSRenderBackend {
                     })
                     .withBindGroupLayout(layoutBuilder.build())
                     .build();
-            PipelineCache cache = new PipelineCache(this.device, makeShaderSource(shader));
-            CompiledRenderPipeline compiledPipeline = cache.get(pipeline);
+            PipelineCache cache = new PipelineCache(RenderSystem.getPipelineBuilder(), makeShaderSource(shader));
+            CompiledRenderPipeline compiledPipeline = cache.get(pipeline, RenderPassLayouts.COLOR_ONLY.subpass(0));
             if (compiledPipeline != null) {
                 this.pipelines.put(elsPipeline, compiledPipeline);
             } else {
@@ -160,7 +162,7 @@ public final class RenderPearlRenderBackend extends ELSRenderBackend {
     public ELSRenderPass createRenderPass(String label, ELSTexture target, ThemeColor clearColor) {
         GpuTextureView texture = ((RenderPearlTexture) target).view();
         Optional<Vector4fc> clearColorVec = Optional.of(new Vector4f(clearColor.r(), clearColor.g(), clearColor.b(), clearColor.a()));
-        return new RenderPearlRenderPass(this, this.device.createCommandEncoder().createRenderPass(() -> label, texture, clearColorVec));
+        return new RenderPearlRenderPass(this, this.device.createCommandEncoder().createRenderPass(() -> label, RenderPassLayouts.COLOR_ONLY, texture, clearColorVec, null, OptionalDouble.empty()));
     }
 
     @Override

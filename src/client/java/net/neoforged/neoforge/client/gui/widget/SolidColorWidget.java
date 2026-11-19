@@ -7,9 +7,9 @@ package net.neoforged.neoforge.client.gui.widget;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 
@@ -79,9 +79,9 @@ public class SolidColorWidget extends AbstractWidget {
     }
 
     @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-        graphics.fill(RenderPipelines.GUI, getX() + 1, getY() + 1, getX() + 1 + getWidth(), getY() + 1 + getHeight(), shadowColor);
-        graphics.fill(RenderPipelines.GUI, getX(), getY(), getX() + getWidth(), getY() + getHeight(), color);
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics) {
+        graphics.fill(GuiPipeline.DEFAULT, getX() + 1, getY() + 1, getX() + 1 + getWidth(), getY() + 1 + getHeight(), shadowColor);
+        graphics.fill(GuiPipeline.DEFAULT, getX(), getY(), getX() + getWidth(), getY() + getHeight(), color);
     }
 
     @Override
