@@ -1,0 +1,12 @@
+--- a/net/minecraft/core/dispenser/EmptyBucketDispenseBehavior.java
++++ b/net/minecraft/core/dispenser/EmptyBucketDispenseBehavior.java
+@@ -20,7 +_,8 @@
+         if (dispensed.getItem() instanceof DispensibleContainerItem bucket) {
+             BlockPos var6 = source.pos().relative(source.state().getValue(DispenserBlock.FACING));
+             ServerLevel level = source.level();
+-            if (bucket.emptyContents(null, level, var6, null)) {
++            // Neo: add the dispensed stack as context
++            if (bucket.emptyContents(null, level, var6, null, dispensed)) {
+                 bucket.checkExtraContent(null, level, dispensed, var6);
+                 return DispenseBehavior.consumeWithRemainder(source, dispensed, new ItemStack(Items.BUCKET));
+             } else {

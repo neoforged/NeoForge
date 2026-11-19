@@ -1,13 +1,12 @@
-++++ Target missing
---- a/net/minecraft/core/dispenser/EquipmentDispenseItemBehavior.java
-+++ b/net/minecraft/core/dispenser/EquipmentDispenseItemBehavior.java
-@@ -26,6 +26,10 @@
+--- a/net/minecraft/core/dispenser/EquipDispenseBehavior.java
++++ b/net/minecraft/core/dispenser/EquipDispenseBehavior.java
+@@ -27,6 +_,10 @@
  
          LivingEntity target = entities.getFirst();
          EquipmentSlot slot = target.getEquipmentSlotForItem(dispensed);
 +        // Neo: Respect IItemExtension#canEquip in dispenseEquipment()
 +        if (!dispensed.canEquip(slot, target)) {
-+            return false;
++            return DispenseBehavior.DispenseResult.failure();
 +        }
          ItemStack equip = dispensed.split(1);
          target.setItemSlot(slot, equip);

@@ -1,13 +1,12 @@
-++++ Target missing
---- a/net/minecraft/core/dispenser/BoatDispenseItemBehavior.java
-+++ b/net/minecraft/core/dispenser/BoatDispenseItemBehavior.java
-@@ -29,27 +29,39 @@
+--- a/net/minecraft/core/dispenser/PlaceBoatDispenseBehavior.java
++++ b/net/minecraft/core/dispenser/PlaceBoatDispenseBehavior.java
+@@ -35,21 +_,29 @@
          double spawnY = center.y() + direction.getStepY() * 1.125F;
          double spawnZ = center.z() + direction.getStepZ() * justOutsideDispenser;
          BlockPos frontPos = source.pos().relative(direction);
 +        // Neo: Move the creation (but not addition to the level) of the boat entity earlier for use in various checks
-+        AbstractBoat boat = this.type.create(level, EntitySpawnReason.DISPENSER);
-+        if (boat != null) {
++        var entity = type.create(level, EntitySpawnReason.DISPENSER);
++        if (entity instanceof AbstractBoat boat) {
 +            boat.setInitialPos(spawnX, spawnY, spawnZ);
 +            EntityType.<AbstractBoat>createDefaultStackConfig(level, dispensed, null).apply(boat);
 +            boat.setYRot(direction.toYRot());
@@ -15,34 +14,38 @@
          double yOffset;
 -        if (level.getFluidState(frontPos).is(FluidTags.WATER)) {
 +        // Neo: check whether the fluid in front of the dispenser supports boating
-+        if (canBoatInFluid(boat, level.getFluidState(frontPos))) {
++        if (canBoatInFluid(entity, level.getFluidState(frontPos))) {
              yOffset = 1.0;
          } else {
 -            if (!level.getBlockState(frontPos).isAir() || !level.getFluidState(frontPos.below()).is(FluidTags.WATER)) {
 +            // Neo: check whether the fluid below the block in front of the dispenser supports boating
-+            if (!level.getBlockState(frontPos).isAir() || !canBoatInFluid(boat, level.getFluidState(frontPos.below()))) {
-                 return this.defaultDispenseItemBehavior.dispense(source, dispensed);
++            if (!level.getBlockState(frontPos).isAir() || !canBoatInFluid(entity, level.getFluidState(frontPos.below()))) {
+                 return DispenseBehavior.DispenseResult.failure();
              }
  
              yOffset = 0.0;
          }
  
--        AbstractBoat boat = this.type.create(level, EntitySpawnReason.DISPENSER);
-         if (boat != null) {
-+            // Neo: Apply Y offset to the boat, add it to the level, and shrink the stack
+-        if (type.create(level, EntitySpawnReason.DISPENSER) instanceof AbstractBoat boat) {
++        // Neo: use entity created above
++        if (entity instanceof AbstractBoat boat) {
              boat.setInitialPos(spawnX, spawnY + yOffset, spawnZ);
 -            EntityType.<AbstractBoat>createDefaultStackConfig(level, dispensed, null).apply(boat);
 -            boat.setYRot(direction.toYRot());
              level.addFreshEntity(boat);
              dispensed.shrink(1);
-         }
- 
-         return dispensed;
+             return DispenseBehavior.DispenseResult.success(dispensed);
+@@ -61,5 +_,13 @@
+     @Override
+     public MapCodec<PlaceBoatDispenseBehavior> codec() {
+         return MAP_CODEC;
 +    }
 +
 +    /// Neo: {@return whether the given fluid supports boating with the given boat}
-+    private static boolean canBoatInFluid(@org.jspecify.annotations.Nullable AbstractBoat boat, net.minecraft.world.level.material.FluidState fluid) {
-+        return boat != null ? boat.canBoatInFluid(fluid) : fluid.is(FluidTags.WATER);
++    private static boolean canBoatInFluid(net.minecraft.world.entity.@org.jspecify.annotations.Nullable Entity entity, net.minecraft.world.level.material.FluidState fluid) {
++        if (entity instanceof AbstractBoat boat) {
++            return boat.canBoatInFluid(fluid);
++        }
++        return fluid.is(FluidTags.WATER);
      }
- 
-     @Override
+ }

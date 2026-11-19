@@ -1,0 +1,19 @@
+--- a/net/minecraft/core/dispenser/IgniteDispenseBehavior.java
++++ b/net/minecraft/core/dispenser/IgniteDispenseBehavior.java
+@@ -48,11 +_,14 @@
+             level.setBlockAndUpdate(targetPos, BaseFireBlock.getState(level, targetPos));
+             level.gameEvent(null, GameEvent.BLOCK_PLACE, targetPos);
+             return true;
+-        } else if (CampfireBlock.canLight(target) || CandleBlock.canLight(target) || CandleCakeBlock.canLight(target)) {
++        }
++        BlockState modifiedState = target.getToolModifiedState(new net.minecraft.world.item.context.UseOnContext(level, null, net.minecraft.world.InteractionHand.MAIN_HAND, dispensed, new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(targetPos), facing.getOpposite(), targetPos, false)), net.neoforged.neoforge.common.ItemAbilities.FIRESTARTER_LIGHT, false);
++        if (modifiedState != null) {
+             level.setBlockAndUpdate(targetPos, target.setValue(BlockStateProperties.LIT, true));
+             level.gameEvent(null, GameEvent.BLOCK_CHANGE, targetPos);
+             return true;
+-        } else if (target.getBlock() instanceof TntBlock && TntBlock.prime(level, targetPos, null, dispensed)) {
++        } else if (target.isFlammable(level, targetPos, facing.getOpposite()) && target.onCaughtFire(level, targetPos, facing.getOpposite(), null, dispensed)) { // Neo: allow any flammable block to be triggered
++            if (target.getBlock() instanceof TntBlock)
+             level.removeBlock(targetPos, false);
+             return true;
+         } else {

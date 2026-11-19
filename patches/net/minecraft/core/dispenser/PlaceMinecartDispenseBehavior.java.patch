@@ -1,7 +1,6 @@
-++++ Target missing
---- a/net/minecraft/core/dispenser/MinecartDispenseItemBehavior.java
-+++ b/net/minecraft/core/dispenser/MinecartDispenseItemBehavior.java
-@@ -34,7 +34,8 @@
+--- a/net/minecraft/core/dispenser/PlaceMinecartDispenseBehavior.java
++++ b/net/minecraft/core/dispenser/PlaceMinecartDispenseBehavior.java
+@@ -33,7 +_,8 @@
          BlockState blockFront = level.getBlockState(front);
          double yOffset;
          if (blockFront.is(BlockTags.RAILS)) {
@@ -11,8 +10,8 @@
                  yOffset = 0.6;
              } else {
                  yOffset = 0.1;
-@@ -49,7 +50,8 @@
-                 return this.defaultDispenseItemBehavior.dispense(source, dispensed);
+@@ -48,7 +_,8 @@
+                 return DispenseBehavior.DispenseResult.failure();
              }
  
 -            if (direction != Direction.DOWN && getRailShape(blockBelow).isSlope()) {
@@ -21,8 +20,8 @@
                  yOffset = -0.4;
              } else {
                  yOffset = -0.9;
-@@ -68,8 +70,9 @@
-         return dispensed;
+@@ -66,8 +_,9 @@
+         }
      }
  
 -    private static RailShape getRailShape(BlockState blockFront) {

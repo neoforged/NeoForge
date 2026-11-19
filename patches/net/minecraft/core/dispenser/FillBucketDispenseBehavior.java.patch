@@ -1,0 +1,12 @@
+--- a/net/minecraft/core/dispenser/FillBucketDispenseBehavior.java
++++ b/net/minecraft/core/dispenser/FillBucketDispenseBehavior.java
+@@ -28,7 +_,8 @@
+                 return DispenseBehavior.DispenseResult.failure();
+             }
+ 
+-            pickupSource.getPickupSound().ifPresent(soundEvent -> level.playSound(null, target, soundEvent, SoundSource.BLOCKS));
++            // Neo: add blockstate context
++            pickupSource.getPickupSound(blockState).ifPresent(soundEvent -> level.playSound(null, target, soundEvent, SoundSource.BLOCKS));
+             level.gameEvent(null, GameEvent.FLUID_PICKUP, target);
+             return DispenseBehavior.consumeWithRemainder(source, dispensed, new ItemStack(pickup.getItem()));
+         } else {

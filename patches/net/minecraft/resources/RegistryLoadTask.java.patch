@@ -58,7 +58,7 @@
 +                // For loot tables, we fire the appropriate LootTableLoadEvent first; if the event hook returns null, skip it with the SKIPPED_ELEMENT_MARKER error
 +                if (elementKey.isFor(net.minecraft.core.registries.Registries.LOOT_TABLE) && elementCandidate instanceof net.minecraft.world.level.storage.loot.LootTable lootTable) {
 +                    lootTable.setLootTableId(elementKey.identifier());
-+                    var resultLootTable = net.neoforged.neoforge.event.EventHooks.loadLootTable(ops.lookupProvider::lookup, elementKey.identifier(), lootTable);
++                    var resultLootTable = net.neoforged.neoforge.event.EventHooks.loadLootTable(ops.getterProvider, elementKey.identifier(), lootTable);
 +                    if (resultLootTable == null) {
 +                        return Either.right(SKIPPED_ELEMENT_MARKER);
 +                    }

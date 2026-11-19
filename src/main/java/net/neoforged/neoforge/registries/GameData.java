@@ -8,6 +8,7 @@ package net.neoforged.neoforge.registries;
 import com.google.common.collect.Table;
 import com.mojang.logging.LogUtils;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -125,11 +126,16 @@ public class GameData {
      * @return A {@link LinkedHashSet} containing the registration order.
      */
     public static Set<Identifier> getRegistrationOrder() {
+        List<Identifier> vanillaOrder = BuiltInRegistries.REGISTRY.listElementIds()
+                .map(ResourceKey::identifier)
+                .filter(id -> id.getNamespace().equals(Identifier.DEFAULT_NAMESPACE))
+                .toList();
+
         Set<Identifier> ordered = new LinkedHashSet<>();
         ordered.add(Registries.ATTRIBUTE.identifier()); // Vanilla order is incorrect, both Item and MobEffect depend on Attribute at construction time.
         ordered.add(Registries.DATA_COMPONENT_TYPE.identifier()); // Vanilla order is incorrect, Item depends on data components at construction time.
         ordered.add(Registries.PARTICLE_TYPE.identifier()); // Vanilla order is incorrect, both Block and MobEffect depend on ParticleType at construction time.
-        ordered.addAll(BuiltInRegistries.getVanillaRegistrationOrder());
+        ordered.addAll(vanillaOrder);
         ordered.addAll(BuiltInRegistries.REGISTRY.keySet().stream().sorted(Identifier::compareNamespaced).toList());
         return ordered;
     }
