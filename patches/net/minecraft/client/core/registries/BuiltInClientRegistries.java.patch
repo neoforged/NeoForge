@@ -1,0 +1,12 @@
+--- a/net/minecraft/client/core/registries/BuiltInClientRegistries.java
++++ b/net/minecraft/client/core/registries/BuiltInClientRegistries.java
+@@ -71,4 +_,9 @@
+     public static void bootStrap() {
+         BUILDER.bootStrap();
+     }
++
++    /// Neo: {@return an unmodifiable view of the (intended) registration order of vanilla registries}
++    public static java.util.List<net.minecraft.resources.Identifier> getVanillaRegistrationOrder() {
++        return BUILDER.getRegistryOrder();
++    }
+ }

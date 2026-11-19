@@ -1,0 +1,32 @@
+--- a/net/minecraft/core/registries/BuiltinRegistryBuilder.java
++++ b/net/minecraft/core/registries/BuiltinRegistryBuilder.java
+@@ -18,6 +_,8 @@
+ public class BuiltinRegistryBuilder {
+     private final List<Runnable> loaders = new ArrayList<>();
+     private final WritableRegistry<WritableRegistry<?>> registry;
++    /// Neo: holds the (intended) registration order of vanilla registries
++    private final List<Identifier> registryOrder = new ArrayList<>();
+ 
+     public BuiltinRegistryBuilder(Identifier root) {
+         this.registry = new MappedRegistry<>(ResourceKey.createRegistryKey(root), Lifecycle.stable());
+@@ -49,6 +_,8 @@
+         Bootstrap.checkBootstrapCalled(() -> "registry " + name.identifier());
+         this.loaders.add(() -> loader.run(registry));
+         this.registry.register((ResourceKey<WritableRegistry<?>>)(ResourceKey<?>)name, registry, RegistrationInfo.BUILT_IN);
++        // Neo: capture registry IDs in registration order
++        this.registryOrder.add(name.identifier());
+         return registry;
+     }
+ 
+@@ -94,6 +_,11 @@
+ 
+     public Registry<? extends Registry<?>> build() {
+         return this.registry;
++    }
++
++    /// Neo: {@return an unmodifiable view of the (intended) registration order of vanilla registries}
++    public List<Identifier> getRegistryOrder() {
++        return java.util.Collections.unmodifiableList(this.registryOrder);
+     }
+ 
+     @FunctionalInterface
