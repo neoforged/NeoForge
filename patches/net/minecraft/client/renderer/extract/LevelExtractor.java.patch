@@ -105,7 +105,7 @@
                          TextureAtlasSprite sprite = this.minecraft.getModelManager().getBlockStateModelSet().getParticleMaterial(viewBlockingState).sprite();
                          state.blockOverlay = new PlayerRenderState.BlockOverlay(
                              sprite.atlasLocation(), sprite.getU0(), sprite.getV0(), sprite.getU1(), sprite.getV1()
-@@ -456,12 +_,22 @@
+@@ -456,13 +_,16 @@
                      if (this.minecraft.options.getCameraType().isFirstPerson()) {
                          state.isEyeInWater = player.isEyeInFluid(FluidTags.WATER);
                          state.isOnFire = player.isOnFire();
@@ -116,19 +116,13 @@
                              state.waterOverlay = new PlayerRenderState.WaterOverlay(
                                  ARGB.colorFromFloat(0.1F, brightness, brightness, brightness), -player.getYRot() / 64.0F, player.getXRot() / 64.0F
                              );
-+                        } else {
-+                            var fluidType = player.getFluidInteraction().getFirstEyeInFluid();
-+                            if (!fluidType.isAir()) {
-+                                BlockPos eyePos = BlockPos.containing(player.getEyePosition());
-+                                float brightness = Lightmap.getBrightness(player.level().dimensionType(), player.level().getMaxLocalRawBrightness(eyePos));
-+                                net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(fluidType).extractOverlay(this.minecraft, player, state, eyePos, brightness);
-+                            }
-+                        }
+                         }
 +                        if (state.isOnFire) {
 +                            net.neoforged.neoforge.client.ClientHooks.extractFireScreenEffect(player, state, camera, worldPartialTicks, playerPartialTick);
-                         }
++                        }
                      }
                  }
+             } else {
 @@ -471,16 +_,22 @@
          }
      }

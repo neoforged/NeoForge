@@ -1,0 +1,16 @@
+--- a/net/minecraft/client/renderer/extract/LevelExtractor.java
++++ b/net/minecraft/client/renderer/extract/LevelExtractor.java
+@@ -461,12 +_,22 @@
+                             state.waterOverlay = new PlayerRenderState.WaterOverlay(
+                                 ARGB.colorFromFloat(0.1F, brightness, brightness, brightness), -player.getYRot() / 64.0F, player.getXRot() / 64.0F
+                             );
++                        } else {
++                            var fluidType = player.getFluidInteraction().getFirstEyeInFluid();
++                            if (!fluidType.isAir()) {
++                                BlockPos eyePos = BlockPos.containing(player.getEyePosition());
++                                float brightness = Lightmap.getBrightness(player.level().dimensionType(), player.level().getMaxLocalRawBrightness(eyePos));
++                                net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(fluidType).extractOverlay(this.minecraft, player, state, eyePos, brightness);
++                            }
+                         }
+                         if (state.isOnFire) {
+                             net.neoforged.neoforge.client.ClientHooks.extractFireScreenEffect(player, state, camera, worldPartialTicks, playerPartialTick);
