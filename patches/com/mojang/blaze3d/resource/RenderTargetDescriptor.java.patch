@@ -18,7 +18,7 @@
 +        }
 +        // Neo: clear stencil buffer if present, using the Y component of the depth clear "color" if depth is also present or X if depth is absent
 +        if (this.depth != null && this.depth.clearColor != null && this.depth.format.hasStencilAspect()) {
-+            int value = (int) (this.depth.format.hasDepthAspect() ? this.depth.clearColor.y() : this.depth.clearColor.x());
++            byte value = (byte) (this.depth.format.hasDepthAspect() ? this.depth.clearColor.y() : this.depth.clearColor.x());
 +            RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(resource.getDepthTexture(), value);
          }
      }

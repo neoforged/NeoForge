@@ -1,0 +1,11 @@
+--- a/com/mojang/blaze3d/vertex/SectionBufferBuilder.java
++++ b/com/mojang/blaze3d/vertex/SectionBufferBuilder.java
+@@ -91,7 +_,7 @@
+             brightnessPacked |= (instance.getBrightness(vertex) & 255) << brightnessShiftVal;
+         }
+ 
+-        this.addQuad(quad, x, y, z, instance.getColor(), brightnessPacked, lightCoordsPacked);
++        this.addQuad(quad, x, y, z, ARGB.multiply(instance.getColor(), quad.bakedColors().color(0)), brightnessPacked, lightCoordsPacked);
+     }
+ 
+     public void addFluidQuad(float x, float y, float z, BakedQuad quad, int color, int brightness, int lightCoords) {

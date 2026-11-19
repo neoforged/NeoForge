@@ -1,0 +1,18 @@
+--- a/com/mojang/blaze3d/vertex/VertexConsumer.java
++++ b/com/mojang/blaze3d/vertex/VertexConsumer.java
+@@ -67,11 +_,14 @@
+             long packedUv = quad.packedUV(vertex);
+             short brightness = instance.getBrightness(vertex);
+             int tint = instance.getColor();
+-            int vertexColor = ARGB.scaleRGB(tint, brightness);
++            // Neo: apply baked color from the quad
++            int vertexColor = ARGB.scaleRGB(ARGB.multiply(tint, quad.bakedColors().color(vertex)), brightness);
+             int light = instance.getLightCoordsWithEmission(vertex, lightEmission);
+             Vector3f pos = matrix.transformPosition(position, new Vector3f());
+             float u = UVPair.unpackU(packedUv);
+             float v = UVPair.unpackV(packedUv);
++            // Neo: apply baked normals from the quad
++            applyBakedNormals(normal, quad.bakedNormals(), vertex, pose.normal());
+             this.addVertex(pos.x(), pos.y(), pos.z(), vertexColor, u, v, instance.overlayCoords(), light, normal.x(), normal.y(), normal.z());
+         }
+     }
