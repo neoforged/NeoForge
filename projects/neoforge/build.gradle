@@ -216,8 +216,8 @@ generateAccessTransformers {
     // Make all render pipeline snippet fields public
     fieldGroup(
             'render pipeline snippets', PUBLIC,
-            named('net/minecraft/client/renderer/RenderPipelines'),
-            fieldsOfType(named('com/mojang/renderpearl/api/pipeline/RenderPipeline$Snippet'))
+            named('net/minecraft/client/renderer/pipeline/RenderPipelines'),
+            fieldsOfType(named('com/mojang/blaze3d/pipeline/RenderPipeline$Snippet'))
     )
 
     // Make all block constructors public so they can be used by mods
@@ -258,13 +258,6 @@ generateAccessTransformers {
             'creative tabs', PUBLIC,
             named('net/minecraft/world/item/CreativeModeTabs'),
             fieldsOfType(named('net/minecraft/resources/ResourceKey'))
-    )
-
-    // Make all DebugScreenEntry groups public
-    fieldGroup(
-            'DebugScreenEntry groups', PUBLIC,
-            classesWithSuperclass('net/minecraft/client/gui/components/debug/DebugScreenEntry'),
-            fieldsOfType(named('net/minecraft/resources/Identifier'))
     )
 
     // Make all BuiltInBlockModels factory methods public
