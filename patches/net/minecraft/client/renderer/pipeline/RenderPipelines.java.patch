@@ -1,0 +1,141 @@
+--- a/net/minecraft/client/renderer/pipeline/RenderPipelines.java
++++ b/net/minecraft/client/renderer/pipeline/RenderPipelines.java
+@@ -444,6 +_,9 @@
+         precompiledDynamic(dynamicPipelines, endPortal(new RenderPipelines.EndPortalParameters(true, false)), RenderPassLayouts.COLOR_DEPTH);
+         precompiledDynamic(dynamicPipelines, endPortal(new RenderPipelines.EndPortalParameters(false, false)), RenderPassLayouts.COLOR_DEPTH);
+         precompiledDynamic(dynamicPipelines, endPortal(new RenderPipelines.EndPortalParameters(false, true)), RenderPassLayouts.COLOR_ONLY);
++
++        net.neoforged.neoforge.client.pipeline.RenderPipelineManager.appendDynamicPipelines(dynamicPipelines, context);
++
+         return dynamicPipelines.stream();
+     }
+ 
+@@ -460,16 +_,40 @@
+     }
+ 
+     public static Stream<PipelineCache.Key> staticPipelinesToPrecompile() {
+-        return STATIC_PIPELINES_TO_PRECOMPILE.stream();
+-    }
+-
++        return Stream.concat(STATIC_PIPELINES_TO_PRECOMPILE.stream(), net.neoforged.neoforge.client.pipeline.RenderPipelineManager.getStaticPipelines());
++    }
++
++    /// Neo: overload of [#dynamicPipeline(Object, String, Function)] with support for namespaced pipeline ID
++    public static <P> RenderPipeline dynamicPipeline(@Nullable P parameters, net.minecraft.resources.Identifier id, Function<@Nullable P, RenderPipeline> pipelineSupplier) {
++        return dynamicPipeline(parameters, id.toShortString(), pipelineSupplier);
++    }
++
++    /// @deprecated Neo: use [#dynamicPipeline(Object, net.minecraft.resources.Identifier, Function)] instead
++    @Deprecated
+     public static <P> RenderPipeline dynamicPipeline(@Nullable P parameters, String id, Function<@Nullable P, RenderPipeline> pipelineSupplier) {
+         return DYNAMIC_PIPELINES_CACHE.computeIfAbsent(new RenderPipelines.DynamicPipelineKey(parameters, id), var2 -> pipelineSupplier.apply(parameters));
+     }
+ 
++    /// @deprecated Neo: use [#finishDynamicPipeline(RenderPipeline.Builder, net.minecraft.resources.Identifier, boolean, OitStage, Consumer, Consumer, Consumer, Consumer, String)] instead
++    @Deprecated
+     private static RenderPipeline finishDynamicPipeline(
+         RenderPipeline.Builder builder,
+         String baseName,
++        boolean supportsOit,
++        @Nullable OitStage oitStage,
++        @Nullable Consumer<RenderPipeline.Builder> nonOitSetup,
++        @Nullable Consumer<RenderPipeline.Builder> oitSetup,
++        @Nullable Consumer<RenderPipeline.Builder> oitAccumulateSetup,
++        @Nullable Consumer<RenderPipeline.Builder> colorOutputSetup,
++        @Nullable String locationPostfix
++    ) {
++        return finishDynamicPipeline(builder, net.minecraft.resources.Identifier.withDefaultNamespace(baseName), supportsOit, oitStage, nonOitSetup, oitSetup, oitAccumulateSetup, colorOutputSetup, locationPostfix);
++    }
++
++    /// Neo: overload of [#finishDynamicPipeline(RenderPipeline.Builder, String, boolean, OitStage, Consumer, Consumer, Consumer, Consumer, String)] with support for namespaced base name
++    public static RenderPipeline finishDynamicPipeline(
++        RenderPipeline.Builder builder,
++        net.minecraft.resources.Identifier baseName,
+         boolean supportsOit,
+         @Nullable OitStage oitStage,
+         @Nullable Consumer<RenderPipeline.Builder> nonOitSetup,
+@@ -515,17 +_,36 @@
+         }
+ 
+         builder.withLocation(
++            // Neo: take base name namespace into account
++            net.minecraft.resources.Identifier.fromNamespaceAndPath(baseName.getNamespace(),
+             "pipeline/"
+                 + (oitStage != null ? "oit_" + oitStage.name().toLowerCase(Locale.ROOT) + "_" : "")
+-                + baseName
++                + baseName.getPath()
+                 + (locationPostfix != null ? "_" + locationPostfix : "")
++            )
+         );
+         return builder.build();
+     }
+ 
++    /// @deprecated Neo: use [#finishDynamicPipeline(RenderPipeline.Builder, net.minecraft.resources.Identifier, boolean, OitStage, Consumer, Consumer, Consumer, String)] instead
++    @Deprecated
+     private static RenderPipeline finishDynamicPipeline(
+         RenderPipeline.Builder builder,
+         String baseName,
++        boolean supportsOit,
++        @Nullable OitStage oitStage,
++        @Nullable Consumer<RenderPipeline.Builder> nonOitSetup,
++        @Nullable Consumer<RenderPipeline.Builder> oitSetup,
++        @Nullable Consumer<RenderPipeline.Builder> oitAccumulateSetup,
++        @Nullable String locationPostfix
++    ) {
++        return finishDynamicPipeline(builder, net.minecraft.resources.Identifier.withDefaultNamespace(baseName), supportsOit, oitStage, nonOitSetup, oitSetup, oitAccumulateSetup, locationPostfix);
++    }
++
++    /// Neo: overload of [#finishDynamicPipeline(RenderPipeline.Builder, String, boolean, OitStage, Consumer, Consumer, Consumer, String)] with support for namespaced base name
++    private static RenderPipeline finishDynamicPipeline(
++        RenderPipeline.Builder builder,
++        net.minecraft.resources.Identifier baseName,
+         boolean supportsOit,
+         @Nullable OitStage oitStage,
+         @Nullable Consumer<RenderPipeline.Builder> nonOitSetup,
+@@ -536,9 +_,23 @@
+         return finishDynamicPipeline(builder, baseName, supportsOit, oitStage, nonOitSetup, oitSetup, oitAccumulateSetup, null, locationPostfix);
+     }
+ 
++    /// @deprecated Neo: use [#finishDynamicPipeline(RenderPipeline.Builder, net.minecraft.resources.Identifier, boolean, OitStage, Consumer, String)] instead
++    @Deprecated
+     private static RenderPipeline finishDynamicPipeline(
+         RenderPipeline.Builder builder,
+         String baseName,
++        boolean supportsOit,
++        @Nullable OitStage oitStage,
++        @Nullable Consumer<RenderPipeline.Builder> nonOitSetup,
++        @Nullable String locationPostfix
++    ) {
++        return finishDynamicPipeline(builder, net.minecraft.resources.Identifier.withDefaultNamespace(baseName), supportsOit, oitStage, nonOitSetup, locationPostfix);
++    }
++
++    /// Neo: overload of [#finishDynamicPipeline(RenderPipeline.Builder, String, boolean, OitStage, Consumer, String)] with support for namespaced base name
++    private static RenderPipeline finishDynamicPipeline(
++        RenderPipeline.Builder builder,
++        net.minecraft.resources.Identifier baseName,
+         boolean supportsOit,
+         @Nullable OitStage oitStage,
+         @Nullable Consumer<RenderPipeline.Builder> nonOitSetup,
+@@ -547,9 +_,22 @@
+         return finishDynamicPipeline(builder, baseName, supportsOit, oitStage, nonOitSetup, null, null, null, locationPostfix);
+     }
+ 
++    /// @deprecated Neo: use [#finishDynamicPipeline(RenderPipeline.Builder, net.minecraft.resources.Identifier, boolean, OitStage, Consumer)] instead
++    @Deprecated
+     private static RenderPipeline finishDynamicPipeline(
+         RenderPipeline.Builder builder,
+         String baseName,
++        boolean supportsOit,
++        @Nullable OitStage oitStage,
++        @Nullable Consumer<RenderPipeline.Builder> nonOitSetup
++    ) {
++        return finishDynamicPipeline(builder, net.minecraft.resources.Identifier.withDefaultNamespace(baseName), supportsOit, oitStage, nonOitSetup);
++    }
++
++    /// Neo: overload of [#finishDynamicPipeline(RenderPipeline.Builder, String, boolean, OitStage, Consumer)] with support for namespaced base name
++    private static RenderPipeline finishDynamicPipeline(
++        RenderPipeline.Builder builder,
++        net.minecraft.resources.Identifier baseName,
+         boolean supportsOit,
+         @Nullable OitStage oitStage,
+         @Nullable Consumer<RenderPipeline.Builder> nonOitSetup

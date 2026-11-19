@@ -8,6 +8,8 @@ package net.neoforged.neoforge.client;
 import java.util.function.Function;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.feature.ItemFeatureRenderer;
+import net.minecraft.client.renderer.pipeline.RenderPipelines;
+import net.minecraft.client.renderer.pipeline.variant.ItemRenderPipelineVariant;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -62,7 +64,7 @@ public final class NeoForgeRenderTypes {
         private static final Function<Identifier, RenderType> ITEM_GLINT_SPECIAL_TRANSLUCENT_UNLIT = Util.memoize(Internal::itemGlintSpecialTranslucentUnlit);
 
         private static RenderType itemCutoutUnlit(Identifier texture) {
-            RenderSetup state = RenderSetup.builder(NeoForgeRenderPipelines.ITEM_CUTOUT_UNLIT)
+            RenderSetup state = RenderSetup.nonOitBuilder(NeoForgeRenderPipelines.itemUnlit(new RenderPipelines.ItemParameters(ItemRenderPipelineVariant.CUTOUT, null)))
                     .withTexture("Sampler0", texture)
                     .useLightmap()
                     .useOverlay()
@@ -73,7 +75,7 @@ public final class NeoForgeRenderTypes {
         }
 
         private static RenderType itemGlintCutoutUnlit(Identifier texture) {
-            RenderSetup state = RenderSetup.builder(NeoForgeRenderPipelines.ITEM_CUTOUT_UNLIT_GLINT)
+            RenderSetup state = RenderSetup.nonOitBuilder(NeoForgeRenderPipelines.itemUnlit(new RenderPipelines.ItemParameters(ItemRenderPipelineVariant.CUTOUT_GLINT, null)))
                     .withTexture("Sampler0", texture)
                     .withTexture("GlintSampler", ItemFeatureRenderer.ENCHANTED_GLINT_ITEM)
                     .setTextureTransform(TextureTransform.GLINT_TEXTURING)
@@ -86,7 +88,7 @@ public final class NeoForgeRenderTypes {
         }
 
         private static RenderType itemGlintSpecialCutoutUnlit(Identifier texture) {
-            RenderSetup state = RenderSetup.builder(NeoForgeRenderPipelines.ITEM_CUTOUT_UNLIT_GLINT_SPECIAL)
+            RenderSetup state = RenderSetup.nonOitBuilder(NeoForgeRenderPipelines.itemUnlit(new RenderPipelines.ItemParameters(ItemRenderPipelineVariant.CUTOUT_GLINT_SPECIAL, null)))
                     .withTexture("Sampler0", texture)
                     .withTexture("GlintSampler", ItemFeatureRenderer.ENCHANTED_GLINT_ITEM)
                     .setTextureTransform(TextureTransform.GLINT_TEXTURING)
@@ -99,8 +101,7 @@ public final class NeoForgeRenderTypes {
         }
 
         private static RenderType itemTranslucentUnlit(Identifier texture) {
-            RenderSetup state = RenderSetup.builder(NeoForgeRenderPipelines.ITEM_TRANSLUCENT_UNLIT)
-                    .setOitPipelines(NeoForgeRenderPipelines.OIT_ITEM_UNLIT)
+            RenderSetup state = RenderSetup.builder(stage -> NeoForgeRenderPipelines.itemUnlit(new RenderPipelines.ItemParameters(ItemRenderPipelineVariant.TRANSLUCENT, stage)))
                     .withTexture("Sampler0", texture)
                     .useLightmap()
                     .useOverlay()
@@ -112,8 +113,7 @@ public final class NeoForgeRenderTypes {
         }
 
         private static RenderType itemGlintTranslucentUnlit(Identifier texture) {
-            RenderSetup state = RenderSetup.builder(NeoForgeRenderPipelines.ITEM_TRANSLUCENT_UNLIT_GLINT)
-                    .setOitPipelines(NeoForgeRenderPipelines.OIT_ITEM_UNLIT_GLINT)
+            RenderSetup state = RenderSetup.builder(stage -> NeoForgeRenderPipelines.itemUnlit(new RenderPipelines.ItemParameters(ItemRenderPipelineVariant.TRANSLUCENT_GLINT, stage)))
                     .withTexture("Sampler0", texture)
                     .withTexture("GlintSampler", ItemFeatureRenderer.ENCHANTED_GLINT_ITEM)
                     .setTextureTransform(TextureTransform.GLINT_TEXTURING)
@@ -127,8 +127,7 @@ public final class NeoForgeRenderTypes {
         }
 
         private static RenderType itemGlintSpecialTranslucentUnlit(Identifier texture) {
-            RenderSetup state = RenderSetup.builder(NeoForgeRenderPipelines.ITEM_TRANSLUCENT_UNLIT_GLINT_SPECIAL)
-                    .setOitPipelines(NeoForgeRenderPipelines.OIT_ITEM_UNLIT_GLINT_SPECIAL)
+            RenderSetup state = RenderSetup.builder(stage -> NeoForgeRenderPipelines.itemUnlit(new RenderPipelines.ItemParameters(ItemRenderPipelineVariant.TRANSLUCENT_GLINT_SPECIAL, stage)))
                     .withTexture("Sampler0", texture)
                     .withTexture("GlintSampler", ItemFeatureRenderer.ENCHANTED_GLINT_ITEM)
                     .setTextureTransform(TextureTransform.GLINT_TEXTURING)
@@ -144,15 +143,15 @@ public final class NeoForgeRenderTypes {
         public static Function<Identifier, RenderType> ENTITY_UNLIT_TRANSLUCENT = Util.memoize(Internal::unlitTranslucent);
 
         private static RenderType unlitTranslucent(Identifier textureLocation) {
-            var renderStateBuilder = RenderSetup.builder(NeoForgeRenderPipelines.ENTITY_UNLIT_TRANSLUCENT)
-                    .setOitPipelines(NeoForgeRenderPipelines.OIT_ENTITY_UNLIT)
+            RenderSetup state = RenderSetup.builder(stage -> RenderPipelines.entity(new RenderPipelines.EntityParameters(NeoForgeRenderPipelines. ENTITY_UNLIT_VARIANT, stage)))
                     .withTexture("Sampler0", textureLocation)
                     .useLightmap()
                     .useOverlay()
                     .affectsCrumbling()
                     .setOutline(RenderSetup.OutlineProperty.AFFECTS_OUTLINE)
-                    .sortOnUpload();
-            return RenderType.create("neoforge_entity_unlit_translucent", renderStateBuilder.createRenderSetup());
+                    .sortOnUpload()
+                    .createRenderSetup();
+            return RenderType.create("neoforge_entity_unlit_translucent", state);
         }
     }
 
