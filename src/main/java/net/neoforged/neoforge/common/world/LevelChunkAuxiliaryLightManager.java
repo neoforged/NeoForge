@@ -16,7 +16,6 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.game.ClientboundBundlePacket;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.lighting.LightEngine;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
@@ -37,7 +36,7 @@ public final class LevelChunkAuxiliaryLightManager implements AuxiliaryLightMana
     @Override
     public void setLightAt(BlockPos pos, int value) {
         pos = pos.immutable();
-        value = Mth.clamp(value, 0, LightEngine.MAX_LEVEL);
+        value = Math.clamp(value, 0, LightEngine.MAX_LEVEL);
 
         Byte oldValue;
         if (value > 0) {

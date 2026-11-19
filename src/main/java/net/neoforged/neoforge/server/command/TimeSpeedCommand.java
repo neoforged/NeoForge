@@ -9,6 +9,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import net.minecraft.commands.CommandPermissionLevels;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -18,13 +19,13 @@ class TimeSpeedCommand {
     static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("day")
                 .then(Commands.literal("speed")
-                        .then(Commands.literal("set").requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS)) // same as /gamerule
+                        .then(Commands.literal("set").requires(Commands.hasPermission(CommandPermissionLevels.LEVEL_GAMEMASTERS)) // same as /gamerule
                                 .then(Commands.literal("default").executes(context -> setDefault(context.getSource())))
                                 .then(Commands.literal("realtime").executes(context -> setDaylength(context.getSource(), 1440)))
                                 .then(Commands.argument("speed", FloatArgumentType.floatArg(0f, 1000f)).executes(context -> setSpeed(context.getSource(), FloatArgumentType.getFloat(context, "speed")))))
                         .executes(context -> query(context.getSource())))
                 .then(Commands.literal("length")
-                        .then(Commands.literal("set").requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        .then(Commands.literal("set").requires(Commands.hasPermission(CommandPermissionLevels.LEVEL_GAMEMASTERS))
                                 .then(Commands.literal("default").executes(context -> setDefault(context.getSource())))
                                 .then(Commands.literal("realtime").executes(context -> setDaylength(context.getSource(), 1440)))
                                 .then(Commands.argument("minutes", IntegerArgumentType.integer(1, 1440)).executes(context -> setDaylength(context.getSource(), IntegerArgumentType.getInteger(context, "minutes")))))

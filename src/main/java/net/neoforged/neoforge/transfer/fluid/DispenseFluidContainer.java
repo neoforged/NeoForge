@@ -5,10 +5,11 @@
 
 package net.neoforged.neoforge.transfer.fluid;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.BlockSource;
-import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.core.dispenser.DispenseBehavior;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -20,8 +21,9 @@ import net.neoforged.neoforge.transfer.item.ItemUtil;
 /**
  * Fills or drains a fluid container item using a Dispenser.
  */
-public final class DispenseFluidContainer extends DefaultDispenseItemBehavior {
+public final class DispenseFluidContainer implements DispenseBehavior {
     private static final DispenseFluidContainer INSTANCE = new DispenseFluidContainer();
+    public static final MapCodec<DispenseFluidContainer> CODEC = MapCodec.unit(INSTANCE);
 
     public static DispenseFluidContainer getInstance() {
         return INSTANCE;
@@ -30,7 +32,7 @@ public final class DispenseFluidContainer extends DefaultDispenseItemBehavior {
     private DispenseFluidContainer() {}
 
     @Override
-    public ItemStack execute(BlockSource source, ItemStack stack) {
+    public DispenseBehavior.DispenseResult execute(BlockSource source, ItemStack stack) {
         // Create an item access; for now a simple one with 1 overflow slots.
         // TODO: switch to a custom item access implementation with infinite room for dropping on overflow if needed
         var containingHandler = new ItemStacksResourceHandler(2);
@@ -39,7 +41,7 @@ public final class DispenseFluidContainer extends DefaultDispenseItemBehavior {
 
         var resourceHandler = itemAccess.getCapability(Capabilities.Fluid.ITEM);
         if (resourceHandler == null) {
-            return super.execute(source, stack);
+            return DispenseBehavior.DispenseResult.failure();
         }
 
         Direction dispenserFacing = source.state().getValue(DispenserBlock.FACING);
@@ -53,9 +55,14 @@ public final class DispenseFluidContainer extends DefaultDispenseItemBehavior {
 
             // Grow by 1 to match the shrink in consumeWithRemainder
             stack0.grow(1);
-            return this.consumeWithRemainder(source, stack0, stack1);
+            return DispenseBehavior.consumeWithRemainder(source, stack0, stack1);
         } else {
-            return super.execute(source, stack);
+            return DispenseBehavior.DispenseResult.failure();
         }
+    }
+
+    @Override
+    public MapCodec<DispenseFluidContainer> codec() {
+        return CODEC;
     }
 }

@@ -15,12 +15,12 @@ import com.mojang.brigadier.tree.RootCommandNode;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
-import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.synchronization.SuggestionProviders;
+import net.minecraft.commands.suggestions.CustomSuggestion;
+import net.minecraft.commands.suggestions.SuggestionContext;
 import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.permissions.PermissionCheck;
 import net.minecraft.server.permissions.PermissionProviderCheck;
+import net.minecraft.server.permissions.PermissionSetSupplier;
 import org.jspecify.annotations.Nullable;
 
 // TODO 1.21.6: Investigate whether the NodeBuilder/NodeInspector are actually correctly implemented and whether the filtering can be done directly in the NodeBuilder
@@ -28,33 +28,32 @@ class CommandTreeCleaner {
     /**
      * We use this as a node requirement marker to restore the original bitmask entry for restricted commands.
      */
-    private static final Predicate<SharedSuggestionProvider> RESTRICTED = o -> true;
+    private static final Predicate<SuggestionContext> RESTRICTED = _ -> true;
 
     /**
      * Reconstructs the command nodes from information contained in the {@link ClientboundCommandsPacket}.
      * The Vanilla version of this lives in the client source set and uses the client-side suggestion provider.
      */
-    public static final ClientboundCommandsPacket.NodeBuilder<SharedSuggestionProvider> COMMAND_NODE_BUILDER = new ClientboundCommandsPacket.NodeBuilder<>() {
+    public static final ClientboundCommandsPacket.NodeBuilder<SuggestionContext> COMMAND_NODE_BUILDER = new ClientboundCommandsPacket.NodeBuilder<>() {
         @Override
-        public ArgumentBuilder<SharedSuggestionProvider, ?> createLiteral(String literal) {
+        public ArgumentBuilder<SuggestionContext, ?> createLiteral(String literal) {
             return LiteralArgumentBuilder.literal(literal);
         }
 
         @Override
-        public ArgumentBuilder<SharedSuggestionProvider, ?> createArgument(String name, ArgumentType<?> type, @Nullable Identifier suggests) {
-            RequiredArgumentBuilder<SharedSuggestionProvider, ?> builder = RequiredArgumentBuilder.argument(name, type);
-            if (suggests != null) {
-                builder.suggests(SuggestionProviders.getProvider(suggests));
+        public ArgumentBuilder<SuggestionContext, ?> createArgument(String id, ArgumentType<?> argumentType, @Nullable CustomSuggestion customSuggestion) {
+            RequiredArgumentBuilder<SuggestionContext, ?> builder = RequiredArgumentBuilder.argument(id, argumentType);
+            if (customSuggestion != null) {
+                builder.suggests(customSuggestion.toBrigadier());
             }
 
             return builder;
         }
 
         @Override
-        public ArgumentBuilder<SharedSuggestionProvider, ?> configure(
-                ArgumentBuilder<SharedSuggestionProvider, ?> builder, boolean executes, boolean restricted) {
+        public ArgumentBuilder<SuggestionContext, ?> configure(ArgumentBuilder<SuggestionContext, ?> builder, boolean executes, boolean restricted) {
             if (executes) {
-                builder.executes(ctx -> 0);
+                builder.executes(_ -> 0);
             }
 
             if (restricted) {
@@ -64,21 +63,14 @@ class CommandTreeCleaner {
             return builder;
         }
     };
-    public static final ClientboundCommandsPacket.NodeInspector<SharedSuggestionProvider> COMMAND_NODE_INSPECTOR = new ClientboundCommandsPacket.NodeInspector<>() {
-        @Nullable
+    public static final ClientboundCommandsPacket.NodeInspector<PermissionSetSupplier> COMMAND_NODE_INSPECTOR = new ClientboundCommandsPacket.NodeInspector<>() {
         @Override
-        public Identifier suggestionId(ArgumentCommandNode<SharedSuggestionProvider, ?> node) {
-            var suggestions = node.getCustomSuggestions();
-            return suggestions != null ? SuggestionProviders.getName(suggestions) : null;
-        }
-
-        @Override
-        public boolean isExecutable(CommandNode<SharedSuggestionProvider> node) {
+        public boolean isExecutable(CommandNode<? extends PermissionSetSupplier> node) {
             return node.getCommand() != null;
         }
 
         @Override
-        public boolean isRestricted(CommandNode<SharedSuggestionProvider> node) {
+        public boolean isRestricted(CommandNode<? extends PermissionSetSupplier> node) {
             return node.getRequirement() instanceof PermissionProviderCheck<?>(PermissionCheck test) && test instanceof PermissionCheck.Require;
         }
     };
@@ -90,7 +82,7 @@ class CommandTreeCleaner {
      * @return A new command tree, stripped of any unmatched argument types
      */
     public static <S> RootCommandNode<S> cleanArgumentTypes(RootCommandNode<S> root, Predicate<ArgumentType<?>> argumentTypeFilter) {
-        Predicate<CommandNode<?>> nodeFilter = node -> !(node instanceof ArgumentCommandNode<?, ?>) || argumentTypeFilter.test(((ArgumentCommandNode<?, ?>) node).getType());
+        Predicate<CommandNode<?>> nodeFilter = node -> !(node instanceof ArgumentCommandNode<?, ?> argNode) || argumentTypeFilter.test(argNode.getType());
         return (RootCommandNode<S>) processCommandNode(root, nodeFilter, new HashMap<>());
     }
 

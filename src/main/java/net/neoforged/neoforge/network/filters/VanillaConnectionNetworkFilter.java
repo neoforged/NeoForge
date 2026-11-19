@@ -13,10 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
-import net.minecraft.commands.CommandBuildContext;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.synchronization.ArgumentTypeInfo;
-import net.minecraft.commands.synchronization.ArgumentTypeInfos;
+import net.minecraft.commands.arguments.SerializableArgument;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.registries.VanillaRegistries;
@@ -76,16 +73,18 @@ public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
     }
 
     /**
-     * Filter for SCommandListPacket. Uses {@link CommandTreeCleaner} to filter out any ArgumentTypes that are not in the "minecraft" or "brigadier" namespace.
+     * Filter for {@link ClientboundCommandsPacket}. Uses {@link CommandTreeCleaner} to filter out any ArgumentTypes that are not in the "minecraft" namespace.
      * A vanilla client would fail to deserialize the packet and disconnect with an error message if these were sent.
      */
     private static ClientboundCommandsPacket filterCommandList(ClientboundCommandsPacket packet) {
-        CommandBuildContext commandBuildContext = Commands.createValidationContext(VanillaRegistries.createWorldLookup());
-        var root = packet.getRoot(commandBuildContext, CommandTreeCleaner.COMMAND_NODE_BUILDER);
+        var root = packet.getRoot(CommandTreeCleaner.COMMAND_NODE_BUILDER);
         var newRoot = CommandTreeCleaner.cleanArgumentTypes(root, argType -> {
-            ArgumentTypeInfo<?, ?> info = ArgumentTypeInfos.byClass(argType);
-            Identifier id = BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey(info);
-            return id != null && (id.getNamespace().equals("minecraft") || id.getNamespace().equals("brigadier"));
+            if (!(argType instanceof SerializableArgument.BrigadierWrapper<?> wrapper)) {
+                return true;
+            }
+            SerializableArgument.Type<? extends SerializableArgument<?>> type = wrapper.argument().type();
+            Identifier id = BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey(type);
+            return id != null && id.getNamespace().equals("minecraft");
         });
         return new ClientboundCommandsPacket(newRoot, CommandTreeCleaner.COMMAND_NODE_INSPECTOR);
     }

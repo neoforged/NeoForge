@@ -23,8 +23,8 @@ public class ResourceHandlerSlot extends StackCopySlot {
     private final ResourceHandler<ItemResource> handler;
     private final IndexModifier<ItemResource> slotModifier;
 
-    public ResourceHandlerSlot(ResourceHandler<ItemResource> handler, IndexModifier<ItemResource> slotModifier, int handlerSlot, int xPosition, int yPosition) {
-        super(handlerSlot, xPosition, yPosition);
+    public ResourceHandlerSlot(ResourceHandler<ItemResource> handler, IndexModifier<ItemResource> slotModifier, int handlerSlot, int xPosition, int yPosition, Slot.Section section) {
+        super(handlerSlot, xPosition, yPosition, section);
         this.handler = handler;
         this.slotModifier = slotModifier;
     }

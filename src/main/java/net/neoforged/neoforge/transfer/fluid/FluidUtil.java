@@ -345,7 +345,7 @@ public final class FluidUtil {
         BlockState destBlockState = level.getBlockState(pos);
         boolean isDestReplaceable = destBlockState.canBeReplaced(resource.getFluid());
         boolean canDestContainFluid = destBlockState.getBlock() instanceof LiquidBlockContainer lbc
-                && lbc.canPlaceLiquid(player, level, pos, destBlockState, resource.getFluid());
+                && lbc.canPlaceLiquid(player, level, pos, destBlockState, resource.getFluid().defaultFluidState());
         if (!destBlockState.isAir() && !isDestReplaceable && !canDestContainFluid) {
             return false; // Non-air unreplaceable block. We can't put fluid here.
         }

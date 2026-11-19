@@ -11,6 +11,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.commands.CommandPermissionLevels;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
@@ -29,7 +30,7 @@ class GenerateCommand {
     private static GenerationBar generationBar;
 
     static ArgumentBuilder<CommandSourceStack, ?> register() {
-        LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("generate").requires(Commands.hasPermission(Commands.LEVEL_OWNERS)); //permission
+        LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("generate").requires(Commands.hasPermission(CommandPermissionLevels.LEVEL_OWNERS)); //permission
 
         builder.then(Commands.literal("start")
                 .then(Commands.argument("pos", BlockPosArgument.blockPos())

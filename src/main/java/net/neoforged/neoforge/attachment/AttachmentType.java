@@ -92,14 +92,14 @@ public final class AttachmentType<T> {
             if (!serializer.write(attachment, output)) {
                 return null;
             }
-            if (!reporter.isEmpty()) {
+            if (reporter.hasAnyProblems()) {
                 throw new IllegalArgumentException("Attachment failed to serialise during copy: " + reporter.getReport());
             }
 
             reporter = new ProblemReporter.Collector();
             var input = TagValueInput.create(reporter, provider, output.buildResult());
             var attach = serializer.read(holder, input);
-            if (!reporter.isEmpty()) {
+            if (reporter.hasAnyProblems()) {
                 throw new IllegalArgumentException("Attachment failed to deserialise during copy: " + reporter.getReport());
             }
             return attach;

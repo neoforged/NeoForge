@@ -18,9 +18,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandPermissionLevels;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.ResourceKeyArgument;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -48,7 +48,7 @@ class DumpCommand {
          * /neoforge dump registry <registry> <alphabetical_sort> <print_numeric_ids>
          */
         return Commands.literal("dump")
-                .requires(Commands.hasPermission(Commands.LEVEL_OWNERS))
+                .requires(Commands.hasPermission(CommandPermissionLevels.LEVEL_OWNERS))
                 .then(Commands.literal("registry")
                         .then(Commands.argument("registry", ResourceKeyArgument.key(ROOT_REGISTRY_KEY))
                                 .suggests(CommandUtils::suggestRegistries)

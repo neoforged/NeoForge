@@ -196,7 +196,7 @@ public final class FluidStack implements MutableDataComponentHolder, FluidInstan
      * Checks if this fluid stack is empty.
      */
     public boolean isEmpty() {
-        return this == EMPTY || fluid.value().isSame(Fluids.EMPTY) || this.amount <= 0;
+        return this == EMPTY || fluid.value() == Fluids.EMPTY || this.amount <= 0;
     }
 
     /**

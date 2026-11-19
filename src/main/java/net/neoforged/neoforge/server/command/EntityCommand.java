@@ -17,10 +17,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import net.minecraft.commands.CommandPermissionLevels;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.DimensionArgument;
+import net.minecraft.commands.suggestions.SuggestionContext;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -44,9 +45,9 @@ class EntityCommand {
 
         static ArgumentBuilder<CommandSourceStack, ?> register() {
             return Commands.literal("list")
-                    .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS)) //permission
+                    .requires(Commands.hasPermission(CommandPermissionLevels.LEVEL_GAMEMASTERS)) //permission
                     .then(Commands.argument("filter", StringArgumentType.string())
-                            .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(BuiltInRegistries.ENTITY_TYPE.keySet().stream().map(Identifier::toString).map(StringArgumentType::escapeIfRequired), builder))
+                            .suggests((ctx, builder) -> SuggestionContext.suggest(BuiltInRegistries.ENTITY_TYPE.keySet().stream().map(Identifier::toString).map(StringArgumentType::escapeIfRequired), builder))
                             .then(Commands.argument("dim", DimensionArgument.dimension())
                                     .executes(ctx -> execute(ctx.getSource(), StringArgumentType.getString(ctx, "filter"), DimensionArgument.getDimension(ctx, "dim").dimension())))
                             .executes(ctx -> execute(ctx.getSource(), StringArgumentType.getString(ctx, "filter"), ctx.getSource().getLevel().dimension())))

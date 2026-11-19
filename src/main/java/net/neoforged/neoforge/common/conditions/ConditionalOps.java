@@ -14,6 +14,7 @@ import com.mojang.serialization.Encoder;
 import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.util.ExtraCodecs;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
@@ -30,8 +31,8 @@ public class ConditionalOps<T> extends RegistryOps<T> {
         this.context = context;
     }
 
-    public ConditionalOps(DynamicOps<T> ops, RegistryOps.RegistryInfoLookup lookupProvider, ICondition.IContext context) {
-        super(ops, lookupProvider);
+    public ConditionalOps(DynamicOps<T> ops, HolderGetter.Provider getterProvider, ICondition.IContext context) {
+        super(ops, getterProvider);
         this.context = context;
     }
 
@@ -112,7 +113,7 @@ public class ConditionalOps<T> extends RegistryOps<T> {
     @Override
     @SuppressWarnings("unchecked")
     public <U> ConditionalOps<U> withParent(DynamicOps<U> parent) {
-        return parent == this.delegate ? (ConditionalOps<U>) this : new ConditionalOps<>(parent, this.lookupProvider, this.context);
+        return parent == this.delegate ? (ConditionalOps<U>) this : new ConditionalOps<>(parent, this.getterProvider, this.context);
     }
 
     private static final class ConditionalEncoder<A> implements Encoder<Optional<WithConditions<A>>> {

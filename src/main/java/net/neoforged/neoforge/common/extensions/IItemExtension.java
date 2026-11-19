@@ -313,7 +313,7 @@ public interface IItemExtension {
      * @return the damage value
      */
     default int getDamage(ItemStack stack) {
-        return Mth.clamp(stack.getOrDefault(DataComponents.DAMAGE, 0), 0, stack.getMaxDamage());
+        return Math.clamp(stack.getOrDefault(DataComponents.DAMAGE, 0), 0, stack.getMaxDamage());
     }
 
     /**
@@ -346,7 +346,7 @@ public interface IItemExtension {
      * @param damage the new damage value
      */
     default void setDamage(ItemStack stack, int damage) {
-        stack.set(DataComponents.DAMAGE, Mth.clamp(damage, 0, stack.getMaxDamage()));
+        stack.set(DataComponents.DAMAGE, Math.clamp(damage, 0, stack.getMaxDamage()));
     }
 
     /**

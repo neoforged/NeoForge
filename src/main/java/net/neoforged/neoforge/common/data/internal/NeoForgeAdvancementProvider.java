@@ -230,10 +230,10 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
 
     private static <T extends SimpleCriterionTrigger.SimpleInstance> Criterion<T> replacePlayerPredicate(Criterion<T> old, Holder<LootItemCondition> newPlayer, BootstrapContextAccess registries) {
         Codec<T> codec = old.trigger().codec();
-        RegistryOps<JsonElement> registryops = RegistryOps.create(JsonOps.INSTANCE, new RegistryOps.RegistryInfoLookup() {
+        RegistryOps<JsonElement> registryops = RegistryOps.create(JsonOps.INSTANCE, new HolderGetter.Provider() {
             @Override
-            public <E> Optional<HolderGetter<E>> lookup(ResourceKey<? extends Registry<? extends E>> registry) {
-                return Optional.of(registries.lookup(registry));
+            public <R> Optional<? extends HolderGetter<R>> lookup(ResourceKey<? extends Registry<? extends R>> key) {
+                return Optional.of(registries.lookup(key));
             }
         });
         return codec.encodeStart(registryops, old.triggerInstance())

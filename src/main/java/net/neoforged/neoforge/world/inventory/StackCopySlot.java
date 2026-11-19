@@ -32,8 +32,8 @@ public abstract class StackCopySlot extends Slot {
     /**
      * @param slot The slot in the underlying container, whatever it may be; zero if not applicable.
      */
-    public StackCopySlot(int slot, int x, int y) {
-        super(emptyInventory, slot, x, y);
+    public StackCopySlot(int slot, int x, int y, Slot.Section section) {
+        super(emptyInventory, slot, x, y, section);
     }
 
     /**

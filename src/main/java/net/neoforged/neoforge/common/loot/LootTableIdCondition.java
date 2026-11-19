@@ -9,7 +9,9 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import org.jspecify.annotations.Nullable;
 
 public class LootTableIdCondition implements LootItemCondition {
     public static final MapCodec<LootTableIdCondition> CODEC = RecordCodecBuilder.mapCodec(
@@ -34,6 +36,14 @@ public class LootTableIdCondition implements LootItemCondition {
     public boolean test(LootContext lootContext) {
         return lootContext.getQueriedLootTableId().equals(this.targetLootTableId);
     }
+
+    @Override
+    public @Nullable Boolean constantValue(ConstantConditionEvaluationContext context) {
+        return null;
+    }
+
+    @Override
+    public void validate(ValidationContext context) {}
 
     public static Builder builder(final Identifier targetLootTableId) {
         return new Builder(targetLootTableId);

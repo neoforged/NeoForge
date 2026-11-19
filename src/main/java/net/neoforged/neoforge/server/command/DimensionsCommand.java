@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.commands.CommandPermissionLevels;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.Registry;
@@ -22,10 +23,10 @@ import net.minecraft.world.level.dimension.DimensionType;
 class DimensionsCommand {
     static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("dimensions")
-                .requires(Commands.hasPermission(Commands.LEVEL_ALL)) //permission
+                .requires(Commands.hasPermission(CommandPermissionLevels.LEVEL_ALL)) //permission
                 .executes(ctx -> {
                     ctx.getSource().sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.dimensions.list"), true);
-                    final Registry<DimensionType> reg = ctx.getSource().registryAccess().lookupOrThrow(Registries.DIMENSION_TYPE);
+                    final Registry<DimensionType> reg = ctx.getSource().getLevel().registryAccess().lookupOrThrow(Registries.DIMENSION_TYPE);
 
                     Map<Identifier, List<Component>> types = new HashMap<>();
                     for (ServerLevel dim : ctx.getSource().getServer().getAllLevels()) {

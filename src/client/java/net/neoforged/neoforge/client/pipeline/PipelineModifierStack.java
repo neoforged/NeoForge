@@ -5,8 +5,8 @@
 
 package net.neoforged.neoforge.client.pipeline;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import java.util.ArrayDeque;
 import java.util.Deque;

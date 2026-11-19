@@ -504,8 +504,9 @@ public interface IBlockExtension {
      */
     @Nullable
     default Integer getBeaconColorMultiplier(BlockState state, LevelReader level, BlockPos pos, BlockPos beaconPos) {
-        if (self() instanceof BeaconBeamBlock)
-            return ((BeaconBeamBlock) self()).getColor().getTextureDiffuseColor();
+        if (self() instanceof BeaconBeamBlock block) {
+            return block.getColor();
+        }
         return null;
     }
 
@@ -930,7 +931,7 @@ public interface IBlockExtension {
      * @return true if this block should cause the fluid's face to not render
      */
     default boolean shouldHideAdjacentFluidFace(BlockState state, Direction selfFace, FluidState adjacentFluid) {
-        return state.getFluidState().getType().isSame(adjacentFluid.getType());
+        return state.getFluidState().is(adjacentFluid.getType());
     }
 
     /// Returns this blocks bounce restitution for the given state and position. Normally between 0 and 1

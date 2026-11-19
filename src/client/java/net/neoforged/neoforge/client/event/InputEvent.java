@@ -146,19 +146,13 @@ public abstract class InputEvent extends Event {
         private final int accumulatedScrollY;
         private final double mouseX;
         private final double mouseY;
-        private final boolean leftDown;
-        private final boolean middleDown;
-        private final boolean rightDown;
 
         @ApiStatus.Internal
-        public MouseScrollingEvent(double scrollDeltaX, double scrollDeltaY, Vector2ic accumulatedScroll, boolean leftDown, boolean middleDown, boolean rightDown, double mouseX, double mouseY) {
+        public MouseScrollingEvent(double scrollDeltaX, double scrollDeltaY, Vector2ic accumulatedScroll, double mouseX, double mouseY) {
             this.scrollDeltaX = scrollDeltaX;
             this.scrollDeltaY = scrollDeltaY;
             this.accumulatedScrollX = accumulatedScroll.x();
             this.accumulatedScrollY = accumulatedScroll.y();
-            this.leftDown = leftDown;
-            this.middleDown = middleDown;
-            this.rightDown = rightDown;
             this.mouseX = mouseX;
             this.mouseY = mouseY;
         }
@@ -191,27 +185,6 @@ public abstract class InputEvent extends Event {
         /// @return the accumulated integral vertical scroll amount
         public int getAccumulatedScrollY() {
             return accumulatedScrollY;
-        }
-
-        /**
-         * {@return {@code true} if the left mouse button is pressed}
-         */
-        public boolean isLeftDown() {
-            return this.leftDown;
-        }
-
-        /**
-         * {@return {@code true} if the right mouse button is pressed}
-         */
-        public boolean isRightDown() {
-            return this.rightDown;
-        }
-
-        /**
-         * {@return {@code true} if the middle mouse button is pressed}
-         */
-        public boolean isMiddleDown() {
-            return this.middleDown;
         }
 
         /**

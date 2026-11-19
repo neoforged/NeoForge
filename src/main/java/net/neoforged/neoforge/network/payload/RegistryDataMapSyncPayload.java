@@ -61,12 +61,12 @@ public record RegistryDataMapSyncPayload<T>(ResourceKey<? extends Registry<T>> r
 
     private static <T> T readJsonWithRegistryCodec(RegistryFriendlyByteBuf buf, Codec<T> codec) {
         JsonElement jsonelement = GsonHelper.fromJson(GSON, buf.readUtf(), JsonElement.class);
-        DataResult<T> dataresult = codec.parse(buf.registryAccess().createSerializationContext(JsonOps.INSTANCE), jsonelement);
+        DataResult<T> dataresult = codec.parse(buf.registries().createSerializationContext(JsonOps.INSTANCE), jsonelement);
         return dataresult.getOrThrow(name -> new DecoderException("Failed to decode json: " + name));
     }
 
     private static <T> void writeJsonWithRegistryCodec(RegistryFriendlyByteBuf buf, Codec<T> codec, T value) {
-        DataResult<JsonElement> dataresult = codec.encodeStart(buf.registryAccess().createSerializationContext(JsonOps.INSTANCE), value);
+        DataResult<JsonElement> dataresult = codec.encodeStart(buf.registries().createSerializationContext(JsonOps.INSTANCE), value);
         buf.writeUtf(GSON.toJson(dataresult.getOrThrow(message -> new EncoderException("Failed to encode: " + message + " " + value))));
     }
 }

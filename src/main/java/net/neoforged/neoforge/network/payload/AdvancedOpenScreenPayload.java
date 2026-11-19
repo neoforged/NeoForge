@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.network.payload;
 
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -32,7 +32,7 @@ public record AdvancedOpenScreenPayload(int windowId, MenuType<?> menuType, Comp
     public static final StreamCodec<RegistryFriendlyByteBuf, AdvancedOpenScreenPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
             AdvancedOpenScreenPayload::windowId,
-            ByteBufCodecs.idMapper(BuiltInRegistries.MENU),
+            ByteBufCodecs.registry(Registries.MENU),
             AdvancedOpenScreenPayload::menuType,
             ComponentSerialization.STREAM_CODEC,
             AdvancedOpenScreenPayload::name,

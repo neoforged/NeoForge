@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.pipeline.MainTarget;
@@ -25,6 +25,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -51,14 +52,14 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.Options;
+import net.minecraft.client.core.registries.BuiltInClientRegistries;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.components.debug.DebugEntryCategory;
-import net.minecraft.client.gui.components.debug.DebugScreenEntries;
+import net.minecraft.client.gui.components.debug.DebugScreenEntry;
 import net.minecraft.client.gui.components.toasts.Toast;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -86,7 +87,6 @@ import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelTargetBundle;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
@@ -95,6 +95,7 @@ import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.chunk.RenderSectionRegion;
 import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.renderer.fog.environment.FogEnvironment;
+import net.minecraft.client.renderer.pipeline.RenderPipelines;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.state.level.PlayerRenderState;
 import net.minecraft.client.renderer.texture.SpriteLoader;
@@ -107,8 +108,9 @@ import net.minecraft.client.resources.model.sprite.AtlasManager;
 import net.minecraft.client.resources.model.sprite.MaterialBaker;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
-import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.suggestions.SuggestionContext;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.locale.Language;
 import net.minecraft.network.Connection;
@@ -370,20 +372,20 @@ public class ClientHooks {
         return e.getMusic();
     }
 
-    public static void extractScreen(Screen screen, Stack<Screen> backgroundLayers, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public static void extractScreen(Screen screen, Stack<Screen> backgroundLayers, GuiGraphicsExtractor graphics) {
         for (Screen layer : backgroundLayers) {
             // Prevent the background layers from thinking the mouse is over their controls and showing them as highlighted.
-            extractScreenInternal(layer, guiGraphics, Integer.MAX_VALUE, Integer.MAX_VALUE, partialTick);
-            guiGraphics.nextStratum();
+            graphics.extractWithoutMouse(() -> extractScreenInternal(layer, graphics));
+            graphics.nextStratum();
         }
-        extractScreenInternal(screen, guiGraphics, mouseX, mouseY, partialTick);
+        extractScreenInternal(screen, graphics);
     }
 
-    private static void extractScreenInternal(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        if (!NeoForge.EVENT_BUS.post(new ScreenEvent.Render.Pre(screen, guiGraphics, mouseX, mouseY, partialTick)).isCanceled()) {
-            screen.extractRenderStateWithTooltipAndSubtitles(guiGraphics, mouseX, mouseY, partialTick);
+    private static void extractScreenInternal(Screen screen, GuiGraphicsExtractor guiGraphics) {
+        if (!NeoForge.EVENT_BUS.post(new ScreenEvent.Render.Pre(screen, guiGraphics)).isCanceled()) {
+            screen.extractRenderStateWithTooltipAndSubtitles(guiGraphics);
         }
-        NeoForge.EVENT_BUS.post(new ScreenEvent.Render.Post(screen, guiGraphics, mouseX, mouseY, partialTick));
+        NeoForge.EVENT_BUS.post(new ScreenEvent.Render.Post(screen, guiGraphics));
     }
 
     public static void getFogColor(Camera camera, float partialTick, ClientLevel level, int renderDistance, float darkenWorldAmount, float fogRed, float fogGreen, float fogBlue, Vector4f dest) {
@@ -448,8 +450,7 @@ public class ClientHooks {
     }
 
     public static CustomizeGuiOverlayEvent.BossEventProgress onCustomizeBossEventProgress(GuiGraphicsExtractor guiGraphics, Window window, LerpingBossEvent bossInfo, int x, int y, int increment) {
-        CustomizeGuiOverlayEvent.BossEventProgress evt = new CustomizeGuiOverlayEvent.BossEventProgress(window, guiGraphics,
-                Minecraft.getInstance().getDeltaTracker(), bossInfo, x, y, increment);
+        CustomizeGuiOverlayEvent.BossEventProgress evt = new CustomizeGuiOverlayEvent.BossEventProgress(window, guiGraphics, bossInfo, x, y, increment);
         NeoForge.EVENT_BUS.post(evt);
         return evt;
     }
@@ -503,19 +504,19 @@ public class ClientHooks {
         NeoForge.EVENT_BUS.post(event);
     }
 
-    public static boolean onScreenMouseScrollPre(MouseHandler mouseHelper, Screen guiScreen, double scrollDeltaX, double scrollDeltaY) {
-        Window mainWindow = guiScreen.getMinecraft().getWindow();
-        double mouseX = mouseHelper.xpos() * (double) mainWindow.getGuiScaledWidth() / (double) mainWindow.getScreenWidth();
-        double mouseY = mouseHelper.ypos() * (double) mainWindow.getGuiScaledHeight() / (double) mainWindow.getScreenHeight();
-        var event = new ScreenEvent.MouseScrolled.Pre(guiScreen, mouseX, mouseY, scrollDeltaX, scrollDeltaY);
+    public static boolean onScreenMouseScrollPre(MouseHandler mouseHelper, Screen screen, double scrollDeltaX, double scrollDeltaY) {
+        Window window = screen.getMinecraft().getWindow();
+        double mouseX = mouseHelper.getScaledXPos(window);
+        double mouseY = mouseHelper.getScaledYPos(window);
+        var event = new ScreenEvent.MouseScrolled.Pre(screen, mouseX, mouseY, scrollDeltaX, scrollDeltaY);
         return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
-    public static void onScreenMouseScrollPost(MouseHandler mouseHelper, Screen guiScreen, double scrollDeltaX, double scrollDeltaY) {
-        Window mainWindow = guiScreen.getMinecraft().getWindow();
-        double mouseX = mouseHelper.xpos() * (double) mainWindow.getGuiScaledWidth() / (double) mainWindow.getScreenWidth();
-        double mouseY = mouseHelper.ypos() * (double) mainWindow.getGuiScaledHeight() / (double) mainWindow.getScreenHeight();
-        Event event = new ScreenEvent.MouseScrolled.Post(guiScreen, mouseX, mouseY, scrollDeltaX, scrollDeltaY);
+    public static void onScreenMouseScrollPost(MouseHandler mouseHelper, Screen screen, double scrollDeltaX, double scrollDeltaY) {
+        Window window = screen.getMinecraft().getWindow();
+        double mouseX = mouseHelper.getScaledXPos(window);
+        double mouseY = mouseHelper.getScaledYPos(window);
+        Event event = new ScreenEvent.MouseScrolled.Post(screen, mouseX, mouseY, scrollDeltaX, scrollDeltaY);
         NeoForge.EVENT_BUS.post(event);
     }
 
@@ -567,8 +568,11 @@ public class ClientHooks {
         NeoForge.EVENT_BUS.post(new InputEvent.MouseButton.Post(mouseButtonInfo, action));
     }
 
-    public static boolean onMouseScroll(MouseHandler mouseHelper, double scrollDeltaX, double scrollDeltaY, Vector2ic acummulatedScroll) {
-        var event = new InputEvent.MouseScrollingEvent(scrollDeltaX, scrollDeltaY, acummulatedScroll, mouseHelper.isLeftPressed(), mouseHelper.isMiddlePressed(), mouseHelper.isRightPressed(), mouseHelper.xpos(), mouseHelper.ypos());
+    public static boolean onMouseScroll(MouseHandler mouseHandler, double scrollDeltaX, double scrollDeltaY, Vector2ic acummulatedScroll) {
+        Window window = Minecraft.getInstance().getWindow();
+        double mouseX = mouseHandler.getScaledXPos(window);
+        double mouseY = mouseHandler.getScaledYPos(window);
+        var event = new InputEvent.MouseScrollingEvent(scrollDeltaX, scrollDeltaY, acummulatedScroll, mouseX, mouseY);
         return NeoForge.EVENT_BUS.post(event).isCanceled();
     }
 
@@ -801,7 +805,6 @@ public class ClientHooks {
         initializedClientHooks = true;
 
         ClientExtensionsManager.init();
-        MenuScreens.init();
         initClientRegistries();
 
         var rlEvent = new AddClientReloadListenersEvent(resourceManager);
@@ -841,7 +844,7 @@ public class ClientHooks {
     }
 
     /**
-     * Fires {@link RenderFrameEvent.Pre}. Called just before {@link GameRenderer#render(DeltaTracker, boolean)} in {@link Minecraft#runTick(boolean)}.
+     * Fires {@link RenderFrameEvent.Pre}. Called just before {@link GameRenderer#extract(DeltaTracker, boolean)} in {@link Minecraft#runTick(boolean)}.
      * <p>
      * Fired before the profiler section for "gameRenderer" is started.
      *
@@ -852,7 +855,7 @@ public class ClientHooks {
     }
 
     /**
-     * Fires {@link RenderFrameEvent.Post}. Called just after {@link GameRenderer#render(DeltaTracker, boolean)} in {@link Minecraft#runTick(boolean)}.
+     * Fires {@link RenderFrameEvent.Post}. Called just after {@link GameRenderer#extract(DeltaTracker, boolean)} in {@link Minecraft#runTick(boolean)}.
      * <p>
      * Fired after the profiler section for "gameRenderer" is ended.
      *
@@ -891,7 +894,7 @@ public class ClientHooks {
     /**
      * Fires the {@link GatherEffectScreenTooltipsEvent} and returns the resulting tooltip lines.
      * <p>
-     * Called from {@link EffectsInInventory#renderText(GuiGraphicsExtractor, Component, Component, Font, int, int, int, int, int, int, MobEffectInstance)} just before {@link GuiGraphicsExtractor#setTooltipForNextFrame(Font, List, Optional, int, int)} is called.
+     * Called from {@link EffectsInInventory#extractText(GuiGraphicsExtractor, Component, Component, Font, int, int, int, int, MobEffectInstance)} is called.
      *
      * @param screen     The screen rendering the tooltip.
      * @param effectInst The effect instance whose tooltip is being rendered.
@@ -987,20 +990,20 @@ public class ClientHooks {
     }
 
     @ApiStatus.Internal
-    public static void updateDebugScreenEntriesForSearch(String searchText, Consumer<DebugEntryCategory> addCategory, Consumer<Identifier> addEntry) {
-        var byCategory = MultimapBuilder.hashKeys().arrayListValues().<DebugEntryCategory, Identifier>build();
+    public static void updateDebugScreenEntriesForSearch(String searchText, Consumer<DebugEntryCategory> addCategory, Consumer<Holder.Reference<DebugScreenEntry>> addEntry) {
+        ListMultimap<DebugEntryCategory, Holder.Reference<DebugScreenEntry>> byCategory = MultimapBuilder.hashKeys().arrayListValues().build();
 
         // filter out to match search text
         // - blank/empty string, accept everything
         // - accept entries whose namespace/path match given text
-        DebugScreenEntries.allEntries().forEach((id, value) -> {
-            if (isValidDebugEntryForSearch(searchText, id)) {
-                byCategory.put(value.category(), id);
+        BuiltInClientRegistries.DEBUG_SCREEN_ENTRY.listElements().forEach(holder -> {
+            if (isValidDebugEntryForSearch(searchText, holder.key().identifier())) {
+                byCategory.put(holder.value().category(), holder);
             }
         });
 
         // sort categories by the 'sortKey'
-        var sortedCategories = Lists.newArrayList(byCategory.keySet());
+        List<DebugEntryCategory> sortedCategories = new ArrayList<>(byCategory.keySet());
         sortedCategories.sort((a, b) -> FloatComparators.NATURAL_COMPARATOR.compare(a.sortKey(), b.sortKey()));
 
         sortedCategories.forEach(category -> {
@@ -1008,8 +1011,8 @@ public class ClientHooks {
             addCategory.accept(category);
 
             // sort entries by their ids (vanilla first)
-            var entries = byCategory.get(category);
-            entries.sort(CommonHooks.CMP_BY_NAMESPACE_VANILLA_FIRST);
+            List<Holder.Reference<DebugScreenEntry>> entries = byCategory.get(category);
+            entries.sort(Comparator.comparing(holder -> holder.key().identifier(), CommonHooks.CMP_BY_NAMESPACE_VANILLA_FIRST));
             // add entry to screen
             entries.forEach(addEntry);
         });
@@ -1021,10 +1024,10 @@ public class ClientHooks {
             return true;
         } else if (StringUtils.contains(searchText, Identifier.NAMESPACE_SEPARATOR)) {
             // search text contains ':' separator, accept all whose full id match
-            return SharedSuggestionProvider.matchesSubStr(searchText, id.toString());
+            return SuggestionContext.matchesSubStr(searchText, id.toString());
         } else {
             // default, accept all whose namespace or path match
-            return SharedSuggestionProvider.matchesSubStr(searchText, id.getNamespace()) || SharedSuggestionProvider.matchesSubStr(searchText, id.getPath());
+            return SuggestionContext.matchesSubStr(searchText, id.getNamespace()) || SuggestionContext.matchesSubStr(searchText, id.getPath());
         }
     }
 

@@ -14,7 +14,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.flag.FeatureFlagSet;
 
@@ -22,10 +21,6 @@ public class ConditionContext implements ICondition.IContext {
     private final Map<TagKey<?>, List<? extends Holder<?>>> pendingContents;
     private final FeatureFlagSet enabledFeatures;
     private final HolderGetter.Provider registries;
-
-    public ConditionContext(List<Registry.PendingTags<?>> pendingTags, RegistryOps.RegistryInfoLookup context, FeatureFlagSet enabledFeatures) {
-        this(pendingTags, (HolderGetter.Provider) context::lookup, enabledFeatures);
-    }
 
     public ConditionContext(List<Registry.PendingTags<?>> pendingTags, HolderGetter.Provider registries, FeatureFlagSet enabledFeatures) {
         this.pendingContents = new IdentityHashMap<>();

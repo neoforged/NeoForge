@@ -20,8 +20,8 @@ public final class NeoForgeFluidTagsProvider extends FluidTagsProvider {
 
     @Override
     public void addTags(HolderLookup.Provider lookupProvider) {
-        tag(Fluids.WATER).add(FluidIds.WATER).add(FluidIds.FLOWING_WATER);
-        tag(Fluids.LAVA).add(FluidIds.LAVA).add(FluidIds.FLOWING_LAVA);
+        tag(Fluids.WATER).add(FluidIds.WATER);
+        tag(Fluids.LAVA).add(FluidIds.LAVA);
         tag(Fluids.MILK).addOptional(NeoForgeMod.MILK.key()).addOptional(NeoForgeMod.FLOWING_MILK.key());
         tag(Fluids.GASEOUS);
         tag(Fluids.HONEY);

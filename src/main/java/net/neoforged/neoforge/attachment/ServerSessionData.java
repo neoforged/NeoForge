@@ -51,14 +51,14 @@ public final class ServerSessionData extends SessionData {
             ProblemReporter.Collector reporter = new ProblemReporter.Collector();
             // Note: Side effect here, keep an eye on this
             deserializeAttachments(TagValueInput.create(reporter, server.registryAccess(), tag));
-            return !reporter.isEmpty()
+            return reporter.hasAnyProblems()
                     ? DataResult.error(() -> "Deserialisation error in session attachments: " + reporter.getReport())
                     : DataResult.success(new Storage());
         }, storage -> {
             ProblemReporter.Collector reporter = new ProblemReporter.Collector();
             var tag = TagValueOutput.createWithContext(reporter, server.registryAccess());
             serializeAttachments(tag);
-            return !reporter.isEmpty()
+            return reporter.hasAnyProblems()
                     ? DataResult.error(() -> "Serialisation error in session attachments: " + reporter.getReport())
                     : DataResult.success(tag.buildResult());
         });

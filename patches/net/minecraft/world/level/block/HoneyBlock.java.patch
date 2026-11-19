@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/level/block/HoneyBlock.java
 +++ b/net/minecraft/world/level/block/HoneyBlock.java
-@@ -58,7 +_,7 @@
+@@ -58,7 +_,8 @@
          }
  
          if (entity.causeFallDamage(fallDistance, 0.2F, level.damageSources().fall())) {
 -            BlockSoundSet blockSoundSet = state.getSounds(level);
++            // Neo: use level-sensitive sound set getter
 +            BlockSoundSet blockSoundSet = state.getSounds(level, pos, entity);
              blockSoundSet.fallSound()
                  .ifPresent(fallSound -> entity.playSound((Holder<SoundEvent>)fallSound, blockSoundSet.volume() * 0.5F, blockSoundSet.pitch() * 0.75F));

@@ -8,6 +8,7 @@ package net.neoforged.neoforge.server.command;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import net.minecraft.commands.CommandPermissionLevels;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.neoforged.fml.ModList;
@@ -15,7 +16,7 @@ import net.neoforged.fml.ModList;
 class ModListCommand {
     static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("mods")
-                .requires(Commands.hasPermission(Commands.LEVEL_ALL)) //permission
+                .requires(Commands.hasPermission(CommandPermissionLevels.LEVEL_ALL)) //permission
                 .executes(ctx -> {
                     ctx.getSource().sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.mods.list",
                             ModList.get().applyForEachModFile(modFile ->

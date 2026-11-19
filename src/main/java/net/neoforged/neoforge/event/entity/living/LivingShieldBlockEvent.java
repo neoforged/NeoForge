@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.event.entity.living;
 
-import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.component.BlocksAttacks;
@@ -82,7 +81,7 @@ public class LivingShieldBlockEvent extends LivingEvent {
      * Note that initially the blocked amount depends on the {@link BlocksAttacks#damageReductions()}.
      */
     public void setBlockedDamage(float blocked) {
-        this.dmgBlocked = Mth.clamp(blocked, 0, container.getNewDamage());
+        this.dmgBlocked = Math.clamp(blocked, 0, container.getNewDamage());
     }
 
     /**

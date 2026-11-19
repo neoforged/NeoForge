@@ -50,10 +50,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
 import net.minecraft.IdentifierException;
-import net.minecraft.SharedConstants;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -64,7 +61,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.dispenser.BlockSource;
-import net.minecraft.core.dispenser.ShearsDispenseItemBehavior;
+import net.minecraft.core.dispenser.DispenseBehavior;
+import net.minecraft.core.dispenser.ShearDispenseBehavior;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -84,14 +82,16 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.network.syncher.SyncedDataHolder;
 import net.minecraft.resources.Identifier;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.permissions.PermissionSetSupplier;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.stats.RecipeBookSettings;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.CrudeIncrementalIntIdentityHashBiMap;
+import net.minecraft.util.DevUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Prediction;
 import net.minecraft.util.Util;
@@ -137,6 +137,7 @@ import net.minecraft.world.item.TippedArrowItem;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.component.TypedEntityData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeMap;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -317,7 +318,7 @@ public class CommonHooks {
     }
 
     /**
-     * Called after invulnerability checks in {@link LivingEntity#hurt(DamageSource, float)},
+     * Called after invulnerability checks in {@link LivingEntity#hurtServer(ServerLevel, DamageSource, float)},
      * this method creates and posts the first event in the LivingEntity damage sequence,
      * {@link LivingIncomingDamageEvent}.
      *
@@ -584,7 +585,7 @@ public class CommonHooks {
                 level.addFreshEntity(entity);
             }
             // Always pass false for the dropXP (last) param to spawnAfterBreak since we handle XP.
-            state.spawnAfterBreak((ServerLevel) level, pos, tool, false);
+            state.spawnAfterBreak(level, pos, tool, false, breaker);
             if (event.getDroppedExperience() > 0) {
                 state.getBlock().popExperience(level, pos, event.getDroppedExperience());
             }
@@ -592,7 +593,7 @@ public class CommonHooks {
     }
 
     /**
-     * Fires {@link BlockEvent.BreakEvent}, pre-emptively canceling the event based on the conditions that will cause the block to not be broken anyway.
+     * Fires {@link BreakBlockEvent}, pre-emptively canceling the event based on the conditions that will cause the block to not be broken anyway.
      * <p>
      * Note that undoing the pre-cancel will not permit breaking the block, since the vanilla conditions will always be checked.
      *
@@ -1047,8 +1048,8 @@ public class CommonHooks {
                 if (key.isPresent()) {
                     return key.get().identifier().getNamespace();
                 }
-            } else if (item instanceof SpawnEggItem spawnEggItem) {
-                Optional<ResourceKey<EntityType<?>>> key = BuiltInRegistries.ENTITY_TYPE.getResourceKey(spawnEggItem.getType(itemStack));
+            } else if (item instanceof SpawnEggItem) {
+                Optional<ResourceKey<EntityType<?>>> key = BuiltInRegistries.ENTITY_TYPE.getResourceKey(TypedEntityData.getType(itemStack));
                 if (key.isPresent()) {
                     return key.get().identifier().getNamespace();
                 }
@@ -1403,8 +1404,8 @@ public class CommonHooks {
         return registryKey.getNamespace().equals("minecraft") ? registryKey.getPath() : registryKey.getNamespace() + "/" + registryKey.getPath();
     }
 
-    public static boolean canUseEntitySelectors(SharedSuggestionProvider provider) {
-        if (EntitySelectorParser.allowSelectors(provider)) {
+    public static boolean canUseEntitySelectors(PermissionSetSupplier provider) {
+        if (provider.permissions().hasPermission(Permissions.COMMANDS_ENTITY_SELECTORS)) {
             return true;
         } else if (provider instanceof CommandSourceStack source && source.source instanceof ServerPlayer player) {
             // TODO 1.21.11: Minecraft now has a permission system too and has permissions for this
@@ -1502,7 +1503,7 @@ public class CommonHooks {
      */
     @ApiStatus.Internal
     public static void validateComponent(@Nullable Object dataComponent) {
-        if (!SharedConstants.IS_RUNNING_IN_IDE || dataComponent == null) {
+        if (!DevUtil.IS_RUNNING_IN_IDE || dataComponent == null) {
             return;
         }
 
@@ -1591,19 +1592,7 @@ public class CommonHooks {
     }
 
     /**
-     * Extracts a {@link HolderLookup.Provider} from the given {@code ops}, if possible.
-     *
-     * @throws IllegalArgumentException if the ops were not created using a {@linkplain HolderLookup.Provider}
-     */
-    public static HolderLookup.Provider extractLookupProvider(RegistryOps<?> ops) {
-        if (ops.lookupProvider instanceof RegistryOps.HolderLookupAdapter hla) {
-            return hla.lookupProvider;
-        }
-        throw new IllegalArgumentException("Registry ops has lookup provider " + ops.lookupProvider + " which is not a HolderLookupAdapter");
-    }
-
-    /**
-     * Creates a {@link UseOnContext} for {@link net.minecraft.core.dispenser.DispenseItemBehavior dispense behavior}.
+     * Creates a {@link UseOnContext} for {@link DispenseBehavior dispense behavior}.
      *
      * @param source the {@link BlockSource block source} context of the dispense behavior
      * @param stack  the dispensed item stack
@@ -1621,11 +1610,11 @@ public class CommonHooks {
     }
 
     /**
-     * Attempts to modify target block using {@link ItemAbilities#SHEARS_HARVEST} in {@link ShearsDispenseItemBehavior},
+     * Attempts to modify target block using {@link ItemAbilities#SHEARS_HARVEST} in {@link ShearDispenseBehavior},
      * consistent with vanilla beehive harvest behavior (also controlled by {@link ItemAbilities#SHEARS_HARVEST}).
      * <p>
      * The beehive harvest behavior is not implemented by {@link IBlockExtension#getToolModifiedState(BlockState, UseOnContext, ItemAbility, boolean)}
-     * and thus will still be controlled by {@link ShearsDispenseItemBehavior#tryShearBeehive(ServerLevel, BlockPos)} by default.
+     * and thus will still be controlled by {@link ShearDispenseBehavior#tryShearBeehive(ServerLevel, ItemStack, BlockPos)} by default.
      * <p>
      * Mods may subscribe to {@link BlockEvent.BlockToolModificationEvent}
      * to override vanilla beehive harvest behavior by setting a non-null {@link BlockState} result.
@@ -1775,7 +1764,7 @@ public class CommonHooks {
         message.append("Please refer to the data attachments documentation available at https://docs.neoforged.net/docs/datastorage/attachments.\n");
         message.append("This message will only be printed once per class");
 
-        if (SharedConstants.IS_RUNNING_IN_IDE) {
+        if (DevUtil.IS_RUNNING_IN_IDE) {
             throw new IllegalStateException(message.toString());
         } else {
             LOGGER.warn(message);

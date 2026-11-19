@@ -16,10 +16,10 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandPermissionLevels;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.IdentifierArgument;
-import net.minecraft.commands.arguments.ResourceKeyArgument;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
@@ -31,7 +31,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.Mth;
 
 /**
  * The {@code /neoforge tags} command for listing a registry's tags, getting the elements of tags, and querying the tags of a
@@ -69,8 +68,8 @@ class TagsCommand {
          * /neoforge tags <registry> query <element> [page]
          */
         return Commands.literal("tags")
-                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
-                .then(Commands.argument("registry", ResourceKeyArgument.key(ROOT_REGISTRY_KEY))
+                .requires(Commands.hasPermission(CommandPermissionLevels.LEVEL_GAMEMASTERS))
+                .then(Commands.argument("registry", null/*ResourceKeyArgument.key(ROOT_REGISTRY_KEY)*/)
                         .suggests(CommandUtils::suggestRegistries)
                         .then(Commands.literal("list")
                                 .executes(ctx -> listTags(ctx, 1))
@@ -176,7 +175,7 @@ class TagsCommand {
             final ChatFormatting elementColor,
             final Supplier<Stream<String>> names) {
         final long totalPages = (count - 1) / PAGE_SIZE + 1;
-        final long actualPage = (long) Mth.clamp(currentPage, 1, totalPages);
+        final long actualPage = Math.clamp(currentPage, 1, totalPages);
 
         MutableComponent containsComponent = CommandUtils.makeTranslatableWithFallback(containsText, count);
         if (count > 0) // Highlight the count text, make it clickable, and append page counters

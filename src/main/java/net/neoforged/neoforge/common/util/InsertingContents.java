@@ -44,7 +44,7 @@ public record InsertingContents(int index) implements ComponentContents {
     }
 
     @Override
-    public <T> Optional<T> visit(FormattedText.ContentConsumer<T> visitor) {
+    public <T> Optional<T> visitUnbounded(FormattedText.ContentConsumer<T> visitor) {
         var translation = TRANSLATION_STACK.get().peek();
 
         if (translation == null || translation.getArgs().length <= index)
@@ -53,14 +53,14 @@ public record InsertingContents(int index) implements ComponentContents {
         Object arg = translation.getArgs()[index];
 
         if (arg instanceof Component component) {
-            return component.visit(visitor);
+            return component.visitUnbounded(visitor);
         } else {
             return visitor.accept(arg.toString());
         }
     }
 
     @Override
-    public <T> Optional<T> visit(FormattedText.StyledContentConsumer<T> visitor, Style style) {
+    public <T> Optional<T> visitUnbounded(FormattedText.StyledContentConsumer<T> visitor, Style style) {
         var translation = TRANSLATION_STACK.get().peek();
 
         if (translation == null || translation.getArgs().length <= index)
@@ -69,7 +69,7 @@ public record InsertingContents(int index) implements ComponentContents {
         Object arg = translation.getArgs()[index];
 
         if (arg instanceof Component component) {
-            return component.visit(visitor, style);
+            return component.visitUnbounded(visitor, style);
         } else {
             return visitor.accept(style, arg.toString());
         }

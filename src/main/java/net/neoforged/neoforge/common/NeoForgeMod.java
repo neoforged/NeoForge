@@ -16,14 +16,13 @@ import java.util.UUID;
 import java.util.function.Function;
 import net.minecraft.SharedConstants;
 import net.minecraft.advancements.predicates.entity.EntitySubPredicate;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.synchronization.ArgumentTypeInfo;
-import net.minecraft.commands.synchronization.ArgumentTypeInfos;
-import net.minecraft.commands.synchronization.SingletonArgumentInfo;
+import net.minecraft.commands.CommandPermissionLevels;
+import net.minecraft.commands.arguments.SerializableArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.predicates.DataComponentPredicate;
+import net.minecraft.core.dispenser.DispenseBehavior;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -159,13 +158,13 @@ import net.neoforged.neoforge.registries.holdersets.AnyHolderSet;
 import net.neoforged.neoforge.registries.holdersets.HolderSetType;
 import net.neoforged.neoforge.registries.holdersets.NotHolderSet;
 import net.neoforged.neoforge.registries.holdersets.OrHolderSet;
-import net.neoforged.neoforge.server.command.EnumArgument;
 import net.neoforged.neoforge.server.command.ModIdArgument;
 import net.neoforged.neoforge.server.jsonrpc.NeoForgeRpcMethods;
 import net.neoforged.neoforge.server.jsonrpc.NeoForgeSchemas;
 import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
 import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
 import net.neoforged.neoforge.server.permission.nodes.PermissionTypes;
+import net.neoforged.neoforge.transfer.fluid.DispenseFluidContainer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -185,18 +184,16 @@ public class NeoForgeMod {
     private static final Marker NEOFORGEMOD = MarkerManager.getMarker("NEOFORGE-MOD");
 
     private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, MOD_ID);
-    private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, MOD_ID);
+    private static final DeferredRegister<SerializableArgument.Type<?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, MOD_ID);
     private static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> GLOBAL_LOOT_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MOD_ID);
     private static final DeferredRegister<MapCodec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, MOD_ID);
     private static final DeferredRegister<MapCodec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, MOD_ID);
     private static final DeferredRegister<HolderSetType> HOLDER_SET_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.HOLDER_SET_TYPES, MOD_ID);
     private static final DeferredRegister<AttributeType<?>> ATTRIBUTE_TYPES = DeferredRegister.create(Registries.ATTRIBUTE_TYPE, MOD_ID);
     private static final DeferredRegister<EnvironmentAttribute<?>> ENVIRONMENT_ATTRIBUTES = DeferredRegister.create(Registries.ENVIRONMENT_ATTRIBUTE, MOD_ID);
+    private static final DeferredRegister<MapCodec<? extends DispenseBehavior>> DISPENSE_BEHAVIORS = DeferredRegister.create(Registries.DISPENSE_BEHAVIOR_TYPE, MOD_ID);
 
-    @SuppressWarnings({ "unchecked", "rawtypes" }) // Uses Holder instead of DeferredHolder as the type due to weirdness between ECJ and javac.
-    private static final Holder<ArgumentTypeInfo<?, ?>> ENUM_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("enum", () -> ArgumentTypeInfos.registerByClass(EnumArgument.class, new EnumArgument.Info()));
-    private static final DeferredHolder<ArgumentTypeInfo<?, ?>, SingletonArgumentInfo<ModIdArgument>> MODID_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("modid", () -> ArgumentTypeInfos.registerByClass(ModIdArgument.class,
-            SingletonArgumentInfo.contextFree(ModIdArgument::modIdArgument)));
+    private static final Holder<SerializableArgument.Type<?>> MODID_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("modid", () -> ModIdArgument.TYPE);
 
     /// If the server is intended to be vanilla-compatible then this attribute must not be applied via item attribute modifiers.
     public static final Holder<Attribute> SWIM_SPEED = ATTRIBUTES.register("swim_speed", () -> new PercentageAttribute("neoforge.swim_speed", 1.0D, 0.0D, 1024.0D).setSyncable(true));
@@ -550,6 +547,8 @@ public class NeoForgeMod {
         ENVIRONMENT_ATTRIBUTES.register("custom_clouds", () -> NeoForgeEnvironmentAttributes.CUSTOM_CLOUDS);
         ENVIRONMENT_ATTRIBUTES.register("custom_skybox", () -> NeoForgeEnvironmentAttributes.CUSTOM_SKYBOX);
 
+        DISPENSE_BEHAVIORS.register("fluid_container", () -> DispenseFluidContainer.CODEC);
+
         // NeoForge-provided datapack registries
         modEventBus.addListener((NewDatapackRegistryEvent event) -> {
             event.worldRegistry(NeoForgeRegistries.Keys.BIOME_MODIFIERS, BiomeModifier.DIRECT_CODEC);
@@ -579,6 +578,7 @@ public class NeoForgeMod {
         GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
         ATTRIBUTE_TYPES.register(modEventBus);
         ENVIRONMENT_ATTRIBUTES.register(modEventBus);
+        DISPENSE_BEHAVIORS.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
         ConfigSync.registerEventListeners();
         container.registerConfig(ModConfig.Type.SYNCED, NeoForgeSyncedConfig.SPEC);
@@ -677,7 +677,7 @@ public class NeoForgeMod {
     }
 
     public static final PermissionNode<Boolean> USE_SELECTORS_PERMISSION = new PermissionNode<>(MOD_ID, "use_entity_selectors",
-            PermissionTypes.BOOLEAN, (player, uuid, contexts) -> player != null && Commands.LEVEL_GAMEMASTERS.check(player.permissions()));
+            PermissionTypes.BOOLEAN, (player, uuid, contexts) -> player != null && CommandPermissionLevels.LEVEL_GAMEMASTERS.check(player.permissions()));
 
     public void registerPermissionNodes(PermissionGatherEvent.Nodes event) {
         event.addNodes(USE_SELECTORS_PERMISSION);

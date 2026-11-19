@@ -39,14 +39,14 @@ public class LevelAttachmentsSavedData extends SavedData {
             ProblemReporter.Collector reporter = new ProblemReporter.Collector();
             // Note: Side effect here, keep an eye on this
             data.level.deserializeAttachments(TagValueInput.create(reporter, data.level.registryAccess(), tag));
-            return !reporter.isEmpty()
+            return reporter.hasAnyProblems()
                     ? DataResult.error(() -> "Deserialisation error in level attachments: " + reporter.getReport())
                     : DataResult.success(data);
         }, data -> {
             ProblemReporter.Collector reporter = new ProblemReporter.Collector();
             var tag = TagValueOutput.createWithContext(reporter, data.level.registryAccess());
             data.level.serializeAttachments(tag);
-            return !reporter.isEmpty()
+            return reporter.hasAnyProblems()
                     ? DataResult.error(() -> "Serialisation error in level attachments: " + reporter.getReport())
                     : DataResult.success(tag.buildResult());
         });

@@ -5,16 +5,15 @@
 
 package net.neoforged.neoforge.common.loot;
 
-import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Set;
-import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.ItemAbility;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This LootItemCondition "neoforge:can_item_perform_ability" can be used to check if an item can perform a given ItemAbility.
@@ -38,9 +37,12 @@ public class CanItemPerformAbility implements LootItemCondition {
     }
 
     @Override
-    public Set<ContextKey<?>> getReferencedContextParams() {
-        return ImmutableSet.of(LootContextParams.TOOL);
+    public @Nullable Boolean constantValue(ConstantConditionEvaluationContext context) {
+        return null;
     }
+
+    @Override
+    public void validate(ValidationContext context) {}
 
     @Override
     public boolean test(LootContext lootContext) {

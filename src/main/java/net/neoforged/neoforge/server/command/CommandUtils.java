@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.suggestions.SuggestionContext;
 import net.minecraft.core.Registry;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
@@ -32,7 +32,7 @@ public final class CommandUtils {
     public static CompletableFuture<Suggestions> suggestRegistries(
             final CommandContext<CommandSourceStack> ctx,
             final SuggestionsBuilder builder) {
-        return SharedSuggestionProvider.suggestResource(ctx.getSource().registryAccess().listRegistryKeys().map(ResourceKey::identifier), builder);
+        return SuggestionContext.suggestResource(ctx.getSource().holderLookups().listRegistryKeys().map(ResourceKey::identifier), builder);
     }
 
     public static <T extends Registry<?>> SuggestionProvider<CommandSourceStack> suggestFromRegistry(
@@ -40,8 +40,8 @@ public final class CommandUtils {
             final String argumentString,
             final ResourceKey<Registry<T>> registryKey) {
         return (ctx, builder) -> CommandUtils.getResourceKey(ctx, argumentString, registryKey)
-                .flatMap(key -> ctx.getSource().registryAccess().lookup(key).map(registry -> {
-                    SharedSuggestionProvider.suggestResource(namesFunction.apply(registry), builder);
+                .flatMap(key -> ctx.getSource().getLevel().registryAccess().lookup(key).map(registry -> {
+                    SuggestionContext.suggestResource(namesFunction.apply(registry), builder);
                     return builder.buildFuture();
                 }))
                 .orElseGet(builder::buildFuture);
