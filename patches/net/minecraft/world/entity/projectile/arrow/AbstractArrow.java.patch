@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/entity/projectile/arrow/AbstractArrow.java
 +++ b/net/minecraft/world/entity/projectile/arrow/AbstractArrow.java
-@@ -183,7 +_,7 @@
-             this.shakeTime--;
-         }
- 
--        if (this.isInWaterOrRain()) {
-+        if (this.isInWaterOrRain() || this.getFluidInteraction().isInFluidMatching(this, (entity, type, _) -> entity.canFluidExtinguish(type))) {
-             this.clearFire();
-         }
- 
 @@ -281,11 +_,17 @@
  
              if (entitiesHit.isEmpty()) {

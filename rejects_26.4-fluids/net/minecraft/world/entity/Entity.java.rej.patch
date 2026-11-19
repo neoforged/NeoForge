@@ -22,6 +22,15 @@
          }
  
          this.checkBelowWorld();
+@@ -1649,7 +_,7 @@
+     }
+ 
+     public boolean isInShallowWater() {
+-        return this.isInWater() && !this.isUnderWater();
++        return this.isInWater() && !this.isUnderWater() || this.fluidInteraction.isInFluidMatching(this, (entity, type, _) -> entity.canSwimInFluidType(type) && !entity.canStartSwimming());
+     }
+ 
+     public boolean isUnderWater() {
 @@ -1663,18 +1691,19 @@
  
      public void updateSwimming() {
@@ -66,6 +75,16 @@
  
          return inAnyFluid;
      }
+@@ -1752,7 +_,8 @@
+     }
+ 
+     public boolean canSpawnSprintParticle() {
+-        return this.isSprinting() && !this.isInLiquid() && !this.isSpectator() && !this.isCrouching() && this.isAlive();
++        // Neo: take modded fluids into account
++        return this.isSprinting() && !this.isInWater() && !this.isSpectator() && !this.isCrouching() && !this.isInLava() && this.isAlive() && !this.fluidInteraction.isInAnyFluid();
+     }
+ 
+     protected void spawnSprintParticle() {
 @@ -1760,16 +1786,23 @@
          }
      }
@@ -86,3 +105,29 @@
      }
  
      public void moveRelative(float speed, Vec3 input) {
+@@ -2806,7 +_,7 @@
+     }
+ 
+     public boolean isVisuallyCrawling() {
+-        return this.isVisuallySwimming() && !this.isInSwimmableLiquid();
++        return this.isVisuallySwimming() && !this.isInWater() && !this.fluidInteraction.isInFluidMatching(this, (entity, type, _) -> entity.canSwimInFluidType(type));
+     }
+ 
+     public void setSwimming(boolean swimming) {
+@@ -3807,10 +_,16 @@
+         return !this.level().hasChunksAt(x0, z0, x1, z1);
+     }
+ 
++    /// @deprecated Neo: use [#getFluidHeight(net.neoforged.neoforge.fluids.FluidType)] instead
++    @Deprecated
+     public double getFluidHeight(TagKey<Fluid> type) {
+         return this.fluidInteraction.getFluidHeight(type);
+     }
+ 
++    public double getFluidHeight(net.neoforged.neoforge.fluids.FluidType type) {
++        return this.fluidInteraction.getFluidHeight(type);
++    }
++
+     public double getFluidJumpThreshold() {
+         return this.getEyeHeight() < 0.4 ? 0.0 : 0.4;
+     }

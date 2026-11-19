@@ -53,14 +53,7 @@
                  this.stopSleepInBed(false, true);
              }
          } else if (this.sleepCounter > 0) {
-@@ -290,12 +_,13 @@
-             this.lastItemInMainHand = mainHandItemStack.copy();
-         }
- 
--        if (!this.isEyeInFluid(FluidTags.WATER) && this.isEquipped(Items.TURTLE_HELMET)) {
-+        if (!this.getFluidInteraction().isEyeInFluidMatching(this, (entity, type, _) -> entity.canDrownInFluidType(type)) && this.isEquipped(Items.TURTLE_HELMET)) {
-             this.turtleHelmetTick();
-         }
+@@ -296,6 +_,7 @@
  
          this.cooldowns.tick();
          this.updatePlayerPose();
@@ -68,15 +61,6 @@
      }
  
      @Override
-@@ -316,7 +_,7 @@
-     }
- 
-     protected boolean updateIsUnderwater() {
--        this.wasUnderwater = this.isEyeInFluid(FluidTags.WATER);
-+        this.wasUnderwater = this.getFluidInteraction().isEyeInFluidMatching(this, (entity, type, _) -> entity.canSwimInFluidType(type));
-         return this.wasUnderwater;
-     }
- 
 @@ -355,6 +_,11 @@
      }
  
@@ -113,15 +97,6 @@
          float speed = this.inventory.getSelectedItem().getDestroySpeed(state);
          if (speed > 1.0F) {
              speed += (float)this.getAttributeValue(Attributes.MINING_EFFICIENCY);
-@@ -609,7 +_,7 @@
-         }
- 
-         speed *= (float)this.getAttributeValue(Attributes.BLOCK_BREAK_SPEED);
--        if (this.isEyeInFluid(FluidTags.WATER)) {
-+        if (this.getFluidInteraction().isEyeInFluidMatching(this, (_, type, _) -> type.getIsWaterLike())) {
-             speed *= (float)this.getAttribute(Attributes.SUBMERGED_MINING_SPEED).getValue();
-         }
- 
 @@ -617,9 +_,16 @@
              speed /= 5.0F;
          }

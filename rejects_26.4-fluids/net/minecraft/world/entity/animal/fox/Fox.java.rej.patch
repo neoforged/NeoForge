@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/animal/fox/Fox.java
++++ b/net/minecraft/world/entity/animal/fox/Fox.java
+@@ -1001,7 +_,7 @@
+ 
+         @Override
+         public boolean canUse() {
+-            return Fox.this.getFluidHeight(this.fluid) > 0.25 || Fox.this.isInLava();
++            return Fox.this.isInFluidDeeperThan(0.25, this.fluid) || Fox.this.isInLava() || Fox.this.getFluidInteraction().isInFluidMatching(Fox.this, (entity, fluidType, height) -> entity.canSwimInFluidType(fluidType) && height > 0.25D);
+         }
+     }
+ 
