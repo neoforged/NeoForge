@@ -5,8 +5,10 @@
 
 package net.neoforged.neoforge.debug.fluid;
 
+import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -22,16 +24,24 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.LiquidBlockContainer;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
+import net.neoforged.neoforge.fluids.FluidInteractionRegistry;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -234,6 +244,73 @@ public class FluidTests {
         });
     }
 
+    @GameTest
+    @EmptyTemplate(value = "6x3x3")
+    @TestHolder(description = "Tests the interactions between two fluids", enabledByDefault = true)
+    static void fluidInteractions(final DynamicTest test, final RegistrationHelper reg) {
+        // Register fluid types
+        DeferredRegister<FluidType> fluidTypes = reg.registrar(NeoForgeRegistries.Keys.FLUID_TYPES);
+        Supplier<FluidType> fluidType1 = fluidTypes.register("fluid_1", () -> new FluidType(FluidType.Properties.create()));
+        Supplier<FluidType> fluidType2 = fluidTypes.register("fluid_2", () -> new FluidType(FluidType.Properties.create()));
+
+        // Create mutable lookups
+        MutableSupplier<FlowingFluid> fluid1Source = new MutableSupplier<>();
+        MutableSupplier<FlowingFluid> fluid1Flowing = new MutableSupplier<>();
+        MutableSupplier<LiquidBlock> fluid1Block = new MutableSupplier<>();
+        BaseFlowingFluid.Properties fluid1Props = new BaseFlowingFluid.Properties(
+                fluidType1, fluid1Source, fluid1Flowing).block(fluid1Block).tickRate(2);
+
+        MutableSupplier<FlowingFluid> fluid2Source = new MutableSupplier<>();
+        MutableSupplier<FlowingFluid> fluid2Flowing = new MutableSupplier<>();
+        MutableSupplier<LiquidBlock> fluid2Block = new MutableSupplier<>();
+        BaseFlowingFluid.Properties fluid2Props = new BaseFlowingFluid.Properties(
+                fluidType2, fluid2Source, fluid2Flowing).block(fluid2Block).tickRate(2);
+
+        // Register fluids
+        DeferredRegister<Fluid> fluids = reg.registrar(Registries.FLUID);
+        fluid1Source.set(fluids.register("fluid_1_source", () -> new BaseFlowingFluid.Source(fluid1Props)));
+        fluid1Flowing.set(fluids.register("fluid_1_flowing", () -> new BaseFlowingFluid.Flowing(fluid1Props)));
+        fluid2Source.set(fluids.register("fluid_2_source", () -> new BaseFlowingFluid.Source(fluid2Props)));
+        fluid2Flowing.set(fluids.register("fluid_2_flowing", () -> new BaseFlowingFluid.Flowing(fluid2Props)));
+
+        // Register blocks
+        fluid1Block.set(reg.blocks().registerBlock("fluid_1_block", props -> new LiquidBlock(fluid1Source.get(), props), props -> props.noCollision().strength(100.0F).noLootTable()));
+        fluid2Block.set(reg.blocks().registerBlock("fluid_2_block", props -> new LiquidBlock(fluid2Source.get(), props), props -> props.noCollision().strength(100.0F).noLootTable()));
+
+        // Register interactions
+        test.eventListeners().mod().addListener((FMLCommonSetupEvent event) -> {
+            // Fluid 1 + Fluid 2 = Diamond Block (Source 1) / Iron Block (Flowing 1)
+            FluidInteractionRegistry.addInteraction(fluidType1.get(), new FluidInteractionRegistry.InteractionInformation(
+                    fluidType2.get(),
+                    fluidState -> fluidState.isSource() ? Blocks.DIAMOND_BLOCK.defaultBlockState() : Blocks.IRON_BLOCK.defaultBlockState()));
+        });
+
+        // Handle game test
+        test.onGameTest(helper -> helper.startSequence()
+                // Fill in test space and hollow out
+                .thenExecute(() -> {
+                    BlockPos.betweenClosed(helper.testInfo.getStructureBounds().contract(1, 1, 1))
+                            .forEach(pos -> helper.setBlock(helper.relativePos(pos), Blocks.GLASS));
+
+                    helper.setBlock(2, 2, 1, Blocks.AIR);
+                    helper.setBlock(2, 1, 1, Blocks.AIR);
+                })
+                // Set fluids
+                .thenExecute(() -> {
+                    helper.setBlock(4, 2, 1, fluid1Block.get());
+                    helper.setBlock(1, 2, 1, fluid2Block.get());
+                })
+                // Wait a bit for the fluid to flow, then erase blocker
+                .thenExecuteAfter(10, () -> helper.setBlock(3, 2, 1, Blocks.AIR))
+                // Then check if block present is iron (`LiquidBlock#onPlace`)
+                .thenExecuteAfter(4, () -> helper.assertBlockPresent(Blocks.IRON_BLOCK, 3, 2, 1))
+                // Set the central block to fluid 2
+                .thenExecute(() -> helper.setBlock(3, 2, 1, fluid2Block.get()))
+                // Then check if block present is diamond (`LiquidBlock#neighborChanged`)
+                .thenExecuteAfter(4, () -> helper.assertBlockPresent(Blocks.DIAMOND_BLOCK, 4, 2, 1))
+                .thenSucceed());
+    }
+
     private static class TestHelper extends ExtendedGameTestHelper {
         public TestHelper(GameTestInfo info) {
             super(info);
@@ -283,6 +360,19 @@ public class FluidTests {
         @Override
         protected FluidState getFluidState(BlockState state) {
             return state.getValue(LAVA_LOGGED) ? Fluids.LAVA.defaultFluidState() : Fluids.EMPTY.defaultFluidState();
+        }
+    }
+
+    private static class MutableSupplier<T> implements Supplier<T> {
+        private Supplier<T> value;
+
+        public void set(Supplier<T> value) {
+            this.value = value;
+        }
+
+        @Override
+        public T get() {
+            return this.value.get();
         }
     }
 }
