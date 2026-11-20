@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.debug.transfer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntSupplier;
 import net.minecraft.core.BlockPos;
@@ -21,6 +23,7 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.ChiseledBookShelfBlock;
 import net.minecraft.world.level.block.ComparatorBlock;
 import net.minecraft.world.level.block.ComposterBlock;
@@ -30,12 +33,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
+import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
 import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
@@ -43,8 +48,6 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.transfer.EmptyResourceHandler;
-import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.item.ComposterWrapper;
 import net.neoforged.neoforge.transfer.item.ItemResource;
@@ -507,51 +510,56 @@ public class VanillaHandlersTests {
     /**
      * Regression test for <a href="https://github.com/FabricMC/fabric/issues/2810">double chest wrapper only updating modified halves</a>.
      */
-    // TODO: I would like to bring this test over, but we need snbt test structure support first
-    // @GameTest(template = "fabric-transfer-api-v1-testmod:double_chest_comparators")
-    // @TestHolder
+    @GameTest
+    @EmptyTemplate(value = "4x2x3", floor = true)
+    @TestHolder(description = "Tests that inserting into one half of a double chest updates comparators around both halves on commit")
     public static void testDoubleChestComparator(ExtendedGameTestHelper helper) {
-        BlockPos chestPos = new BlockPos(2, 1, 2);
-        // TODO: use ResourceHandler capability
-        ResourceHandler<ItemResource> handler = EmptyResourceHandler.instance(); // helper.requireCapability(Capabilities.ItemHandler.BLOCK, chestPos, Direction.UP);
+        var left = new BlockPos(1, 1, 1);
+        var right = left.east();
+        var rotation = helper.getTestRotation();
+        var chest = Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, rotation.rotate(Direction.NORTH));
+        helper.setBlock(left, chest.setValue(ChestBlock.TYPE, ChestType.LEFT));
+        helper.setBlock(right, chest.setValue(ChestBlock.TYPE, ChestType.RIGHT));
 
-        // Insert one item
+        // Each exposed side has a comparator reading the adjacent chest half.
+        var comparators = new ArrayList<BlockPos>();
+        for (BlockPos half : List.of(left, right)) {
+            for (Direction side : Direction.Plane.HORIZONTAL) {
+                BlockPos pos = half.relative(side);
+                if (pos.equals(left) || pos.equals(right)) continue;
+                helper.setBlock(pos, Blocks.COMPARATOR.defaultBlockState().setValue(ComparatorBlock.FACING, rotation.rotate(side.getOpposite())));
+                comparators.add(pos);
+            }
+        }
+
+        var handler = helper.requireCapability(Capabilities.Item.BLOCK, left, Direction.UP);
+        helper.assertValueEqual(handler.size(), 54, "double chest handler size");
+        var ticks = helper.getLevel().getBlockTicks();
         try (Transaction tx = Transaction.openRoot()) {
-            helper.assertTrue(handler.insert(ItemResource.of(Items.DIAMOND), 1, tx) == 1, "Diamond should have been inserted");
+            helper.assertValueEqual(handler.insert(ItemResource.of(Items.DIAMOND), 1, tx), 1, "diamonds inserted");
+            for (BlockPos pos : comparators) {
+                helper.assertTrue(!ticks.hasScheduledTick(helper.absolutePos(pos), Blocks.COMPARATOR), "Comparator at " + pos + " was notified before commit");
+            }
             tx.commit();
         }
 
-        // Check that the container and the handler match
-        Container container = HopperBlockEntity.getContainerAt(helper.getLevel(), helper.absolutePos(chestPos));
-        helper.assertTrue(container != null, "Container must not be null");
-
-        for (int i = 0; i < container.getContainerSize(); ++i) {
+        var container = ChestBlock.getContainer((ChestBlock) Blocks.CHEST, helper.getBlockState(left), helper.getLevel(), helper.absolutePos(left), false);
+        helper.assertNotNull(container, "Expected a vanilla double chest container");
+        helper.assertValueEqual(container.getContainerSize(), handler.size(), "double chest container size");
+        for (int i = 0; i < handler.size(); ++i) {
             ItemStack stack = container.getItem(i);
-            ItemResource resource = ItemResource.of(stack);
-            helper.assertTrue(resource.matches(stack), "Item resource in slot " + i + " must match stack");
-            int expectedCount = stack.getCount();
-            int actualCount = handler.getAmountAsInt(i);
-            helper.assertValueEqual(expectedCount, actualCount, "slot " + i + " item count");
+            helper.assertTrue(handler.getResource(i).matches(stack), "Item resource in slot " + i + " must match the chest");
+            helper.assertValueEqual(handler.getAmountAsInt(i), stack.getCount(), "slot " + i + " item count");
         }
 
-        // Check that an update is queued for every single comparator
-        AtomicInteger comparatorCount = new AtomicInteger();
-
-        helper.forEveryBlockInStructure(relativePos -> {
-            if (helper.getBlockState(relativePos).getBlock() != Blocks.COMPARATOR) {
-                return;
-            }
-
-            comparatorCount.incrementAndGet();
-
-            if (!helper.getLevel().getBlockTicks().hasScheduledTick(helper.absolutePos(relativePos), Blocks.COMPARATOR)) {
-                throw helper.assertionException("Comparator at " + relativePos + " should have an update scheduled");
+        for (BlockPos pos : comparators) {
+            helper.assertTrue(ticks.hasScheduledTick(helper.absolutePos(pos), Blocks.COMPARATOR), "Comparator at " + pos + " should be notified on commit");
+        }
+        helper.succeedWhen(() -> {
+            for (BlockPos pos : comparators) {
+                helper.assertValueEqual(helper.getBlockEntity(pos, ComparatorBlockEntity.class).getOutputSignal(), 1, "comparator signal at " + pos);
             }
         });
-
-        helper.assertTrue(comparatorCount.intValue() == 6, "Expected exactly 6 comparators");
-
-        helper.succeed();
     }
 
     /**
