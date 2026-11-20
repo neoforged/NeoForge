@@ -194,6 +194,7 @@ import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
+import net.neoforged.neoforge.client.registries.ClientRegistryManager;
 import net.neoforged.neoforge.client.renderstate.BaseRenderState;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -664,6 +665,7 @@ public class ClientHooks {
         if (!packetListener.getConnectionType().isNeoForge()) {
             // Notify client mods that they're connected to a Vanilla server, which will never give them recipe data
             NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RecipesReceivedEvent(Set.of(), RecipeMap.EMPTY));
+            ClientRegistryManager.applyDataMapClientDefaults();
         }
     }
 
