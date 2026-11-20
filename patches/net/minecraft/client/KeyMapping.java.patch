@@ -46,32 +46,53 @@
          if (keyMappings != null && !keyMappings.isEmpty()) {
              for (KeyMapping keyMapping : keyMappings) {
                  operation.accept(keyMapping);
-@@ -107,8 +_,83 @@
+@@ -107,8 +_,104 @@
          this.registerMapping(this.key);
      }
  
 +    /// Neo: convenience constructor for creating KeyMappings with keyConflictContext set.
 +    public KeyMapping(String name, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, InputConstants.Type inputType, int keyCode, KeyMapping.Category category) {
-+        this(name, keyConflictContext, inputType.getOrCreate(keyCode), category);
++        this(name, keyConflictContext, inputType, keyCode, category, 0);
++    }
++
++    /// Neo: creates a key mapping with a conflict context and sort order within its category.
++    public KeyMapping(String name, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, InputConstants.Type inputType, int keyCode, KeyMapping.Category category, int order) {
++        this(name, keyConflictContext, inputType.getOrCreate(keyCode), category, order);
 +    }
 +
 +    /// Neo: convenience constructor for creating KeyMappings with keyConflictContext set.
 +    public KeyMapping(String name, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, InputConstants.Key keyCode, KeyMapping.Category category) {
-+        this(name, keyConflictContext, net.neoforged.neoforge.client.settings.KeyModifier.NONE, keyCode, category);
++        this(name, keyConflictContext, keyCode, category, 0);
++    }
++
++    /// Neo: creates a key mapping with a conflict context and sort order within its category.
++    public KeyMapping(String name, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, InputConstants.Key keyCode, KeyMapping.Category category, int order) {
++        this(name, keyConflictContext, net.neoforged.neoforge.client.settings.KeyModifier.NONE, keyCode, category, order);
 +    }
 +
 +    /// Neo: convenience constructor for creating KeyMappings with keyConflictContext and keyModifier set.
 +    public KeyMapping(String name, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, net.neoforged.neoforge.client.settings.KeyModifier keyModifier, InputConstants.Type inputType, int keyCode, KeyMapping.Category category) {
-+        this(name, keyConflictContext, keyModifier, inputType.getOrCreate(keyCode), category);
++        this(name, keyConflictContext, keyModifier, inputType, keyCode, category, 0);
++    }
++
++    /// Neo: creates a key mapping with a conflict context, key modifier and sort order within its category.
++    public KeyMapping(String name, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, net.neoforged.neoforge.client.settings.KeyModifier keyModifier, InputConstants.Type inputType, int keyCode, KeyMapping.Category category, int order) {
++        this(name, keyConflictContext, keyModifier, inputType.getOrCreate(keyCode), category, order);
 +    }
 +
 +    /// Neo: convenience constructor for creating KeyMappings with keyConflictContext and keyModifier set.
 +    public KeyMapping(String name, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, net.neoforged.neoforge.client.settings.KeyModifier keyModifier, InputConstants.Key keyCode, KeyMapping.Category category) {
++        this(name, keyConflictContext, keyModifier, keyCode, category, 0);
++    }
++
++    /// Neo: creates a key mapping with a conflict context, key modifier and sort order within its category.
++    /// Lower order values are displayed first.
++    public KeyMapping(String name, net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext, net.neoforged.neoforge.client.settings.KeyModifier keyModifier, InputConstants.Key keyCode, KeyMapping.Category category, int order) {
 +        this.name = name;
 +        this.key = keyCode;
 +        this.defaultKey = keyCode;
 +        this.category = category;
-+        this.order = 0; // TODO 1.21.11: should we add additional constructor overloads to specify this?
++        this.order = order;
 +        this.keyConflictContext = keyConflictContext;
 +        this.keyModifier = keyModifier;
 +        this.keyModifierDefault = keyModifier;
