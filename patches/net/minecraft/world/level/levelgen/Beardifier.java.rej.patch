@@ -1,0 +1,32 @@
+--- /dev/null
++++ b/net/minecraft/world/level/levelgen/Beardifier.java.rej
+@@ -1,0 +_,29 @@
++diff a/projects/neoforge/src/main/java/net/minecraft/world/level/levelgen/Beardifier.java b/projects/neoforge/src/main/java/net/minecraft/world/level/levelgen/Beardifier.java	(rejected hunks)
++@@ -64,12 +64,23 @@ public class Beardifier implements DensitySampler {
++                 if (piece.isCloseToChunk(chunkPos, 12)) {
++                     if (piece instanceof net.neoforged.neoforge.common.world.PieceBeardifierModifier pieceBeardifierModifier) {
++                         if (pieceBeardifierModifier.getTerrainAdjustment() != TerrainAdjustment.NONE) {
++-                            rigids.add(new Beardifier.Rigid(pieceBeardifierModifier.getBeardifierBox(), pieceBeardifierModifier.getTerrainAdjustment(), pieceBeardifierModifier.getGroundLevelDelta()));
+++                            rigids.add(new Beardifier.Rigid(pieceBeardifierModifier.getBeardifierBox(), pieceBeardifierModifier.getTerrainAdjustment(), pieceBeardifierModifier.getBeardifierGroundLevelDelta()));
++                             anyPieceBoundingBox = includeBoundingBox(anyPieceBoundingBox, pieceBeardifierModifier.getBeardifierBox());
++                         }
++-                        continue;
++-                    }
++-                    if (piece instanceof PoolElementStructurePiece poolPiece) {
+++
+++                        for (JigsawJunction junction : pieceBeardifierModifier.getBeardifierJunctions()) {
+++                            int junctionX = junction.getSourceX();
+++                            int junctionZ = junction.getSourceZ();
+++                            if (junctionX > chunkStartBlockX - 12
+++                                && junctionZ > chunkStartBlockZ - 12
+++                                && junctionX < chunkStartBlockX + 15 + 12
+++                                && junctionZ < chunkStartBlockZ + 15 + 12) {
+++                                junctions.add(junction);
+++                                BoundingBox junctionBox = new BoundingBox(new BlockPos(junctionX, junction.getSourceGroundY(), junctionZ));
+++                                anyPieceBoundingBox = includeBoundingBox(anyPieceBoundingBox, junctionBox);
+++                            }
+++                        }
+++                    } else if (piece instanceof PoolElementStructurePiece poolPiece) {
++                         StructureTemplatePool.Projection projection = poolPiece.getElement().getProjection();
++                         if (projection == StructureTemplatePool.Projection.RIGID) {
++                             rigids.add(new Beardifier.Rigid(poolPiece.getBoundingBox(), terrainAdjustment, poolPiece.getGroundLevelDelta()));
