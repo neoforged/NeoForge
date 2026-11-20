@@ -58,11 +58,11 @@ public class ComposterWrapper extends SnapshotJournal<BlockState> {
 
     @Nullable
     public static ResourceHandler<ItemResource> get(Level level, BlockPos pos, @Nullable Direction direction) {
-        // TODO: for a null direction we could return a read-only view of the bottom handler
-        if (direction == null || !direction.getAxis().isVertical()) return null;
+        if (direction != null && !direction.getAxis().isVertical()) return null;
 
         WrapperLocation location = new WrapperLocation(level, pos.immutable());
         ComposterWrapper wrapper = wrappers.computeIfAbsent(location, ComposterWrapper::new);
+        if (direction == null) return wrapper.unsidedHandler;
         return direction == Direction.UP ? wrapper.topHandler : wrapper.bottomHandler;
     }
 
@@ -71,7 +71,8 @@ public class ComposterWrapper extends SnapshotJournal<BlockState> {
     private final WrapperLocation location;
     private final TransactionalRandom transactionalRandom = new TransactionalRandom();
     private final ResourceHandler<ItemResource> topHandler = new Top();
-    private final ResourceHandler<ItemResource> bottomHandler = new Bottom();
+    private final ResourceHandler<ItemResource> bottomHandler = new Bottom(true);
+    private final ResourceHandler<ItemResource> unsidedHandler = new Bottom(false);
 
     private ComposterWrapper(WrapperLocation location) {
         this.location = location;
@@ -203,6 +204,12 @@ public class ComposterWrapper extends SnapshotJournal<BlockState> {
     }
 
     private class Bottom implements ResourceHandler<ItemResource> {
+        private final boolean allowExtraction;
+
+        private Bottom(boolean allowExtraction) {
+            this.allowExtraction = allowExtraction;
+        }
+
         @Override
         public int size() {
             return 1;
@@ -210,6 +217,8 @@ public class ComposterWrapper extends SnapshotJournal<BlockState> {
 
         @Override
         public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            Objects.checkIndex(index, size());
+            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
             return 0;
         }
 
@@ -218,8 +227,7 @@ public class ComposterWrapper extends SnapshotJournal<BlockState> {
             Objects.checkIndex(index, size());
             TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
-            // Check amount.
-            if (amount < 1) return 0;
+            if (!allowExtraction || amount < 1) return 0;
             // Check that the resource is bone meal.
             if (!BONE_MEAL.equals(resource)) return 0;
             // Check that there is bone meal to extract.
@@ -256,7 +264,7 @@ public class ComposterWrapper extends SnapshotJournal<BlockState> {
 
         @Override
         public String toString() {
-            return "ComposterWrapper[" + location + "/bottom]";
+            return "ComposterWrapper[" + location + (allowExtraction ? "/bottom]" : "/unsided]");
         }
     }
 }
