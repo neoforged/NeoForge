@@ -10,7 +10,7 @@
 +                                rigids.add(new Beardifier.Rigid(pieceBeardifierModifier.getBeardifierBox(), pieceBeardifierModifier.getTerrainAdjustment(), pieceBeardifierModifier.getBeardifierGroundLevelDelta()));
 +                                anyPieceBoundingBox = includeBoundingBox(anyPieceBoundingBox, pieceBeardifierModifier.getBeardifierBox());
 +                            }
-+    
++
 +                            for (JigsawJunction junction : pieceBeardifierModifier.getBeardifierJunctions()) {
 +                                int junctionX = junction.getSourceX();
 +                                int junctionZ = junction.getSourceZ();
