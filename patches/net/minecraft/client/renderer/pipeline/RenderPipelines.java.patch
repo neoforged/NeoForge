@@ -86,7 +86,7 @@
 +    }
 +
 +    /// Neo: overload of [#finishDynamicPipeline(RenderPipeline.Builder, String, boolean, OitStage, Consumer, Consumer, Consumer, String)] with support for namespaced base name
-+    private static RenderPipeline finishDynamicPipeline(
++    public static RenderPipeline finishDynamicPipeline(
 +        RenderPipeline.Builder builder,
 +        net.minecraft.resources.Identifier baseName,
          boolean supportsOit,
@@ -110,7 +110,7 @@
 +    }
 +
 +    /// Neo: overload of [#finishDynamicPipeline(RenderPipeline.Builder, String, boolean, OitStage, Consumer, String)] with support for namespaced base name
-+    private static RenderPipeline finishDynamicPipeline(
++    public static RenderPipeline finishDynamicPipeline(
 +        RenderPipeline.Builder builder,
 +        net.minecraft.resources.Identifier baseName,
          boolean supportsOit,
@@ -133,7 +133,7 @@
 +    }
 +
 +    /// Neo: overload of [#finishDynamicPipeline(RenderPipeline.Builder, String, boolean, OitStage, Consumer)] with support for namespaced base name
-+    private static RenderPipeline finishDynamicPipeline(
++    public static RenderPipeline finishDynamicPipeline(
 +        RenderPipeline.Builder builder,
 +        net.minecraft.resources.Identifier baseName,
          boolean supportsOit,
