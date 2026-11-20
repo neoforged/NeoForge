@@ -11,6 +11,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.TriState;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
@@ -25,10 +27,10 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
-// TODO - check the light based tests
 @ForEachTest(groups = { "level.block.survivability" })
 public class CanSustainPlantTests {
     @GameTest
@@ -90,53 +92,19 @@ public class CanSustainPlantTests {
 
         final BlockPos belowBlock = new BlockPos(1, 1, 1);
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
-                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.MYCELIUM))
-                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.RED_MUSHROOM), Direction.UP))
-                .thenExecute(() -> helper.assertBlockPresent(Blocks.RED_MUSHROOM, belowBlock.above()))
+                .thenExecute(() -> enclosePlantWithGlowstoneRoof(helper, belowBlock))
+                .thenWaitUntil(() -> assertPlantLight(helper, belowBlock, 14))
+                .thenExecute(player -> checkPlantPlacement(helper, player, belowBlock, Blocks.MYCELIUM, Items.RED_MUSHROOM, Blocks.RED_MUSHROOM))
+                .thenExecute(player -> checkPlantPlacement(helper, player, belowBlock, Blocks.STONE, Items.RED_MUSHROOM, Blocks.AIR))
+                .thenExecute(player -> checkPlantPlacement(helper, player, belowBlock, Blocks.FARMLAND, Items.RED_MUSHROOM, Blocks.AIR))
+                .thenExecute(player -> checkPlantPlacement(helper, player, belowBlock, sustainingBlock.get(), Items.RED_MUSHROOM, Blocks.RED_MUSHROOM))
 
-                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
-                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.STONE))
-                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.RED_MUSHROOM), Direction.UP))
-                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.RED_MUSHROOM, belowBlock.above()))
-
-                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
-                .thenExecute(() -> helper.setBlock(belowBlock, sustainingBlock.get()))
-                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.RED_MUSHROOM), Direction.UP))
-                .thenExecute(() -> helper.assertBlockPresent(Blocks.RED_MUSHROOM, belowBlock.above()))
-
-                // Commented out due to issues with getting lighting engine to recalculate dark area in time.
-//                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().north(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().south(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().east(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().west(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above(2), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.STONE))
-//                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.RED_MUSHROOM), Direction.UP))
-//                .thenExecute(() -> helper.assertBlockPresent(Blocks.RED_MUSHROOM, belowBlock.above()))
-//
-//                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().north(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().south(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().east(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().west(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above(2), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.FARMLAND))
-//                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.RED_MUSHROOM), Direction.UP))
-//                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.RED_MUSHROOM, belowBlock.above()))
-//
-//                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().north(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().south(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().east(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().west(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above(2), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock, sustainingBlock.get()))
-//                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.RED_MUSHROOM), Direction.UP))
-//                .thenExecute(() -> helper.assertBlockPresent(Blocks.RED_MUSHROOM, belowBlock.above()))
-
-                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR)) // Clear the plant so that it doesn't try to randomly tick to grow and crash because of the side check
-
+                .thenExecute(() -> helper.setBlock(belowBlock.above(2), Blocks.STONE))
+                .thenWaitUntil(() -> assertPlantLight(helper, belowBlock, 0))
+                .thenExecute(player -> checkPlantPlacement(helper, player, belowBlock, Blocks.MYCELIUM, Items.RED_MUSHROOM, Blocks.RED_MUSHROOM))
+                .thenExecute(player -> checkPlantPlacement(helper, player, belowBlock, Blocks.STONE, Items.RED_MUSHROOM, Blocks.RED_MUSHROOM))
+                .thenExecute(player -> checkPlantPlacement(helper, player, belowBlock, Blocks.FARMLAND, Items.RED_MUSHROOM, Blocks.AIR))
+                .thenExecute(player -> checkPlantPlacement(helper, player, belowBlock, sustainingBlock.get(), Items.RED_MUSHROOM, Blocks.RED_MUSHROOM))
                 .thenSucceed());
     }
 
@@ -146,42 +114,7 @@ public class CanSustainPlantTests {
             "Wheat should be placeable on farmland but not on dirt nor in too dark areas. And plantable on custom blocks that allow the plant."
     })
     static void survivabilityWheatTest(final DynamicTest test, final RegistrationHelper reg) {
-        final var sustainingBlock = reg.blocks()
-                .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new)
-                .withLang("Super Sustaining block")
-                .withDefaultWhiteModel()
-                .withBlockItem();
-
-        final BlockPos belowBlock = new BlockPos(1, 1, 1);
-        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
-                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.FARMLAND))
-                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.WHEAT_SEEDS), Direction.UP))
-                .thenExecute(() -> helper.assertBlockPresent(Blocks.WHEAT, belowBlock.above()))
-
-                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
-                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.DIRT))
-                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.WHEAT_SEEDS), Direction.UP))
-                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.WHEAT, belowBlock.above()))
-
-                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
-                .thenExecute(() -> helper.setBlock(belowBlock, sustainingBlock.get()))
-                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.WHEAT_SEEDS), Direction.UP))
-                .thenExecute(() -> helper.assertBlockPresent(Blocks.WHEAT, belowBlock.above()))
-
-                // Commented out due to issues with getting lighting engine to recalculate dark area in time.
-//                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().north(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().south(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().east(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().west(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above(2), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.FARMLAND))
-//                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.WHEAT_SEEDS), Direction.UP))
-//                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.WHEAT, belowBlock.above()))
-
-                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR)) // Clear the plant so that it doesn't try to randomly tick to grow and crash because of the side check
-
-                .thenSucceed());
+        testCropPlacement(test, reg, Items.WHEAT_SEEDS, Blocks.WHEAT);
     }
 
     @GameTest
@@ -190,6 +123,10 @@ public class CanSustainPlantTests {
             "Pitcher Crop should be placeable on farmland but not on dirt nor in too dark areas. And plantable on custom blocks that allow the plant."
     })
     static void survivabilityPitcherCropTest(final DynamicTest test, final RegistrationHelper reg) {
+        testCropPlacement(test, reg, Items.PITCHER_POD, Blocks.PITCHER_CROP);
+    }
+
+    private static void testCropPlacement(DynamicTest test, RegistrationHelper reg, Item seeds, Block crop) {
         final var sustainingBlock = reg.blocks()
                 .registerBlock("super_sustaining_sustaining_block", CustomSuperSustainingBlock::new)
                 .withLang("Super Sustaining block")
@@ -198,34 +135,37 @@ public class CanSustainPlantTests {
 
         final BlockPos belowBlock = new BlockPos(1, 1, 1);
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
-                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.FARMLAND))
-                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.PITCHER_POD), Direction.UP))
-                .thenExecute(() -> helper.assertBlockPresent(Blocks.PITCHER_CROP, belowBlock.above()))
+                .thenExecute(() -> enclosePlantWithGlowstoneRoof(helper, belowBlock))
+                .thenWaitUntil(() -> assertPlantLight(helper, belowBlock, 14))
+                .thenExecute(player -> checkPlantPlacement(helper, player, belowBlock, Blocks.FARMLAND, seeds, crop))
+                .thenExecute(player -> checkPlantPlacement(helper, player, belowBlock, Blocks.DIRT, seeds, Blocks.AIR))
+                .thenExecute(player -> checkPlantPlacement(helper, player, belowBlock, sustainingBlock.get(), seeds, crop))
 
-                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
-                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.DIRT))
-                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.PITCHER_POD), Direction.UP))
-                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.PITCHER_CROP, belowBlock.above()))
-
-                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
-                .thenExecute(() -> helper.setBlock(belowBlock, sustainingBlock.get()))
-                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.PITCHER_POD), Direction.UP))
-                .thenExecute(() -> helper.assertBlockPresent(Blocks.PITCHER_CROP, belowBlock.above()))
-
-                // Commented out due to issues with getting lighting engine to recalculate dark area in time.
-//                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().north(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().south(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().east(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above().west(), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock.above(2), Blocks.STONE))
-//                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.FARMLAND))
-//                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.PITCHER_POD), Direction.UP))
-//                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.PITCHER_CROP, belowBlock.above()))
-
-                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR)) // Clear the plant so that it doesn't try to randomly tick to grow and crash because of the side check
-
+                .thenExecute(() -> helper.setBlock(belowBlock.above(2), Blocks.STONE))
+                .thenWaitUntil(() -> assertPlantLight(helper, belowBlock, 0))
+                .thenExecute(player -> checkPlantPlacement(helper, player, belowBlock, Blocks.FARMLAND, seeds, Blocks.AIR))
+                .thenExecute(player -> checkPlantPlacement(helper, player, belowBlock, sustainingBlock.get(), seeds, crop))
                 .thenSucceed());
+    }
+
+    private static void enclosePlantWithGlowstoneRoof(ExtendedGameTestHelper helper, BlockPos belowBlock) {
+        for (Direction side : Direction.Plane.HORIZONTAL) {
+            // Enclose the soil too, as farmland does not block light from the side.
+            helper.setBlock(belowBlock.relative(side), Blocks.STONE);
+            helper.setBlock(belowBlock.above().relative(side), Blocks.STONE);
+        }
+        helper.setBlock(belowBlock.above(2), Blocks.GLOWSTONE);
+    }
+
+    private static void assertPlantLight(ExtendedGameTestHelper helper, BlockPos belowBlock, int expected) {
+        helper.assertValueEqual(helper.getLevel().getRawBrightness(helper.absolutePos(belowBlock.above()), 0), expected, "Light at the plant");
+    }
+
+    private static void checkPlantPlacement(ExtendedGameTestHelper helper, Player player, BlockPos belowBlock, Block soil, Item item, Block expected) {
+        helper.setBlock(belowBlock, soil);
+        helper.useBlock(belowBlock, player, new ItemStack(item), Direction.UP);
+        helper.assertBlockPresent(expected, belowBlock.above());
+        helper.setBlock(belowBlock.above(), Blocks.AIR);
     }
 
     @GameTest

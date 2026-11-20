@@ -5,20 +5,26 @@
 
 package net.neoforged.neoforge.unittest;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.JsonOps;
 import java.util.List;
 import java.util.stream.Stream;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.CompoundFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.DataComponentFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.IntersectionFluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import net.neoforged.testframework.junit.EphemeralTestServerProvider;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -87,6 +93,50 @@ public class FluidIngredientTests {
         Assertions.assertThat(ingredient.test(new FluidStack(Fluids.WATER.builtInRegistryHolder(), 1234, DataComponentPatch.builder().set(DataComponents.RARITY, Rarity.COMMON).build())))
                 .withFailMessage("Single fluid ingredient should match regardless of fluid data!")
                 .isTrue();
+    }
+
+    @Test
+    void basicFluidIngredientSerialization(MinecraftServer server) {
+        var registries = server.registryAccess();
+        var ops = registries.createSerializationContext(JsonOps.INSTANCE);
+        var singleFluid = FluidIngredient.of(Fluids.WATER);
+        var tagFluid = FluidIngredient.of(registries.lookupOrThrow(Registries.FLUID).getOrThrow(Tags.Fluids.WATER));
+
+        var singleJson = FluidIngredient.CODEC.encodeStart(ops, singleFluid).getOrThrow();
+        var tagJson = FluidIngredient.CODEC.encodeStart(ops, tagFluid).getOrThrow();
+        Assertions.assertThat(singleJson).isEqualTo(new JsonPrimitive("minecraft:water"));
+        Assertions.assertThat(tagJson).isEqualTo(new JsonPrimitive("#" + Tags.Fluids.WATER.location()));
+        Assertions.assertThat(FluidIngredient.CODEC.parse(ops, singleJson).getOrThrow()).isEqualTo(singleFluid);
+        Assertions.assertThat(FluidIngredient.CODEC.parse(ops, tagJson).getOrThrow()).isEqualTo(tagFluid);
+
+        var nested = new JsonObject();
+        nested.addProperty("neoforge:ingredient_type", NeoForgeMod.SIMPLE_FLUID_INGREDIENT_TYPE.getId().toString());
+        nested.addProperty("fluid", "minecraft:water");
+        Assertions.assertThat(FluidIngredient.CODEC.parse(ops, nested).isError()).isTrue();
+    }
+
+    @Test
+    void sizedFluidIngredientSerialization(MinecraftServer server) {
+        var sized = SizedFluidIngredient.of(Fluids.WATER, 1000);
+        var expected = new JsonObject();
+        expected.addProperty("ingredient", "minecraft:water");
+        expected.addProperty("amount", 1000);
+
+        var ops = server.registryAccess().createSerializationContext(JsonOps.INSTANCE);
+        var json = SizedFluidIngredient.CODEC.encodeStart(ops, sized).getOrThrow();
+        Assertions.assertThat(json).isEqualTo(expected);
+        Assertions.assertThat(SizedFluidIngredient.CODEC.parse(ops, json).getOrThrow()).isEqualTo(sized);
+    }
+
+    @Test
+    void sizedFluidIngredientMatching(MinecraftServer server) {
+        var sized = SizedFluidIngredient.of(Fluids.WATER, 2);
+        Assertions.assertThat(sized.test(new FluidStack(Fluids.LAVA, 1000))).isFalse();
+        Assertions.assertThat(sized.test(new FluidStack(Fluids.WATER, 1))).isFalse();
+        Assertions.assertThat(sized.test(new FluidStack(Fluids.WATER, 2))).isTrue();
+        Assertions.assertThat(sized.test(new FluidStack(Fluids.WATER, 3))).isTrue();
+
+        // TODO(max): implement display wrapping for sized ingredients(?)
     }
 
     @Test
