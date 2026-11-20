@@ -5,9 +5,12 @@
 
 package net.neoforged.neoforge.debug.crafting;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Player;
@@ -16,6 +19,8 @@ import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
@@ -39,7 +44,8 @@ public class GrindstoneEventTests {
     private static final int INVENTORY_SLOT_FIRST = 0;
     private static final int INVENTORY_SLOT_SECOND = 1;
 
-    // Awarded as a single experience orb, so the amount can be read back from the level
+    // Awarded as a single experience orb, so the amount can be read back from the level. It is an amount vanilla can never award
+    // for the inputs of these tests: the sword with sharpness I is worth 1 XP (see vanillaXpRange), the pickaxe and the shovel 0
     private static final int CUSTOM_XP = 7;
 
     /** An enchanted sword, which vanilla disenchants when placed in the grindstone. */
@@ -47,6 +53,33 @@ public class GrindstoneEventTests {
         ItemStack s = new ItemStack(Items.IRON_SWORD);
         s.enchant(helper.getHolder(Enchantments.SHARPNESS), 1);
         return s;
+    }
+
+    /** The XP vanilla may award for some inputs, as a range of amounts. */
+    private record XpRange(int min, int max) {
+        boolean contains(int xp) {
+            return xp >= min && xp <= max;
+        }
+    }
+
+    /**
+     * Computes the XP vanilla may award for disenchanting the given inputs, like the grindstone menu does: half the sum of the
+     * minimum costs of their enchantments, rounded up, plus a random amount below that half. Unenchanted inputs award nothing.
+     */
+    private static XpRange vanillaXpRange(ItemStack... inputs) {
+        int cost = 0;
+        for (ItemStack input : inputs) {
+            for (Object2IntMap.Entry<Holder<Enchantment>> entry : EnchantmentHelper.getEnchantmentsForCrafting(input).entrySet()) {
+                if (!entry.getKey().is(EnchantmentTags.CURSE)) {
+                    cost += entry.getKey().value().getMinCost(entry.getIntValue());
+                }
+            }
+        }
+        if (cost == 0) {
+            return new XpRange(0, 0);
+        }
+        int half = (int) Math.ceil(cost / 2.0);
+        return new XpRange(half, half * 2 - 1);
     }
 
     private static void moveItemsToInputs(GrindstoneMenu menu, Player player) {
@@ -135,7 +168,10 @@ public class GrindstoneEventTests {
             ctx.helper.assertNotNull(take, "OnTakeItem should fire when taking the result");
             ctx.helper.assertTrue(take.getPlayer() == ctx.player, "Expected the player using the grindstone; player is " + take.getPlayer());
             ctx.helper.assertTrue(take.getTopItem().is(Items.IRON_SWORD), "Expected the sword as top item; top is " + take.getTopItem());
-            ctx.helper.assertTrue(take.getXp() >= 0, "Expected the vanilla XP amount; XP is " + take.getXp());
+            XpRange vanillaXp = vanillaXpRange(enchantedSword(ctx.helper));
+            ctx.helper.assertTrue(vanillaXp.contains(take.getXp()), "Expected the vanilla XP amount, within " + vanillaXp + "; XP is " + take.getXp());
+            int awardedXp = experienceAroundGrindstone(ctx.helper);
+            ctx.helper.assertTrue(vanillaXp.contains(awardedXp), "Expected the vanilla XP amount to be awarded, within " + vanillaXp + "; awarded " + awardedXp);
             ctx.helper.assertTrue(ctx.menu.getSlot(MENU_SLOT_TOP).getItem().isEmpty(), "Expected the top input to be consumed; top is " + ctx.menu.getSlot(MENU_SLOT_TOP).getItem());
 
             ctx.helper.succeed();
@@ -216,7 +252,9 @@ public class GrindstoneEventTests {
             takeResult(ctx.menu, ctx.player);
             GrindstoneEvent.OnTakeItem take = takeEvent.get();
             ctx.helper.assertNotNull(take, "OnTakeItem should fire when taking the result");
-            ctx.helper.assertTrue(take.getXp() != CUSTOM_XP, "Expected the XP override to be ignored when the output is left empty; XP is " + take.getXp());
+            // CUSTOM_XP lies outside the vanilla range for this input, so this also shows that the override on place was ignored
+            XpRange vanillaXp = vanillaXpRange(enchantedSword(ctx.helper));
+            ctx.helper.assertTrue(vanillaXp.contains(take.getXp()), "Expected the vanilla XP amount, within " + vanillaXp + ", when the output is left empty; XP is " + take.getXp());
 
             ctx.helper.succeed();
         });

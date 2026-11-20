@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.debug.effect;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -102,6 +104,7 @@ public class MobEffectEventTests {
             helper.assertTrue(event.getOldEffectInstance() == null, "Expected no previous instance; previous is " + event.getOldEffectInstance());
             helper.assertTrue(event.getEffectSource() == player, "Expected the player as effect source; source is " + event.getEffectSource());
 
+            // Reset to capture the event of the upgrade
             fired.set(null);
             MobEffectInstance upgrade = new MobEffectInstance(MobEffects.SPEED, 200, 1);
             pig.addEffect(upgrade, player);
@@ -115,14 +118,17 @@ public class MobEffectEventTests {
 
     @GameTest
     @EmptyTemplate(floor = true)
-    @TestHolder(description = "Tests if the MobEffectEvent.Remove event fires and can prevent the removal")
+    @TestHolder(description = "Tests if the MobEffectEvent.Remove event fires for the removal of one effect and of all effects, and can prevent a removal")
     static void mobEffectRemove(final DynamicTest test) {
         AtomicBoolean cancel = new AtomicBoolean(true);
-        AtomicReference<MobEffectEvent.Remove> fired = new AtomicReference<>();
+        List<MobEffectEvent.Remove> fired = new ArrayList<>();
         test.eventListeners().forge().addListener((final MobEffectEvent.Remove event) -> {
-            if (event.getEntity() instanceof Pig && event.getEffect().value() == MobEffects.SPEED.value()) {
-                fired.set(event);
-                event.setCanceled(cancel.get());
+            if (event.getEntity() instanceof Pig) {
+                fired.add(event);
+                // Only the removal of the speed effect is prevented
+                if (event.getEffectInstance().is(MobEffects.SPEED)) {
+                    event.setCanceled(cancel.get());
+                }
             }
         });
 
@@ -130,12 +136,20 @@ public class MobEffectEventTests {
             Pig pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, 1, 2, 1);
             MobEffectInstance speed = new MobEffectInstance(MobEffects.SPEED, 100);
             pig.addEffect(speed);
+            pig.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100));
 
             helper.assertFalse(pig.removeEffect(MobEffects.SPEED), "Expected the removal to be prevented while the event is cancelled");
-            MobEffectEvent.Remove event = fired.get();
-            helper.assertNotNull(event, "Event should fire when an effect is removed");
-            helper.assertTrue(event.getEffectInstance() == speed, "Expected the removed instance; instance is " + event.getEffectInstance());
+            helper.assertValueEqual(fired.size(), 1, "Expected a single event for the removal of one effect; events are " + fired);
+            helper.assertTrue(fired.get(0).getEffectInstance() == speed, "Expected the removed instance; instance is " + fired.get(0).getEffectInstance());
             helper.assertTrue(pig.hasEffect(MobEffects.SPEED), "Expected the pig to keep the speed effect");
+
+            // Removing all effects fires the event for each of them, and only the cancelled one is kept
+            fired.clear();
+            pig.removeAllEffects();
+            helper.assertValueEqual(fired.size(), 2, "Expected an event for each effect when removing all effects; events are " + fired);
+            helper.assertTrue(fired.stream().anyMatch(event -> event.getEffectInstance().is(MobEffects.REGENERATION)), "Expected an event for the regeneration effect; events are " + fired);
+            helper.assertTrue(pig.hasEffect(MobEffects.SPEED), "Expected the pig to keep the speed effect when removing all effects");
+            helper.assertFalse(pig.hasEffect(MobEffects.REGENERATION), "Expected the regeneration effect to be removed with all effects");
 
             cancel.set(false);
             helper.assertTrue(pig.removeEffect(MobEffects.SPEED), "Expected the removal to succeed once the event is not cancelled");
@@ -159,11 +173,14 @@ public class MobEffectEventTests {
 
         test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityTypes.PIG, 1, 2, 1))
                 .thenExecute(pig -> pig.addEffect(new MobEffectInstance(MobEffects.SPEED, 1)))
-                // The effect runs out on the next tick, but the cancelled event keeps it
-                .thenWaitUntil(() -> helper.assertTrue(fireCount.get() > 0, "Expected the event to fire when the effect runs out"))
-                .thenExecute(pig -> helper.assertTrue(pig.hasEffect(MobEffects.SPEED), "Expected the effect to be kept while the event is cancelled"))
+                // The effect runs out on the next tick of the pig, but the cancelled event keeps it
+                .thenExecuteAfter(1, pig -> {
+                    helper.assertValueEqual(fireCount.get(), 1, "Expected the event to fire once when the effect runs out; fired " + fireCount.get() + " times");
+                    helper.assertTrue(pig.hasEffect(MobEffects.SPEED), "Expected the effect to be kept while the event is cancelled");
+                })
                 .thenExecute(() -> cancel.set(false))
-                .thenWaitUntil(pig -> helper.assertFalse(pig.hasEffect(MobEffects.SPEED), "Expected the effect to be removed once the event is not cancelled"))
+                // The event fires again on each tick while the effect has no duration left, and the effect goes once it is not cancelled
+                .thenExecuteAfter(1, pig -> helper.assertFalse(pig.hasEffect(MobEffects.SPEED), "Expected the effect to be removed once the event is not cancelled"))
                 .thenSucceed());
     }
 }

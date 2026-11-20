@@ -44,6 +44,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.PhantomSpawner;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.storage.LevelData;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.event.StatAwardEvent;
@@ -397,11 +398,16 @@ public class PlayerEventTests {
                     .thenExecute(expectedPlayer::set)
                     // The sky darkness follows the time of day on the next level tick
                     .thenExecuteAfter(2, player -> {
+                        // A fresh spawner, whose countdown starts at zero: the spawner of the level cannot be reached from here, and it
+                        // waits one to two minutes between two attempts once it has run
                         new PhantomSpawner().tick(level, true);
 
                         PlayerSpawnPhantomsEvent event = fired.get();
                         helper.assertNotNull(event, "Event should fire for the player when phantoms could spawn");
-                        var phantoms = level.getEntities(EntityTypes.PHANTOM, player.getBoundingBox().inflate(40.0), Entity::isAlive);
+                        // Phantoms spawn 20 to 34 blocks above the player, and up to 10 blocks away from them on each horizontal axis
+                        BlockPos playerPos = player.blockPosition();
+                        AABB spawnArea = AABB.encapsulatingFullBlocks(playerPos.offset(-10, 20, -10), playerPos.offset(10, 34, 10));
+                        var phantoms = level.getEntities(EntityTypes.PHANTOM, spawnArea, Entity::isAlive);
                         helper.assertValueEqual(phantoms.size(), phantomsToSpawn, "Expected the amount of phantoms set by the event; found " + phantoms.size());
                         phantoms.forEach(Entity::discard);
                     })

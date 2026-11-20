@@ -101,6 +101,7 @@ public class ItemStackedOnOtherEventTests {
             ctx.helper.assertValueEqual(event.getClickAction(), ClickAction.PRIMARY, "Expected a primary click; action is " + event.getClickAction());
             ctx.helper.assertTrue(event.getPlayer() == ctx.player, "Expected the clicking player; player is " + event.getPlayer());
             ctx.helper.assertTrue(event.getCarriedSlotAccess().get().is(Items.BUNDLE), "Expected the carried slot access to expose the bundle; it exposes " + event.getCarriedSlotAccess().get());
+            ctx.helper.assertTrue(event.getCancellationResult(), "Expected the cancellation result to be true by default, which halts the click once cancelled");
 
             // Not cancelled: the vanilla bundle logic ran and picked the apple up
             ctx.helper.assertTrue(ctx.inSlot().isEmpty(), "Expected the apple to be taken out of the slot; slot has " + ctx.inSlot());
@@ -113,9 +114,9 @@ public class ItemStackedOnOtherEventTests {
 
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = "Cancelling halts the click entirely")
+    @TestHolder(description = "Cancelling with a true result halts the click entirely")
     static void itemStackedOnOtherCancelHaltsClick(DynamicTest test) {
-        test.whenEnabled(listeners -> listeners.forge().addListener((ItemStackedOnOtherEvent e) -> e.setCanceled(true)));
+        test.whenEnabled(listeners -> listeners.forge().addListener((ItemStackedOnOtherEvent e) -> e.cancelWithResult(true)));
 
         withInventory(test, GameType.CREATIVE, Items.BUNDLE, Items.APPLE, ctx -> {
             ctx.click(ClickAction.PRIMARY);

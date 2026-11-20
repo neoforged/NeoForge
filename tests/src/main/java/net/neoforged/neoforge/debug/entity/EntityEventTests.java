@@ -21,6 +21,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.animal.cow.Cow;
@@ -31,7 +32,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -343,11 +346,13 @@ public class EntityEventTests {
     static void registerSpawnPlacementsEvent(final DynamicTest test) {
         // The placements are registered when they are first used, so this test is enabled by default to have its listener in place
         test.eventListeners().mod().addListener((final RegisterSpawnPlacementsEvent event) -> {
-            // REPLACE: slimes only spawn on gold blocks
-            event.register(EntityTypes.SLIME, (type, level, reason, pos, random) -> level.getBlockState(pos.below()).is(Blocks.GOLD_BLOCK), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+            // REPLACE: slimes only spawn on gold blocks, with a placement type and a heightmap type of their own, which only this
+            // operation may change
+            event.register(EntityTypes.SLIME, SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.WORLD_SURFACE, (type, level, reason, pos, random) -> level.getBlockState(pos.below()).is(Blocks.GOLD_BLOCK), RegisterSpawnPlacementsEvent.Operation.REPLACE);
             // OR: creepers also spawn on emerald blocks, whatever the light level
             event.register(EntityTypes.CREEPER, (type, level, reason, pos, random) -> level.getBlockState(pos.below()).is(Blocks.EMERALD_BLOCK), RegisterSpawnPlacementsEvent.Operation.OR);
-            // AND: pigs additionally need a gold block two blocks below them
+            // AND: pigs additionally need a gold block two blocks below them, as their vanilla placement already requires a block
+            // of the animals_spawnable_on tag right below them
             event.register(EntityTypes.PIG, (type, level, reason, pos, random) -> level.getBlockState(pos.below(2)).is(Blocks.GOLD_BLOCK), RegisterSpawnPlacementsEvent.Operation.AND);
         });
 
@@ -355,8 +360,11 @@ public class EntityEventTests {
             helper.requireDifficulty(Difficulty.NORMAL);
             ServerLevel level = helper.getLevel();
             RandomSource random = level.getRandom();
-            // Slime and creeper spots: a gold block, an emerald block and a glass block on the floor
+            // Slime and creeper spots: a gold block, an emerald block and a glass block on the floor, lit by a glowstone block so
+            // that the vanilla placements of both monsters refuse all three spots: monsters need a block light of zero to spawn,
+            // and slimes only spawn in swamps at night or in slime chunks deep underground
             helper.setBlock(0, 2, 0, Blocks.GOLD_BLOCK);
+            helper.setBlock(1, 2, 0, Blocks.GLOWSTONE);
             helper.setBlock(2, 2, 0, Blocks.EMERALD_BLOCK);
             helper.setBlock(4, 2, 0, Blocks.GLASS);
             // Pig spots: grass with gold underneath, grass with the floor underneath, and stone with gold underneath
@@ -365,15 +373,28 @@ public class EntityEventTests {
             helper.setBlock(2, 2, 4, Blocks.GRASS_BLOCK);
             helper.setBlock(4, 1, 4, Blocks.GOLD_BLOCK);
             helper.setBlock(4, 2, 4, Blocks.STONE);
+            BlockPos goldSpot = helper.absolutePos(new BlockPos(0, 3, 0));
+            BlockPos emeraldSpot = helper.absolutePos(new BlockPos(2, 3, 0));
+            BlockPos glassSpot = helper.absolutePos(new BlockPos(4, 3, 0));
 
-            helper.assertTrue(canSpawn(level, random, EntityTypes.SLIME, helper.absolutePos(new BlockPos(0, 3, 0))), "Expected slimes to spawn on gold blocks with the replaced placement");
-            helper.assertFalse(canSpawn(level, random, EntityTypes.SLIME, helper.absolutePos(new BlockPos(2, 3, 0))), "Expected slimes not to spawn on emerald blocks with the replaced placement");
-            helper.assertTrue(canSpawn(level, random, EntityTypes.CREEPER, helper.absolutePos(new BlockPos(2, 3, 0))), "Expected creepers to spawn on emerald blocks with the added placement");
-            helper.assertFalse(canSpawn(level, random, EntityTypes.CREEPER, helper.absolutePos(new BlockPos(4, 3, 0))), "Expected creepers to keep their vanilla placement elsewhere, which refuses glass");
-            helper.assertTrue(canSpawn(level, random, EntityTypes.PIG, helper.absolutePos(new BlockPos(0, 3, 4))), "Expected pigs to spawn on grass with gold underneath");
-            helper.assertFalse(canSpawn(level, random, EntityTypes.PIG, helper.absolutePos(new BlockPos(2, 3, 4))), "Expected pigs not to spawn without gold underneath, even on grass");
-            helper.assertFalse(canSpawn(level, random, EntityTypes.PIG, helper.absolutePos(new BlockPos(4, 3, 4))), "Expected pigs to keep their vanilla placement, which refuses stone");
-            helper.succeed();
+            helper.assertValueEqual(SpawnPlacements.getPlacementType(EntityTypes.SLIME), SpawnPlacementTypes.NO_RESTRICTIONS, "Expected the placement type of slimes to be replaced");
+            helper.assertValueEqual(SpawnPlacements.getHeightmapType(EntityTypes.SLIME), Heightmap.Types.WORLD_SURFACE, "Expected the heightmap type of slimes to be replaced");
+            helper.assertValueEqual(SpawnPlacements.getPlacementType(EntityTypes.CREEPER), SpawnPlacementTypes.ON_GROUND, "Expected creepers to keep their vanilla placement type");
+            helper.assertValueEqual(SpawnPlacements.getHeightmapType(EntityTypes.CREEPER), Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, "Expected creepers to keep their vanilla heightmap type");
+
+            helper.startSequence()
+                    // The light engine spreads the light of the glowstone block over the next ticks
+                    .thenWaitUntil(() -> helper.assertTrue(level.getBrightness(LightLayer.BLOCK, glassSpot) > 0, "Expected the light of the glowstone block to reach the spots"))
+                    .thenExecute(() -> {
+                        helper.assertTrue(canSpawn(level, random, EntityTypes.SLIME, goldSpot), "Expected slimes to spawn on gold blocks with the replaced placement, despite the light");
+                        helper.assertFalse(canSpawn(level, random, EntityTypes.SLIME, emeraldSpot), "Expected slimes not to spawn on emerald blocks with the replaced placement");
+                        helper.assertTrue(canSpawn(level, random, EntityTypes.CREEPER, emeraldSpot), "Expected creepers to spawn on emerald blocks with the added placement, despite the light");
+                        helper.assertFalse(canSpawn(level, random, EntityTypes.CREEPER, glassSpot), "Expected creepers to keep their vanilla placement elsewhere, which refuses the light");
+                        helper.assertTrue(canSpawn(level, random, EntityTypes.PIG, helper.absolutePos(new BlockPos(0, 3, 4))), "Expected pigs to spawn on grass with gold underneath");
+                        helper.assertFalse(canSpawn(level, random, EntityTypes.PIG, helper.absolutePos(new BlockPos(2, 3, 4))), "Expected pigs not to spawn without gold underneath, even on grass");
+                        helper.assertFalse(canSpawn(level, random, EntityTypes.PIG, helper.absolutePos(new BlockPos(4, 3, 4))), "Expected pigs to keep their vanilla placement, which refuses stone");
+                    })
+                    .thenSucceed();
         });
     }
 }
