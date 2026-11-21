@@ -24,10 +24,10 @@ import java.util.function.UnaryOperator;
 import net.minecraft.client.animation.AnimationChannel;
 import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.animation.Keyframe;
-import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
 import net.neoforged.neoforge.client.entity.animation.AnimationKeyframeTarget;
 import net.neoforged.neoforge.client.entity.animation.AnimationTarget;
+import net.neoforged.neoforge.client.registries.NeoForgeClientRegistries;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
@@ -39,35 +39,13 @@ public final class AnimationParser {
      * {@snippet lang = JSON : "minecraft:rotation"
      * }
      */
-    private static final Codec<AnimationTarget> TARGET_CODEC = Identifier.CODEC
-            .flatXmap(
-                    name -> Optional.ofNullable(AnimationTypeManager.getTarget(name))
-                            .map(DataResult::success)
-                            .orElseGet(() -> DataResult.error(() -> String.format(
-                                    Locale.ENGLISH, "Animation target '%s' not found. Registered targets: %s",
-                                    name, AnimationTypeManager.getTargetList()))),
-                    target -> Optional.ofNullable(AnimationTypeManager.getTargetName(target))
-                            .map(DataResult::success)
-                            .orElseGet(() -> DataResult.error(() -> String.format(
-                                    Locale.ENGLISH, "Unregistered animation target '%s'. Registered targets: %s",
-                                    target, AnimationTypeManager.getTargetList()))));
+    private static final Codec<AnimationTarget> TARGET_CODEC = NeoForgeClientRegistries.ANIMATION_CHANNEL_TARGET.byNameCodec();
 
     /**
      * {@snippet lang = JSON : "minecraft:linear"
      * }
      */
-    private static final Codec<AnimationChannel.Interpolation> INTERPOLATION_CODEC = Identifier.CODEC
-            .flatXmap(
-                    name -> Optional.ofNullable(AnimationTypeManager.getInterpolation(name))
-                            .map(DataResult::success)
-                            .orElseGet(() -> DataResult.error(() -> String.format(
-                                    Locale.ENGLISH, "Animation interpolation '%s' not found. Registered interpolations: %s",
-                                    name, AnimationTypeManager.getInterpolationList()))),
-                    target -> Optional.ofNullable(AnimationTypeManager.getInterpolationName(target))
-                            .map(DataResult::success)
-                            .orElseGet(() -> DataResult.error(() -> String.format(
-                                    Locale.ENGLISH, "Unregistered animation interpolation '%s'. Registered interpolations: %s",
-                                    target, AnimationTypeManager.getInterpolationList()))));
+    private static final Codec<AnimationChannel.Interpolation> INTERPOLATION_CODEC = NeoForgeClientRegistries.ANIMATION_CHANNEL_INTERPOLATION.byNameCodec();
 
     /**
      * {@snippet lang = JSON :

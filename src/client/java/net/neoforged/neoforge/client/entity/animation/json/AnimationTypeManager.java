@@ -5,17 +5,17 @@
 
 package net.neoforged.neoforge.client.entity.animation.json;
 
-import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.client.animation.AnimationChannel;
 import net.minecraft.client.animation.Keyframe;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
-import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.client.entity.animation.AnimationTarget;
-import net.neoforged.neoforge.client.event.RegisterJsonAnimationTypesEvent;
+import net.neoforged.neoforge.client.registries.NeoForgeClientRegistries;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
@@ -27,44 +27,16 @@ import org.jspecify.annotations.Nullable;
  * <p>
  * The built-in {@link AnimationChannel.Interpolation interpolation function}s are {@code minecraft:linear} and
  * {@code minecraft:catmullrom}.
+ *
+ * @see NeoForgeClientRegistries#ANIMATION_CHANNEL_TARGET
+ * @see NeoForgeClientRegistries#ANIMATION_CHANNEL_INTERPOLATION
  */
 public final class AnimationTypeManager {
-    private static final ImmutableBiMap<Identifier, AnimationTarget> DEFAULT_TARGETS = ImmutableBiMap.of(
-            Identifier.withDefaultNamespace("position"), AnimationTarget.POSITION,
-            Identifier.withDefaultNamespace("rotation"), AnimationTarget.ROTATION,
-            Identifier.withDefaultNamespace("scale"), AnimationTarget.SCALE);
-    private static final ImmutableBiMap<Identifier, AnimationChannel.Interpolation> DEFAULT_INTERPOLATIONS = ImmutableBiMap.of(
-            Identifier.withDefaultNamespace("linear"), AnimationChannel.Interpolations.LINEAR,
-            Identifier.withDefaultNamespace("catmullrom"), AnimationChannel.Interpolations.CATMULLROM);
-
-    private static ImmutableBiMap<Identifier, AnimationTarget> TARGETS = DEFAULT_TARGETS;
-    private static ImmutableMap<AnimationChannel.Target, AnimationTarget> TARGETS_BY_CHANNEL_TARGET = ImmutableMap.of();
-    private static ImmutableMap<AnimationTarget, Codec<Keyframe>> KEYFRAME_CODECS = ImmutableMap.of();
-    private static ImmutableBiMap<Identifier, AnimationChannel.Interpolation> INTERPOLATIONS = DEFAULT_INTERPOLATIONS;
+    private static Map<AnimationChannel.Target, AnimationTarget> TARGETS_BY_CHANNEL_TARGET = Map.of();
+    private static Map<AnimationTarget, Codec<Keyframe>> KEYFRAME_CODECS = Map.of();
     private static String TARGET_LIST = "";
-    private static String INTERPOLATION_LIST = "";
-
-    static {
-        recomputeDerivedFields();
-    }
 
     private AnimationTypeManager() {}
-
-    /**
-     * Gets the {@link AnimationTarget} associated with the given {@code name}.
-     */
-    @Nullable
-    public static AnimationTarget getTarget(Identifier name) {
-        return TARGETS.get(name);
-    }
-
-    /**
-     * Gets the {@link Identifier} associated with the given {@code target}.
-     */
-    @Nullable
-    public static Identifier getTargetName(AnimationTarget target) {
-        return TARGETS.inverse().get(target);
-    }
 
     /**
      * Gets the full {@link AnimationTarget} from its {@link AnimationTarget#channelTarget() channelTarget}.
@@ -83,59 +55,19 @@ public final class AnimationTypeManager {
     }
 
     /**
-     * Gets the {@link AnimationChannel.Interpolation interpolation function} associated with the given {@code name}.
-     */
-    public static AnimationChannel.@Nullable Interpolation getInterpolation(Identifier name) {
-        return INTERPOLATIONS.get(name);
-    }
-
-    /**
-     * Gets the {@link Identifier} associated with the given {@code interpolation}.
-     */
-    @Nullable
-    public static Identifier getInterpolationName(AnimationChannel.Interpolation interpolation) {
-        return INTERPOLATIONS.inverse().get(interpolation);
-    }
-
-    /**
      * Retrieves a comma-separated list of all available {@link AnimationTarget}s, for use in error messages.
      */
     public static String getTargetList() {
         return TARGET_LIST;
     }
 
-    /**
-     * Retrieves a comma-separated list of all available
-     * {@link AnimationChannel.Interpolation interpolation function}s, for use in error messages.
-     */
-    public static String getInterpolationList() {
-        return INTERPOLATION_LIST;
-    }
-
     @ApiStatus.Internal
-    public static void init() {
-        final var targets = ImmutableBiMap.<Identifier, AnimationTarget>builder().putAll(DEFAULT_TARGETS);
-        final var interpolations = ImmutableBiMap.<Identifier, AnimationChannel.Interpolation>builder().putAll(DEFAULT_INTERPOLATIONS);
-        final var event = new RegisterJsonAnimationTypesEvent(targets, interpolations);
-        ModLoader.postEventWrapContainerInModOrder(event);
-        TARGETS = targets.buildOrThrow();
-        INTERPOLATIONS = interpolations.buildOrThrow();
-        recomputeDerivedFields();
-    }
-
-    private static void recomputeDerivedFields() {
-        TARGETS_BY_CHANNEL_TARGET = TARGETS.values()
-                .stream()
+    public static void recomputeTargetDerivedFields(Registry<AnimationTarget> registry) {
+        TARGETS_BY_CHANNEL_TARGET = registry.stream()
                 .collect(ImmutableMap.toImmutableMap(AnimationTarget::channelTarget, Function.identity()));
-        KEYFRAME_CODECS = TARGETS.values()
-                .stream()
+        KEYFRAME_CODECS = registry.stream()
                 .collect(ImmutableMap.toImmutableMap(Function.identity(), AnimationParser::keyframeCodec));
-        TARGET_LIST = TARGETS.keySet()
-                .stream()
-                .map(Identifier::toString)
-                .collect(Collectors.joining(", "));
-        INTERPOLATION_LIST = INTERPOLATIONS.keySet()
-                .stream()
+        TARGET_LIST = registry.keySet().stream()
                 .map(Identifier::toString)
                 .collect(Collectors.joining(", "));
     }

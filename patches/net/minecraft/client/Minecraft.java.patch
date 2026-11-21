@@ -58,13 +58,11 @@
          this.textInputManager = new TextInputManager(this.window);
          this.sdlEventHandler.flushInputEvents();
          this.window
-@@ -570,6 +_,9 @@
+@@ -570,6 +_,7 @@
          this.keyboardHandler = new KeyboardHandler(this);
          this.options.applyGraphicsPreset(this.options.graphicsPreset().get());
          this.resourceManager = new ReloadableResourceManager(PackType.CLIENT_RESOURCES);
 +        net.neoforged.neoforge.client.loading.ClientModLoader.setupModResourcePacks(this.resourcePackRepository);
-+        // Neo: Move client bootstrap to after mod loading so that events can be fired for it.
-+        ClientBootstrap.bootstrap();
          this.resourcePackRepository.reload();
          this.options.loadSelectedResourcePacks(this.resourcePackRepository);
          this.languageManager = new LanguageManager(this, this.options.languageCode, var1 -> {

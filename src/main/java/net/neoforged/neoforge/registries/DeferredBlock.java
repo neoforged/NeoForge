@@ -59,7 +59,7 @@ public class DeferredBlock<T extends Block> extends DeferredHolder<Block, T> imp
     }
 
     protected DeferredBlock(ResourceKey<Block> key) {
-        super(key);
+        super(Registries.BLOCK, key);
     }
 
     @Override

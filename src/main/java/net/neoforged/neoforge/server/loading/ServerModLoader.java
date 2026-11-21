@@ -27,7 +27,7 @@ public class ServerModLoader extends CommonModLoader {
         ServerModLoader.gameTestServer = gameTestServer;
         LanguageHook.loadBuiltinLanguages();
         try {
-            begin(() -> {}, false);
+            beginServer(() -> {}, false);
             load(() -> {});
         } catch (ModLoadingException error) {
             ServerModLoader.hasErrors = true;

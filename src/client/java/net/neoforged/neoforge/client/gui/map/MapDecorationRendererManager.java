@@ -11,14 +11,14 @@ import java.util.Map;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.MapRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
-import net.neoforged.fml.ModLoader;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public final class MapDecorationRendererManager {
     private static final Map<MapDecorationType, IMapDecorationRenderer> RENDERERS = new IdentityHashMap<>();
-    private static boolean initialized = false;
 
     private MapDecorationRendererManager() {}
 
@@ -38,12 +38,13 @@ public final class MapDecorationRendererManager {
         return false;
     }
 
-    public static void init() {
-        if (initialized) {
-            throw new IllegalStateException("Duplicate initialization of MapDecorationRendererManager");
-        }
-
-        initialized = true;
-        ModLoader.postEvent(new RegisterMapDecorationRenderersEvent(RENDERERS));
+    public static void updateMapping(Registry<IMapDecorationRenderer> registry) {
+        RENDERERS.clear();
+        registry.listElements().forEach(holder -> {
+            MapDecorationType decorationType = BuiltInRegistries.MAP_DECORATION_TYPE.getValue(holder.key().identifier());
+            if (decorationType != null) {
+                RENDERERS.put(decorationType, holder.value());
+            }
+        });
     }
 }

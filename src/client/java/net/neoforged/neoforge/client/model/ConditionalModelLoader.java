@@ -24,7 +24,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.GsonHelper;
 import net.neoforged.neoforge.client.model.generators.loaders.ConditionalModelBuilder;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
 
@@ -35,7 +34,6 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 ///
 /// @see ConditionalModelBuilder
 public final class ConditionalModelLoader implements UnbakedModelLoader<UnbakedModel> {
-    public static final Identifier ID = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "conditional");
     public static final ConditionalModelLoader INSTANCE = new ConditionalModelLoader();
     public static final String INLINE_KEY = "model";
     public static final String FALLBACK_KEY = "fallback";

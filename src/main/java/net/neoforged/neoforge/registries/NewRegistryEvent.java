@@ -7,11 +7,8 @@ package net.neoforged.neoforge.registries;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.Registry;
-import net.minecraft.core.WritableRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
 
@@ -29,7 +26,7 @@ import net.neoforged.fml.event.IModBusEvent;
  * @see ModifyRegistriesEvent
  */
 public class NewRegistryEvent extends Event implements IModBusEvent {
-    private final List<Registry<?>> registries = new ArrayList<>();
+    final List<Registry<?>> registries = new ArrayList<>();
 
     NewRegistryEvent() {}
 
@@ -53,24 +50,5 @@ public class NewRegistryEvent extends Event implements IModBusEvent {
      */
     public <T> void register(Registry<T> registry) {
         this.registries.add(registry);
-    }
-
-    void fill() {
-        ((BaseMappedRegistry<?>) BuiltInRegistries.REGISTRY).unfreeze(true);
-
-        for (final var registry : this.registries) {
-            registerToRootRegistry(registry);
-        }
-
-        ((WritableRegistry<?>) BuiltInRegistries.REGISTRY).freeze();
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private void registerToRootRegistry(Registry<?> registry) {
-        Identifier registryName = registry.key().identifier();
-        if (BuiltInRegistries.REGISTRY.containsKey(registryName))
-            throw new IllegalStateException("Attempted duplicate registration of registry " + registryName);
-
-        ((WritableRegistry) BuiltInRegistries.REGISTRY).register(registry.key(), registry, RegistrationInfo.BUILT_IN);
     }
 }

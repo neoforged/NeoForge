@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.client.model;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -13,30 +12,19 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import java.io.Reader;
 import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.stream.Collectors;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.client.resources.model.cuboid.CuboidModel;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
-import net.neoforged.fml.ModLoader;
-import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.registries.NeoForgeClientRegistries;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
-public class UnbakedModelParser {
-    private static ImmutableMap<Identifier, UnbakedModelLoader<?>> LOADERS;
-
+public final class UnbakedModelParser {
     @Nullable
     public static UnbakedModelLoader<?> get(Identifier name) {
-        return LOADERS.get(name);
-    }
-
-    @ApiStatus.Internal
-    public static void init() {
-        var loaders = new HashMap<Identifier, UnbakedModelLoader<?>>();
-        ModLoader.postEventWrapContainerInModOrder(new ModelEvent.RegisterLoaders(loaders));
-        LOADERS = ImmutableMap.copyOf(loaders);
+        return NeoForgeClientRegistries.UNBAKED_MODEL_LOADER.getValue(name);
     }
 
     public static UnbakedModel parse(Reader reader) {
@@ -69,7 +57,8 @@ public class UnbakedModelParser {
                         return loaderInstance.read(jsonObject, jsonDeserializationContext);
                     }
                     if (!optional) {
-                        throw new JsonParseException("Unknown loader: " + loader + " (did you forget to register it?) Available loaders: " + LOADERS.keySet().stream().map(Identifier::toString).collect(Collectors.joining(", ")));
+                        String knownLoaders = NeoForgeClientRegistries.UNBAKED_MODEL_LOADER.keySet().stream().map(Identifier::toString).collect(Collectors.joining(", ", "\n", ""));
+                        throw new JsonParseException("Unknown loader: " + loader + " (did you forget to register it?) Available loaders: " + knownLoaders);
                     }
                 }
 
@@ -77,4 +66,6 @@ public class UnbakedModelParser {
             }
         }
     }
+
+    private UnbakedModelParser() {}
 }
