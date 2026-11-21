@@ -195,20 +195,29 @@ public class LevelEventTests {
         test.onGameTest(helper -> {
             ServerLevel level = helper.getLevel();
             // A chunk that was never generated: far from the test, and shifted by the current time so that a level kept between
-            // runs, like the one of a client, does not have it from an earlier run either
+            // runs, like the one of a client, does not have it from an earlier run either. Should it still have it, the next
+            // chunks along X are tried, a few times
             ChunkPos farChunk = farChunk(helper, CHUNK_LOAD_EVENT_OFFSET);
-            ChunkPos pos = new ChunkPos(farChunk.x(), farChunk.z() + (int) (System.currentTimeMillis() / 1000 % 10000));
-            target.set(pos);
-            helper.assertFalse(level.getChunkSource().hasChunk(pos.x(), pos.z()), "Expected the far chunk not to be loaded yet");
+            int shift = (int) (System.currentTimeMillis() / 1000 % 10000);
 
             helper.startSequence()
                     .thenExecute(() -> {
-                        level.getChunk(pos.x(), pos.z());
-                        helper.assertValueEqual(loads, List.of(true), "Expected a single load event, for a new chunk; events are " + loads);
+                        for (int attempt = 0; attempt < 3; attempt++) {
+                            ChunkPos pos = new ChunkPos(farChunk.x() + attempt, farChunk.z() + shift);
+                            helper.assertFalse(level.getChunkSource().hasChunk(pos.x(), pos.z()), "Expected the far chunk not to be loaded yet");
+                            target.set(pos);
+                            loads.clear();
+                            level.getChunk(pos.x(), pos.z());
+                            if (loads.equals(List.of(true))) {
+                                return;
+                            }
+                        }
+                        helper.fail("Expected a single load event for a new chunk within three attempts; events of the last one are " + loads);
                     })
                     // The temporary ticket of getChunk expires, which lets the chunk go
-                    .thenWaitUntil(() -> helper.assertFalse(level.getChunkSource().hasChunk(pos.x(), pos.z()), "Expected the far chunk to be unloaded again"))
+                    .thenWaitUntil(() -> helper.assertFalse(level.getChunkSource().hasChunk(target.get().x(), target.get().z()), "Expected the far chunk to be unloaded again"))
                     .thenExecute(() -> {
+                        ChunkPos pos = target.get();
                         level.getChunk(pos.x(), pos.z());
                         helper.assertValueEqual(loads, List.of(true, false), "Expected a second load event, not for a new chunk; events are " + loads);
                     })
