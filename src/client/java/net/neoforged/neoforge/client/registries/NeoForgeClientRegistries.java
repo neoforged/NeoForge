@@ -62,5 +62,5 @@ public final class NeoForgeClientRegistries {
         private Keys() {}
     }
 
-    private NeoForgeClientRegistries() { }
+    private NeoForgeClientRegistries() {}
 }

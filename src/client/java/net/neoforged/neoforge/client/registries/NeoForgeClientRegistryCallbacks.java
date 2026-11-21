@@ -1,5 +1,6 @@
 package net.neoforged.neoforge.client.registries;
 
+import java.util.Locale;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -19,8 +20,6 @@ import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.common.world.NeoForgeEnvironmentAttributes;
 import net.neoforged.neoforge.registries.callback.AddCallback;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
-
-import java.util.Locale;
 
 final class NeoForgeClientRegistryCallbacks {
     static final class BlockEntityRendererCallbacks implements AddCallback<BlockEntityRendererProvider<?, ?>> {

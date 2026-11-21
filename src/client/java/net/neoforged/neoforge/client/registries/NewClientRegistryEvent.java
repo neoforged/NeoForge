@@ -1,14 +1,13 @@
 package net.neoforged.neoforge.client.registries;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.client.core.registries.BuiltInClientRegistries;
 import net.minecraft.core.Registry;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.registries.RegistryBuilder;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /// Fired when new client registries can be constructed and registered.
 ///
