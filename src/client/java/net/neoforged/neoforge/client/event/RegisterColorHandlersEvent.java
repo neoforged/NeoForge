@@ -6,14 +6,10 @@
 package net.neoforged.neoforge.client.event;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.MapCodec;
 import java.util.List;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.color.block.BlockTintSource;
-import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.ColorResolver;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -28,7 +24,6 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>These events are fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  *
  * @see BlockTintSources
- * @see RegisterColorHandlersEvent.ItemTintSources
  * @see RegisterColorHandlersEvent.ColorResolvers
  */
 public abstract class RegisterColorHandlersEvent extends Event implements IModBusEvent {
@@ -84,27 +79,6 @@ public abstract class RegisterColorHandlersEvent extends Event implements IModBu
 
         public void register(ColorResolver resolver) {
             this.builder.add(resolver);
-        }
-    }
-
-    /**
-     * Fired for registering item color handlers.
-     * <p>
-     * This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}
-     *
-     * @see ItemTintSource
-     * @see ItemTintSources
-     */
-    public static class ItemTintSources extends RegisterColorHandlersEvent {
-        private final ExtraCodecs.LateBoundIdMapper<Identifier, MapCodec<? extends ItemTintSource>> idMapper;
-
-        @ApiStatus.Internal
-        public ItemTintSources(ExtraCodecs.LateBoundIdMapper<Identifier, MapCodec<? extends ItemTintSource>> idMapper) {
-            this.idMapper = idMapper;
-        }
-
-        public void register(Identifier location, MapCodec<? extends ItemTintSource> source) {
-            this.idMapper.put(location, source);
         }
     }
 }

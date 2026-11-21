@@ -43,7 +43,6 @@ import org.jspecify.annotations.Nullable;
  * <p>These events are fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  *
  * @see EntityRenderersEvent.RegisterLayerDefinitions
- * @see EntityRenderersEvent.RegisterRenderers
  * @see EntityRenderersEvent.AddLayers
  */
 public abstract class EntityRenderersEvent extends Event implements IModBusEvent {

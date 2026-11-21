@@ -6,9 +6,14 @@
 package net.neoforged.neoforge.client;
 
 import com.mojang.brigadier.Command;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.DetectedVersion;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.item.ItemTintSource;
+import net.minecraft.client.core.registries.ClientRegistries;
 import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.texture.atlas.SpriteSource;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.component.DataComponents;
@@ -41,12 +46,9 @@ import net.neoforged.neoforge.client.event.ClientResourceLoadFinishedEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
-import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterFeatureRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
-import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterRecipeBookSearchCategoriesEvent;
-import net.neoforged.neoforge.client.event.RegisterSpriteSourcesEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
@@ -61,6 +63,7 @@ import net.neoforged.neoforge.client.model.item.TrimmedArmorModel;
 import net.neoforged.neoforge.client.model.obj.ObjLoader;
 import net.neoforged.neoforge.client.recipebook.RecipeDisplayResultIdExtractor;
 import net.neoforged.neoforge.client.recipebook.RecipeDisplayResultTooltipExtractor;
+import net.neoforged.neoforge.client.registries.NeoForgeClientRegistriesSetup;
 import net.neoforged.neoforge.client.resources.VanillaClientListeners;
 import net.neoforged.neoforge.client.submit.ExtendedBlockModelFeatureRenderer;
 import net.neoforged.neoforge.client.textures.DirectoryPalettedPermutations;
@@ -90,12 +93,17 @@ import net.neoforged.neoforge.event.DefaultDataComponentsBoundEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.display.FluidStackContentsFactory;
 import net.neoforged.neoforge.internal.BrandingControl;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 @Mod(value = "neoforge", dist = Dist.CLIENT)
 public class ClientNeoForgeMod {
+    private static final DeferredRegister<MapCodec<? extends ItemModel.Unbaked>> ITEM_MODELS = DeferredRegister.create(ClientRegistries.ITEM_MODEL_TYPE, NeoForgeMod.MOD_ID);
+    private static final DeferredRegister<MapCodec<? extends ItemTintSource>> ITEM_TINT_SOURCES = DeferredRegister.create(ClientRegistries.ITEM_TINT_SOURCE_TYPE, NeoForgeMod.MOD_ID);
+    private static final DeferredRegister<MapCodec<? extends SpriteSource>> SPRITE_SOURCES = DeferredRegister.create(ClientRegistries.SPRITE_SOURCE_TYPE, NeoForgeMod.MOD_ID);
+
     private static Identifier neoForgeId(String path) {
         return Identifier.fromNamespaceAndPath("neoforge", path);
     }
@@ -105,6 +113,7 @@ public class ClientNeoForgeMod {
 
         ClientCommandHandler.init();
         TagConventionLogWarningClient.init();
+        NeoForgeClientRegistriesSetup.setup(modEventBus);
 
         modEventBus.register(ClientNeoForgeMod.class);
 
@@ -112,6 +121,18 @@ public class ClientNeoForgeMod {
         modEventBus.register(NeoForgeClientConfig.class);
 
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+
+        ITEM_MODELS.register(modEventBus);
+        ITEM_TINT_SOURCES.register(modEventBus);
+        SPRITE_SOURCES.register(modEventBus);
+
+        ITEM_MODELS.register("trimmed_armor", () -> TrimmedArmorModel.Unbaked.MAP_CODEC);
+        ITEM_MODELS.register("fluid_container", () -> DynamicFluidContainerModel.Unbaked.MAP_CODEC);
+
+        ITEM_TINT_SOURCES.register("fluid_contents_tint", () -> FluidContentsTint.MAP_CODEC);
+
+        SPRITE_SOURCES.register("namespaced_directory", () -> NamespacedDirectoryLister.CODEC);
+        SPRITE_SOURCES.register("directory_paletted_permutations", () -> DirectoryPalettedPermutations.CODEC);
 
         NeoForge.EVENT_BUS.addListener((final ClientPlayerNetworkEvent.LoggingOut event) -> {
             // Reset WORLD type config caches
@@ -226,12 +247,6 @@ public class ClientNeoForgeMod {
     }
 
     @SubscribeEvent
-    static void onRegisterSpriteSourceTypes(RegisterSpriteSourcesEvent event) {
-        event.register(NamespacedDirectoryLister.ID, NamespacedDirectoryLister.CODEC);
-        event.register(DirectoryPalettedPermutations.ID, DirectoryPalettedPermutations.CODEC);
-    }
-
-    @SubscribeEvent
     static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
         event.registerFluidType(new IClientFluidTypeExtensions() {
             private static final Identifier UNDERWATER_LOCATION = Identifier.withDefaultNamespace("textures/misc/underwater.png");
@@ -254,17 +269,6 @@ public class ClientNeoForgeMod {
                     null,
                     null), stillFluid, flowingFluid);
         });
-    }
-
-    @SubscribeEvent
-    static void registerItemTintSources(RegisterColorHandlersEvent.ItemTintSources event) {
-        event.register(neoForgeId("fluid_contents_tint"), FluidContentsTint.MAP_CODEC);
-    }
-
-    @SubscribeEvent
-    static void registerItemModels(RegisterItemModelsEvent event) {
-        event.register(neoForgeId("trimmed_armor"), TrimmedArmorModel.Unbaked.MAP_CODEC);
-        event.register(neoForgeId("fluid_container"), DynamicFluidContainerModel.Unbaked.MAP_CODEC);
     }
 
     @SubscribeEvent

@@ -40,7 +40,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
 
-public class DatagenModLoader extends CommonModLoader {
+@ApiStatus.NonExtendable
+public abstract class DatagenModLoader extends CommonModLoader {
     private static final Logger LOGGER = LogManager.getLogger();
     private static DataGeneratorConfig dataGeneratorConfig;
     private static boolean runningDataGen;
@@ -50,17 +51,32 @@ public class DatagenModLoader extends CommonModLoader {
     }
 
     @ApiStatus.Internal
-    public static void begin(
-            final Set<String> mods,
-            final Path path,
-            final Collection<Path> inputs,
+    public static void beginServer(
+            Set<String> mods,
+            Path path,
+            Collection<Path> inputs,
             Collection<Path> existingPacks,
-            final boolean devToolGenerators,
-            final boolean reportsGenerator,
-            final boolean structureValidator,
-            final boolean flat,
+            boolean devToolGenerators,
+            boolean reportsGenerator,
+            boolean structureValidator,
+            boolean flat,
             boolean uncached,
-            Runnable setup,
+            DataGenerator vanillaGenerator) {
+        begin(() -> beginServer(() -> {}, true), mods, path, inputs, existingPacks, devToolGenerators, reportsGenerator, structureValidator, flat, uncached, GatherDataEvent.Server::new, vanillaGenerator, _ -> {});
+    }
+
+    @ApiStatus.Internal
+    protected static void begin(
+            Runnable bootstrapper,
+            Set<String> mods,
+            Path path,
+            Collection<Path> inputs,
+            Collection<Path> existingPacks,
+            boolean devToolGenerators,
+            boolean reportsGenerator,
+            boolean structureValidator,
+            boolean flat,
+            boolean uncached,
             GatherDataEvent.GatherDataEventGenerator eventGenerator,
             DataGenerator vanillaGenerator,
             Consumer<Consumer<PackResources>> vanillaClientAssets) {
@@ -69,10 +85,9 @@ public class DatagenModLoader extends CommonModLoader {
         LOGGER.info("Initializing Data Gatherer for mods {}", mods);
         runningDataGen = true;
         Bootstrap.bootStrap();
-        begin(() -> {}, true);
+        bootstrapper.run();
         CompletableFuture<HolderLookup.Provider> worldLookupProvider = CompletableFuture.supplyAsync(VanillaRegistries::createWorldLookup, Util.backgroundExecutor());
         dataGeneratorConfig = new DataGeneratorConfig(mods, path, inputs, worldLookupProvider, devToolGenerators, reportsGenerator, structureValidator, flat, vanillaGenerator, existingPacks, vanillaClientAssets);
-        setup.run();
 
         // Gather datapack registries first
         var mainGatherer = new DatapackRegistryGathererImpl(dataGeneratorConfig.getMods());

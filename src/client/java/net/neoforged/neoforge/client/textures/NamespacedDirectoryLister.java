@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.texture.atlas.sources.DirectoryLister;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.neoforged.neoforge.common.NeoForgeMod;
 
 /**
  * Namespace-aware version of {@link DirectoryLister}. This version should be preferred when several textures from
@@ -25,7 +24,6 @@ public record NamespacedDirectoryLister(String namespace, String sourcePath, Str
             Codec.STRING.fieldOf("namespace").forGetter(lister -> lister.namespace),
             Codec.STRING.fieldOf("source").forGetter(lister -> lister.sourcePath),
             Codec.STRING.fieldOf("prefix").forGetter(lister -> lister.idPrefix)).apply(inst, NamespacedDirectoryLister::new));
-    public static final Identifier ID = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "namespaced_directory");
 
     @Override
     public void run(ResourceManager resourceManager, Output output) {

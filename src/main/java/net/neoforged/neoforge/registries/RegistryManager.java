@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,10 +23,13 @@ import java.util.stream.Collectors;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.Registry;
+import net.minecraft.core.WritableRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.loading.progress.StartupNotificationManager;
 import net.neoforged.neoforge.network.configuration.RegistryDataMapNegotiation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
@@ -42,11 +46,15 @@ import org.slf4j.MarkerFactory;
 public class RegistryManager {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Marker REGISTRIES = MarkerFactory.getMarker("REGISTRIES");
+    public static final RegistryManager INSTANCE = new RegistryManager();
+    @Nullable
     private static Set<Identifier> pendingModdedRegistries = new HashSet<>();
     private static Set<Identifier> vanillaRegistryKeys = Set.of();
     private static Map<Identifier, RegistrySnapshot> vanillaSnapshot = null;
     private static Map<Identifier, RegistrySnapshot> frozenSnapshot = null;
     private static Map<ResourceKey<Registry<?>>, Map<Identifier, DataMapType<?, ?>>> dataMaps = Map.of();
+
+    protected RegistryManager() {}
 
     /**
      * Called by {@link RegistryBuilder} to make sure that modders don't forget to register their registries.
@@ -63,6 +71,43 @@ public class RegistryManager {
         }
     }
 
+    protected static void registerRegistries(Registry<? extends Registry<?>> rootRegistry, List<Registry<?>> registries) {
+        ((BaseMappedRegistry<?>) rootRegistry).unfreeze(true);
+        for (Registry<?> registry : registries) {
+            registerToRootRegistry(rootRegistry, registry);
+        }
+        ((WritableRegistry<?>) rootRegistry).freeze();
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static void registerToRootRegistry(Registry<? extends Registry<?>> rootRegistry, Registry<?> registry) {
+        Identifier registryName = registry.key().identifier();
+        if (rootRegistry.containsKey(registryName)) {
+            throw new IllegalStateException("Attempted duplicate registration of registry " + registryName);
+        }
+
+        ((WritableRegistry) rootRegistry).register(registry.key(), registry, RegistrationInfo.BUILT_IN);
+    }
+
+    protected static void unfreezeRegistries(Registry<? extends Registry<?>> rootRegistry) {
+        rootRegistry.stream().filter(r -> r instanceof BaseMappedRegistry).forEach(r -> ((BaseMappedRegistry<?>) r).unfreeze(true));
+    }
+
+    protected static void freezeRegistries(Registry<? extends Registry<?>> rootRegistry) {
+        rootRegistry.stream().filter(r -> r instanceof MappedRegistry).forEach(r -> {
+            // HolderSet.Named may be used for registry objects, vanilla binds these tags so freeze doesn't throw for unbound tags
+            ((MappedRegistry<?>) r).bindAllTagsToEmpty();
+            ((MappedRegistry<?>) r).freeze();
+        });
+    }
+
+    protected static void postRegisterEvent(Registry<? extends Registry<?>> rootRegistry, Identifier registryName) {
+        Registry<?> registry = Objects.requireNonNull(rootRegistry.getValue(registryName));
+        RegisterEvent registerEvent = new RegisterEvent(registry);
+        StartupNotificationManager.modLoaderMessage("REGISTERING " + registryName);
+        ModLoader.postEventWrapContainerInModOrder(registerEvent);
+    }
+
     @Nullable
     public static <R> DataMapType<R, ?> getDataMap(ResourceKey<? extends Registry<R>> registry, Identifier key) {
         final var map = dataMaps.get(registry);
@@ -76,25 +121,47 @@ public class RegistryManager {
         return dataMaps;
     }
 
-    public static void postNewRegistryEvent() {
-        NewRegistryEvent staticEvent = new NewRegistryEvent();
-        NewDatapackRegistryEvent datapackEvent = new NewDatapackRegistryEvent();
+    public void postNewRegistryEvent() {
         vanillaRegistryKeys = Set.copyOf(BuiltInRegistries.REGISTRY.keySet());
 
+        NewRegistryEvent staticEvent = new NewRegistryEvent();
         ModLoader.postEventWrapContainerInModOrder(staticEvent);
-        ModLoader.postEventWrapContainerInModOrder(datapackEvent);
+        registerRegistries(BuiltInRegistries.REGISTRY, staticEvent.registries);
 
-        staticEvent.fill();
+        NewDatapackRegistryEvent datapackEvent = new NewDatapackRegistryEvent();
+        ModLoader.postEventWrapContainerInModOrder(datapackEvent);
         datapackEvent.process();
 
         ModLoader.postEvent(new ModifyRegistriesEvent());
+    }
 
-        pendingModdedRegistries.removeIf(BuiltInRegistries.REGISTRY::containsKey);
+    public final void validateRegistries() {
+        assert pendingModdedRegistries != null;
+
+        pendingModdedRegistries.removeIf(this::isKnownRegistry);
         if (!pendingModdedRegistries.isEmpty()) {
-            throw new IllegalStateException("The following registries were created but not registered to NewRegistryEvent:"
+            throw new IllegalStateException("The following registries were created but not registered to NewRegistryEvent or NewClientRegistryEvent:"
                     + pendingModdedRegistries.stream().map(Identifier::toString).collect(Collectors.joining("\n\t - ", "\n\t - ", "")));
         }
         pendingModdedRegistries = null;
+    }
+
+    protected boolean isKnownRegistry(Identifier registry) {
+        return BuiltInRegistries.REGISTRY.containsKey(registry);
+    }
+
+    public void postRegisterEvents() {
+        GameData.unfreezeData();
+        for (Identifier registryName : getRegistrationOrder()) {
+            try {
+                RegistryManager.postRegisterEvent(BuiltInRegistries.REGISTRY, registryName);
+            } catch (Throwable t) {
+                LOGGER.error("Failed to register some entries, rolling back to VANILLA state", t);
+                RegistryManager.revertToVanilla();
+                throw t;
+            }
+        }
+        GameData.freezeData();
     }
 
     public static void initDataMaps() {
@@ -248,6 +315,26 @@ public class RegistryManager {
         return vanillaRegistryKeys;
     }
 
+    /// Creates a [LinkedHashSet] containing the ordered list of registry names in the registration order.
+    ///
+    /// The order is as follows:
+    /// - Attributes, Data Component Types, Particle Types
+    /// - The remaining vanilla registries in vanilla order
+    /// - Modded registries in alphabetical order
+    ///
+    /// Due to static init issues, this is not necessarily the order that vanilla objects are bootstrapped in.
+    ///
+    /// @return A [LinkedHashSet] containing the registration order.
+    public static Set<Identifier> getRegistrationOrder() {
+        Set<Identifier> ordered = new LinkedHashSet<>();
+        ordered.add(Registries.ATTRIBUTE.identifier()); // Vanilla order is incorrect, both Item and MobEffect depend on Attribute at construction time.
+        ordered.add(Registries.DATA_COMPONENT_TYPE.identifier()); // Vanilla order is incorrect, Item depends on data components at construction time.
+        ordered.add(Registries.PARTICLE_TYPE.identifier()); // Vanilla order is incorrect, both Block and MobEffect depend on ParticleType at construction time.
+        ordered.addAll(BuiltInRegistries.getVanillaRegistrationOrder());
+        ordered.addAll(BuiltInRegistries.REGISTRY.keySet().stream().sorted(Identifier::compareNamespaced).toList());
+        return ordered;
+    }
+
     public enum SnapshotType {
         /**
          * The snapshot can be synced to clients.
@@ -268,6 +355,7 @@ public class RegistryManager {
         context.finishCurrentTask(RegistryDataMapNegotiation.TYPE);
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void assertIsSyncedBuiltInRegistry(ResourceKey<? extends Registry<?>> registryKey) {
         Registry<?> value = BuiltInRegistries.REGISTRY.getValue((ResourceKey) registryKey);
         if (value != null && !value.doesSync()) {

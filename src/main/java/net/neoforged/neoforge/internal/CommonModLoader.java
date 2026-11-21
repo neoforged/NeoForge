@@ -37,23 +37,20 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public abstract class CommonModLoader {
-    private static boolean registriesLoaded = false;
-
-    public static boolean areRegistriesLoaded() {
-        return registriesLoaded;
+    protected static void beginServer(Runnable periodicTask, boolean datagen) {
+        begin(periodicTask, RegistryManager.INSTANCE, datagen);
     }
 
-    protected static void begin(Runnable periodicTask, boolean datagen) {
+    protected static void begin(Runnable periodicTask, RegistryManager registryManager, boolean datagen) {
         var syncExecutor = ModWorkManager.syncExecutor();
 
         ModLoader.gatherAndInitializeMods(syncExecutor, ModWorkManager.parallelExecutor(), periodicTask);
 
         ModLoader.runInitTask("Registry initialization", syncExecutor, periodicTask, () -> {
-            RegistryManager.postNewRegistryEvent();
-            GameData.unfreezeData();
-            GameData.postRegisterEvents();
-            GameData.freezeData();
-            registriesLoaded = true;
+            registryManager.postNewRegistryEvent();
+            registryManager.validateRegistries();
+            registryManager.postRegisterEvents();
+            GameData.runPostRegistrationTasks();
         });
 
         if (!datagen) {

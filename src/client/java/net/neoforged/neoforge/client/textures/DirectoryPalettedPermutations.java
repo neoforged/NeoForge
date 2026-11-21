@@ -21,7 +21,6 @@ import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.neoforged.neoforge.common.NeoForgeMod;
 
 /// An implementation of vanilla's {@link PalettedPermutations} loader that uses a whole directory instead of just a list of contents.
 /// If you wish to use the PalettedPermutations system for something, using this would be preferred as it allows other mods to also utilize your system to its fullest extent.
@@ -35,7 +34,6 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 /// @param paletteKey  The palette key from [PalettedPermutations#paletteKey()], that will be loaded from `textures/palettes/<paletteKey>.png`
 /// @param palettePath The base directory used for the values of [PalettedPermutations#permutations()], that will be loaded from `textures/palettes/<palettePath>/*.png`
 public record DirectoryPalettedPermutations(String texturePath, Identifier paletteKey, String palettePath) implements SpriteSource {
-    public static final Identifier ID = Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "directory_paletted_permutations");
     public static final MapCodec<DirectoryPalettedPermutations> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.fieldOf("textures").forGetter(DirectoryPalettedPermutations::texturePath),
             Identifier.CODEC.fieldOf("palette_key").forGetter(DirectoryPalettedPermutations::paletteKey),
