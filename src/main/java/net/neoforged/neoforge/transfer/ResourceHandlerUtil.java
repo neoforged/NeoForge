@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Objects;
 import java.util.function.Predicate;
 import net.minecraft.CrashReport;
@@ -23,6 +24,8 @@ import org.jspecify.annotations.Nullable;
  * Utility methods for dealing with {@link ResourceHandler}.
  */
 public final class ResourceHandlerUtil {
+    private static final MethodHandles.Lookup TRANSACTION_CALLER = MethodHandles.lookup();
+
     private ResourceHandlerUtil() {}
 
     /**
@@ -148,7 +151,7 @@ public final class ResourceHandlerUtil {
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
         if (handler == null || amount == 0) return 0;
 
-        try (Transaction tx = Transaction.open(transaction)) {
+        try (Transaction tx = Transaction.open(transaction, TRANSACTION_CALLER)) {
             int inserted = 0;
             int size = handler.size();
             // Attempt to insert into indices with a non-empty resource first
@@ -203,7 +206,7 @@ public final class ResourceHandlerUtil {
         T resource = findExtractableResource(handler, filter, transaction);
         if (resource == null) return null;
 
-        try (var tx = Transaction.open(transaction)) {
+        try (var tx = Transaction.open(transaction, TRANSACTION_CALLER)) {
             int extracted = handler.extract(resource, amount, tx);
             if (extracted > 0) {
                 tx.commit();
@@ -281,7 +284,7 @@ public final class ResourceHandlerUtil {
         TransferPreconditions.checkNonNegative(amount);
         if (from == null || to == null || amount == 0) return 0;
 
-        try (Transaction subTransaction = Transaction.open(transaction)) {
+        try (Transaction subTransaction = Transaction.open(transaction, TRANSACTION_CALLER)) {
             int totalMoved = 0;
             int size = from.size();
 
@@ -291,13 +294,13 @@ public final class ResourceHandlerUtil {
 
                 // check how much can be extracted
                 int maxExtracted;
-                try (Transaction simulatedExtract = Transaction.open(subTransaction)) {
+                try (Transaction simulatedExtract = Transaction.open(subTransaction, TRANSACTION_CALLER)) {
                     maxExtracted = from.extract(index, fromResource, amount - totalMoved, simulatedExtract);
                 }
 
                 if (maxExtracted == 0) continue;
 
-                try (Transaction transferTransaction = Transaction.open(subTransaction)) {
+                try (Transaction transferTransaction = Transaction.open(subTransaction, TRANSACTION_CALLER)) {
                     // check how much can be inserted
                     int inserted;
                     if (stacking) {
@@ -405,13 +408,13 @@ public final class ResourceHandlerUtil {
 
                 // check how much can be extracted
                 int extracted;
-                try (Transaction simulatedExtractTransaction = Transaction.open(transaction)) {
+                try (Transaction simulatedExtractTransaction = Transaction.open(transaction, TRANSACTION_CALLER)) {
                     extracted = from.extract(index, fromResource, amount - totalMoved, simulatedExtractTransaction);
                 }
 
                 if (extracted == 0) continue;
 
-                try (Transaction transferTransaction = Transaction.open(transaction)) {
+                try (Transaction transferTransaction = Transaction.open(transaction, TRANSACTION_CALLER)) {
                     // check how much can be inserted
                     int inserted;
                     if (stacking) {
@@ -495,7 +498,7 @@ public final class ResourceHandlerUtil {
             ResourceHandler<T> handler,
             Predicate<T> filter,
             @Nullable TransactionContext transaction) {
-        try (Transaction temp = Transaction.open(transaction)) {
+        try (Transaction temp = Transaction.open(transaction, TRANSACTION_CALLER)) {
             int size = handler.size();
             for (int index = 0; index < size; index++) {
                 T resource = handler.getResource(index);
