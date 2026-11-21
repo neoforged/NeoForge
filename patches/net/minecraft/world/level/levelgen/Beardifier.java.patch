@@ -1,14 +1,27 @@
 --- a/net/minecraft/world/level/levelgen/Beardifier.java
 +++ b/net/minecraft/world/level/levelgen/Beardifier.java
-@@ -51,7 +_,12 @@
+@@ -51,7 +_,25 @@
  
                  for (StructurePiece piece : start.getPieces()) {
                      if (piece.isCloseToChunk(chunkPos, 12)) {
 -                        if (piece instanceof PoolElementStructurePiece poolPiece) {
 +                        if (piece instanceof net.neoforged.neoforge.common.world.PieceBeardifierModifier pieceBeardifierModifier) {
 +                            if (pieceBeardifierModifier.getTerrainAdjustment() != TerrainAdjustment.NONE) {
-+                                rigids.add(new Beardifier.Rigid(pieceBeardifierModifier.getBeardifierBox(), pieceBeardifierModifier.getTerrainAdjustment(), pieceBeardifierModifier.getGroundLevelDelta()));
++                                rigids.add(new Beardifier.Rigid(pieceBeardifierModifier.getBeardifierBox(), pieceBeardifierModifier.getTerrainAdjustment(), pieceBeardifierModifier.getBeardifierGroundLevelDelta()));
 +                                anyPieceBoundingBox = includeBoundingBox(anyPieceBoundingBox, pieceBeardifierModifier.getBeardifierBox());
++                            }
++
++                            for (JigsawJunction junction : pieceBeardifierModifier.getBeardifierJunctions()) {
++                                int junctionX = junction.getSourceX();
++                                int junctionZ = junction.getSourceZ();
++                                if (junctionX > chunkStartBlockX - 12
++                                    && junctionZ > chunkStartBlockZ - 12
++                                    && junctionX < chunkStartBlockX + 15 + 12
++                                    && junctionZ < chunkStartBlockZ + 15 + 12) {
++                                    junctions.add(junction);
++                                    BoundingBox junctionBox = new BoundingBox(new BlockPos(junctionX, junction.getSourceGroundY(), junctionZ));
++                                    anyPieceBoundingBox = includeBoundingBox(anyPieceBoundingBox, junctionBox);
++                                }
 +                            }
 +                        } else if (piece instanceof PoolElementStructurePiece poolPiece) {
                              StructureTemplatePool.Projection projection = poolPiece.getElement().getProjection();
