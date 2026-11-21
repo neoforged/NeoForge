@@ -65,7 +65,7 @@
              xo,
              yo,
              positioner,
-@@ -1066,15 +_,27 @@
+@@ -1066,10 +_,18 @@
          boolean extraSpaceAfterFirstLine
      ) {
          this.setTooltipForNextFrameInternal(
@@ -75,28 +75,16 @@
          );
      }
  
-     private static List<ClientTooltipComponent> createTooltipComponents(List<Component> texts, Optional<TooltipComponent> optionalImage) {
-         List<ClientTooltipComponent> components = texts.stream()
--            .map(Component::getVisualOrderText)
--            .map(ClientTooltipComponent::create)
--            .collect(Util.toMutableList());
-+                .map(Component::getVisualOrderText)
-+                .map(ClientTooltipComponent::create)
-+                .collect(Util.toMutableList());
-+        return createTooltipComponentsFinish(components, optionalImage);
-+    }
-+
 +    /// Neo: overload of [#createTooltipComponents(List, Optional)] with improved line wrapping
 +    private List<ClientTooltipComponent> createTooltipComponents(List<Component> texts, Optional<TooltipComponent> optionalImage, int xo, Font font) {
-+        List<ClientTooltipComponent> components = net.neoforged.neoforge.client.ClientHooks.gatherTooltipComponents(this.tooltipStack, texts, optionalImage, xo, this.guiWidth(), this.guiHeight(), font);
-+        return createTooltipComponentsFinish(components, optionalImage);
++        return net.neoforged.neoforge.client.ClientHooks.gatherTooltipComponents(this.tooltipStack, texts, optionalImage, xo, this.guiWidth(), this.guiHeight(), font);
 +    }
 +
-+    /// Neo: extracted from [#createTooltipComponents(List, Optional)] for re-use in [#createTooltipComponents(List, Optional, int, Font)]
-+    private static List<ClientTooltipComponent> createTooltipComponentsFinish(List<ClientTooltipComponent> components, Optional<TooltipComponent> optionalImage) {
-         optionalImage.ifPresent(image -> components.add(components.isEmpty() ? 0 : 1, ClientTooltipComponent.create(image)));
-         return components;
-     }
++    /// @deprecated Neo: use [#createTooltipComponents(List, Optional, int, Font)] instead
++    @Deprecated
+     private static List<ClientTooltipComponent> createTooltipComponents(List<Component> texts, Optional<TooltipComponent> optionalImage) {
+         List<ClientTooltipComponent> components = texts.stream()
+             .map(Component::getVisualOrderText)
 @@ -1117,13 +_,14 @@
      }
  

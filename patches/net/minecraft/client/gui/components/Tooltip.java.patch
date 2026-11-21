@@ -1,0 +1,22 @@
+--- a/net/minecraft/client/gui/components/Tooltip.java
++++ b/net/minecraft/client/gui/components/Tooltip.java
+@@ -68,7 +_,18 @@
+     }
+ 
+     public static Tooltip createForItem(List<Component> lines, @Nullable Component narration, ItemStack item) {
+-        return new Tooltip(CommonComponents.joinLines(lines), narration, item.getTooltipImage(), item.get(DataComponents.TOOLTIP_STYLE), false, true);
++        return createForItem(lines, narration, item.getTooltipImage(), item);
++    }
++
++    /// Neo: overload of [#createForItem(List, ItemStack)] allowing the tooltip image to be overriden
++    public static Tooltip createForItem(List<Component> lines, Optional<TooltipComponent> tooltipImage, ItemStack item) {
++        Component narration = lines.size() > 1 ? CommonComponents.joinLines(lines.subList(1, lines.size())) : null;
++        return createForItem(lines, narration, tooltipImage, item);
++    }
++
++    /// Neo: overload of [#createForItem(List, Component, ItemStack)] allowing the tooltip image to be overriden
++    public static Tooltip createForItem(List<Component> lines, @Nullable Component narration, Optional<TooltipComponent> tooltipImage, ItemStack item) {
++        return new Tooltip(CommonComponents.joinLines(lines), narration, tooltipImage, item.get(DataComponents.TOOLTIP_STYLE), false, true);
+     }
+ 
+     public Optional<TooltipComponent> component() {
