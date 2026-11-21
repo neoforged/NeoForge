@@ -4,11 +4,13 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.registries.callback.AddCallback;
+import net.neoforged.neoforge.registries.callback.BakeCallback;
 
 import java.util.Locale;
 
@@ -22,21 +24,31 @@ final class NeoForgeClientRegistryCallbacks {
         }
     }
 
-    static final class EntityRendererCallbacks implements AddCallback<EntityRendererProvider<?>> {
+    static final class EntityRendererCallbacks implements AddCallback<EntityRendererProvider<?>>, BakeCallback<EntityRendererProvider<?>> {
         static final EntityRendererCallbacks INSTANCE = new EntityRendererCallbacks();
 
         @Override
         public void onAdd(Registry<EntityRendererProvider<?>> registry, int id, ResourceKey<EntityRendererProvider<?>> key, EntityRendererProvider<?> value) {
             assertHasCommonCounterpart(registry, BuiltInRegistries.ENTITY_TYPE, key.identifier());
         }
+
+        @Override
+        public void onBake(Registry<EntityRendererProvider<?>> registry) {
+            EntityRenderers.collectMissingEntityRenderers();
+        }
     }
 
-    static final class MenuScreenCallbacks implements AddCallback<MenuScreens.ScreenConstructor<?, ?>> {
+    static final class MenuScreenCallbacks implements AddCallback<MenuScreens.ScreenConstructor<?, ?>>, BakeCallback<MenuScreens.ScreenConstructor<?, ?>> {
         static final MenuScreenCallbacks INSTANCE = new MenuScreenCallbacks();
 
         @Override
         public void onAdd(Registry<MenuScreens.ScreenConstructor<?, ?>> registry, int id, ResourceKey<MenuScreens.ScreenConstructor<?, ?>> key, MenuScreens.ScreenConstructor<?, ?> value) {
             assertHasCommonCounterpart(registry, BuiltInRegistries.MENU, key.identifier());
+        }
+
+        @Override
+        public void onBake(Registry<MenuScreens.ScreenConstructor<?, ?>> registry) {
+            MenuScreens.selfTest();
         }
     }
 
