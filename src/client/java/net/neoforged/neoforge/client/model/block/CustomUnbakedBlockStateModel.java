@@ -7,13 +7,11 @@ package net.neoforged.neoforge.client.model.block;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
-import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
+import net.neoforged.neoforge.client.registries.NeoForgeClientRegistries;
 
-/**
- * Interface for modded {@link BlockStateModel.Unbaked} implementations.
- *
- * <p>The codecs must be registered in {@link RegisterBlockStateModels}.
- */
+/// Interface for modded [BlockStateModel.Unbaked] implementations.
+///
+/// The codecs must be registered via [NeoForgeClientRegistries#BLOCK_STATE_MODEL_TYPE].
 public interface CustomUnbakedBlockStateModel extends BlockStateModel.Unbaked {
     /**
      * Returns the codec for this type of unbaked block state model.

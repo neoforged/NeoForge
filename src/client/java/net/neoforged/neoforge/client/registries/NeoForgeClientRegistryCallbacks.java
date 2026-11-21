@@ -9,6 +9,14 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.neoforged.neoforge.client.CustomCloudsRenderer;
+import net.neoforged.neoforge.client.CustomSkyboxRenderer;
+import net.neoforged.neoforge.client.CustomWeatherEffectRenderer;
+import net.neoforged.neoforge.client.entity.animation.AnimationTarget;
+import net.neoforged.neoforge.client.entity.animation.json.AnimationTypeManager;
+import net.neoforged.neoforge.client.gui.map.IMapDecorationRenderer;
+import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
+import net.neoforged.neoforge.common.world.NeoForgeEnvironmentAttributes;
 import net.neoforged.neoforge.registries.callback.AddCallback;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
 
@@ -58,6 +66,62 @@ final class NeoForgeClientRegistryCallbacks {
         @Override
         public void onAdd(Registry<ParticleProvider<?>> registry, int id, ResourceKey<ParticleProvider<?>> key, ParticleProvider<?> value) {
             assertHasCommonCounterpart(registry, BuiltInRegistries.PARTICLE_TYPE, key.identifier());
+        }
+    }
+
+    static final class CustomCloudsRendererCallbacks implements AddCallback<CustomCloudsRenderer> {
+        static final CustomCloudsRendererCallbacks INSTANCE = new CustomCloudsRendererCallbacks();
+
+        @Override
+        public void onAdd(Registry<CustomCloudsRenderer> registry, int id, ResourceKey<CustomCloudsRenderer> key, CustomCloudsRenderer value) {
+            if (NeoForgeEnvironmentAttributes.DEFAULT_CUSTOM_CLOUDS.equals(key.identifier())) {
+                throw new IllegalArgumentException("You cannot register a renderer for the default clouds");
+            }
+        }
+    }
+
+    static final class CustomSkyboxRendererCallbacks implements AddCallback<CustomSkyboxRenderer> {
+        static final CustomSkyboxRendererCallbacks INSTANCE = new CustomSkyboxRendererCallbacks();
+
+        @Override
+        public void onAdd(Registry<CustomSkyboxRenderer> registry, int id, ResourceKey<CustomSkyboxRenderer> key, CustomSkyboxRenderer value) {
+            if (NeoForgeEnvironmentAttributes.DEFAULT_CUSTOM_SKYBOX.equals(key.identifier())) {
+                throw new IllegalArgumentException("You cannot register a renderer for the default skybox");
+            }
+        }
+    }
+
+    static final class CustomWeatherEffectRendererCallbacks implements AddCallback<CustomWeatherEffectRenderer> {
+        static final CustomWeatherEffectRendererCallbacks INSTANCE = new CustomWeatherEffectRendererCallbacks();
+
+        @Override
+        public void onAdd(Registry<CustomWeatherEffectRenderer> registry, int id, ResourceKey<CustomWeatherEffectRenderer> key, CustomWeatherEffectRenderer value) {
+            if (NeoForgeEnvironmentAttributes.DEFAULT_CUSTOM_WEATHER_EFFECTS.equals(key.identifier())) {
+                throw new IllegalArgumentException("You cannot register a renderer for the default weather effects");
+            }
+        }
+    }
+
+    static final class AnimationChannelTargetCallbacks implements BakeCallback<AnimationTarget> {
+        static final AnimationChannelTargetCallbacks INSTANCE = new AnimationChannelTargetCallbacks();
+
+        @Override
+        public void onBake(Registry<AnimationTarget> registry) {
+            AnimationTypeManager.recomputeTargetDerivedFields(registry);
+        }
+    }
+
+    static final class MapDecorationRendererCallbacks implements AddCallback<IMapDecorationRenderer>, BakeCallback<IMapDecorationRenderer> {
+        static final MapDecorationRendererCallbacks INSTANCE = new MapDecorationRendererCallbacks();
+
+        @Override
+        public void onAdd(Registry<IMapDecorationRenderer> registry, int id, ResourceKey<IMapDecorationRenderer> key, IMapDecorationRenderer value) {
+            assertHasCommonCounterpart(registry, BuiltInRegistries.MAP_DECORATION_TYPE, key.identifier());
+        }
+
+        @Override
+        public void onBake(Registry<IMapDecorationRenderer> registry) {
+            MapDecorationRendererManager.updateMapping(registry);
         }
     }
 

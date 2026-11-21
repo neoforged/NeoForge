@@ -20,6 +20,17 @@ public final class NeoForgeClientRegistriesSetup {
     }
 
     private static void registerRegistries(NewClientRegistryEvent event) {
+        event.register(NeoForgeClientRegistries.BLOCK_STATE_MODEL_DISPATCHER_TYPE);
+        event.register(NeoForgeClientRegistries.BLOCK_STATE_MODEL_TYPE);
+        event.register(NeoForgeClientRegistries.UNBAKED_MODEL_LOADER);
+        event.register(NeoForgeClientRegistries.CUSTOM_CLOUDS_RENDERER);
+        event.register(NeoForgeClientRegistries.CUSTOM_SKYBOX_RENDERER);
+        event.register(NeoForgeClientRegistries.CUSTOM_WEATHER_EFFECT_RENDERER);
+        event.register(NeoForgeClientRegistries.ANIMATION_CHANNEL_TARGET);
+        event.register(NeoForgeClientRegistries.ANIMATION_CHANNEL_INTERPOLATION);
+        event.register(NeoForgeClientRegistries.WORLD_PRESET_EDITOR);
+        event.register(NeoForgeClientRegistries.MAP_DECORATION_RENDERER);
+        event.register(NeoForgeClientRegistries.PIPELINE_MODIFIER);
     }
 
     private static void modifyRegistries(ModifyClientRegistriesEvent event) {

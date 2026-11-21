@@ -9,17 +9,17 @@ import com.mojang.renderpearl.api.commands.RenderPass;
 import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.client.renderer.state.level.SkyRenderState;
 import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
-import net.neoforged.neoforge.client.event.RegisterCustomEnvironmentEffectRendererEvent;
+import net.neoforged.neoforge.client.registries.NeoForgeClientRegistries;
 import org.joml.Matrix4fc;
 
 /**
- * A custom skybox renderer that can be registered using {@link RegisterCustomEnvironmentEffectRendererEvent#registerSkyboxRenderer}
+ * A custom skybox renderer that can be registered via {@link NeoForgeClientRegistries#CUSTOM_SKYBOX_RENDERER}
  * and used with {@link net.neoforged.neoforge.common.world.NeoForgeEnvironmentAttributes#CUSTOM_SKYBOX}.
  * <p>
  * Custom render state needed for the various render methods must be extracted via {@link ExtractLevelRenderStateEvent}
  * and stored in the provided {@link LevelRenderState}.
  *
- * @see RegisterCustomEnvironmentEffectRendererEvent#registerSkyboxRenderer
+ * @see NeoForgeClientRegistries#CUSTOM_SKYBOX_RENDERER
  * @see net.neoforged.neoforge.common.world.NeoForgeEnvironmentAttributes#CUSTOM_SKYBOX
  */
 public interface CustomSkyboxRenderer {

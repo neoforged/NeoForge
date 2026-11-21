@@ -66,6 +66,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.EffectsInInventory;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.client.gui.screens.worldselection.PresetEditor;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -117,6 +118,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.sounds.Music;
@@ -135,6 +137,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.presets.WorldPreset;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
@@ -143,7 +146,6 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
-import net.neoforged.neoforge.client.entity.animation.json.AnimationTypeManager;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.CalculateDetachedCameraDistanceEvent;
@@ -190,10 +192,8 @@ import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtension
 import net.neoforged.neoforge.client.gamerules.GameRuleEntryFactoryManager;
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
 import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
-import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
-import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
-import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
 import net.neoforged.neoforge.client.pipeline.RenderPipelineManager;
+import net.neoforged.neoforge.client.registries.NeoForgeClientRegistries;
 import net.neoforged.neoforge.client.renderstate.BaseRenderState;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -812,14 +812,10 @@ public class ClientHooks {
         EntitySpectatorShaderManager.init();
         RecipeBookManager.init();
         mc.gui.hud.initModdedOverlays();
-        CustomEnvironmentEffectsRendererManager.init();
         ColorResolverManager.init();
         ItemDecoratorHandler.init();
-        PresetEditorManager.init();
-        MapDecorationRendererManager.init();
         DimensionTransitionScreenManager.init();
         RenderPipelineManager.init();
-        PipelineModifiers.init();
         GameRuleEntryFactoryManager.register();
     }
 
@@ -829,9 +825,6 @@ public class ClientHooks {
             throw new IllegalStateException("Client registries initialized more than once");
         }
         initializedClientRegistries = true;
-
-        AnimationTypeManager.init();
-        BlockStateModelHooks.init();
 
         ModLoader.postEvent(new InitializeClientRegistriesEvent());
     }
@@ -1071,5 +1064,9 @@ public class ClientHooks {
                 entry.getKey().visible = entry.getBooleanValue();
             }
         }
+    }
+
+    public static @Nullable PresetEditor getWorldPresetEditor(ResourceKey<WorldPreset> preset) {
+        return NeoForgeClientRegistries.WORLD_PRESET_EDITOR.getValue(preset.identifier());
     }
 }
