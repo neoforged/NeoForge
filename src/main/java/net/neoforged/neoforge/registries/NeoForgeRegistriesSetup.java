@@ -40,6 +40,8 @@ public class NeoForgeRegistriesSetup {
             BuiltInRegistries.BLOCK_ENTITY_TYPE, // Required for BlockEntity packets
             BuiltInRegistries.MENU, // Required for ClientboundOpenScreenPacket
             BuiltInRegistries.COMMAND_ARGUMENT_TYPE, // Required for ClientboundCommandsPacket
+            BuiltInRegistries.COMMAND_SUGGESTION_TYPE, // Required for ClientboundCommandsPacket
+            BuiltInRegistries.CONTEXT_KEY_SET, // Required for ValidatableArgument
             BuiltInRegistries.STAT_TYPE, // Required for ClientboundAwardStatsPacket
             BuiltInRegistries.VILLAGER_TYPE, // Required for EntityDataSerializers
             BuiltInRegistries.VILLAGER_PROFESSION, // Required for EntityDataSerializers
