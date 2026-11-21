@@ -77,8 +77,10 @@ public final class DataPackRegistriesHooks {
     }
 
     static {
-        // Force static init of RegistryDataLoader
-        RegistryDataLoader.WORLD_REGISTRIES.size();
+        // Force static init of RegistryDataLoader (field is null if RegistryDataLoader is initialized from somewhere else)
+        if (RegistryDataLoader.WORLD_REGISTRIES != null) {
+            RegistryDataLoader.WORLD_REGISTRIES.size();
+        }
     }
 
     private record DatapackRegistryGroup(List<RegistryDataLoader.RegistryData<?>> registryData, Set<ResourceKey<? extends Registry<?>>> registryKeys) {
