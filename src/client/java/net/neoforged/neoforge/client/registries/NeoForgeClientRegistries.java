@@ -40,7 +40,7 @@ public final class NeoForgeClientRegistries {
             .onAdd(NeoForgeClientRegistryCallbacks.MapDecorationRendererCallbacks.INSTANCE)
             .onBake(NeoForgeClientRegistryCallbacks.MapDecorationRendererCallbacks.INSTANCE)
             .create();
-    public static final Registry<PipelineModifier> PIPELINE_MODIFIER = new RegistryBuilder<>(Keys.PIPELINE_MODIFIER).create();
+    public static final Registry<PipelineModifier> RENDER_PIPELINE_MODIFIER = new RegistryBuilder<>(Keys.RENDER_PIPELINE_MODIFIER).create();
 
     public static final class Keys {
         public static final ResourceKey<Registry<MapCodec<? extends CustomBlockModelDefinition>>> BLOCK_STATE_MODEL_DISPATCHER_TYPE = key("block_state_model_dispatcher_type");
@@ -53,7 +53,7 @@ public final class NeoForgeClientRegistries {
         public static final ResourceKey<Registry<AnimationChannel.Interpolation>> ANIMATION_CHANNEL_INTERPOLATION = key("animation_channel_interpolation");
         public static final ResourceKey<Registry<PresetEditor>> WORLD_PRESET_EDITOR = key("world_preset_editor");
         public static final ResourceKey<Registry<IMapDecorationRenderer>> MAP_DECORATION_RENDERER = key("map_decoration_renderer");
-        public static final ResourceKey<Registry<PipelineModifier>> PIPELINE_MODIFIER = key("pipeline_modifier");
+        public static final ResourceKey<Registry<PipelineModifier>> RENDER_PIPELINE_MODIFIER = key("render_pipeline_modifier");
 
         private static <T> ResourceKey<Registry<T>> key(String name) {
             return ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, name));

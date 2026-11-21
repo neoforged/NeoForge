@@ -31,7 +31,7 @@ public final class PipelineModifierStack {
 
     public void push(ResourceKey<PipelineModifier> modifier) {
         RenderSystem.assertOnRenderThread();
-        if (!NeoForgeClientRegistries.PIPELINE_MODIFIER.containsKey(modifier)) {
+        if (!NeoForgeClientRegistries.RENDER_PIPELINE_MODIFIER.containsKey(modifier)) {
             throw new IllegalArgumentException("Unknown pipeline modifier: " + modifier.identifier());
         }
         this.modifiers.push(modifier);
@@ -60,7 +60,7 @@ public final class PipelineModifierStack {
             RenderPipeline newPipeline = xformCache.get(pipeline);
             if (newPipeline == null) {
                 Identifier name = pipeline.getLocation().withSuffix("/transform/" + modifier.identifier().toString().replace(":", "/"));
-                PipelineModifier value = NeoForgeClientRegistries.PIPELINE_MODIFIER.getValue(modifier);
+                PipelineModifier value = NeoForgeClientRegistries.RENDER_PIPELINE_MODIFIER.getValue(modifier);
                 newPipeline = Objects.requireNonNull(value).apply(pipeline, name);
                 if (newPipeline != pipeline && newPipeline.getLocation().equals(pipeline.getLocation())) {
                     throw new IllegalStateException(String.format(

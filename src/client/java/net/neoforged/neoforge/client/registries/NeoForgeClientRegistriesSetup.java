@@ -35,7 +35,7 @@ public final class NeoForgeClientRegistriesSetup {
         event.register(NeoForgeClientRegistries.ANIMATION_CHANNEL_INTERPOLATION);
         event.register(NeoForgeClientRegistries.WORLD_PRESET_EDITOR);
         event.register(NeoForgeClientRegistries.MAP_DECORATION_RENDERER);
-        event.register(NeoForgeClientRegistries.PIPELINE_MODIFIER);
+        event.register(NeoForgeClientRegistries.RENDER_PIPELINE_MODIFIER);
     }
 
     private static void modifyRegistries(ModifyClientRegistriesEvent event) {

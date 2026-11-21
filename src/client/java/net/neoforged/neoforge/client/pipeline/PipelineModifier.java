@@ -17,8 +17,8 @@ import net.neoforged.neoforge.client.registries.NeoForgeClientRegistries;
  * All implementations of this interface must be idempotent and have to return the exact same result for the given
  * input. The result of invoking {@link #apply(RenderPipeline, Identifier)} will be cached.
  *
- * @see NeoForgeClientRegistries#PIPELINE_MODIFIER
- * @see NeoForgeClientRegistries.Keys#PIPELINE_MODIFIER
+ * @see NeoForgeClientRegistries#RENDER_PIPELINE_MODIFIER
+ * @see NeoForgeClientRegistries.Keys#RENDER_PIPELINE_MODIFIER
  * @see RenderSystem#pushPipelineModifier(ResourceKey)
  * @see RenderSystem#popPipelineModifier()
  * @see RenderSystem#renderWithPipelineModifier(ResourceKey, Runnable)
