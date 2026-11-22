@@ -5,16 +5,19 @@
 
 package net.neoforged.neoforge.client.registries;
 
-import java.util.Locale;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import net.neoforged.neoforge.client.CustomCloudsRenderer;
 import net.neoforged.neoforge.client.CustomSkyboxRenderer;
 import net.neoforged.neoforge.client.CustomWeatherEffectRenderer;
@@ -27,49 +30,35 @@ import net.neoforged.neoforge.registries.callback.AddCallback;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
 
 final class NeoForgeClientRegistryCallbacks {
-    static final class BlockEntityRendererCallbacks implements AddCallback<BlockEntityRendererProvider<?, ?>> {
+    static final class BlockEntityRendererCallbacks extends ClientRegistryCallback<BlockEntityType<?>, BlockEntityRendererProvider<?, ?>> {
         static final BlockEntityRendererCallbacks INSTANCE = new BlockEntityRendererCallbacks();
 
-        @Override
-        public void onAdd(Registry<BlockEntityRendererProvider<?, ?>> registry, int id, ResourceKey<BlockEntityRendererProvider<?, ?>> key, BlockEntityRendererProvider<?, ?> value) {
-            assertHasCommonCounterpart(registry, BuiltInRegistries.BLOCK_ENTITY_TYPE, key.identifier());
+        private BlockEntityRendererCallbacks() {
+            super(BuiltInRegistries.BLOCK_ENTITY_TYPE, () -> {});
         }
     }
 
-    static final class EntityRendererCallbacks implements AddCallback<EntityRendererProvider<?>>, BakeCallback<EntityRendererProvider<?>> {
+    static final class EntityRendererCallbacks extends ClientRegistryCallback<EntityType<?>, EntityRendererProvider<?>> {
         static final EntityRendererCallbacks INSTANCE = new EntityRendererCallbacks();
 
-        @Override
-        public void onAdd(Registry<EntityRendererProvider<?>> registry, int id, ResourceKey<EntityRendererProvider<?>> key, EntityRendererProvider<?> value) {
-            assertHasCommonCounterpart(registry, BuiltInRegistries.ENTITY_TYPE, key.identifier());
-        }
-
-        @Override
-        public void onBake(Registry<EntityRendererProvider<?>> registry) {
-            EntityRenderers.collectMissingEntityRenderers();
+        private EntityRendererCallbacks() {
+            super(BuiltInRegistries.ENTITY_TYPE, EntityRenderers::collectMissingEntityRenderers);
         }
     }
 
-    static final class MenuScreenCallbacks implements AddCallback<MenuScreens.ScreenConstructor<?, ?>>, BakeCallback<MenuScreens.ScreenConstructor<?, ?>> {
+    static final class MenuScreenCallbacks extends ClientRegistryCallback<MenuType<?>, MenuScreens.ScreenConstructor<?, ?>> {
         static final MenuScreenCallbacks INSTANCE = new MenuScreenCallbacks();
 
-        @Override
-        public void onAdd(Registry<MenuScreens.ScreenConstructor<?, ?>> registry, int id, ResourceKey<MenuScreens.ScreenConstructor<?, ?>> key, MenuScreens.ScreenConstructor<?, ?> value) {
-            assertHasCommonCounterpart(registry, BuiltInRegistries.MENU, key.identifier());
-        }
-
-        @Override
-        public void onBake(Registry<MenuScreens.ScreenConstructor<?, ?>> registry) {
-            MenuScreens.selfTest();
+        private MenuScreenCallbacks() {
+            super(BuiltInRegistries.MENU, MenuScreens::selfTest);
         }
     }
 
-    static final class ParticleProviderCallbacks implements AddCallback<ParticleProvider<?>> {
+    static final class ParticleProviderCallbacks extends ClientRegistryCallback<ParticleType<?>, ParticleProvider<?>> {
         static final ParticleProviderCallbacks INSTANCE = new ParticleProviderCallbacks();
 
-        @Override
-        public void onAdd(Registry<ParticleProvider<?>> registry, int id, ResourceKey<ParticleProvider<?>> key, ParticleProvider<?> value) {
-            assertHasCommonCounterpart(registry, BuiltInRegistries.PARTICLE_TYPE, key.identifier());
+        private ParticleProviderCallbacks() {
+            super(BuiltInRegistries.PARTICLE_TYPE, () -> {});
         }
     }
 
@@ -115,28 +104,17 @@ final class NeoForgeClientRegistryCallbacks {
         }
     }
 
-    static final class MapDecorationRendererCallbacks implements AddCallback<IMapDecorationRenderer>, BakeCallback<IMapDecorationRenderer> {
+    static final class MapDecorationRendererCallbacks extends ClientRegistryCallback<MapDecorationType, IMapDecorationRenderer> implements BakeCallback<IMapDecorationRenderer> {
         static final MapDecorationRendererCallbacks INSTANCE = new MapDecorationRendererCallbacks();
 
-        @Override
-        public void onAdd(Registry<IMapDecorationRenderer> registry, int id, ResourceKey<IMapDecorationRenderer> key, IMapDecorationRenderer value) {
-            assertHasCommonCounterpart(registry, BuiltInRegistries.MAP_DECORATION_TYPE, key.identifier());
+        private MapDecorationRendererCallbacks() {
+            super(BuiltInRegistries.MAP_DECORATION_TYPE, () -> {});
         }
 
         @Override
         public void onBake(Registry<IMapDecorationRenderer> registry) {
+            super.onBake(registry);
             MapDecorationRendererManager.updateMapping(registry);
-        }
-    }
-
-    private static void assertHasCommonCounterpart(Registry<?> clientRegistry, Registry<?> commonRegistry, Identifier id) {
-        if (!commonRegistry.containsKey(id)) {
-            throw new IllegalStateException(String.format(
-                    Locale.ROOT,
-                    "Entry '%s' in client registry '%s' has no counterpart in common registry '%s'",
-                    id,
-                    clientRegistry.key().identifier(),
-                    commonRegistry.key().identifier()));
         }
     }
 
