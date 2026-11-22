@@ -78,18 +78,22 @@ public class DataMapsUpdatedEvent extends Event {
     }
 
     public enum UpdateCause {
-        /**
-         * The data maps have been synced to the client.
-         * 
-         * @implNote An event with this cause is <i>not</i> fired for the host of a single-player world, or for any {@linkplain Connection#isMemoryConnection() in-memory} connections.
-         */
+        /// The data maps have been synced to the client.
+        ///
+        /// @implNote An event with this cause is _not_ fired for the host of a single-player world, or for any [in-memory][Connection#isMemoryConnection()] connections.
         CLIENT_SYNC,
-        /**
-         * The data maps have been reloaded on the server.
-         * 
-         * @implNote Events with this cause are fired during the {@linkplain SimplePreparableReloadListener#apply(Object, ResourceManager, ProfilerFiller) apply phase}
-         *           of a reload listener, and <strong>not</strong> after the reload is complete.
-         */
-        SERVER_RELOAD
+        /// Data maps providing client-side default values have been set to these values due to connecting to a non-NeoForge server.
+        ///
+        /// @implNote An event with this cause is _not_ fired for the host of a single-player world, or for any [in-memory][Connection#isMemoryConnection()] connections.
+        CLIENT_DEFAULT,
+        /// The data maps have been reloaded on the server.
+        ///
+        /// @implNote Events with this cause are fired during the [apply phase][SimplePreparableReloadListener#apply(Object, ResourceManager, ProfilerFiller)]
+        ///           of a reload listener, and **not** after the reload is complete.
+        SERVER_RELOAD;
+
+        public boolean isClient() {
+            return this != SERVER_RELOAD;
+        }
     }
 }
