@@ -119,7 +119,7 @@
 +        /// Neo: indicates whether this tab has a search bar
 +        private boolean hasSearchBar = false;
 +        /// Neo: holds the width of the search bar
-+        private int searchBarWidth = 89;
++        private int searchBarWidth = 80;
 +        /// Neo: holds the text color of the tab title
 +        private int labelColor = -12566464;
 +        /// Neo: holds the function to use for constructing the tab

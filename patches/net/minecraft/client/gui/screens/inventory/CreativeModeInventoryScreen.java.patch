@@ -1,6 +1,73 @@
 --- a/net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen.java
-@@ -245,9 +_,12 @@
+@@ -119,10 +_,11 @@
+         ItemStack item = slot.getItem();
+         boolean isCreativeSlot = slot instanceof CreativeModeInventoryScreen.CustomCreativeSlot;
+         boolean isSingleCategoryTab = selectedTab.getType() == CreativeModeTab.Type.CATEGORY;
+-        boolean isSearchTab = selectedTab.getType() == CreativeModeTab.Type.SEARCH;
++        // Neo: add support for search bars in "standard" creative tabs
++        boolean isSearchTab = selectedTab.hasSearchBar();
+         TooltipFlag.Default originalTooltipStyle = this.minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
+         TooltipFlag tooltipStyle = isCreativeSlot ? originalTooltipStyle.asCreative() : originalTooltipStyle;
+-        List<Component> originalLines = item.getTooltipLines(Item.TooltipContext.of(this.minecraft.level), this.minecraft.player, tooltipStyle);
++        List<Component> originalLines = item.getTooltipLines(Item.TooltipContext.of(this.minecraft.level, this.minecraft.player), this.minecraft.player, net.neoforged.neoforge.client.ClientTooltipFlag.of(tooltipStyle));
+         if (!originalLines.isEmpty() && (!isSingleCategoryTab || !isCreativeSlot)) {
+             List<Component> linesToDisplay = new ArrayList<>(originalLines);
+             if (isSearchTab && isCreativeSlot) {
+@@ -136,7 +_,8 @@
+             int i = 1;
+ 
+             for (CreativeModeTab tab : CreativeModeTabs.tabs()) {
+-                if (tab.getType() != CreativeModeTab.Type.SEARCH && tab.contains(item)) {
++                // Neo: add support for search bars in "standard" creative tabs
++                if (!tab.hasSearchBar() && tab.contains(item)) {
+                     linesToDisplay.add(i++, tab.getDisplayName().copy().withStyle(ChatFormatting.BLUE));
+                 }
+             }
+@@ -146,6 +_,7 @@
+             return Tooltip.createForItem(originalLines, item);
+         }
+     };
++    private final net.neoforged.neoforge.client.gui.CreativeModeTabPageManager pages = new net.neoforged.neoforge.client.gui.CreativeModeTabPageManager(this, this::rebuildWidgets);
+ 
+     public CreativeModeInventoryScreen(LocalPlayer player, FeatureFlagSet enabledFeatures, boolean displayOperatorCreativeTab) {
+         super(new CreativeModeInventoryScreen.ItemPickerMenu(player), player.getInventory(), TITLE, 195, 136);
+@@ -153,6 +_,8 @@
+         this.displayOperatorCreativeTab = displayOperatorCreativeTab;
+         this.tryRebuildTabContents(player.connection.searchTrees(), enabledFeatures, this.hasPermissions(player), player.level().registryAccess());
+         this.effects = new EffectsInInventory(this);
++        // Neo: update tab pages
++        this.pages.update(selectedTab, true);
+     }
+ 
+     @Override
+@@ -172,9 +_,12 @@
+                 .spacing(1)
+                 .name(BOTTOM_TAB_BAR_NAME);
+ 
+-            for (CreativeModeTab tab : CreativeModeTabs.tabs()) {
+-                boolean isTop = tab.row() == CreativeModeTab.Row.TOP;
+-                int index = Math.clamp(tab.column(), 0, 6) + 1;
++            // Neo: add page navigation buttons if needed
++            this.pages.addNavButtons(this::addRenderableWidget);
++            // Neo: filter for tabs of the active page and ensure correct positioning
++            for (CreativeModeTab tab : this.pages.getCurrentTabs()) {
++                boolean isTop = this.pages.isTop(tab);
++                int index = Math.clamp(this.pages.getColumn(tab), 0, 6) + 1;
+                 String row = isTop ? "top" : "bottom";
+                 WidgetSprites tabSprite = new WidgetSprites(
+                     Identifier.withDefaultNamespace("container/creative_inventory/tab_" + row + "_unselected_" + index),
+@@ -201,7 +_,8 @@
+             this.searchBox.setTextColor(-1);
+             this.searchBox.setInvertHighlightedTextColor(false);
+             this.searchBox.setResponder(value -> {
+-                if (selectedTab.getType() == CreativeModeTab.Type.SEARCH) {
++                // Neo: add support for search bars in "standard" creative tabs
++                if (selectedTab.hasSearchBar()) {
+                     this.refreshSearchResults();
+                 }
+             });
+@@ -245,18 +_,26 @@
          }
  
          if (searchTrees != null) {
@@ -15,8 +82,13 @@
 +            });
          }
  
++        // Neo: update tab pages
++        if (this.isInitialized()) {
++            this.pages.update(selectedTab, false);
++        }
          return true;
-@@ -256,7 +_,8 @@
+     }
+ 
      private void refreshCurrentTabContents(Collection<ItemStack> displayList) {
          int oldRowIndex = this.menu.getRowIndexForScroll(this.scrollOffs);
          this.menu.items.clear();
@@ -26,6 +98,36 @@
              this.refreshSearchResults();
          } else {
              this.menu.items.addAll(displayList);
+@@ -450,7 +_,8 @@
+         if (this.ignoreTextInput) {
+             return false;
+         } else {
+-            return selectedTab.getType() != CreativeModeTab.Type.SEARCH ? false : super.charTyped(event);
++            // Neo: add support for search bars in "standard" creative tabs
++            return !selectedTab.hasSearchBar() ? false : super.charTyped(event);
+         }
+     }
+ 
+@@ -459,7 +_,8 @@
+         if (this.ignoreTextInput) {
+             return false;
+         } else {
+-            return selectedTab.getType() != CreativeModeTab.Type.SEARCH ? false : super.preeditUpdated(event);
++            // Neo: add support for search bars in "standard" creative tabs
++            return !selectedTab.hasSearchBar() ? false : super.preeditUpdated(event);
+         }
+     }
+ 
+@@ -470,7 +_,8 @@
+             return true;
+         }
+ 
+-        if (selectedTab.getType() != CreativeModeTab.Type.SEARCH) {
++        // Neo: add support for search bars in "standard" creative tabs
++        if (!selectedTab.hasSearchBar()) {
+             if (this.minecraft.options.keyChat.matches(event)) {
+                 this.ignoreTextInput = true;
+                 this.selectTab(CreativeModeTabs.searchTab());
 @@ -525,6 +_,10 @@
      }
  
@@ -52,6 +154,68 @@
                  }
  
                  this.menu.items.addAll(tree.search(searchTerm.toLowerCase(Locale.ROOT)));
+@@ -568,7 +_,8 @@
+     @Override
+     protected void extractLabels(GuiGraphicsExtractor graphics) {
+         if (selectedTab.showTitle()) {
+-            graphics.text(this.font, selectedTab.getDisplayName(), 8, 6, -12566464, false);
++            // Neo: add support for custom tab title color
++            graphics.text(this.font, selectedTab.getDisplayName(), 8, 6, selectedTab.getLabelColor(), false);
+         }
+     }
+ 
+@@ -668,7 +_,11 @@
+             this.menu.slots.add(this.destroyItemSlot);
+         }
+ 
+-        if (selectedTab.getType() == CreativeModeTab.Type.SEARCH) {
++        // Neo: add support for search bars in "standard" creative tabs
++        if (selectedTab.hasSearchBar()) {
++            // Neo: make the search bar width configurable by the tab
++            this.searchBox.setWidth(selectedTab.getSearchBarWidth());
++            this.searchBox.setX(this.leftPos + (82 /*default left*/ + 80 /*default width*/) - this.searchBox.getWidth());
+             this.searchBox.setVisible(true);
+             this.searchBox.setValue("");
+         } else {
+@@ -718,7 +_,8 @@
+ 
+     @Override
+     protected void setInitialFocus() {
+-        if (selectedTab.getType() == CreativeModeTab.Type.SEARCH) {
++        // Neo: add support for search bars in "standard" creative tabs
++        if (selectedTab.hasSearchBar()) {
+             this.setInitialFocus(this.searchBox);
+         } else {
+             super.setInitialFocus();
+@@ -774,6 +_,12 @@
+     public void extractRenderState(GuiGraphicsExtractor graphics) {
+         this.effects.extractRenderState(graphics);
+         super.extractRenderState(graphics);
++
++        // Neo: render page indicator if more than one page is present
++        if (this.pages.hasMultiplePages()) {
++            Component page = this.pages.getPageIndicator();
++            graphics.text(this.font, page, this.leftPos + (this.imageWidth / 2) - (this.font.width(page) / 2), this.topPos - 44, -1);
++        }
+     }
+ 
+     @Override
+@@ -800,11 +_,13 @@
+         int yscr = this.topPos + 18;
+         int yscr2 = yscr + 112;
+         if (selectedTab.canScroll()) {
+-            Identifier sprite = this.canScroll() ? SCROLLER_SPRITE : SCROLLER_DISABLED_SPRITE;
++            // Neo: allow the tab to control the scroller sprite
++            Identifier sprite = selectedTab.getScrollerSprite(); // this.canScroll() ? SCROLLER_SPRITE : SCROLLER_DISABLED_SPRITE;
+             graphics.blitSprite(GuiPipeline.TEXTURED, sprite, xscr, yscr + (int)((yscr2 - yscr - 17) * this.scrollOffs), 12, 15);
+         }
+ 
+-        TabButton selectedTabButton = (selectedTab.row() == CreativeModeTab.Row.TOP ? this.tabBarTop : this.tabBarBottom).currentTabButton();
++        // Neo: determine tab row from active page
++        TabButton selectedTabButton = (this.pages.isTop(selectedTab) ? this.tabBarTop : this.tabBarBottom).currentTabButton();
+         if (selectedTabButton != null) {
+             selectedTabButton.extractRenderState(graphics);
+         }
 @@ -1137,6 +_,22 @@
          @Override
          public boolean mayPickup(Player player) {
