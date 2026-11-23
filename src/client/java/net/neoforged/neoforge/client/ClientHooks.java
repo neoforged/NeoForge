@@ -658,7 +658,7 @@ public class ClientHooks {
         if (!packetListener.getConnectionType().isNeoForge()) {
             // Notify client mods that they're connected to a Vanilla server, which will never give them recipe data
             NeoForge.EVENT_BUS.post(new RecipesReceivedEvent(Set.of(), RecipeMap.EMPTY));
-            ClientRegistryManager.applyDataMapClientDefaults();
+            ClientRegistryManager.applyDataMapClientDefaults(packetListener.registryAccess());
         }
     }
 

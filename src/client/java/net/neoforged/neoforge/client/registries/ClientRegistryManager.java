@@ -15,8 +15,9 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -109,26 +110,30 @@ public class ClientRegistryManager {
         context.reply(new KnownRegistryDataMapsReplyPayload(known));
     }
 
-    public static void applyDataMapClientDefaults() {
-        RegistryAccess regAccess = Minecraft.getInstance().level.registryAccess();
+    public static void applyDataMapClientDefaults(RegistryAccess registryAccess) {
         RegistryManager.getDataMaps().forEach((registryKey, types) -> {
-            BaseMappedRegistry<?> registry = (BaseMappedRegistry<?>) regAccess.lookupOrThrow(registryKey);
+            BaseMappedRegistry<?> registry = (BaseMappedRegistry<?>) registryAccess.lookupOrThrow(registryKey);
             registry.getDataMaps().clear();
 
             for (DataMapType<?, ?> type : types.values()) {
-                if (type instanceof AdvancedDataMapType<?, ?, ?> advType && advType.getClientDefaults() != null) {
+                if (type instanceof AdvancedDataMapType<?, ?, ?> advType) {
                     applyDataMapClientDefaults(registry, advType);
                 }
             }
 
-            NeoForge.EVENT_BUS.post(new DataMapsUpdatedEvent(regAccess, registry, DataMapsUpdatedEvent.UpdateCause.CLIENT_DEFAULT));
+            NeoForge.EVENT_BUS.post(new DataMapsUpdatedEvent(registryAccess, registry, DataMapsUpdatedEvent.UpdateCause.CLIENT_DEFAULT));
         });
     }
 
     @SuppressWarnings("unchecked")
     private static <R, T> void applyDataMapClientDefaults(BaseMappedRegistry<?> registry, AdvancedDataMapType<R, T, ?> type) {
+        Consumer<BiConsumer<ResourceKey<R>, T>> clientDefaults = type.getClientDefaults();
+        if (clientDefaults == null) {
+            return;
+        }
+
         Map<ResourceKey<R>, T> values = new IdentityHashMap<>();
-        Objects.requireNonNull(type.getClientDefaults()).accept(values::put);
+        clientDefaults.accept(values::put);
         ((BaseMappedRegistry<R>) registry).getDataMaps().put(type, Collections.unmodifiableMap(values));
     }
 }

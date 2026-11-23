@@ -201,6 +201,7 @@ public final class AdvancedDataMapType<R, T, VR extends DataMapValueRemover<R, T
         }
 
         /// Add a provider for client defaults to load when a NeoForge client with this datamap connects to a vanilla server.
+        /// These defaults must be non-overrideable to ensure they match the server's vanilla data.
         ///
         /// @param clientDefaults The defaults to apply
         /// @return the builder instance
