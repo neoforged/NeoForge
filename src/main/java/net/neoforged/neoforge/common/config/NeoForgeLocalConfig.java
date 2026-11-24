@@ -20,6 +20,7 @@ public final class NeoForgeLocalConfig {
     public final ModConfigSpec.BooleanValue attributeAdvancedTooltipDebugInfo;
     public final ModConfigSpec.IntValue splitPacketMaxSizeLimitMb;
     public final ModConfigSpec.IntValue maxAdhocChannelLimit;
+    public final ModConfigSpec.BooleanValue enableGlobalDatapacksAutomatically;
 
     private NeoForgeLocalConfig(ModConfigSpec.Builder builder) {
         attributeAdvancedTooltipDebugInfo = builder
@@ -34,6 +35,10 @@ public final class NeoForgeLocalConfig {
                 .comment("The maximum number of adhoc channels allowed to be registered.")
                 .translation("neoforge.configgui.maxAdhocChannelLimit")
                 .defineInRange("maxAdhocChannelLimit", 2048, 1024, 16384);
+        enableGlobalDatapacksAutomatically = builder
+                .comment("Controls whether datapacks loaded from the global 'datapacks' folder (in the game directory) are automatically enabled for new worlds.")
+                .translation("neoforge.configgui.enableGlobalDatapacksAutomatically")
+                .define("enableGlobalDatapacksAutomatically", true);
     }
 
     static {
