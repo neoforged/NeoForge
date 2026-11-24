@@ -5,7 +5,7 @@
  
  public class PoiTypes {
 -    private static final Map<BlockState, Holder<PoiType>> TYPE_BY_STATE = new HashMap<>();
-+    private static final Map<BlockState, Holder<PoiType>> TYPE_BY_STATE = net.neoforged.neoforge.registries.GameData.getBlockStatePointOfInterestTypeMap();
++    private static final Map<BlockState, Holder<PoiType>> TYPE_BY_STATE = net.neoforged.neoforge.registries.RegistryManager.getBlockStatePointOfInterestTypeMap();
      private static final Set<BlockState> BEDS = Blocks.BED
          .asList()
          .stream()

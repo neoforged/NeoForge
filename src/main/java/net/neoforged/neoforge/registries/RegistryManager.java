@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.registries;
 
+import com.google.common.collect.Table;
 import com.mojang.logging.LogUtils;
 import io.netty.handler.codec.CodecException;
 import io.netty.util.AttributeKey;
@@ -18,8 +19,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.SequencedSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import net.minecraft.core.Holder;
+import net.minecraft.core.IdMapper;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.Registry;
@@ -28,8 +32,19 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gamerules.GameRuleCategory;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.CreativeModeTabRegistry;
+import net.neoforged.neoforge.common.crafting.RecipePropertySetManager;
+import net.neoforged.neoforge.common.tooltip.ItemTooltipHandler;
+import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import net.neoforged.neoforge.network.configuration.RegistryDataMapNegotiation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
@@ -55,6 +70,22 @@ public class RegistryManager {
     private static Map<ResourceKey<Registry<?>>, Map<Identifier, DataMapType<?, ?>>> dataMaps = Map.of();
 
     protected RegistryManager() {}
+
+    public static Map<Block, Item> getBlockItemMap() {
+        return NeoForgeRegistryCallbacks.ItemCallbacks.BLOCK_TO_ITEM_MAP;
+    }
+
+    public static IdMapper<BlockState> getBlockStateIDMap() {
+        return NeoForgeRegistryCallbacks.BlockCallbacks.BLOCKSTATE_TO_ID_MAP;
+    }
+
+    public static Map<BlockState, Holder<PoiType>> getBlockStatePointOfInterestTypeMap() {
+        return NeoForgeRegistryCallbacks.PoiTypeCallbacks.BLOCKSTATE_TO_POI_TYPE_MAP;
+    }
+
+    public static Table<Block, Block, Block> getFlowerPotBlockTable() {
+        return NeoForgeRegistryCallbacks.BlockCallbacks.EMPTY_POT_AND_FLOWER_TO_FULL_POT_TABLE;
+    }
 
     /**
      * Called by {@link RegistryBuilder} to make sure that modders don't forget to register their registries.
@@ -140,7 +171,7 @@ public class RegistryManager {
 
         pendingModdedRegistries.removeIf(this::isKnownRegistry);
         if (!pendingModdedRegistries.isEmpty()) {
-            throw new IllegalStateException("The following registries were created but not registered to NewRegistryEvent or NewClientRegistryEvent:"
+            throw new IllegalStateException("The following registries were created but not registered to " + getNewRegistryEventNames() + ":"
                     + pendingModdedRegistries.stream().map(Identifier::toString).collect(Collectors.joining("\n\t - ", "\n\t - ", "")));
         }
         pendingModdedRegistries = null;
@@ -150,18 +181,33 @@ public class RegistryManager {
         return BuiltInRegistries.REGISTRY.containsKey(registry);
     }
 
+    protected String getNewRegistryEventNames() {
+        return "NewRegistryEvent";
+    }
+
     public void postRegisterEvents() {
-        GameData.unfreezeData();
+        unfreezeRegistries(BuiltInRegistries.REGISTRY);
         for (Identifier registryName : getRegistrationOrder()) {
             try {
-                RegistryManager.postRegisterEvent(BuiltInRegistries.REGISTRY, registryName);
+                postRegisterEvent(BuiltInRegistries.REGISTRY, registryName);
             } catch (Throwable t) {
-                LOGGER.error("Failed to register some entries, rolling back to VANILLA state", t);
-                RegistryManager.revertToVanilla();
+                LOGGER.error("Failed to register some entries to {}, rolling back to VANILLA state", registryName, t);
+                revertToVanilla();
                 throw t;
             }
         }
-        GameData.freezeData();
+        freezeRegistries(BuiltInRegistries.REGISTRY);
+        takeFrozenSnapshot();
+    }
+
+    public static void runPostRegistrationTasks() {
+        CommonHooks.modifyAttributes();
+        SpawnPlacements.fireSpawnPlacementEvent();
+        ModLoader.postEvent(new BlockEntityTypeAddBlocksEvent());
+        CreativeModeTabRegistry.sortTabs();
+        GameRuleCategory.registerModdedCategories();
+        ItemTooltipHandler.init();
+        RecipePropertySetManager.init();
     }
 
     public static void initDataMaps() {
@@ -172,15 +218,15 @@ public class RegistryManager {
         dataMaps = Collections.unmodifiableMap(dataMapTypes);
     }
 
-    static void takeVanillaSnapshot() {
+    public static void takeVanillaSnapshot() {
         vanillaSnapshot = takeSnapshot(SnapshotType.FULL);
     }
 
-    static void takeFrozenSnapshot() {
+    private static void takeFrozenSnapshot() {
         frozenSnapshot = takeSnapshot(SnapshotType.SYNC_TO_CLIENT);
     }
 
-    public static void revertToVanilla() {
+    private static void revertToVanilla() {
         applySnapshot(vanillaSnapshot, true);
     }
 
@@ -315,7 +361,7 @@ public class RegistryManager {
         return vanillaRegistryKeys;
     }
 
-    /// Creates a [LinkedHashSet] containing the ordered list of registry names in the registration order.
+    /// Creates a set containing the ordered list of registry names in the registration order.
     ///
     /// The order is as follows:
     /// - Attributes, Data Component Types, Particle Types
@@ -325,13 +371,13 @@ public class RegistryManager {
     /// Due to static init issues, this is not necessarily the order that vanilla objects are bootstrapped in.
     ///
     /// @return A [LinkedHashSet] containing the registration order.
-    public static Set<Identifier> getRegistrationOrder() {
-        Set<Identifier> ordered = new LinkedHashSet<>();
+    public static SequencedSet<Identifier> getRegistrationOrder() {
+        SequencedSet<Identifier> ordered = new LinkedHashSet<>();
         ordered.add(Registries.ATTRIBUTE.identifier()); // Vanilla order is incorrect, both Item and MobEffect depend on Attribute at construction time.
         ordered.add(Registries.DATA_COMPONENT_TYPE.identifier()); // Vanilla order is incorrect, Item depends on data components at construction time.
         ordered.add(Registries.PARTICLE_TYPE.identifier()); // Vanilla order is incorrect, both Block and MobEffect depend on ParticleType at construction time.
         ordered.addAll(BuiltInRegistries.getVanillaRegistrationOrder());
-        ordered.addAll(BuiltInRegistries.REGISTRY.keySet().stream().sorted(Identifier::compareNamespaced).toList());
+        BuiltInRegistries.REGISTRY.keySet().stream().sorted(Identifier::compareNamespaced).forEach(ordered::add);
         return ordered;
     }
 

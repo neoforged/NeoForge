@@ -22,7 +22,6 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
-import net.neoforged.neoforge.registries.GameData;
 import net.neoforged.neoforge.registries.RegistryManager;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -50,7 +49,7 @@ public abstract class CommonModLoader {
             registryManager.postNewRegistryEvent();
             registryManager.validateRegistries();
             registryManager.postRegisterEvents();
-            GameData.runPostRegistrationTasks();
+            RegistryManager.runPostRegistrationTasks();
         });
 
         if (!datagen) {

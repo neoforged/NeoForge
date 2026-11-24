@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.SequencedSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.ChatFormatting;
@@ -63,7 +64,7 @@ public final class ClientRegistryManager extends RegistryManager {
             try {
                 RegistryManager.postRegisterEvent(BuiltInClientRegistries.REGISTRY, registryName);
             } catch (Throwable t) {
-                LOGGER.error("Failed to register some entries", t);
+                LOGGER.error("Failed to register some entries to {}", registryName, t);
                 throw t;
             }
         }
@@ -75,10 +76,15 @@ public final class ClientRegistryManager extends RegistryManager {
         return super.isKnownRegistry(registry) || BuiltInClientRegistries.REGISTRY.containsKey(registry);
     }
 
-    public static Set<Identifier> getRegistrationOrder() {
-        Set<Identifier> ordered = new LinkedHashSet<>();
+    @Override
+    protected String getNewRegistryEventNames() {
+        return "NewRegistryEvent or NewClientRegistryEvent";
+    }
+
+    public static SequencedSet<Identifier> getRegistrationOrder() {
+        SequencedSet<Identifier> ordered = new LinkedHashSet<>();
         ordered.addAll(BuiltInClientRegistries.getVanillaRegistrationOrder());
-        ordered.addAll(BuiltInClientRegistries.REGISTRY.keySet().stream().sorted(Identifier::compareNamespaced).toList());
+        BuiltInClientRegistries.REGISTRY.keySet().stream().sorted(Identifier::compareNamespaced).forEach(ordered::add);
         return ordered;
     }
 

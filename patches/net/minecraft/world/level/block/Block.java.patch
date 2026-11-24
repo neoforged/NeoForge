@@ -5,7 +5,7 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      private final Holder.Reference<Block> builtInRegistryHolder = BuiltInRegistries.BLOCK.createIntrusiveHolder(this);
 -    public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = new IdMapper<>();
-+    public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = net.neoforged.neoforge.registries.GameData.getBlockStateIDMap();
++    public static final IdMapper<BlockState> BLOCK_STATE_REGISTRY = net.neoforged.neoforge.registries.RegistryManager.getBlockStateIDMap();
      public static final StreamCodec<RegistryFriendlyByteBuf, BlockState> BLOCK_STATE_REGISTRY_STREAM_CODEC = ByteBufCodecs.idMapper(
              BLOCK_STATE_REGISTRY::byIdOrThrow, BLOCK_STATE_REGISTRY::getIdOrThrow
          )

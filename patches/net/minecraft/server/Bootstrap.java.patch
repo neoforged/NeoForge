@@ -6,7 +6,7 @@
              CreativeModeTabs.validate();
 +            if (false) // Neo: skip validation until after param event
              LootContextParamSets.validate();
-+            net.neoforged.neoforge.registries.GameData.vanillaSnapshot();
++            net.neoforged.neoforge.registries.RegistryManager.takeVanillaSnapshot();
 +            if (false) // Neo: skip wrapStreams(), we already redirect stdout and stderr output to log so that they print with more context
              wrapStreams();
              bootstrapDuration.set(Duration.between(start, Instant.now()).toMillis());

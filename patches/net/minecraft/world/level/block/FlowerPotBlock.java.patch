@@ -84,7 +84,7 @@
 +        if (this.emptyPot != null) {
 +            throw new IllegalStateException("Full pots can only be queried from the empty pot");
 +        }
-+        return java.util.Collections.unmodifiableMap(net.neoforged.neoforge.registries.GameData.getFlowerPotBlockTable().row(this));
++        return java.util.Collections.unmodifiableMap(net.neoforged.neoforge.registries.RegistryManager.getFlowerPotBlockTable().row(this));
 +    }
 +
 +    /// Neo: {@return the full pot associated with the given plant block, or [Blocks#AIR] if there is no associated full pot}
@@ -95,7 +95,7 @@
 +        if (this.emptyPot != null) {
 +            throw new IllegalStateException("Full pots can only be queried from the empty pot");
 +        }
-+        return net.neoforged.neoforge.registries.GameData.getFlowerPotBlockTable().row(this).getOrDefault(plant, Blocks.AIR);
++        return net.neoforged.neoforge.registries.RegistryManager.getFlowerPotBlockTable().row(this).getOrDefault(plant, Blocks.AIR);
      }
  
      @Override

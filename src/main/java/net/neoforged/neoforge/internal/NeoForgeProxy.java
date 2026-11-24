@@ -63,7 +63,7 @@ public class NeoForgeProxy {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected static @Nullable Registry<?> tryGetRegistry(Registry<? extends Registry<?>> rootRegistry, ResourceKey<? extends Registry<?>> key) {
-        Holder<Registry<?>> registry = (Holder<Registry<?>>) BuiltInRegistries.REGISTRY.get((ResourceKey) key).orElse(null);
+        Holder<Registry<?>> registry = (Holder<Registry<?>>) rootRegistry.get((ResourceKey) key).orElse(null);
         return registry != null ? registry.value() : null;
     }
 }

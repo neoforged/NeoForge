@@ -104,7 +104,7 @@ final class NeoForgeClientRegistryCallbacks {
         }
     }
 
-    static final class MapDecorationRendererCallbacks extends ClientRegistryCallback<MapDecorationType, IMapDecorationRenderer> implements BakeCallback<IMapDecorationRenderer> {
+    static final class MapDecorationRendererCallbacks extends ClientRegistryCallback<MapDecorationType, IMapDecorationRenderer> {
         static final MapDecorationRendererCallbacks INSTANCE = new MapDecorationRendererCallbacks();
 
         private MapDecorationRendererCallbacks() {

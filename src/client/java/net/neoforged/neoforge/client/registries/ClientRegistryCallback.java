@@ -7,11 +7,11 @@ package net.neoforged.neoforge.client.registries;
 
 import java.util.Locale;
 import java.util.function.BiConsumer;
-
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.registries.callback.AddCallback;
 import net.neoforged.neoforge.registries.callback.BakeCallback;
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
 
 /// [AddCallback] and [BakeCallback] implementation for client-only registries which require an
 /// associated common registry to contain an object with the same name as the client-only object
@@ -46,6 +46,7 @@ public class ClientRegistryCallback<A, B> implements AddCallback<B>, BakeCallbac
     }
 
     @Override
+    @MustBeInvokedByOverriders
     public void onBake(Registry<B> registry) {
         validator.accept(commonRegistry, registry);
     }
