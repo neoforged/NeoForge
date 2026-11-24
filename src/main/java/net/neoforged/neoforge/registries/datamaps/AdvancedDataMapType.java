@@ -8,6 +8,8 @@ package net.neoforged.neoforge.registries.datamaps;
 import com.mojang.serialization.Codec;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -59,6 +61,7 @@ public final class AdvancedDataMapType<R, T, VR extends DataMapValueRemover<R, T
     private final boolean supportsTags;
     @Nullable
     private final String noTagsReason;
+    private final @Nullable Consumer<BiConsumer<ResourceKey<R>, T>> clientDefaults;
 
     private AdvancedDataMapType(
             ResourceKey<Registry<R>> registryKey,
@@ -68,12 +71,14 @@ public final class AdvancedDataMapType<R, T, VR extends DataMapValueRemover<R, T
             boolean mandatorySync,
             Codec<VR> remover,
             DataMapValueMerger<R, T> merger,
-            @Nullable String noTagsReason) {
+            @Nullable String noTagsReason,
+            @Nullable Consumer<BiConsumer<ResourceKey<R>, T>> clientDefaults) {
         super(registryKey, id, codec, networkCodec, mandatorySync);
         this.remover = Objects.requireNonNull(remover, "remover must not be null");
         this.merger = Objects.requireNonNull(merger, "merger must not be null");
         this.supportsTags = noTagsReason == null;
         this.noTagsReason = noTagsReason;
+        this.clientDefaults = clientDefaults;
     }
 
     /**
@@ -105,6 +110,11 @@ public final class AdvancedDataMapType<R, T, VR extends DataMapValueRemover<R, T
         return noTagsReason;
     }
 
+    /// {@return the client defaults provider, if specified}
+    public @Nullable Consumer<BiConsumer<ResourceKey<R>, T>> getClientDefaults() {
+        return clientDefaults;
+    }
+
     /**
      * {@return an advanced data map type builder}
      *
@@ -131,6 +141,7 @@ public final class AdvancedDataMapType<R, T, VR extends DataMapValueRemover<R, T
         private DataMapValueMerger<R, T> merger = DataMapValueMerger.defaultMerger();
         @Nullable
         private String noTagsReason = null;
+        private @Nullable Consumer<BiConsumer<ResourceKey<R>, T>> clientDefaults;
 
         Builder(ResourceKey<Registry<R>> registryKey, Identifier id, Codec<T> codec) {
             super(registryKey, id, codec);
@@ -189,12 +200,22 @@ public final class AdvancedDataMapType<R, T, VR extends DataMapValueRemover<R, T
             return this;
         }
 
+        /// Add a provider for client defaults to load when a NeoForge client with this datamap connects to a vanilla server.
+        /// These defaults must be non-overrideable to ensure they match the server's vanilla data.
+        ///
+        /// @param clientDefaults The defaults to apply
+        /// @return the builder instance
+        public AdvancedDataMapType.Builder<T, R, VR> clientDefaults(Consumer<BiConsumer<ResourceKey<R>, T>> clientDefaults) {
+            this.clientDefaults = Objects.requireNonNull(clientDefaults);
+            return this;
+        }
+
         /**
          * {@return a built advanced data map type}
          */
         @Override
         public AdvancedDataMapType<R, T, VR> build() {
-            return new AdvancedDataMapType<>(registryKey, id, codec, networkCodec, mandatorySync, remover, merger, noTagsReason);
+            return new AdvancedDataMapType<>(registryKey, id, codec, networkCodec, mandatorySync, remover, merger, noTagsReason, clientDefaults);
         }
     }
 }

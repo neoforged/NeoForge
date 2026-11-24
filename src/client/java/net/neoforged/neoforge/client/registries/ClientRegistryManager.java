@@ -12,12 +12,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
@@ -29,6 +34,8 @@ import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsReplyPayload;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import net.neoforged.neoforge.registries.BaseMappedRegistry;
 import net.neoforged.neoforge.registries.RegistryManager;
+import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
+import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapsUpdatedEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
@@ -101,5 +108,32 @@ public class ClientRegistryManager {
         final var known = new HashMap<ResourceKey<? extends Registry<?>>, Collection<Identifier>>();
         RegistryManager.getDataMaps().forEach((key, vals) -> known.put(key, vals.keySet()));
         context.reply(new KnownRegistryDataMapsReplyPayload(known));
+    }
+
+    public static void applyDataMapClientDefaults(RegistryAccess registryAccess) {
+        RegistryManager.getDataMaps().forEach((registryKey, types) -> {
+            BaseMappedRegistry<?> registry = (BaseMappedRegistry<?>) registryAccess.lookupOrThrow(registryKey);
+            registry.getDataMaps().clear();
+
+            for (DataMapType<?, ?> type : types.values()) {
+                if (type instanceof AdvancedDataMapType<?, ?, ?> advType) {
+                    applyDataMapClientDefaults(registry, advType);
+                }
+            }
+
+            NeoForge.EVENT_BUS.post(new DataMapsUpdatedEvent(registryAccess, registry, DataMapsUpdatedEvent.UpdateCause.CLIENT_DEFAULT));
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <R, T> void applyDataMapClientDefaults(BaseMappedRegistry<?> registry, AdvancedDataMapType<R, T, ?> type) {
+        Consumer<BiConsumer<ResourceKey<R>, T>> clientDefaults = type.getClientDefaults();
+        if (clientDefaults == null) {
+            return;
+        }
+
+        Map<ResourceKey<R>, T> values = new IdentityHashMap<>();
+        clientDefaults.accept(values::put);
+        ((BaseMappedRegistry<R>) registry).getDataMaps().put(type, Collections.unmodifiableMap(values));
     }
 }

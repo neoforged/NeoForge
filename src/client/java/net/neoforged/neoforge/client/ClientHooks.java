@@ -167,6 +167,7 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.client.event.PlayerHeartTypeEvent;
+import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
@@ -194,6 +195,7 @@ import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
+import net.neoforged.neoforge.client.registries.ClientRegistryManager;
 import net.neoforged.neoforge.client.renderstate.BaseRenderState;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -663,7 +665,8 @@ public class ClientHooks {
     public static void handleUpdateRecipes(ClientPacketListener packetListener) {
         if (!packetListener.getConnectionType().isNeoForge()) {
             // Notify client mods that they're connected to a Vanilla server, which will never give them recipe data
-            NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RecipesReceivedEvent(Set.of(), RecipeMap.EMPTY));
+            NeoForge.EVENT_BUS.post(new RecipesReceivedEvent(Set.of(), RecipeMap.EMPTY));
+            ClientRegistryManager.applyDataMapClientDefaults(packetListener.registryAccess());
         }
     }
 
