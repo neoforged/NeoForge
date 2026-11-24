@@ -358,10 +358,18 @@ public interface IItemExtension {
      * @return True if the stack can perform the action
      */
     default boolean canPerformAction(ItemInstance stack, ItemAbility itemAbility) {
-        if (itemAbility == ItemAbilities.SWORD_SWEEP) {
+        if (itemAbility == ItemAbilities.SWORD_SWEEP || itemAbility == ItemAbilities.SWORD_DIG) {
             return stack.is(ItemTags.SWORDS);
         } else if (itemAbility == ItemAbilities.SHOVEL_DOUSE) {
             return stack.is(ItemTags.DOUSES_CAMPFIRES);
+        } else if (itemAbility == ItemAbilities.AXE_DIG) {
+            return stack.is(ItemTags.AXES);
+        } else if (itemAbility == ItemAbilities.PICKAXE_DIG) {
+            return stack.is(ItemTags.PICKAXES);
+        } else if (itemAbility == ItemAbilities.SHOVEL_DIG) {
+            return stack.is(ItemTags.SHOVELS);
+        } else if (itemAbility == ItemAbilities.HOE_DIG) {
+            return stack.is(ItemTags.HOES);
         }
         return switch (stack.typeHolder().value()) {
             case BrushItem _ -> ItemAbilities.DEFAULT_BRUSH_ACTIONS.contains(itemAbility);
