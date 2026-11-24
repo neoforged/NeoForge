@@ -1065,9 +1065,9 @@ public class ModConfigSpec implements IConfigSpec {
         public String toString() {
             if (clazz == Integer.class) {
                 if (max.equals(Integer.MAX_VALUE)) {
-                    return "> " + min;
+                    return ">= " + min;
                 } else if (min.equals(Integer.MIN_VALUE)) {
-                    return "< " + max;
+                    return "<= " + max;
                 }
             } // TODO add more special cases?
             return min + " ~ " + max;
