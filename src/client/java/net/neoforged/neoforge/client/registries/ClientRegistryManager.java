@@ -81,6 +81,15 @@ public final class ClientRegistryManager extends RegistryManager {
         return "NewRegistryEvent or NewClientRegistryEvent";
     }
 
+    /// Creates a set containing the ordered list of registry names in the registration order.
+    ///
+    /// The order is as follows:
+    /// - The vanilla registries in vanilla order
+    /// - Modded registries in alphabetical order
+    ///
+    /// Due to static init issues, this is not necessarily the order that vanilla objects are bootstrapped in.
+    ///
+    /// @return A set containing the registration order
     public static SequencedSet<Identifier> getRegistrationOrder() {
         SequencedSet<Identifier> ordered = new LinkedHashSet<>();
         ordered.addAll(BuiltInClientRegistries.getVanillaRegistrationOrder());

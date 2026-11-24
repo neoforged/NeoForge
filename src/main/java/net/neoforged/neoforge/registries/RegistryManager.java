@@ -370,7 +370,7 @@ public class RegistryManager {
     ///
     /// Due to static init issues, this is not necessarily the order that vanilla objects are bootstrapped in.
     ///
-    /// @return A [LinkedHashSet] containing the registration order.
+    /// @return A set containing the registration order
     public static SequencedSet<Identifier> getRegistrationOrder() {
         SequencedSet<Identifier> ordered = new LinkedHashSet<>();
         ordered.add(Registries.ATTRIBUTE.identifier()); // Vanilla order is incorrect, both Item and MobEffect depend on Attribute at construction time.
