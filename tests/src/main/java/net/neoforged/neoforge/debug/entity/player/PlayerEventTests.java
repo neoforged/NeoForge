@@ -7,19 +7,25 @@ package net.neoforged.neoforge.debug.entity.player;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.ServerboundClientInformationPacket;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.LevelBasedPermissionSet;
 import net.minecraft.stats.ServerStatsCounter;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.clock.WorldClock;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
@@ -35,17 +41,21 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.PhantomSpawner;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.storage.LevelData;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.event.StatAwardEvent;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
+import net.neoforged.neoforge.event.entity.player.ClientInformationUpdatedEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerRespawnPositionEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -320,5 +330,88 @@ public class PlayerEventTests {
                 .thenExecute(player -> Objects.requireNonNull(player.level().getServer()).getPlayerList().respawn(player, false, Entity.RemovalReason.KILLED))
                 .thenExecute(() -> helper.assertEntityIsHolding(new BlockPos(0, 1, 1), EntityTypes.PLAYER, Items.APPLE))
                 .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if the ClientInformationUpdatedEvent fires with the old and the new information when a player updates their client options")
+    static void clientInformationUpdatedEvent(final DynamicTest test) {
+        AtomicReference<GameTestPlayer> expectedPlayer = new AtomicReference<>();
+        AtomicReference<ClientInformationUpdatedEvent> fired = new AtomicReference<>();
+        test.eventListeners().forge().addListener((final ClientInformationUpdatedEvent event) -> {
+            if (event.getEntity() == expectedPlayer.get()) {
+                fired.set(event);
+            }
+        });
+
+        test.onGameTest(helper -> {
+            GameTestPlayer player = helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL);
+            expectedPlayer.set(player);
+            ClientInformation oldInformation = player.clientInformation();
+            ClientInformation newInformation = new ClientInformation(
+                    "fr_fr",
+                    oldInformation.viewDistance() + 1,
+                    oldInformation.chatVisibility(),
+                    oldInformation.chatColors(),
+                    oldInformation.modelCustomisation(),
+                    oldInformation.mainHand(),
+                    oldInformation.textFilteringEnabled(),
+                    oldInformation.allowsListing(),
+                    oldInformation.particleStatus());
+
+            // The same path as a client sending its updated options
+            player.connection.handleClientInformation(new ServerboundClientInformationPacket(newInformation));
+
+            ClientInformationUpdatedEvent event = fired.get();
+            helper.assertNotNull(event, "Event should fire when the client information is updated");
+            helper.assertValueEqual(event.getOldInformation(), oldInformation, "Expected the previous information; old is " + event.getOldInformation());
+            helper.assertValueEqual(event.getUpdatedInformation(), newInformation, "Expected the sent information; updated is " + event.getUpdatedInformation());
+            helper.assertValueEqual(player.clientInformation(), newInformation, "Expected the new information to be applied; information is " + player.clientInformation());
+            helper.succeed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests if the PlayerSpawnPhantomsEvent can force phantoms to spawn around a player, with a custom amount")
+    static void playerSpawnPhantomsEvent(final DynamicTest test) {
+        final int phantomsToSpawn = 3;
+        AtomicReference<GameTestPlayer> expectedPlayer = new AtomicReference<>();
+        AtomicReference<PlayerSpawnPhantomsEvent> fired = new AtomicReference<>();
+        test.eventListeners().forge().addListener((final PlayerSpawnPhantomsEvent event) -> {
+            if (event.getEntity() == expectedPlayer.get()) {
+                fired.set(event);
+                event.setPhantomsToSpawn(phantomsToSpawn);
+                event.setResult(PlayerSpawnPhantomsEvent.Result.ALLOW);
+            }
+        });
+
+        test.onGameTest(helper -> {
+            ServerLevel level = helper.getLevel();
+            Holder<WorldClock> clock = level.dimensionType().defaultClock().orElseThrow();
+            long time = level.clockManager().getInstance(clock).totalTicks();
+            helper.addEndListener(passed -> level.clockManager().setTotalTicks(clock, time));
+            // Phantoms only spawn at night
+            level.clockManager().setTotalTicks(clock, 18000);
+
+            helper.startSequence(() -> helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL).moveToCentre())
+                    .thenExecute(expectedPlayer::set)
+                    // The sky darkness follows the time of day on the next level tick
+                    .thenExecuteAfter(2, player -> {
+                        // A fresh spawner, whose countdown starts at zero: the spawner of the level cannot be reached from here, and it
+                        // waits one to two minutes between two attempts once it has run
+                        new PhantomSpawner().tick(level, true);
+
+                        PlayerSpawnPhantomsEvent event = fired.get();
+                        helper.assertNotNull(event, "Event should fire for the player when phantoms could spawn");
+                        // Phantoms spawn 20 to 34 blocks above the player, and up to 10 blocks away from them on each horizontal axis
+                        BlockPos playerPos = player.blockPosition();
+                        AABB spawnArea = AABB.encapsulatingFullBlocks(playerPos.offset(-10, 20, -10), playerPos.offset(10, 34, 10));
+                        var phantoms = level.getEntities(EntityTypes.PHANTOM, spawnArea, Entity::isAlive);
+                        helper.assertValueEqual(phantoms.size(), phantomsToSpawn, "Expected the amount of phantoms set by the event; found " + phantoms.size());
+                        phantoms.forEach(Entity::discard);
+                    })
+                    .thenSucceed();
+        });
     }
 }

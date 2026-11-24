@@ -128,6 +128,8 @@ public class CreativeTabOrderTest {
     @Test
     void testParentStoneOrder(MinecraftServer server) {
         List<Item> desiredOrder = setupDesiredStoneOrder();
+        // Only visible in the parent tab
+        desiredOrder.add(Items.GRAVEL);
         for (ItemStack entry : stoneParentTab) {
             Item currentDesiredItem = desiredOrder.removeFirst();
             Assertions.assertTrue(entry.is(currentDesiredItem), entry.getItem() + " is not the desired " + currentDesiredItem + " in the stone parent tab!");
@@ -135,6 +137,8 @@ public class CreativeTabOrderTest {
         Assertions.assertTrue(desiredOrder.isEmpty(), "Not all sorted stones were found in stone parent tab!");
 
         desiredOrder = setupDesiredStoneOrder();
+        // Only visible in the search tab
+        desiredOrder.add(Items.SAND);
         for (ItemStack entry : stoneSearchTab) {
             Item currentDesiredItem = desiredOrder.removeFirst();
             Assertions.assertTrue(entry.is(currentDesiredItem), entry.getItem() + " is not the desired " + currentDesiredItem + " in the stone search tab!");
@@ -190,6 +194,9 @@ public class CreativeTabOrderTest {
                 event.accept(i(Blocks.CONCRETE.cyan()), vis);
                 event.remove(i(Blocks.CONCRETE.cyan()), vis);
                 event.insertFirst(i(Blocks.BASALT), vis);
+                // Entries visible in one of the two tabs only
+                event.insertAfter(i(Blocks.ANDESITE), i(Blocks.GRAVEL), CreativeModeTab.TabVisibility.PARENT_TAB_ONLY);
+                event.accept(i(Blocks.SAND), CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY);
 
                 catchSpecificExceptionForAction(
                         () -> event.accept(new ItemStack(Items.DIRT, 4), vis),

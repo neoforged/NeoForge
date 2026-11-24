@@ -11,25 +11,40 @@ import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.animal.cow.Cow;
 import net.minecraft.world.entity.animal.pig.Pig;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityMountEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
+import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.level.ExplosionKnockbackEvent;
 import net.neoforged.testframework.DynamicTest;
@@ -37,6 +52,7 @@ import net.neoforged.testframework.Test;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.gametest.GameTestPlayer;
 import net.neoforged.testframework.registration.RegistrationHelper;
@@ -251,5 +267,134 @@ public class EntityEventTests {
                 .thenIdle(20)
                 .thenExecute(helper::killAllEntities)
                 .thenSucceed());
+    }
+
+    /** Creates a fishing hook owned by {@code player}, one block west of {@code target} and flying towards it. */
+    private static FishingHook castHookTowards(final ExtendedGameTestHelper helper, final Player player, final Entity target) {
+        FishingHook hook = new FishingHook(EntityTypes.FISHING_BOBBER, helper.getLevel());
+        hook.setOwner(player);
+        hook.setPos(target.getX() - 1.0, target.getY(0.5), target.getZ());
+        hook.setDeltaMovement(1.5, 0.0, 0.0);
+        helper.getLevel().addFreshEntity(hook);
+        return hook;
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests if the ProjectileImpactEvent fires when a fishing hook hits an entity")
+    static void projectileImpactEvent(final DynamicTest test) {
+        AtomicReference<FishingHook> hook = new AtomicReference<>();
+        AtomicReference<ProjectileImpactEvent> fired = new AtomicReference<>();
+        test.eventListeners().forge().addListener((final ProjectileImpactEvent event) -> {
+            if (event.getProjectile() == hook.get()) {
+                fired.set(event);
+            }
+        });
+
+        test.onGameTest(helper -> {
+            GameTestPlayer player = helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL);
+            player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.FISHING_ROD));
+            Pig pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, 1, 2, 1);
+            hook.set(castHookTowards(helper, player, pig));
+
+            helper.startSequence()
+                    .thenWaitUntil(() -> helper.assertTrue(fired.get() != null, "Expected the event to fire when the hook reaches the pig"))
+                    .thenExecute(() -> {
+                        ProjectileImpactEvent event = fired.get();
+                        helper.assertTrue(event.getEntity() == hook.get(), "Expected the hook as the event entity; entity is " + event.getEntity());
+                        helper.assertTrue(event.getRayTraceResult() instanceof EntityHitResult hit && hit.getEntity() == pig, "Expected the pig to be hit; hit result is " + event.getRayTraceResult());
+                        helper.assertTrue(hook.get().getHookedIn() == pig, "Expected the hook to hook the pig; hooked is " + hook.get().getHookedIn());
+                    })
+                    .thenSucceed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests if cancelling the ProjectileImpactEvent prevents a fishing hook from hooking an entity")
+    static void projectileImpactEventCancel(final DynamicTest test) {
+        AtomicReference<FishingHook> hook = new AtomicReference<>();
+        AtomicInteger fireCount = new AtomicInteger();
+        test.eventListeners().forge().addListener((final ProjectileImpactEvent event) -> {
+            if (event.getProjectile() == hook.get()) {
+                fireCount.incrementAndGet();
+                event.setCanceled(true);
+            }
+        });
+
+        test.onGameTest(helper -> {
+            GameTestPlayer player = helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL);
+            player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.FISHING_ROD));
+            Pig pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, 1, 2, 1);
+            hook.set(castHookTowards(helper, player, pig));
+
+            helper.startSequence()
+                    .thenWaitUntil(() -> helper.assertTrue(fireCount.get() > 0, "Expected the event to fire when the hook reaches the pig"))
+                    // Leave the hook a few more ticks to make sure it never hooks the pig
+                    .thenExecuteAfter(3, () -> helper.assertTrue(hook.get().getHookedIn() == null, "Expected the cancelled impact not to hook the pig; hooked is " + hook.get().getHookedIn()))
+                    .thenSucceed();
+        });
+    }
+
+    private static boolean canSpawn(final ServerLevel level, final RandomSource random, final EntityType<?> type, final BlockPos pos) {
+        return SpawnPlacements.checkSpawnRules(type, level, EntitySpawnReason.NATURAL, pos, random);
+    }
+
+    @GameTest
+    @EmptyTemplate(value = "5x5x5", floor = true)
+    @TestHolder(description = "Tests if the RegisterSpawnPlacementsEvent can replace, extend and restrict the spawn placements of entities", enabledByDefault = true)
+    static void registerSpawnPlacementsEvent(final DynamicTest test) {
+        // The placements are registered when they are first used, so this test is enabled by default to have its listener in place
+        test.eventListeners().mod().addListener((final RegisterSpawnPlacementsEvent event) -> {
+            // REPLACE: slimes only spawn on gold blocks, with a placement type and a heightmap type of their own, which only this
+            // operation may change
+            event.register(EntityTypes.SLIME, SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.WORLD_SURFACE, (type, level, reason, pos, random) -> level.getBlockState(pos.below()).is(Blocks.GOLD_BLOCK), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+            // OR: creepers also spawn on emerald blocks, whatever the light level
+            event.register(EntityTypes.CREEPER, (type, level, reason, pos, random) -> level.getBlockState(pos.below()).is(Blocks.EMERALD_BLOCK), RegisterSpawnPlacementsEvent.Operation.OR);
+            // AND: pigs additionally need a gold block two blocks below them, as their vanilla placement already requires a block
+            // of the animals_spawnable_on tag right below them
+            event.register(EntityTypes.PIG, (type, level, reason, pos, random) -> level.getBlockState(pos.below(2)).is(Blocks.GOLD_BLOCK), RegisterSpawnPlacementsEvent.Operation.AND);
+        });
+
+        test.onGameTest(helper -> {
+            helper.requireDifficulty(Difficulty.NORMAL);
+            ServerLevel level = helper.getLevel();
+            RandomSource random = level.getRandom();
+            // Slime and creeper spots: a gold block, an emerald block and a glass block on the floor, lit by a glowstone block so
+            // that the vanilla placements of both monsters refuse all three spots: monsters need a block light of zero to spawn,
+            // and slimes only spawn in swamps at night or in slime chunks deep underground
+            helper.setBlock(0, 2, 0, Blocks.GOLD_BLOCK);
+            helper.setBlock(1, 2, 0, Blocks.GLOWSTONE);
+            helper.setBlock(2, 2, 0, Blocks.EMERALD_BLOCK);
+            helper.setBlock(4, 2, 0, Blocks.GLASS);
+            // Pig spots: grass with gold underneath, grass with the floor underneath, and stone with gold underneath
+            helper.setBlock(0, 1, 4, Blocks.GOLD_BLOCK);
+            helper.setBlock(0, 2, 4, Blocks.GRASS_BLOCK);
+            helper.setBlock(2, 2, 4, Blocks.GRASS_BLOCK);
+            helper.setBlock(4, 1, 4, Blocks.GOLD_BLOCK);
+            helper.setBlock(4, 2, 4, Blocks.STONE);
+            BlockPos goldSpot = helper.absolutePos(new BlockPos(0, 3, 0));
+            BlockPos emeraldSpot = helper.absolutePos(new BlockPos(2, 3, 0));
+            BlockPos glassSpot = helper.absolutePos(new BlockPos(4, 3, 0));
+
+            helper.assertValueEqual(SpawnPlacements.getPlacementType(EntityTypes.SLIME), SpawnPlacementTypes.NO_RESTRICTIONS, "Expected the placement type of slimes to be replaced");
+            helper.assertValueEqual(SpawnPlacements.getHeightmapType(EntityTypes.SLIME), Heightmap.Types.WORLD_SURFACE, "Expected the heightmap type of slimes to be replaced");
+            helper.assertValueEqual(SpawnPlacements.getPlacementType(EntityTypes.CREEPER), SpawnPlacementTypes.ON_GROUND, "Expected creepers to keep their vanilla placement type");
+            helper.assertValueEqual(SpawnPlacements.getHeightmapType(EntityTypes.CREEPER), Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, "Expected creepers to keep their vanilla heightmap type");
+
+            helper.startSequence()
+                    // The light engine spreads the light of the glowstone block over the next ticks
+                    .thenWaitUntil(() -> helper.assertTrue(level.getBrightness(LightLayer.BLOCK, glassSpot) > 0, "Expected the light of the glowstone block to reach the spots"))
+                    .thenExecute(() -> {
+                        helper.assertTrue(canSpawn(level, random, EntityTypes.SLIME, goldSpot), "Expected slimes to spawn on gold blocks with the replaced placement, despite the light");
+                        helper.assertFalse(canSpawn(level, random, EntityTypes.SLIME, emeraldSpot), "Expected slimes not to spawn on emerald blocks with the replaced placement");
+                        helper.assertTrue(canSpawn(level, random, EntityTypes.CREEPER, emeraldSpot), "Expected creepers to spawn on emerald blocks with the added placement, despite the light");
+                        helper.assertFalse(canSpawn(level, random, EntityTypes.CREEPER, glassSpot), "Expected creepers to keep their vanilla placement elsewhere, which refuses the light");
+                        helper.assertTrue(canSpawn(level, random, EntityTypes.PIG, helper.absolutePos(new BlockPos(0, 3, 4))), "Expected pigs to spawn on grass with gold underneath");
+                        helper.assertFalse(canSpawn(level, random, EntityTypes.PIG, helper.absolutePos(new BlockPos(2, 3, 4))), "Expected pigs not to spawn without gold underneath, even on grass");
+                        helper.assertFalse(canSpawn(level, random, EntityTypes.PIG, helper.absolutePos(new BlockPos(4, 3, 4))), "Expected pigs to keep their vanilla placement, which refuses stone");
+                    })
+                    .thenSucceed();
+        });
     }
 }

@@ -5,9 +5,12 @@
 
 package net.neoforged.neoforge.debug.entity;
 
+import java.lang.reflect.Method;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.minecraft.client.renderer.entity.NoopRenderer;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -20,13 +23,34 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
+import net.minecraft.world.entity.ai.goal.RangedCrossbowAttackGoal;
+import net.minecraft.world.entity.ai.goal.WrappedGoal;
+import net.minecraft.world.entity.monster.Enderman;
+import net.minecraft.world.entity.monster.illager.Pillager;
+import net.minecraft.world.entity.monster.skeleton.Skeleton;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.CrossbowItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.equipment.ArmorMaterials;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
@@ -36,6 +60,7 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
+import org.jspecify.annotations.Nullable;
 
 @ForEachTest(groups = EntityTests.GROUP)
 public class EntityTests {
@@ -171,5 +196,84 @@ public class EntityTests {
         public CustomPacketPayload.Type<CustomSyncPayload> type() {
             return TYPE;
         }
+    }
+
+    private static boolean hasGoal(final Mob mob, final Class<? extends Goal> type) {
+        return mob.goalSelector.getAvailableGoals().stream().anyMatch(goal -> type.isInstance(goal.getGoal()));
+    }
+
+    private static boolean canUseGoal(final Mob mob, final Class<? extends Goal> type) {
+        return mob.goalSelector.getAvailableGoals().stream().filter(goal -> type.isInstance(goal.getGoal())).anyMatch(WrappedGoal::canUse);
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests if ranged mobs use modded bows and crossbows, and not only the vanilla ones")
+    static void rangedMobsUseModdedWeapons(final DynamicTest test, final RegistrationHelper reg) {
+        final var moddedBow = reg.items().registerItem("modded_bow", properties -> new BowItem(properties.durability(384))).withLang("Modded bow");
+        final var moddedCrossbow = reg.items().registerItem("modded_crossbow", properties -> new CrossbowItem(properties.durability(326))).withLang("Modded crossbow");
+
+        test.onGameTest(helper -> {
+            Skeleton skeleton = helper.spawnWithNoFreeWill(EntityTypes.SKELETON, 1, 2, 1);
+            skeleton.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.STICK));
+            skeleton.reassessWeaponGoal();
+            helper.assertFalse(hasGoal(skeleton, RangedBowAttackGoal.class), "Expected a skeleton without a bow not to use bow attacks");
+            skeleton.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(moddedBow.get()));
+            skeleton.reassessWeaponGoal();
+            helper.assertTrue(hasGoal(skeleton, RangedBowAttackGoal.class), "Expected a skeleton holding a modded bow to use bow attacks");
+
+            // Spawned with its goals, as removing the free will of a mob clears them; the crossbow goal also needs a valid target
+            Pillager pillager = helper.spawn(EntityTypes.PILLAGER, 1, 2, 1);
+            pillager.setTarget(helper.makeMockPlayer(GameType.SURVIVAL));
+            pillager.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.STICK));
+            helper.assertFalse(canUseGoal(pillager, RangedCrossbowAttackGoal.class), "Expected a pillager without a crossbow not to use crossbow attacks");
+            pillager.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(moddedCrossbow.get()));
+            helper.assertTrue(canUseGoal(pillager, RangedCrossbowAttackGoal.class), "Expected a pillager holding a modded crossbow to use crossbow attacks");
+
+            helper.killAllEntities();
+            helper.succeed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate(value = "7x4x7", floor = true)
+    @TestHolder(description = "Tests if an item can hide the gaze of a player from an enderman through IItemExtension#isGazeDisguise, depending on the player and on the entity looked at")
+    static void gazeDisguiseItem(final DynamicTest test, final RegistrationHelper reg) {
+        final var enderMask = reg.items().registerItem("ender_mask", properties -> new Item(properties.humanoidArmor(ArmorMaterials.LEATHER, ArmorType.HELMET)) {
+            @Override
+            public boolean isGazeDisguise(ItemStack stack, Player player, @Nullable LivingEntity entity) {
+                return entity instanceof Enderman && player.experienceLevel >= 10;
+            }
+        }).withLang("Ender mask");
+
+        test.onGameTest(helper -> {
+            Enderman enderman = helper.spawnWithNoFreeWill(EntityTypes.ENDERMAN, 1, 2, 3);
+            LivingEntity pig = helper.spawnWithNoFreeWill(EntityTypes.PIG, 3, 2, 5);
+            Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+            player.setPos(helper.absoluteVec(new Vec3(5.5, 2, 3.5)));
+            player.experienceLevel = 10;
+            player.setItemSlot(EquipmentSlot.HEAD, new ItemStack(enderMask.get()));
+
+            helper.assertFalse(LivingEntity.PLAYER_NOT_WEARING_DISGUISE_ITEM_FOR_TARGET.test(player, enderman), "Expected the mask to hide the gaze of the player from the enderman");
+            helper.assertTrue(LivingEntity.PLAYER_NOT_WEARING_DISGUISE_ITEM_FOR_TARGET.test(player, pig), "Expected the mask not to hide the gaze of the player from a pig");
+            player.experienceLevel = 0;
+            helper.assertTrue(LivingEntity.PLAYER_NOT_WEARING_DISGUISE_ITEM_FOR_TARGET.test(player, enderman), "Expected the mask not to hide the gaze of a player below level 10");
+            player.experienceLevel = 10;
+
+            // The check of the enderman itself, which decides whether a player looking at it makes it angry
+            Method isBeingStaredBy = helper.catchException(() -> ObfuscationReflectionHelper.findMethod(Enderman.class, "isBeingStaredBy", Player.class));
+            BooleanSupplier stared = () -> {
+                player.lookAt(EntityAnchorArgument.Anchor.EYES, enderman.getEyePosition());
+                return helper.catchException(() -> (boolean) isBeingStaredBy.invoke(enderman, player));
+            };
+            helper.assertFalse(stared.getAsBoolean(), "Expected the enderman not to be stared at by a player wearing the mask");
+            player.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
+            helper.assertTrue(stared.getAsBoolean(), "Expected the enderman to be stared at by a player without the mask");
+            player.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.CARVED_PUMPKIN));
+            helper.assertFalse(stared.getAsBoolean(), "Expected the carved pumpkin to still hide the gaze of the player, through the vanilla tag");
+
+            helper.killAllEntities();
+            helper.succeed();
+        });
     }
 }
