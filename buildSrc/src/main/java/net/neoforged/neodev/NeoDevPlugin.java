@@ -207,7 +207,6 @@ public class NeoDevPlugin implements Plugin<Project> {
                 legacyClasspath -> {},
                 downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile),
                 mcAndNeoFormVersion);
-        // TODO: Gradle run tasks should be moved to gradle group GROUP
 
         /*
          * OTHER TASKS

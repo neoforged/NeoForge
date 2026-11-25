@@ -5,48 +5,36 @@
 
 package net.neoforged.neoforge.oldtest.misc;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
-import java.nio.file.Path;
 import java.util.Locale;
-import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.data.CachedOutput;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DataProvider;
 import net.minecraft.resources.Identifier;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.packs.PackType;
 import net.minecraft.tags.TagKey;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.util.thread.EffectiveSide;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GatherDataRegistryEntriesEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.NewDatapackRegistryEvent;
 import org.slf4j.Logger;
 
 /**
  * <p>This test class shows an example of how to register unsynced and synced datapack registries,
- * and how to use a dataprovider to generate json files for them.
+ * and how to generate an entry for the unsynced registry.
  * It also verifies that data and tags are loaded and synced correctly.
  * Data is loaded from the following folders in test resources:</p>
  * <ul>
  * <li><code>data/data_pack_registries_test/data_pack_registries_test/unsyncable/test.json</code></li>
+ * <li><code>data/data_pack_registries_test/data_pack_registries_test/unsyncable/datagen_test.json</code> (generated)</li>
  * <li><code>data/data_pack_registries_test/tags/data_pack_registries_test/unsyncable/test.json</code></li>
  * <li><code>data/data_pack_registries_test/data_pack_registries_test/syncable/test.json</code></li>
  * <li><code>data/data_pack_registries_test/tags/data_pack_registries_test/syncable/test.json</code></li>
@@ -54,69 +42,29 @@ import org.slf4j.Logger;
  */
 @Mod(DataPackRegistriesTest.MODID)
 public class DataPackRegistriesTest {
-    private static final boolean ENABLED = false;
+    // Enable for manual sync testing with a client that also has this test mod.
+    private static final boolean ENABLE_SYNC_TEST = false;
     public static final String MODID = "data_pack_registries_test";
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Identifier TEST_RL = Identifier.fromNamespaceAndPath(MODID, "test");
 
-    //TODO: Fix datapack generation for it.
-    private final DeferredHolder<Unsyncable, Unsyncable> datagenTestObject = null;
+    private static final ResourceKey<Unsyncable> DATAGEN_TEST_KEY = ResourceKey.create(Unsyncable.REGISTRY_KEY, Identifier.fromNamespaceAndPath(MODID, "datagen_test"));
 
     public DataPackRegistriesTest(IEventBus modBus) {
-        if (!ENABLED)
-            return;
-
-        final IEventBus forgeBus = NeoForge.EVENT_BUS;
-
         modBus.addListener((NewDatapackRegistryEvent event) -> {
-            event.worldRegistry(ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(MODID, "unsyncable")), Unsyncable.DIRECT_CODEC);
-            event.worldRegistry(ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(MODID, "syncable")), Syncable.DIRECT_CODEC, Syncable.DIRECT_CODEC);
+            event.worldRegistry(Unsyncable.REGISTRY_KEY, Unsyncable.DIRECT_CODEC);
+            if (ENABLE_SYNC_TEST) {
+                event.worldRegistry(Syncable.REGISTRY_KEY, Syncable.DIRECT_CODEC, Syncable.DIRECT_CODEC);
+            }
         });
 
-        modBus.addListener(this::onGatherData);
-        forgeBus.addListener(this::onServerStarting);
+        modBus.addListener((GatherDataRegistryEntriesEvent event) -> event.add(Unsyncable.REGISTRY_KEY,
+                context -> context.register(DATAGEN_TEST_KEY, new Unsyncable("Datagen Success"))));
+        NeoForge.EVENT_BUS.addListener(this::onServerStarting);
 
-        if (FMLEnvironment.getDist().isClient()) {
+        if (ENABLE_SYNC_TEST && FMLEnvironment.getDist().isClient()) {
             ClientEvents.subscribeClientEvents();
         }
-    }
-
-    private void onGatherData(final GatherDataEvent.Client event) {
-        // Example of how to datagen datapack registry objects.
-        // Objects to be datagenerated must be registered (e.g. via DeferredRegister above).
-        // This outputs to data/data_pack_registries_test/data_pack_registries_test/unsyncable/datagen_test.json
-        final DataGenerator generator = event.getGenerator();
-        final Path outputFolder = generator.getPackOutput().getOutputFolder();
-        final CompletableFuture<HolderLookup.Provider> providerCompletableFuture = event.getReloadableLookupProvider();
-        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        final Identifier registryId = Unsyncable.REGISTRY_KEY.identifier();
-        final Identifier id = this.datagenTestObject.getId();
-        final Unsyncable element = new Unsyncable("Datagen Success");
-        final String pathString = String.join("/", PackType.SERVER_DATA.getDirectory(), id.getNamespace(), registryId.getNamespace(), registryId.getPath(), id.getPath() + ".json");
-        final Path path = outputFolder.resolve(pathString);
-
-        generator.addProvider(true, new DataProvider() {
-            @Override
-            public CompletableFuture<?> run(final CachedOutput cache) {
-                return providerCompletableFuture.thenCompose(provider -> {
-                    final RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, provider);
-
-                    Unsyncable.DIRECT_CODEC.encodeStart(ops, element)
-                            .resultOrPartial(msg -> LOGGER.error("Failed to encode {}: {}", path, msg)) // Log error on encode failure.
-                            .ifPresent(json -> // Output to file on encode success.
-                    {
-                                DataProvider.saveStable(cache, json, path);
-                            });
-
-                    return CompletableFuture.allOf();
-                });
-            }
-
-            @Override
-            public String getName() {
-                return String.format("%s provider for %s", registryId, MODID);
-            }
-        });
     }
 
     private void onServerStarting(final ServerStartingEvent event) {
@@ -131,6 +79,10 @@ public class DataPackRegistriesTest {
         final TagKey<Unsyncable> tag = TagKey.create(Unsyncable.REGISTRY_KEY, TEST_RL);
         if (!registry.get(tag).get().contains(holder))
             throw new IllegalStateException(String.format(Locale.ENGLISH, "Tag %s does not contain %s", tag, TEST_RL));
+
+        final Unsyncable generated = registry.getValueOrThrow(DATAGEN_TEST_KEY);
+        if (!generated.value().equals("Datagen Success"))
+            throw new IllegalStateException("Incorrect value loaded for " + DATAGEN_TEST_KEY.identifier() + ": " + generated.value());
 
         LOGGER.info("DataPackRegistriesTest server data loaded successfully!");
     }

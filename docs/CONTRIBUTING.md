@@ -3,7 +3,7 @@ Contributing to NeoForge
 
 1) Keep patches to Minecraft classes together. If you need a lot of things done, you may either add to relevant forge classes or make a new class. Try not to spread out your patches across multiple disjoint lines, as this makes maintenance of your patches difficult.
 
-2) TODO: Test Mods
+2) When possible, add or extend an automated test for the behavior you change. Put [GameTests](NEOGAMETESTS.md) and manual client tests that use the [test framework](TESTFRAMEWORK.md) in `tests/src/main/java`, alongside tests for the same feature. Put JUnit tests in `tests/src/junit/java`.
 
 3) Follow the code style of the class you're working in (braces on newlines & spaces instead of tabs in Forge classes, inline brackets in patches, etc).
 
@@ -24,7 +24,7 @@ Contributing to NeoForge
      - Runs starting with `tests -` run NeoForge along with the test mods in the `tests` project.
    - Run `gradlew :tests:runGameTestServer` or `tests - GameTestServer` from IDE
    - Run `gradlew :tests:runClient` or `tests - Client` from IDE
-   - If possible, write an automated test under the tests project. See [NEOGAMETESTS.md](NEOGAMETESTS.md) for more info.
+   - Run JUnit tests with `gradlew :tests:junitTest`
 10. Run `gradlew genPatches` to generate patch-files from the patched sources
 11. Run `gradlew applyAllFormatting` to automatically format sources
 12. Check correct formatting with `gradlew checkFormatting`

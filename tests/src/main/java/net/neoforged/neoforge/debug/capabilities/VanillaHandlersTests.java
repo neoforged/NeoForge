@@ -21,8 +21,10 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -96,7 +98,7 @@ public class VanillaHandlersTests {
 
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = "Tests that non-compostable items cannot be inserted into a composter")
+    @TestHolder(description = "Tests that composters reject non-compostable items and expose their output read-only when queried without a side")
     public static void testComposterCannotAcceptNonCompostables(ExtendedGameTestHelper helper) {
         var composterPos = new BlockPos(1, 1, 1);
 
@@ -106,20 +108,32 @@ public class VanillaHandlersTests {
         if (nonCompostable.has(DataComponents.COMPOSTABLE))
             helper.fail("Assumption failed: expected " + nonCompostable + " to be non-compostable");
 
-        // Of particular note to be tested here is the 'null' side; see #2572
-        // "IItemHandler for null side of Composter allows items without compost value to be inserted"
-        // TODO: change test back to null + all directions once supported by the ComposterWrapper
-        var sides = new Direction[] { Direction.UP, Direction.DOWN };
-
-        for (Direction side : sides) {
-            var capability = helper.requireCapability(Capabilities.Item.BLOCK, composterPos, side);
-            try (Transaction tx = Transaction.openRoot()) {
-                var result = capability.insert(0, nonCompostable, 1, tx);
-                if (result > 0) {
-                    helper.fail("Expected failure to insert non-compostable item for side " + side);
-                }
-            }
+        for (Direction side : Direction.Plane.HORIZONTAL) {
+            helper.assertTrue(helper.getCapability(Capabilities.Item.BLOCK, composterPos, side) == null, "Expected no item handler on " + side);
         }
+
+        var top = helper.requireCapability(Capabilities.Item.BLOCK, composterPos, Direction.UP);
+        var bottom = helper.requireCapability(Capabilities.Item.BLOCK, composterPos, Direction.DOWN);
+        var unsided = helper.requireCapability(Capabilities.Item.BLOCK, composterPos, null);
+        helper.assertTrue(unsided.getResource(0).isEmpty() && unsided.getAmountAsInt(0) == 0, "Expected an empty composter to report no output");
+        try (Transaction tx = Transaction.openRoot()) {
+            helper.assertTrue(top.insert(0, nonCompostable, 1, tx) == 0, "Expected the top to reject non-compostable items");
+            helper.assertTrue(bottom.insert(0, nonCompostable, 1, tx) == 0, "Expected the bottom to reject non-compostable items");
+            helper.assertTrue(unsided.insert(0, nonCompostable, 1, tx) == 0, "Expected unsided access to reject non-compostable items");
+            helper.assertTrue(unsided.insert(0, ItemResource.of(Items.CARROT), 1, tx) == 0, "Expected unsided access to reject compostable items");
+            tx.commit();
+        }
+        helper.assertValueEqual(helper.getBlockState(composterPos).getValue(ComposterBlock.LEVEL), ComposterBlock.MIN_LEVEL, "composter level after unsided insertion attempt");
+
+        helper.setBlock(composterPos, Blocks.COMPOSTER.defaultBlockState().setValue(ComposterBlock.LEVEL, ComposterBlock.READY));
+        var boneMeal = ItemResource.of(Items.BONE_MEAL);
+        helper.assertTrue(unsided.getResource(0).equals(boneMeal) && unsided.getAmountAsInt(0) == 1, "Expected a ready composter to report one bone meal");
+        try (Transaction tx = Transaction.openRoot()) {
+            helper.assertTrue(unsided.extract(0, boneMeal, 1, tx) == 0, "Expected unsided access to refuse extraction");
+            helper.assertTrue(bottom.extract(0, boneMeal, 1, tx) == 1, "Expected bone meal to be extractable from the bottom");
+            tx.commit();
+        }
+        helper.assertTrue(unsided.getResource(0).isEmpty() && unsided.getAmountAsInt(0) == 0, "Expected no output after extracting the bone meal");
 
         helper.succeed();
     }
