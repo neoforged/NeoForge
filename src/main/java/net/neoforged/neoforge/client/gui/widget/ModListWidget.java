@@ -51,6 +51,7 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
     public void refreshList() {
         this.clearEntries();
         parent.buildModList(this::addEntry, mod -> new ModEntry(mod, this.parent));
+        this.clampScrollAmount();
     }
 
     public class ModEntry extends ObjectSelectionList.Entry<ModEntry> {
