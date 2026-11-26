@@ -58,23 +58,15 @@
          this.textInputManager = new TextInputManager(this.window);
          this.sdlEventHandler.flushInputEvents();
          this.window
-@@ -570,6 +_,9 @@
+@@ -570,6 +_,7 @@
          this.keyboardHandler = new KeyboardHandler(this);
          this.options.applyGraphicsPreset(this.options.graphicsPreset().get());
          this.resourceManager = new ReloadableResourceManager(PackType.CLIENT_RESOURCES);
 +        net.neoforged.neoforge.client.loading.ClientModLoader.setupModResourcePacks(this.resourcePackRepository);
-+        // Neo: Move client bootstrap to after mod loading so that events can be fired for it.
-+        ClientBootstrap.bootstrap();
          this.resourcePackRepository.reload();
          this.options.loadSelectedResourcePacks(this.resourcePackRepository);
          this.languageManager = new LanguageManager(this, this.options.languageCode, var1 -> {
-@@ -603,11 +_,14 @@
-         this.resourceManager.registerReloadListener(new DryFoliageColorReloadListener());
-         RenderSystem.setupDefaultState();
-         this.blockColors = BlockColors.createDefault();
-+        net.neoforged.neoforge.client.model.UnbakedModelParser.init();
-         this.modelManager = new ModelManager(this.blockColors, this.atlasManager, this.playerSkinRenderCache);
-         this.resourceManager.registerReloadListener(this.modelManager);
+@@ -608,6 +_,8 @@
          EquipmentAssetManager equipmentAssets = new EquipmentAssetManager();
          this.resourceManager.registerReloadListener(equipmentAssets);
          BlockModelResolver blockModelResolver = new BlockModelResolver(this.modelManager);

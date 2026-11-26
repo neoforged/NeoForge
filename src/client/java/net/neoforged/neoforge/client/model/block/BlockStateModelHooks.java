@@ -13,26 +13,17 @@ import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelDispatcher;
 import net.minecraft.client.renderer.block.dispatch.SingleVariant;
-import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.random.Weighted;
-import net.neoforged.fml.ModLoader;
-import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
+import net.neoforged.neoforge.client.registries.NeoForgeClientRegistries;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public class BlockStateModelHooks {
-    static final ExtraCodecs.LateBoundIdMapper<Identifier, MapCodec<? extends CustomUnbakedBlockStateModel>> BLOCK_STATE_MODEL_IDS = new ExtraCodecs.LateBoundIdMapper<>();
-    static final ExtraCodecs.LateBoundIdMapper<Identifier, MapCodec<? extends CustomBlockModelDefinition>> BLOCK_MODEL_DEFINITION_IDS = new ExtraCodecs.LateBoundIdMapper<>();
-
-    public static void init() {
-        ModLoader.postEvent(new RegisterBlockStateModels(BLOCK_STATE_MODEL_IDS, BLOCK_MODEL_DEFINITION_IDS));
-    }
-
+public final class BlockStateModelHooks {
     public static MapCodec<Either<CustomUnbakedBlockStateModel, SingleVariant.Unbaked>> makeSingleModelCodec() {
         return NeoForgeExtraCodecs.dispatchMapOrElse(
-                BLOCK_STATE_MODEL_IDS.codec(Identifier.CODEC),
+                NeoForgeClientRegistries.BLOCK_STATE_MODEL_TYPE.byNameCodec(),
                 CustomUnbakedBlockStateModel::codec,
                 c -> c,
                 SingleVariant.Unbaked.MAP_CODEC);
@@ -50,7 +41,7 @@ public class BlockStateModelHooks {
     public static Codec<BlockStateModelDispatcher> makeDefinitionCodec() {
         return NeoForgeExtraCodecs.dispatchMapOrElse(
                 "neoforge:definition_type",
-                BLOCK_MODEL_DEFINITION_IDS.codec(Identifier.CODEC),
+                NeoForgeClientRegistries.BLOCK_STATE_MODEL_DISPATCHER_TYPE.byNameCodec(),
                 CustomBlockModelDefinition::codec,
                 Function.identity(),
                 BlockStateModelDispatcher.VANILLA_CODEC).xmap(

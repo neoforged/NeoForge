@@ -17,6 +17,7 @@ import net.minecraft.client.resources.model.cuboid.MissingCuboidModel;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.model.ConditionalModelLoader;
 import net.neoforged.neoforge.client.model.generators.template.CustomLoaderBuilder;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jspecify.annotations.Nullable;
@@ -29,7 +30,7 @@ public final class ConditionalModelBuilder extends CustomLoaderBuilder {
     private Either<Identifier, InlineModel> fallback = Either.left(MissingCuboidModel.LOCATION);
 
     public ConditionalModelBuilder() {
-        super(ConditionalModelLoader.ID, true);
+        super(Identifier.fromNamespaceAndPath(NeoForgeMod.MOD_ID, "conditional"), true);
     }
 
     /// Add a loading condition which must be satisfied for this model to be loaded.

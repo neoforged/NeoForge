@@ -4,7 +4,7 @@
  
  @OnlyIn(Dist.CLIENT)
  public interface PresetEditor {
-+    /// @deprecated Neo: Use [net.neoforged.neoforge.client.PresetEditorManager#get(ResourceKey)] instead.
++    /// @deprecated Neo: Use [net.neoforged.neoforge.client.ClientHooks#getWorldPresetEditor(ResourceKey)] instead.
 +    @Deprecated
      Map<Optional<ResourceKey<WorldPreset>>, PresetEditor> EDITORS = Map.of(
          Optional.of(WorldPresets.FLAT),

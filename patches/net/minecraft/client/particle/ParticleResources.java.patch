@@ -1,0 +1,20 @@
+--- a/net/minecraft/client/particle/ParticleResources.java
++++ b/net/minecraft/client/particle/ParticleResources.java
+@@ -321,6 +_,17 @@
+         return (ParticleProvider<T>)this.providers.get(options.getType());
+     }
+ 
++    /// Neo: Instantiate the given [SpriteParticleRegistration] for the given [ParticleType].
++    ///
++    /// Note: This method **must** only be called in the lambda passed to a `DeferredRegister` or from a `RegisterEvent` listener.
++    /// Prefer using [net.neoforged.neoforge.client.registries.DeferredClientRegister.ParticleProviders].
++    public static <T extends ParticleOptions> ParticleProvider<T> instantiateSpriteParticleRegistration(ParticleType<T> type, SpriteParticleRegistration<T> registration) {
++        ParticleResources.MutableSpriteSet spriteSet = new ParticleResources.MutableSpriteSet();
++        ResourceKey<ParticleProvider<?>> key = particleTypeKey(type);
++        SPRITE_SETS.put(key, spriteSet);
++        return registration.create(spriteSet);
++    }
++
+     private static class MutableSpriteSet implements SpriteSet {
+         private List<TextureAtlasSprite> sprites;
+ 

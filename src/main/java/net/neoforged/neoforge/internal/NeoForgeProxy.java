@@ -5,8 +5,10 @@
 
 package net.neoforged.neoforge.internal;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.thread.BlockableEventLoop;
@@ -53,5 +55,15 @@ public class NeoForgeProxy {
             return server.registryAccess().lookup(key).orElse(null);
         }
         return null;
+    }
+
+    public @Nullable Registry<?> getBuiltinRegistry(ResourceKey<? extends Registry<?>> key) {
+        return tryGetRegistry(BuiltInRegistries.REGISTRY, key);
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected static @Nullable Registry<?> tryGetRegistry(Registry<? extends Registry<?>> rootRegistry, ResourceKey<? extends Registry<?>> key) {
+        Holder<Registry<?>> registry = (Holder<Registry<?>>) rootRegistry.get((ResourceKey) key).orElse(null);
+        return registry != null ? registry.value() : null;
     }
 }

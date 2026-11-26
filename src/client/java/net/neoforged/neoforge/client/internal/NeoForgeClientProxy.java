@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.client.internal;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.core.registries.BuiltInClientRegistries;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
@@ -38,5 +39,11 @@ public class NeoForgeClientProxy extends NeoForgeProxy {
             }
         }
         return lookup;
+    }
+
+    @Override
+    public @Nullable Registry<?> getBuiltinRegistry(ResourceKey<? extends Registry<?>> key) {
+        Registry<?> registry = tryGetRegistry(BuiltInClientRegistries.REGISTRY, key);
+        return registry != null ? registry : super.getBuiltinRegistry(key);
     }
 }

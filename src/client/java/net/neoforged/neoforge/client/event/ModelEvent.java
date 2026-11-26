@@ -5,19 +5,16 @@
 
 package net.neoforged.neoforge.client.event;
 
-import com.google.common.base.Preconditions;
 import java.util.Collections;
 import java.util.Map;
 import net.minecraft.client.renderer.texture.SpriteLoader;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.model.sprite.MaterialBaker;
-import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.client.model.UnbakedModelLoader;
 import net.neoforged.neoforge.client.model.standalone.StandaloneModelKey;
 import net.neoforged.neoforge.client.model.standalone.UnbakedStandaloneModel;
 import org.jetbrains.annotations.ApiStatus;
@@ -165,33 +162,6 @@ public abstract class ModelEvent extends Event {
          */
         public <T> void register(StandaloneModelKey<T> modelKey, UnbakedStandaloneModel<T> baker) {
             modelMap.put(modelKey, baker);
-        }
-    }
-
-    /**
-     * Allows users to register their own {@link UnbakedModelLoader unbaked model loaders} for use in block/item models.
-     *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
-     *
-     * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
-     */
-    public static class RegisterLoaders extends ModelEvent implements IModBusEvent {
-        private final Map<Identifier, UnbakedModelLoader<?>> loaders;
-
-        @ApiStatus.Internal
-        public RegisterLoaders(Map<Identifier, UnbakedModelLoader<?>> loaders) {
-            this.loaders = loaders;
-        }
-
-        /**
-         * Registers a new unbaked model loader.
-         *
-         * @param key    the ID of the loader
-         * @param loader the loader to register
-         */
-        public void register(Identifier key, UnbakedModelLoader<?> loader) {
-            Preconditions.checkArgument(!loaders.containsKey(key), "Unbaked model loader already registered: " + key);
-            loaders.put(key, loader);
         }
     }
 }

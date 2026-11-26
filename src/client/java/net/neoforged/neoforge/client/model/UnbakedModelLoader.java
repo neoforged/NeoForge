@@ -12,7 +12,7 @@ import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.client.resources.model.cuboid.CuboidModel;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
-import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.registries.NeoForgeClientRegistries;
 
 /**
  * A loader for custom {@linkplain UnbakedModel unbaked models}.
@@ -20,7 +20,7 @@ import net.neoforged.neoforge.client.event.ModelEvent;
  * If you do any caching, you should implement {@link ResourceManagerReloadListener} and register it with
  * {@link AddClientReloadListenersEvent}.
  *
- * @see ModelEvent.RegisterLoaders
+ * @see NeoForgeClientRegistries#UNBAKED_MODEL_LOADER
  * @see AddClientReloadListenersEvent
  */
 public interface UnbakedModelLoader<T extends UnbakedModel> {

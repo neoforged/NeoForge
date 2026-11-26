@@ -28,6 +28,7 @@ import net.neoforged.fml.startup.FatalErrorReporting;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.gui.LoadingErrorScreen;
 import net.neoforged.neoforge.client.network.registration.ClientNetworkRegistry;
+import net.neoforged.neoforge.client.registries.ClientRegistryManager;
 import net.neoforged.neoforge.common.VersionChecker;
 import net.neoforged.neoforge.internal.CommonModLoader;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
@@ -53,7 +54,11 @@ public class ClientModLoader extends CommonModLoader {
         LanguageHook.loadBuiltinLanguages();
 
         Runnable periodicTick = earlyLoadingScreen != null ? earlyLoadingScreen::periodicTick : () -> {};
-        begin(periodicTick, false);
+        beginClient(periodicTick, false);
+    }
+
+    static void beginClient(Runnable periodicTask, boolean datagen) {
+        begin(periodicTask, ClientRegistryManager.INSTANCE, datagen);
     }
 
     public static void setupModResourcePacks(PackRepository repository) {

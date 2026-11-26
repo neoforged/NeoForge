@@ -8,7 +8,6 @@ package net.neoforged.neoforge.registries;
 import com.mojang.serialization.Lifecycle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import net.minecraft.core.DefaultedMappedRegistry;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
@@ -105,8 +104,7 @@ public class RegistryBuilder<T> {
 
     /**
      * Creates a new registry from this builder.
-     * Use {@link NewRegistryEvent#create(RegistryBuilder)} or {@link DeferredRegister#makeRegistry(Consumer)}
-     * to not have to call this manually.
+     * Use {@link NewRegistryEvent#create(RegistryBuilder)} to not have to call this manually.
      * All created registries must be registered, see {@link NewRegistryEvent#register(Registry)}.
      *
      * @return the created registry

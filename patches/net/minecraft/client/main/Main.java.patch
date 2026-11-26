@@ -17,14 +17,17 @@
          OptionSpec<String> versionOption = parser.accepts("version").withRequiredArg().required();
          OptionSpec<Integer> widthOption = parser.accepts("width").withRequiredArg().ofType(Integer.class).defaultsTo(854);
          OptionSpec<Integer> heightOption = parser.accepts("height").withRequiredArg().ofType(Integer.class).defaultsTo(480);
-@@ -159,10 +_,13 @@
+@@ -159,10 +_,16 @@
              CrashReport.preload();
              logger = LogUtils.getLogger();
              stage = "Bootstrap";
 -            Bootstrap.bootStrap();
 -            ClientBootstrap.bootstrap();
 +            // Neo: wrap vanilla boostrap in ELS ticks
-+            net.neoforged.fml.loading.BackgroundWaiter.runAndTick(() -> Bootstrap.bootStrap(), net.neoforged.fml.loading.ImmediateWindowHandler::renderTick);
++            net.neoforged.fml.loading.BackgroundWaiter.runAndTick(() -> {
++                Bootstrap.bootStrap();
++                ClientBootstrap.bootstrap();
++            }, net.neoforged.fml.loading.ImmediateWindowHandler::renderTick);
              GameLoadTimesEvent.INSTANCE.setBootstrapTime(Bootstrap.bootstrapDuration.get());
              Bootstrap.validate();
 +

@@ -12,8 +12,10 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.neoforged.neoforge.client.registries.NeoForgeClientRegistries;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -29,6 +31,9 @@ public final class PipelineModifierStack {
 
     public void push(ResourceKey<PipelineModifier> modifier) {
         RenderSystem.assertOnRenderThread();
+        if (!NeoForgeClientRegistries.RENDER_PIPELINE_MODIFIER.containsKey(modifier)) {
+            throw new IllegalArgumentException("Unknown pipeline modifier: " + modifier.identifier());
+        }
         this.modifiers.push(modifier);
     }
 
@@ -55,7 +60,8 @@ public final class PipelineModifierStack {
             RenderPipeline newPipeline = xformCache.get(pipeline);
             if (newPipeline == null) {
                 Identifier name = pipeline.getLocation().withSuffix("/transform/" + modifier.identifier().toString().replace(":", "/"));
-                newPipeline = PipelineModifiers.MODIFIERS.get(modifier).apply(pipeline, name);
+                PipelineModifier value = NeoForgeClientRegistries.RENDER_PIPELINE_MODIFIER.getValue(modifier);
+                newPipeline = Objects.requireNonNull(value).apply(pipeline, name);
                 if (newPipeline != pipeline && newPipeline.getLocation().equals(pipeline.getLocation())) {
                     throw new IllegalStateException(String.format(
                             Locale.ROOT,

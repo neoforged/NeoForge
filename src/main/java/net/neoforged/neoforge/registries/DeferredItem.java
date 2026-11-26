@@ -58,7 +58,7 @@ public class DeferredItem<T extends Item> extends DeferredHolder<Item, T> implem
     }
 
     protected DeferredItem(ResourceKey<Item> key) {
-        super(key);
+        super(Registries.ITEM, key);
     }
 
     @Override

@@ -14,7 +14,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -34,7 +33,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.IEventBus;
-import org.jspecify.annotations.Nullable;
 
 /**
  * A helper class to aid in registering objects to modded and {@linkplain BuiltInRegistries vanilla registries} and
@@ -45,11 +43,10 @@ import org.jspecify.annotations.Nullable;
  *
  * <p>Suppliers should return <em>new</em> instances every time they are invoked.
  *
- * <p>To create an instance of this helper class, use any of the three factory methods: {@link #create(Registry, String)},
- * {@link #create(ResourceKey, String)}, or {@link #create(Identifier, String)}. There are also specialized
- * subclasses of this helper for {@link Block}s and {@link Item}s, created through {@link #createBlocks(String)} and
- * {@link #createItems(String)} respectively. (Be sure to <em>store the concrete type</em> of those subclasses, rather than
- * storing them generically as {@code DeferredRegister<Block>} or {@code DeferredRegister<Item>}.)
+ * <p>To create an instance of this helper class, use any of the three factory methods: {@link #create(Registry, String)} or
+ * {@link #create(ResourceKey, String)}. There are also specialized subclasses of this helper for {@link Block}s and {@link Item}s,
+ * created through {@link #createBlocks(String)} and {@link #createItems(String)} respectively. (Be sure to <em>store the concrete type</em>
+ * of those subclasses, rather than storing them generically as {@code DeferredRegister<Block>} or {@code DeferredRegister<Item>}.)
  *
  * <p>Here are some common examples for using this class:
  *
@@ -94,7 +91,6 @@ public class DeferredRegister<T> {
      * @param registry  the registry to register to
      * @param namespace the namespace for all objects registered to this DeferredRegister
      * @see #create(ResourceKey, String)
-     * @see #create(Identifier, String)
      * @see #createItems(String)
      * @see #createBlocks(String)
      */
@@ -110,7 +106,6 @@ public class DeferredRegister<T> {
      * @param key       the key of the registry to reference. May come from another DeferredRegister through {@link #getRegistryKey()}.
      * @param namespace the namespace for all objects registered to this DeferredRegister
      * @see #create(Registry, String)
-     * @see #create(Identifier, String)
      * @see #createItems(String)
      * @see #createBlocks(String)
      */
@@ -119,28 +114,11 @@ public class DeferredRegister<T> {
     }
 
     /**
-     * DeferredRegister factory for custom forge registries or {@link BuiltInRegistries vanilla registries} to lookup based on the provided registry name. Supports both registries that already exist or do not exist yet.
-     * <p>
-     * If the registry is never created, any {@link DeferredHolder}s made from this DeferredRegister will throw an exception.
-     *
-     * @param registryName The name of the registry, should include namespace. May come from another DeferredRegister through {@link #getRegistryName()}.
-     * @param modid        The namespace for all objects registered to this DeferredRegister
-     * @see #create(Registry, String)
-     * @see #create(ResourceKey, String)
-     * @see #createItems(String)
-     * @see #createBlocks(String)
-     */
-    public static <B> DeferredRegister<B> create(Identifier registryName, String modid) {
-        return new DeferredRegister<>(ResourceKey.createRegistryKey(registryName), modid);
-    }
-
-    /**
      * Factory for a specialized {@link DeferredRegister} for {@link Item Items}.
      *
      * @param modid The namespace for all objects registered to this {@link DeferredRegister}
      * @see #create(Registry, String)
      * @see #create(ResourceKey, String)
-     * @see #create(Identifier, String)
      * @see #createBlocks(String)
      */
     public static DeferredRegister.Items createItems(String modid) {
@@ -153,7 +131,6 @@ public class DeferredRegister<T> {
      * @param modid The namespace for all objects registered to this DeferredRegister
      * @see #create(Registry, String)
      * @see #create(ResourceKey, String)
-     * @see #create(Identifier, String)
      * @see #createItems(String)
      */
     public static DeferredRegister.Blocks createBlocks(String modid) {
@@ -167,7 +144,6 @@ public class DeferredRegister<T> {
      * @param modid       The namespace for all objects registered to this DeferredRegister
      * @see #create(Registry, String)
      * @see #create(ResourceKey, String)
-     * @see #create(Identifier, String)
      * @see #createItems(String)
      */
     public static DataComponents createDataComponents(ResourceKey<Registry<DataComponentType<?>>> registryKey, String modid) {
@@ -180,7 +156,6 @@ public class DeferredRegister<T> {
      * @param modid The namespace for all objects registered to this DeferredRegister
      * @see #create(Registry, String)
      * @see #create(ResourceKey, String)
-     * @see #create(Identifier, String)
      */
     public static Entities createEntities(String modid) {
         return new Entities(modid);
@@ -192,12 +167,7 @@ public class DeferredRegister<T> {
     private final Set<DeferredHolder<T, ? extends T>> entriesView = Collections.unmodifiableSet(entries.keySet());
     private final Map<Identifier, Identifier> aliases = new HashMap<>();
 
-    @Nullable
-    private Registry<T> customRegistry;
-    @Nullable
-    private RegistryHolder<T> registryHolder;
     private boolean seenRegisterEvent = false;
-    private boolean seenNewRegistryEvent = false;
     private boolean registeredEventBus = false;
 
     protected DeferredRegister(ResourceKey<? extends Registry<T>> registryKey, String namespace) {
@@ -252,28 +222,6 @@ public class DeferredRegister<T> {
     }
 
     /**
-     * This method is used to configure a custom modded registry. It can only be invoked by a single DeferredRegister instance for a given registry key.
-     *
-     * @param consumer A consumer that configures the provided RegistryBuilder during {@link NewRegistryEvent}
-     * @return The {@link Registry} linked to {@link #getRegistryKey()}.
-     */
-    public Registry<T> makeRegistry(final Consumer<RegistryBuilder<T>> consumer) {
-        return makeRegistry(this.registryKey.identifier(), consumer);
-    }
-
-    /**
-     * Returns a supplier for the {@link Registry} linked to this deferred register. For vanilla registries, this will always return a non-null registry. For modded registries, a non-null registry will only be returned after {@link NewRegistryEvent} fires, or if {@link #makeRegistry(Consumer)} is called on this same DeferredRegister instance.
-     * <p>
-     * To register additional DeferredRegisters for custom modded registries, use {@link #create(ResourceKey, String)} which can take a registry key from {@link #getRegistryKey()}.
-     */
-    public Supplier<Registry<T>> getRegistry() {
-        if (this.registryHolder == null)
-            this.registryHolder = new RegistryHolder<>(this.registryKey);
-
-        return this.registryHolder;
-    }
-
-    /**
      * Creates a tag key based on the current namespace and provided path as the location and the registry name linked to this DeferredRegister. To control the namespace, use {@link #createTagKey(Identifier)}.
      *
      * @see #createTagKey(Identifier)
@@ -318,7 +266,6 @@ public class DeferredRegister<T> {
             throw new IllegalStateException("Cannot register DeferredRegister to more than one event bus.");
         this.registeredEventBus = true;
         bus.addListener(this::addEntries);
-        bus.addListener(this::addRegistry);
     }
 
     /**
@@ -349,22 +296,6 @@ public class DeferredRegister<T> {
         return this.namespace;
     }
 
-    private Registry<T> makeRegistry(final Identifier registryName, final Consumer<RegistryBuilder<T>> consumer) {
-        if (registryName == null)
-            throw new IllegalStateException("Cannot create a registry without specifying a registry name");
-        if (BuiltInRegistries.REGISTRY.containsKey(registryName) || this.customRegistry != null)
-            throw new IllegalStateException("Cannot create a registry that already exists - " + this.registryKey);
-        if (this.seenNewRegistryEvent)
-            throw new IllegalStateException("Cannot create a registry after NewRegistryEvent was fired");
-
-        RegistryBuilder<T> registryBuilder = new RegistryBuilder<>(this.registryKey);
-        consumer.accept(registryBuilder);
-        this.customRegistry = registryBuilder.create();
-        this.registryHolder = new RegistryHolder<>(this.registryKey);
-        this.registryHolder.registry = this.customRegistry;
-        return this.customRegistry;
-    }
-
     private void addEntries(RegisterEvent event) {
         if (!event.getRegistryKey().equals(this.registryKey)) {
             return;
@@ -375,13 +306,6 @@ public class DeferredRegister<T> {
         for (Entry<DeferredHolder<T, ? extends T>, Supplier<? extends T>> e : entries.entrySet()) {
             event.register(this.registryKey, e.getKey().getId(), () -> e.getValue().get());
             e.getKey().bind(false);
-        }
-    }
-
-    private void addRegistry(NewRegistryEvent event) {
-        this.seenNewRegistryEvent = true;
-        if (this.customRegistry != null) {
-            event.register(this.customRegistry);
         }
     }
 
@@ -842,25 +766,6 @@ public class DeferredRegister<T> {
          */
         public <E extends Entity> DeferredHolder<EntityType<?>, EntityType<E>> registerEntityType(String name, EntityType.EntityFactory<E> factory, MobCategory category, UnaryOperator<EntityType.Builder<E>> builder) {
             return this.registerEntityType(name, factory, category, (fact, cat) -> builder.apply(EntityType.Builder.of(fact, cat)));
-        }
-    }
-
-    private static class RegistryHolder<V> implements Supplier<Registry<V>> {
-        private final ResourceKey<? extends Registry<V>> registryKey;
-        private Registry<V> registry = null;
-
-        private RegistryHolder(ResourceKey<? extends Registry<V>> registryKey) {
-            this.registryKey = registryKey;
-        }
-
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        public @Nullable Registry<V> get() {
-            // Keep looking up the registry until it's not null
-            if (this.registry == null)
-                this.registry = (Registry<V>) BuiltInRegistries.REGISTRY.getValueOrThrow((ResourceKey) this.registryKey);
-
-            return this.registry;
         }
     }
 }

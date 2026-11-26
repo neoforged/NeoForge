@@ -15,14 +15,14 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderOwner;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.PatchedRegistry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
+import net.neoforged.neoforge.internal.NeoForgeProxy;
 import org.jspecify.annotations.Nullable;
 
-/// A Deferred Holder is a [Holder] that is constructed with only a ResourceKey.
+/// A Deferred Holder is a [Holder] that is constructed with only a pair of ResourceKeys.
 ///
 /// It will be populated with the underlying Holder from the registry when available.
 ///
@@ -30,60 +30,46 @@ import org.jspecify.annotations.Nullable;
 ///
 /// @implNote Similar to vanilla's [PatchedRegistry.LazyHolder] we extend [Holder.Reference]
 public class DeferredHolder<R, T extends R> extends Holder.Reference<R> implements Supplier<T> {
-    /**
-     * Creates a new DeferredHolder targeting the value with the specified name in the specified registry.
-     *
-     * @param <T>         The type of the target value.
-     * @param <R>         The registry type.
-     * @param registryKey The name of the registry the target value is a member of.
-     * @param valueName   The name of the target value.
-     */
+    /// Creates a new DeferredHolder targeting the value with the specified name in the specified registry.
+    ///
+    /// @param <T>         The type of the target value.
+    /// @param <R>         The registry type.
+    /// @param registryKey The name of the registry the target value is a member of.
+    /// @param valueName   The name of the target value.
     public static <R, T extends R> DeferredHolder<R, T> create(ResourceKey<? extends Registry<R>> registryKey, Identifier valueName) {
-        return create(ResourceKey.create(registryKey, valueName));
+        return create(registryKey, ResourceKey.create(registryKey, valueName));
     }
 
-    /**
-     * Creates a new DeferredHolder targeting the value with the specified name in the specified registry.
-     *
-     * @param <T>          The registry type.
-     * @param registryName The name of the registry the target value is a member of.
-     * @param valueName    The name of the target value.
-     */
-    public static <R, T extends R> DeferredHolder<R, T> create(Identifier registryName, Identifier valueName) {
-        return create(ResourceKey.createRegistryKey(registryName), valueName);
+    /// Creates a new DeferredHolder targeting the specified value in the specified registry.
+    ///
+    /// @param <T>         The type of the target value.
+    /// @param <R>         The registry type.
+    /// @param registryKey The name of the registry the target value is a member of.
+    /// @param valueKey    The resource key of the target value.
+    public static <R, T extends R> DeferredHolder<R, T> create(ResourceKey<? extends Registry<R>> registryKey, ResourceKey<R> valueKey) {
+        return new DeferredHolder<>(registryKey, valueKey);
     }
 
-    /**
-     * Creates a new DeferredHolder targeting the specified value.
-     *
-     * @param <T> The type of the target value.
-     * @param key The resource key of the target value.
-     */
-    public static <R, T extends R> DeferredHolder<R, T> create(ResourceKey<R> key) {
-        return new DeferredHolder<>(key);
-    }
-
-    /**
-     * The currently cached value.
-     */
+    /// The key of the containing registry.
+    private final ResourceKey<? extends Registry<R>> registryKey;
+    /// The currently cached value.
     @Nullable
     private Holder<R> holder = null;
 
-    /**
-     * Creates a new DeferredHolder with a ResourceKey.
-     *
-     * <p>Attempts to bind immediately if possible.
-     *
-     * @param key The resource key of the target object.
-     * @see #create(ResourceKey, Identifier)
-     * @see #create(Identifier, Identifier)
-     * @see #create(ResourceKey)
-     */
-    protected DeferredHolder(ResourceKey<R> key) {
-        Objects.requireNonNull(key);
-        //Attempt to get the registry, but if it isn't present just pass null and make sure we override any uses of owner in reference
-        Registry<R> registry = (Registry<R>) BuiltInRegistries.REGISTRY.getValue(key.registry());
-        super(Holder.Reference.Type.STAND_ALONE, registry, key, null);
+    /// Creates a new DeferredHolder with a ResourceKey pair.
+    ///
+    /// Attempts to bind immediately if possible.
+    ///
+    /// @param registryKey The resource key of the containing registry
+    /// @param valueKey    The resource key of the target object
+    /// @see #create(ResourceKey, Identifier)
+    @SuppressWarnings("unchecked")
+    protected DeferredHolder(ResourceKey<? extends Registry<R>> registryKey, ResourceKey<R> valueKey) {
+        Objects.requireNonNull(valueKey);
+        // Attempt to get the registry, but if it isn't present just pass null and make sure we override any uses of owner in reference
+        Registry<R> registry = (Registry<R>) NeoForgeProxy.INSTANCE.getBuiltinRegistry(registryKey);
+        super(Holder.Reference.Type.STAND_ALONE, registry, valueKey, null);
+        this.registryKey = registryKey;
         this.bind(false);
     }
 
@@ -128,7 +114,7 @@ public class DeferredHolder<R, T extends R> extends Holder.Reference<R> implemen
     @Override
     @SuppressWarnings("unchecked")
     public HolderLookup.@Nullable RegistryLookup<R> unwrapLookup() {
-        return (Registry<R>) BuiltInRegistries.REGISTRY.getValue(this.key().registry());
+        return (Registry<R>) NeoForgeProxy.INSTANCE.getBuiltinRegistry(registryKey);
     }
 
     /**

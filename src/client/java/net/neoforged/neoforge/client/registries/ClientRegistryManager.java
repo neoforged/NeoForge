@@ -12,16 +12,20 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.SequencedSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.core.registries.BuiltInClientRegistries;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
@@ -34,8 +38,64 @@ import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 
 @ApiStatus.Internal
-public class ClientRegistryManager {
+public final class ClientRegistryManager extends RegistryManager {
     private static final Logger LOGGER = LogUtils.getLogger();
+    public static final ClientRegistryManager INSTANCE = new ClientRegistryManager();
+
+    private ClientRegistryManager() {}
+
+    @Override
+    public void postNewRegistryEvent() {
+        super.postNewRegistryEvent();
+
+        NewClientRegistryEvent event = new NewClientRegistryEvent();
+        ModLoader.postEventWrapContainerInModOrder(event);
+        RegistryManager.registerRegistries(BuiltInClientRegistries.REGISTRY, event.registries);
+
+        ModLoader.postEvent(new ModifyClientRegistriesEvent());
+    }
+
+    @Override
+    public void postRegisterEvents() {
+        super.postRegisterEvents();
+
+        RegistryManager.unfreezeRegistries(BuiltInClientRegistries.REGISTRY);
+        for (Identifier registryName : getRegistrationOrder()) {
+            try {
+                RegistryManager.postRegisterEvent(BuiltInClientRegistries.REGISTRY, registryName);
+            } catch (Throwable t) {
+                LOGGER.error("Failed to register some entries to {}", registryName, t);
+                throw t;
+            }
+        }
+        RegistryManager.freezeRegistries(BuiltInClientRegistries.REGISTRY);
+    }
+
+    @Override
+    protected boolean isKnownRegistry(Identifier registry) {
+        return super.isKnownRegistry(registry) || BuiltInClientRegistries.REGISTRY.containsKey(registry);
+    }
+
+    @Override
+    protected String getNewRegistryEventNames() {
+        return "NewRegistryEvent or NewClientRegistryEvent";
+    }
+
+    /// Creates a set containing the ordered list of registry names in the registration order.
+    ///
+    /// The order is as follows:
+    /// - The vanilla registries in vanilla order
+    /// - Modded registries in alphabetical order
+    ///
+    /// Due to static init issues, this is not necessarily the order that vanilla objects are bootstrapped in.
+    ///
+    /// @return A set containing the registration order
+    public static SequencedSet<Identifier> getRegistrationOrder() {
+        SequencedSet<Identifier> ordered = new LinkedHashSet<>();
+        ordered.addAll(BuiltInClientRegistries.getVanillaRegistrationOrder());
+        BuiltInClientRegistries.REGISTRY.keySet().stream().sorted(Identifier::compareNamespaced).forEach(ordered::add);
+        return ordered;
+    }
 
     public static <R> void handleDataMapSync(final RegistryDataMapSyncPayload<R> payload, final IPayloadContext context) {
         context.enqueueWork(() -> {

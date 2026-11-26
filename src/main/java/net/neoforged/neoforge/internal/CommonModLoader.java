@@ -22,7 +22,6 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
-import net.neoforged.neoforge.registries.GameData;
 import net.neoforged.neoforge.registries.RegistryManager;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -37,23 +36,20 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public abstract class CommonModLoader {
-    private static boolean registriesLoaded = false;
-
-    public static boolean areRegistriesLoaded() {
-        return registriesLoaded;
+    protected static void beginServer(Runnable periodicTask, boolean datagen) {
+        begin(periodicTask, RegistryManager.INSTANCE, datagen);
     }
 
-    protected static void begin(Runnable periodicTask, boolean datagen) {
+    protected static void begin(Runnable periodicTask, RegistryManager registryManager, boolean datagen) {
         var syncExecutor = ModWorkManager.syncExecutor();
 
         ModLoader.gatherAndInitializeMods(syncExecutor, ModWorkManager.parallelExecutor(), periodicTask);
 
         ModLoader.runInitTask("Registry initialization", syncExecutor, periodicTask, () -> {
-            RegistryManager.postNewRegistryEvent();
-            GameData.unfreezeData();
-            GameData.postRegisterEvents();
-            GameData.freezeData();
-            registriesLoaded = true;
+            registryManager.postNewRegistryEvent();
+            registryManager.validateRegistries();
+            registryManager.postRegisterEvents();
+            RegistryManager.runPostRegistrationTasks();
         });
 
         if (!datagen) {
