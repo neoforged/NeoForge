@@ -39,7 +39,7 @@
                      hasAnyTranslations = true;
                  }
              }
-@@ -54,10 +_,15 @@
+@@ -54,10 +_,17 @@
          }
  
          DeprecatedTranslationsInfo.loadFromDefaultResource().applyToMap(translations);
@@ -47,6 +47,8 @@
 +        return new ClientLanguage(Map.copyOf(translations), defaultRightToLeft, componentMap);
      }
  
++    /// @deprecated Neo: use [#appendFrom(String, List, Map, Map)] instead
++    @Deprecated
      private static void appendFrom(String languageCode, List<Resource> resources, Map<String, String> translations) {
 +        appendFrom(languageCode, resources, translations, new java.util.HashMap<>());
 +    }

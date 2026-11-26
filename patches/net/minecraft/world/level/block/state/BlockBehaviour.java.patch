@@ -159,7 +159,7 @@
          private boolean replaceable;
          private BlockBehaviour.StateArgumentPredicate<EntityType<?>> isValidSpawn = (state, level, pos, var3) -> state.isFaceSturdy(level, pos, Direction.UP)
 -            && state.getLightEmission() < 14;
-+                // Neo: use level-sensitive light getter
++            // Neo: use level-sensitive light getter
 +            && state.getLightEmission(level, pos) < 14;
          private BlockBehaviour.StatePredicate isRedstoneConductor = BlockBehaviour.BlockStateBase::isCollisionShapeFullBlock;
          private BlockBehaviour.StatePredicate isSuffocating = (state, level, pos) -> state.is(BlockTags.CAUSES_SUFFOCATION)

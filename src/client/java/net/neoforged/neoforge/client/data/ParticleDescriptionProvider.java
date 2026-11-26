@@ -15,8 +15,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
+import net.minecraft.client.particle.ParticleDescription;
+import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.ParticleResources;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
@@ -24,11 +28,13 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
+import net.neoforged.neoforge.client.registries.DeferredClientRegister;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.VisibleForTesting;
 
 /**
- * A data provider for {@link net.minecraft.client.particle.ParticleDescription}s.
+ * A data provider for {@link ParticleDescription}s.
  *
  * <p>To use this provider, extend this class and implement {@link #addDescriptions()}.
  * Then, register an instance using {@link net.minecraft.data.DataGenerator#addProvider(boolean, Factory)}
@@ -49,17 +55,17 @@ import org.jetbrains.annotations.VisibleForTesting;
  *
  * <p>A particle description holds a list of textures used when rendering the
  * particle to the screen. All registered particle descriptions are stitched
- * together into a texture atlas called {@link net.minecraft.client.renderer.texture.TextureAtlas#LOCATION_PARTICLES}.
+ * together into a texture atlas called {@link TextureAtlas#LOCATION_PARTICLES}.
  * A {@link ParticleType} whose particle uses the texture atlas, typically via
- * the {@link net.minecraft.client.particle.ParticleRenderType}, can then reference
+ * the {@link ParticleRenderType}, can then reference
  * the necessary texture during rendering.
  *
  * <p>Particles with a particle description must have their particle providers
- * attached to a {@link ParticleType} as a {@linkplain RegisterParticleProvidersEvent#registerSpriteSet(ParticleType, ParticleResources.SpriteParticleRegistration) sprite set}
- * consumer.
+ * attached to a {@link ParticleType} as a {@link ParticleResources.SpriteParticleRegistration}
  *
  * @see DataProvider
- * @see net.minecraft.client.particle.ParticleDescription
+ * @see ParticleDescription
+ * @see DeferredClientRegister.ParticleProviders#registerSpriteRegistration(DeferredHolder, Supplier)
  */
 public abstract class ParticleDescriptionProvider implements DataProvider {
     private final PackOutput.PathProvider particlesPath;

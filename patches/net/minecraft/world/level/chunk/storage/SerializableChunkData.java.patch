@@ -16,24 +16,24 @@
 +    /// @deprecated Neo: use constructor with additional data instead
 +    @Deprecated
 +    SerializableChunkData(
-+            PalettedContainerFactory containerFactory,
-+            ChunkPos chunkPos,
-+            int minSectionY,
-+            long lastUpdateTime,
-+            long inhabitedTime,
-+            ChunkStatus chunkStatus,
-+            BlendingData.@Nullable Packed blendingData,
-+            @Nullable RetroGen retroGen,
-+            UpgradeData upgradeData,
-+            Map<Heightmap.Types, long[]> heightmaps,
-+            ChunkAccess.PackedTicks packedTicks,
-+            @Nullable ShortList[] postProcessingSections,
-+            boolean lightCorrect,
-+            List<SerializableChunkData.SectionData> sectionData,
-+            @Nullable NoiseBiomeChunk noiseBiomeChunk,
-+            List<CompoundTag> entities,
-+            List<CompoundTag> blockEntities,
-+            CompoundTag structureData
++        PalettedContainerFactory containerFactory,
++        ChunkPos chunkPos,
++        int minSectionY,
++        long lastUpdateTime,
++        long inhabitedTime,
++        ChunkStatus chunkStatus,
++        BlendingData.@Nullable Packed blendingData,
++        @Nullable RetroGen retroGen,
++        UpgradeData upgradeData,
++        Map<Heightmap.Types, long[]> heightmaps,
++        ChunkAccess.PackedTicks packedTicks,
++        @Nullable ShortList[] postProcessingSections,
++        boolean lightCorrect,
++        List<SerializableChunkData.SectionData> sectionData,
++        @Nullable NoiseBiomeChunk noiseBiomeChunk,
++        List<CompoundTag> entities,
++        List<CompoundTag> blockEntities,
++        CompoundTag structureData
 +    ) {
 +        this(containerFactory, chunkPos, minSectionY, lastUpdateTime, inhabitedTime, chunkStatus, blendingData, retroGen, upgradeData, heightmaps, packedTicks, postProcessingSections, lightCorrect, sectionData, noiseBiomeChunk, entities, blockEntities, structureData, null, null);
 +    }

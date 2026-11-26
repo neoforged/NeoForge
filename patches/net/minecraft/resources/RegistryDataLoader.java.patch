@@ -59,11 +59,11 @@
 +    }
 +
 +    public static CompletableFuture<RegistryAccess.Frozen> load(
-+            ResourceManager resourceManager,
-+            List<HolderLookup.RegistryLookup<?>> contextRegistries,
-+            List<RegistryDataLoader.RegistryData<?>> registriesToLoad,
-+            Executor executor,
-+            List<Registry.PendingTags<?>> pendingTags
++        ResourceManager resourceManager,
++        List<HolderLookup.RegistryLookup<?>> contextRegistries,
++        List<RegistryDataLoader.RegistryData<?>> registriesToLoad,
++        Executor executor,
++        List<Registry.PendingTags<?>> pendingTags
 +    ) {
          RegistryDataLoader.LoaderFactory loaderFactory = new RegistryDataLoader.LoaderFactory() {
              @Override

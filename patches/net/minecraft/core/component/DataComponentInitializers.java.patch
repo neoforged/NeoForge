@@ -26,7 +26,7 @@
  
          default <T> DataComponentInitializers.Initializer<T> asInitializer(DataComponentType<C> type) {
 -            return (components, context, var4) -> components.set(type, this.create(context));
-+            return (components, context, key) -> {
++            return (components, context, var4) -> {
 +                var value = this.create(context);
 +                net.neoforged.neoforge.common.CommonHooks.validateComponent(value);
 +                components.set(type, value);

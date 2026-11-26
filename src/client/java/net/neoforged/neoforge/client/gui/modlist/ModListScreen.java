@@ -28,7 +28,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
-
 import com.mojang.renderpearl.api.textures.GpuSampler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
