@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 import net.neoforged.minecraftdependencies.MinecraftDependenciesPlugin;
 import net.neoforged.moddevgradle.internal.NeoDevFacade;
-import net.neoforged.moddevgradle.internal.utils.ExtensionUtils;
 import net.neoforged.moddevgradle.tasks.JarJar;
 import net.neoforged.neodev.e2e.InstallProductionClient;
 import net.neoforged.neodev.e2e.InstallProductionServer;
@@ -604,16 +603,17 @@ public class NeoDevPlugin implements Plugin<Project> {
             });
         });
 
-        var javaToolchainService = ExtensionUtils.getExtension(project, "javaToolchains", JavaToolchainService.class);
-        var javaVersion = project.getProviders().gradleProperty("java_version").map(Integer::parseInt).get();
+        var javaToolchainService = project.getExtensions().getByType(JavaToolchainService.class);
+        var javaVersion = project.getProviders().gradleProperty("java_version").map(JavaLanguageVersion::of);
 
         tasks.withType(NeoFormRuntimeTask.class, task -> {
             task.addArtifactsToManifest(neoFormRuntimeDataOnly);
             task.addArtifactsToManifest(neoFormRuntimeMinecraftDependencies);
 
-            // NFRT needs access to a JDK of the right version to be able to correctly decompile and recompile the code
+            // NeoFormRuntimeTask defaults to Java 21.
+            // In moddev MDG overwrites it to the Java version used by MC, but in neodev we have to do it ourselves.
             task.getJavaExecutable().set(javaToolchainService
-                    .launcherFor(spec -> spec.getLanguageVersion().set(JavaLanguageVersion.of(javaVersion)))
+                    .launcherFor(spec -> spec.getLanguageVersion().set(javaVersion))
                     .map(javaLauncher -> javaLauncher.getExecutablePath().getAsFile().getAbsolutePath()));
         });
 
@@ -622,14 +622,6 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.setGroup(INTERNAL_GROUP);
             task.getGameSourcesArtifact().set(minecraftArtifactsDir.map(dir -> dir.file("base-sources.jar")));
             task.getNeoFormArtifact().set(mcAndNeoFormVersion.map(version -> "net.neoforged:neoform:" + version + "@zip"));
-
-            // NFRT needs access to a JDK of the right version to be able to correctly decompile and recompile the code
-            task.getToolsJavaExecutable().set(javaToolchainService
-                    .launcherFor(spec -> spec.getLanguageVersion().set(JavaLanguageVersion.of(javaVersion)))
-                    .map(javaLauncher -> javaLauncher.getExecutablePath().getAsFile().getAbsolutePath()));
-            task.getJavaExecutable().set(javaToolchainService
-                    .launcherFor(spec -> spec.getLanguageVersion().set(JavaLanguageVersion.of(javaVersion)))
-                    .map(javaLauncher -> javaLauncher.getExecutablePath().getAsFile().getAbsolutePath()));
         });
 
         var vanillaResources = tasks.register("vanillaResources", Zip.class, task -> {
