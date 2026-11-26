@@ -1,11 +1,20 @@
 --- a/com/mojang/blaze3d/vertex/SectionBufferBuilder.java
 +++ b/com/mojang/blaze3d/vertex/SectionBufferBuilder.java
-@@ -91,7 +_,7 @@
-             brightnessPacked |= (instance.getBrightness(vertex) & 255) << brightnessShiftVal;
+@@ -120,6 +_,8 @@
+         long pointer = this.buffer.reserve(this.layer.vertexBufferFaceSize());
+         int positionPacked = packPositionChannel(z) << 16 | packPositionChannel(y) << 8 | packPositionChannel(x);
+         MemoryUtil.memPutInt(pointer + 0L, positionPacked);
++        // Neo: include tint color alpha channel
++        MemoryUtil.memPutByte(pointer + 4L, (byte) ARGB.alpha(color));
+         int abgr = ARGB.toABGR(color);
+         MemoryUtil.memPutInt(pointer + 5L, abgr);
+         MemoryUtil.memPutInt(pointer + 8L, brightnessPacked);
+@@ -138,6 +_,8 @@
+             MemoryUtil.memPutFloat(pointer + 4L, pos.y());
+             MemoryUtil.memPutFloat(pointer + 8L, pos.z());
+             MemoryUtil.memPutLong(pointer + 12L, bakedQuad.packedUV(i));
++            // Neo: include baked vertex color
++            MemoryUtil.memPutInt(pointer + 20L, ARGB.toABGR(bakedQuad.bakedColors().color(i)));
+             pointer += vertexBufferBakedFaceCornerSize;
          }
- 
--        this.addQuad(quad, x, y, z, instance.getColor(), brightnessPacked, lightCoordsPacked);
-+        this.addQuad(quad, x, y, z, ARGB.multiply(instance.getColor(), quad.bakedColors().color(0)), brightnessPacked, lightCoordsPacked);
      }
- 
-     public void addFluidQuad(float x, float y, float z, BakedQuad quad, int color, int brightness, int lightCoords) {

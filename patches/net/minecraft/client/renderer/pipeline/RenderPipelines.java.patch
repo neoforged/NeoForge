@@ -139,3 +139,13 @@
          boolean supportsOit,
          @Nullable OitStage oitStage,
          @Nullable Consumer<RenderPipeline.Builder> nonOitSetup
+@@ -588,6 +_,9 @@
+                 if (parameters.variant.supportsOit() && parameters.checkWaterMask()) {
+                     builder.withShaderDefine("CHECK_WATER_MASK").withBindGroupLayout(BindGroupLayouts.WATER_MASK_SAMPLER);
+                 }
++
++                // Neo: add flag indicating to resource packs overriding the terrain vertex shader that tint alpha and per-vertex colors are populated
++                builder.withShaderDefine("C_EXTENDED_TERRAIN_VERTEX_COLORS");
+ 
+                 String locationPostfix = parameters.variant.name()
+                     + (parameters.improvedFog ? "_improved_fog" : "")
