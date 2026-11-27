@@ -91,9 +91,9 @@ public class DeferredClientRegister<A, B> extends DeferredRegister<B> {
             super(ClientRegistries.ENTITY_RENDERER, namespace);
         }
 
-        public <E extends Entity, I extends EntityRendererProvider<E>> DeferredHolder<EntityRendererProvider<?>, I> registerRenderer(
-                DeferredHolder<EntityType<?>, ? extends EntityType<? extends E>> holder, Supplier<? extends I> sup) {
-            return super.register(holder, sup);
+        public <E extends Entity> DeferredHolder<EntityRendererProvider<?>, EntityRendererProvider<E>> registerRenderer(
+                DeferredHolder<EntityType<?>, ? extends EntityType<? extends E>> holder, EntityRendererProvider<E> provider) {
+            return super.register(holder, () -> provider);
         }
     }
 
