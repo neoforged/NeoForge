@@ -6,6 +6,9 @@
     "minecraft:evoker": {
       "acceptable_villager_distance": 12.0
     },
+    "minecraft:frostbite": {
+      "acceptable_villager_distance": 8.0
+    },
     "minecraft:husk": {
       "acceptable_villager_distance": 8.0
     },

@@ -36,14 +36,14 @@
     "minecraft:evoker": {
       "sound": "minecraft:entity.parrot.imitate.evoker"
     },
+    "minecraft:frostbite": {
+      "sound": "minecraft:entity.parrot.imitate.frostbite"
+    },
     "minecraft:ghast": {
       "sound": "minecraft:entity.parrot.imitate.ghast"
     },
     "minecraft:guardian": {
       "sound": "minecraft:entity.parrot.imitate.guardian"
-    },
-    "minecraft:happy_ghast": {
-      "sound": "minecraft:intentionally_empty"
     },
     "minecraft:hoglin": {
       "sound": "minecraft:entity.parrot.imitate.hoglin"
