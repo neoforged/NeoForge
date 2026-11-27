@@ -364,6 +364,14 @@ public class ClientHooks {
         var event = new CalculateDetachedCameraDistanceEvent(camera, flipped, entityScale, entityDistance, vehicleEntityScale, vehicleDistance);
         NeoForge.EVENT_BUS.post(event);
         return event.getDistance();
+    /// {@return an arrow component for a page button}
+    /// This accounts for bidirectional text mirroring in the current language.
+    ///
+    /// @param left whether the arrow should point left on screen
+    public static Component getPageButtonComponent(boolean left) {
+        return Component.literal(left != Language.getInstance().isDefaultRightToLeft() ? "<" : ">");
+    }
+
     }
 
     public static void renderMainMenu(TitleScreen gui, GuiGraphicsExtractor guiGraphics, Font font, int width, int height, int alpha) {
