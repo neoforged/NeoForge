@@ -6,6 +6,7 @@
 package net.neoforged.testframework.impl;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.commands.arguments.SerializableArgument;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestInstance;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
@@ -29,9 +30,13 @@ public class TestFrameworkMod {
     public static final DeferredRegister<MapCodec<? extends GameTestInstance>> TEST_INSTANCES = DeferredRegister.create(Registries.TEST_INSTANCE_TYPE, "testframework");
     public static final DeferredHolder<MapCodec<? extends GameTestInstance>, MapCodec<GameTestRegistration.Instance>> DELEGATING_INSTANCE = TEST_INSTANCES.register("delegate_to_test", () -> GameTestRegistration.Instance.CODEC);
 
+    public static final DeferredRegister<SerializableArgument.Type<?>> ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, "testframework");
+    public static final DeferredHolder<SerializableArgument.Type<?>, SerializableArgument.Type<TestResultArgument>> TEST_RESULT_ARGUMENT = ARGUMENT_TYPES.register("test_result", () -> TestResultArgument.TYPE);
+
     public TestFrameworkMod(IEventBus bus) {
         LOOT_CONDITIONS.register(bus);
         INGREDIENTS.register(bus);
         TEST_INSTANCES.register(bus);
+        ARGUMENT_TYPES.register(bus);
     }
 }

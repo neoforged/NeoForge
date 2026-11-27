@@ -79,30 +79,30 @@ public class TestScreen extends AbstractTestScreen {
 
         addRenderableWidget(Button.builder(Component.literal("Disable"), pButton -> groupableList.getSelected().enable(false)).bounds(searchTextField.getX() - 43, searchTextField.getY(), 40, 20).build(builder -> new Button(builder) {
             @Override
-            protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+            protected void extractContents(GuiGraphicsExtractor graphics) {
                 this.active = groupableList != null && groupableList.getSelected() != null && groupableList.getSelected().canDisable();
             }
         }));
         addRenderableWidget(Button.builder(Component.literal("Enable"), pButton -> groupableList.getSelected().enable(true)).bounds(searchTextField.getX() + searchTextField.getWidth() + 3, searchTextField.getY(), 40, 20).build(builder -> new Button(builder) {
             @Override
-            protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+            protected void extractContents(GuiGraphicsExtractor graphics) {
                 this.active = groupableList != null && groupableList.getSelected() != null && groupableList.getSelected().canEnable();
             }
         }));
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+    public void extractRenderState(GuiGraphicsExtractor graphics) {
         if (showAsGroup.getValue()) {
-            filterMode.visible = false;
+            filterMode.setVisible(false);
             filterMode.active = false;
         } else {
-            filterMode.visible = true;
+            filterMode.setVisible(true);
             filterMode.active = true;
         }
 
-        super.extractRenderState(graphics, mouseX, mouseY, a);
-        searchTextField.extractRenderState(graphics, mouseX, mouseY, a);
+        super.extractRenderState(graphics);
+        searchTextField.extractRenderState(graphics);
 
         graphics.centeredText(font, getTitle(), this.width / 2, 7, 0xffffffff);
     }

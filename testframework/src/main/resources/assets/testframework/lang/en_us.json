@@ -1,4 +1,5 @@
 {
+  "argument.testframework.test_result.invalid": "Invalid test result: '%s'",
   "key.testframework.toggleoverlay": "Toggle Tests Overlay",
   "key.testframework.openmanager": "Open Test Manager",
   "key.categories.examplemod.tests": "Example Mod Tests"

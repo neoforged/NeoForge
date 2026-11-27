@@ -9,11 +9,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.impl.MutableTestFramework;
 import net.neoforged.testframework.impl.TestFrameworkMod;
+import org.jspecify.annotations.Nullable;
 
 public record TestEnabledLootCondition(TestFramework framework, String testId) implements LootItemCondition {
     public static final MapCodec<TestEnabledLootCondition> CODEC = RecordCodecBuilder.mapCodec(in -> in.group(
@@ -33,4 +35,12 @@ public record TestEnabledLootCondition(TestFramework framework, String testId) i
     public boolean test(LootContext lootContext) {
         return framework.tests().isEnabled(testId);
     }
+
+    @Override
+    public @Nullable Boolean constantValue(ConstantConditionEvaluationContext context) {
+        return null;
+    }
+
+    @Override
+    public void validate(ValidationContext context) {}
 }

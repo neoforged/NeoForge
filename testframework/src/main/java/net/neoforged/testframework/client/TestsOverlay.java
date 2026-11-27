@@ -16,11 +16,10 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
@@ -46,7 +45,7 @@ public final class TestsOverlay implements GuiLayer {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+    public void render(GuiGraphicsExtractor graphics) {
         if (!enabled.getAsBoolean()) return;
 
         List<Test> enabled = impl.tests().enabled().collect(Collectors.toCollection(ArrayList::new));
@@ -166,7 +165,7 @@ public final class TestsOverlay implements GuiLayer {
 
         maxX += 3;
 
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BG_TEXTURE, startX - 4, startY - 4, (maxX - startX) + 4 + 4, (y - startY) + 4, 0x7FFFFFFF);
+        graphics.blitSprite(GuiPipeline.TEXTURED, BG_TEXTURE, startX - 4, startY - 4, (maxX - startX) + 4 + 4, (y - startY) + 4, 0x7FFFFFFF);
         renderingQueue.forEach(Runnable::run);
     }
 
@@ -182,7 +181,7 @@ public final class TestsOverlay implements GuiLayer {
         rendering.add(withXY(x, y, (x$, y$) -> graphics.text(font, bullet, x$, y$ - 1, colour)));
         x += font.width(bullet) + 1;
 
-        rendering.add(withXY(x, y, (x$, y$) -> graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ICON_BY_RESULT.get(status.result()), x$, y$, 9, 9)));
+        rendering.add(withXY(x, y, (x$, y$) -> graphics.blitSprite(GuiPipeline.TEXTURED, ICON_BY_RESULT.get(status.result()), x$, y$, 9, 9)));
         x += 11;
 
         final Component title = statusColoured(test.visuals().title(), status);

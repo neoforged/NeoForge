@@ -7,29 +7,35 @@ package net.neoforged.testframework.registration;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.client.core.registries.ClientRegistries;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 public class DeferredEntityTypeBuilder<E extends Entity, T extends EntityType<E>> extends DeferredHolder<EntityType<?>, T> {
     private final RegistrationHelper helper;
 
     protected DeferredEntityTypeBuilder(ResourceKey<EntityType<?>> key, RegistrationHelper helper) {
-        super(key);
+        super(Registries.ENTITY_TYPE, key);
         this.helper = helper;
     }
 
     public DeferredEntityTypeBuilder<E, T> withRenderer(Supplier<Function<EntityRendererProvider.Context, EntityRenderer<E, ?>>> renderer) {
         if (FMLEnvironment.getDist().isClient()) {
-            helper.eventListeners().accept((final EntityRenderersEvent.RegisterRenderers event) -> event.registerEntityRenderer(value(), renderer.get()::apply));
+            helper.eventListeners().accept((RegisterEvent event) -> {
+                event.register(ClientRegistries.ENTITY_RENDERER, helper -> {
+                    helper.register(key().identifier(), (EntityRendererProvider<E>) renderer.get()::apply);
+                });
+            });
         }
         return this;
     }

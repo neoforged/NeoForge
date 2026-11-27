@@ -24,12 +24,12 @@ import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -89,16 +89,16 @@ public abstract class AbstractTestScreen extends Screen {
         }
 
         @Override
-        public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-            super.extractWidgetRenderState(graphics, mouseX, mouseY, a);
-            renderTooltips(graphics, mouseX, mouseY);
+        public void extractWidgetRenderState(GuiGraphicsExtractor graphics) {
+            super.extractWidgetRenderState(graphics);
+            renderTooltips(graphics);
         }
 
-        private void renderTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-            if (this.isMouseOver(mouseX, mouseY)) {
-                Entry entry = this.getEntryAtPosition(mouseX, mouseY);
+        private void renderTooltips(GuiGraphicsExtractor graphics) {
+            if (this.isMouseOver(graphics.mouseX(), graphics.mouseY())) {
+                Entry entry = this.getEntryAtPosition(graphics.mouseX(), graphics.mouseY());
                 if (entry != null) {
-                    entry.renderTooltips(graphics, mouseX, mouseY);
+                    entry.renderTooltips(graphics);
                 }
             }
         }
@@ -162,7 +162,7 @@ public abstract class AbstractTestScreen extends Screen {
                 return false;
             }
 
-            protected void renderTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {}
+            protected void renderTooltips(GuiGraphicsExtractor graphics) {}
         }
 
         protected final class TestEntry extends Entry {
@@ -173,21 +173,21 @@ public abstract class AbstractTestScreen extends Screen {
             }
 
             @Override
-            public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
+            public void extractContent(GuiGraphicsExtractor graphics, boolean hovered) {
                 final Test.Status status = framework.tests().getStatus(test.id());
 
                 final int alpha = 0x73000000;
                 final boolean renderTransparent = !isEnabled();
 
                 Identifier icon = TestsOverlay.ICON_BY_RESULT.get(status.result());
-                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, icon, getContentX(), getContentY(), 9, 9, renderTransparent ? (alpha | 0x00FFFFFF) : 0xFFFFFFFF);
+                graphics.blitSprite(GuiPipeline.TEXTURED, icon, getContentX(), getContentY(), 9, 9, renderTransparent ? (alpha | 0x00FFFFFF) : 0xFFFFFFFF);
 
                 final Component title = TestsOverlay.statusColoured(test.visuals().title(), status);
                 graphics.text(font, title, getContentX() + 11, getContentY(), renderTransparent ? (alpha | 0x00FFFFFF) : 0xFFFFFFFF);
             }
 
             @Override
-            protected void renderTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+            protected void renderTooltips(GuiGraphicsExtractor graphics) {
                 final List<FormattedCharSequence> tooltip = new ArrayList<>();
                 if (!isEnabled()) {
                     tooltip.add(Component.literal("DISABLED").withStyle(ChatFormatting.GRAY).getVisualOrderText());
@@ -203,7 +203,7 @@ public abstract class AbstractTestScreen extends Screen {
                 }
 
                 if (!tooltip.isEmpty()) {
-                    graphics.setTooltipForNextFrame(font, tooltip, mouseX, mouseY);
+                    graphics.setTooltipForNextFrame(font, tooltip, graphics.mouseX(), graphics.mouseY());
                 }
             }
 
@@ -240,12 +240,12 @@ public abstract class AbstractTestScreen extends Screen {
                         .pos(0, 0).build();
                 if (isTitle) {
                     browseButton.active = false;
-                    browseButton.visible = false;
+                    browseButton.setVisible(false);
                 }
             }
 
             @Override
-            public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
+            public void extractContent(GuiGraphicsExtractor graphics, boolean hovered) {
                 if (isTitle) {
                     graphics.centeredText(font, getTitle(), getContentXMiddle(), getContentY(), 0xffffffff);
                 } else {
@@ -253,21 +253,21 @@ public abstract class AbstractTestScreen extends Screen {
                     this.browseButton.setX(getX() + getWidth() - 53);
                     this.browseButton.setY(getY() - 1);
                     // TODO 1.21.6: nextStratum instead? Was increasing z by 100 before.
-                    browseButton.extractRenderState(graphics, mouseX, mouseY, a);
+                    browseButton.extractRenderState(graphics);
                 }
             }
 
             @Override
-            protected void renderTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+            protected void renderTooltips(GuiGraphicsExtractor graphics) {
                 if (isTitle) return;
                 final List<Test> all = group.resolveAll();
                 final int enabledCount = (int) all.stream().filter(it -> framework.tests().isEnabled(it.id())).count();
                 if (enabledCount == all.size()) {
-                    graphics.setTooltipForNextFrame(font, Component.literal("All tests in group (" + all.size() + ") are enabled!").withStyle(ChatFormatting.GREEN), mouseX, mouseY);
+                    graphics.setTooltipForNextFrame(font, Component.literal("All tests in group (" + all.size() + ") are enabled!").withStyle(ChatFormatting.GREEN), graphics.mouseX(), graphics.mouseY());
                 } else if (enabledCount == 0) {
-                    graphics.setTooltipForNextFrame(font, Component.literal("All tests in group (" + all.size() + ") are disabled!").withStyle(ChatFormatting.GRAY), mouseX, mouseY);
+                    graphics.setTooltipForNextFrame(font, Component.literal("All tests in group (" + all.size() + ") are disabled!").withStyle(ChatFormatting.GRAY), graphics.mouseX(), graphics.mouseY());
                 } else {
-                    graphics.setTooltipForNextFrame(font, Component.literal(enabledCount + "/" + all.size() + " tests enabled!").withStyle(ChatFormatting.BLUE), mouseX, mouseY);
+                    graphics.setTooltipForNextFrame(font, Component.literal(enabledCount + "/" + all.size() + " tests enabled!").withStyle(ChatFormatting.BLUE), graphics.mouseX(), graphics.mouseY());
                 }
             }
 
@@ -294,7 +294,7 @@ public abstract class AbstractTestScreen extends Screen {
                     @Override
                     protected void init() {
                         super.init();
-                        showAsGroup.visible = false;
+                        showAsGroup.setVisible(false);
                         showAsGroup.active = false;
                         showAsGroup.setValue(false);
                         groupableList.resetRows("");

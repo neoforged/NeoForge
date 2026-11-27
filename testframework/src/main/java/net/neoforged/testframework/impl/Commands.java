@@ -25,7 +25,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.permissions.PermissionCheck;
 import net.minecraft.server.permissions.PermissionProviderCheck;
-import net.neoforged.neoforge.server.command.EnumArgument;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.group.Group;
 import net.neoforged.testframework.group.Groupable;
@@ -77,7 +76,7 @@ public record Commands(MutableTestFramework framework) {
                         .requires(getCommandRequirement())
                         .then(argument("id", StringArgumentType.string())
                                 .suggests(suggestTest(test -> framework.tests().isEnabled(test.id())))
-                                .then(argument("result", EnumArgument.enumArgument(Test.Result.class))
+                                .then(argument("result", TestResultArgument.testResult())
                                         .executes(it -> processSetStatus(it, ""))
                                         .then(argument("message", StringArgumentType.greedyString())
                                                 .executes(it -> processSetStatus(it, StringArgumentType.getString(it, "message"))))))));
@@ -132,7 +131,7 @@ public record Commands(MutableTestFramework framework) {
         parseGroupable(ctx.getSource(), id,
                 group -> ctx.getSource().sendFailure(Component.literal("This command does not support groups!")),
                 test -> {
-                    final Test.Result result = ctx.getArgument("result", Test.Result.class);
+                    final Test.Result result = TestResultArgument.getTestResult(ctx, "result");
                     final Test.Status status = new Test.Status(result, message);
                     framework.changeStatus(test, status, ctx.getSource().getEntity());
                     ctx.getSource().sendSuccess(

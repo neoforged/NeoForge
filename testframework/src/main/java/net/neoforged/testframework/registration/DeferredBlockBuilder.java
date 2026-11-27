@@ -14,6 +14,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import net.minecraft.client.color.block.BlockTintSources;
 import net.minecraft.client.color.item.ItemTintSource;
+import net.minecraft.client.core.registries.ClientRegistries;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
@@ -37,6 +38,7 @@ import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jspecify.annotations.Nullable;
 
 public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
@@ -136,9 +138,9 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
         final ConstantItemTintSourceBuilder source = new ConstantItemTintSourceBuilder(color);
 
         helper.eventListeners().accept((final RegisterColorHandlersEvent.BlockTintSources event) -> event.register(List.of(BlockTintSources.constant(color)), value()));
-        helper.eventListeners().accept((final RegisterColorHandlersEvent.ItemTintSources event) -> {
+        helper.eventListeners().accept((RegisterEvent event) -> {
             if (hasItem) {
-                event.register(key().identifier(), source.type());
+                event.register(ClientRegistries.ITEM_TINT_SOURCE_TYPE, key().identifier(), source::type);
             }
         });
     }

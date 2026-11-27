@@ -15,7 +15,7 @@ import net.minecraft.network.chat.Style;
 public final class FormattingUtil {
     public static String componentToString(Component component, Style baseStyle, BiFunction<Style, String, String> formatter) {
         StringBuilder builder = new StringBuilder();
-        component.visit((style, text) -> {
+        component.visitUnbounded((style, text) -> {
             if (style.isEmpty()) {
                 builder.append(text);
             } else {
