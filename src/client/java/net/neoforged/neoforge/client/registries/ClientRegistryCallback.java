@@ -39,7 +39,7 @@ public class ClientRegistryCallback<A, B> implements AddCallback<B>, BakeCallbac
             throw new IllegalStateException(String.format(
                     Locale.ROOT,
                     "Entry '%s' in client registry '%s' has no counterpart in common registry '%s'",
-                    id,
+                    key.identifier(),
                     registry.key().identifier(),
                     commonRegistry.key().identifier()));
         }
