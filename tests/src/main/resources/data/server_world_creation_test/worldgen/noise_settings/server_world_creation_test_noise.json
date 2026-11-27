@@ -50,9 +50,19 @@
     "ridges": "minecraft:zero",
     "chunk_surface_level": "minecraft:zero",
     "final_density": {
-      "type": "minecraft:interpolated",
-      "cell_size_xz": 4,
-      "cell_size_y": 8,
+      "type": "minecraft:upscale",
+      "x": {
+        "cell_size": 8,
+        "mode": "interpolate_linear"
+      },
+      "y": {
+        "cell_size": 4,
+        "mode": "interpolate_linear"
+      },
+      "z": {
+        "cell_size": 8,
+        "mode": "interpolate_linear"
+      },
       "input": "minecraft:overworld/base_3d_noise"
     }
   },

@@ -6,9 +6,7 @@
         "left": {
           "type": "minecraft:squeeze",
           "input": {
-            "type": "minecraft:interpolated",
-            "cell_size_xz": 8,
-            "cell_size_y": 4,
+            "type": "minecraft:upscale",
             "input": {
               "type": "minecraft:mul",
               "left": {
@@ -40,6 +38,18 @@
                 }
               },
               "right": 0.64
+            },
+            "x": {
+              "cell_size": 8,
+              "mode": "interpolate_linear"
+            },
+            "y": {
+              "cell_size": 4,
+              "mode": "interpolate_linear"
+            },
+            "z": {
+              "cell_size": 8,
+              "mode": "interpolate_linear"
             }
           }
         },
@@ -47,10 +57,9 @@
           "type": "minecraft:beardifier"
         }
       },
-      "label": "N"
+      "label": "Final Density"
     }
   ],
-  "default_block": "minecraft:stone",
   "default_fluid": "minecraft:water",
   "disable_mob_generation": false,
   "legacy_random_source": true,
@@ -69,9 +78,7 @@
       "left": {
         "type": "minecraft:squeeze",
         "input": {
-          "type": "minecraft:interpolated",
-          "cell_size_xz": 8,
-          "cell_size_y": 4,
+          "type": "minecraft:upscale",
           "input": {
             "type": "minecraft:mul",
             "left": {
@@ -103,6 +110,18 @@
               }
             },
             "right": 0.64
+          },
+          "x": {
+            "cell_size": 8,
+            "mode": "interpolate_linear"
+          },
+          "y": {
+            "cell_size": 4,
+            "mode": "interpolate_linear"
+          },
+          "z": {
+            "cell_size": 8,
+            "mode": "interpolate_linear"
           }
         }
       },
