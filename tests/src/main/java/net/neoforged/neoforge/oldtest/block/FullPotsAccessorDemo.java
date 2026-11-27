@@ -20,7 +20,7 @@ import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.geometry.QuadCollection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -53,12 +53,10 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
 import net.neoforged.neoforge.client.model.DelegateBlockStateModel;
 import net.neoforged.neoforge.client.model.block.CustomUnbakedBlockStateModel;
+import net.neoforged.neoforge.client.registries.NeoForgeClientRegistries;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.model.data.ModelData;
 import net.neoforged.neoforge.model.data.ModelProperty;
@@ -178,8 +176,8 @@ public class FullPotsAccessorDemo {
         }
 
         @Override
-        public CompoundTag getUpdateTag(HolderLookup.Provider holderLookup) {
-            return saveWithFullMetadata(holderLookup);
+        public CompoundTag getUpdateTag(HolderGetter.Provider registries) {
+            return saveWithFullMetadata(registries);
         }
 
         @Override
@@ -215,11 +213,13 @@ public class FullPotsAccessorDemo {
         }
     }
 
-    @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
-    private static class ClientHandler {
-        @SubscribeEvent
-        public static void registerBlockStateModelType(final RegisterBlockStateModels event) {
-            event.registerModel(Identifier.fromNamespaceAndPath(MOD_ID, "diorite_pot"), DioritePotUnbakedBlockStateModel.CODEC);
+    @Mod(value = MOD_ID, dist = Dist.CLIENT)
+    public static class ClientHandler {
+        private static final DeferredRegister<MapCodec<? extends CustomUnbakedBlockStateModel>> BLOCK_STATE_MODELS = DeferredRegister.create(NeoForgeClientRegistries.Keys.BLOCK_STATE_MODEL_TYPE, MOD_ID);
+
+        public ClientHandler(IEventBus modBus) {
+            BLOCK_STATE_MODELS.register(modBus);
+            BLOCK_STATE_MODELS.register("diorite_pot", () -> DioritePotUnbakedBlockStateModel.CODEC);
         }
 
         private static class DioritePotUnbakedBlockStateModel implements CustomUnbakedBlockStateModel {

@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug.client;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.client.core.registries.ClientRegistries;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -28,7 +29,6 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationLoader;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -44,12 +44,10 @@ public class AnimationLoaderTests {
         test.framework().modEventBus().addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> {
             event.registerLayerDefinition(TestEntityModel.LAYER_LOC, TestEntityModel::createLayer);
         });
-        test.framework().modEventBus().addListener((EntityRenderersEvent.RegisterRenderers event) -> {
-            event.registerEntityRenderer(entity.get(), context -> new TestEntityRenderer(context, test));
-        });
-        test.framework().modEventBus().addListener((RegisterItemModelsEvent event) -> {
-            event.register(itemModelId, new TestItemModel(test).codec);
-        });
+        test.registrationHelper().registrar(ClientRegistries.ENTITY_RENDERER)
+                .<EntityRendererProvider<TestEntity>>register(entity.key().identifier().getPath(), () -> context -> new TestEntityRenderer(context, test));
+        test.registrationHelper().registrar(ClientRegistries.ITEM_MODEL_TYPE)
+                .register(itemModelId.getPath(), () -> new TestItemModel(test).codec);
     }
 
     private static final class TestEntity extends Entity {

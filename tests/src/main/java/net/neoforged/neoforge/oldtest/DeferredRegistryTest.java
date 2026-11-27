@@ -37,6 +37,8 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NewRegistryEvent;
+import net.neoforged.neoforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,7 +53,8 @@ public class DeferredRegistryTest {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     private static final ResourceKey<Registry<Custom>> CUSTOM_REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(MODID, "test_registry"));
     private static final DeferredRegister<Custom> CUSTOMS = DeferredRegister.create(CUSTOM_REGISTRY_KEY, MODID);
-    private static final DeferredRegister<Object> DOESNT_EXIST_REG = DeferredRegister.create(Identifier.fromNamespaceAndPath(MODID, "doesnt_exist"), MODID);
+    private static final ResourceKey<Registry<Object>> DOESNT_EXIST_KEY = ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(MODID, "doesnt_exist"));
+    private static final DeferredRegister<Object> DOESNT_EXIST_REG = DeferredRegister.create(DOESNT_EXIST_KEY, MODID);
     private static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(BuiltInRegistries.RECIPE_TYPE, MODID);
     // Vanilla Registry - filled directly after all RegistryEvent.Register events are fired
     private static final DeferredRegister<PosRuleTestType<?>> POS_RULE_TEST_TYPES = DeferredRegister.create(Registries.POS_RULE_TEST, MODID);
@@ -67,7 +70,9 @@ public class DeferredRegistryTest {
     private static final DeferredHolder<PosRuleTestType<?>, PosRuleTestType<?>> POS_RULE_TEST_TYPE = POS_RULE_TEST_TYPES.register("test", () -> () -> null);
 
 //    private static final TagKey<Custom> CUSTOM_TAG_KEY = CUSTOMS.createOptionalTagKey("test_tag", Set.of(CUSTOM));
-    private static final Registry<Custom> CUSTOM_REG = CUSTOMS.makeRegistry(builder -> builder.onAdd((owner, id, key, obj) -> LOGGER.info("Custom Added: " + id + " " + obj.foo())));
+    private static final Registry<Custom> CUSTOM_REG = new RegistryBuilder<>(CUSTOM_REGISTRY_KEY)
+        .onAdd((owner, id, key, obj) -> LOGGER.info("Custom Added: {} {}", id, obj.foo()))
+        .create();
 
     public DeferredRegistryTest(IEventBus modBus) {
         BLOCKS.register(modBus);
@@ -80,6 +85,11 @@ public class DeferredRegistryTest {
 
         NeoForge.EVENT_BUS.addListener(this::serverStarted);
         modBus.addListener(this::addCreative);
+        modBus.addListener(DeferredRegistryTest::onNewRegistry);
+    }
+
+    private static void onNewRegistry(NewRegistryEvent event) {
+        event.register(CUSTOM_REG);
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {

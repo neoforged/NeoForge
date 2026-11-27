@@ -37,14 +37,14 @@ public class CustomBoatTest {
         Supplier<EntityType<Raft>> paperRaft = reg.entityTypes().registerEntityType("paper_raft", (type, level) -> new Raft(type, level, () -> paperRaftItem.get()), MobCategory.MISC, UnaryOperator.identity());
         Supplier<EntityType<ChestRaft>> paperChestRaft = reg.entityTypes().registerEntityType("paper_chest_raft", (type, level) -> new ChestRaft(type, level, () -> paperChestRaftItem.get()), MobCategory.MISC, UnaryOperator.identity());
 
-        paperBoatItem = reg.items().registerItem("paper_boat", props -> new BoatItem(paperBoat.get(), props))
+        paperBoatItem = reg.items().registerItem("paper_boat", props -> new BoatItem(props.spawns(paperBoat.get())))
                 .withLang("Paper Boat");
-        paperChestBoatItem = reg.items().registerItem("paper_chest_boat", props -> new BoatItem(paperChestBoat.get(), props))
+        paperChestBoatItem = reg.items().registerItem("paper_chest_boat", props -> new BoatItem(props.spawns(paperChestBoat.get())))
                 .withLang("Paper Chest Boat");
 
-        paperRaftItem = reg.items().registerItem("paper_raft", props -> new BoatItem(paperRaft.get(), props))
+        paperRaftItem = reg.items().registerItem("paper_raft", props -> new BoatItem(props.spawns(paperRaft.get())))
                 .withLang("Paper Raft");
-        paperChestRaftItem = reg.items().registerItem("paper_chest_raft", props -> new BoatItem(paperChestRaft.get(), props))
+        paperChestRaftItem = reg.items().registerItem("paper_chest_raft", props -> new BoatItem(props.spawns(paperChestRaft.get())))
                 .withLang("Paper Chest Raft");
 
         test.updateStatus(Test.Status.PASSED, null);

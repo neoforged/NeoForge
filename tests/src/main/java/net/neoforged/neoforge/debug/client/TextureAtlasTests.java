@@ -13,6 +13,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.core.registries.ClientRegistries;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -32,7 +33,6 @@ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientResourceLoadFinishedEvent;
-import net.neoforged.neoforge.client.event.RegisterSpriteSourcesEvent;
 import net.neoforged.neoforge.client.event.RegisterTextureAtlasesEvent;
 import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -156,10 +156,8 @@ public class TextureAtlasTests {
             }
         }
 
-        test.framework().modEventBus().addListener(RegisterSpriteSourcesEvent.class, event -> {
-            Identifier id = Identifier.fromNamespaceAndPath(test.createModId(), "custom_sprite_source");
-            event.register(id, CustomSpriteSource.CODEC);
-        });
+        test.registrationHelper().registrar(ClientRegistries.SPRITE_SOURCE_TYPE)
+                .register("custom_sprite_source", () -> CustomSpriteSource.CODEC);
 
         Identifier testSprite = Identifier.fromNamespaceAndPath(test.createModId(), "test_sprite");
 

@@ -23,7 +23,7 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -57,10 +57,8 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.registries.DeferredClientRegister;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -82,13 +80,14 @@ import org.jspecify.annotations.Nullable;
 public class CustomItemDisplayContextTest {
     public static final String MODID = "custom_transformtype_test";
 
-    @EventBusSubscriber(value = Dist.CLIENT, modid = MODID)
-    private static class RendererEvents {
+    @Mod(value = MODID, dist = Dist.CLIENT)
+    public static class RendererEvents {
         public static final ItemDisplayContext HANGING = ItemDisplayContext.valueOf("NEOTESTS_HANGING");
+        private static final DeferredClientRegister.BlockEntityRenderers BLOCK_ENTITY_RENDERERS = new DeferredClientRegister.BlockEntityRenderers(MODID);
 
-        @SubscribeEvent
-        public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-            event.registerBlockEntityRenderer(ITEM_HANGER_BE.get(), ItemHangerBlockEntityRenderer::new);
+        public RendererEvents(IEventBus modBus) {
+            BLOCK_ENTITY_RENDERERS.register(modBus);
+            BLOCK_ENTITY_RENDERERS.registerRenderer(ITEM_HANGER_BE, ItemHangerBlockEntityRenderer::new);
         }
 
         private static class ItemHangerBlockEntityRenderer implements BlockEntityRenderer<ItemHangerBlockEntity, ItemHangerRenderState> {
@@ -222,8 +221,8 @@ public class CustomItemDisplayContextTest {
         }
 
         @Override
-        public CompoundTag getUpdateTag(HolderLookup.Provider holderLookup) {
-            return saveWithoutMetadata(holderLookup);
+        public CompoundTag getUpdateTag(HolderGetter.Provider registries) {
+            return saveWithoutMetadata(registries);
         }
 
         @Nullable

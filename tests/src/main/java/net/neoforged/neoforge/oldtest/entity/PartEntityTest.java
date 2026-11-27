@@ -29,9 +29,8 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.registries.DeferredClientRegister;
 import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -57,13 +56,17 @@ public class PartEntityTest {
         event.put(TEST_ENTITY.get(), Pig.createAttributes().build());
     }
 
-    @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
-    private static class ClientEvents {
-        @SubscribeEvent
-        public static void onRegisterRenderers(final EntityRenderersEvent.RegisterRenderers event) {
-            if (!ENABLED) return;
+    @Mod(value = MOD_ID, dist = Dist.CLIENT)
+    public static class ClientEvents {
+        private static final DeferredClientRegister.EntityRenderers ENTITY_RENDERERS = new DeferredClientRegister.EntityRenderers(MOD_ID);
 
-            event.registerEntityRenderer(TEST_ENTITY.get(), PigRenderer::new);
+        public ClientEvents(IEventBus modBus) {
+            if (!ENABLED) {
+                return;
+            }
+
+            ENTITY_RENDERERS.register(modBus);
+            ENTITY_RENDERERS.registerRenderer(TEST_ENTITY, PigRenderer::new);
         }
     }
 
@@ -166,8 +169,8 @@ public class PartEntityTest {
         }
 
         @Override
-        public boolean is(Entity entity) {
-            return this == entity || this.parent == entity;
+        public Entity getGraphRoot() {
+            return this.parent.getGraphRoot();
         }
 
         @Override

@@ -6,9 +6,9 @@
 package net.neoforged.neoforge.debug.client;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.screens.LevelLoadingScreen;
 import net.minecraft.client.multiplayer.LevelLoadTracker;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
@@ -64,13 +64,13 @@ public class DimensionTransitionScreenTests {
         }
 
         @Override
-        public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        public void extractRenderState(GuiGraphicsExtractor graphics) {
             graphics.centeredText(this.font, this.message, this.width / 2, this.height / 2 - 50, 0xFFFFFF);
         }
 
         @Override
-        public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-            graphics.blit(RenderPipelines.GUI_TEXTURED, this.bgTexture, 0, 0, 0, 0.0F, 0, this.width, this.height, 32, 32);
+        public void extractBackground(GuiGraphicsExtractor graphics) {
+            graphics.blit(GuiPipeline.TEXTURED, this.bgTexture, 0, 0, 0, 0.0F, 0, this.width, this.height, 32, 32);
         }
     }
 }

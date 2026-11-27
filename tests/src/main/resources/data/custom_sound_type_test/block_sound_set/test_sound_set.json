@@ -1,0 +1,7 @@
+{
+    "break_sound": "custom_sound_type_test:test_step",
+    "fall_sound": "custom_sound_type_test:test_step",
+    "hit_sound": "custom_sound_type_test:test_step",
+    "place_sound": "custom_sound_type_test:test_step",
+    "step_sound": "custom_sound_type_test:test_step"
+}

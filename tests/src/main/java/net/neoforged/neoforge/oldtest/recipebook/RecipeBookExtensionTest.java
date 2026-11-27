@@ -21,11 +21,9 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterRecipeBookSearchCategoriesEvent;
+import net.neoforged.neoforge.client.registries.DeferredClientRegister;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -78,17 +76,19 @@ public class RecipeBookExtensionTest {
         return Identifier.fromNamespaceAndPath(MOD_ID, name);
     }
 
-    @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
+    @Mod(value = MOD_ID, dist = Dist.CLIENT)
     public static class ClientHandler {
-        @SubscribeEvent
-        public static void clientSetup(RegisterMenuScreensEvent event) {
-            if (!ENABLED)
-                return;
-            event.register(RECIPE_BOOK_TEST_MENU_TYPE.get(), RecipeBookTestScreen::new);
+        private static final DeferredClientRegister.MenuScreen MENU_SCREENS = new DeferredClientRegister.MenuScreen(MOD_ID);
+
+        public ClientHandler(IEventBus modBus) {
+            if (ENABLED) {
+                MENU_SCREENS.register(modBus);
+                MENU_SCREENS.registerScreen(RECIPE_BOOK_TEST_MENU_TYPE, RecipeBookTestScreen::new);
+            }
+            modBus.addListener(ClientHandler::registerSearchCategories);
         }
 
-        @SubscribeEvent
-        public static void registerSearchCategories(RegisterRecipeBookSearchCategoriesEvent event) {
+        private static void registerSearchCategories(RegisterRecipeBookSearchCategoriesEvent event) {
             event.register(SEARCH_CATEGORY, RECIPE_BOOK_TEST_CAT1.get(), RECIPE_BOOK_TEST_CAT2.get());
         }
     }

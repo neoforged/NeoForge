@@ -26,11 +26,11 @@ public class FluidEventTests {
         test.eventListeners().forge().addListener((final CreateFluidSourceEvent event) -> {
             final BlockState state = event.getState();
             final FluidState fluidState = state.getFluidState();
-            if (fluidState.getType().isSame(Fluids.WATER)) {
+            if (fluidState.is(Fluids.WATER)) {
                 event.setCanConvert(false);
                 // Place andesite on top of the sources
                 event.getLevel().setBlock(event.getPos().above(), Blocks.ANDESITE.defaultBlockState(), 3);
-            } else if (fluidState.getType().isSame(Fluids.LAVA)) {
+            } else if (fluidState.is(Fluids.LAVA)) {
                 event.setCanConvert(true);
             }
         });
@@ -60,7 +60,7 @@ public class FluidEventTests {
                 .thenWaitUntil(() -> helper.assertBlockPresent(Blocks.WATER, 2, 1, 2)) // Wait until the water spread
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.ANDESITE, 2, 2, 1))
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.ANDESITE, 2, 2, 3))
-                .thenExecute(() -> helper.assertBlockState(new BlockPos(2, 1, 2), state -> state.getFluidState().is(Fluids.FLOWING_WATER) && !state.getFluidState().isSource(), $ -> Component.literal("Water block was a source!")))
+                .thenExecute(() -> helper.assertBlockState(new BlockPos(2, 1, 2), state -> state.getFluidState().is(Fluids.WATER) && !state.getFluidState().isSource(), $ -> Component.literal("Water block was a source!")))
 
                 .thenIdle(5)
 

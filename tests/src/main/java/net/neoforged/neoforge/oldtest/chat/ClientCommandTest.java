@@ -10,12 +10,12 @@ import com.mojang.brigadier.context.CommandContext;
 import java.util.List;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.commands.arguments.ObjectiveArgument;
 import net.minecraft.commands.arguments.TeamArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
-import net.minecraft.commands.synchronization.SuggestionProviders;
+import net.minecraft.commands.suggestions.SuggestAvailableSounds;
+import net.minecraft.commands.suggestions.SuggestionContext;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.common.Mod;
@@ -35,12 +35,12 @@ public class ClientCommandTest {
                         // Used for checking suggestion providers that aren't registered
                         .then(Commands.literal("rawsuggest")
                                 .then(Commands.argument("block", IdentifierArgument.id())
-                                        .suggests((c, b) -> SharedSuggestionProvider.suggestResource(BuiltInRegistries.BLOCK.keySet(), b))
+                                        .suggests((_, b) -> SuggestionContext.suggestResource(BuiltInRegistries.BLOCK.keySet(), b))
                                         .executes(this::testCommand)))
                         // Used for checking suggestion providers that are registered
                         .then(Commands.literal("registeredsuggest").then(
                                 Commands.argument("block", IdentifierArgument.id())
-                                        .suggests(SuggestionProviders.cast(SuggestionProviders.AVAILABLE_SOUNDS))
+                                        .suggests(SuggestAvailableSounds.suggestAvailableSounds())
                                         .executes(this::testCommand)))
                         // Used for checking if attempting to get the server on the client side errors
                         .then(Commands.literal("server")
@@ -124,11 +124,11 @@ public class ClientCommandTest {
 
     private int testCommand(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() -> Component.literal("Input: " + IdentifierArgument.getId(context, "block")), false);
-        context.getSource().sendSuccess(() -> Component.literal("Teams: " + context.getSource().getAllTeams()), false);
-        context.getSource().sendSuccess(() -> Component.literal("Players: " + context.getSource().getOnlinePlayerNames()), false);
+        //context.getSource().sendSuccess(() -> Component.literal("Teams: " + context.getSource().getAllTeams()), false);
+        //context.getSource().sendSuccess(() -> Component.literal("Players: " + context.getSource().getOnlinePlayerNames()), false);
 //        context.getSource().sendSuccess(() -> Component.literal("First recipe: " + context.getSource().getRecipeNames().findFirst().get()), false);
         context.getSource().sendSuccess(() -> Component.literal("Levels: " + context.getSource().levels()), false);
-        context.getSource().sendSuccess(() -> Component.literal("Registry Access: " + context.getSource().registryAccess()), false);
+        context.getSource().sendSuccess(() -> Component.literal("Registry Access: " + context.getSource().holderLookups()), false);
         return 0;
     }
 }

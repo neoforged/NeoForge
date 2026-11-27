@@ -6,16 +6,17 @@
 package net.neoforged.neoforge.oldtest;
 
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.sounds.BlockSoundSet;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.util.DeferredSoundType;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -32,7 +33,7 @@ public class CustomSoundTypeTest {
 
     private static final DeferredHolder<SoundEvent, SoundEvent> TEST_STEP_EVENT = SOUND_EVENTS.register("test_step",
             () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(MODID, "block.sound_type_test.step")));
-    private static final SoundType TEST_SOUND_TYPE = new DeferredSoundType(1.0F, 1.0F, TEST_STEP_EVENT, TEST_STEP_EVENT, TEST_STEP_EVENT, TEST_STEP_EVENT, TEST_STEP_EVENT);
+    private static final ResourceKey<BlockSoundSet> TEST_SOUND_TYPE = ResourceKey.create(Registries.BLOCK_SOUND_SET, Identifier.fromNamespaceAndPath(MODID, "test_sound_set"));
 
     private static final DeferredBlock<Block> TEST_STEP_BLOCK = BLOCKS.registerSimpleBlock("test_block",
             props -> props.mapColor(MapColor.WOOD).sound(TEST_SOUND_TYPE));

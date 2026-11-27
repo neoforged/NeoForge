@@ -35,10 +35,12 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.registries.DeferredClientRegister;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -62,25 +64,27 @@ public class EntityRendererEventsTest {
         event.put(MY_ENTITY_TYPE.get(), Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 1.0D).build());
     }
 
-    @EventBusSubscriber(value = Dist.CLIENT, modid = "entity_renderer_events_test")
-    private static class EntityRenderEventsTestClientModStuff {
+    @Mod(value = "entity_renderer_events_test", dist = Dist.CLIENT)
+    public static class EntityRenderEventsTestClientModStuff {
         private static final ModelLayerLocation MAIN_LAYER = new ModelLayerLocation(MY_ENTITY, "main");
         private static final ModelLayerLocation OUTER_LAYER = new ModelLayerLocation(MY_ENTITY, "main");
         private static final ModelLayerLocation ADDED_LAYER = new ModelLayerLocation(MY_ENTITY, "added");
+        private static final DeferredClientRegister.EntityRenderers ENTITY_RENDERERS = new DeferredClientRegister.EntityRenderers("entity_renderer_events_test");
 
-        @SubscribeEvent
+        public EntityRenderEventsTestClientModStuff(IEventBus modBus) {
+            ENTITY_RENDERERS.register(modBus);
+            ENTITY_RENDERERS.registerRenderer(MY_ENTITY_TYPE, MyEntityRenderer::new);
+
+            modBus.addListener(EntityRenderEventsTestClientModStuff::layerDefinitions);
+            modBus.addListener(EntityRenderEventsTestClientModStuff::entityLayers);
+        }
+
         public static void layerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
             event.registerLayerDefinition(MAIN_LAYER, MyEntityModel::createMainLayer);
             event.registerLayerDefinition(OUTER_LAYER, () -> MyEntityModel.createLayer(new CubeDeformation(1.0f)));
             event.registerLayerDefinition(ADDED_LAYER, () -> MyEntityModel.createLayer(new CubeDeformation(2.0f)));
         }
 
-        @SubscribeEvent
-        public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
-            event.registerEntityRenderer(MY_ENTITY_TYPE.get(), MyEntityRenderer::new);
-        }
-
-        @SubscribeEvent
         public static void entityLayers(EntityRenderersEvent.AddLayers event) {
             MyEntityRenderer renderer = event.getRenderer(MY_ENTITY_TYPE.get());
             renderer.addLayer(new MyEntityLayer(renderer, new MyEntityModel(event.getEntityModels().bakeLayer(ADDED_LAYER)), 0.5f));

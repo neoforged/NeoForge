@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.oldtest.block;
 
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
 import net.minecraft.client.renderer.blockentity.StandingSignRenderer;
 import net.minecraft.core.BlockPos;
@@ -17,7 +16,6 @@ import net.minecraft.world.item.HangingSignItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.StandingAndWallBlockItem;
 import net.minecraft.world.level.block.CeilingHangingSignBlock;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.StandingSignBlock;
 import net.minecraft.world.level.block.WallHangingSignBlock;
 import net.minecraft.world.level.block.WallSignBlock;
@@ -25,14 +23,15 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.HangingSignBlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.world.level.block.sounds.BlockSoundSets;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.WoodType;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.client.registries.DeferredClientRegister;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -44,13 +43,13 @@ public class CustomSignsTest {
     public static final boolean ENABLE = false; // TODO fix
     public static final String MODID = "custom_signs_test";
 
-    public static final WoodType TEST_WOOD_TYPE = WoodType.register(new WoodType(Identifier.fromNamespaceAndPath(MODID, "test").toString(), BlockSetType.ACACIA));
+    public static final WoodType TEST_WOOD_TYPE = new WoodType(Identifier.fromNamespaceAndPath(MODID, "test").toString(), BlockSetType.DEFAULT_WOOD);
 
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
-    public static final DeferredBlock<CustomStandingSignBlock> TEST_STANDING_SIGN = BLOCKS.register("test_sign", () -> new CustomStandingSignBlock(Properties.of().noCollision().strength(1.0F).sound(SoundType.WOOD), CustomSignsTest.TEST_WOOD_TYPE));
-    public static final DeferredBlock<CustomWallSignBlock> TEST_WALL_SIGN = BLOCKS.register("test_wall_sign", () -> new CustomWallSignBlock(Properties.of().noCollision().strength(1.0F).sound(SoundType.WOOD), CustomSignsTest.TEST_WOOD_TYPE));
-    public static final DeferredBlock<CustomCeilingHangingSignBlock> TEST_CEILING_HANGING_SIGN = BLOCKS.register("test_hanging_sign", () -> new CustomCeilingHangingSignBlock(Properties.of().noCollision().strength(1.0F).sound(SoundType.WOOD), CustomSignsTest.TEST_WOOD_TYPE));
-    public static final DeferredBlock<CustomWallHangingSignBlock> TEST_WALL_HANGING_SIGN = BLOCKS.register("test_wall_hanging_sign", () -> new CustomWallHangingSignBlock(Properties.of().noCollision().strength(1.0F).sound(SoundType.WOOD), CustomSignsTest.TEST_WOOD_TYPE));
+    public static final DeferredBlock<CustomStandingSignBlock> TEST_STANDING_SIGN = BLOCKS.register("test_sign", () -> new CustomStandingSignBlock(Properties.of().noCollision().strength(1.0F).sound(BlockSoundSets.WOOD), CustomSignsTest.TEST_WOOD_TYPE));
+    public static final DeferredBlock<CustomWallSignBlock> TEST_WALL_SIGN = BLOCKS.register("test_wall_sign", () -> new CustomWallSignBlock(Properties.of().noCollision().strength(1.0F).sound(BlockSoundSets.WOOD), CustomSignsTest.TEST_WOOD_TYPE));
+    public static final DeferredBlock<CustomCeilingHangingSignBlock> TEST_CEILING_HANGING_SIGN = BLOCKS.register("test_hanging_sign", () -> new CustomCeilingHangingSignBlock(Properties.of().noCollision().strength(1.0F).sound(BlockSoundSets.WOOD), CustomSignsTest.TEST_WOOD_TYPE));
+    public static final DeferredBlock<CustomWallHangingSignBlock> TEST_WALL_HANGING_SIGN = BLOCKS.register("test_wall_hanging_sign", () -> new CustomWallHangingSignBlock(Properties.of().noCollision().strength(1.0F).sound(BlockSoundSets.WOOD), CustomSignsTest.TEST_WOOD_TYPE));
 
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     public static final DeferredItem<Item> TEST_SIGN = ITEMS.register("test_sign", () -> new StandingAndWallBlockItem(TEST_STANDING_SIGN.get(), TEST_WALL_SIGN.get(), Direction.DOWN, new Item.Properties().stacksTo(16)));
@@ -66,8 +65,6 @@ public class CustomSignsTest {
             ITEMS.register(eventBus);
             BLOCK_ENTITIES.register(eventBus);
 
-            eventBus.addListener(this::clientSetup);
-            eventBus.addListener(this::commonSetup);
             eventBus.addListener(this::addCreative);
         }
     }
@@ -79,13 +76,17 @@ public class CustomSignsTest {
         }
     }
 
-    private void clientSetup(final FMLClientSetupEvent event) {
-        BlockEntityRenderers.register(CUSTOM_SIGN.get(), StandingSignRenderer::new);
-        BlockEntityRenderers.register(CUSTOM_HANGING_SIGN.get(), HangingSignRenderer::new);
-    }
+    @Mod(value = MODID, dist = Dist.CLIENT)
+    public static final class Client {
+        private static final DeferredClientRegister.BlockEntityRenderers BLOCK_ENTITY_RENDERERS = new DeferredClientRegister.BlockEntityRenderers(MODID);
 
-    private void commonSetup(final FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> WoodType.register(TEST_WOOD_TYPE));
+        public Client(IEventBus modBus) {
+            if (ENABLE) {
+                BLOCK_ENTITY_RENDERERS.register(modBus);
+                BLOCK_ENTITY_RENDERERS.registerRenderer(CUSTOM_SIGN, StandingSignRenderer::new);
+                BLOCK_ENTITY_RENDERERS.registerRenderer(CUSTOM_HANGING_SIGN, HangingSignRenderer::new);
+            }
+        }
     }
 
     public static class CustomStandingSignBlock extends StandingSignBlock {

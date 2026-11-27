@@ -22,7 +22,7 @@
              ItemStack result = recipe.display().result().resolveForFirstStack(context);
 +            // Neo: use custom button creator, if present
 +            if (this.overlayButtonCreator != null) {
-+                this.recipeButtons.add(this.overlayButtonCreator.create(this, x, y, recipe.id(), recipe.display(), context, canCraft));
++                this.recipeButtons.add(this.overlayButtonCreator.create(this, x, y, recipe.id(), recipe.display(), context, canCraft, this.slotSelectTime));
 +                continue;
 +            }
              if (this.isFurnaceMenu) {

@@ -12,6 +12,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.io.IOException;
 import java.util.Objects;
+import net.minecraft.commands.CommandPermissionLevels;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
@@ -95,7 +96,7 @@ public class AttachmentTests {
             event.getDispatcher()
                     .register(literal(test.id())
                             .then(literal("print_and_increment")
-                                    .requires(Commands.hasPermission(Commands.LEVEL_OWNERS))
+                                    .requires(Commands.hasPermission(CommandPermissionLevels.LEVEL_OWNERS))
                                     .executes(ctx -> {
                                         var chunk = ctx.getSource().getLevel().getChunkAt(BlockPos.containing(ctx.getSource().getPosition()));
                                         var attachment = chunk.getData(attachmentType);
@@ -169,7 +170,7 @@ public class AttachmentTests {
                 var reporter = new ProblemReporter.Collector();
                 var tag = TagValueOutput.createWithContext(reporter, helper.getLevel().registryAccess());
                 player.serializeAttachments(tag); // This will throw if it fails
-                helper.assertTrue(reporter.isEmpty(), "expected no serialisation problems");
+                helper.assertTrue(!reporter.hasAnyProblems(), "expected no serialisation problems");
             });
             helper.succeed();
         });

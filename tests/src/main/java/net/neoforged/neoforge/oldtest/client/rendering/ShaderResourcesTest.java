@@ -5,10 +5,11 @@
 
 package net.neoforged.neoforge.oldtest.client.rendering;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.logging.LogUtils;
 import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import net.minecraft.client.renderer.RenderPassLayouts;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -48,7 +49,7 @@ public class ShaderResourcesTest {
         }
 
         public static void registerShaders(final RegisterRenderPipelinesEvent event) {
-            event.registerPipeline(CUBEMAP_PIPELINE);
+            event.registerStaticPipeline(CUBEMAP_PIPELINE, RenderPassLayouts.COLOR_ONLY);
         }
     }
 }

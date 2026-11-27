@@ -48,14 +48,15 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.model.DelegateUnbakedModel;
 import net.neoforged.neoforge.client.model.ExtendedUnbakedGeometry;
 import net.neoforged.neoforge.client.model.UnbakedModelLoader;
 import net.neoforged.neoforge.client.model.generators.loaders.ObjModelBuilder;
 import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
+import net.neoforged.neoforge.client.registries.NeoForgeClientRegistries;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -94,7 +95,6 @@ public class NewModelLoaderTest {
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
 
-        modEventBus.addListener(this::modelRegistry);
         modEventBus.addListener(this::datagen);
         modEventBus.addListener(this::addCreative);
     }
@@ -110,8 +110,14 @@ public class NewModelLoaderTest {
         }
     }
 
-    public void modelRegistry(ModelEvent.RegisterLoaders event) {
-        event.register(Identifier.fromNamespaceAndPath(MODID, "custom_loader"), new TestLoader());
+    @Mod(value = MODID, dist = Dist.CLIENT)
+    public static final class Client {
+        private static final DeferredRegister<UnbakedModelLoader<?>> MODEL_LOADERS = DeferredRegister.create(NeoForgeClientRegistries.UNBAKED_MODEL_LOADER, MODID);
+
+        public Client(IEventBus modBus) {
+            MODEL_LOADERS.register(modBus);
+            MODEL_LOADERS.register("custom_loader", TestLoader::new);
+        }
     }
 
     static class TestBlock extends Block {

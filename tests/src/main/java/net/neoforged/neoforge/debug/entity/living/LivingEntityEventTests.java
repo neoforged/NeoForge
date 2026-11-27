@@ -201,7 +201,7 @@ public class LivingEntityEventTests {
                     .thenExecute(() -> zombie.setData(specialAggro, false))
                     .thenIdle(10) // Increase the zombie tick count
                     .thenExecute(zombie::setLastHurtByMob)
-                    .thenWaitUntil(player -> helper.assertTrue(zombie.getTarget() != null && zombie.getTarget().is(player), "Zombie wasn't targeting player"))
+                    .thenWaitUntil(player -> helper.assertTrue(zombie.getTarget() != null && zombie.getTarget() == player, "Zombie wasn't targeting player"))
                     .thenSucceed();
         });
     }

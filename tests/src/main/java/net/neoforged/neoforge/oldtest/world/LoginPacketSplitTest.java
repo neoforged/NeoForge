@@ -9,7 +9,6 @@ import com.google.common.base.Stopwatch;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.brigadier.Command;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -32,7 +31,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.SharedConstants;
-import net.minecraft.commands.Commands;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.network.CompressionDecoder;
@@ -54,9 +52,6 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.InclusiveRange;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.registries.NewDatapackRegistryEvent;
 import org.jspecify.annotations.Nullable;
@@ -97,14 +92,6 @@ public class LoginPacketSplitTest {
                             new PackSelectionConfig(true, Pack.Position.TOP, false))));
                 }
             });
-
-            if (FMLEnvironment.getDist().isClient()) {
-                NeoForge.EVENT_BUS.addListener((final RegisterClientCommandsEvent event) -> event.getDispatcher().register(Commands.literal("big_data")
-                        .executes(context -> {
-                            context.getSource().sendSuccess(() -> Component.literal("Registry has " + context.getSource().registryAccess().lookupOrThrow(BIG_DATA).size() + " entries."), true);
-                            return Command.SINGLE_SUCCESS;
-                        })));
-            }
         }
     }
 

@@ -10,6 +10,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Button.OnPress;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
+import net.minecraft.client.gui.screens.worldselection.PresetEditor;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext.DimensionsUpdater;
 import net.minecraft.core.Holder;
@@ -30,11 +31,13 @@ import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import net.minecraft.world.level.levelgen.presets.WorldPreset;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.RegisterPresetEditorsEvent;
+import net.neoforged.neoforge.client.registries.NeoForgeClientRegistries;
 import net.neoforged.neoforge.data.event.GatherDataRegistryEntriesEvent;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 @Mod(CustomPresetEditorTest.MODID)
 public class CustomPresetEditorTest {
@@ -62,11 +65,13 @@ public class CustomPresetEditorTest {
         }
     }
 
-    @EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
+    @Mod(value = MODID, dist = Dist.CLIENT)
     public static class ClientModEvents {
-        @SubscribeEvent
-        public static void onRegisterPresetEditors(RegisterPresetEditorsEvent event) {
-            event.register(WORLD_PRESET_KEY, SwampDesertScreen::new);
+        private static final DeferredRegister<PresetEditor> PRESET_EDITORS = DeferredRegister.create(NeoForgeClientRegistries.WORLD_PRESET_EDITOR, MODID);
+
+        public ClientModEvents(IEventBus modBus) {
+            PRESET_EDITORS.register(modBus);
+            PRESET_EDITORS.register(WORLD_PRESET_KEY.identifier().getPath(), () -> SwampDesertScreen::new);
         }
     }
 

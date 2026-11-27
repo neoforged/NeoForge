@@ -56,7 +56,7 @@ public class RecipeBookTestMenu extends RecipeBookMenu {
         /**
          * Copied from {@link ResultSlot} but not limited to {@link CraftingContainer}
          */
-        this.resultSlot = new Slot(this.resultContainer, 0, 144, 35) {
+        this.resultSlot = new Slot(this.resultContainer, 0, 144, 35, Slot.Section.RESULT) {
             private int removeCount;
 
             @Override
@@ -148,7 +148,7 @@ public class RecipeBookTestMenu extends RecipeBookMenu {
         //slots 1 - 8
         for (int i = 0; i < 4; ++i) {
             for (int j = 0; j < 2; ++j)
-                this.addSlot(new Slot(this.container, j + i * 2, 30 + j * 18, 61 - i * 18) {
+                this.addSlot(new Slot(this.container, j + i * 2, 30 + j * 18, 61 - i * 18, Slot.Section.CONTAINER) {
                     @Override
                     public void setChanged() {
                         super.setChanged();
@@ -160,12 +160,12 @@ public class RecipeBookTestMenu extends RecipeBookMenu {
         //slots 9 to 35
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j)
-                this.addSlot(new Slot(inv, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+                this.addSlot(new Slot(inv, j + i * 9 + 9, 8 + j * 18, 84 + i * 18, Slot.Section.INVENTORY));
         }
 
         //slots 36 to 44
         for (int i = 0; i < 9; ++i)
-            this.addSlot(new Slot(inv, i, 8 + i * 18, 142));
+            this.addSlot(new Slot(inv, i, 8 + i * 18, 142, Slot.Section.HOTBAR));
     }
 
     protected static void slotChangedCraftingGrid(

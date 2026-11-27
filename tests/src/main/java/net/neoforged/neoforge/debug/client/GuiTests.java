@@ -5,25 +5,28 @@
 
 package net.neoforged.neoforge.debug.client;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.renderpearl.api.pipeline.ColorTargetState;
 import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import java.util.Objects;
 import java.util.Random;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.gui.screens.social.EntityPortraitWidget;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.BindGroupLayouts;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.state.gui.GuiElementRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -97,8 +100,8 @@ public class GuiTests {
         }
 
         @Override
-        public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-            super.extractBackground(graphics, mouseX, mouseY, partialTicks);
+        public void extractBackground(GuiGraphicsExtractor graphics) {
+            super.extractBackground(graphics);
             graphics.text(this.font, this.title, this.width / 2, 15, 0xFFFFFF);
         }
 
@@ -167,7 +170,7 @@ public class GuiTests {
     }
 
     private static GuiLayer makeRightOverlay(DynamicTest test, int height, int color) {
-        return (guiGraphics, _) -> {
+        return guiGraphics -> {
             if (!test.framework().tests().isEnabled(test.id())) {
                 return;
             }
@@ -183,7 +186,7 @@ public class GuiTests {
     }
 
     private static GuiLayer makeLeftOverlay(DynamicTest test, int height, int color) {
-        return (guiGraphics, _) -> {
+        return guiGraphics -> {
             if (!test.framework().tests().isEnabled(test.id())) {
                 return;
             }
@@ -201,14 +204,14 @@ public class GuiTests {
     @TestHolder(description = "Tests if gui layers can be wrapped to apply pose stack transformations")
     static void testGuiLayerWrapping(DynamicTest test) {
         test.framework().modEventBus().addListener((RegisterGuiLayersEvent event) -> {
-            event.wrapLayer(VanillaGuiLayers.FOOD_LEVEL, guiLayer -> (guiGraphics, deltaTracker) -> {
+            event.wrapLayer(VanillaGuiLayers.FOOD_LEVEL, guiLayer -> guiGraphics -> {
                 if (test.framework().tests().isEnabled(test.id())) {
                     guiGraphics.pose().pushMatrix();
                     guiGraphics.pose().translate(-91 / 2f, -11);
-                    guiLayer.render(guiGraphics, deltaTracker);
+                    guiLayer.render(guiGraphics);
                     guiGraphics.pose().popMatrix();
                 } else {
-                    guiLayer.render(guiGraphics, deltaTracker);
+                    guiLayer.render(guiGraphics);
                 }
             });
         });
@@ -228,10 +231,10 @@ public class GuiTests {
         test.framework().modEventBus().addListener((RegisterGuiLayersEvent event) -> {
             // Register some placeholder layers
             for (int i = 0; i < 50; i++) {
-                event.registerAboveAll(Identifier.fromNamespaceAndPath(test.createModId(), "fake_" + i), (guiGraphics, deltaTracker) -> {});
+                event.registerAboveAll(Identifier.fromNamespaceAndPath(test.createModId(), "fake_" + i), _ -> {});
             }
             // Register the real layer
-            event.registerAboveAll(Identifier.fromNamespaceAndPath(test.createModId(), "high_depth_test"), (guiGraphics, deltaTracker) -> {
+            event.registerAboveAll(Identifier.fromNamespaceAndPath(test.createModId(), "high_depth_test"), guiGraphics -> {
                 if (test.framework().tests().isEnabled(test.id())) {
                     guiGraphics.fill(guiGraphics.guiWidth() - 50, 0, guiGraphics.guiWidth(), 50, 0xFFFF0000);
                 }
@@ -251,13 +254,16 @@ public class GuiTests {
         Lazy<ArmorStand> entityOne = Lazy.of(() -> makeTestArmorStand(Items.DIAMOND_CHESTPLATE));
         Lazy<ArmorStand> entityTwo = Lazy.of(() -> makeTestArmorStand(Items.LEATHER_CHESTPLATE));
         test.framework().modEventBus().addListener((RegisterGuiLayersEvent event) -> {
-            event.registerAboveAll(Identifier.fromNamespaceAndPath(test.createModId(), "inv_entities"), (graphics, deltaTracker) -> {
+            event.registerAboveAll(Identifier.fromNamespaceAndPath(test.createModId(), "inv_entities"), graphics -> {
                 if (!test.framework().tests().isEnabled(test.id())) return;
 
                 var armorStandAngleX = 0.43633232F;
                 int maxX = graphics.guiWidth();
-                InventoryScreen.renderEntityInInventoryFollowsAngle(graphics, maxX - 100, 20, maxX - 60, 80, 25, 1, 0, armorStandAngleX, entityOne.get());
-                InventoryScreen.renderEntityInInventoryFollowsAngle(graphics, maxX - 50, 20, maxX - 10, 80, 25, 1, 0, armorStandAngleX, entityTwo.get());
+                EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+                EntityRenderState stateOne = dispatcher.extractEntity(entityOne.get(), graphics.partialTicks());
+                EntityRenderState stateTwo = dispatcher.extractEntity(entityTwo.get(), graphics.partialTicks());
+                EntityPortraitWidget.renderEntityInInventoryFollowsAngle(graphics, maxX - 100, 20, maxX - 60, 80, 25, 1, 0, armorStandAngleX, stateOne);
+                EntityPortraitWidget.renderEntityInInventoryFollowsAngle(graphics, maxX - 50, 20, maxX - 10, 80, 25, 1, 0, armorStandAngleX, stateTwo);
             });
         });
         test.eventListeners().forge().addListener((ClientPlayerNetworkEvent.LoggingOut event) -> {
@@ -281,7 +287,7 @@ public class GuiTests {
     static void testNonQuadUiGeometry(DynamicTest test) {
         String modId = test.createModId();
 
-        RenderPipeline triStripPipeline = RenderPipeline.builder()
+        GuiPipeline triStripPipeline = GuiPipeline.of(() -> RenderPipeline.builder()
                 .withLocation(Identifier.fromNamespaceAndPath(modId, "tri_strip"))
                 .withVertexShader("core/position_color")
                 .withFragmentShader("core/position_color")
@@ -291,7 +297,7 @@ public class GuiTests {
                 .withCull(false)
                 .withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR)
                 .withPrimitiveTopology(PrimitiveTopology.TRIANGLE_FAN)
-                .build();
+                .build());
 
         record CircleGuiElementRenderState(
                 int centerX,
@@ -299,7 +305,7 @@ public class GuiTests {
                 int radius,
                 int divisions,
                 int color,
-                RenderPipeline pipeline,
+                GuiPipeline pipeline,
                 TextureSetup textureSetup,
                 ScreenRectangle bounds,
                 @Nullable ScreenRectangle scissorArea) implements GuiElementRenderState {
@@ -309,7 +315,7 @@ public class GuiTests {
                     int radius,
                     int divisions,
                     int color,
-                    RenderPipeline pipeline) {
+                    GuiPipeline pipeline) {
                 ScreenRectangle bounds = new ScreenRectangle(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
                 return new CircleGuiElementRenderState(centerX, centerY, radius, divisions, color, pipeline, TextureSetup.noTexture(), bounds, null);
             }
@@ -327,7 +333,7 @@ public class GuiTests {
 
         test.framework().modEventBus().addListener(RegisterGuiLayersEvent.class, event -> {
             Identifier id = Identifier.fromNamespaceAndPath(modId, "test");
-            event.registerAboveAll(id, (graphics, deltaTracker) -> {
+            event.registerAboveAll(id, graphics -> {
                 int centerX = graphics.guiWidth() - 20;
                 graphics.submitGuiElementRenderState(CircleGuiElementRenderState.create(centerX, 20, 15, 8, 0xFFAA0000, triStripPipeline));
                 graphics.submitGuiElementRenderState(CircleGuiElementRenderState.create(centerX, 60, 15, 8, 0xFFAA0000, triStripPipeline));

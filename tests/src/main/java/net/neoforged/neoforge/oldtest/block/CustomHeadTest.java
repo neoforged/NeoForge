@@ -28,11 +28,10 @@ import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterBlockModelsEvent;
+import net.neoforged.neoforge.client.registries.DeferredClientRegister;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -115,26 +114,28 @@ public class CustomHeadTest {
         }
     }
 
-    @EventBusSubscriber(value = Dist.CLIENT, modid = MODID)
-    private static class ClientEvents {
+    @Mod(value = MODID, dist = Dist.CLIENT)
+    public static class ClientEvents {
         static final ModelLayerLocation BLAZE_HEAD_LAYER = new ModelLayerLocation(BLAZE_HEAD.getId(), "main");
+        private static final DeferredClientRegister.BlockEntityRenderers BLOCK_ENTITY_RENDERERS = new DeferredClientRegister.BlockEntityRenderers(MODID);
 
-        @SubscribeEvent
+        public ClientEvents(IEventBus modBus) {
+            BLOCK_ENTITY_RENDERERS.register(modBus);
+            BLOCK_ENTITY_RENDERERS.registerRenderer(CUSTOM_SKULL, SkullBlockRenderer::new);
+
+            modBus.addListener(ClientEvents::registerLayerDefinitions);
+            modBus.addListener(ClientEvents::registerSkullModel);
+            modBus.addListener(ClientEvents::registerSpecialBlockRenderer);
+        }
+
         static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
             event.registerLayerDefinition(BLAZE_HEAD_LAYER, Lazy.of(SkullModel::createMobHeadLayer));
         }
 
-        @SubscribeEvent
-        static void registerLayerDefinitions(EntityRenderersEvent.RegisterRenderers event) {
-            event.registerBlockEntityRenderer(CUSTOM_SKULL.get(), SkullBlockRenderer::new);
-        }
-
-        @SubscribeEvent
         static void registerSkullModel(EntityRenderersEvent.CreateSkullModels event) {
             event.registerSkullModel(SkullType.BLAZE, ClientEvents.BLAZE_HEAD_LAYER, Identifier.withDefaultNamespace("textures/entity/blaze/blaze.png"));
         }
 
-        @SubscribeEvent
         static void registerSpecialBlockRenderer(RegisterBlockModelsEvent event) {
             BuiltInBlockModels.createMobHeads(event.getBuilder(), SkullType.BLAZE, BLAZE_HEAD.get(), BLAZE_HEAD_WALL.get());
         }

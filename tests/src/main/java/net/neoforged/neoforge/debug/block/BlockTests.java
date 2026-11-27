@@ -35,6 +35,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.minecraft.world.entity.ai.village.poi.PoiTypeIds;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -255,7 +256,7 @@ public class BlockTests {
         boolean[] failedEarly = new boolean[1];
         test.eventListeners().mod().addListener((ExtendPoiTypesEvent event) -> {
             try {
-                event.addBlockToPoi(PoiTypes.MEETING, block.value());
+                event.addBlockToPoi(PoiTypeIds.MEETING, block.value());
             } catch (Exception e) {
                 test.updateStatus(Test.Status.failed("PoiType extension failed with exception", e), null);
                 failedEarly[0] = true;
@@ -264,7 +265,7 @@ public class BlockTests {
         test.eventListeners().mod().addListener((FMLLoadCompleteEvent event) -> {
             if (failedEarly[0]) return;
 
-            PoiType poiType = BuiltInRegistries.POINT_OF_INTEREST_TYPE.getValueOrThrow(PoiTypes.MEETING);
+            PoiType poiType = BuiltInRegistries.POINT_OF_INTEREST_TYPE.getValueOrThrow(PoiTypeIds.MEETING);
             ImmutableList<BlockState> states = block.value().getStateDefinition().getPossibleStates();
             if (!poiType.matchingStates().containsAll(states)) {
                 test.fail("Test block's states were not added to PoiType's matchingStates");

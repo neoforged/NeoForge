@@ -25,12 +25,13 @@ import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.gui.map.IMapDecorationRenderer;
-import net.neoforged.neoforge.client.gui.map.RegisterMapDecorationRenderersEvent;
+import net.neoforged.neoforge.client.registries.NeoForgeClientRegistries;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
+import org.jspecify.annotations.Nullable;
 
 @ForEachTest(side = Dist.CLIENT, groups = MapDecorationRenderTests.GROUP)
 public class MapDecorationRenderTests {
@@ -45,9 +46,8 @@ public class MapDecorationRenderTests {
                         false,
                         false));
 
-        test.framework().modEventBus().addListener((RegisterMapDecorationRenderersEvent event) -> {
-            event.register(decorationType.value(), new TestDecorationRenderer(null));
-        });
+        test.registrationHelper().registrar(NeoForgeClientRegistries.Keys.MAP_DECORATION_RENDERER)
+                .register(decorationType.key().identifier().getPath(), () -> new TestDecorationRenderer(null));
 
         test.eventListeners().forge().addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             Player player = event.getEntity();
@@ -74,9 +74,8 @@ public class MapDecorationRenderTests {
                         false,
                         false));
 
-        test.framework().modEventBus().addListener((RegisterMapDecorationRenderersEvent event) -> {
-            event.register(decorationType.value(), new TestDecorationRenderer(key));
-        });
+        test.registrationHelper().registrar(NeoForgeClientRegistries.Keys.MAP_DECORATION_RENDERER)
+                .register(decorationType.key().identifier().getPath(), () -> new TestDecorationRenderer(key));
         test.framework().modEventBus().addListener((RegisterRenderStateModifiersEvent event) -> {
             event.registerMapDecorationModifier(decorationType.key(), (_, _, mapDecorationRenderState) -> {
                 mapDecorationRenderState.setRenderData(key, 0xFFFFAABB);
@@ -99,9 +98,10 @@ public class MapDecorationRenderTests {
     }
 
     private static final class TestDecorationRenderer implements IMapDecorationRenderer {
+        @Nullable
         private final ContextKey<Integer> customColorKey;
 
-        TestDecorationRenderer(ContextKey<Integer> customColorKey) {
+        TestDecorationRenderer(@Nullable ContextKey<Integer> customColorKey) {
             this.customColorKey = customColorKey;
         }
 
@@ -129,7 +129,7 @@ public class MapDecorationRenderTests {
 
             float hue = (System.currentTimeMillis() % 3000L) / 3000F;
             int color = Mth.hsvToArgb(hue, 1F, 1F, 0xFF);
-            if (decoration.getRenderData(customColorKey) != null) {
+            if (customColorKey != null && decoration.getRenderData(customColorKey) != null) {
                 color = decoration.getRenderDataOrThrow(customColorKey);
             }
 

@@ -33,24 +33,29 @@ public class RecipeBookTestComponent extends RecipeBookComponent<RecipeBookTestM
     private static final Identifier OVERLAY_HIGHLIGHTED_ENABLED_SPRITE = Identifier.withDefaultNamespace("recipe_book/crafting_overlay_highlighted");
     private static final Identifier OVERLAY_DISABLED_SPRITE = Identifier.withDefaultNamespace("recipe_book/crafting_overlay_disabled");
     private static final Identifier OVERLAY_HIGHLIGHTED_DISABLED_SPRITE = Identifier.withDefaultNamespace("recipe_book/crafting_overlay_disabled_highlighted");
+    private static final WidgetSprites OVERLAY_SPRITES = new WidgetSprites(
+            OVERLAY_ENABLED_SPRITE,
+            OVERLAY_DISABLED_SPRITE,
+            OVERLAY_HIGHLIGHTED_ENABLED_SPRITE,
+            OVERLAY_HIGHLIGHTED_DISABLED_SPRITE);
     private static final WidgetSprites FILTER_BUTTON_SPRITES = new WidgetSprites(
             Identifier.withDefaultNamespace("recipe_book/filter_enabled"),
             Identifier.withDefaultNamespace("recipe_book/filter_disabled"),
             Identifier.withDefaultNamespace("recipe_book/filter_enabled_highlighted"),
             Identifier.withDefaultNamespace("recipe_book/filter_disabled_highlighted"));
     private static final List<RecipeBookComponent.TabInfo> TABS = List.of(
-            new RecipeBookComponent.TabInfo(new ItemStack(Items.COMPASS), Optional.empty(), RecipeBookExtensionTest.SEARCH_CATEGORY),
+            new RecipeBookComponent.TabInfo(new ItemStack(Items.COMPASS), Optional.empty(), RecipeBookExtensionTest.SEARCH_CATEGORY, Component.literal("Test")),
             new RecipeBookComponent.TabInfo(Items.DIAMOND, RecipeBookExtensionTest.RECIPE_BOOK_TEST_CAT1.get()));
     //OverlayRecipeButton create(OverlayRecipeComponent parent, int x, int y, RecipeDisplayId id, RecipeDisplay recipe, ContextMap context, boolean isCraftable);
-    private static final RecipeOverlayButtonCreator OVERLAY_BUTTON_CREATOR = (parent, x, y, id, recipe, context, isCraftable) -> {
+    private static final RecipeOverlayButtonCreator OVERLAY_BUTTON_CREATOR = (parent, x, y, id, recipe, context, isCraftable, selectTime) -> {
         //Create a custom overlay button that is like vanilla's crafting table one
-        List<OverlayRecipeComponent.OverlayRecipeButton.Pos> result = new ArrayList<>();
+        List<OverlayRecipeComponent.Pos> result = new ArrayList<>();
         switch (recipe) {
             case ShapedCraftingRecipeDisplay shaped -> {
                 PlaceRecipeHelper.placeRecipe(3, 3, shaped.width(), shaped.height(), shaped.ingredients(), (ingredient, _, gridXPos, gridYPos) -> {
                     List<ItemStack> itemsx = ingredient.resolveForStacks(context);
                     if (!itemsx.isEmpty()) {
-                        result.add(OverlayRecipeButton.createGridPos(gridXPos, gridYPos, itemsx));
+                        result.add(OverlayRecipeComponent.createGridPos(gridXPos, gridYPos, itemsx));
                     }
                 });
             }
@@ -59,22 +64,13 @@ public class RecipeBookTestComponent extends RecipeBookComponent<RecipeBookTestM
                 for (int i = 0; i < ingredients.size(); i++) {
                     List<ItemStack> items = ingredients.get(i).resolveForStacks(context);
                     if (!items.isEmpty()) {
-                        result.add(OverlayRecipeButton.createGridPos(i % 3, i / 3, items));
+                        result.add(OverlayRecipeComponent.createGridPos(i % 3, i / 3, items));
                     }
                 }
             }
             default -> {}
         }
-        return parent.new OverlayRecipeButton(x, y, id, isCraftable, result) {
-            @Override
-            protected Identifier getSprite(boolean isCraftable) {
-                if (isCraftable) {
-                    return this.isHoveredOrFocused() ? OVERLAY_HIGHLIGHTED_ENABLED_SPRITE : OVERLAY_ENABLED_SPRITE;
-                } else {
-                    return this.isHoveredOrFocused() ? OVERLAY_HIGHLIGHTED_DISABLED_SPRITE : OVERLAY_DISABLED_SPRITE;
-                }
-            }
-        };
+        return parent.new OverlayRecipeButton(x, y, id, recipe.result().resolveForFirstStack(context), isCraftable, OVERLAY_SPRITES, result, selectTime);
     };
 
     public RecipeBookTestComponent(RecipeBookTestMenu menu) {

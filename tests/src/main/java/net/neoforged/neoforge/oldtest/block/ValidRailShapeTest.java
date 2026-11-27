@@ -12,7 +12,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.sounds.BlockSoundSets;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
@@ -48,7 +48,7 @@ public class ValidRailShapeTest {
         private static final EnumProperty<RailShape> ASCENDING_RAIL_SHAPE = EnumProperty.create("shape", RailShape.class, RailShape::isSlope);
 
         protected RailSlopeBlock(Properties properties) {
-            super(true, properties.noCollision().strength(0.7F).sound(SoundType.METAL));
+            super(true, properties.noCollision().strength(0.7F).sound(BlockSoundSets.METAL));
         }
 
         @Override

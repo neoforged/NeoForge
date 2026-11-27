@@ -7,7 +7,7 @@ package net.neoforged.neoforge.debug.block;
 
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -178,8 +178,8 @@ public class BlockPropertyTests {
         }
 
         @Override
-        public CompoundTag getUpdateTag(HolderLookup.Provider holderLookup) {
-            CompoundTag tag = super.getUpdateTag(holderLookup);
+        public CompoundTag getUpdateTag(HolderGetter.Provider registries) {
+            CompoundTag tag = super.getUpdateTag(registries);
             tag.putBoolean("lit", lit);
             return tag;
         }

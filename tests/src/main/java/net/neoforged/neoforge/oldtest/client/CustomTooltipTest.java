@@ -152,8 +152,8 @@ public class CustomTooltipTest {
         }
 
         @Override
-        public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-            super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+        public void extractRenderState(GuiGraphicsExtractor graphics) {
+            super.extractRenderState(graphics);
             graphics.text(font, "* must have Stack, # must have custom font", 0, 0, 0xFFFFFF);
         }
 
@@ -188,15 +188,15 @@ public class CustomTooltipTest {
             int x = 50;
             int y = 50;
             for (var test : tooltipTests) {
-                addRenderableWidget(new Button.Builder(Component.literal(test.getKey()), button -> {})
+                addRenderableWidget(Button.builder(Component.literal(test.getKey()), button -> {})
                         .bounds(x, y, 100, 20).build(b -> new Button.Plain(b) {
                             @Override
-                            public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-                                super.extractContents(graphics, mouseX, mouseY, partialTick);
+                            public void extractContents(GuiGraphicsExtractor graphics) {
+                                super.extractContents(graphics);
 
                                 boolean showTooltip = this.isHovered || this.isFocused() && Minecraft.getInstance().getLastInputType().isKeyboard();
                                 if (showTooltip)
-                                    test.getValue().render(graphics, mouseX, mouseY);
+                                    test.getValue().render(graphics, graphics.mouseX(), graphics.mouseY());
                             }
                         }));
                 y += 22;

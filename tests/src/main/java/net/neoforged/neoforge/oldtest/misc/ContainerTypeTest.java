@@ -22,9 +22,10 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.registries.DeferredClientRegister;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -46,7 +47,7 @@ public class ContainerTypeTest {
             super(TYPE.get(), windowId);
             this.text = text;
             for (int i = 0; i < 9; i++) {
-                this.addSlot(new Slot(inv, i, (i % 3) * 18, (i / 3) * 18));
+                this.addSlot(new Slot(inv, i, (i % 3) * 18, (i / 3) * 18, Slot.Section.CONTAINER));
             }
         }
 
@@ -61,29 +62,24 @@ public class ContainerTypeTest {
         }
     }
 
-    public class TestGui extends AbstractContainerScreen<TestContainer> {
+    public static class TestGui extends AbstractContainerScreen<TestContainer> {
         public TestGui(TestContainer container, Inventory inv, Component name) {
             super(container, inv, name);
         }
 
         @Override
-        public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-            graphics.text(this.font, getMenu().text, mouseX, mouseY, -1);
+        public void extractBackground(GuiGraphicsExtractor graphics) {
+            graphics.text(this.font, getMenu().text, graphics.mouseX(), graphics.mouseY(), -1);
         }
     }
 
     public ContainerTypeTest(IEventBus modEventBus) {
         modEventBus.addListener(this::registerContainers);
-        modEventBus.addListener(this::registerMenuScreens);
         NeoForge.EVENT_BUS.addListener(this::onRightClick);
     }
 
     private void registerContainers(final RegisterEvent event) {
         event.register(Registries.MENU, helper -> helper.register(Identifier.fromNamespaceAndPath("containertypetest", "container"), IMenuTypeExtension.create(TestContainer::new)));
-    }
-
-    private void registerMenuScreens(RegisterMenuScreensEvent event) {
-        event.register(TYPE.get(), TestGui::new);
     }
 
     private void onRightClick(PlayerInteractEvent.RightClickBlock event) {
@@ -108,6 +104,16 @@ public class ContainerTypeTest {
                     extraData.writeUtf(text);
                 });
             }
+        }
+    }
+
+    @Mod(value = "containertypetest", dist = Dist.CLIENT)
+    public static final class Client {
+        private static final DeferredClientRegister.MenuScreen MENU_SCREENS = new DeferredClientRegister.MenuScreen("containertypetest");
+
+        public Client(IEventBus modBus) {
+            MENU_SCREENS.register(modBus);
+            MENU_SCREENS.registerScreen(TYPE, TestGui::new);
         }
     }
 }

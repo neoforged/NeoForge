@@ -42,7 +42,7 @@ public class RichTranslationsTest {
             MutableBoolean foundRed = new MutableBoolean();
             MutableBoolean foundBlue = new MutableBoolean();
 
-            fancy.visit((style, content) -> {
+            fancy.visitUnbounded((style, content) -> {
                 if (TextColor.fromLegacyFormat(ChatFormatting.RED).equals(style.getColor()) && content.equals("Ooo, colors!"))
                     foundRed.setTrue();
 

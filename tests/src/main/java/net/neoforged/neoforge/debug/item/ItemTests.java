@@ -22,8 +22,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.dispenser.BlockSource;
-import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.core.dispenser.DispenseBehaviorIds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
@@ -41,7 +40,6 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.animal.pig.Pig;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.DispensibleContainerItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -60,7 +58,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.testframework.DynamicTest;
@@ -137,26 +134,8 @@ public class ItemTests {
                 EntityTypes.COW,
                 Fluids.WATER,
                 SoundEvents.BUCKET_EMPTY_FISH,
-                props.stacksTo(1)))
+                props.stacksTo(1).dispensed(DispenseBehaviorIds.FILLED_BUCKET)))
                 .withLang("Cow bucket");
-        test.framework().modEventBus().addListener((final FMLCommonSetupEvent event) -> {
-            DispenserBlock.registerBehavior(cowBucket, new DefaultDispenseItemBehavior() {
-                private final DefaultDispenseItemBehavior defaultDispenseItemBehavior = new DefaultDispenseItemBehavior();
-
-                @Override
-                public ItemStack execute(BlockSource p_302435_, ItemStack p_123562_) {
-                    DispensibleContainerItem dispensiblecontaineritem = (DispensibleContainerItem) p_123562_.getItem();
-                    BlockPos blockpos = p_302435_.pos().relative(p_302435_.state().getValue(DispenserBlock.FACING));
-                    Level level = p_302435_.level();
-                    if (dispensiblecontaineritem.emptyContents(null, level, blockpos, null, p_123562_)) {
-                        dispensiblecontaineritem.checkExtraContent(null, level, p_123562_, blockpos);
-                        return new ItemStack(Items.BUCKET);
-                    } else {
-                        return this.defaultDispenseItemBehavior.dispense(p_302435_, p_123562_);
-                    }
-                }
-            });
-        });
 
         test.registerGameTestTemplate(StructureTemplateBuilder.withSize(3, 4, 3)
                 .placeWaterConfinement(1, 1, 1, Blocks.IRON_BLOCK.defaultBlockState(), true)
@@ -184,7 +163,7 @@ public class ItemTests {
                 .withRenderer(() -> PigRenderer::new)
                 .withLang("Test Pig spawn egg");
 
-        final var egg = reg.items().registerItem("test_spawn_egg", props -> new SpawnEggItem(props.spawnEgg(testEntity.get())) {
+        final var egg = reg.items().registerItem("test_spawn_egg", props -> new SpawnEggItem(props.spawns(testEntity.get()).dispensed(DispenseBehaviorIds.SPAWN_EGG)) {
             @Override
             public InteractionResult useOn(UseOnContext ctx) {
                 final var result = super.useOn(ctx);

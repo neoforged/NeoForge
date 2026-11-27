@@ -21,7 +21,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ScaffoldingBlock;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.sounds.BlockSoundSets;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.MapColor;
@@ -43,7 +43,7 @@ public class ScaffoldingTest {
     static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     static final TagKey<Block> SCAFFOLDING = BlockTags.create(Identifier.fromNamespaceAndPath("neoforge", "scaffolding"));
 
-    static final DeferredBlock<Block> SCAFFOLDING_METHOD_TEST = BLOCKS.registerBlock("scaffolding_method_test", ScaffoldingTest.ScaffoldingMethodTestBlock::new, props -> props.mapColor(MapColor.SAND).noCollision().sound(SoundType.SCAFFOLDING).dynamicShape());
+    static final DeferredBlock<Block> SCAFFOLDING_METHOD_TEST = BLOCKS.registerBlock("scaffolding_method_test", ScaffoldingTest.ScaffoldingMethodTestBlock::new, props -> props.mapColor(MapColor.SAND).noCollision().sound(BlockSoundSets.SCAFFOLDING).dynamicShape());
     static final DeferredItem<BlockItem> SCAFFOLDING_METHOD_TEST_ITEM = ITEMS.registerSimpleBlockItem(SCAFFOLDING_METHOD_TEST);
 
     public ScaffoldingTest(IEventBus modBus) {

@@ -28,7 +28,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
@@ -268,13 +267,13 @@ public class FluidTests {
         }
 
         @Override
-        public boolean canPlaceLiquid(@Nullable LivingEntity user, BlockGetter level, BlockPos pos, BlockState state, Fluid fluid) {
-            return !state.getValue(LAVA_LOGGED) && fluid == Fluids.LAVA;
+        public boolean canPlaceLiquid(@Nullable LivingEntity user, BlockGetter level, BlockPos pos, BlockState state, FluidState fluid) {
+            return !state.getValue(LAVA_LOGGED) && fluid.is(Fluids.LAVA);
         }
 
         @Override
         public boolean placeLiquid(LevelAccessor level, BlockPos pos, BlockState state, FluidState fluidState) {
-            if (!canPlaceLiquid(null, level, pos, state, fluidState.getType())) {
+            if (!canPlaceLiquid(null, level, pos, state, fluidState)) {
                 return false;
             }
             return level.setBlock(pos, state.setValue(LAVA_LOGGED, true), Block.UPDATE_ALL);

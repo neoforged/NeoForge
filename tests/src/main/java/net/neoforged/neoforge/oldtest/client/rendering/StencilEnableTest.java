@@ -8,18 +8,15 @@ package net.neoforged.neoforge.oldtest.client.rendering;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.renderpearl.api.pipeline.CompareOp;
 import com.mojang.renderpearl.api.pipeline.DepthStencilState;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.StencilTest;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ConfigureMainRenderTargetEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
-import net.neoforged.neoforge.client.stencil.StencilOperation;
-import net.neoforged.neoforge.client.stencil.StencilPerFaceTest;
-import net.neoforged.neoforge.client.stencil.StencilTest;
 
 /**
  * Basic test that uses the stencil buffer.
@@ -43,30 +40,16 @@ public class StencilEnableTest {
 
     private static final State ENABLED = State.ENABLE_REGISTRATION;
 
-    private static final RenderPipeline GUI_TEXTURED_STENCIL_FILL = RenderPipelines.GUI_TEXTURED.toBuilder()
+    private static final StencilTest.PerFace TEST_FILL = new StencilTest.PerFace(StencilTest.Op.KEEP, StencilTest.Op.KEEP, StencilTest.Op.REPLACE, CompareOp.ALWAYS_PASS, (byte) 0xFF, (byte) 0xFF, (byte) 1);
+    private static final StencilTest.PerFace TEST_APPLY = new StencilTest.PerFace(StencilTest.Op.KEEP, StencilTest.Op.KEEP, StencilTest.Op.KEEP, CompareOp.NOT_EQUAL, (byte) 0xFF, (byte) 0, (byte) 1);
+    private static final GuiPipeline GUI_TEXTURED_STENCIL_FILL = GuiPipeline.of(() -> GuiPipeline.TEXTURED.pipeline().toBuilder()
             .withLocation(Identifier.fromNamespaceAndPath(MOD_ID, "pipeline/gui_textured_stencil_fill"))
-            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, 0F, 0F, new StencilTest(
-                    new StencilPerFaceTest(
-                            StencilOperation.KEEP,
-                            StencilOperation.KEEP,
-                            StencilOperation.REPLACE,
-                            CompareOp.ALWAYS_PASS),
-                    0xFF,
-                    0xFF,
-                    1)))
-            .build();
-    private static final RenderPipeline GUI_STENCIL_APPLY = RenderPipelines.GUI.toBuilder()
+            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, 0F, 0F, new StencilTest(TEST_FILL, TEST_FILL)))
+            .build());
+    private static final GuiPipeline GUI_STENCIL_APPLY = GuiPipeline.of(() -> GuiPipeline.DEFAULT.pipeline().toBuilder()
             .withLocation(Identifier.fromNamespaceAndPath(MOD_ID, "pipeline/gui_textured_stencil_apply"))
-            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, 0F, 0F, new StencilTest(
-                    new StencilPerFaceTest(
-                            StencilOperation.KEEP,
-                            StencilOperation.KEEP,
-                            StencilOperation.KEEP,
-                            CompareOp.NOT_EQUAL),
-                    0xFF,
-                    0,
-                    1)))
-            .build();
+            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, 0F, 0F, new StencilTest(TEST_APPLY, TEST_APPLY)))
+            .build());
     private static final Identifier MASK_TEXTURE = Identifier.withDefaultNamespace("textures/gui/sprites/icon/new_realm.png");
 
     public StencilEnableTest(IEventBus modEventBus) {
@@ -82,8 +65,8 @@ public class StencilEnableTest {
             }
             event.registerAboveAll(
                     Identifier.fromNamespaceAndPath(MOD_ID, "stenciled_ui_element"),
-                    (guiGraphics, _) -> {
-                        RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(Minecraft.getInstance().gameRenderer.mainRenderTarget().getDepthTexture(), 0);
+                    guiGraphics -> {
+                        RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(Minecraft.getInstance().gameRenderer.mainRenderTarget().getDepthTexture(), (byte) 0);
 
                         int maxX = guiGraphics.guiWidth();
                         guiGraphics.blit(GUI_TEXTURED_STENCIL_FILL, MASK_TEXTURE, maxX - 100, 10, 0, 0, 40, 20, 40, 20, 0x01FFFFFF);

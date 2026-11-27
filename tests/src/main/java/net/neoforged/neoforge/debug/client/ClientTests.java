@@ -11,11 +11,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import javax.sound.sampled.AudioFormat;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
@@ -166,18 +165,18 @@ public class ClientTests {
         test.framework().modEventBus().addListener((final RegisterClientExtensionsEvent event) -> {
             event.registerItem(new IClientItemExtensions() {
                 @Override
-                public void renderFirstPersonOverlay(ItemStack stack, EquipmentSlot equipmentSlot, Player player, GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker) {
-                    guiGraphics.blit(
-                            RenderPipelines.GUI_TEXTURED,
+                public void renderFirstPersonOverlay(ItemStack stack, EquipmentSlot equipmentSlot, Player player, GuiGraphicsExtractor graphics) {
+                    graphics.blit(
+                            GuiPipeline.TEXTURED,
                             Identifier.withDefaultNamespace("textures/block/stone.png"),
                             0,
                             0,
                             0,
                             0,
-                            guiGraphics.guiWidth(),
-                            guiGraphics.guiHeight(),
-                            guiGraphics.guiWidth(),
-                            guiGraphics.guiHeight(),
+                            graphics.guiWidth(),
+                            graphics.guiHeight(),
+                            graphics.guiWidth(),
+                            graphics.guiHeight(),
                             -1);
                 }
             }, item);
