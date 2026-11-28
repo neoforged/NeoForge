@@ -25,7 +25,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -155,9 +154,7 @@ public class CustomItemDisplayContextTest {
     }
 
     public void gatherData(GatherDataEvent.Client event) {
-        DataGenerator gen = event.getGenerator();
-        final PackOutput output = gen.getPackOutput();
-        gen.addProvider(true, new ModelGen(output));
+        event.addProvider(ModelGen::new);
     }
 
     private static final class ModelGen extends ModelProvider {

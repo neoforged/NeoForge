@@ -42,7 +42,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.data.metadata.PackMetadataGenerator;
@@ -129,10 +128,7 @@ public class DataGeneratorTest {
                 .registerTypeAdapter(ItemTransform.class, new ItemTransform.Deserializer())
                 .create();
 
-        DataGenerator gen = event.getGenerator();
-        PackOutput packOutput = gen.getPackOutput();
-
-        gen.addProvider(true, new PackMetadataGenerator(packOutput)
+        event.addProvider(output -> new PackMetadataGenerator(output)
                 .add(GeneratingOverlayMetadataSection.neoforgeType(PackType.SERVER_DATA), new GeneratingOverlayMetadataSection(List.of(
                         new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(PackFormat.of(15), PackFormat.of(Integer.MAX_VALUE)), "neoforge_overlays_test")))))
                 .add(GeneratingOverlayMetadataSection.type(PackType.SERVER_DATA), new GeneratingOverlayMetadataSection(List.of(
@@ -143,19 +139,14 @@ public class DataGeneratorTest {
                         Component.literal("NeoForge tests resource pack"),
                         new InclusiveRange<>(PackFormat.of(15), PackFormat.of(Integer.MAX_VALUE, Integer.MAX_VALUE)))));
 
-        gen.addProvider(true, new Lang(packOutput));
-        gen.addProvider(true, new SoundDefinitions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
-        gen.addProvider(true, new ParticleDescriptions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
+        event.addProvider(Lang::new);
+        event.addProvider(output -> new SoundDefinitions(output, event.getResourceManager(PackType.CLIENT_RESOURCES)));
+        event.addProvider(output -> new ParticleDescriptions(output, event.getResourceManager(PackType.CLIENT_RESOURCES)));
 
-        gen.addProvider(true, new Tags(packOutput, event.getReloadableLookupProvider()));
+        event.addProvider(Tags::new);
 
-        // Without giving `PackGenerator` a prefix, doing the following
-        // would crash data gen with `duplicate provider`
-        event.getPackGenerator(gen.getPackOutput("pack-a"))
-                .createProvider(output -> PackMetadataGenerator.forFeaturePack(output, Component.literal("MultiPack Test - Pack A")));
-
-        event.getPackGenerator(gen.getPackOutput("pack-b"))
-                .createProvider(output -> PackMetadataGenerator.forFeaturePack(output, Component.literal("MultiPack Test - Pack B")));
+        event.subpack("pack-a").addProvider(output -> PackMetadataGenerator.forFeaturePack(output, Component.literal("MultiPack Test - Pack A")));
+        event.subpack("pack-b").addProvider(output -> PackMetadataGenerator.forFeaturePack(output, Component.literal("MultiPack Test - Pack B")));
     }
 
     public static void levelStem(BootstrapContext<LevelStem> context) {

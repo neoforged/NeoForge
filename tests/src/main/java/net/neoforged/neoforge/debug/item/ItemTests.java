@@ -184,7 +184,7 @@ public class ItemTests {
         })
                 .tab(CreativeModeTabs.SPAWN_EGGS);
 
-        reg.addClientProvider(event -> event.addProvider(new ModelProvider(event.getGenerator().getPackOutput(), reg.modId()) {
+        reg.addClientProvider(output -> new ModelProvider(output, reg.modId()) {
             @Override
             protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
                 itemModels.generateFlatItem(egg.value(), ModelTemplates.FLAT_ITEM);
@@ -204,7 +204,7 @@ public class ItemTests {
             public String getName() {
                 return "forge_spawn_egg_test_model_generator";
             }
-        }));
+        });
 
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.IRON_BLOCK))

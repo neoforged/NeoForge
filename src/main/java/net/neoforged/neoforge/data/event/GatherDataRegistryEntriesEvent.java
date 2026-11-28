@@ -15,8 +15,9 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.IModBusEvent;
 import org.jetbrains.annotations.ApiStatus;
 
-/// Gathers the datapack registry entries used for data generation. This is fired for all mods to collect all registry
-/// objects, but only those added via '--mod' in the run arguments will have their contents generated.
+/// Gathers the datapack registry entries used for data generation into a shared global registry set. This is fired
+/// for all mods to collect all registry objects, but only those added via '--mod' in the run arguments will have
+/// their contents generated.
 ///
 /// Usage:
 /// <!-- @formatter:off because of https://github.com/eclipse-jdt/eclipse.jdt.core/issues/5474 -->

@@ -6,8 +6,8 @@
      }
 +
 +    @Override
-+    protected java.util.stream.Stream<net.minecraft.world.entity.EntityType<?>> getKnownEntityTypes() {
++    protected java.util.stream.Stream<net.minecraft.core.Holder.Reference<net.minecraft.world.entity.EntityType<?>>> getKnownEntityTypes() {
 +        // Neo: only generate for vanilla entities
-+        return super.getKnownEntityTypes().filter(type -> type.builtInRegistryHolder().key().identifier().getNamespace().equals("minecraft"));
++        return super.getKnownEntityTypes().filter(type -> type.key().identifier().getNamespace().equals("minecraft"));
 +    }
  }

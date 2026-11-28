@@ -62,7 +62,7 @@ public class ClientFluidTests {
                 .withLang("Water Glass")
                 .withBlockItem();
 
-        reg.addClientProvider(event -> event.addProvider(new ModelProvider(event.getGenerator().getPackOutput(), reg.modId()) {
+        reg.addClientProvider(output -> new ModelProvider(output, reg.modId()) {
             @Override
             protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
                 blockModels.createTrivialBlock(glass.value(), TexturedModel.CUBE
@@ -86,7 +86,7 @@ public class ClientFluidTests {
             public String getName() {
                 return "test_water_glass_face_removal_model_generator";
             }
-        }));
+        });
 
         final var waterPosition = new BlockPos(1, 1, 2);
         final var glassDirection = WaterGlassBlock.HIDE_DIRECTION.getOpposite();

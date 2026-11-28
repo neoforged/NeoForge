@@ -91,12 +91,12 @@ public class DamageTypeTests {
         reg.registriesForTest(registries -> registries.add(Registries.DAMAGE_TYPE, bootstrap -> {
             bootstrap.register(TEST_DMG_TYPE, new DamageType("test_mod", scaling, 0.0f, effects, msgType));
         }));
-        reg.addClientProvider(event -> event.addProvider(new TagsProvider<>(event.getGenerator().getPackOutput(), Registries.DAMAGE_TYPE, event.getWorldLookupProvider(), reg.modId()) {
+        reg.addClientProvider((output, registries) -> new TagsProvider<>(output, Registries.DAMAGE_TYPE, registries, reg.modId()) {
             @Override
             protected void addTags(Provider registries) {
                 tag(DamageTypeTags.BYPASSES_COOLDOWN).add(TEST_DMG_TYPE);
             }
-        }));
+        });
 
         test.onGameTest(helper -> {
             Skeleton target = helper.spawnWithNoFreeWill(EntityTypes.SKELETON, 1, 1, 1);

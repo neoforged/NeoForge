@@ -17,11 +17,9 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.data.CachedOutput;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryOps;
@@ -85,9 +83,7 @@ public class DataPackRegistriesTest {
         // Example of how to datagen datapack registry objects.
         // Objects to be datagenerated must be registered (e.g. via DeferredRegister above).
         // This outputs to data/data_pack_registries_test/data_pack_registries_test/unsyncable/datagen_test.json
-        final DataGenerator generator = event.getGenerator();
-        final Path outputFolder = generator.getPackOutput().getOutputFolder();
-        final CompletableFuture<HolderLookup.Provider> providerCompletableFuture = event.getReloadableLookupProvider();
+        final Path outputFolder = event.getGenerator().getOutputFolder();
         final Gson gson = new GsonBuilder().setPrettyPrinting().create();
         final Identifier registryId = Unsyncable.REGISTRY_KEY.identifier();
         final Identifier id = this.datagenTestObject.getId();
@@ -95,10 +91,10 @@ public class DataPackRegistriesTest {
         final String pathString = String.join("/", PackType.SERVER_DATA.getDirectory(), id.getNamespace(), registryId.getNamespace(), registryId.getPath(), id.getPath() + ".json");
         final Path path = outputFolder.resolve(pathString);
 
-        generator.addProvider(true, new DataProvider() {
+        event.addProvider((_, registries) -> new DataProvider() {
             @Override
             public CompletableFuture<?> run(final CachedOutput cache) {
-                return providerCompletableFuture.thenCompose(provider -> {
+                return registries.thenCompose(provider -> {
                     final RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, provider);
 
                     Unsyncable.DIRECT_CODEC.encodeStart(ops, element)

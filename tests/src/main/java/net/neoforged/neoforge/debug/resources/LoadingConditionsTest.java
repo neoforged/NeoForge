@@ -165,8 +165,8 @@ public final class LoadingConditionsTest {
         TagKey<LootTable> emptyLootTableTag = TagKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(modId, "empty"));
         TagKey<LootTable> nonEmptyLootTableTag = TagKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(modId, "not_empty"));
 
-        test.registrationHelper().addClientProvider(event -> {
-            return new TagsProvider<>(event.getGenerator().getPackOutput(), Registries.LOOT_TABLE, event.getReloadableLookupProvider(), modId) {
+        test.registrationHelper().addClientProvider((output, registries) -> {
+            return new TagsProvider<>(output, Registries.LOOT_TABLE, registries, modId) {
                 @Override
                 protected void addTags(HolderLookup.Provider registries) {
                     tag(emptyLootTableTag);
@@ -174,7 +174,7 @@ public final class LoadingConditionsTest {
                 }
             };
         });
-        test.registrationHelper().addClientProvider(event -> new JsonCodecProvider<>(event.getGenerator().getPackOutput(), PackOutput.Target.DATA_PACK, directory, codec, event.getReloadableLookupProvider(), modId) {
+        test.registrationHelper().addClientProvider((output, registries) -> new JsonCodecProvider<>(output, PackOutput.Target.DATA_PACK, directory, codec, registries, modId) {
             @Override
             protected void gather() {
                 add(absentStaticObject, NeoForgeConditions.not(NeoForgeConditions.itemRegistered("nope:no_such_item")));

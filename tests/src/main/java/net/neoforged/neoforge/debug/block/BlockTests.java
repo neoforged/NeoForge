@@ -116,7 +116,7 @@ public class BlockTests {
                 .withLang("Woodless Fence Gate")
                 .withBlockItem();
 
-        reg.addClientProvider(event -> event.addProvider(new ModelProvider(event.getGenerator().getPackOutput(), reg.modId()) {
+        reg.addClientProvider(output -> new ModelProvider(output, reg.modId()) {
             @Override
             protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
                 var family = new BlockFamily.Builder(Blocks.IRON_BLOCK).fenceGate(gate.value()).getFamily();
@@ -137,7 +137,7 @@ public class BlockTests {
             public String getName() {
                 return "test_woodless_fence_gate_model_generator";
             }
-        }));
+        });
 
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
                 .thenExecute(() -> helper.setBlock(1, 1, 1, gate.get().defaultBlockState().setValue(FenceGateBlock.OPEN, true)))
@@ -356,7 +356,7 @@ public class BlockTests {
                 return side.getAxis() == Direction.Axis.X ? TriState.FALSE : TriState.DEFAULT;
             }
         }, () -> BlockBehaviour.Properties.ofFullCopy(Blocks.COBBLESTONE_WALL));
-        reg.addClientProvider(event -> new BlockTagsProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider(), reg.modId()) {
+        reg.addClientProvider((output, registries) -> new BlockTagsProvider(output, registries, reg.modId()) {
             @Override
             protected void addTags(HolderLookup.Provider registries) {
                 tag(BlockTags.WALLS).add(wallBlock.key());

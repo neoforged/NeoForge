@@ -82,7 +82,7 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
             return this;
         }
 
-        helper.addClientProvider(event -> event.addProvider(new ModelProvider(event.getGenerator().getPackOutput(), helper.modId()) {
+        helper.addClientProvider(output -> new ModelProvider(output, helper.modId()) {
             @Override
             protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
                 ModelTemplate template;
@@ -121,7 +121,7 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
             public String getName() {
                 return key().identifier().toDebugFileName() + "-default-white-model-generator";
             }
-        }));
+        });
         return this;
     }
 

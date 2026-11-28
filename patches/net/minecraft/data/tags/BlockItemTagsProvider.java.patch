@@ -1,0 +1,76 @@
+--- a/net/minecraft/data/tags/BlockItemTagsProvider.java
++++ b/net/minecraft/data/tags/BlockItemTagsProvider.java
+@@ -37,6 +_,36 @@
+                 appender.addTag(id.block());
+                 return this;
+             }
++
++            @Override
++            public CombinedAppender addAllOptional(Stream<BlockItemId> ids) {
++                ids.forEach(id -> appender.addOptional(id.block()));
++                return this;
++            }
++
++            @Override
++            public CombinedAppender addOptionalTag(BlockItemTagId id) {
++                appender.addOptionalTag(id.block());
++                return this;
++            }
++
++            @Override
++            public CombinedAppender replace(boolean value) {
++                appender.replace(value);
++                return this;
++            }
++
++            @Override
++            public CombinedAppender removeAll(Stream<BlockItemId> ids) {
++                ids.forEach(id -> appender.remove(id.block()));
++                return this;
++            }
++
++            @Override
++            public CombinedAppender removeTag(BlockItemTagId id) {
++                appender.remove(id.block());
++                return this;
++            }
+         };
+     }
+ 
+@@ -51,6 +_,36 @@
+             @Override
+             public BlockItemTagsProvider.CombinedAppender addTag(BlockItemTagId id) {
+                 appender.addTag(id.item());
++                return this;
++            }
++
++            @Override
++            public CombinedAppender addAllOptional(Stream<BlockItemId> ids) {
++                ids.forEach(id -> appender.addOptional(id.item()));
++                return this;
++            }
++
++            @Override
++            public CombinedAppender addOptionalTag(BlockItemTagId id) {
++                appender.addOptionalTag(id.item());
++                return this;
++            }
++
++            @Override
++            public CombinedAppender replace(boolean value) {
++                appender.replace(value);
++                return this;
++            }
++
++            @Override
++            public CombinedAppender removeAll(Stream<BlockItemId> ids) {
++                ids.forEach(id -> appender.remove(id.item()));
++                return this;
++            }
++
++            @Override
++            public CombinedAppender removeTag(BlockItemTagId id) {
++                appender.remove(id.item());
+                 return this;
+             }
+         };

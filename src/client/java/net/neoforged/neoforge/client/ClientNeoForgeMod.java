@@ -227,26 +227,27 @@ public class ClientNeoForgeMod {
         // We perform client and server datagen in a single clientData run to avoid
         // having to juggle two generated resources folders and two runs for no additional benefit.
 
-        event.createProvider(output -> new PackMetadataGenerator(output)
+        event.addProvider(output -> new PackMetadataGenerator(output)
                 .add(PackMetadataSection.SERVER_TYPE, new PackMetadataSection(
                         Component.translatable("pack.neoforge.description"),
                         new InclusiveRange<>(DetectedVersion.BUILT_IN.packVersion(PackType.SERVER_DATA)))));
 
-        event.createBlockAndItemTags(NeoForgeBlockTagsProvider::new, NeoForgeItemTagsProvider::new);
-        event.createProvider(NeoForgeEntityTypeTagsProvider::new);
-        event.createProvider(NeoForgeFluidTagsProvider::new);
-        event.createProvider(NeoForgeEnchantmentTagsProvider::new);
-        event.createProvider(NeoForgePotionTagsProvider::new);
-        event.createProvider(NeoForgeBiomeTagsProvider::new);
-        event.createProvider(NeoForgeStructureTagsProvider::new);
-        event.createProvider(NeoForgeDamageTypeTagsProvider::new);
-        event.createProvider(NeoForgeRegistryOrderReportProvider::new);
-        event.createProvider(NeoForgeDataMapsProvider::new);
+        event.addProvider(NeoForgeBlockTagsProvider::new);
+        event.addProvider(NeoForgeItemTagsProvider::new);
+        event.addProvider(NeoForgeEntityTypeTagsProvider::new);
+        event.addProvider(NeoForgeFluidTagsProvider::new);
+        event.addProvider(NeoForgeEnchantmentTagsProvider::new);
+        event.addProvider(NeoForgePotionTagsProvider::new);
+        event.addProvider(NeoForgeBiomeTagsProvider::new);
+        event.addProvider(NeoForgeStructureTagsProvider::new);
+        event.addProvider(NeoForgeDamageTypeTagsProvider::new);
+        event.addProvider(NeoForgeRegistryOrderReportProvider::new);
+        event.addProvider(NeoForgeDataMapsProvider::new);
 
-        event.createProvider(NeoForgeSpriteSourceProvider::new);
-        event.createProvider(VanillaModelProvider::new);
-        event.createProvider(VanillaSoundDefinitionsProvider::new);
-        event.createProvider(NeoForgeLanguageProvider::new);
+        event.addProvider(NeoForgeSpriteSourceProvider::new);
+        event.addProvider(VanillaModelProvider::new);
+        event.addProvider(VanillaSoundDefinitionsProvider::new);
+        event.addProvider(NeoForgeLanguageProvider::new);
     }
 
     @SubscribeEvent

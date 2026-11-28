@@ -40,7 +40,7 @@ public interface WorldClockTests {
         }));
 
         // register tag generator to tag our new world clock as 'ignores_pausing'
-        reg.addClientProvider(event -> new TagsProvider<>(event.getGenerator().getPackOutput(), Registries.WORLD_CLOCK, event.getWorldLookupProvider(), modId) {
+        reg.addClientProvider((output, registries) -> new TagsProvider<>(output, Registries.WORLD_CLOCK, registries, modId) {
             @Override
             protected void addTags(HolderLookup.Provider registries) {
                 tag(Tags.WorldClocks.IGNORES_PAUSE_COMMAND).add(ignoresPause);

@@ -102,7 +102,7 @@ public final class DataGeneratorConfig {
     }
 
     public void runAll() {
-        Map<Path, List<DataGenerator>> paths = this.generators.stream().collect(Collectors.groupingBy(gen -> gen.getPackOutput().getOutputFolder(), LinkedHashMap::new, Collectors.toList()));
+        Map<Path, List<DataGenerator>> paths = this.generators.stream().collect(Collectors.groupingBy(DataGenerator::getOutputFolder, LinkedHashMap::new, Collectors.toList()));
 
         paths.values().forEach(lst -> {
             DataGenerator parent = lst.getFirst();

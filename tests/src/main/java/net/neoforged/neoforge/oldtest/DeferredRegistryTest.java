@@ -16,7 +16,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
@@ -71,8 +70,8 @@ public class DeferredRegistryTest {
 
 //    private static final TagKey<Custom> CUSTOM_TAG_KEY = CUSTOMS.createOptionalTagKey("test_tag", Set.of(CUSTOM));
     private static final Registry<Custom> CUSTOM_REG = new RegistryBuilder<>(CUSTOM_REGISTRY_KEY)
-        .onAdd((owner, id, key, obj) -> LOGGER.info("Custom Added: {} {}", id, obj.foo()))
-        .create();
+            .onAdd((owner, id, key, obj) -> LOGGER.info("Custom Added: {} {}", id, obj.foo()))
+            .create();
 
     public DeferredRegistryTest(IEventBus modBus) {
         BLOCKS.register(modBus);
@@ -111,9 +110,7 @@ public class DeferredRegistryTest {
     }
 
     public void gatherData(GatherDataEvent.Client event) {
-        DataGenerator gen = event.getGenerator();
-
-        gen.addProvider(true, new ModelProvider(gen.getPackOutput(), MODID) {
+        event.addProvider(output -> new ModelProvider(output, MODID) {
             @Override
             protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
                 blockModels.createTrivialBlock(BLOCK.value(), TexturedModel.CUBE.updateTexture(textures -> textures.put(TextureSlot.ALL, TextureMapping.getBlockTexture(Blocks.FURNACE, "_top"))));

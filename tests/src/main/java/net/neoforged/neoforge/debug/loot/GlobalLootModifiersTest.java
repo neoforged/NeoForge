@@ -252,8 +252,8 @@ public class GlobalLootModifiersTest {
                 .register(SMELT, new Enchantment.Builder(Enchantment.definition(boot.lookup(Registries.ITEM).getOrThrow(ItemTags.MINING_ENCHANTABLE), 10, 1, Enchantment.dynamicCost(1, 10), Enchantment.dynamicCost(5, 10), 1, EquipmentSlotGroup.HAND))
                         .build(SMELT.identifier()))));
 
-        var subpack = HELPER.registerSubpack("smelt_glms");
-        HELPER.addClientProvider(event -> new GlobalLootModifierProvider(event.getGenerator().getPackOutput(subpack), event.getReloadableLookupProvider(), HELPER.modId()) {
+        var subpackName = HELPER.registerSubpack("smelt_glms");
+        HELPER.clientSubpack(subpackName, subpack -> subpack.addProvider((output, registries) -> new GlobalLootModifierProvider(output, registries, HELPER.modId()) {
             @Override
             protected void start() {
                 add("smelting", new SmeltingEnchantmentModifier(
@@ -270,7 +270,7 @@ public class GlobalLootModifiersTest {
             public String getName() {
                 return super.getName() + " - smelting modifier";
             }
-        });
+        }));
 
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL).preventItemPickup())
                 .thenExecute(player -> player.setItemInHand(InteractionHand.MAIN_HAND, Items.DIAMOND_PICKAXE.getDefaultInstance()))
@@ -299,8 +299,8 @@ public class GlobalLootModifiersTest {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if a GLM replacing loot table values works, by replacing seeds with wheat when harvesting wheat")
     static void wheatSeedReplacerTest(final DynamicTest test) {
-        var subpack = HELPER.registerSubpack("wheat_seed_glms");
-        HELPER.addClientProvider(event -> new GlobalLootModifierProvider(event.getGenerator().getPackOutput(subpack), event.getReloadableLookupProvider(), HELPER.modId()) {
+        var subpackName = HELPER.registerSubpack("wheat_seed_glms");
+        HELPER.clientSubpack(subpackName, subpack -> subpack.addProvider((output, registries) -> new GlobalLootModifierProvider(output, registries, HELPER.modId()) {
             @Override
             protected void start() {
                 HolderLookup.RegistryLookup<Block> blocks = registries.lookupOrThrow(Registries.BLOCK);
@@ -327,7 +327,7 @@ public class GlobalLootModifiersTest {
             public String getName() {
                 return super.getName() + " - wheat seed replacer";
             }
-        });
+        }));
 
         test.onGameTest(helper -> {
             LootModifierManager lootModManager = helper.getLevel()

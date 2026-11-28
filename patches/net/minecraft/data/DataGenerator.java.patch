@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/DataGenerator.java
 +++ b/net/minecraft/data/DataGenerator.java
-@@ -34,6 +_,67 @@
+@@ -36,6 +_,51 @@
          return new DataGenerator.PackGenerator(toRun, packId, new PackOutput(packOutputDir));
      }
  
@@ -10,24 +10,14 @@
 +        return new PackGenerator(run, namespace + '_' + packId, new PackOutput(packPath));
 +    }
 +
-+    /// Neo: {@return an unmodifiable view of the data providers to be run}
-+    public Map<String, DataProvider> getProvidersView() {
-+        return java.util.Collections.unmodifiableMap(this.providersToRun);
-+    }
-+
-+    /// Neo: {@return the default pack output}
-+    public PackOutput getPackOutput() {
-+        return this.vanillaPackOutput;
-+    }
-+
-+    /// Neo: {@return a pack output for the given path}
-+    public PackOutput getPackOutput(String path) {
-+        return new PackOutput(this.vanillaPackOutput.getOutputFolder().resolve(path));
++    /// Neo: {@return a pack generator with the given provider prefix, writing to the base output}
++    public PackGenerator getPackGenerator(boolean run, String providerPrefix) {
++        return this.getPackGenerator(run, providerPrefix, this.vanillaPackOutput);
 +    }
 +
 +    /// Neo: {@return a pack generator with the given provider prefix, writing to the given path}
 +    public PackGenerator getPackGenerator(boolean run, String providerPrefix, String path) {
-+        return this.getPackGenerator(run, providerPrefix, this.getPackOutput(path));
++        return this.getPackGenerator(run, providerPrefix, new PackOutput(this.vanillaPackOutput.getOutputFolder().resolve(path)));
 +    }
 +
 +    /// Neo: {@return a pack generator with the given provider prefix, writing to the given output}
@@ -35,21 +25,15 @@
 +        return new PackGenerator(run, providerPrefix, output);
 +    }
 +
-+    /// Neo: add the data provider created with the default pack output by the given factory
-+    public <T extends DataProvider> T addProvider(boolean run, DataProvider.Factory<T> factory) {
-+        return this.addProvider(run, factory.create(this.vanillaPackOutput));
++    /// Neo: {@return an unmodifiable view of the data providers to be run}
++    public Map<String, DataProvider> getProvidersView() {
++        return java.util.Collections.unmodifiableMap(this.providersToRun);
 +    }
 +
-+    /// Neo: add the given data provider
-+    public <T extends DataProvider> T addProvider(boolean run, T provider) {
-+        String id = provider.getName();
-+        if (!DataGenerator.this.allProviderIds.add(id)) {
-+            throw new IllegalStateException("Duplicate provider: " + id);
-+        }
-+        if (run) {
-+            DataGenerator.this.providersToRun.put(id, provider);
-+        }
-+        return provider;
++    /// Neo: {@return the base output directory for the generator}
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public Path getOutputFolder() {
++        return this.vanillaPackOutput.getOutputFolder();
 +    }
 +
 +    /// Neo: merge the given data generator into this one
