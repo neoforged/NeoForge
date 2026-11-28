@@ -8,12 +8,12 @@ package net.neoforged.neoforge.data.loading;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.MultiRegistryBootstrap;
 import net.minecraft.core.registries.SingleRegistryBootstrap;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryDataLoader;
@@ -21,6 +21,7 @@ import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.data.event.DatapackRegistryGatherer;
 import net.neoforged.neoforge.data.event.DatapackRegistrySets;
+import net.neoforged.neoforge.data.event.PackGatherer;
 import net.neoforged.neoforge.registries.DataPackRegistriesHooks;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jspecify.annotations.Nullable;
@@ -46,7 +47,15 @@ record DatapackRegistryGathererImpl(@Nullable DatapackRegistryGatherer global, S
     ///
     /// @param modIds The set of mod ids to generate the registry elements of.
     DatapackRegistryGathererImpl(Set<String> modIds) {
-        this(null, "Global", new DatapackRegistrySets<>(new RegistrySetBuilder(), new RegistrySetBuilder()), modIds, new DatapackRegistrySets<>(new MutableBoolean(), new MutableBoolean()));
+        this("Global", modIds);
+    }
+
+    /// Used to construct the subpack registry gatherer.
+    ///
+    /// @param id     The identifier of the subpack provider.
+    /// @param modIds The set of mod ids to generate the registry elements of.
+    DatapackRegistryGathererImpl(String id, Set<String> modIds) {
+        this(null, id, new DatapackRegistrySets<>(new RegistrySetBuilder(), new RegistrySetBuilder()), modIds, new DatapackRegistrySets<>(new MutableBoolean(), new MutableBoolean()));
     }
 
     @Override
@@ -139,18 +148,18 @@ record DatapackRegistryGathererImpl(@Nullable DatapackRegistryGatherer global, S
 
     /// An internal method used to add the data providers for any mod id subset, if any entries were added.
     ///
-    /// @param generator    The data generator.
+    /// @param gatherer     The provider gatherer for the pack.
     /// @param registrySets The global registries for each layer.
     /// @param index        A unique identifier to prevent name collisions.
-    void createSub(DataGenerator generator, DatapackRegistrySets<CompletableFuture<HolderLookup.Provider>> registrySets, int index) {
-        CompletableFuture<HolderLookup.Provider> worldAndDimension = registrySets.worldAndDimension();
+    void createSub(PackGatherer gatherer, DatapackRegistrySets<CompletableFuture<HolderLookup.Provider>> registrySets, int index) {
+        AtomicReference<CompletableFuture<HolderLookup.Provider>> worldAndDimension = new AtomicReference<>(registrySets.worldAndDimension());
         if (this.hasEntries.worldAndDimension().booleanValue()) {
-            worldAndDimension = generator.addProvider(true, DatapackBuiltinEntriesProvider.forWorldLayer(
-                    generator.getPackOutput(), "World (" + this.id + "[" + index + "]" + "): " + this.modIds, worldAndDimension, this.builder.worldAndDimension(), this.modIds)).getRegistryProvider();
+            worldAndDimension.updateAndGet(world -> gatherer.addProvider(output -> DatapackBuiltinEntriesProvider.forWorldLayer(
+                    output, "World (" + this.id + "[" + index + "]" + "): " + this.modIds, world, this.builder.worldAndDimension(), this.modIds)).getRegistryProvider());
         }
         if (this.hasEntries.reloadable().booleanValue()) {
-            generator.addProvider(true, DatapackBuiltinEntriesProvider.forReloadableLayer(
-                    generator.getPackOutput(), "Reloadable (" + this.id + "[" + index + "]" + "): " + this.modIds, worldAndDimension, registrySets.reloadable(), this.builder.reloadable(), this.modIds));
+            gatherer.addProvider(output -> DatapackBuiltinEntriesProvider.forReloadableLayer(
+                    output, "Reloadable (" + this.id + "[" + index + "]" + "): " + this.modIds, worldAndDimension.get(), registrySets.reloadable(), this.builder.reloadable(), this.modIds));
         }
     }
 }

@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.tags.BlockItemTagsProvider;
 import net.minecraft.data.tags.TagAppender;
 import net.minecraft.references.BlockItemId;
 import net.minecraft.references.BlockItemIds;
@@ -26,26 +27,21 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ColorCollection;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.data.BlockTagCopyingItemTagProvider;
+import net.neoforged.neoforge.common.data.ItemTagsProvider;
 
-public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvider {
-    public NeoForgeItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTags) {
-        super(output, lookupProvider, blockTags, "neoforge");
+public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
+    public NeoForgeItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(output, lookupProvider, "neoforge");
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void addTags(HolderLookup.Provider lookupProvider) {
-        copy(Tags.BlockItems.BARRELS);
-        copy(Tags.BlockItems.BARRELS_WOODEN);
-        copy(Tags.BlockItems.BARS);
-        copy(Tags.BlockItems.BARS_COPPER);
-        copy(Tags.BlockItems.BARS_IRON);
+        new NeoForgeBlockItemTagsProvider(tagId -> BlockItemTagsProvider.wrapForItems(this.tag(tagId.item()))).run();
+
         tag(Tags.Items.BONES).add(Items.BONE);
-        copy(Tags.BlockItems.BOOKSHELVES);
         tag(Tags.Items.BRICKS).addTags(Tags.Items.BRICKS_NORMAL, Tags.Items.BRICKS_NETHER, Tags.Items.BRICKS_RESIN);
         tag(Tags.Items.BRICKS_NORMAL).add(Items.BRICK);
         tag(Tags.Items.BRICKS_NETHER).add(Items.NETHER_BRICK);
@@ -58,22 +54,8 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         tag(Tags.Items.BUCKETS_ENTITY_WATER).add(Items.AXOLOTL_BUCKET, Items.COD_BUCKET, Items.PUFFERFISH_BUCKET, Items.TADPOLE_BUCKET, Items.TROPICAL_FISH_BUCKET, Items.SALMON_BUCKET);
         tag(Tags.Items.BUCKETS_ENTITY_DRY).add(Items.SULFUR_CUBE_BUCKET);
         tag(Tags.Items.BUCKETS).addTags(Tags.Items.BUCKETS_EMPTY, Tags.Items.BUCKETS_WATER, Tags.Items.BUCKETS_LAVA, Tags.Items.BUCKETS_MILK, Tags.Items.BUCKETS_POWDER_SNOW, Tags.Items.BUCKETS_ENTITY_WATER, Tags.Items.BUCKETS_ENTITY_DRY);
-        copy(Tags.BlockItems.BUDDING_BLOCKS);
-        copy(Tags.BlockItems.BUDS);
-        copy(Tags.BlockItems.CHAINS);
-        copy(Tags.BlockItems.CHESTS);
-        copy(Tags.BlockItems.CHESTS_ENDER);
-        copy(Tags.BlockItems.CHESTS_TRAPPED);
-        copy(Tags.BlockItems.CHESTS_WOODEN);
-        copy(Tags.BlockItems.CLUSTERS);
         tag(Tags.Items.CLUMPS).addTags(Tags.Items.CLUMPS_RESIN);
         tag(Tags.Items.CLUMPS_RESIN).add(Items.RESIN_CLUMP);
-        copy(Tags.BlockItems.COBBLESTONES);
-        copy(Tags.BlockItems.COBBLESTONES_NORMAL);
-        copy(Tags.BlockItems.COBBLESTONES_INFESTED);
-        copy(Tags.BlockItems.COBBLESTONES_MOSSY);
-        copy(Tags.BlockItems.COBBLESTONES_DEEPSLATE);
-        copy(Tags.BlockItems.CONCRETES);
         var concretePowder = tag(Tags.Items.CONCRETE_POWDERS);
         Items.CONCRETE_POWDER.forEach(concretePowder::add);
         tag(Tags.Items.CROPS).addTags(
@@ -106,14 +88,10 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         tag(Tags.Items.DRINKS_JUICE);
 
         ColorCollection<NeoForgeItemTagsProvider.Appender> builders = Tags.BlockItems.DYED_COLORS.map(BlockItemTagId::item).map(this::tag);
-        for (ColorCollection<BlockItemId> colorCollection : NeoForgeBlockTagsProvider.dyeableBlockItems()) {
-            ColorCollection.zipApply(builders, colorCollection, NeoForgeItemTagsProvider.Appender::add);
-        }
         var dyeableItems = List.of(ItemIds.DYED_BUNDLE, ItemIds.CUSHION, ItemIds.HARNESS);
         for (ColorCollection<ResourceKey<Item>> colorCollection : dyeableItems) {
             ColorCollection.zipApply(builders, colorCollection, NeoForgeItemTagsProvider.Appender::add);
         }
-        addColoredTags(tag(Tags.BlockItems.DYED.item())::addTag, Tags.BlockItems.DYED.item());
 
         ColorCollection<NeoForgeItemTagsProvider.Appender> dyesBuilders = Tags.Items.DYE_COLORS.map(this::tag);
         ColorCollection.zipApply(dyesBuilders, ItemIds.DYE, NeoForgeItemTagsProvider.Appender::add);
@@ -155,18 +133,9 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         tag(Tags.Items.DUSTS_REDSTONE).add(Items.REDSTONE);
         tag(Tags.Items.EGGS).add(Items.EGG, Items.BROWN_EGG, Items.BLUE_EGG);
         tag(Tags.Items.ENCHANTING_FUELS).addTag(Tags.Items.GEMS_LAPIS);
-        copy(Tags.BlockItems.END_STONES);
         tag(Tags.Items.ENDER_PEARLS).add(Items.ENDER_PEARL);
         tag(Tags.Items.FEATHERS).add(Items.FEATHER);
-        copy(Tags.BlockItems.FENCE_GATES);
-        copy(Tags.BlockItems.FENCE_GATES_WOODEN);
-        copy(Tags.BlockItems.FENCES);
-        copy(Tags.BlockItems.FENCES_NETHER_BRICK);
-        copy(Tags.BlockItems.FENCES_WOODEN);
         tag(Tags.Items.FERTILIZERS).add(Items.BONE_MEAL);
-        copy(Tags.BlockItems.FLOWERS_SMALL);
-        copy(Tags.BlockItems.FLOWERS_TALL);
-        copy(Tags.BlockItems.FLOWERS);
         tag(Tags.Items.FOODS_FRUIT).add(Items.APPLE, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE, Items.CHORUS_FRUIT, Items.MELON_SLICE);
         tag(Tags.Items.FOODS_VEGETABLE).add(Items.CARROT, Items.GOLDEN_CARROT, Items.POTATO, Items.BEETROOT);
         tag(Tags.Items.FOODS_BERRY).add(Items.SWEET_BERRIES, Items.GLOW_BERRIES);
@@ -195,7 +164,6 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
                         ItemTags.GOAT_FOOD, ItemTags.HOGLIN_FOOD, ItemTags.HORSE_FOOD, ItemTags.LLAMA_FOOD, ItemTags.OCELOT_FOOD,
                         ItemTags.PANDA_FOOD, ItemTags.PARROT_FOOD, ItemTags.PIG_FOOD, ItemTags.PIGLIN_FOOD, ItemTags.RABBIT_FOOD,
                         ItemTags.SHEEP_FOOD, ItemTags.SNIFFER_FOOD, ItemTags.STRIDER_FOOD, ItemTags.TURTLE_FOOD, ItemTags.WOLF_FOOD);
-        copy(Tags.BlockItems.FROGLIGHTS);
         tag(Tags.Items.GEMS).addTags(Tags.Items.GEMS_AMETHYST, Tags.Items.GEMS_DIAMOND, Tags.Items.GEMS_EMERALD, Tags.Items.GEMS_LAPIS, Tags.Items.GEMS_PRISMARINE, Tags.Items.GEMS_QUARTZ);
         tag(Tags.Items.GEMS_AMETHYST).add(Items.AMETHYST_SHARD);
         tag(Tags.Items.GEMS_DIAMOND).add(Items.DIAMOND);
@@ -203,14 +171,6 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         tag(Tags.Items.GEMS_LAPIS).add(Items.LAPIS_LAZULI);
         tag(Tags.Items.GEMS_PRISMARINE).add(Items.PRISMARINE_CRYSTALS);
         tag(Tags.Items.GEMS_QUARTZ).add(Items.QUARTZ);
-        copy(Tags.BlockItems.GLASS_BLOCKS);
-        copy(Tags.BlockItems.GLASS_BLOCKS_COLORLESS);
-        copy(Tags.BlockItems.GLASS_BLOCKS_TINTED);
-        copy(Tags.BlockItems.GLASS_BLOCKS_CHEAP);
-        copy(Tags.BlockItems.GLASS_PANES);
-        copy(Tags.BlockItems.GLASS_PANES_COLORLESS);
-        copy(Tags.BlockItems.GLAZED_TERRACOTTAS);
-        copy(Tags.BlockItems.GRAVELS);
         tag(Tags.Items.GUNPOWDERS).add(Items.GUNPOWDER);
         tag(Tags.Items.HIDDEN_FROM_RECIPE_VIEWERS);
         tag(Tags.BlockItems.ICE).add(Items.ICE, Items.PACKED_ICE, Items.BLUE_ICE);
@@ -228,44 +188,14 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
                 Items.MUSIC_DISC_RELIC, Items.MUSIC_DISC_CREATOR, Items.MUSIC_DISC_CREATOR_MUSIC_BOX, Items.MUSIC_DISC_PRECIPICE,
                 Items.MUSIC_DISC_TEARS, Items.MUSIC_DISC_LAVA_CHICKEN, Items.MUSIC_DISC_BOUNCE);
         tag(Tags.Items.NETHER_STARS).add(Items.NETHER_STAR);
-        copy(Tags.BlockItems.NETHERRACKS);
         tag(Tags.Items.NUGGETS).addTags(Tags.Items.NUGGETS_COPPER, Tags.Items.NUGGETS_IRON, Tags.Items.NUGGETS_GOLD);
         tag(Tags.Items.NUGGETS_COPPER).add(Items.COPPER_NUGGET);
         tag(Tags.Items.NUGGETS_IRON).add(Items.IRON_NUGGET);
         tag(Tags.Items.NUGGETS_GOLD).add(Items.GOLD_NUGGET);
-        copy(Tags.BlockItems.OBSIDIANS);
-        copy(Tags.BlockItems.ORE_BEARING_GROUND_DEEPSLATE);
-        copy(Tags.BlockItems.ORE_BEARING_GROUND_NETHERRACK);
-        copy(Tags.BlockItems.ORE_BEARING_GROUND_STONE);
-        copy(Tags.BlockItems.ORE_RATES_DENSE);
-        copy(Tags.BlockItems.ORE_RATES_SINGULAR);
-        copy(Tags.BlockItems.ORE_RATES_SPARSE);
-        copy(Tags.BlockItems.ORES);
-        copy(Tags.BlockItems.ORES_COAL);
-        copy(Tags.BlockItems.ORES_COPPER);
-        copy(Tags.BlockItems.ORES_DIAMOND);
-        copy(Tags.BlockItems.ORES_EMERALD);
-        copy(Tags.BlockItems.ORES_GOLD);
-        copy(Tags.BlockItems.ORES_IRON);
-        copy(Tags.BlockItems.ORES_LAPIS);
-        copy(Tags.BlockItems.ORES_QUARTZ);
-        copy(Tags.BlockItems.ORES_REDSTONE);
-        copy(Tags.BlockItems.ORES_NETHERITE_SCRAP);
-        copy(Tags.BlockItems.ORES_IN_GROUND_DEEPSLATE);
-        copy(Tags.BlockItems.ORES_IN_GROUND_NETHERRACK);
-        copy(Tags.BlockItems.ORES_IN_GROUND_STONE);
         tag(Tags.Items.PIGLIN_USABLE_CROSSBOWS).addTag(Tags.Items.TOOLS_CROSSBOW);
         tag(Tags.Items.PILLAGER_USABLE_CROSSBOWS).addTags(Tags.Items.TOOLS_CROSSBOW);
-        copy(Tags.BlockItems.PLAYER_WORKSTATIONS_CRAFTING_TABLES);
-        copy(Tags.BlockItems.PLAYER_WORKSTATIONS_FURNACES);
         tag(Tags.Items.POTIONS_BOTTLE).add(Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION);
         tag(Tags.Items.POTIONS).addTags(Tags.Items.POTIONS_BOTTLE);
-        copy(Tags.BlockItems.OBSIDIANS_NORMAL);
-        copy(Tags.BlockItems.OBSIDIANS_CRYING);
-        copy(Tags.BlockItems.PUMPKINS);
-        copy(Tags.BlockItems.PUMPKINS_NORMAL);
-        copy(Tags.BlockItems.PUMPKINS_CARVED);
-        copy(Tags.BlockItems.PUMPKINS_JACK_O_LANTERNS);
         tag(Tags.Items.RAW_MATERIALS).addTags(Tags.Items.RAW_MATERIALS_COPPER, Tags.Items.RAW_MATERIALS_GOLD, Tags.Items.RAW_MATERIALS_IRON);
         tag(Tags.Items.RAW_MATERIALS_COPPER).add(Items.RAW_COPPER);
         tag(Tags.Items.RAW_MATERIALS_GOLD).add(Items.RAW_GOLD);
@@ -274,19 +204,6 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         tag(Tags.Items.RODS_BLAZE).add(Items.BLAZE_ROD);
         tag(Tags.Items.RODS_BREEZE).add(Items.BREEZE_ROD);
         tag(Tags.Items.RODS_WOODEN).add(Items.STICK);
-        copy(Tags.BlockItems.ROPES);
-        copy(Tags.BlockItems.SANDS);
-        copy(Tags.BlockItems.SANDS_COLORLESS);
-        copy(Tags.BlockItems.SANDS_RED);
-        copy(Tags.BlockItems.SANDSTONE_BLOCKS);
-        copy(Tags.BlockItems.SANDSTONE_SLABS);
-        copy(Tags.BlockItems.SANDSTONE_STAIRS);
-        copy(Tags.BlockItems.SANDSTONE_RED_BLOCKS);
-        copy(Tags.BlockItems.SANDSTONE_RED_SLABS);
-        copy(Tags.BlockItems.SANDSTONE_RED_STAIRS);
-        copy(Tags.BlockItems.SANDSTONE_UNCOLORED_BLOCKS);
-        copy(Tags.BlockItems.SANDSTONE_UNCOLORED_SLABS);
-        copy(Tags.BlockItems.SANDSTONE_UNCOLORED_STAIRS);
         tag(Tags.Items.SEEDS).addTags(Tags.Items.SEEDS_BEETROOT, Tags.Items.SEEDS_MELON, Tags.Items.SEEDS_PUMPKIN, Tags.Items.SEEDS_TORCHFLOWER, Tags.Items.SEEDS_PITCHER_PLANT, Tags.Items.SEEDS_WHEAT);
         tag(Tags.Items.SEEDS_BEETROOT).add(Items.BEETROOT_SEEDS);
         tag(Tags.Items.SEEDS_MELON).add(Items.MELON_SEEDS);
@@ -298,32 +215,7 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         tag(Tags.Items.SLIME_BALLS).add(Items.SLIME_BALL);
         var shulker = tag(Tags.Items.SHULKER_BOXES).add(Items.SHULKER_BOX);
         Items.DYED_SHULKER_BOX.forEach(shulker::add);
-        copy(Tags.BlockItems.STONES);
-        copy(Tags.BlockItems.STORAGE_BLOCKS);
-        copy(Tags.BlockItems.STORAGE_BLOCKS_BONE_MEAL);
-        copy(Tags.BlockItems.STORAGE_BLOCKS_COAL);
-        copy(Tags.BlockItems.STORAGE_BLOCKS_COPPER);
-        copy(Tags.BlockItems.STORAGE_BLOCKS_DIAMOND);
-        copy(Tags.BlockItems.STORAGE_BLOCKS_DRIED_KELP);
-        copy(Tags.BlockItems.STORAGE_BLOCKS_EMERALD);
-        copy(Tags.BlockItems.STORAGE_BLOCKS_GOLD);
-        copy(Tags.BlockItems.STORAGE_BLOCKS_IRON);
-        copy(Tags.BlockItems.STORAGE_BLOCKS_LAPIS);
-        copy(Tags.BlockItems.STORAGE_BLOCKS_NETHERITE);
-        copy(Tags.BlockItems.STORAGE_BLOCKS_RAW_COPPER);
-        copy(Tags.BlockItems.STORAGE_BLOCKS_RAW_GOLD);
-        copy(Tags.BlockItems.STORAGE_BLOCKS_RAW_IRON);
-        copy(Tags.BlockItems.STORAGE_BLOCKS_REDSTONE);
-        copy(Tags.BlockItems.STORAGE_BLOCKS_RESIN);
-        copy(Tags.BlockItems.STORAGE_BLOCKS_SLIME);
-        copy(Tags.BlockItems.STORAGE_BLOCKS_WHEAT);
         tag(Tags.Items.STRINGS).add(Items.STRING);
-        copy(Tags.BlockItems.OVERWORLD_NATURAL_LOGS);
-        copy(Tags.BlockItems.NETHER_NATURAL_LOGS);
-        copy(Tags.BlockItems.NATURAL_LOGS);
-        copy(Tags.BlockItems.NATURAL_WOODS);
-        copy(Tags.BlockItems.STRIPPED_LOGS);
-        copy(Tags.BlockItems.STRIPPED_WOODS);
         tag(Tags.Items.VILLAGER_JOB_SITES).add(
                 Items.BARREL, Items.BLAST_FURNACE, Items.BREWING_STAND, Items.CARTOGRAPHY_TABLE,
                 Items.CAULDRON, Items.COMPOSTER, Items.FLETCHING_TABLE, Items.GRINDSTONE,
@@ -494,16 +386,6 @@ public final class NeoForgeItemTagsProvider extends BlockTagCopyingItemTagProvid
         for (DyeColor color : DyeColor.values()) {
             TagKey<Item> tag = getForgeItemTag(prefix + color.getName());
             consumer.accept(tag);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private TagKey<Block> getForgeBlockTag(String name) {
-        try {
-            name = name.toUpperCase(Locale.ENGLISH);
-            return (TagKey<Block>) Tags.Blocks.class.getDeclaredField(name).get(null);
-        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-            throw new IllegalStateException(Tags.Blocks.class.getName() + " is missing tag name: " + name);
         }
     }
 

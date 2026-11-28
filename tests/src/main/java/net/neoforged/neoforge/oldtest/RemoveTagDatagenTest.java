@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.oldtest;
 
 import net.minecraft.core.HolderLookup;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.references.BlockItemIds;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
@@ -31,9 +30,7 @@ public class RemoveTagDatagenTest {
     }
 
     private void onGatherData(GatherDataEvent.Client event) {
-        DataGenerator generator = event.getGenerator();
-
-        var blocks = new BlockTagsProvider(generator.getPackOutput(), event.getReloadableLookupProvider(), MODID) {
+        var blocks = event.addProvider((output, registries) -> new BlockTagsProvider(output, registries, MODID) {
             @SuppressWarnings("unchecked")
             @Override
             protected void addTags(HolderLookup.Provider provider) {
@@ -45,11 +42,9 @@ public class RemoveTagDatagenTest {
                         .remove(BlockTags.BEEHIVES)
                         .remove(BlockTags.BANNERS, BlockTags.BEDS);
             }
-        };
+        });
 
-        generator.addProvider(true, blocks);
-
-        generator.addProvider(true, new BlockTagCopyingItemTagProvider(generator.getPackOutput(), event.getReloadableLookupProvider(), blocks.contentsGetter(), MODID) {
+        event.addProvider((output, registries) -> new BlockTagCopyingItemTagProvider(output, registries, blocks.contentsGetter(), MODID) {
             @Override
             protected void addTags(HolderLookup.Provider provider) {
                 // This is for testing if it is functional, remove spruce_planks from planks, which makes us unable to craft beds with them.

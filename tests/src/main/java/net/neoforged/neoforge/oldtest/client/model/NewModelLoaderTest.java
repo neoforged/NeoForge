@@ -28,7 +28,6 @@ import net.minecraft.client.resources.model.sprite.TextureSlots;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
@@ -180,11 +179,8 @@ public class NewModelLoaderTest {
     }
 
     private void datagen(GatherDataEvent.Client event) {
-        DataGenerator gen = event.getGenerator();
-        final PackOutput output = gen.getPackOutput();
-
         // Let blockstate provider see generated item models by passing its existing file helper
-        gen.addProvider(true, new ModelGen(output));
+        event.addProvider(ModelGen::new);
     }
 
     private static class ModelGen extends ModelProvider {

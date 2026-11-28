@@ -30,6 +30,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
 import net.neoforged.neoforge.client.registries.DeferredClientRegister;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.PackGatherer;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -37,7 +38,7 @@ import org.jetbrains.annotations.VisibleForTesting;
  * A data provider for {@link ParticleDescription}s.
  *
  * <p>To use this provider, extend this class and implement {@link #addDescriptions()}.
- * Then, register an instance using {@link net.minecraft.data.DataGenerator#addProvider(boolean, Factory)}
+ * Then, register an instance using {@link PackGatherer#addProvider(Factory)}
  * via the {@link GatherDataEvent} on the mod event bus.
  *
  * <p>A description can be added to a {@link ParticleType} which uses a {@linkplain #spriteSet(ParticleType, Iterable) sprite set}.

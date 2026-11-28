@@ -104,11 +104,17 @@
   "net/minecraft/core/component/DataComponentMap$Builder": [
     "net/neoforged/neoforge/common/extensions/IDataComponentMapBuilderExtensions"
   ],
+  "net/minecraft/data/DataGenerator$PackGenerator": [
+    "net/neoforged/neoforge/data/event/PackGatherer"
+  ],
   "net/minecraft/data/loot/LootTableSubProvider$Context": [
     "net/neoforged/neoforge/common/extensions/LootTableSubProviderContextExtension"
   ],
   "net/minecraft/data/recipes/RecipeOutput": [
     "net/neoforged/neoforge/common/extensions/IRecipeOutputExtension"
+  ],
+  "net/minecraft/data/tags/BlockItemTagsProvider$CombinedAppender": [
+    "net/neoforged/neoforge/common/extensions/ICombinedAppenderExtension"
   ],
   "net/minecraft/data/tags/IntrinsicHolderTagsProvider$IntrinsicTagAppender": [
     "net/neoforged/neoforge/common/extensions/IIntrinsicHolderTagAppenderExtension<T>"

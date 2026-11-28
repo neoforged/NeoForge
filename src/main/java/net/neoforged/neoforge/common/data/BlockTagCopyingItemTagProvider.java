@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.Block;
  * into a separate class and reuse that from your block and item tag provider. See {@link net.minecraft.data.tags.BlockItemTagsProvider}
  * for vanillas implementation of this concept.
  */
+@Deprecated(forRemoval = true)
 public abstract class BlockTagCopyingItemTagProvider extends TagsProvider<Item> {
     private final CompletableFuture<TagsProvider.TagLookup<Block>> blockTags;
     private final Map<TagKey<Block>, TagKey<Item>> tagsToCopy = new HashMap<>();

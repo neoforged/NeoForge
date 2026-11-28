@@ -11,7 +11,6 @@ import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
 import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
@@ -53,8 +52,7 @@ public class ScaffoldingTest {
     }
 
     private void gatherData(final GatherDataEvent.Client event) {
-        DataGenerator gen = event.getGenerator();
-        event.addProvider(new ScaffoldingModels(gen.getPackOutput()));
+        event.addProvider(ScaffoldingModels::new);
     }
 
     private static final class ScaffoldingModels extends ModelProvider {

@@ -90,7 +90,7 @@ public class DataMapTests {
 
         final String subpackName = reg.registerSubpack("second_layer");
 
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
+        reg.addClientProvider((output, registries) -> new DataMapProvider(output, registries) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -108,7 +108,7 @@ public class DataMapTests {
             }
         });
 
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getReloadableLookupProvider()) {
+        reg.clientSubpack(subpackName, subpack -> subpack.addProvider((output, registries) -> new DataMapProvider(output, registries) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -125,7 +125,7 @@ public class DataMapTests {
             public String getName() {
                 return "generator 2";
             }
-        });
+        }));
 
         test.onGameTest(helper -> {
             helper.assertTrue(Objects.equals(Items.BLUE_ORCHID.builtInRegistryHolder()
@@ -170,7 +170,7 @@ public class DataMapTests {
 
         final String subpackName = reg.registerSubpack("second_layer");
 
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
+        reg.addClientProvider((output, registries) -> new DataMapProvider(output, registries) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -190,7 +190,7 @@ public class DataMapTests {
             }
         });
 
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getReloadableLookupProvider()) {
+        reg.clientSubpack(subpackName, subpack -> subpack.addProvider((output, registries) -> new DataMapProvider(output, registries) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -205,7 +205,7 @@ public class DataMapTests {
             public String getName() {
                 return "generator 2";
             }
-        });
+        }));
 
         test.onGameTest(helper -> {
             helper.assertTrue(Objects.equals(Items.POTATO.builtInRegistryHolder()
@@ -234,7 +234,7 @@ public class DataMapTests {
 
         test.framework().modEventBus().addListener((final RegisterDataMapTypesEvent event) -> event.register(someData));
 
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
+        reg.addClientProvider((output, registries) -> new DataMapProvider(output, registries) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -286,7 +286,7 @@ public class DataMapTests {
                 Registries.DAMAGE_TYPE, ExperienceGrant.CODEC)
                 .build());
 
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
+        reg.addClientProvider((output, registries) -> new DataMapProvider(output, registries) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(xpGrant)
@@ -318,7 +318,7 @@ public class DataMapTests {
                 Registries.LOOT_TABLE, MobEffectInstance.CODEC)
                 .build());
 
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
+        reg.addClientProvider((output, registries) -> new DataMapProvider(output, registries) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(effectGrant)
@@ -351,7 +351,7 @@ public class DataMapTests {
                 Identifier.fromNamespaceAndPath(reg.modId(), "weight"),
                 Registries.ITEM, Codec.INT)
                 .build());
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
+        reg.addClientProvider((output, registries) -> new DataMapProvider(output, registries) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(dataMap)
@@ -397,7 +397,7 @@ public class DataMapTests {
 
         Holder<Block> lightlyOxidizedWaxedIron = reg.blocks().registerBlock("lightly_oxidized_waxed_iron", Block::new);
 
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
+        reg.addClientProvider((output, registries) -> new DataMapProvider(output, registries) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(NeoForgeDataMaps.OXIDIZABLES)
@@ -472,7 +472,7 @@ public class DataMapTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if block transforms appended via the transformables datamap work")
     static void transformablesMapTest(final DynamicTest test, final RegistrationHelper reg) {
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
+        reg.addClientProvider((output, registries) -> new DataMapProvider(output, registries) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(NeoForgeDataMaps.TRANSFORMABLES)
@@ -493,7 +493,7 @@ public class DataMapTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if block transforms appended via the block transform appenders datamap work")
     static void transformAppendersMapTest(final DynamicTest test, final RegistrationHelper reg) {
-        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getReloadableLookupProvider()) {
+        reg.addClientProvider((output, registries) -> new DataMapProvider(output, registries) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 BlockTransformer.BlockTransformData transformer = BlockTransformer.BlockTransformData.builder(

@@ -7,7 +7,6 @@ package net.neoforged.testframework.registration;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import net.minecraft.core.Registry;
 import net.minecraft.data.DataProvider;
 import net.minecraft.resources.Identifier;
@@ -18,6 +17,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.data.event.DatapackRegistryGatherer;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.data.event.GlobalDatapackRegistryGatherer;
+import net.neoforged.neoforge.data.event.PackGatherer;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
@@ -71,9 +71,41 @@ public interface RegistrationHelper {
 
     String registerSubpack(String name);
 
-    void addClientProvider(Function<GatherDataEvent.Client, DataProvider> provider);
+    /// Adds the provider to generate for [GatherDataEvent.Client].
+    ///
+    /// @param factory A factory that constructs the provider from the pack output.
+    /// @param <T>     The type of the data provider.
+    <T extends DataProvider> void addClientProvider(DataProvider.Factory<T> factory);
 
-    void addServerProvider(Function<GatherDataEvent.Server, DataProvider> provider);
+    /// Adds the provider to generate for [GatherDataEvent.Client].
+    ///
+    /// @param factory A factory that constructs the provider from the pack output and registry set.
+    /// @param <T>     The type of the data provider.
+    <T extends DataProvider> void addClientProvider(PackGatherer.FactoryWithRegistries<T> factory);
+
+    /// Adds the provider to generate for [GatherDataEvent.Server].
+    ///
+    /// @param factory A factory that constructs the provider from the pack output.
+    /// @param <T>     The type of the data provider.
+    <T extends DataProvider> void addServerProvider(DataProvider.Factory<T> factory);
+
+    /// Adds the provider to generate for [GatherDataEvent.Server].
+    ///
+    /// @param factory A factory that constructs the provider from the pack output and registry set.
+    /// @param <T>     The type of the data provider.
+    <T extends DataProvider> void addServerProvider(PackGatherer.FactoryWithRegistries<T> factory);
+
+    /// Adds the providers to generate within the given path for [GatherDataEvent.Client].
+    ///
+    /// @param path    The path relative to the output directory.
+    /// @param subpack A consumer that gathers the providers for the subpack.
+    void clientSubpack(String path, Consumer<PackGatherer.WithRegistries> subpack);
+
+    /// Adds the providers to generate within the given path for [GatherDataEvent.Server].
+    ///
+    /// @param path    The path relative to the output directory.
+    /// @param subpack A consumer that gathers the providers for the subpack.
+    void serverSubpack(String path, Consumer<PackGatherer.WithRegistries> subpack);
 
     <T extends DataProvider> void serverProvider(Class<T> type, Consumer<T> consumer);
 

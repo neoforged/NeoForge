@@ -5,13 +5,9 @@
 
 package net.neoforged.neoforge.data.event;
 
-import java.util.Set;
-import net.minecraft.core.RegistrySetBuilder;
-import net.neoforged.neoforge.event.AddPackFindersEvent;
-
-/// Gathers the datapack registry entries during [GatherDataRegistryEntriesEvent] within a global registry set shared
-/// between all mods. Mods added via '--mod' in the run arguments will generate their contents, but all gathered entries
-/// can still be used for other parts of the data generation pipeline.
+/// Gathers the datapack registry entries within a global registry set shared Mods added via '--mod' in the run
+/// arguments will generate their contents, but all gathered entries can still be used for other parts of the
+/// data generation pipeline.
 ///
 /// Distinctions between the different registry layers (i.e., world, reloadable) are abstracted away and handled
 /// by the implementation.
@@ -32,11 +28,6 @@ public interface GlobalDatapackRegistryGatherer extends DatapackRegistryGatherer
     /// }
     /// ```
     /// <!-- @formatter:on -->
-    ///
-    /// Entries added using this method will still be available in the global registry set for any mod to use. If trying
-    /// to create a built-in datapack added via [AddPackFindersEvent], then it should
-    /// be handled via [PackGenerator#createWorldRegistryObjects(RegistrySetBuilder, Set)] and
-    /// [PackGenerator#createReloadableRegistryObjects(RegistrySetBuilder, Set)], respectively.
     ///
     /// @param modId  The first mod id to gather registry entries for.
     /// @param modIds Any additional mod ids to gather the registry entries for.

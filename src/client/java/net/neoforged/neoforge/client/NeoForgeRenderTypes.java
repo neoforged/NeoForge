@@ -143,7 +143,7 @@ public final class NeoForgeRenderTypes {
         public static Function<Identifier, RenderType> ENTITY_UNLIT_TRANSLUCENT = Util.memoize(Internal::unlitTranslucent);
 
         private static RenderType unlitTranslucent(Identifier textureLocation) {
-            RenderSetup state = RenderSetup.builder(stage -> RenderPipelines.entity(new RenderPipelines.EntityParameters(NeoForgeRenderPipelines. ENTITY_UNLIT_VARIANT, stage)))
+            RenderSetup state = RenderSetup.builder(stage -> RenderPipelines.entity(new RenderPipelines.EntityParameters(NeoForgeRenderPipelines.ENTITY_UNLIT_VARIANT, stage)))
                     .withTexture("Sampler0", textureLocation)
                     .useLightmap()
                     .useOverlay()

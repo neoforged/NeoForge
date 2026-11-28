@@ -121,14 +121,15 @@ public abstract class DatagenModLoader extends CommonModLoader {
         for (ModContainer mod : ModList.get().getSortedMods()) {
             if (dataGeneratorConfig.getMods().contains(mod.getModId())) {
                 var generator = dataGeneratorConfig.makeGenerator(p -> dataGeneratorConfig.isFlat() ? p : p.resolve(mod.getModId()), uncached);
+                var mainPack = generator.getPackGenerator(true, mod.getModId() + "-global");
 
                 // Add registry providers
                 var registryProviders = modRegistryProviders.getOrDefault(mod.getModId(), Collections.emptyList());
                 for (int i = 0; i < registryProviders.size(); ++i) {
-                    registryProviders.get(i).createSub(generator, registries, i);
+                    registryProviders.get(i).createSub(mainPack, registries, i);
                 }
 
-                var event = eventGenerator.create(mod, generator, dataGeneratorConfig, registries);
+                var event = eventGenerator.create(mod, generator, mainPack, dataGeneratorConfig, registries);
                 mod.acceptEvent(event);
             }
         }

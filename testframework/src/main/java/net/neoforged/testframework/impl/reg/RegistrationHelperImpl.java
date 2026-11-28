@@ -8,6 +8,7 @@ package net.neoforged.testframework.impl.reg;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,13 +17,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
@@ -45,6 +44,8 @@ import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.data.event.GatherDataRegistryEntriesEvent;
 import net.neoforged.neoforge.data.event.GlobalDatapackRegistryGatherer;
+import net.neoforged.neoforge.data.event.PackGatherer;
+import net.neoforged.neoforge.data.loading.RegistryPackGatherer;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -100,8 +101,8 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     private final ListMultimap<Class<?>, Consumer<? extends DataProvider>> clientProviders = Multimaps.newListMultimap(new IdentityHashMap<>(), ArrayList::new);
     private final ListMultimap<Class<?>, Consumer<? extends DataProvider>> serverProviders = Multimaps.newListMultimap(new IdentityHashMap<>(), ArrayList::new);
     private final List<Consumer<GlobalDatapackRegistryGatherer>> registryGatherers = new ArrayList<>();
-    private final List<Function<GatherDataEvent.Client, DataProvider>> directClientProviders = new ArrayList<>();
-    private final List<Function<GatherDataEvent.Server, DataProvider>> directServerProviders = new ArrayList<>();
+    private final ListMultimap<@Nullable String, Consumer<PackGatherer.WithRegistries>> directClientProviders = Multimaps.newListMultimap(new HashMap<>(), ArrayList::new);
+    private final ListMultimap<@Nullable String, Consumer<PackGatherer.WithRegistries>> directServerProviders = Multimaps.newListMultimap(new HashMap<>(), ArrayList::new);
     private final Map<ResourceKey<? extends Registry<?>>, DeferredRegister<?>> registrars = new ConcurrentHashMap<>();
     @Nullable
     private RegistrySetBuilder worldRegistrySetBuilder;
@@ -216,13 +217,33 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     }
 
     @Override
-    public void addClientProvider(Function<GatherDataEvent.Client, DataProvider> provider) {
-        directClientProviders.add(provider);
+    public <T extends DataProvider> void addClientProvider(DataProvider.Factory<T> factory) {
+        directClientProviders.put(null, pack -> pack.addProvider(factory));
     }
 
     @Override
-    public void addServerProvider(Function<GatherDataEvent.Server, DataProvider> provider) {
-        directServerProviders.add(provider);
+    public <T extends DataProvider> void addClientProvider(PackGatherer.FactoryWithRegistries<T> factory) {
+        directClientProviders.put(null, pack -> pack.addProvider(factory));
+    }
+
+    @Override
+    public <T extends DataProvider> void addServerProvider(DataProvider.Factory<T> factory) {
+        directServerProviders.put(null, pack -> pack.addProvider(factory));
+    }
+
+    @Override
+    public <T extends DataProvider> void addServerProvider(PackGatherer.FactoryWithRegistries<T> factory) {
+        directServerProviders.put(null, pack -> pack.addProvider(factory));
+    }
+
+    @Override
+    public void clientSubpack(String path, Consumer<PackGatherer.WithRegistries> subpack) {
+        directClientProviders.put(path, subpack);
+    }
+
+    @Override
+    public void serverSubpack(String path, Consumer<PackGatherer.WithRegistries> subpack) {
+        directServerProviders.put(path, subpack);
     }
 
     @Override
@@ -262,23 +283,18 @@ public class RegistrationHelperImpl implements RegistrationHelper {
         gather(event, clientProviders, directClientProviders);
     }
 
-    private <T extends GatherDataEvent> void gather(final T event, ListMultimap<Class<?>, Consumer<? extends DataProvider>> providers, List<Function<T, DataProvider>> directProviders) {
-        providers.asMap().forEach((cls, cons) -> event.getGenerator().addProvider(true, PROVIDERS.get(cls).create(
-                event.getGenerator().getPackOutput(), event.getReloadableLookupProvider(), event.getGenerator(), modId, (List) cons)));
+    private <T extends GatherDataEvent> void gather(final T event, ListMultimap<Class<?>, Consumer<? extends DataProvider>> providers, ListMultimap<@Nullable String, Consumer<PackGatherer.WithRegistries>> directProviders) {
+        providers.asMap().forEach((cls, cons) -> event.addProvider((output, registries) -> PROVIDERS.get(cls).create(
+                output, registries, event.getGenerator(), modId, (List) cons)));
 
-        directProviders.forEach(func -> event.getGenerator().addProvider(true, new DataProvider() {
-            final DataProvider p = func.apply(event);
-
-            @Override
-            public CompletableFuture<?> run(CachedOutput output) {
-                return p.run(output);
-            }
-
-            @Override
-            public String getName() {
-                return modId + " generator " + p.getName();
-            }
-        }));
+        directProviders.asMap().forEach((path, packConsumers) -> {
+            PackGatherer.WithRegistries pack = path == null
+                    // If `null`, create a wrapper around the default pack generator to prevent name collisions
+                    ? RegistryPackGatherer.create(event.getGenerator().getPackGenerator(true, this.modId), event.registries())
+                    // Otherwise create the subpack
+                    : event.subpack(path);
+            packConsumers.forEach(packConsumer -> packConsumer.accept(pack));
+        });
     }
 
     private final class DeferredRegistrar<R, T extends DeferredRegister<R>> implements Supplier<T> {

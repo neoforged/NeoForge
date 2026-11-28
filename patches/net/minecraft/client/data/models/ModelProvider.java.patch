@@ -67,13 +67,7 @@
          blockStateGenerators.validate();
          itemModels.finalizeAndValidate();
          return CompletableFuture.allOf(
-@@ -61,11 +_,23 @@
- 
-     @Override
-     public String getName() {
--        return "Model Definitions";
-+        return "Model Definitions - " + this.modId;
-     }
+@@ -66,6 +_,18 @@
  
      private static class BlockStateGeneratorCollector implements Consumer<BlockModelDefinitionGenerator> {
          private final Map<Block, BlockModelDefinitionGenerator> generators = new HashMap<>();

@@ -63,7 +63,7 @@ public class EmissiveElementsTest {
     static final class DatagenHandler {
         @SubscribeEvent
         static void onGatherData(GatherDataEvent.Client event) {
-            event.addProvider(new ModelProvider(event.getGenerator().getPackOutput(), MOD_ID) {
+            event.addProvider(output -> new ModelProvider(output, MOD_ID) {
                 @Override
                 protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
                     Identifier modelId = ModelTemplates.FLAT_ITEM.extend()

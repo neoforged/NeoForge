@@ -31,8 +31,7 @@ public interface RecipeDisplayResultIdExtractor {
     /// @param contentsFactory Factory to resolve the typed instances from the result display.
     static <TYPE> RecipeDisplayResultIdExtractor forRegisteredType(DisplayContentsFactory<? extends TypedInstance<TYPE>> contentsFactory) {
         return (result, _, recipeContext) -> {
-            return result.resolve(recipeContext, contentsFactory).
-                    flatMap(stack -> stack.typeHolder().unwrapKey().stream())
+            return result.resolve(recipeContext, contentsFactory).flatMap(stack -> stack.typeHolder().unwrapKey().stream())
                     .map(ResourceKey::identifier);
         };
     }
