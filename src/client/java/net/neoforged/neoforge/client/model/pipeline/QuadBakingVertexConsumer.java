@@ -7,8 +7,8 @@ package net.neoforged.neoforge.client.model.pipeline;
 
 import com.mojang.blaze3d.platform.Transparency;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormatElement;
 import java.util.Arrays;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
 import net.minecraft.client.model.geom.builders.UVPair;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
